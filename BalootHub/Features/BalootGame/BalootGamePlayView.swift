@@ -7,9 +7,16 @@ struct BalootGamePlayView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(PurchaseManager.self) private var purchaseManager
-    @State private var viewModel = BalootGameViewModel()
+    @State private var viewModel: BalootGameViewModel
     @State private var isPresentingStopConfirm = false
     @State private var isPresentingRules = false
+
+    init(slug: String) {
+        self.slug = slug
+        // النمط يُشتق من عنصر الكتالوج، فيبدأ المحرك مقيّدًا بنمط اللعبة المفتوحة
+        // بدل أن تفتح كل الألعاب نفس الجولة الحرة.
+        _viewModel = State(initialValue: BalootGameViewModel(variant: BalootGameVariant(slug: slug)))
+    }
 
     var body: some View {
         Group {
@@ -109,20 +116,24 @@ struct BalootGamePlayView: View {
     private var biddingPanel: some View {
         VStack(spacing: AppSpacing.md) {
             if viewModel.isHumanTurn {
-                Text("اختر نمط الجولة")
+                Text(viewModel.variant == .hokumOnly ? "اختر نوع الحكم" : "اختر نمط الجولة")
                     .font(AppTypography.headline)
                 HStack(spacing: AppSpacing.sm) {
-                    Button("صن") { viewModel.chooseMode(.sun, trumpSuit: nil) }
-                        .buttonStyle(.borderedProminent)
-                        .tint(AppColor.accent)
-                    ForEach(Suit.allCases) { suit in
-                        Button {
-                            viewModel.chooseMode(.hokum, trumpSuit: suit)
-                        } label: {
-                            Text("حكم \(suit.symbol)")
+                    if viewModel.variant.allowsSun {
+                        Button("صن") { viewModel.chooseMode(.sun, trumpSuit: nil) }
+                            .buttonStyle(.borderedProminent)
+                            .tint(AppColor.accent)
+                    }
+                    if viewModel.variant.allowsHokum {
+                        ForEach(Suit.allCases) { suit in
+                            Button {
+                                viewModel.chooseMode(.hokum, trumpSuit: suit)
+                            } label: {
+                                Text("حكم \(suit.symbol)")
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .tint(AppColor.primary)
                         }
-                        .buttonStyle(.borderedProminent)
-                        .tint(AppColor.primary)
                     }
                 }
             } else {
@@ -162,20 +173,31 @@ struct BalootGamePlayView: View {
     }
 
     private var trickArea: some View {
-        HStack(spacing: AppSpacing.sm) {
-            if let trick = viewModel.state.currentTrick, !trick.playedCards.isEmpty {
-                ForEach(trick.playedCards) { played in
-                    CardView(card: played.card)
-                        .transition(reduceMotion ? .identity : .scale.combined(with: .opacity))
+        VStack(spacing: AppSpacing.xs) {
+            HStack(spacing: AppSpacing.sm) {
+                if !viewModel.trickOnTable.isEmpty {
+                    ForEach(viewModel.trickOnTable) { played in
+                        CardView(card: played.card)
+                            .transition(reduceMotion ? .identity : .scale.combined(with: .opacity))
+                    }
+                } else if viewModel.state.phase == .playing {
+                    Text("بانتظار أول ورقة في الأكلة")
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColor.textSecondary)
                 }
-            } else if viewModel.state.phase == .playing {
-                Text("بانتظار أول ورقة في الأكلة")
+            }
+            // إظهار من فاز بالأكلة بعد حسمها، وإلا اختفت الأوراق دون تفسير.
+            if let winner = viewModel.lastTrickWinnerName {
+                Label("فاز بالأكلة: \(winner)", systemImage: "checkmark.seal.fill")
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColor.textSecondary)
+                    .foregroundStyle(AppColor.success)
+                    .transition(.opacity)
             }
         }
-        .animation(AppAnimation.standard(reduceMotion: reduceMotion), value: viewModel.state.currentTrick?.playedCards.count)
-        .frame(minHeight: 90)
+        .animation(AppAnimation.standard(reduceMotion: reduceMotion), value: viewModel.trickOnTable.count)
+        .animation(AppAnimation.standard(reduceMotion: reduceMotion), value: viewModel.lastTrickWinnerName)
+        .frame(minHeight: 110)
+        .opacity(viewModel.isShowingResolvedTrick ? 0.75 : 1)
     }
 
     private var humanHandArea: some View {

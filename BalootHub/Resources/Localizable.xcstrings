@@ -11923,32 +11923,12 @@
         }
       }
     },
-    "في صن: الآس أعلى ثم 10 ثم K ثم Q ثم J ثم 9 ثم 8 ثم 7. في حكم: الشايب (J) هو الأقوى في نوع الحكم يليه 9 ثم A ثم 10 ثم K ثم Q ثم 8 ثم 7، بينما بقية الأنواع تُرتَّب كما في صن.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "In Sun: Ace is highest, then 10, K, Q, J, 9, 8, 7. In Hokum: the Jack is strongest in the trump suit, followed by 9, then A, 10, K, Q, 8, 7 — while the other suits rank as in Sun."
-          }
-        }
-      }
-    },
     "كل الأنواع الأربعة تُرتَّب بنفس الترتيب: A أعلى، يليه 10، K، Q، J، 9، 8، 7 (الأضعف).": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "All four suits rank the same way: A highest, then 10, K, Q, J, 9, 8, 7 (lowest)."
-          }
-        }
-      }
-    },
-    "في نوع الحكم فقط: الشايب (J) أقوى ورقة، يليه 9، ثم A، 10، K، Q، 8، 7. بقية الأنواع الثلاثة تُرتَّب كما في صن (A الأعلى وحتى 7 الأضعف).": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "In the trump suit only: the Jack is the strongest card, followed by 9, then A, 10, K, Q, 8, 7. The other three suits rank as in Sun (A highest down to 7 lowest)."
           }
         }
       }
@@ -12649,6 +12629,154 @@
           "stringUnit": {
             "state": "translated",
             "value": "This section will be added soon."
+          }
+        }
+      }
+    },
+    "في صن: الآس أعلى ثم 10 ثم K ثم Q ثم J ثم 9 ثم 8 ثم 7. في حكم: الولد (J) هو الأقوى في نوع الحكم يليه 9 ثم A ثم 10 ثم K ثم Q ثم 8 ثم 7، بينما بقية الأنواع تُرتَّب كما في صن.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In Sun: Ace is highest, then 10, K, Q, J, 9, 8, 7. In Hokum: the Jack is strongest in the trump suit, followed by 9, then A, 10, K, Q, 8, 7 — while the other suits rank as in Sun."
+          }
+        }
+      }
+    },
+    "في نوع الحكم فقط: الولد (J) أقوى ورقة، يليه 9، ثم A، 10، K، Q، 8، 7. بقية الأنواع الثلاثة تُرتَّب كما في صن (A الأعلى وحتى 7 الأضعف).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In the trump suit only: the Jack is the strongest card, followed by 9, then A, 10, K, Q, 8, 7. The other three suits rank as in Sun (A highest down to 7 lowest)."
+          }
+        }
+      }
+    },
+    "اختر نوع الحكم": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose the trump suit"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez la couleur d'atout"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elige el palo de triunfo"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trumpffarbe wählen"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Koz türünü seçin"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выберите козырную масть"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حکم کا رنگ منتخب کریں"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "तुरुप का रंग चुनें"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pilih suit truf"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择将牌花色"
+          }
+        }
+      }
+    },
+    "فاز بالأكلة: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trick won by: %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pli remporté par : %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baza ganada por: %@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stich gewonnen von: %@"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eli kazanan: %@"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Взятку взял: %@"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ہاتھ جیتا: %@"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "हाथ जीता: %@"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trik dimenangkan: %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "赢得该墩：%@"
           }
         }
       }
