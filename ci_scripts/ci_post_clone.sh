@@ -6,10 +6,16 @@
 # وبوضوح في سجلّ Xcode Cloud بدل فشل غامض لاحقًا أثناء البناء.
 set -e
 
-echo "==> لمّة بلوت (Baloot Hub) — ci_post_clone"
+echo "==> البلوت (Baloot Hub) — ci_post_clone"
 echo "Xcode: $(xcodebuild -version | head -1)"
+echo "Build: $(xcodebuild -version | sed -n '2p')"
 echo "Swift: $(swift --version 2>/dev/null | head -1)"
+
+# نسخة الـSDK هي سبب رفض ITMS-90111 السابق، لذا تُطبع صراحة في السجل
+# ليسهل التأكد من أن Xcode Cloud يبني بنسخة SDK تقبلها أبل للإرسال.
+echo "iPhoneOS SDK: $(xcrun --sdk iphoneos --show-sdk-version 2>/dev/null || echo 'غير متاح')"
 echo "الفرع: ${CI_BRANCH:-غير معروف} | الفعل: ${CI_XCODEBUILD_ACTION:-غير معروف}"
+echo "رقم بناء Xcode Cloud: ${CI_BUILD_NUMBER:-غير محدد}"
 
 PACKAGE_MANIFEST="$CI_PRIMARY_REPOSITORY_PATH/Packages/BalootEngine/Package.swift"
 if [ ! -f "$PACKAGE_MANIFEST" ]; then
