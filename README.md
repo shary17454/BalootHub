@@ -33,6 +33,17 @@ xcodebuild test  -scheme "BalootHub" -destination "platform=iOS Simulator,name=i
 cd Packages/BalootEngine && swift test
 ```
 
+## Xcode Cloud
+
+يحتوي المستودع مجلد [`ci_scripts/`](ci_scripts/) بجانب `BalootHub.xcodeproj` مباشرة (المكان الذي يشترطه Apple).
+السكربت الوحيد حاليًا هو `ci_post_clone.sh`: يعمل بعد استنساخ المستودع وقبل حل اعتماديات SPM، ويسجّل نسخة
+Xcode/Swift المستخدمة في بيئة البناء السحابية، ويتحقق من وجود حزمة `Packages/BalootEngine` قبل المتابعة حتى
+تظهر أي مشكلة بنية بوضوح في السجلّ بدل فشل غامض لاحقًا. لم تُضف سكربتات `ci_pre_xcodebuild.sh` أو
+`ci_post_xcodebuild.sh` لأنه لا يوجد لهما عمل فعلي بعد (لا تنبيهات خارجية ولا خطوات ما بعد بناء مطلوبة حاليًا).
+
+تفعيل Xcode Cloud نفسه (Product → Xcode Cloud → Create Workflow) خطوة تفاعلية داخل Xcode تتطلب حساب Apple
+Developer الخاص بك، ولا يمكن لأداة آلية أن تقوم بها نيابة عنك.
+
 ## بنية المشروع
 
 ```
