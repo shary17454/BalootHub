@@ -12,11 +12,11 @@ enum AppTab: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .home: "الرئيسية"
-        case .catalog: "الألعاب"
-        case .scorekeeper: "تسجيل البلوت"
-        case .history: "السجل"
-        case .settings: "الإعدادات"
+        case .home: "الرئيسية".localized
+        case .catalog: "الألعاب".localized
+        case .scorekeeper: "تسجيل البلوت".localized
+        case .history: "السجل".localized
+        case .settings: "الإعدادات".localized
         }
     }
 

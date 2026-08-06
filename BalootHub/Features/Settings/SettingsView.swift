@@ -58,7 +58,7 @@ struct SettingsView: View {
             }
 
             Section("عن التطبيق") {
-                LabeledContent("الاسم", value: "لمّة بلوت")
+                LabeledContent("الاسم", value: "البلوت")
                 LabeledContent("الإصدار", value: "1.0.0")
                 Text("لا يجمع التطبيق أي بيانات شخصية، ولا يحتاج اتصالًا بالإنترنت. كل البيانات تُخزَّن محليًا على جهازك فقط.")
                     .font(AppTypography.caption)

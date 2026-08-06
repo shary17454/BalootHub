@@ -19,7 +19,7 @@ struct StatusBadge: View {
                 Image(systemName: systemImage)
                     .accessibilityHidden(true)
             }
-            Text(title)
+            Text(title.localized)
         }
         .font(AppTypography.badge)
         .padding(.horizontal, AppSpacing.sm)

@@ -11,9 +11,9 @@ enum AppearanceMode: String, Codable, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .system: "حسب النظام"
-        case .light: "فاتح"
-        case .dark: "داكن"
+        case .system: "حسب النظام".localized
+        case .light: "فاتح".localized
+        case .dark: "داكن".localized
         }
     }
 }

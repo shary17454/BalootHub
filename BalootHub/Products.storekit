@@ -1,0 +1,41 @@
+{
+  "identifier" : "6798472232",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "30.00",
+      "familyShareable" : false,
+      "internalID" : "3F2E9A9C-6B1D-4E9C-9B1F-2A6E7A2D9C11",
+      "localizations" : [
+        {
+          "description" : "فتح اللعبة الكاملة بدفعة واحدة، بلا اشتراكات وبلا إعلانات إطلاقًا.",
+          "displayName" : "فتح اللعبة الكاملة",
+          "locale" : "ar"
+        }
+      ],
+      "productID" : "app.balooThub.ios.fullgame",
+      "referenceName" : "Full Game Unlock",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_askToBuyEnabled" : false,
+    "_billingIssuesEnabled" : false,
+    "_disableDialogs" : false,
+    "_failTransactionsEnabled" : false,
+    "_locale" : "ar_SA",
+    "_storefront" : "SAU",
+    "_storeKitErrors" : [
+
+    ]
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

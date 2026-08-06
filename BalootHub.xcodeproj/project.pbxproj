@@ -52,6 +52,9 @@
 		48D369A5FB1E459C8B133283 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 20E0FBBD7CE549F2A3856DB6 /* Assets.xcassets */; };
 		166C8047BAEC44568A030D73 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = E32D73CAC888412DAEE3DF83 /* Localizable.xcstrings */; };
 		F70F14C4E298417F9B5BF315 /* BalootEngine in Frameworks */ = {isa = PBXBuildFile; productRef = 4590EC0E0CDB435687D96BE3 /* BalootEngine */; };
+		F2BAAC0D94FF47CA855544E0 /* String+Localized.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5274FC0EE24B55B81A0DB6 /* String+Localized.swift */; };
+		65A1AE5C58E64E6C83790D91 /* PurchaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4758A99A56664E9C962452F2 /* PurchaseManager.swift */; };
+		92078686623F498BBE8CF9D2 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70BBCF20A74430985D4CF5E /* PaywallView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -111,6 +114,9 @@
 		E32D73CAC888412DAEE3DF83 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		00DEA2A186EE491180E5F977 /* BalootHub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BalootHub.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		45F37EE22BE547E6818E907D /* BalootHubTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BalootHubTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5C5274FC0EE24B55B81A0DB6 /* String+Localized.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Localized.swift"; sourceTree = "<group>"; };
+		4758A99A56664E9C962452F2 /* PurchaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseManager.swift; sourceTree = "<group>"; };
+		B70BBCF20A74430985D4CF5E /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -189,6 +195,7 @@
 			isa = PBXGroup;
 			children = (
 				CF9F773079864F468AFEE357 /* DesignSystem */,
+				C67E98A5D04A4AB9AE11C842 /* Localization */,
 				17BFA5B210294E90949B6B40 /* Persistence */,
 			);
 			path = Core;
@@ -221,6 +228,7 @@
 			isa = PBXGroup;
 			children = (
 				774F64E2FF1449F4BFBB8528 /* CatalogFilter.swift */,
+				4758A99A56664E9C962452F2 /* PurchaseManager.swift */,
 				08D5EFA6DCEE4185BB3648B4 /* ScoreRules.swift */,
 			);
 			path = Services;
@@ -315,6 +323,7 @@
 				FE6DF1A40BF14397892588AB /* Rules */,
 				173708000B104C4D978011F3 /* Scorekeeper */,
 				423ADE61FD1E4589B2F5B22E /* Settings */,
+				97018DFF13F94EE38E91F034 /* Purchase */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -358,6 +367,22 @@
 				5F4072C18FD744E4A0DBA308 /* BalootHubTests */,
 				20B05460A917465D8A742E3A /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		C67E98A5D04A4AB9AE11C842 /* Localization */ = {
+			isa = PBXGroup;
+			children = (
+				5C5274FC0EE24B55B81A0DB6 /* String+Localized.swift */,
+			);
+			path = Localization;
+			sourceTree = "<group>";
+		};
+		97018DFF13F94EE38E91F034 /* Purchase */ = {
+			isa = PBXGroup;
+			children = (
+				B70BBCF20A74430985D4CF5E /* PaywallView.swift */,
+			);
+			path = Purchase;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -426,6 +451,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				ar,
+				en,
 				Base,
 			);
 			mainGroup = 9025DC4A1A8E4BD4A9EA53A5;
@@ -504,6 +530,9 @@
 				F8CA1C8C0E77448C886FF98F /* ScorekeeperHomeView.swift in Sources */,
 				D9F9DDE126A54A5C809A7C50 /* ScorekeeperSessionView.swift in Sources */,
 				79BA9746DCA54A48B4846ED5 /* SettingsView.swift in Sources */,
+				F2BAAC0D94FF47CA855544E0 /* String+Localized.swift in Sources */,
+				65A1AE5C58E64E6C83790D91 /* PurchaseManager.swift in Sources */,
+				92078686623F498BBE8CF9D2 /* PaywallView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -659,7 +688,7 @@
 				DEVELOPMENT_TEAM = 4HM66AD594;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "لمّة بلوت";
+				INFOPLIST_KEY_CFBundleDisplayName = "البلوت";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.card-games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -691,7 +720,7 @@
 				DEVELOPMENT_TEAM = 4HM66AD594;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "لمّة بلوت";
+				INFOPLIST_KEY_CFBundleDisplayName = "البلوت";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.card-games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

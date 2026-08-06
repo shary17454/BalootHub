@@ -1,7 +1,1736 @@
 {
-  "sourceLanguage" : "ar",
-  "strings" : {
-
+  "sourceLanguage": "ar",
+  "strings": {
+    "، دوره الآن": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": ", their turn now"
+          }
+        }
+      }
+    },
+    "أداة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tool"
+          }
+        }
+      }
+    },
+    "أدخل نقاطًا صحيحة غير سالبة لكلا الفريقين.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter valid, non-negative scores for both teams."
+          }
+        }
+      }
+    },
+    "أدوات": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tools"
+          }
+        }
+      }
+    },
+    "أدوات البلوت": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baloot Tools"
+          }
+        }
+      }
+    },
+    "أضف أول صكة لبدء تتبّع النتيجة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add the first round to start tracking the score."
+          }
+        }
+      }
+    },
+    "ألعاب البلوت": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baloot Games"
+          }
+        }
+      }
+    },
+    "ألعاب ورق": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Card Games"
+          }
+        }
+      }
+    },
+    "ألعاب ورق أخرى": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Other Card Games"
+          }
+        }
+      }
+    },
+    "أهلًا بك في البلوت": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome to Baloot"
+          }
+        }
+      }
+    },
+    "إزالة من المفضلة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove from Favorites"
+          }
+        }
+      }
+    },
+    "إضافة إلى المفضلة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add to Favorites"
+          }
+        }
+      }
+    },
+    "إضافة صكة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add Round"
+          }
+        }
+      }
+    },
+    "إعادة المحاولة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retry"
+          }
+        }
+      }
+    },
+    "إلغاء": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        }
+      }
+    },
+    "إنهاء الجلسة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End Session"
+          }
+        }
+      }
+    },
+    "إنهاء الجولة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End Round"
+          }
+        }
+      }
+    },
+    "إنهاء والخروج": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End and Exit"
+          }
+        }
+      }
+    },
+    "ابحث عن لعبة أو أداة…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search for a game or tool…"
+          }
+        }
+      }
+    },
+    "ابحث في كل الألعاب والأدوات…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search all games and tools…"
+          }
+        }
+      }
+    },
+    "ابدأ جلسة جديدة لتسجيل نتائج جولات صن وحكم أولًا بأول.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start a new session to track sun and hokum round scores as you go."
+          }
+        }
+      }
+    },
+    "احتساب النقاط": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scoring"
+          }
+        }
+      }
+    },
+    "اختر نمط الجولة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose the round mode"
+          }
+        }
+      }
+    },
+    "استعادة المشتريات": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore Purchases"
+          }
+        }
+      }
+    },
+    "اسم الفريق الأول": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Team One Name"
+          }
+        }
+      }
+    },
+    "اسم الفريق الثاني": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Team Two Name"
+          }
+        }
+      }
+    },
+    "اضغط للعب هذه الورقة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap to play this card"
+          }
+        }
+      }
+    },
+    "اضغط مرتين لعرض التفاصيل والقواعد": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Double-tap to view details and rules"
+          }
+        }
+      }
+    },
+    "افتح اللعبة الكاملة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock the Full Game"
+          }
+        }
+      }
+    },
+    "الأخطاء الشائعة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Common Mistakes"
+          }
+        }
+      }
+    },
+    "الأكلات": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tricks"
+          }
+        }
+      }
+    },
+    "الألعاب": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Games"
+          }
+        }
+      }
+    },
+    "الإصدار": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version"
+          }
+        }
+      }
+    },
+    "الإعدادات": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings"
+          }
+        }
+      }
+    },
+    "الاسم": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name"
+          }
+        }
+      }
+    },
+    "الاهتزاز اللمسي": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haptic Feedback"
+          }
+        }
+      }
+    },
+    "البلوت": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baloot"
+          }
+        }
+      }
+    },
+    "التقدم نحو الهدف": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Progress toward the target"
+          }
+        }
+      }
+    },
+    "التمييز دون اعتماد على اللون": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Differentiate without relying on color"
+          }
+        }
+      }
+    },
+    "الجلسات النشطة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Active Sessions"
+          }
+        }
+      }
+    },
+    "الجلسة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Session"
+          }
+        }
+      }
+    },
+    "الحد الافتراضي": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Default target"
+          }
+        }
+      }
+    },
+    "الحد المستهدف": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Target Score"
+          }
+        }
+      }
+    },
+    "الحد المستهدف الافتراضي": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Default Target Score"
+          }
+        }
+      }
+    },
+    "الخصم": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opponent"
+          }
+        }
+      }
+    },
+    "الدبل": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Multiplier"
+          }
+        }
+      }
+    },
+    "الرئيسية": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Home"
+          }
+        }
+      }
+    },
+    "السجل": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "History"
+          }
+        }
+      }
+    },
+    "الصكات": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rounds"
+          }
+        }
+      }
+    },
+    "الصوت والاهتزاز": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sound & Haptics"
+          }
+        }
+      }
+    },
+    "الصيغة القياسية": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standard Formula"
+          }
+        }
+      }
+    },
+    "الفريقان": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teams"
+          }
+        }
+      }
+    },
+    "الكل": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All"
+          }
+        }
+      }
+    },
+    "المؤثرات الصوتية": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sound Effects"
+          }
+        }
+      }
+    },
+    "المدة المتوقعة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Estimated Duration"
+          }
+        }
+      }
+    },
+    "المشاريع": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Projects"
+          }
+        }
+      }
+    },
+    "المشاريع أو المضاعفات": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Projects or Multipliers"
+          }
+        }
+      }
+    },
+    "المضاعف": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Multiplier"
+          }
+        }
+      }
+    },
+    "المظهر": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appearance"
+          }
+        }
+      }
+    },
+    "المفضلة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Favorites"
+          }
+        }
+      }
+    },
+    "النقاط": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Score"
+          }
+        }
+      }
+    },
+    "النمط": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mode"
+          }
+        }
+      }
+    },
+    "النوع": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Category"
+          }
+        }
+      }
+    },
+    "الهدف من اللعبة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Objective"
+          }
+        }
+      }
+    },
+    "انتهت الجولة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Round Finished"
+          }
+        }
+      }
+    },
+    "بانتظار أول ورقة في الأكلة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting for the first card of the trick"
+          }
+        }
+      }
+    },
+    "بانتظار بقية اللاعبين": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting for other players"
+          }
+        }
+      }
+    },
+    "بدء": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start"
+          }
+        }
+      }
+    },
+    "بدء اللعب": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start Playing"
+          }
+        }
+      }
+    },
+    "بدء جلسة جديدة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start New Session"
+          }
+        }
+      }
+    },
+    "بدون دبل": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Multiplier"
+          }
+        }
+      }
+    },
+    "بقية اللاعبين يقررون نمط الجولة…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The other players are choosing the round mode…"
+          }
+        }
+      }
+    },
+    "بلا إعلانات نهائيًا، الآن ومستقبلًا": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No ads, ever — now and in the future"
+          }
+        }
+      }
+    },
+    "بلوت": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baloot"
+          }
+        }
+      }
+    },
+    "تأكيد قبل الحذف أو التراجع": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confirm Before Delete or Undo"
+          }
+        }
+      }
+    },
+    "تجهيز اللعب": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Setup"
+          }
+        }
+      }
+    },
+    "تخصيص الحد المستهدف": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Customize Target Score"
+          }
+        }
+      }
+    },
+    "تراجع": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Undo"
+          }
+        }
+      }
+    },
+    "ترتيب الأوراق": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Card Ranking"
+          }
+        }
+      }
+    },
+    "تسجيل البلوت": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baloot Scorekeeper"
+          }
+        }
+      }
+    },
+    "تعديل الصكة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit Round"
+          }
+        }
+      }
+    },
+    "تعذّر العثور على قواعد هذه اللعبة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't find this game's rules."
+          }
+        }
+      }
+    },
+    "تعذّر العثور على هذه الجلسة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't find this session."
+          }
+        }
+      }
+    },
+    "تعذّر العثور على هذه اللعبة في الكتالوج.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't find this game in the catalog."
+          }
+        }
+      }
+    },
+    "تعذّر تحميل البيانات": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't load the data"
+          }
+        }
+      }
+    },
+    "تعذّر تحميل معلومات الشراء. تحقق من الاتصال وحاول مرة أخرى.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't load purchase information. Check your connection and try again."
+          }
+        }
+      }
+    },
+    "تعذّرت استعادة المشتريات. حاول مرة أخرى لاحقًا.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't restore purchases. Try again later."
+          }
+        }
+      }
+    },
+    "تعذّرت عملية الشراء. حاول مرة أخرى لاحقًا.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The purchase couldn't be completed. Try again later."
+          }
+        }
+      }
+    },
+    "تعذّرت هذه الحركة، حاول مرة أخرى.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That move couldn't be made. Try again."
+          }
+        }
+      }
+    },
+    "تفعيل مضاعف \"قهوة\"": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enable \"Coffee\" Multiplier"
+          }
+        }
+      }
+    },
+    "تقليل الحركة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reduce Motion"
+          }
+        }
+      }
+    },
+    "تنبيه": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alert"
+          }
+        }
+      }
+    },
+    "توزيع الأوراق": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dealing"
+          }
+        }
+      }
+    },
+    "ثري": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Triple"
+          }
+        }
+      }
+    },
+    "جارِ التحميل…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading…"
+          }
+        }
+      }
+    },
+    "جارِ تجهيز الكتالوج…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preparing the catalog…"
+          }
+        }
+      }
+    },
+    "جرّب تغيير الفلتر أو كلمة البحث.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Try changing the filter or search term."
+          }
+        }
+      }
+    },
+    "جرّب كلمات بحث أخرى": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Try different search terms"
+          }
+        }
+      }
+    },
+    "جرّب كلمة بحث أخرى مثل اسم اللعبة أو نوعها.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Try a different search term, like the game's name or category."
+          }
+        }
+      }
+    },
+    "جلسات منتهية": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finished Sessions"
+          }
+        }
+      }
+    },
+    "جلسات نشطة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Active Sessions"
+          }
+        }
+      }
+    },
+    "جلسة جديدة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New Session"
+          }
+        }
+      }
+    },
+    "جولة جديدة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New Round"
+          }
+        }
+      }
+    },
+    "حدث خطأ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An Error Occurred"
+          }
+        }
+      }
+    },
+    "حدث خطأ أثناء لعب اللاعبين الآليين.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An error occurred while the AI players were playing."
+          }
+        }
+      }
+    },
+    "حذف": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete"
+          }
+        }
+      }
+    },
+    "حسب النظام": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System"
+          }
+        }
+      }
+    },
+    "حسنًا": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        }
+      }
+    },
+    "حفظ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save"
+          }
+        }
+      }
+    },
+    "حكم": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hokum"
+          }
+        }
+      }
+    },
+    "داكن": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dark"
+          }
+        }
+      }
+    },
+    "دبل": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Double"
+          }
+        }
+      }
+    },
+    "دبل ×2 · ثري ×3 · فور ×4 · قهوة ×4": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Double ×2 · Triple ×3 · Quadruple ×4 · Coffee ×4"
+          }
+        }
+      }
+    },
+    "دبل ×2 · ثري ×4 · فور ×6 · قهوة ×8": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Double ×2 · Triple ×4 · Quadruple ×6 · Coffee ×8"
+          }
+        }
+      }
+    },
+    "دفعة واحدة تملك بها اللعبة للأبد": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One payment, yours forever"
+          }
+        }
+      }
+    },
+    "دفعة واحدة فقط، بلا اشتراكات وبلا إعلانات إطلاقًا": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A single one-time payment — no subscriptions, no ads at all"
+          }
+        }
+      }
+    },
+    "دورك الآن": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Turn"
+          }
+        }
+      }
+    },
+    "ستظهر هنا كل جلسات تسجيل البلوت النشطة والمنتهية.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All your active and finished Baloot scorekeeper sessions will appear here."
+          }
+        }
+      }
+    },
+    "سجّل جلسة بلوت جديدة، أو تابع جلسة قائمة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start a new Baloot session, or continue an existing one"
+          }
+        }
+      }
+    },
+    "سهل": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Easy"
+          }
+        }
+      }
+    },
+    "صعب": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hard"
+          }
+        }
+      }
+    },
+    "صن": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sun"
+          }
+        }
+      }
+    },
+    "صيغة احتساب المضاعفات": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Multiplier Formula"
+          }
+        }
+      }
+    },
+    "صيغة مضاعفات أعلى": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Higher-Stakes Formula"
+          }
+        }
+      }
+    },
+    "طاولة اللعب": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Game Table"
+          }
+        }
+      }
+    },
+    "طريقة اللعب": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How to Play"
+          }
+        }
+      }
+    },
+    "عدد اللاعبين": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Number of Players"
+          }
+        }
+      }
+    },
+    "عرض القواعد": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "View Rules"
+          }
+        }
+      }
+    },
+    "عرض القواعد كاملة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "View Full Rules"
+          }
+        }
+      }
+    },
+    "عملية الشراء قيد الموافقة (مثل التحكم الأبوي)، ستُفعَّل تلقائيًا عند اكتمالها.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The purchase is pending approval (such as Ask to Buy) and will activate automatically once complete."
+          }
+        }
+      }
+    },
+    "عن التطبيق": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About the App"
+          }
+        }
+      }
+    },
+    "فاتح": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Light"
+          }
+        }
+      }
+    },
+    "فتح اللعبة الكاملة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock the Full Game"
+          }
+        }
+      }
+    },
+    "فتح مسجل النقاط": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Scorekeeper"
+          }
+        }
+      }
+    },
+    "فريقنا": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Our Team"
+          }
+        }
+      }
+    },
+    "فور": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quadruple"
+          }
+        }
+      }
+    },
+    "قد تختلف بعض التفاصيل بين المجالس والبطولات، ويمكن تعديل إعدادات التسجيل لتناسب القواعد المعتمدة لديكم.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Some details may vary between gatherings and tournaments — you can adjust the scorekeeper settings to match the rules your group follows."
+          }
+        }
+      }
+    },
+    "قهوة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coffee"
+          }
+        }
+      }
+    },
+    "قواعد فقط": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rules Only"
+          }
+        }
+      }
+    },
+    "كل ألعاب البلوت وأدواتها وألعاب الورق المفضّلة في مكان واحد": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All your favorite Baloot games, tools, and card games in one place"
+          }
+        }
+      }
+    },
+    "لا توجد جلسات نشطة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Active Sessions"
+          }
+        }
+      }
+    },
+    "لا توجد صكات بعد": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Rounds Yet"
+          }
+        }
+      }
+    },
+    "لا توجد عناصر بعد في هذا القسم.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No items in this section yet."
+          }
+        }
+      }
+    },
+    "لا نتائج": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Results"
+          }
+        }
+      }
+    },
+    "لا نتائج مطابقة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Matching Results"
+          }
+        }
+      }
+    },
+    "لا يجمع التطبيق أي بيانات شخصية، ولا يحتاج اتصالًا بالإنترنت. كل البيانات تُخزَّن محليًا على جهازك فقط.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The app doesn't collect any personal data and doesn't need an internet connection. All data is stored locally on your device only."
+          }
+        }
+      }
+    },
+    "لا يمكن أن تكون نقاط المشاريع سالبة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Project points cannot be negative."
+          }
+        }
+      }
+    },
+    "لا يمكن حفظ صكة فارغة بدون أي نقاط.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can't save an empty round with no points."
+          }
+        }
+      }
+    },
+    "لا يمكن لعب هذه الورقة الآن": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This card can't be played right now"
+          }
+        }
+      }
+    },
+    "لا يوجد سجل بعد": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No History Yet"
+          }
+        }
+      }
+    },
+    "لاحقًا": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Later"
+          }
+        }
+      }
+    },
+    "لعب بلوت كامل ضد لاعبين آليين": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Full Baloot gameplay against AI players"
+          }
+        }
+      }
+    },
+    "لعبة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Game"
+          }
+        }
+      }
+    },
+    "لم يُعثر على عملية شراء سابقة لهذا الحساب.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No previous purchase was found for this account."
+          }
+        }
+      }
+    },
+    "متابعة آخر جلسة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue Last Session"
+          }
+        }
+      }
+    },
+    "متابعة اللعب": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue Playing"
+          }
+        }
+      }
+    },
+    "متاح للعب": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playable"
+          }
+        }
+      }
+    },
+    "متوسط": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Medium"
+          }
+        }
+      }
+    },
+    "مستوى الصعوبة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Difficulty"
+          }
+        }
+      }
+    },
+    "مسح البحث": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear Search"
+          }
+        }
+      }
+    },
+    "مشاركة الملخص": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share Summary"
+          }
+        }
+      }
+    },
+    "ملاحظات (اختياري)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notes (Optional)"
+          }
+        }
+      }
+    },
+    "ملاحظات عن الصكة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notes about the round"
+          }
+        }
+      }
+    },
+    "ملخص جلسة تسجيل البلوت": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baloot Scorekeeper Session Summary"
+          }
+        }
+      }
+    },
+    "نتائج البحث": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search Results"
+          }
+        }
+      }
+    },
+    "نهاية الجولة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End of Round"
+          }
+        }
+      }
+    },
+    "نوع الجولة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Round Type"
+          }
+        }
+      }
+    },
+    "هل تريد إنهاء الجلسة؟": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End this session?"
+          }
+        }
+      }
+    },
+    "هل تريد إنهاء هذه الجولة والخروج؟": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End this round and exit?"
+          }
+        }
+      }
+    },
+    "هل تريد التراجع عن آخر صكة؟": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Undo the last round?"
+          }
+        }
+      }
+    },
+    "هل تريد حذف هذه الجلسة نهائيًا؟": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permanently delete this session?"
+          }
+        }
+      }
+    },
+    "هل تريد حذف هذه الصكة؟": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete this round?"
+          }
+        }
+      }
+    },
+    "ورق": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cards"
+          }
+        }
+      }
+    }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

@@ -45,15 +45,15 @@ enum ScoreRulePreset: String, Codable, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .standard: "الصيغة القياسية"
-        case .highStakes: "صيغة مضاعفات أعلى"
+        case .standard: "الصيغة القياسية".localized
+        case .highStakes: "صيغة مضاعفات أعلى".localized
         }
     }
 
     var subtitle: String {
         switch self {
-        case .standard: "دبل ×2 · ثري ×3 · فور ×4 · قهوة ×4"
-        case .highStakes: "دبل ×2 · ثري ×4 · فور ×6 · قهوة ×8"
+        case .standard: "دبل ×2 · ثري ×3 · فور ×4 · قهوة ×4".localized
+        case .highStakes: "دبل ×2 · ثري ×4 · فور ×6 · قهوة ×8".localized
         }
     }
 }

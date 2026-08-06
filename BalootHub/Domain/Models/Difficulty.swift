@@ -10,9 +10,9 @@ enum Difficulty: String, Codable, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .beginner: "سهل"
-        case .intermediate: "متوسط"
-        case .advanced: "صعب"
+        case .beginner: "سهل".localized
+        case .intermediate: "متوسط".localized
+        case .advanced: "صعب".localized
         }
     }
 

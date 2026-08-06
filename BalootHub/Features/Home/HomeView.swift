@@ -48,13 +48,13 @@ struct HomeView: View {
             .padding(AppSpacing.md)
         }
         .background(AppColor.background)
-        .navigationTitle("لمّة بلوت")
+        .navigationTitle("البلوت")
         .navigationBarTitleDisplayMode(.large)
     }
 
     private var header: some View {
         VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-            Text("أهلًا بك في لمّة بلوت")
+            Text("أهلًا بك في البلوت")
                 .font(AppTypography.largeTitle)
                 .foregroundStyle(AppColor.textPrimary)
             Text("كل ألعاب البلوت وأدواتها وألعاب الورق المفضّلة في مكان واحد")

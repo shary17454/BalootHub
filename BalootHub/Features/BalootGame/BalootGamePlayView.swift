@@ -6,11 +6,24 @@ struct BalootGamePlayView: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(PurchaseManager.self) private var purchaseManager
     @State private var viewModel = BalootGameViewModel()
     @State private var isPresentingStopConfirm = false
     @State private var isPresentingRules = false
 
     var body: some View {
+        Group {
+            if purchaseManager.isFullGameUnlocked {
+                gameContent
+            } else {
+                PaywallView()
+                    .navigationTitle("طاولة اللعب")
+                    .navigationBarTitleDisplayMode(.inline)
+            }
+        }
+    }
+
+    private var gameContent: some View {
         ZStack {
             table
 

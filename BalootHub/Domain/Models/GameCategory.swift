@@ -14,17 +14,17 @@ enum GameCategory: String, Codable, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .balootGame: "ألعاب البلوت"
-        case .balootTool: "أدوات البلوت"
-        case .otherCardGame: "ألعاب ورق أخرى"
+        case .balootGame: "ألعاب البلوت".localized
+        case .balootTool: "أدوات البلوت".localized
+        case .otherCardGame: "ألعاب ورق أخرى".localized
         }
     }
 
     var shortBadgeTitle: String {
         switch self {
-        case .balootGame: "بلوت"
-        case .balootTool: "أداة"
-        case .otherCardGame: "ورق"
+        case .balootGame: "بلوت".localized
+        case .balootTool: "أداة".localized
+        case .otherCardGame: "ورق".localized
         }
     }
 

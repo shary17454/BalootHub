@@ -9,8 +9,8 @@ enum BalootMode: String, Codable, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .sun: "صن"
-        case .hokum: "حكم"
+        case .sun: "صن".localized
+        case .hokum: "حكم".localized
         }
     }
 }
@@ -27,11 +27,11 @@ enum ScoreMultiplier: String, Codable, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .none: "بدون دبل"
-        case .double: "دبل"
-        case .triple: "ثري"
-        case .quadruple: "فور"
-        case .coffee: "قهوة"
+        case .none: "بدون دبل".localized
+        case .double: "دبل".localized
+        case .triple: "ثري".localized
+        case .quadruple: "فور".localized
+        case .coffee: "قهوة".localized
         }
     }
 }
