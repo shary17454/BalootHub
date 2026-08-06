@@ -45,7 +45,22 @@ Xcode/Swift المستخدمة في بيئة البناء السحابية، و�
 `ci_post_xcodebuild.sh` لأنه لا يوجد لهما عمل فعلي بعد (لا تنبيهات خارجية ولا خطوات ما بعد بناء مطلوبة حاليًا).
 
 تفعيل Xcode Cloud نفسه (Product → Xcode Cloud → Create Workflow) خطوة تفاعلية داخل Xcode تتطلب حساب Apple
-Developer الخاص بك، ولا يمكن لأداة آلية أن تقوم بها نيابة عنك.
+Developer الخاص بك، ولا يمكن لأداة آلية أن تقوم بها نيابة عنك — هذا موثّق رسميًا من Apple نفسها: "Get
+started by configuring a workflow **in Xcode**" ([developer.apple.com/xcode-cloud/get-started](https://developer.apple.com/xcode-cloud/get-started/)).
+لا يوجد مسار بديل عبر الويب لإنشاء أول Workflow لمنتج جديد لم يُربط بـ Xcode Cloud من قبل.
+
+## GitHub Actions (بديل فوري يعمل الآن)
+
+بما أن Xcode Cloud يحتاج خطوة تفاعلية داخل Xcode نفسه، أُضيف [`ci.yml`](.github/workflows/ci.yml) يشغّل
+تلقائيًا عند كل `push`/`pull request` على `main`:
+
+1. `swift test` لحزمة `Packages/BalootEngine` (21 اختبارًا).
+2. `xcodebuild build` ثم `xcodebuild test` لتطبيق `BalootHub` كاملًا على محاكي آيفون متاح تلقائيًا على عامل
+   macOS من GitHub.
+
+يعمل هذا فورًا بمجرد الدفع لـ GitHub دون أي إعداد إضافي أو حساب Apple Developer، لكن ملاحظة: عوامل GitHub
+قد تحتوي إصدار Xcode مستقر أحدث قليلًا أو أقدم من نسخة البيتا 26 المثبتة على جهازك محليًا — هذا متوقع
+وطبيعي في أي CI.
 
 ## بنية المشروع
 

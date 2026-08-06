@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  engine-tests:
+    name: اختبارات محرك BalootEngine
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: عرض إصدار Swift
+        run: swift --version
+      - name: تشغيل swift test
+        working-directory: Packages/BalootEngine
+        run: swift test
+
+  app-build-and-test:
+    name: بناء واختبار تطبيق BalootHub
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: عرض إصدار Xcode
+        run: xcodebuild -version
+      - name: اختيار جهاز محاكاة آيفون متاح
+        id: sim
+        run: |
+          NAME=$(xcrun simctl list devices available | grep -m1 -oE 'iPhone [0-9A-Za-z]+( Pro| Plus)?( Max)?' | head -1)
+          echo "استخدام المحاكي: $NAME"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+      - name: بناء المشروع
+        run: >
+          xcodebuild build
+          -scheme BalootHub
+          -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.name }}"
+          -skipMacroValidation
+      - name: تشغيل الاختبارات
+        run: >
+          xcodebuild test
+          -scheme BalootHub
+          -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.name }}"
+          -skipMacroValidation
