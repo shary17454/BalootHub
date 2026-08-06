@@ -11072,6 +11072,1586 @@
           }
         }
       }
+    },
+    "بلوت كلاسيكي": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Classic Baloot"
+          }
+        }
+      }
+    },
+    "بلوت صن": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baloot – Sun"
+          }
+        }
+      }
+    },
+    "بلوت حكم": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baloot – Hokum"
+          }
+        }
+      }
+    },
+    "بلوت مشاريع": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baloot – Projects"
+          }
+        }
+      }
+    },
+    "بلوت دبل": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baloot – Double"
+          }
+        }
+      }
+    },
+    "بلوت تدريب": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baloot Training"
+          }
+        }
+      }
+    },
+    "تحدي حساب النقاط": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scoring Challenge"
+          }
+        }
+      }
+    },
+    "كوت بو ستة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kout Bou Sitta"
+          }
+        }
+      }
+    },
+    "طرنيب": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tarneeb"
+          }
+        }
+      }
+    },
+    "تركس": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trix"
+          }
+        }
+      }
+    },
+    "هاند": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hand"
+          }
+        }
+      }
+    },
+    "اللعبة الأساسية بأنماطها المختلطة: صن وحكم في نفس الجلسة، مع مزايدة حرة بين اللاعبين.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The core game with its mixed modes: Sun and Hokum in the same session, with open bidding among the players."
+          }
+        }
+      }
+    },
+    "نمط داخل البلوت لا يوجد فيه نوع حكم؛ يُحتسب كل الأنواع الأربعة بنفس ترتيب القوة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A Baloot mode with no trump suit; all four suits rank by the same order of strength."
+          }
+        }
+      }
+    },
+    "نمط داخل البلوت يُختار فيه نوع واحد يصبح \"الحكم\"، فيتفوق على بقية الأنواع، والشايب هو أقوى أوراقه.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A Baloot mode where one suit is chosen as the \"Hokum\" (trump), outranking the others, with the Jack as its strongest card."
+          }
+        }
+      }
+    },
+    "نمط يركّز على إعلان \"المشاريع\" (تتابعات وتكرارات في اليد) كمصدر إضافي للنقاط قبل بدء اللعب.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A mode focused on declaring \"projects\" (runs and sets in your hand) as an extra source of points before play begins."
+          }
+        }
+      }
+    },
+    "نمط يعتمد على مضاعفة الرهان أثناء المزايدة (دبل، ثري، فور) قبل بدء اللعب، لرفع قيمة الجولة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A mode built on raising the stakes during bidding (Double, Triple, Quadruple) before play begins, to increase the round's value."
+          }
+        }
+      }
+    },
+    "شاشة تعريفية تشرح أدوار اللاعبين والقواعد الأساسية للبلوت خطوة بخطوة قبل اللعب الفعلي.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An introductory screen explaining the players' roles and the basic rules of Baloot step by step before real play."
+          }
+        }
+      }
+    },
+    "صفحة مرجعية تشرح طريقة احتساب نقاط البلوت بالتفصيل لمن يريد إتقان الحساب اليدوي.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A reference page explaining Baloot scoring in detail for anyone who wants to master calculating by hand."
+          }
+        }
+      }
+    },
+    "أداة مستقلة لتسجيل نتائج جلسة بلوت فعلية على الطاولة: الفرق، الصكات، المشاريع، والدبل.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A standalone tool for recording a real Baloot session at the table: teams, rounds, projects, and multipliers."
+          }
+        }
+      }
+    },
+    "لعبة ورق شعبية مستقلة عن البلوت، تعتمد على تجنّب أو جمع أوراق محددة حسب اتفاق اللاعبين.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A popular card game separate from Baloot, based on avoiding or collecting specific cards as the players agree."
+          }
+        }
+      }
+    },
+    "لعبة ورق جماعية شهيرة تعتمد على المزايدة لتحديد عدد الأكلات المستهدفة ونوع الحكم (الطرنيب).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A well-known team card game based on bidding to set a target number of tricks and the trump suit (the Tarneeb)."
+          }
+        }
+      }
+    },
+    "لعبة ورق تجمع عدة جولات مختلفة الأهداف في دورة واحدة (تجنّب أوراق معيّنة، أو التخلص من كل الأوراق أولًا).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A card game that combines several rounds with different objectives in one cycle (avoiding certain cards, or shedding all your cards first)."
+          }
+        }
+      }
+    },
+    "لعبة ورق ثنائية أو جماعية بسيطة تعتمد على مطابقة أو التخلص من الأوراق حسب قواعد متفق عليها.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A simple two-player or group card game based on matching or shedding cards according to agreed rules."
+          }
+        }
+      }
+    },
+    "4 لاعبين (فريقان متقابلان)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "4 players (two opposing teams)"
+          }
+        }
+      }
+    },
+    "لاعب واحد (وضع تعلّم)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One player (learning mode)"
+          }
+        }
+      }
+    },
+    "لاعب واحد (مرجع تعلّمي)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One player (learning reference)"
+          }
+        }
+      }
+    },
+    "يخدم فريقين (4 لاعبين) على الطاولة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serves two teams (4 players) at the table"
+          }
+        }
+      }
+    },
+    "غالبًا 4 لاعبين": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usually 4 players"
+          }
+        }
+      }
+    },
+    "4 لاعبين (فريقان أو أفراد حسب الصيغة)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "4 players (teams or individuals, depending on the format)"
+          }
+        }
+      }
+    },
+    "4 لاعبين أفراد": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "4 individual players"
+          }
+        }
+      }
+    },
+    "لاعبان إلى 4 لاعبين": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2 to 4 players"
+          }
+        }
+      }
+    },
+    "20–35 دقيقة للجلسة الواحدة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "20–35 minutes per session"
+          }
+        }
+      }
+    },
+    "15–20 دقيقة للجولة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "15–20 minutes per round"
+          }
+        }
+      }
+    },
+    "20–30 دقيقة للجولة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "20–30 minutes per round"
+          }
+        }
+      }
+    },
+    "15–25 دقيقة للجولة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "15–25 minutes per round"
+          }
+        }
+      }
+    },
+    "5–10 دقائق للاطلاع": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "5–10 minutes to read"
+          }
+        }
+      }
+    },
+    "5 دقائق للاطلاع": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "5 minutes to read"
+          }
+        }
+      }
+    },
+    "طوال مدة الجلسة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Throughout the session"
+          }
+        }
+      }
+    },
+    "20–30 دقيقة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "20–30 minutes"
+          }
+        }
+      }
+    },
+    "25–40 دقيقة للدورة الكاملة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "25–40 minutes for the full cycle"
+          }
+        }
+      }
+    },
+    "10–20 دقيقة": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "10–20 minutes"
+          }
+        }
+      }
+    },
+    "الوصول بفريقك إلى نقاط الهدف المتفق عليه (152 نقطة افتراضيًا) قبل الفريق الآخر، عبر الفوز بأكبر عدد ممكن من الأكلات في كل جولة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reach the agreed target score (152 points by default) before the other team, by winning as many tricks as possible each round."
+          }
+        }
+      }
+    },
+    "الفوز بأكبر عدد من نقاط الأوراق خلال الجولة دون وجود نوع حكم يفضَّل على البقية.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Win the most card points during the round, with no trump suit favored over the others."
+          }
+        }
+      }
+    },
+    "جمع أكبر عدد من نقاط الأوراق باستخدام نوع الحكم المُختار للتفوق حتى عند عدم امتلاك النوع المطلوب.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Collect the most card points by using the chosen trump suit to win even when you don't hold the suit led."
+          }
+        }
+      }
+    },
+    "تعظيم نقاط الفريق عبر إعلان المشاريع الصحيحة إضافة إلى نقاط الأكلات المعتادة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maximize your team's points by declaring valid projects in addition to the usual trick points."
+          }
+        }
+      }
+    },
+    "رفع قيمة نتيجة الجولة عبر تحدّي الفريق الخصم بمضاعفة الرهان قبل بدء اللعب، مع تحمّل مخاطرة أعلى عند الخسارة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Raise the round's value by challenging the opposing team with a stake multiplier before play begins, at the cost of greater risk if you lose."
+          }
+        }
+      }
+    },
+    "تعريف اللاعب الجديد بأدوار الطاولة (الموزّع، المزايد، الفريقان) وبأبسط قواعد البلوت قبل خوض جولة فعلية.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Introduce a new player to the roles at the table (dealer, bidder, the two teams) and to the simplest Baloot rules before playing a real round."
+          }
+        }
+      }
+    },
+    "إتقان طريقة جمع نقاط الأوراق والمشاريع والمضاعفات يدويًا دون أخطاء.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Master adding up card points, projects, and multipliers by hand without mistakes."
+          }
+        }
+      }
+    },
+    "تتبّع نقاط جلسة بلوت حقيقية بدقة، وإعلان الفريق الفائز فور بلوغ الهدف المتفق عليه.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Track a real Baloot session's score accurately, and declare the winning team as soon as the agreed target is reached."
+          }
+        }
+      }
+    },
+    "تحقيق أفضل نتيجة عبر تجنّب أوراق أو أكلات معيّنة تخسر نقاطًا، بحسب الصيغة المعتمدة من اللاعبين.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get the best result by avoiding certain cards or tricks that lose points, according to the format the players adopt."
+          }
+        }
+      }
+    },
+    "تحقيق عدد الأكلات الذي التزم به اللاعب أو الفريق أثناء المزايدة، أو أكثر.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Win at least the number of tricks you or your team committed to during the bidding."
+          }
+        }
+      }
+    },
+    "تحقيق أقل عدد نقاط سلبية (أو أعلى نقاط إيجابية حسب الجولة) عبر دورة من عدة أنماط لعب مختلفة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finish with the fewest penalty points (or the most positive points, depending on the round) across a cycle of several different play modes."
+          }
+        }
+      }
+    },
+    "التخلص من كل الأوراق في يد اللاعب قبل بقية اللاعبين، أو تحقيق أقل عدد نقاط متبقية بحسب الصيغة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shed all the cards in your hand before the other players, or end with the fewest remaining points depending on the format."
+          }
+        }
+      }
+    },
+    "أربعة لاعبين ثابتون في فريقين من لاعبين، يجلس شريكا كل فريق متقابلين على الطاولة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Four fixed players in two teams of two, with each team's partners seated opposite each other at the table."
+          }
+        }
+      }
+    },
+    "أربعة لاعبين في فريقين متقابلين، كما في البلوت الكلاسيكي.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Four players in two opposing teams, as in Classic Baloot."
+          }
+        }
+      }
+    },
+    "أربعة لاعبين في فريقين متقابلين.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Four players in two opposing teams."
+          }
+        }
+      }
+    },
+    "مخصصة للتعلّم الفردي، وتُطبَّق لاحقًا مع 4 لاعبين في جولة حقيقية.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Designed for solo learning, then applied later with 4 players in a real round."
+          }
+        }
+      }
+    },
+    "مرجع فردي يمكن الرجوع إليه أثناء أي جولة بلوت.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A solo reference you can return to during any Baloot round."
+          }
+        }
+      }
+    },
+    "يُسجَّل باسم فريقين، كل فريق من لاعبين على الطاولة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recorded under two team names, each team of two players at the table."
+          }
+        }
+      }
+    },
+    "تُلعب غالبًا بأربعة لاعبين، وتختلف التفاصيل بين المجالس.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usually played with four players, with details varying between groups."
+          }
+        }
+      }
+    },
+    "أربعة لاعبين، إما كل لاعب لنفسه أو في فريقين متقابلين حسب الصيغة المعتمدة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Four players, either every player for themselves or in two opposing teams depending on the format used."
+          }
+        }
+      }
+    },
+    "أربعة لاعبين، كل لاعب يلعب لحسابه الخاص دون فرق ثابتة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Four players, each playing for themselves with no fixed teams."
+          }
+        }
+      }
+    },
+    "من لاعبين حتى أربعة لاعبين، أفرادًا أو في فرق صغيرة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From two up to four players, individually or in small teams."
+          }
+        }
+      }
+    },
+    "تُستخدم حزمة من 32 ورقة (من 7 حتى الآس). يُحدَّد الموزّع الأول بالاتفاق أو بالقرعة، ثم يدور التوزيع بالتناوب.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A 32-card deck is used (7 through Ace). The first dealer is chosen by agreement or by draw, then the deal rotates."
+          }
+        }
+      }
+    },
+    "نفس حزمة الـ32 ورقة، ويُختار نمط \"صن\" في مرحلة المزايدة بدل اختيار نوع حكم.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The same 32-card deck, with \"Sun\" chosen during the bidding phase instead of picking a trump suit."
+          }
+        }
+      }
+    },
+    "يختار اللاعب الفائز بالمزايدة نوعًا واحدًا من الأنواع الأربعة ليكون \"الحكم\" لهذه الجولة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The player who wins the bidding chooses one of the four suits to be the \"Hokum\" (trump) for that round."
+          }
+        }
+      }
+    },
+    "بعد التوزيع، يفحص كل لاعب يده بحثًا عن مشاريع محتملة قبل أن تبدأ الأكلات.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After the deal, each player checks their hand for possible projects before the tricks begin."
+          }
+        }
+      }
+    },
+    "بعد اختيار نمط الجولة (صن أو حكم)، يجوز لأي فريق أن \"يدبل\" ليضاعف قيمة الجولة، ويجوز للفريق الآخر الرد بمضاعفة أعلى (ثري ثم فور).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After the round mode is chosen (Sun or Hokum), either team may \"double\" to multiply the round's value, and the other team may answer with a higher multiplier (Triple, then Quadruple)."
+          }
+        }
+      }
+    },
+    "لا تحتاج توزيع أوراق فعلي؛ تعرض أمثلة توضيحية لترتيب الأوراق والأدوار.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No actual deal is needed; illustrative examples show card ranking and roles."
+          }
+        }
+      }
+    },
+    "لا يوجد إعداد؛ هي صفحة شرح ثابتة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No setup; this is a static explanatory page."
+          }
+        }
+      }
+    },
+    "أدخل اسمي الفريقين واختر الحد المستهدف (152 افتراضيًا أو قيمة مخصصة) قبل بدء أول صكة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter the two team names and choose the target score (152 by default, or a custom value) before recording the first round."
+          }
+        }
+      }
+    },
+    "تُستخدم حزمة ورق عادية أو مختصرة حسب عرف اللاعبين قبل البدء.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A standard or shortened deck is used, according to the players' custom, before starting."
+          }
+        }
+      }
+    },
+    "تُستخدم حزمة ورق كاملة من 52 ورقة عادة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A full 52-card deck is normally used."
+          }
+        }
+      }
+    },
+    "تُستخدم حزمة ورق كاملة من 52 ورقة، وتُلعب عادة دورة من عدة جولات متتالية بأهداف مختلفة لكل جولة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A full 52-card deck is used, and a cycle of several consecutive rounds is usually played, each with a different objective."
+          }
+        }
+      }
+    },
+    "تُوزَّع الأوراق حسب عدد اللاعبين، وتُترك بقية الحزمة كسحب احتياطي إن كانت الصيغة تسمح بذلك.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cards are dealt according to the number of players, with the rest of the deck left as a draw pile if the format allows it."
+          }
+        }
+      }
+    },
+    "يوزَّع 8 أوراق لكل لاعب على دفعات (مثل 3-2-3 أو 5-3)، ثم تبدأ مرحلة المزايدة قبل رؤية بقية الأوراق أحيانًا حسب عادة المجلس.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "8 cards are dealt to each player in batches (such as 3-2-3 or 5-3), then the bidding phase begins — sometimes before the remaining cards are seen, depending on the group's custom."
+          }
+        }
+      }
+    },
+    "توزيع الأوراق مطابق للبلوت الكلاسيكي: 8 أوراق لكل لاعب.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The deal is identical to Classic Baloot: 8 cards per player."
+          }
+        }
+      }
+    },
+    "8 أوراق لكل لاعب، مطابق لبقية أنماط البلوت.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "8 cards per player, identical to the other Baloot modes."
+          }
+        }
+      }
+    },
+    "تشرح آلية توزيع الـ8 أوراق لكل لاعب بشكل مبسّط بالصور التوضيحية داخل صفحة القواعد.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Explains how the 8 cards are dealt to each player, simplified with illustrations inside the rules page."
+          }
+        }
+      }
+    },
+    "غير منطبق على هذه الصفحة المرجعية.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not applicable to this reference page."
+          }
+        }
+      }
+    },
+    "غير منطبق مباشرة؛ الأداة تُسجّل نتيجة كل صكة بعد لعبها فعليًا على الطاولة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not directly applicable; the tool records each round's result after it has actually been played at the table."
+          }
+        }
+      }
+    },
+    "تُوزَّع الأوراق بالتساوي على اللاعبين في بداية كل جولة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The cards are dealt evenly among the players at the start of each round."
+          }
+        }
+      }
+    },
+    "تُوزَّع كل الأوراق على اللاعبين الأربعة بالتساوي (13 ورقة لكل لاعب).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All cards are dealt evenly among the four players (13 cards each)."
+          }
+        }
+      }
+    },
+    "تُوزَّع كل الأوراق على اللاعبين الأربعة بالتساوي (13 ورقة لكل لاعب) في بداية كل جولة من الدورة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All cards are dealt evenly among the four players (13 cards each) at the start of each round in the cycle."
+          }
+        }
+      }
+    },
+    "عدد الأوراق لكل لاعب يعتمد على عدد اللاعبين والصيغة المعتمدة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The number of cards per player depends on the number of players and the format used."
+          }
+        }
+      }
+    },
+    "في صن: الآس أعلى ثم 10 ثم K ثم Q ثم J ثم 9 ثم 8 ثم 7. في حكم: الشايب (J) هو الأقوى في نوع الحكم يليه 9 ثم A ثم 10 ثم K ثم Q ثم 8 ثم 7، بينما بقية الأنواع تُرتَّب كما في صن.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In Sun: Ace is highest, then 10, K, Q, J, 9, 8, 7. In Hokum: the Jack is strongest in the trump suit, followed by 9, then A, 10, K, Q, 8, 7 — while the other suits rank as in Sun."
+          }
+        }
+      }
+    },
+    "كل الأنواع الأربعة تُرتَّب بنفس الترتيب: A أعلى، يليه 10، K، Q، J، 9، 8، 7 (الأضعف).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All four suits rank the same way: A highest, then 10, K, Q, J, 9, 8, 7 (lowest)."
+          }
+        }
+      }
+    },
+    "في نوع الحكم فقط: الشايب (J) أقوى ورقة، يليه 9، ثم A، 10، K، Q، 8، 7. بقية الأنواع الثلاثة تُرتَّب كما في صن (A الأعلى وحتى 7 الأضعف).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In the trump suit only: the Jack is the strongest card, followed by 9, then A, 10, K, Q, 8, 7. The other three suits rank as in Sun (A highest down to 7 lowest)."
+          }
+        }
+      }
+    },
+    "يتبع ترتيب صن أو حكم حسب النمط المُختار لهذه الجولة (المشاريع تُضاف فوقه ولا تُغيّره).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Follows the Sun or Hokum ranking depending on the mode chosen for the round (projects are added on top and do not change it)."
+          }
+        }
+      }
+    },
+    "يتبع ترتيب صن أو حكم حسب النمط المُختار لهذه الجولة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Follows the Sun or Hokum ranking depending on the mode chosen for the round."
+          }
+        }
+      }
+    },
+    "تلخّص الفرق بين ترتيب صن وترتيب حكم بمثال مباشر يوضح مكانة الشايب في نوع الحكم.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Summarizes the difference between the Sun and Hokum rankings with a direct example showing the Jack's place in the trump suit."
+          }
+        }
+      }
+    },
+    "تعرض جدول نقاط كل ورقة في نمطي صن وحكم جنبًا إلى جنب لسهولة المقارنة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows a table of each card's points in Sun and Hokum side by side for easy comparison."
+          }
+        }
+      }
+    },
+    "غير منطبق؛ هذه أداة تسجيل وليست محرك لعب.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not applicable; this is a scorekeeping tool, not a game engine."
+          }
+        }
+      }
+    },
+    "يعتمد ترتيب الأوراق على الصيغة المتفق عليها بين اللاعبين قبل البدء.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Card ranking depends on the format the players agree on before starting."
+          }
+        }
+      }
+    },
+    "الآس أعلى ورقة وحتى 2 الأضعف في كل نوع، مع تفوّق نوع \"الطرنيب\" المُختار على بقية الأنواع.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ace is the highest card down to 2 as the lowest in each suit, with the chosen \"Tarneeb\" suit outranking all the others."
+          }
+        }
+      }
+    },
+    "يختلف الترتيب المستخدم حسب نوع الجولة داخل الدورة (بعض الجولات لا تعتمد على قوة الأوراق بل على تجنّب رموز معيّنة).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The ranking used varies with the type of round within the cycle (some rounds don't depend on card strength at all, but on avoiding certain cards)."
+          }
+        }
+      }
+    },
+    "يعتمد الترتيب على الصيغة المحلية المتفق عليها بين اللاعبين قبل البدء.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The ranking depends on the local format the players agree on before starting."
+          }
+        }
+      }
+    },
+    "يبدأ اللاعب الذي على يمين الموزّع، ويجب على بقية اللاعبين اتّباع نفس نوع الورقة الأولى إن توفر لديهم. في نمط حكم، من لا يملك النوع المطلوب ويملك حكمًا يجب أن يقطع به. يفوز بالأكلة صاحب أعلى ورقة من النوع المطلوب أو أعلى حكم.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The player to the dealer's right leads, and the other players must follow the suit led if they hold it. In Hokum, a player without the suit led who holds a trump must trump. The trick goes to the highest card of the suit led, or the highest trump."
+          }
+        }
+      }
+    },
+    "يجب اتّباع نفس نوع الورقة الأولى في كل أكلة إن توفر لدى اللاعب؛ لا يوجد إلزام بالقطع لأنه لا يوجد نوع حكم.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You must follow the suit led in every trick if you hold it; there is no obligation to trump, since there is no trump suit."
+          }
+        }
+      }
+    },
+    "يجب اتّباع نفس النوع المطلوب إن توفر. من لا يملكه ويملك ورقة حكم يجب أن يقطع بها ليفوز بالأكلة مؤقتًا، وإلا يجوز له التخلص من أي ورقة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You must follow the suit led if you hold it. A player without it who holds a trump must play it to take the trick for the moment; otherwise they may discard any card."
+          }
+        }
+      }
+    },
+    "يُعلن اللاعب مشروعه (إن وُجد) في وقت مبكر من الجولة حسب عادة المجلس، ثم يستمر اللعب بشكل طبيعي باتباع النوع المطلوب أو القطع بالحكم.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A player declares their project (if any) early in the round according to the group's custom, then play continues normally by following suit or trumping."
+          }
+        }
+      }
+    },
+    "يُلعب بنفس قواعد اتّباع النوع أو القطع بالحكم، لكن نتيجة الجولة كاملة تُضرب بالمضاعف المتفق عليه قبل اللعب.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Played by the same follow-suit and trumping rules, but the entire round's result is multiplied by the multiplier agreed before play."
+          }
+        }
+      }
+    },
+    "تشرح مبدأ \"التلزيم\" (اتّباع نفس النوع) و\"القطع\" بالحكم بأمثلة مبسّطة خطوة بخطوة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Explains following suit and trumping with simple step-by-step examples."
+          }
+        }
+      }
+    },
+    "تشرح خطوات الحساب: جمع نقاط أوراق كل أكلة فاز بها الفريق، ثم إضافة نقاط المشاريع، ثم تطبيق أي مضاعف.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Explains the calculation steps: add the card points from each trick the team won, then add project points, then apply any multiplier."
+          }
+        }
+      }
+    },
+    "بعد كل صكة، أدخل نوعها (صن أو حكم)، نقاط كل فريق، المشاريع، والمضاعف (دبل/ثري/فور/قهوة إن كانت مفعّلة)، ثم احفظ الجولة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After each round, enter its type (Sun or Hokum), each team's points, the projects, and the multiplier (Double/Triple/Quadruple/Coffee if enabled), then save the round."
+          }
+        }
+      }
+    },
+    "يتناوب اللاعبون على اللعب، مع الحرص على تجنّب أو جمع الأوراق ذات الأثر السلبي أو الإيجابي حسب قواعد المجلس.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Players take turns, taking care to avoid or collect the cards with a negative or positive effect according to the group's rules."
+          }
+        }
+      }
+    },
+    "يلتزم كل لاعب بعدد أكلات أثناء المزايدة، ثم يُلعب مع وجوب اتّباع النوع المطلوب أو القطع بالطرنيب عند عدم توفره.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Each player commits to a number of tricks during the bidding, then play proceeds with the obligation to follow suit or trump when you can't."
+          }
+        }
+      }
+    },
+    "يجب اتّباع نفس النوع المطلوب إن توفر، وتختلف طريقة تحديد الفائز بكل جولة حسب هدفها الخاص ضمن الدورة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You must follow the suit led if you hold it, and how the winner of each round is determined varies with that round's own objective within the cycle."
+          }
+        }
+      }
+    },
+    "يتناوب اللاعبون على اللعب أو المطابقة أو السحب حسب قواعد الصيغة المعتمدة، حتى يخلو أحدهم من الأوراق أو تنتهي الحزمة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Players take turns playing, matching, or drawing according to the rules of the chosen format, until one of them runs out of cards or the deck is exhausted."
+          }
+        }
+      }
+    },
+    "تُجمع نقاط الأوراق التي يفوز بها كل فريق عبر الأكلات. في حكم يكون مجموع نقاط الجولة 152 نقطة، وفي صن 130 نقطة (تُضاعف عادة إلى 260 عند احتسابها ضمن هدف المباراة).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The card points each team wins across the tricks are added up. In Hokum the round totals 152 points, and in Sun 130 points (usually doubled to 260 when counted toward the match target)."
+          }
+        }
+      }
+    },
+    "مجموع نقاط الأوراق في الجولة 120 نقطة، ويُضاف لها 10 نقاط لفريق آخر أكلة فيصبح المجموع 130، وتُضاعف عادة (×2) لتصبح 260 عند احتسابها ضمن هدف المباراة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The card points in the round total 120, plus 10 points for the team taking the last trick, making 130 — usually doubled (×2) to 260 when counted toward the match target."
+          }
+        }
+      }
+    },
+    "مجموع نقاط أوراق جولة الحكم 152 نقطة: 62 نقطة من نوع الحكم و30 نقطة من كل نوع آخر (×3).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A Hokum round's card points total 152: 62 points from the trump suit and 30 points from each of the other suits (×3)."
+          }
+        }
+      }
+    },
+    "تُضاف نقاط المشاريع المعلَنة والصحيحة إلى نقاط الأكلات المعتادة للجولة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The points from valid declared projects are added to the round's usual trick points."
+          }
+        }
+      }
+    },
+    "النتيجة النهائية = نقاط الجولة (أكلات + مشاريع) × المضاعف المُعلَن (دبل ×2، ثري ×3، فور ×4 في الصيغة القياسية لهذا التطبيق، وقابلة للتغيير من الإعدادات).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Final result = round points (tricks + projects) × the declared multiplier (Double ×2, Triple ×3, Quadruple ×4 in this app's standard formula, adjustable in Settings)."
+          }
+        }
+      }
+    },
+    "تلخّص فكرة أن كل ورقة لها قيمة نقاط تختلف حسب النمط، وأن الفريق صاحب أعلى مجموع يفوز بالجولة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Summarizes the idea that each card has a point value that varies by mode, and that the team with the higher total wins the round."
+          }
+        }
+      }
+    },
+    "مجموع حكم = 152، ومجموع صن الأساسي = 130 (يُضاعف عادة إلى 260). القيم قابلة للتخصيص من إعدادات التسجيل حسب عرف المجلس.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hokum totals 152, and the base Sun total is 130 (usually doubled to 260). The values can be customized in the scorekeeper settings to match your group's custom."
+          }
+        }
+      }
+    },
+    "يُحسب إجمالي كل فريق تلقائيًا كمجموع كل الصكات المحفوظة، مع تطبيق المضاعف على كل صكة بحسب صيغة التسجيل المختارة من الإعدادات.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Each team's total is calculated automatically as the sum of all saved rounds, applying the multiplier to each round according to the scoring formula chosen in Settings."
+          }
+        }
+      }
+    },
+    "تُحتسب النتيجة حسب عدد الأوراق أو الأكلات المرصودة نهاية الجولة وفق الاتفاق المسبق.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The result is calculated from the number of cards or tricks recorded at the end of the round, per the prior agreement."
+          }
+        }
+      }
+    },
+    "يُحتسب الفارق بين الأكلات المُلتزَم بها والأكلات المُحقَّقة فعليًا، وقد تُخصم نقاط عند عدم الوفاء بالالتزام حسب الصيغة المعتمدة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The difference between the tricks committed to and the tricks actually won is calculated, and points may be deducted for falling short, depending on the format used."
+          }
+        }
+      }
+    },
+    "تختلف طريقة الاحتساب من جولة لأخرى داخل نفس الدورة، وتُجمع النقاط تراكميًا حتى نهاية الدورة الكاملة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The calculation method differs from one round to the next within the same cycle, and points accumulate until the full cycle ends."
+          }
+        }
+      }
+    },
+    "تُحتسب النتيجة عادة بعدّ الأوراق المتبقية بيد كل لاعب خاسر في نهاية الجولة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The result is usually calculated by counting the cards left in each losing player's hand at the end of the round."
+          }
+        }
+      }
+    },
+    "أبرز مشروع متفق عليه هو \"البلوت\": امتلاك شايب وبنت نوع الحكم معًا، ويُضيف 20 نقطة لصاحبه. مشاريع أخرى مثل السرا والخمسين والمية تحتاج اتفاقًا مسبقًا بين اللاعبين لاعتمادها.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The best-known agreed project is the \"Baloot\": holding both the Jack and Queen of the trump suit, worth 20 points. Other projects such as Sira, Fifty, and Hundred need to be agreed on by the players beforehand."
+          }
+        }
+      }
+    },
+    "نفس مشاريع البلوت العامة قابلة للاتفاق عليها، باستثناء \"البلوت\" (شايب وبنت الحكم) لأنه لا يوجد نوع حكم في هذا النمط.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The same general Baloot projects can be agreed on, except the \"Baloot\" (Jack and Queen of trump), since there is no trump suit in this mode."
+          }
+        }
+      }
+    },
+    "\"البلوت\" (شايب وبنت نوع الحكم معًا في يد واحدة) يضيف 20 نقطة لصاحبه، وهو المشروع المعتمد افتراضيًا في هذا التطبيق.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The \"Baloot\" (the Jack and Queen of the trump suit together in one hand) is worth 20 points, and it is the project enabled by default in this app."
+          }
+        }
+      }
+    },
+    "أشهر المشاريع: السرا (ثلاث أوراق متتابعة من نفس النوع)، الخمسين (أربع متتابعة)، المية (أربع أوراق من نفس الرتبة)، إضافة إلى البلوت. القيم الدقيقة تختلف بين المجالس، لذا تُترك قابلة للاتفاق قبل اللعب.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The best-known projects: Sira (three consecutive cards of the same suit), Fifty (four consecutive), Hundred (four cards of the same rank), plus the Baloot. Exact values vary between groups, so they are left open to agreement before play."
+          }
+        }
+      }
+    },
+    "المشاريع المعتادة (كالبلوت) تُحتسب أولًا، ثم يُطبَّق المضاعف على المجموع الكلي.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The usual projects (such as the Baloot) are counted first, then the multiplier is applied to the overall total."
+          }
+        }
+      }
+    },
+    "تعريف مبسّط بمفهوم \"المشروع\" كنقاط إضافية عند امتلاك تشكيلة معيّنة من الأوراق.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A simple introduction to the idea of a \"project\" as extra points for holding a certain combination of cards."
+          }
+        }
+      }
+    },
+    "تلخّص قيم المشاريع الشائعة وتنبّه إلى أنها قد تختلف بين المجالس.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Summarizes the values of common projects and notes that they may vary between groups."
+          }
+        }
+      }
+    },
+    "أدخل قيمة مشاريع كل فريق يدويًا لكل صكة كما اتُّفق عليه على الطاولة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter each team's project value manually for every round, as agreed at the table."
+          }
+        }
+      }
+    },
+    "لا توجد مشاريع ثابتة متفق عليها عالميًا؛ تُترك لتقدير اللاعبين.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "There are no fixed, universally agreed projects; they are left to the players' discretion."
+          }
+        }
+      }
+    },
+    "لا توجد مشاريع بالمعنى المستخدم في البلوت؛ التركيز على دقة الالتزام بعدد الأكلات.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "There are no projects in the Baloot sense; the focus is on meeting your committed number of tricks exactly."
+          }
+        }
+      }
+    },
+    "لا توجد مشاريع بالمفهوم المستخدم في البلوت.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "There are no projects in the sense used in Baloot."
+          }
+        }
+      }
+    },
+    "لا توجد مشاريع ثابتة؛ تعتمد اللعبة على قواعد مبسّطة متفق عليها.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "There are no fixed projects; the game relies on simplified agreed rules."
+          }
+        }
+      }
+    },
+    "تنتهي الجولة بعد لعب كل الأوراق الثماني (8 أكلات)، ثم تُحسب النقاط ويبدأ توزيع جديد حتى يبلغ أحد الفريقين الهدف.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The round ends after all eight cards are played (8 tricks), then the points are counted and a new deal begins until one team reaches the target."
+          }
+        }
+      }
+    },
+    "تنتهي الجولة بعد لعب الأكلات الثماني وتُجمع النقاط لكل فريق.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The round ends after the eight tricks are played and each team's points are added up."
+          }
+        }
+      }
+    },
+    "تنتهي الجولة بعد الأكلات الثماني، وتُحتسب نقاط كل فريق وتُضاف إلى إجمالي الجلسة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The round ends after the eight tricks, and each team's points are counted and added to the session total."
+          }
+        }
+      }
+    },
+    "تنتهي الجولة كالمعتاد بعد الأكلات الثماني مع إضافة قيمة المشاريع الصحيحة للنتيجة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The round ends as usual after the eight tricks, with the value of any valid projects added to the result."
+          }
+        }
+      }
+    },
+    "تنتهي الجولة كالمعتاد بعد الأكلات الثماني، وتُطبَّق المضاعفة على النتيجة النهائية قبل إضافتها لإجمالي الجلسة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The round ends as usual after the eight tricks, and the multiplier is applied to the final result before it is added to the session total."
+          }
+        }
+      }
+    },
+    "توضّح متى تنتهي الجولة ومتى تنتهي الجلسة كاملة (عند بلوغ الهدف المتفق عليه).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Explains when a round ends and when the full session ends (upon reaching the agreed target)."
+          }
+        }
+      }
+    },
+    "توضّح كيف تُضاف نتيجة الجولة إلى إجمالي الجلسة في مسجّل تسجيل البلوت.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Explains how a round's result is added to the session total in the Baloot scorekeeper."
+          }
+        }
+      }
+    },
+    "تُعلَن الجلسة منتهية والفريق فائزًا فور بلوغ أحد الفريقين الهدف المستهدف بفارق واضح.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The session is declared over and the team declared the winner as soon as one team reaches the target score by a clear margin."
+          }
+        }
+      }
+    },
+    "تنتهي الجولة بانتهاء الأوراق، وتُعلن النتيجة بحسب الصيغة المعتمدة.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The round ends when the cards run out, and the result is declared according to the format used."
+          }
+        }
+      }
+    },
+    "تنتهي الجولة بانتهاء كل الأوراق (13 أكلة)، وتُحدَّث النتيجة التراكمية.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The round ends when all the cards are played (13 tricks), and the running total is updated."
+          }
+        }
+      }
+    },
+    "تنتهي كل جولة فرعية بانتهاء الأوراق، وتنتهي الدورة الكاملة بعد لعب كل أنماط الجولات المتفق عليها.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Each sub-round ends when its cards run out, and the full cycle ends after all the agreed round types have been played."
+          }
+        }
+      }
+    },
+    "تنتهي الجولة بخلوّ يد أحد اللاعبين من الأوراق أو باستنفاد الحزمة الاحتياطية.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The round ends when one player's hand is empty or the draw pile is exhausted."
+          }
+        }
+      }
+    },
+    "أشهر الأخطاء: نسيان التلزيم بنفس النوع، القطع بحكم أضعف من اللازم، والإعلان عن مشروع غير مكتمل الشروط.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The most common mistakes: forgetting to follow suit, trumping with a weaker card than necessary, and declaring a project that doesn't meet the conditions."
+          }
+        }
+      }
+    },
+    "الخطأ الأكثر شيوعًا هو التعامل مع صن وكأن فيها نوعًا مفضّلًا، أو نسيان أن الآس هو الأقوى دائمًا هنا.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The most common mistake is treating Sun as though it had a favored suit, or forgetting that the Ace is always the strongest card here."
+          }
+        }
+      }
+    },
+    "أشهر الأخطاء: القطع بحكم ضعيف بلا داعٍ، ونسيان أن بعض المجالس تُلزم بالتعلية (القطع بحكم أعلى) — وهو إعداد قابل للتفعيل من إعدادات التسجيل.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The most common mistakes: trumping with a low card needlessly, and forgetting that some groups require overtrumping (playing a higher trump) — an option you can enable in the scorekeeper settings."
+          }
+        }
+      }
+    },
+    "إعلان مشروع غير مكتمل الشروط، أو الخلط بين قيم المشاريع المختلفة بين المجالس.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Declaring a project that doesn't meet the conditions, or mixing up project values that differ between groups."
+          }
+        }
+      }
+    },
+    "الدبل دون تقييم حقيقي لقوة اليد، أو نسيان تسجيل المضاعف الصحيح في مسجّل النقاط.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doubling without a real assessment of your hand's strength, or forgetting to record the correct multiplier in the scorekeeper."
+          }
+        }
+      }
+    },
+    "تجمع أكثر الأخطاء شيوعًا لدى المبتدئين في نقاط سريعة قبل اللعب الفعلي.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Collects the most common beginner mistakes into quick points before real play."
+          }
+        }
+      }
+    },
+    "أخطاء الجمع اليدوي الشائعة، ونسيان تطبيق المضاعف على المجموع الكامل بدل جزء منه فقط.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Common manual-addition mistakes, and forgetting to apply the multiplier to the full total rather than only part of it."
+          }
+        }
+      }
+    },
+    "نسيان اختيار المضاعف الصحيح، أو حفظ صكة بأرقام فارغة أو سالبة — والأداة تمنع ذلك تلقائيًا.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forgetting to choose the correct multiplier, or saving a round with empty or negative numbers — which the tool prevents automatically."
+          }
+        }
+      }
+    },
+    "الخلط بين صيغ اللعب المختلفة المتداولة باسم هذه اللعبة دون اتفاق مسبق واضح.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mixing up the different formats circulating under this game's name without a clear prior agreement."
+          }
+        }
+      }
+    },
+    "المبالغة في الالتزام بعدد أكلات أعلى من قوة اليد الفعلية.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Committing to more tricks than your hand's actual strength justifies."
+          }
+        }
+      }
+    },
+    "الخلط بين أهداف الجولات المختلفة داخل نفس الدورة، خصوصًا عند التبديل بين جولة تجنّب وجولة تجميع.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mixing up the objectives of different rounds within the same cycle, especially when switching between an avoidance round and a collection round."
+          }
+        }
+      }
+    },
+    "عدم الاتفاق المسبق على تفاصيل الصيغة المحلية المستخدمة، ما يسبب خلافًا أثناء اللعب.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not agreeing beforehand on the details of the local format in use, which causes disputes during play."
+          }
+        }
+      }
+    },
+    "سيُضاف هذا القسم قريبًا.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This section will be added soon."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

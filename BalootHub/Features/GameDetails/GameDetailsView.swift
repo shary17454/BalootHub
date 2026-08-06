@@ -25,7 +25,7 @@ struct GameDetailsView: View {
             }
         }
         .background(AppColor.background)
-        .navigationTitle(item?.arabicTitle ?? "")
+        .navigationTitle(item?.displayTitle ?? "")
         .navigationBarTitleDisplayMode(.inline)
     }
 
@@ -35,7 +35,7 @@ struct GameDetailsView: View {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
                 heroCard(item)
 
-                Text(item.shortDescription)
+                Text(item.displayDescription)
                     .font(AppTypography.body)
                     .foregroundStyle(AppColor.textPrimary)
 
@@ -66,7 +66,7 @@ struct GameDetailsView: View {
                 Image(systemName: item.iconName)
                     .font(.system(size: 48, weight: .semibold))
                     .foregroundStyle(.white)
-                Text(item.arabicTitle)
+                Text(item.displayTitle)
                     .font(AppTypography.title)
                     .foregroundStyle(.white)
                 if let englishTitle = item.englishTitle {
@@ -86,9 +86,9 @@ struct GameDetailsView: View {
     private func infoGrid(_ item: GameCatalogItem) -> some View {
         VStack(spacing: AppSpacing.xs) {
             InfoRow(icon: item.category.iconName, title: "النوع", value: item.category.title)
-            InfoRow(icon: "person.3.fill", title: "عدد اللاعبين", value: item.playerCountText)
+            InfoRow(icon: "person.3.fill", title: "عدد اللاعبين", value: item.displayPlayerCount)
             InfoRow(icon: "chart.bar.fill", title: "مستوى الصعوبة", value: "\(item.difficulty.title) (\(String(repeating: "★", count: item.difficulty.starCount)))")
-            InfoRow(icon: "clock.fill", title: "المدة المتوقعة", value: item.estimatedDuration)
+            InfoRow(icon: "clock.fill", title: "المدة المتوقعة", value: item.displayDuration)
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.medium))
@@ -96,10 +96,10 @@ struct GameDetailsView: View {
 
     private func summaryCard(section: GameRuleSection) -> some View {
         VStack(alignment: .leading, spacing: AppSpacing.xs) {
-            Label(section.title, systemImage: section.iconName)
+            Label(section.displayTitle, systemImage: section.iconName)
                 .font(AppTypography.headline)
                 .foregroundStyle(AppColor.primary)
-            Text(section.body)
+            Text(section.displayBody)
                 .font(AppTypography.subheadline)
                 .foregroundStyle(AppColor.textPrimary)
         }

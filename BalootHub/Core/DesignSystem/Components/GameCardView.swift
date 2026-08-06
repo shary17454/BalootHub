@@ -33,12 +33,12 @@ struct GameCardView: View {
                 }
             }
 
-            Text(item.arabicTitle)
+            Text(item.displayTitle)
                 .font(AppTypography.headline)
                 .foregroundStyle(AppColor.textPrimary)
                 .lineLimit(1)
 
-            Text(item.shortDescription)
+            Text(item.displayDescription)
                 .font(AppTypography.caption)
                 .foregroundStyle(AppColor.textSecondary)
                 .lineLimit(2)
@@ -59,7 +59,7 @@ struct GameCardView: View {
         .appShadow(AppShadow.card)
         .contentShape(RoundedRectangle(cornerRadius: AppRadius.large))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(item.arabicTitle)، \(item.category.title)، \(item.isPlayable ? "متاح للعب" : "قواعد فقط")")
+        .accessibilityLabel("\(item.displayTitle)، \(item.category.title)، \(item.isPlayable ? "متاح للعب" : "قواعد فقط")")
         .accessibilityHint("اضغط مرتين لعرض التفاصيل والقواعد")
     }
 }

@@ -27,7 +27,7 @@ struct RulesView: View {
                     }
                     .padding(AppSpacing.md)
                 }
-                .navigationTitle("قواعد \(item.arabicTitle)")
+                .navigationTitle("قواعد \(item.displayTitle)")
                 .navigationBarTitleDisplayMode(.inline)
             } else {
                 ErrorStateView(message: "تعذّر العثور على قواعد هذه اللعبة.")
@@ -55,10 +55,10 @@ private struct RuleSectionCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.xs) {
-            Label(section.title, systemImage: section.iconName)
+            Label(section.displayTitle, systemImage: section.iconName)
                 .font(AppTypography.headline)
                 .foregroundStyle(AppColor.primary)
-            Text(section.body)
+            Text(section.displayBody)
                 .font(AppTypography.body)
                 .foregroundStyle(AppColor.textPrimary)
         }

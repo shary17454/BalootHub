@@ -72,6 +72,24 @@ final class GameCatalogItem {
         rules.sorted { $0.order < $1.order }
     }
 
+    // MARK: - نصوص العرض المترجَمة
+    //
+    // المحتوى يُزرع في قاعدة البيانات بالعربية مرة واحدة عند أول تشغيل، لذا لا يصح ترجمته
+    // وقت الزرع (وإلا تجمّد على لغة أول تشغيل). بدل ذلك يبقى النص العربي مفتاحًا في
+    // ``Localizable.xcstrings`` ويُترجَم وقت العرض، فيتبع لغة الجهاز فورًا عند تغييرها.
+
+    /// عنوان اللعبة بلغة الجهاز الحالية.
+    var displayTitle: String { arabicTitle.localized }
+
+    /// الوصف المختصر بلغة الجهاز الحالية.
+    var displayDescription: String { shortDescription.localized }
+
+    /// نص عدد اللاعبين بلغة الجهاز الحالية.
+    var displayPlayerCount: String { playerCountText.localized }
+
+    /// المدة المتوقعة بلغة الجهاز الحالية.
+    var displayDuration: String { estimatedDuration.localized }
+
     /// يبحث عن قسم قواعد بترتيبه المعياري الثابت (انظر ``StandardRuleSectionKind``).
     func ruleSection(_ kind: StandardRuleSectionKind) -> GameRuleSection? {
         sortedRules.first { $0.order == kind.order }

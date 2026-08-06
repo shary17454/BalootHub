@@ -18,4 +18,10 @@ final class GameRuleSection {
         self.order = order
         self.iconName = iconName
     }
+
+    /// عنوان القسم بلغة الجهاز الحالية (النص العربي المخزَّن يُستخدم كمفتاح ترجمة).
+    var displayTitle: String { title.localized }
+
+    /// نص القسم بلغة الجهاز الحالية.
+    var displayBody: String { body.localized }
 }
