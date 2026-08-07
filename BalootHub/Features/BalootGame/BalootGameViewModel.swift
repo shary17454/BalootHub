@@ -36,7 +36,7 @@ final class BalootGameViewModel {
     private(set) var errorMessage: String?
 
     let variant: BalootGameVariant
-    private let agent: BalootAgent = SimpleBalootAgent()
+    private let agent: BalootAgent = SmartBalootAgent()
     private let humanPlayerID: Player.ID
     private let rules: BalootRulesConfiguration
     /// مهمة أدوار اللاعبين الآليين الجارية، تُلغى قبل بدء غيرها حتى لا تتداخل
