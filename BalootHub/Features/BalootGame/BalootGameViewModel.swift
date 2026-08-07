@@ -36,7 +36,9 @@ final class BalootGameViewModel {
     private(set) var errorMessage: String?
 
     let variant: BalootGameVariant
-    private let agent: BalootAgent = SmartBalootAgent()
+    // الوكيل الخبير يحاكي توزيعات محتملة قبل كل ورقة (انظر ``ExpertBalootAgent``).
+    // 12 عيّنة تعطي أقوى لعب مع بقاء زمن القرار أقل بكثير من فاصل عرض الورقة.
+    private let agent: BalootAgent = ExpertBalootAgent(samples: 12)
     private let humanPlayerID: Player.ID
     private let rules: BalootRulesConfiguration
     /// مهمة أدوار اللاعبين الآليين الجارية، تُلغى قبل بدء غيرها حتى لا تتداخل
