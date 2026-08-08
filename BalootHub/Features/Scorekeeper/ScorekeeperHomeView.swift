@@ -56,7 +56,7 @@ struct ScorekeeperHomeView: View {
 struct SessionSummaryRow: View {
     let session: ScoreSession
     @Query private var settingsList: [AppSettings]
-    private var rules: ScoreRules { (settingsList.first ?? AppSettings()).scoreRules }
+    private var rules: ScoreRules { settingsList.first?.scoreRules ?? .standard }
 
     var body: some View {
         HStack {

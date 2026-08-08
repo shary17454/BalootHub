@@ -10,8 +10,8 @@ struct MatchHistoryView: View {
     @State private var sessionPendingDelete: ScoreSession?
     @State private var isPresentingDeleteConfirm = false
 
-    private var rules: ScoreRules { (settingsList.first ?? AppSettings()).scoreRules }
-    private var settings: AppSettings { settingsList.first ?? AppSettings() }
+    // تجنّب إنشاء كائن `@Model` مؤقت في كل تقييم للواجهة.
+    private var confirmBeforeDelete: Bool { settingsList.first?.confirmBeforeDelete ?? true }
 
     private var activeSessions: [ScoreSession] { sessions.filter { $0.status == .active } }
     private var finishedSessions: [ScoreSession] { sessions.filter { $0.status == .finished } }
@@ -66,7 +66,7 @@ struct MatchHistoryView: View {
         .swipeActions {
             Button(role: .destructive) {
                 sessionPendingDelete = session
-                if settings.confirmBeforeDelete {
+                if confirmBeforeDelete {
                     isPresentingDeleteConfirm = true
                 } else {
                     modelContext.delete(session)

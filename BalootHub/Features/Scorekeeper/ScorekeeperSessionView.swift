@@ -22,8 +22,10 @@ struct ScorekeeperSessionView: View {
     }
 
     private var session: ScoreSession? { sessions.first }
-    private var settings: AppSettings { settingsList.first ?? AppSettings() }
-    private var rules: ScoreRules { settings.scoreRules }
+    // قراءة القيم مباشرةً بدل `settingsList.first ?? AppSettings()`: تلك الصيغة كانت
+    // تُنشئ كائن `@Model` جديدًا غير مُدرج في السياق مع كل تقييم للواجهة.
+    private var rules: ScoreRules { settingsList.first?.scoreRules ?? .standard }
+    private var confirmBeforeDelete: Bool { settingsList.first?.confirmBeforeDelete ?? true }
 
     var body: some View {
         Group {
@@ -90,12 +92,12 @@ struct ScorekeeperSessionView: View {
         }
         .sheet(isPresented: $isPresentingAddRound) {
             NavigationStack {
-                AddEditRoundView(session: session, roundToEdit: nil, rules: rules)
+                AddEditRoundView(session: session, roundToEdit: nil)
             }
         }
         .sheet(item: $roundBeingEdited) { round in
             NavigationStack {
-                AddEditRoundView(session: session, roundToEdit: round, rules: rules)
+                AddEditRoundView(session: session, roundToEdit: round)
             }
         }
         .confirmationDialog("هل تريد إنهاء الجلسة؟", isPresented: $isPresentingFinishConfirm, titleVisibility: .visible) {
@@ -169,24 +171,32 @@ struct ScorekeeperSessionView: View {
             if session.rounds.isEmpty {
                 EmptyStateView(systemImage: "square.stack.3d.up.slash", title: "لا توجد صكات بعد", message: "أضف أول صكة لبدء تتبّع النتيجة.")
             } else {
+                // `swipeActions` لا تعمل إلا داخل `List`، وهذه الصفوف داخل `VStack`
+                // في `ScrollView`، فكان زر حذف الصكة غير موجود عمليًا ولا سبيل لحذف
+                // صكة وسطية إطلاقًا. البديل هنا قائمة سياقية تعمل في أي حاوية.
                 ForEach(session.sortedRounds) { round in
                     RoundRow(round: round, rules: rules)
                         .contentShape(Rectangle())
                         .onTapGesture {
                             if session.status == .active { roundBeingEdited = round }
                         }
-                        .swipeActions {
+                        .contextMenu {
                             if session.status == .active {
+                                Button {
+                                    roundBeingEdited = round
+                                } label: {
+                                    Label("تعديل", systemImage: "pencil")
+                                }
                                 Button(role: .destructive) {
-                                    roundPendingDelete = round
-                                    if settings.confirmBeforeDelete {
-                                        isPresentingDeleteConfirm = true
-                                    } else {
-                                        delete(round: round, from: session)
-                                    }
+                                    requestDelete(round: round, from: session)
                                 } label: {
                                     Label("حذف", systemImage: "trash")
                                 }
+                            }
+                        }
+                        .accessibilityAction(named: Text("حذف")) {
+                            if session.status == .active {
+                                requestDelete(round: round, from: session)
                             }
                         }
                 }
@@ -194,8 +204,18 @@ struct ScorekeeperSessionView: View {
         }
     }
 
+    /// يحذف الصكة مباشرةً أو يطلب التأكيد أولًا، حسب إعداد "تأكيد قبل الحذف".
+    private func requestDelete(round: ScoreRound, from session: ScoreSession) {
+        roundPendingDelete = round
+        if confirmBeforeDelete {
+            isPresentingDeleteConfirm = true
+        } else {
+            delete(round: round, from: session)
+        }
+    }
+
     private func confirmUndo() {
-        if settings.confirmBeforeDelete {
+        if confirmBeforeDelete {
             isPresentingUndoConfirm = true
         } else if let session {
             undoLastRound(session)
@@ -253,7 +273,7 @@ private struct RoundRow: View {
 
 #Preview {
     NavigationStack {
-        ScorekeeperHomeView()
+        ScorekeeperSessionView(sessionID: UUID())
     }
     .environment(AppEnvironment())
     .modelContainer(PersistenceController.makePreviewContainer())

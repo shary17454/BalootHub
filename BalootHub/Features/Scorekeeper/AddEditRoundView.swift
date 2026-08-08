@@ -4,7 +4,6 @@ import SwiftData
 struct AddEditRoundView: View {
     let session: ScoreSession
     let roundToEdit: ScoreRound?
-    let rules: ScoreRules
 
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
@@ -18,6 +17,9 @@ struct AddEditRoundView: View {
     @State private var multiplier: ScoreMultiplier = .none
     @State private var notes = ""
     @State private var validationMessage: String?
+    /// لوحة الأرقام لا تحتوي زر إرجاع، فبدون تركيز صريح يمكن إغلاقه تبقى مفتوحة
+    /// وتغطي بقية الحقول.
+    @FocusState private var isEditingNumber: Bool
 
     private var coffeeEnabled: Bool { settingsList.first?.enableCoffeeMultiplier ?? false }
 
@@ -41,11 +43,13 @@ struct AddEditRoundView: View {
                     TextField("0", text: $teamOneScoreText)
                         .keyboardType(.numberPad)
                         .multilineTextAlignment(.trailing)
+                        .focused($isEditingNumber)
                 }
                 LabeledContent(session.teamTwoName) {
                     TextField("0", text: $teamTwoScoreText)
                         .keyboardType(.numberPad)
                         .multilineTextAlignment(.trailing)
+                        .focused($isEditingNumber)
                 }
             }
 
@@ -54,11 +58,13 @@ struct AddEditRoundView: View {
                     TextField("0", text: $teamOneProjectsText)
                         .keyboardType(.numberPad)
                         .multilineTextAlignment(.trailing)
+                        .focused($isEditingNumber)
                 }
                 LabeledContent("مشاريع \(session.teamTwoName)") {
                     TextField("0", text: $teamTwoProjectsText)
                         .keyboardType(.numberPad)
                         .multilineTextAlignment(.trailing)
+                        .focused($isEditingNumber)
                 }
             }
 
@@ -90,6 +96,10 @@ struct AddEditRoundView: View {
             }
             ToolbarItem(placement: .confirmationAction) {
                 Button("حفظ") { save() }
+            }
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("تم") { isEditingNumber = false }
             }
         }
         .onAppear(perform: loadInitialValues)
@@ -134,8 +144,11 @@ struct AddEditRoundView: View {
             roundToEdit.multiplier = multiplier
             roundToEdit.notes = trimmedNotes.isEmpty ? nil : trimmedNotes
         } else {
+            // الاعتماد على العدد وحده كان يُنتج رقمين متطابقين بعد حذف صكة وسطية
+            // (٣ صكات ⇒ حذف الثانية ⇒ التالية تأخذ الرقم ٣ الموجود أصلًا).
+            let nextRoundNumber = (session.rounds.map(\.roundNumber).max() ?? 0) + 1
             let round = ScoreRound(
-                roundNumber: session.rounds.count + 1,
+                roundNumber: nextRoundNumber,
                 mode: mode,
                 teamOneBaseScore: teamOneScore,
                 teamTwoBaseScore: teamTwoScore,
@@ -158,7 +171,7 @@ struct AddEditRoundView: View {
     let container = PersistenceController.makePreviewContainer()
     let session = ScoreSession(teamOneName: "فريقنا", teamTwoName: "الخصم", targetScore: 152)
     return NavigationStack {
-        AddEditRoundView(session: session, roundToEdit: nil, rules: .standard)
+        AddEditRoundView(session: session, roundToEdit: nil)
     }
     .modelContainer(container)
 }
