@@ -21,8 +21,7 @@ public struct SimpleBalootAgent: BalootAgent, Sendable {
 
     public func chooseCard(hand: [PlayingCard], legalCards: [PlayingCard], state: GameState) -> PlayingCard {
         guard let fallback = legalCards.first else {
-            // لا يجب أن يحدث هذا: المستدعي مسؤول عن ضمان توفر أوراق قانونية.
-            return hand[0]
+            return Self.fallbackCard(hand: hand)
         }
 
         guard let mode = state.mode else { return fallback }
@@ -52,7 +51,8 @@ public struct SimpleBalootAgent: BalootAgent, Sendable {
     }
 
     private func weakestCard(in cards: [PlayingCard], mode: GameMode, trumpSuit: Suit?) -> PlayingCard {
-        cards.min { effectiveStrength(of: $0, mode: mode, trumpSuit: trumpSuit) < effectiveStrength(of: $1, mode: mode, trumpSuit: trumpSuit) } ?? cards[0]
+        cards.min { effectiveStrength(of: $0, mode: mode, trumpSuit: trumpSuit) < effectiveStrength(of: $1, mode: mode, trumpSuit: trumpSuit) }
+            ?? Self.fallbackCard(hand: cards)
     }
 
     private func effectiveStrength(of card: PlayingCard, mode: GameMode, trumpSuit: Suit?) -> Int {

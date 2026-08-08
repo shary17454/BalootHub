@@ -29,7 +29,7 @@ public struct ExpertBalootAgent: BalootAgent, Sendable {
     }
 
     public func chooseCard(hand: [PlayingCard], legalCards: [PlayingCard], state: GameState) -> PlayingCard {
-        guard let fallback = legalCards.first else { return hand[0] }
+        guard let fallback = legalCards.first else { return Self.fallbackCard(hand: hand) }
         // ورقة واحدة ⇒ لا قرار. وفي المراحل غير اللعب نرجع للسياسة المباشرة.
         guard legalCards.count > 1, state.phase == .playing else { return fallback }
         guard let myID = state.currentTurnPlayerID,
@@ -138,17 +138,23 @@ public struct ExpertBalootAgent: BalootAgent, Sendable {
     // MARK: - الاستنتاج من اللعب السابق
 
     /// كل الأوراق التي لم يرها هذا اللاعب: الحزمة كاملة ناقص يده وناقص كل ما لُعب.
+    ///
+    /// المقارنة تتم على ``PlayingCard`` مباشرة لأن تساويها وتجزئتها معرّفان على
+    /// (النوع + القيمة)، فلا حاجة لبناء مفاتيح نصية في مسار يُستدعى آلاف المرات
+    /// داخل المحاكاة.
     private func unseenCards(state: GameState, myHand: [PlayingCard]) -> [PlayingCard] {
-        var seen = Set(myHand.map(Self.key))
+        var seen = Set(myHand)
         for trick in state.completedTricks {
-            for played in trick.playedCards { seen.insert(Self.key(played.card)) }
+            for played in trick.playedCards { seen.insert(played.card) }
         }
-        for played in state.currentTrick?.playedCards ?? [] { seen.insert(Self.key(played.card)) }
+        for played in state.currentTrick?.playedCards ?? [] { seen.insert(played.card) }
 
         var result: [PlayingCard] = []
+        result.reserveCapacity(Deck.fullCount - seen.count)
         for suit in Suit.allCases {
-            for rank in Rank.allCases where !seen.contains("\(suit.rawValue)-\(rank.rawValue)") {
-                result.append(PlayingCard(suit: suit, rank: rank))
+            for rank in Rank.allCases {
+                let card = PlayingCard(suit: suit, rank: rank)
+                if !seen.contains(card) { result.append(card) }
             }
         }
         return result
@@ -170,17 +176,17 @@ public struct ExpertBalootAgent: BalootAgent, Sendable {
     }
 
     /// بذرة حتمية مشتقة من موضع اللعب الحالي، فلا تتكرر نفس المحاكاة بين المرشحين.
+    ///
+    /// تعتمد على ``Suit/ordinal`` و``Rank/ordinal`` لا على `hashValue`: قيم التجزئة
+    /// في Swift مبذورة عشوائيًا مع كل تشغيل، فاستخدامها هنا كان يجعل قرارات الوكيل
+    /// تختلف بين تشغيل وآخر بنفس المدخلات — عكس ما يوثّقه النوع تمامًا.
     private func seed(for card: PlayingCard, state: GameState, sample: Int) -> UInt64 {
         var value: UInt64 = 0x9E37_79B9_7F4A_7C15
         value ^= UInt64(state.completedTricks.count &* 31)
         value ^= UInt64((state.currentTrick?.playedCards.count ?? 0) &* 131)
-        value ^= UInt64(abs(card.suit.rawValue.hashValue % 100_003))
-        value ^= UInt64(abs(card.rank.rawValue.hashValue % 100_019)) &<< 8
+        value ^= UInt64(card.suit.ordinal) &<< 8
+        value ^= UInt64(card.rank.ordinal) &<< 12
         value ^= UInt64(sample &* 7_919) &<< 16
         return value | 1
-    }
-
-    private static func key(_ card: PlayingCard) -> String {
-        "\(card.suit.rawValue)-\(card.rank.rawValue)"
     }
 }

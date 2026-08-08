@@ -49,7 +49,9 @@ public struct SmartBalootAgent: BalootAgent, Sendable {
                 // نوع جانبي فارغ أو وحيد = فرصة قطع مبكرة.
                 if sideCards.count <= 1 { score += 3 }
             }
-            if bestHokum == nil || score > bestHokum!.score {
+            if let current = bestHokum {
+                if score > current.score { bestHokum = (suit, score) }
+            } else {
                 bestHokum = (suit, score)
             }
         }
@@ -63,7 +65,7 @@ public struct SmartBalootAgent: BalootAgent, Sendable {
     // MARK: - اللعب
 
     public func chooseCard(hand: [PlayingCard], legalCards: [PlayingCard], state: GameState) -> PlayingCard {
-        guard let fallback = legalCards.first else { return hand[0] }
+        guard let fallback = legalCards.first else { return Self.fallbackCard(hand: hand) }
         guard let mode = state.mode, let myID = state.currentTurnPlayerID else { return fallback }
         let trumpSuit = state.trumpSuit
         let memory = CardMemory(state: state, myHand: hand)
@@ -74,10 +76,9 @@ public struct SmartBalootAgent: BalootAgent, Sendable {
 
         let isLast = trick.playedCards.count == 3
         let winning = currentWinner(of: trick, mode: mode, trumpSuit: trumpSuit)
-        let partnerIsWinning = winning.map { isPartner($0.playerID, of: myID, in: state) } ?? false
 
-        if partnerIsWinning {
-            let partnerCard = winning!.card
+        if let winning, isPartner(winning.playerID, of: myID, in: state) {
+            let partnerCard = winning.card
             // الشريك كاسب: لا نقطع عليه أبدًا. نحمّله النقاط إن كانت ورقته مضمونة
             // (نحن الأخير، أو ورقته بص لا يعلوه إلا حكم لم يعد موجودًا).
             let partnerSecure = isLast || memory.isBoss(partnerCard, mode: mode, trumpSuit: trumpSuit)
@@ -96,10 +97,10 @@ public struct SmartBalootAgent: BalootAgent, Sendable {
         let bestStrength = winning.map { effectiveStrength($0.card, mode: mode, trumpSuit: trumpSuit) } ?? -1
         let winners = legalCards.filter { effectiveStrength($0, mode: mode, trumpSuit: trumpSuit) > bestStrength }
 
-        if !winners.isEmpty {
+        if let cheapWinner = weakestByRank(in: winners, mode: mode, trumpSuit: trumpSuit) {
             if isLast {
                 // الأخير يرى كل شيء: يكسب بأرخص ورقة كافية.
-                return winners.min { rankValue($0, mode: mode, trumpSuit: trumpSuit) < rankValue($1, mode: mode, trumpSuit: trumpSuit) }!
+                return cheapWinner
             }
             // لسنا الأخير: نكسب بورقة بص مضمونة إن وُجدت (لن يعلوها أحد)،
             // وإلا بأرخص كاسبة — مع تجنّب إهدار كبار الحكم على أكلة فقيرة النقاط.
@@ -107,7 +108,6 @@ public struct SmartBalootAgent: BalootAgent, Sendable {
                 return boss
             }
             let trickPoints = trick.playedCards.reduce(0) { $0 + $1.card.points(mode: mode, trumpSuit: trumpSuit) }
-            let cheapWinner = winners.min { rankValue($0, mode: mode, trumpSuit: trumpSuit) < rankValue($1, mode: mode, trumpSuit: trumpSuit) }!
             let isBigTrump = mode == .hokum && cheapWinner.suit == trumpSuit && (cheapWinner.rank == .jack || cheapWinner.rank == .nine)
             if isBigTrump && trickPoints < 8, legalCards.count > winners.count {
                 // الأكلة رخيصة وأرخص كاسبة هي ولد/تسعة الحكم: نحتفظ بها لأكلة أثمن.
@@ -171,18 +171,23 @@ public struct SmartBalootAgent: BalootAgent, Sendable {
         cards.max {
             ($0.points(mode: mode, trumpSuit: trumpSuit), $0.strength(mode: mode, trumpSuit: trumpSuit))
                 < ($1.points(mode: mode, trumpSuit: trumpSuit), $1.strength(mode: mode, trumpSuit: trumpSuit))
-        } ?? cards[0]
+        } ?? Self.fallbackCard(hand: cards)
     }
 
     private func cheapestCard(in cards: [PlayingCard], mode: GameMode, trumpSuit: Suit?) -> PlayingCard {
         cards.min {
             ($0.points(mode: mode, trumpSuit: trumpSuit), $0.strength(mode: mode, trumpSuit: trumpSuit))
                 < ($1.points(mode: mode, trumpSuit: trumpSuit), $1.strength(mode: mode, trumpSuit: trumpSuit))
-        } ?? cards[0]
+        } ?? Self.fallbackCard(hand: cards)
     }
 
     private func rankValue(_ card: PlayingCard, mode: GameMode, trumpSuit: Suit?) -> Int {
         card.strength(mode: mode, trumpSuit: trumpSuit)
+    }
+
+    /// أضعف ورقة بالقوة (لا بالنقاط) ضمن مجموعة، أو `nil` إن كانت المجموعة فارغة.
+    private func weakestByRank(in cards: [PlayingCard], mode: GameMode, trumpSuit: Suit?) -> PlayingCard? {
+        cards.min { rankValue($0, mode: mode, trumpSuit: trumpSuit) < rankValue($1, mode: mode, trumpSuit: trumpSuit) }
     }
 
     private func effectiveStrength(_ card: PlayingCard, mode: GameMode, trumpSuit: Suit?) -> Int {
@@ -196,18 +201,23 @@ private struct CardMemory {
     /// الأوراق غير المرئية: كل الحزمة ناقص يدي وناقص كل ما لُعب.
     let unseen: [PlayingCard]
 
+    /// المقارنة على ``PlayingCard`` مباشرة (تساويها معرّف على النوع + القيمة)
+    /// بدل مفاتيح نصية: هذه البنية تُبنى مع كل قرار ورقة، وداخل محاكاة
+    /// ``ExpertBalootAgent`` تُبنى آلاف المرات لكل نقلة واحدة.
     init(state: GameState, myHand: [PlayingCard]) {
-        var seen = Set(myHand.map(Self.key))
+        var seen = Set(myHand)
         for trick in state.completedTricks {
-            for played in trick.playedCards { seen.insert(Self.key(played.card)) }
+            for played in trick.playedCards { seen.insert(played.card) }
         }
         if let current = state.currentTrick {
-            for played in current.playedCards { seen.insert(Self.key(played.card)) }
+            for played in current.playedCards { seen.insert(played.card) }
         }
         var remaining: [PlayingCard] = []
+        remaining.reserveCapacity(Deck.fullCount - seen.count)
         for suit in Suit.allCases {
-            for rank in Rank.allCases where !seen.contains("\(suit.rawValue)-\(rank.rawValue)") {
-                remaining.append(PlayingCard(suit: suit, rank: rank))
+            for rank in Rank.allCases {
+                let card = PlayingCard(suit: suit, rank: rank)
+                if !seen.contains(card) { remaining.append(card) }
             }
         }
         unseen = remaining
@@ -225,9 +235,5 @@ private struct CardMemory {
     /// عدد الأوراق غير المرئية من نوع معيّن.
     func unseenCount(of suit: Suit) -> Int {
         unseen.count { $0.suit == suit }
-    }
-
-    private static func key(_ card: PlayingCard) -> String {
-        "\(card.suit.rawValue)-\(card.rank.rawValue)"
     }
 }
