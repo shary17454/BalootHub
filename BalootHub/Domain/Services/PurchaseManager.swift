@@ -18,10 +18,18 @@ final class PurchaseManager {
     private(set) var isLoading = false
     private(set) var errorMessage: String?
 
-    private var transactionListenerTask: Task<Void, Never>?
+    /// `nonisolated(unsafe)` ليصل إليها `deinit` (سياق غير معزول في صنف `@MainActor`).
+    /// لا سباق: تُكتب مرة واحدة في `init` ولا تُقرأ إلا في `deinit` بعد زوال آخر مرجع.
+    nonisolated(unsafe) private var transactionListenerTask: Task<Void, Never>?
 
     init() {
         transactionListenerTask = listenForTransactionUpdates()
+    }
+
+    deinit {
+        // `Transaction.updates` تيار لا ينتهي؛ بدون إلغاء صريح تبقى المهمة حيّة
+        // بعد تحرّر المدير وتستهلك تحديثات لا مستقبِل لها.
+        transactionListenerTask?.cancel()
     }
 
     func start() async {
@@ -68,11 +76,17 @@ final class PurchaseManager {
             let result = try await product.purchase()
             switch result {
             case .success(let verification):
-                if case .verified(let transaction) = verification {
+                switch verification {
+                case .verified(let transaction):
                     isFullGameUnlocked = true
                     await transaction.finish()
+                    errorMessage = nil
+                case .unverified:
+                    // توقيع المعاملة لم يجتز التحقق: لا نفتح المحتوى، وكان الفرع السابق
+                    // يمرّ بصمت ويمسح الخطأ، فيرى المستخدم عملية "ناجحة" بلا أي أثر
+                    // ولا أي تفسير. لا نُنهي المعاملة هنا حتى تُعاد المحاولة لاحقًا.
+                    errorMessage = "تعذّر التحقق من عملية الشراء. جرّب \"استعادة المشتريات\" أو أعد المحاولة لاحقًا."
                 }
-                errorMessage = nil
             case .userCancelled:
                 break
             case .pending:
