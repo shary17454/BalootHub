@@ -319,3 +319,148 @@ struct GameEngineTests {
         }
     }
 }
+
+// MARK: - اختبارات انحدار
+
+/// اختبارات تحرس أخطاءً وقعت فعلًا في المحرك، حتى لا تعود.
+@Suite("انحدار المحرك")
+struct EngineRegressionTests {
+
+    /// كانت بذرة محاكاة الوكيل الخبير مشتقة من `String.hashValue`، وهي قيمة مبذورة
+    /// عشوائيًا مع كل تشغيل للعملية، فكان الوكيل يخالف توثيقه ويعطي قرارات مختلفة
+    /// بنفس المدخلات. الترتيب الثابت للنوع والقيمة هو ما يضمن التكرار.
+    @Test("ترتيب النوع والقيمة ثابت ولا يعتمد على تجزئة عشوائية")
+    func ordinalsAreStableAndUnique() {
+        #expect(Set(Suit.allCases.map(\.ordinal)).count == Suit.allCases.count)
+        #expect(Set(Rank.allCases.map(\.ordinal)).count == Rank.allCases.count)
+        // الترتيب يطابق ترتيب القوة المعتمد في نمط صن.
+        #expect(Rank.sunOrder.map(\.ordinal) == Array(0..<Rank.allCases.count))
+    }
+
+    /// نفس الحالة ونفس اليد يجب أن تُنتج نفس الورقة في كل استدعاء.
+    @Test("قرار الوكيل الخبير قابل للتكرار بنفس المدخلات")
+    func expertDecisionIsReproducible() throws {
+        let expert = ExpertBalootAgent(samples: 6)
+        var state = GameState.newLocalMatch()
+        state = try GameEngine.apply(.dealCards(seed: 99), to: state)
+        let id = try #require(state.currentTurnPlayerID)
+        let hand = try #require(state.hands[id])
+        state = try GameEngine.apply(.chooseMode(playerID: id, mode: .hokum, trumpSuit: .spades), to: state)
+        let legal = LegalMoveValidator.legalCards(
+            hand: hand, trick: state.currentTrick, mode: .hokum, trumpSuit: .spades, rules: state.rules
+        )
+
+        let first = expert.chooseCard(hand: hand, legalCards: legal, state: state)
+        for _ in 0..<3 {
+            #expect(expert.chooseCard(hand: hand, legalCards: legal, state: state) == first)
+        }
+    }
+
+    /// مكافأة آخر أكلة (10) تُحتسب في حكم أيضًا، فمجموع جولة الحكم 162 لا 152.
+    /// كانت مقصورة على صن، فكان الفريقان يقتسمان 152 نقطة فقط.
+    @Test("مجموع جولة حكم كاملة يساوي 162 قبل المشاريع")
+    func fullHokumRoundTotalsTo162() throws {
+        let agent = SimpleBalootAgent()
+        var state = GameState.newLocalMatch()
+        state = try GameEngine.apply(.dealCards(seed: 2024), to: state)
+        let id = try #require(state.currentTurnPlayerID)
+        state = try GameEngine.apply(.chooseMode(playerID: id, mode: .hokum, trumpSuit: .hearts), to: state)
+        state = try GameEngine.advanceAIPlayers(state: state, agent: agent, maxSteps: 64)
+
+        while state.phase == .playing {
+            guard let currentID = state.currentTurnPlayerID, let hand = state.hands[currentID] else { break }
+            let legal = LegalMoveValidator.legalCards(
+                hand: hand, trick: state.currentTrick, mode: .hokum, trumpSuit: state.trumpSuit, rules: state.rules
+            )
+            let card = agent.chooseCard(hand: hand, legalCards: legal, state: state)
+            state = try GameEngine.apply(.playCard(playerID: currentID, card: card), to: state)
+            state = try GameEngine.advanceAIPlayers(state: state, agent: agent, maxSteps: 64)
+        }
+        state = try GameEngine.advanceAIPlayers(state: state, agent: agent, maxSteps: 64)
+
+        #expect(state.phase == .finished)
+        let total = try #require(state.lastRoundResult?.teamPoints.values.reduce(0, +))
+        // 162 نقطة جولة + 20 لكل مشروع بلوت مكتشف في التوزيعة.
+        #expect((total - 162) % 20 == 0, "المجموع \(total) لا يساوي 162 + مضاعفات 20")
+        #expect(total >= 162)
+    }
+
+    /// كان الفائز يُؤخذ من `Dictionary.max` وترتيب القاموس غير مضمون، فيختلف الفائز
+    /// المُعلن بين تشغيل وآخر عند تساوي الفريقين.
+    @Test("التعادل لا يُعلن فائزًا، والنتيجة ثابتة")
+    func tieYieldsNoWinnerDeterministically() {
+        let teamA = Team(name: "أ")
+        let teamB = Team(name: "ب")
+        let players = [
+            Player(name: "1", kind: .human, seat: .south, teamID: teamA.id),
+            Player(name: "2", kind: .ai, seat: .west, teamID: teamB.id),
+            Player(name: "3", kind: .ai, seat: .north, teamID: teamA.id),
+            Player(name: "4", kind: .ai, seat: .east, teamID: teamB.id)
+        ]
+        // جولة بلا أكلات: الفريقان على صفر ⇒ تعادل.
+        for _ in 0..<20 {
+            let result = ScoreCalculator.finalRoundScore(
+                completedTricks: [], originalHands: [:], players: players, teams: [teamA, teamB],
+                mode: .sun, trumpSuit: nil, rules: .standard
+            )
+            #expect(result.winningTeamID == nil)
+        }
+    }
+
+    /// الحقل كان معرّفًا في الحالة ولا يُكتب فيه أبدًا، فيقرأ صفرًا دائمًا.
+    @Test("نقاط الأكلات الجارية تتراكم لكل فريق")
+    func teamTrickPointsAccumulate() throws {
+        let agent = SimpleBalootAgent()
+        var state = GameState.newLocalMatch()
+        state = try GameEngine.apply(.dealCards(seed: 5), to: state)
+        let id = try #require(state.currentTurnPlayerID)
+        state = try GameEngine.apply(.chooseMode(playerID: id, mode: .sun, trumpSuit: nil), to: state)
+
+        while state.phase == .playing {
+            guard let currentID = state.currentTurnPlayerID, let hand = state.hands[currentID] else { break }
+            let legal = LegalMoveValidator.legalCards(
+                hand: hand, trick: state.currentTrick, mode: .sun, trumpSuit: nil, rules: state.rules
+            )
+            let card = agent.chooseCard(hand: hand, legalCards: legal, state: state)
+            state = try GameEngine.apply(.playCard(playerID: currentID, card: card), to: state)
+        }
+
+        // كل نقاط أوراق الصن (120) موزّعة على الفريقين، بلا مكافأة آخر أكلة ولا مضاعفة.
+        #expect(state.teamTrickPoints.values.reduce(0, +) == 120)
+    }
+
+    /// إعادة التوزيع فوق حالة مستعملة كانت تُبقي أكلات الجولة السابقة ونقاطها.
+    @Test("التوزيع من جديد يُصفّر أكلات ونقاط الجولة السابقة")
+    func dealingResetsPreviousRound() throws {
+        let agent = SimpleBalootAgent()
+        var state = GameState.newLocalMatch()
+        state = try GameEngine.apply(.dealCards(seed: 11), to: state)
+        let id = try #require(state.currentTurnPlayerID)
+        state = try GameEngine.apply(.chooseMode(playerID: id, mode: .sun, trumpSuit: nil), to: state)
+        // إكمال الجولة حتى نهايتها، ثم إعادة التوزيع فوق نفس الحالة.
+        while state.phase == .playing {
+            guard let currentID = state.currentTurnPlayerID, let hand = state.hands[currentID] else { break }
+            let legal = LegalMoveValidator.legalCards(
+                hand: hand, trick: state.currentTrick, mode: .sun, trumpSuit: nil, rules: state.rules
+            )
+            let card = agent.chooseCard(hand: hand, legalCards: legal, state: state)
+            state = try GameEngine.apply(.playCard(playerID: currentID, card: card), to: state)
+        }
+        state = try GameEngine.apply(.finishRound, to: state)
+        #expect(state.phase == .finished)
+        #expect(!state.completedTricks.isEmpty)
+        #expect(state.lastRoundResult != nil)
+
+        state = try GameEngine.apply(.dealCards(seed: 12), to: state)
+        #expect(state.completedTricks.isEmpty)
+        #expect(state.currentTrick == nil)
+        #expect(state.teamTrickPoints.isEmpty)
+        #expect(state.lastRoundResult == nil)
+        #expect(state.mode == nil)
+        #expect(state.trumpSuit == nil)
+        #expect(state.phase == .bidding)
+        for hand in state.hands.values {
+            #expect(hand.count == 8)
+        }
+    }
+}
