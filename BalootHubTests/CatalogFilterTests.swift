@@ -52,8 +52,34 @@ final class CatalogFilterTests: XCTestCase {
         XCTAssertTrue(result.isEmpty)
     }
 
-    func testCatalogHasExactlyTwelveSeedItems() {
-        XCTAssertEqual(makeItems().count, 12)
+    func testCatalogHasExactlySeventeenSeedItems() {
+        XCTAssertEqual(makeItems().count, 17)
+    }
+
+    func testCatalogIncludesAdvancedBalootReferences() {
+        let slugs = Set(makeItems().map(\.slug))
+
+        XCTAssertTrue(slugs.contains("baloot-ashkal"))
+        XCTAssertTrue(slugs.contains("baloot-gahwa-lock"))
+        XCTAssertTrue(slugs.contains("baloot-kaboot"))
+        XCTAssertTrue(slugs.contains("baloot-bidding-guide"))
+        XCTAssertTrue(slugs.contains("baloot-projects-reference"))
+    }
+
+    func testNewLearningReferencesAreRulesOnly() {
+        let items = makeItems()
+        let newItems = items.filter {
+            [
+                "baloot-ashkal",
+                "baloot-gahwa-lock",
+                "baloot-kaboot",
+                "baloot-bidding-guide",
+                "baloot-projects-reference"
+            ].contains($0.slug)
+        }
+
+        XCTAssertEqual(newItems.count, 5)
+        XCTAssertTrue(newItems.allSatisfy { !$0.isPlayable })
     }
 
     func testEveryItemHasAllTenStandardRuleSections() {
