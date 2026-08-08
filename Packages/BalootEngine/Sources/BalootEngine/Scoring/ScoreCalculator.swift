@@ -13,6 +13,9 @@ public struct RoundScoreResult: Sendable, Equatable, Codable {
 
 /// يحسب الفائز بكل أكلة، ويحسب النتيجة الإجمالية للجولة.
 public enum ScoreCalculator {
+    /// عدد الأكلات في جولة بلوت مكتملة (32 ورقة ÷ 4 لاعبين).
+    public static let tricksPerRound = 8
+
     /// يحدد الفائز بأكلة مكتملة (4 أوراق) حسب نوع الورقة المطلوب ونوع الحكم إن وُجد.
     public static func resolveTrickWinner(_ trick: Trick, mode: GameMode, trumpSuit: Suit?) -> Player.ID? {
         guard trick.isComplete, let requiredSuit = trick.requiredSuit else { return nil }
@@ -45,9 +48,13 @@ public enum ScoreCalculator {
                   let winner = players.first(where: { $0.id == winnerID }) else { continue }
 
             let cardPoints = trick.playedCards.reduce(0) { $0 + $1.card.points(mode: mode, trumpSuit: trumpSuit) }
-            // مكافأة آخر أكلة تُطبَّق في نمط صن فقط، لأن مجموع نقاط الأوراق في حكم (152) مكتمل بذاته.
+            // مكافأة آخر أكلة (10) تُطبَّق في النمطين معًا، وهي القاعدة المتفق عليها في البلوت:
+            // حكم = 152 نقطة أوراق + 10 آخر أكلة = 162، وصن = 120 + 10 = 130 (تُضاعف ⇒ 260).
+            // كانت تُطبَّق في صن فقط، فكان مجموع جولة الحكم 152 بدل 162.
+            // تُحتسب على الأكلة الثامنة تحديدًا لا على آخر عنصر في المصفوفة، حتى لا تُمنح
+            // المكافأة لجولة غير مكتملة.
             var bonus = 0
-            if mode == .sun, index == completedTricks.count - 1 {
+            if index == completedTricks.count - 1, completedTricks.count == Self.tricksPerRound {
                 bonus = rules.lastTrickBonus
             }
             totals[winner.teamID, default: 0] += cardPoints + bonus
@@ -98,7 +105,22 @@ public enum ScoreCalculator {
             totals[key] = value * modeMultiplier * multiplier.rawValue
         }
 
-        let winningTeamID = totals.max { $0.value < $1.value }?.key
-        return RoundScoreResult(teamPoints: totals, winningTeamID: winningTeamID)
+        // الترتيب داخل القاموس غير مضمون في Swift، فأخذ `max` منه مباشرة كان يعطي
+        // فائزًا مختلفًا بين تشغيل وآخر عند تساوي الفريقين. نمرّ على `teams` بترتيبها
+        // الثابت، ونُعيد `nil` صراحةً عند التعادل بدل ترجيح أحدهما عشوائيًا.
+        var winningTeamID: Team.ID?
+        var bestPoints = Int.min
+        var isTied = false
+        for team in teams {
+            let points = totals[team.id] ?? 0
+            if points > bestPoints {
+                bestPoints = points
+                winningTeamID = team.id
+                isTied = false
+            } else if points == bestPoints {
+                isTied = true
+            }
+        }
+        return RoundScoreResult(teamPoints: totals, winningTeamID: isTied ? nil : winningTeamID)
     }
 }

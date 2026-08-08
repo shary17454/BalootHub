@@ -4,7 +4,7 @@ import Foundation
 /// لذا تُفصل هنا كإعدادات قابلة للتبديل بدل تثبيتها داخل منطق المحرك.
 ///
 /// الإعداد الافتراضي الموثّق المستخدم في هذا التطبيق:
-/// - مجموع نقاط جولة "حكم" = 152 نقطة (بدون مضاعفة).
+/// - مجموع نقاط جولة "حكم" = 162 نقطة (152 من الأوراق + 10 لآخر أكلة، بدون مضاعفة).
 /// - مجموع نقاط جولة "صن" الأساسي = 130 نقطة (120 من الأوراق + 10 لآخر أكلة)،
 ///   وتُضاعف افتراضيًا (×2) لتصبح 260 عند الاحتساب باتجاه هدف المباراة،
 ///   وهو ما يجعل هدف 152 منطقيًا كافتراضي مشترك بين النمطين.
@@ -12,7 +12,7 @@ import Foundation
 /// - في نمط حكم، إن لم تتوفر ورقة من نفس النوع ولدى اللاعب حكم، يجب "القطع" بالحكم.
 /// - "التعلية" (اللعب بحكم أعلى من الحكم المطروح) غير إلزامية في هذا الإعداد الافتراضي.
 public struct BalootRulesConfiguration: Codable, Sendable, Equatable {
-    /// إجمالي نقاط جولة الحكم قبل أي مضاعفة.
+    /// إجمالي نقاط جولة الحكم قبل أي مضاعفة (152 ورقة + 10 آخر أكلة).
     public var hokumRoundTotal: Int
     /// إجمالي نقاط جولة الصن الأساسي قبل المضاعفة.
     public var sunRoundBaseTotal: Int
@@ -26,7 +26,7 @@ public struct BalootRulesConfiguration: Codable, Sendable, Equatable {
     public var mustOvertrump: Bool
 
     public init(
-        hokumRoundTotal: Int = 152,
+        hokumRoundTotal: Int = 162,
         sunRoundBaseTotal: Int = 130,
         sunScoreMultiplier: Int = 2,
         lastTrickBonus: Int = 10,
