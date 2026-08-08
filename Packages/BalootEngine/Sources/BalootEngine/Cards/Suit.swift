@@ -9,6 +9,19 @@ public enum Suit: String, CaseIterable, Codable, Sendable, Identifiable {
 
     public var id: String { rawValue }
 
+    /// ترتيب ثابت للنوع لا يتغيّر بين تشغيلات التطبيق.
+    ///
+    /// `hashValue` في Swift مبذور عشوائيًا مع كل عملية تشغيل، فلا يصلح أساسًا
+    /// لأي حساب يُفترض أن يكون قابلًا لإعادة الإنتاج (مثل بذور محاكاة الوكيل الخبير).
+    public var ordinal: Int {
+        switch self {
+        case .hearts: 0
+        case .diamonds: 1
+        case .clubs: 2
+        case .spades: 3
+        }
+    }
+
     /// الرمز المعروض للورقة.
     public var symbol: String {
         switch self {

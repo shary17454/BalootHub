@@ -13,6 +13,20 @@ public enum Rank: String, CaseIterable, Codable, Sendable, Identifiable {
 
     public var id: String { rawValue }
 
+    /// ترتيب ثابت للقيمة لا يتغيّر بين تشغيلات التطبيق (انظر ``Suit/ordinal``).
+    public var ordinal: Int {
+        switch self {
+        case .seven: 0
+        case .eight: 1
+        case .nine: 2
+        case .jack: 3
+        case .queen: 4
+        case .king: 5
+        case .ten: 6
+        case .ace: 7
+        }
+    }
+
     /// الرمز المختصر المعروض على الورقة.
     public var shortLabel: String {
         switch self {
@@ -35,7 +49,11 @@ public enum Rank: String, CaseIterable, Codable, Sendable, Identifiable {
     public static let hokumNonTrumpOrder: [Rank] = [.seven, .eight, .nine, .jack, .queen, .king, .ten, .ace]
 
     /// ترتيب القوة في نمط "حكم" لنوع الحكم نفسه، من الأضعف إلى الأقوى.
-    /// الشايب (J) هو الأقوى، يليه الـ9.
+    /// "الولد" (J) هو الأقوى، يليه التسعة.
+    ///
+    /// ملاحظة تسمية: "الشايب" في البلوت هو **الملك (K)** لا الولد، و"البنت" هي (Q)،
+    /// ولذلك يتكوّن مشروع "البلوت" من الملك والبنت من نوع الحكم — انظر
+    /// ``ScoreCalculator/detectBelotProjects(originalHands:players:mode:trumpSuit:)``.
     public static let hokumTrumpOrder: [Rank] = [.seven, .eight, .queen, .king, .ten, .ace, .nine, .jack]
 
     /// نقاط الورقة في نمط "صن".
@@ -62,7 +80,7 @@ public enum Rank: String, CaseIterable, Codable, Sendable, Identifiable {
         }
     }
 
-    /// نقاط الورقة في نمط "حكم" لنوع الحكم نفسه (الشايب وبنت الحكم لهما قيمة أعلى).
+    /// نقاط الورقة في نمط "حكم" لنوع الحكم نفسه (الولد والتسعة لهما قيمة أعلى).
     public var hokumTrumpPoints: Int {
         switch self {
         case .jack: 20
