@@ -43,14 +43,37 @@ final class BalootGameViewModel {
     private let rules: BalootRulesConfiguration
     /// مهمة أدوار اللاعبين الآليين الجارية، تُلغى قبل بدء غيرها حتى لا تتداخل
     /// جولتان (مثلًا عند الضغط على "جولة جديدة" أثناء لعب الآليين).
-    private var aiTask: Task<Void, Never>?
+    ///
+    /// `nonisolated(unsafe)` لأن `deinit` في صنف `@MainActor` سياق غير معزول فلا يصل
+    /// إلى خصائصه. لا يوجد سباق فعلي: كل قراءة وكتابة أخرى تجري على `@MainActor`،
+    /// و`deinit` لا يُستدعى إلا بعد زوال آخر مرجع للكائن.
+    nonisolated(unsafe) private var aiTask: Task<Void, Never>?
+
+    /// أسماء اللاعبين والفريقين مترجمة حسب لغة الجهاز، بدل الأسماء العربية
+    /// المثبّتة داخل المحرك.
+    private static var localizedNames: GameState.LocalMatchNames {
+        GameState.LocalMatchNames(
+            human: "أنت".localized,
+            teamOurs: "فريقنا".localized,
+            teamOpponent: "الخصم".localized,
+            aiWest: "آلي غرب".localized,
+            aiNorth: "آلي شمال".localized,
+            aiEast: "آلي شرق".localized
+        )
+    }
 
     init(variant: BalootGameVariant = .free, rules: BalootRulesConfiguration = .standard) {
-        let initial = GameState.newLocalMatch(rules: rules)
+        let initial = GameState.newLocalMatch(names: Self.localizedNames, rules: rules)
         self.state = initial
         self.variant = variant
         self.rules = rules
         self.humanPlayerID = initial.players.first { $0.kind == .human }?.id ?? UUID()
+    }
+
+    deinit {
+        // بدون هذا تبقى مهمة اللاعبين الآليين تدور بعد إغلاق الشاشة إلى أن تكتشف
+        // أن `self` تحرّر، فتُهدر حسابات محاكاة كاملة بلا فائدة.
+        aiTask?.cancel()
     }
 
     var humanID: Player.ID { humanPlayerID }
@@ -99,8 +122,17 @@ final class BalootGameViewModel {
         return LegalMoveValidator.legalCards(hand: humanHand, trick: state.currentTrick, mode: mode, trumpSuit: state.trumpSuit, rules: state.rules)
     }
 
+    /// مجموعة الأوراق القانونية للبحث السريع من الواجهة.
+    ///
+    /// كانت الواجهة تستدعي ``legalCardsForHuman`` داخل حلقة الأوراق، فيُعاد فرز اليد
+    /// وحساب القانونية ثمان مرات في كل إعادة رسم. تُحسب هنا مرة واحدة، والبحث في
+    /// `Set` ثابت الزمن.
+    var legalCardIDsForHuman: Set<PlayingCard> {
+        Set(legalCardsForHuman)
+    }
+
     func startNewMatch() {
-        state = GameState.newLocalMatch(rules: rules)
+        state = GameState.newLocalMatch(names: Self.localizedNames, rules: rules)
         errorMessage = nil
         deal()
     }
@@ -145,24 +177,46 @@ final class BalootGameViewModel {
             state = try GameEngine.apply(action, to: state)
             errorMessage = nil
         } catch {
-            errorMessage = "تعذّرت هذه الحركة، حاول مرة أخرى."
+            errorMessage = Self.moveErrorMessage
         }
     }
+
+    // رسائل الخطأ تُمرَّر إلى `Text(String)` الذي لا يترجم تلقائيًا (بخلاف السلاسل
+    // الحرفية داخل `Text`)، فتُترجم هنا صراحةً عبر `.localized`.
+    private static var moveErrorMessage: String { "تعذّرت هذه الحركة، حاول مرة أخرى.".localized }
+    private static var aiErrorMessage: String { "حدث خطأ أثناء لعب اللاعبين الآليين.".localized }
 
     /// يلعب اللاعبون الآليون **ورقة واحدة في كل خطوة** مع فاصل زمني قصير، بدل تنفيذ
     /// كل أدوارهم في إطار واحد. بدون هذا الفاصل تظهر أوراق اللاعبين الثلاثة وتُحسم
     /// الأكلة في نفس اللحظة التي يلعب فيها المستخدم، فلا يرى ما حدث إطلاقًا.
+    ///
+    /// اختيار الورقة نفسه يُحسب على خيط خلفي عبر ``GameEngine/nextAIAction(state:agent:)``:
+    /// ``ExpertBalootAgent`` بحث بالمحاكاة يستغرق زمنًا محسوسًا، وحسابه على خيط الواجهة
+    /// كان يُجمّدها قبل كل نقلة آلية. التطبيق على الحالة يبقى على `@MainActor`.
     private func advanceAI() {
         aiTask?.cancel()
+        let agent = self.agent
         aiTask = Task { [weak self] in
             while !Task.isCancelled {
                 guard let self, self.isAITurn else { break }
+
+                let snapshot = self.state
+                let action = await Task.detached(priority: .userInitiated) {
+                    GameEngine.nextAIAction(state: snapshot, agent: agent)
+                }.value
+
+                // الحالة قد تكون تغيّرت أثناء الحساب (جولة جديدة مثلًا)، فنتوقف بدل
+                // تطبيق فعل محسوب على حالة قديمة.
+                guard !Task.isCancelled, let action else { break }
+
                 do {
-                    self.state = try GameEngine.advanceAIPlayers(state: self.state, agent: self.agent, maxSteps: 1)
+                    self.state = try GameEngine.apply(action, to: self.state)
+                    self.errorMessage = nil
                 } catch {
-                    self.errorMessage = "حدث خطأ أثناء لعب اللاعبين الآليين."
+                    self.errorMessage = Self.aiErrorMessage
                     return
                 }
+
                 if self.state.phase == .scoring {
                     self.finishRoundIfNeeded()
                     return
@@ -170,7 +224,7 @@ final class BalootGameViewModel {
                 try? await Task.sleep(for: .milliseconds(Self.aiMoveDelayMilliseconds))
             }
             // قد تكون الجولة اكتملت بورقة المستخدم الأخيرة دون أي دور آلي بعدها.
-            self?.finishRoundIfNeeded()
+            if !Task.isCancelled { self?.finishRoundIfNeeded() }
         }
     }
 
