@@ -8,8 +8,13 @@ public enum TurnManager {
         return players.first { $0.seat == nextSeat }
     }
 
-    /// اللاعب الذي يبدأ الأكلة التالية، وهو اللاعب التالي لقائد الأكلة السابقة.
-    public static func leaderOfNextTrick(previousLeaderSeat: SeatPosition, players: [Player]) -> Player? {
-        players.first { $0.seat == previousLeaderSeat }
+    /// اللاعب الجالس في موقع معيّن.
+    ///
+    /// كان اسم هذه الدالة `leaderOfNextTrick` وتوثيقها يَعِد بـ"اللاعب التالي لقائد الأكلة
+    /// السابقة"، بينما جسدها يُعيد اللاعب الجالس في الموقع المُمرَّر نفسه. قائد الأكلة
+    /// التالية في البلوت هو **الفائز** بالأكلة السابقة، ويحدده ``GameEngine`` مباشرة،
+    /// فصار الاسم يصف ما تفعله الدالة فعلًا بدل وعد لا تفي به.
+    public static func player(at seat: SeatPosition, in players: [Player]) -> Player? {
+        players.first { $0.seat == seat }
     }
 }

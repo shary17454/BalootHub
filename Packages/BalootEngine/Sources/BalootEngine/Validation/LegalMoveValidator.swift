@@ -21,10 +21,19 @@ public enum LegalMoveValidator {
 
         let sameSuitCards = hand.filter { $0.suit == requiredSuit }
 
+        // يجب التلزيم بنفس نوع الورقة الأولى إن توفر.
         if !sameSuitCards.isEmpty {
-            // يجب التلزيم بنفس نوع الورقة الأولى إن توفر.
-            if mode == .hokum, requiredSuit != trumpSuit, rules.mustOvertrump {
-                return sameSuitCards
+            // التعلية داخل نوع الحكم نفسه: إن كان المطلوب هو الحكم وكانت التعلية إلزامية،
+            // فلا يُسمح باللعب بحكم أدنى من أعلى حكم مطروح ما دام لدى اللاعب ما يعلوه.
+            if mode == .hokum, requiredSuit == trumpSuit, rules.mustOvertrump,
+               let highestInTrick = trick.playedCards
+                   .filter({ $0.card.suit == trumpSuit })
+                   .map({ $0.card.strength(mode: mode, trumpSuit: trumpSuit) })
+                   .max() {
+                let higher = sameSuitCards.filter {
+                    $0.strength(mode: mode, trumpSuit: trumpSuit) > highestInTrick
+                }
+                if !higher.isEmpty { return higher }
             }
             return sameSuitCards
         }
