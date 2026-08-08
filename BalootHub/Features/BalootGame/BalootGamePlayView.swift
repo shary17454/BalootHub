@@ -116,23 +116,18 @@ struct BalootGamePlayView: View {
     private var biddingPanel: some View {
         VStack(spacing: AppSpacing.md) {
             if viewModel.isHumanTurn {
-                Text(viewModel.variant == .hokumOnly ? "اختر نوع الحكم" : "اختر نمط الجولة")
+                // تعبير شرطي ⇒ `Text(String)` الذي لا يترجم تلقائيًا، بخلاف السلسلة
+                // الحرفية داخل `Text`. لذا تُترجم كل حالة صراحةً.
+                Text(viewModel.variant == .hokumOnly ? "اختر نوع الحكم".localized : "اختر نمط الجولة".localized)
                     .font(AppTypography.headline)
-                HStack(spacing: AppSpacing.sm) {
-                    if viewModel.variant.allowsSun {
-                        Button("صن") { viewModel.chooseMode(.sun, trumpSuit: nil) }
-                            .buttonStyle(.borderedProminent)
-                            .tint(AppColor.accent)
-                    }
-                    if viewModel.variant.allowsHokum {
-                        ForEach(Suit.allCases) { suit in
-                            Button {
-                                viewModel.chooseMode(.hokum, trumpSuit: suit)
-                            } label: {
-                                Text("حكم \(suit.symbol)")
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .tint(AppColor.primary)
+                // خمسة أزرار في صف واحد تتزاحم على الشاشات الضيقة وعند تكبير الخط،
+                // فتتوزّع تلقائيًا على أكثر من سطر بدل قصّها.
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: AppSpacing.sm) { bidButtons }
+                    VStack(spacing: AppSpacing.sm) {
+                        if viewModel.variant.allowsSun { sunBidButton }
+                        if viewModel.variant.allowsHokum {
+                            HStack(spacing: AppSpacing.sm) { hokumBidButtons }
                         }
                     }
                 }
@@ -142,6 +137,33 @@ struct BalootGamePlayView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    @ViewBuilder
+    private var bidButtons: some View {
+        if viewModel.variant.allowsSun { sunBidButton }
+        if viewModel.variant.allowsHokum { hokumBidButtons }
+    }
+
+    private var sunBidButton: some View {
+        Button("صن") { viewModel.chooseMode(.sun, trumpSuit: nil) }
+            .buttonStyle(.borderedProminent)
+            .tint(AppColor.accent)
+    }
+
+    @ViewBuilder
+    private var hokumBidButtons: some View {
+        ForEach(Suit.allCases) { suit in
+            Button {
+                viewModel.chooseMode(.hokum, trumpSuit: suit)
+            } label: {
+                Text("حكم \(suit.symbol)")
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(AppColor.primary)
+            // الرمز وحده لا يكفي قارئ الشاشة، فيُنطق اسم النوع كاملًا.
+            .accessibilityLabel("\("حكم".localized) \(suit.spokenName)")
+        }
     }
 
     private var resultPanel: some View {
@@ -203,24 +225,24 @@ struct BalootGamePlayView: View {
     private var humanHandArea: some View {
         VStack(spacing: AppSpacing.xs) {
             if viewModel.state.phase == .playing {
-                Text(viewModel.isHumanTurn ? "دورك الآن" : "بانتظار بقية اللاعبين")
+                Text(viewModel.isHumanTurn ? "دورك الآن".localized : "بانتظار بقية اللاعبين".localized)
                     .font(AppTypography.subheadline)
                     .foregroundStyle(viewModel.isHumanTurn ? AppColor.success : AppColor.textSecondary)
             }
             ScrollView(.horizontal, showsIndicators: false) {
+                // تُحسب مرة واحدة لكل إعادة رسم بدل مرة لكل ورقة.
+                let legalCards = viewModel.legalCardIDsForHuman
+                let isHumanTurn = viewModel.isHumanTurn
                 HStack(spacing: AppSpacing.xs) {
                     ForEach(viewModel.humanHand) { card in
-                        let isLegal = viewModel.legalCardsForHuman.contains(card)
+                        let isPlayable = isHumanTurn && legalCards.contains(card)
                         CardView(card: card)
-                            .opacity(viewModel.isHumanTurn && isLegal ? 1 : 0.4)
+                            .opacity(isPlayable ? 1 : 0.4)
                             .onTapGesture {
-                                if viewModel.isHumanTurn, isLegal {
-                                    viewModel.play(card)
-                                }
+                                if isPlayable { viewModel.play(card) }
                             }
                             .accessibilityAddTraits(.isButton)
-                            .accessibilityLabel(card.displayLabel)
-                            .accessibilityHint(viewModel.isHumanTurn && isLegal ? "اضغط للعب هذه الورقة" : "لا يمكن لعب هذه الورقة الآن")
+                            .accessibilityHint(isPlayable ? "اضغط للعب هذه الورقة" : "لا يمكن لعب هذه الورقة الآن")
                     }
                 }
                 .padding(.vertical, AppSpacing.xs)
@@ -246,8 +268,11 @@ struct BalootGamePlayView: View {
     }
 
     private func trickCount(for seat: SeatPosition) -> Int {
-        guard let player = viewModel.state.player(at: seat) else { return 0 }
-        return viewModel.state.completedTricks.filter { $0.winnerPlayerID != nil && viewModel.state.player(id: $0.winnerPlayerID!)?.teamID == player.teamID }.count
+        guard let teamID = viewModel.state.player(at: seat)?.teamID else { return 0 }
+        return viewModel.state.completedTricks.count { trick in
+            guard let winnerID = trick.winnerPlayerID else { return false }
+            return viewModel.state.player(id: winnerID)?.teamID == teamID
+        }
     }
 }
 
@@ -274,6 +299,11 @@ private struct SeatIndicator: View {
 private struct CardView: View {
     let card: PlayingCard
 
+    /// الإطار الثابت كان يقصّ النص عند تكبير الخط، فيتمدّد الآن مع Dynamic Type
+    /// انطلاقًا من نفس المقاس الأصلي عند الحجم القياسي.
+    @ScaledMetric(relativeTo: .body) private var cardWidth: CGFloat = 46
+    @ScaledMetric(relativeTo: .body) private var cardHeight: CGFloat = 64
+
     private var isRed: Bool { card.suit.isRed }
 
     var body: some View {
@@ -284,9 +314,11 @@ private struct CardView: View {
                 .font(.caption)
         }
         .foregroundStyle(isRed ? AppColor.danger : AppColor.textPrimary)
-        .frame(width: 46, height: 64)
+        .minimumScaleFactor(0.6)
+        .frame(width: cardWidth, height: cardHeight)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.small))
         .overlay(RoundedRectangle(cornerRadius: AppRadius.small).stroke(AppColor.border, lineWidth: 1))
+        .accessibilityLabel(card.accessibilityName)
     }
 
     private var symbolName: String {

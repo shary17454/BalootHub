@@ -11,14 +11,16 @@ enum CatalogFilter: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    /// العناوين تُمرَّر إلى `Text(String)` عبر رقاقات الفلترة، وهذا التمرير لا يترجم
+    /// تلقائيًا، فتُترجم هنا صراحةً كما في بقية الأنواع المعروضة.
     var title: String {
         switch self {
-        case .all: "الكل"
-        case .balootGame: "بلوت"
-        case .balootTool: "أدوات"
-        case .otherCardGame: "ألعاب ورق"
-        case .playable: "متاح للعب"
-        case .rulesOnly: "قواعد فقط"
+        case .all: "الكل".localized
+        case .balootGame: "بلوت".localized
+        case .balootTool: "أدوات".localized
+        case .otherCardGame: "ألعاب ورق".localized
+        case .playable: "متاح للعب".localized
+        case .rulesOnly: "قواعد فقط".localized
         }
     }
 }
