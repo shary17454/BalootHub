@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [main]
 
+# دفعة جديدة على نفس الفرع تُلغي التشغيل السابق بدل مزاحمته على العدّادات.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   engine-tests:
     name: اختبارات محرك BalootEngine
@@ -29,17 +34,41 @@ jobs:
         id: sim
         run: |
           NAME=$(xcrun simctl list devices available | grep -m1 -oE 'iPhone [0-9A-Za-z]+( Pro| Plus)?( Max)?' | head -1)
+          if [ -z "$NAME" ]; then
+            echo "لم يُعثر على أي محاكي آيفون متاح" >&2
+            xcrun simctl list devices available >&2
+            exit 1
+          fi
           echo "استخدام المحاكي: $NAME"
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
-      - name: بناء المشروع
-        run: >
-          xcodebuild build
-          -scheme BalootHub
-          -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.name }}"
-          -skipMacroValidation
-      - name: تشغيل الاختبارات
+
+      # `xcodebuild test` يبني الهدف بنفسه، فخطوة بناء منفصلة قبله كانت تُضاعف
+      # زمن التشغيل بلا فائدة.
+      - name: بناء واختبار (Debug)
         run: >
           xcodebuild test
           -scheme BalootHub
           -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.name }}"
+          -resultBundlePath TestResults.xcresult
           -skipMacroValidation
+          CODE_SIGNING_ALLOWED=NO
+
+      # نسخة Release تسلك مسارات كود مختلفة (`#if DEBUG` في PurchaseManager يفتح
+      # اللعبة بلا شراء) وتُبنى بتحسينات مختلفة، فبناء Debug وحده لا يثبت أن نسخة
+      # المتجر تُبنى أصلًا.
+      - name: بناء نسخة Release
+        run: >
+          xcodebuild build
+          -scheme BalootHub
+          -configuration Release
+          -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.name }}"
+          -skipMacroValidation
+          CODE_SIGNING_ALLOWED=NO
+
+      - name: رفع نتائج الاختبارات عند الفشل
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults.xcresult
+          retention-days: 7
