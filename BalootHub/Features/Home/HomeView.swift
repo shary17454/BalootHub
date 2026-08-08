@@ -53,14 +53,34 @@ struct HomeView: View {
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-            Text("أهلًا بك في البلوت")
-                .font(AppTypography.largeTitle)
-                .foregroundStyle(AppColor.textPrimary)
-            Text("كل ألعاب البلوت وأدواتها وألعاب الورق المفضّلة في مكان واحد")
-                .font(AppTypography.subheadline)
-                .foregroundStyle(AppColor.textSecondary)
+        ZStack(alignment: .bottomLeading) {
+            Image("BalootMajlisHero")
+                .resizable()
+                .scaledToFill()
+                .frame(maxWidth: .infinity)
+                .frame(height: 210)
+                .clipped()
+                .overlay {
+                    LinearGradient(
+                        colors: [.black.opacity(0.08), .black.opacity(0.64)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                }
+
+            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                Text("أهلًا بك في البلوت")
+                    .font(AppTypography.largeTitle)
+                    .foregroundStyle(.white)
+                Text("كل ألعاب البلوت وأدواتها وألعاب الورق المفضّلة في مكان واحد")
+                    .font(AppTypography.subheadline)
+                    .foregroundStyle(.white.opacity(0.88))
+            }
+            .padding(AppSpacing.md)
         }
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.large))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("صورة مجلس بلوت مع أوراق لعب وقهوة عربية")
     }
 
     private func continueSessionCard(_ session: ScoreSession) -> some View {
