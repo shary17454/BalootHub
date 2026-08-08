@@ -57,15 +57,51 @@ public struct GameState: Codable, Sendable {
         self.lastRoundResult = lastRoundResult
     }
 
+    /// الأسماء المعروضة للاعبين والفريقين في جولة محلية.
+    ///
+    /// المحرك لا يعرف شيئًا عن الترجمة، فكانت هذه الأسماء مثبّتة بالعربية داخله وتظهر
+    /// كما هي حتى عند تشغيل التطبيق بالإنجليزية. صارت تُحقن من طبقة الواجهة بدلًا من
+    /// ذلك، مع إبقاء القيم العربية افتراضًا حتى لا يتغيّر أي مستدعٍ قائم.
+    public struct LocalMatchNames: Sendable {
+        public var human: String
+        public var teamOurs: String
+        public var teamOpponent: String
+        public var aiWest: String
+        public var aiNorth: String
+        public var aiEast: String
+
+        public init(
+            human: String = "أنت",
+            teamOurs: String = "فريقنا",
+            teamOpponent: String = "الخصم",
+            aiWest: String = "آلي غرب",
+            aiNorth: String = "آلي شمال",
+            aiEast: String = "آلي شرق"
+        ) {
+            self.human = human
+            self.teamOurs = teamOurs
+            self.teamOpponent = teamOpponent
+            self.aiWest = aiWest
+            self.aiNorth = aiNorth
+            self.aiEast = aiEast
+        }
+
+        public static let arabicDefault = LocalMatchNames()
+    }
+
     /// ينشئ حالة إعداد جاهزة بأربعة لاعبين (لاعب واحد إنسان والباقي آليون) وفريقين.
-    public static func newLocalMatch(humanName: String = "أنت", rules: BalootRulesConfiguration = .standard, dealerSeat: SeatPosition = .east) -> GameState {
-        let teamA = Team(name: "فريقنا")
-        let teamB = Team(name: "الخصم")
+    public static func newLocalMatch(
+        names: LocalMatchNames = .arabicDefault,
+        rules: BalootRulesConfiguration = .standard,
+        dealerSeat: SeatPosition = .east
+    ) -> GameState {
+        let teamA = Team(name: names.teamOurs)
+        let teamB = Team(name: names.teamOpponent)
         let players = [
-            Player(name: humanName, kind: .human, seat: .south, teamID: teamA.id),
-            Player(name: "آلي غرب", kind: .ai, seat: .west, teamID: teamB.id),
-            Player(name: "آلي شمال", kind: .ai, seat: .north, teamID: teamA.id),
-            Player(name: "آلي شرق", kind: .ai, seat: .east, teamID: teamB.id)
+            Player(name: names.human, kind: .human, seat: .south, teamID: teamA.id),
+            Player(name: names.aiWest, kind: .ai, seat: .west, teamID: teamB.id),
+            Player(name: names.aiNorth, kind: .ai, seat: .north, teamID: teamA.id),
+            Player(name: names.aiEast, kind: .ai, seat: .east, teamID: teamB.id)
         ]
         return GameState(players: players, teams: [teamA, teamB], rules: rules, dealerSeat: dealerSeat)
     }
