@@ -463,4 +463,19 @@ struct EngineRegressionTests {
             #expect(hand.count == 8)
         }
     }
+
+    @Test("الجولة المحلية البشرية تنشئ أربعة لاعبين بلا آليين")
+    func localHumanMatchUsesFourHumanPlayers() throws {
+        var state = GameState.newLocalHumanMatch()
+
+        #expect(state.players.count == 4)
+        #expect(state.players.allSatisfy { $0.kind == .human })
+
+        state = try GameEngine.apply(.dealCards(seed: 2026), to: state)
+
+        #expect(state.phase == .bidding)
+        #expect(state.currentTurnPlayerID != nil)
+        #expect(state.hands.count == 4)
+        #expect(state.hands.values.allSatisfy { $0.count == 8 })
+    }
 }

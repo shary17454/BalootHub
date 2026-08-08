@@ -15,11 +15,11 @@ import Foundation
 /// لا بحث أعمى. المولّد العشوائي ببذرة ثابتة، فالقرارات قابلة للتكرار والاختبار.
 public struct ExpertBalootAgent: BalootAgent, Sendable {
     /// عدد التوزيعات المحتملة التي تُحاكى لكل ورقة مرشحة.
-    /// 12 توزيعة توازن بين القوة وسرعة الاستجابة على الجهاز.
+    /// 8 توزيعات توازن بين القوة وسرعة الاستجابة على الجهاز.
     private let samples: Int
     private let policy = SmartBalootAgent()
 
-    public init(samples: Int = 12) {
+    public init(samples: Int = 8) {
         self.samples = max(1, samples)
     }
 

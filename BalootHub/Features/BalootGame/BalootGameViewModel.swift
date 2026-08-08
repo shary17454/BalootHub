@@ -29,17 +29,45 @@ enum BalootGameVariant: Equatable {
     var allowsHokum: Bool { self != .sunOnly }
 }
 
+enum BalootTableMode: String, CaseIterable, Identifiable {
+    case versusAI
+    case localHumans
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .versusAI: "ضد الذكاء".localized
+        case .localHumans: "أربعة أشخاص".localized
+        }
+    }
+
+    var subtitle: String {
+        switch self {
+        case .versusAI: "أنت وثلاثة لاعبين آليين".localized
+        case .localHumans: "تمرير الجهاز بين اللاعبين".localized
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .versusAI: "cpu.fill"
+        case .localHumans: "person.4.fill"
+        }
+    }
+}
+
 @Observable
 @MainActor
 final class BalootGameViewModel {
     private(set) var state: GameState
     private(set) var errorMessage: String?
+    private(set) var tableMode: BalootTableMode
 
     let variant: BalootGameVariant
     // الوكيل الخبير يحاكي توزيعات محتملة قبل كل ورقة (انظر ``ExpertBalootAgent``).
-    // 12 عيّنة تعطي أقوى لعب مع بقاء زمن القرار أقل بكثير من فاصل عرض الورقة.
-    private let agent: BalootAgent = ExpertBalootAgent(samples: 12)
-    private let humanPlayerID: Player.ID
+    // 8 عينات تحافظ على قوة اللعب مع تقليل زمن القرار على أجهزة المستخدمين.
+    private let agent: BalootAgent = ExpertBalootAgent(samples: 8)
     private let rules: BalootRulesConfiguration
     /// مهمة أدوار اللاعبين الآليين الجارية، تُلغى قبل بدء غيرها حتى لا تتداخل
     /// جولتان (مثلًا عند الضغط على "جولة جديدة" أثناء لعب الآليين).
@@ -51,23 +79,41 @@ final class BalootGameViewModel {
 
     /// أسماء اللاعبين والفريقين مترجمة حسب لغة الجهاز، بدل الأسماء العربية
     /// المثبّتة داخل المحرك.
-    private static var localizedNames: GameState.LocalMatchNames {
-        GameState.LocalMatchNames(
+    private static func localizedNames(for tableMode: BalootTableMode) -> GameState.LocalMatchNames {
+        let westName: String
+        let northName: String
+        let eastName: String
+        switch tableMode {
+        case .versusAI:
+            westName = "آلي غرب".localized
+            northName = "آلي شمال".localized
+            eastName = "آلي شرق".localized
+        case .localHumans:
+            westName = "غرب".localized
+            northName = "شمال".localized
+            eastName = "شرق".localized
+        }
+
+        return GameState.LocalMatchNames(
             human: "أنت".localized,
             teamOurs: "فريقنا".localized,
             teamOpponent: "الخصم".localized,
-            aiWest: "آلي غرب".localized,
-            aiNorth: "آلي شمال".localized,
-            aiEast: "آلي شرق".localized
+            aiWest: westName,
+            aiNorth: northName,
+            aiEast: eastName
         )
     }
 
-    init(variant: BalootGameVariant = .free, rules: BalootRulesConfiguration = .standard) {
-        let initial = GameState.newLocalMatch(names: Self.localizedNames, rules: rules)
+    init(
+        variant: BalootGameVariant = .free,
+        tableMode: BalootTableMode = .versusAI,
+        rules: BalootRulesConfiguration = .standard
+    ) {
+        let initial = Self.makeInitialState(tableMode: tableMode, rules: rules)
         self.state = initial
         self.variant = variant
+        self.tableMode = tableMode
         self.rules = rules
-        self.humanPlayerID = initial.players.first { $0.kind == .human }?.id ?? UUID()
     }
 
     deinit {
@@ -76,16 +122,29 @@ final class BalootGameViewModel {
         aiTask?.cancel()
     }
 
-    var humanID: Player.ID { humanPlayerID }
+    var activeHumanID: Player.ID? {
+        guard let playerID = state.currentTurnPlayerID,
+              state.player(id: playerID)?.kind == .human
+        else { return state.players.first { $0.kind == .human }?.id }
+        return playerID
+    }
 
     var isHumanTurn: Bool {
         state.phase == .bidding || state.phase == .playing
-            ? state.currentTurnPlayerID == humanPlayerID
+            ? activeHumanID == state.currentTurnPlayerID
             : false
     }
 
+    var currentTurnPlayerName: String {
+        guard let playerID = state.currentTurnPlayerID,
+              let player = state.player(id: playerID)
+        else { return "" }
+        return player.name
+    }
+
     var humanHand: [PlayingCard] {
-        (state.hands[humanPlayerID] ?? []).sorted { lhs, rhs in
+        guard let activeHumanID else { return [] }
+        return (state.hands[activeHumanID] ?? []).sorted { lhs, rhs in
             if lhs.suit != rhs.suit { return lhs.suit.rawValue < rhs.suit.rawValue }
             return lhs.strength(mode: state.mode ?? .sun, trumpSuit: state.trumpSuit) < rhs.strength(mode: state.mode ?? .sun, trumpSuit: state.trumpSuit)
         }
@@ -132,9 +191,16 @@ final class BalootGameViewModel {
     }
 
     func startNewMatch() {
-        state = GameState.newLocalMatch(names: Self.localizedNames, rules: rules)
+        state = Self.makeInitialState(tableMode: tableMode, rules: rules)
         errorMessage = nil
         deal()
+    }
+
+    func setTableMode(_ newMode: BalootTableMode) {
+        guard tableMode != newMode else { return }
+        aiTask?.cancel()
+        tableMode = newMode
+        startNewMatch()
     }
 
     func deal() {
@@ -148,18 +214,20 @@ final class BalootGameViewModel {
     private func applyForcedModeIfNeeded() {
         guard variant == .sunOnly,
               state.phase == .bidding,
-              state.currentTurnPlayerID == humanPlayerID
+              activeHumanID == state.currentTurnPlayerID
         else { return }
         chooseMode(.sun, trumpSuit: nil)
     }
 
     func chooseMode(_ mode: GameMode, trumpSuit: Suit?) {
-        perform(.chooseMode(playerID: humanPlayerID, mode: mode, trumpSuit: trumpSuit))
+        guard let activeHumanID else { return }
+        perform(.chooseMode(playerID: activeHumanID, mode: mode, trumpSuit: trumpSuit))
         advanceAI()
     }
 
     func play(_ card: PlayingCard) {
-        perform(.playCard(playerID: humanPlayerID, card: card))
+        guard let activeHumanID else { return }
+        perform(.playCard(playerID: activeHumanID, card: card))
         advanceAI()
     }
 
@@ -185,6 +253,15 @@ final class BalootGameViewModel {
     // الحرفية داخل `Text`)، فتُترجم هنا صراحةً عبر `.localized`.
     private static var moveErrorMessage: String { "تعذّرت هذه الحركة، حاول مرة أخرى.".localized }
     private static var aiErrorMessage: String { "حدث خطأ أثناء لعب اللاعبين الآليين.".localized }
+
+    private static func makeInitialState(tableMode: BalootTableMode, rules: BalootRulesConfiguration) -> GameState {
+        switch tableMode {
+        case .versusAI:
+            return GameState.newLocalMatch(names: localizedNames(for: tableMode), rules: rules)
+        case .localHumans:
+            return GameState.newLocalHumanMatch(names: localizedNames(for: tableMode), rules: rules)
+        }
+    }
 
     /// يلعب اللاعبون الآليون **ورقة واحدة في كل خطوة** مع فاصل زمني قصير، بدل تنفيذ
     /// كل أدوارهم في إطار واحد. بدون هذا الفاصل تظهر أوراق اللاعبين الثلاثة وتُحسم

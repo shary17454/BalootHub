@@ -54,12 +54,15 @@ struct BalootGamePlayView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    isPresentingRules = true
-                } label: {
-                    Image(systemName: "book.fill")
+                HStack {
+                    tableModeMenu
+                    Button {
+                        isPresentingRules = true
+                    } label: {
+                        Image(systemName: "book.fill")
+                    }
+                    .accessibilityLabel("عرض القواعد")
                 }
-                .accessibilityLabel("عرض القواعد")
             }
             ToolbarItem(placement: .topBarLeading) {
                 Button(role: .destructive) {
@@ -89,6 +92,21 @@ struct BalootGamePlayView: View {
         })
     }
 
+    private var tableModeMenu: some View {
+        Menu {
+            ForEach(BalootTableMode.allCases) { mode in
+                Button {
+                    viewModel.setTableMode(mode)
+                } label: {
+                    Label(mode.title, systemImage: mode.systemImage)
+                }
+            }
+        } label: {
+            Image(systemName: viewModel.tableMode.systemImage)
+        }
+        .accessibilityLabel("نمط اللاعبين")
+    }
+
     private var table: some View {
         RoundedRectangle(cornerRadius: AppRadius.large)
             .fill(RadialGradient(colors: [AppColor.primary.opacity(0.35), AppColor.primary.opacity(0.12)], center: .center, startRadius: 10, endRadius: 400))
@@ -100,6 +118,9 @@ struct BalootGamePlayView: View {
             SeatIndicator(name: playerName(.north), isCurrentTurn: isCurrentSeat(.north), cardCount: cardCount(.north))
             Spacer()
             VStack {
+                Label(viewModel.tableMode.title, systemImage: viewModel.tableMode.systemImage)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
                 Text("الأكلات")
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
@@ -225,7 +246,7 @@ struct BalootGamePlayView: View {
     private var humanHandArea: some View {
         VStack(spacing: AppSpacing.xs) {
             if viewModel.state.phase == .playing {
-                Text(viewModel.isHumanTurn ? "دورك الآن".localized : "بانتظار بقية اللاعبين".localized)
+                Text(turnStatusText)
                     .font(AppTypography.subheadline)
                     .foregroundStyle(viewModel.isHumanTurn ? AppColor.success : AppColor.textSecondary)
             }
@@ -248,6 +269,13 @@ struct BalootGamePlayView: View {
                 .padding(.vertical, AppSpacing.xs)
             }
         }
+    }
+
+    private var turnStatusText: String {
+        if viewModel.tableMode == .localHumans {
+            return "\("الدور الآن".localized): \(viewModel.currentTurnPlayerName)"
+        }
+        return viewModel.isHumanTurn ? "دورك الآن".localized : "بانتظار بقية اللاعبين".localized
     }
 
     private var errorAlertBinding: Binding<Bool> {

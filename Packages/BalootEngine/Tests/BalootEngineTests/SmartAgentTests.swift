@@ -176,12 +176,14 @@ struct ExpertAgentTests {
     /// زمن القرار يجب أن يبقى قصيرًا حتى لا يبدو اللعب متجمدًا على الجهاز.
     @Test("زمن اتخاذ القرار مقبول للاستخدام على الجهاز")
     func decisionLatencyIsAcceptable() throws {
-        let expert = ExpertBalootAgent(samples: 12)
+        let expert = ExpertBalootAgent(samples: 8)
         var state = GameState.newLocalMatch()
         state = try GameEngine.apply(.dealCards(seed: 42), to: state)
         let id = try #require(state.currentTurnPlayerID)
-        let hand = try #require(state.hands[id])
+        _ = try #require(state.hands[id])
         state = try GameEngine.apply(.chooseMode(playerID: id, mode: .sun, trumpSuit: nil), to: state)
+        let playingID = try #require(state.currentTurnPlayerID)
+        let hand = try #require(state.hands[playingID])
 
         let legal = LegalMoveValidator.legalCards(hand: hand, trick: state.currentTrick, mode: .sun, trumpSuit: nil, rules: state.rules)
         let start = Date()

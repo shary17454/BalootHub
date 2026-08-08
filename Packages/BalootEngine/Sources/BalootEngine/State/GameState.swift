@@ -95,13 +95,31 @@ public struct GameState: Codable, Sendable {
         rules: BalootRulesConfiguration = .standard,
         dealerSeat: SeatPosition = .east
     ) -> GameState {
+        newMatch(names: names, rules: rules, dealerSeat: dealerSeat, playerKinds: [.human, .ai, .ai, .ai])
+    }
+
+    /// ينشئ جولة تمرير محلية: كل المقاعد بشر، وتُستخدم عند لعب أربعة أشخاص على نفس الجهاز.
+    public static func newLocalHumanMatch(
+        names: LocalMatchNames = .arabicDefault,
+        rules: BalootRulesConfiguration = .standard,
+        dealerSeat: SeatPosition = .east
+    ) -> GameState {
+        newMatch(names: names, rules: rules, dealerSeat: dealerSeat, playerKinds: [.human, .human, .human, .human])
+    }
+
+    private static func newMatch(
+        names: LocalMatchNames,
+        rules: BalootRulesConfiguration,
+        dealerSeat: SeatPosition,
+        playerKinds: [PlayerKind]
+    ) -> GameState {
         let teamA = Team(name: names.teamOurs)
         let teamB = Team(name: names.teamOpponent)
         let players = [
-            Player(name: names.human, kind: .human, seat: .south, teamID: teamA.id),
-            Player(name: names.aiWest, kind: .ai, seat: .west, teamID: teamB.id),
-            Player(name: names.aiNorth, kind: .ai, seat: .north, teamID: teamA.id),
-            Player(name: names.aiEast, kind: .ai, seat: .east, teamID: teamB.id)
+            Player(name: names.human, kind: playerKinds[safe: 0] ?? .human, seat: .south, teamID: teamA.id),
+            Player(name: names.aiWest, kind: playerKinds[safe: 1] ?? .ai, seat: .west, teamID: teamB.id),
+            Player(name: names.aiNorth, kind: playerKinds[safe: 2] ?? .ai, seat: .north, teamID: teamA.id),
+            Player(name: names.aiEast, kind: playerKinds[safe: 3] ?? .ai, seat: .east, teamID: teamB.id)
         ]
         return GameState(players: players, teams: [teamA, teamB], rules: rules, dealerSeat: dealerSeat)
     }
@@ -112,5 +130,11 @@ public struct GameState: Codable, Sendable {
 
     public func player(id: Player.ID) -> Player? {
         players.first { $0.id == id }
+    }
+}
+
+private extension Array {
+    subscript(safe index: Index) -> Element? {
+        indices.contains(index) ? self[index] : nil
     }
 }
