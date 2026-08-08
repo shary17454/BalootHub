@@ -14,19 +14,29 @@ enum PersistenceController {
     }
 
     /// الحاوية الرئيسية المستخدمة في التطبيق الفعلي، مع تخزين محلي دائم على الجهاز فقط.
+    ///
+    /// عند تعذّر فتح المخزن الدائم (ترحيل فاشل بعد تحديث، أو ملف تالف على الجهاز)
+    /// كان `fatalError` يعني انهيار التطبيق عند كل تشغيل بلا أي مخرج للمستخدم.
+    /// البديل هنا تدرّج آمن: نحاول الدائم، ثم نسقط إلى مخزن داخل الذاكرة يُبقي التطبيق
+    /// صالحًا للاستخدام في تلك الجلسة بدل أن يصبح غير قابل للفتح إطلاقًا.
     static func makeContainer() -> ModelContainer {
         let configuration = ModelConfiguration(schema: appSchema, isStoredInMemoryOnly: false)
-        do {
-            let container = try ModelContainer(for: appSchema, configurations: [configuration])
+        if let container = try? ModelContainer(for: appSchema, configurations: [configuration]) {
             CatalogSeeder.seedIfNeeded(container: container)
             SettingsRepository.ensureSettingsExist(container: container)
             return container
-        } catch {
-            fatalError("تعذّر إنشاء حاوية SwiftData: \(error.localizedDescription)")
         }
+
+        // المخزن الدائم غير صالح للفتح: نكمل بمخزن مؤقت بدل إسقاط التطبيق.
+        // البيانات المحلية تبقى على القرص كما هي ولا تُمسح، فيمكن استرجاعها لاحقًا
+        // إن أصلح تحديثٌ قادمٌ سببَ الفشل.
+        assertionFailure("تعذّر فتح مخزن SwiftData الدائم؛ تم التحويل إلى مخزن داخل الذاكرة")
+        return makePreviewContainer()
     }
 
-    /// حاوية داخل الذاكرة فقط، تُستخدم في SwiftUI Previews واختبارات الوحدات.
+    /// حاوية داخل الذاكرة فقط، تُستخدم في SwiftUI Previews واختبارات الوحدات،
+    /// وكمخزن احتياطي في ``makeContainer()`` عند تعذّر فتح المخزن الدائم.
+    /// فشلها يعني تعذّر تشغيل التطبيق أصلًا، فيبقى `fatalError` هنا هو التصرف الصحيح.
     static func makePreviewContainer(seed: Bool = true) -> ModelContainer {
         let configuration = ModelConfiguration(schema: appSchema, isStoredInMemoryOnly: true)
         do {
