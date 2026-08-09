@@ -2,6 +2,20 @@ import Foundation
 import StoreKit
 import Observation
 
+private final class PurchaseTaskBox: @unchecked Sendable {
+    private var task: Task<Void, Never>?
+
+    func replace(with newTask: Task<Void, Never>) {
+        task?.cancel()
+        task = newTask
+    }
+
+    func cancel() {
+        task?.cancel()
+        task = nil
+    }
+}
+
 /// معرّف منتج الشراء غير المستهلك (Non-Consumable) لفتح اللعبة الكاملة بدفعة واحدة.
 enum ProductID {
     static let fullGameUnlock = "app.balooThub.ios.fullgame"
@@ -18,18 +32,16 @@ final class PurchaseManager {
     private(set) var isLoading = false
     private(set) var errorMessage: String?
 
-    /// `nonisolated(unsafe)` ليصل إليها `deinit` (سياق غير معزول في صنف `@MainActor`).
-    /// لا سباق: تُكتب مرة واحدة في `init` ولا تُقرأ إلا في `deinit` بعد زوال آخر مرجع.
-    nonisolated(unsafe) private var transactionListenerTask: Task<Void, Never>?
+    private let transactionListenerTask = PurchaseTaskBox()
 
     init() {
-        transactionListenerTask = listenForTransactionUpdates()
+        transactionListenerTask.replace(with: listenForTransactionUpdates())
     }
 
     deinit {
         // `Transaction.updates` تيار لا ينتهي؛ بدون إلغاء صريح تبقى المهمة حيّة
         // بعد تحرّر المدير وتستهلك تحديثات لا مستقبِل لها.
-        transactionListenerTask?.cancel()
+        transactionListenerTask.cancel()
     }
 
     func start() async {

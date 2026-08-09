@@ -2,6 +2,20 @@ import Foundation
 import Observation
 import BalootEngine
 
+private final class GameTaskBox: @unchecked Sendable {
+    private var task: Task<Void, Never>?
+
+    func replace(with newTask: Task<Void, Never>) {
+        task?.cancel()
+        task = newTask
+    }
+
+    func cancel() {
+        task?.cancel()
+        task = nil
+    }
+}
+
 /// يربط واجهة شاشة اللعب بمحرك BalootEngine. لا يحتوي أي منطق قواعد؛
 /// كل قرار قانوني أو احتساب نقاط يمر عبر المحرك نفسه.
 /// نمط الجولة المسموح به في شاشة اللعب، مشتقًا من عنصر الكتالوج الذي فُتحت منه.
@@ -71,11 +85,7 @@ final class BalootGameViewModel {
     private let rules: BalootRulesConfiguration
     /// مهمة أدوار اللاعبين الآليين الجارية، تُلغى قبل بدء غيرها حتى لا تتداخل
     /// جولتان (مثلًا عند الضغط على "جولة جديدة" أثناء لعب الآليين).
-    ///
-    /// `nonisolated(unsafe)` لأن `deinit` في صنف `@MainActor` سياق غير معزول فلا يصل
-    /// إلى خصائصه. لا يوجد سباق فعلي: كل قراءة وكتابة أخرى تجري على `@MainActor`،
-    /// و`deinit` لا يُستدعى إلا بعد زوال آخر مرجع للكائن.
-    nonisolated(unsafe) private var aiTask: Task<Void, Never>?
+    private let aiTask = GameTaskBox()
 
     /// أسماء اللاعبين والفريقين مترجمة حسب لغة الجهاز، بدل الأسماء العربية
     /// المثبّتة داخل المحرك.
@@ -119,7 +129,7 @@ final class BalootGameViewModel {
     deinit {
         // بدون هذا تبقى مهمة اللاعبين الآليين تدور بعد إغلاق الشاشة إلى أن تكتشف
         // أن `self` تحرّر، فتُهدر حسابات محاكاة كاملة بلا فائدة.
-        aiTask?.cancel()
+        aiTask.cancel()
     }
 
     var activeHumanID: Player.ID? {
@@ -198,7 +208,7 @@ final class BalootGameViewModel {
 
     func setTableMode(_ newMode: BalootTableMode) {
         guard tableMode != newMode else { return }
-        aiTask?.cancel()
+        aiTask.cancel()
         tableMode = newMode
         startNewMatch()
     }
@@ -271,9 +281,9 @@ final class BalootGameViewModel {
     /// ``ExpertBalootAgent`` بحث بالمحاكاة يستغرق زمنًا محسوسًا، وحسابه على خيط الواجهة
     /// كان يُجمّدها قبل كل نقلة آلية. التطبيق على الحالة يبقى على `@MainActor`.
     private func advanceAI() {
-        aiTask?.cancel()
+        aiTask.cancel()
         let agent = self.agent
-        aiTask = Task { [weak self] in
+        aiTask.replace(with: Task { [weak self] in
             while !Task.isCancelled {
                 guard let self, self.isAITurn else { break }
 
@@ -302,7 +312,7 @@ final class BalootGameViewModel {
             }
             // قد تكون الجولة اكتملت بورقة المستخدم الأخيرة دون أي دور آلي بعدها.
             if !Task.isCancelled { self?.finishRoundIfNeeded() }
-        }
+        })
     }
 
     /// هل الدور الحالي للاعب آلي في مرحلة تسمح باللعب؟

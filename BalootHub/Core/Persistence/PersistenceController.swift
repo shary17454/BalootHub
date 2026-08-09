@@ -20,6 +20,8 @@ enum PersistenceController {
     /// البديل هنا تدرّج آمن: نحاول الدائم، ثم نسقط إلى مخزن داخل الذاكرة يُبقي التطبيق
     /// صالحًا للاستخدام في تلك الجلسة بدل أن يصبح غير قابل للفتح إطلاقًا.
     static func makeContainer() -> ModelContainer {
+        createApplicationSupportDirectoryIfNeeded()
+
         let configuration = ModelConfiguration(schema: appSchema, isStoredInMemoryOnly: false)
         if let container = try? ModelContainer(for: appSchema, configurations: [configuration]) {
             CatalogSeeder.seedIfNeeded(container: container)
@@ -49,5 +51,20 @@ enum PersistenceController {
         } catch {
             fatalError("تعذّر إنشاء حاوية المعاينة: \(error.localizedDescription)")
         }
+    }
+
+    /// ينشئ مجلد Application Support قبل أن يحاول SwiftData إنشاء `default.store`.
+    /// CoreData يستطيع التعافي أحيانًا إذا كان المجلد مفقودًا، لكنه يملأ سجل التشغيل
+    /// بأخطاء file-write-create؛ تجهيز المجلد مسبقًا يجعل الإقلاع أنظف وأكثر توقعًا.
+    private static func createApplicationSupportDirectoryIfNeeded() {
+        guard let applicationSupportURL = FileManager.default.urls(
+            for: .applicationSupportDirectory,
+            in: .userDomainMask
+        ).first else { return }
+
+        try? FileManager.default.createDirectory(
+            at: applicationSupportURL,
+            withIntermediateDirectories: true
+        )
     }
 }
