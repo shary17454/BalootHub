@@ -38,7 +38,13 @@ struct BalootGamePlayView: View {
                 topBar
                 Spacer()
                 if viewModel.state.phase == .bidding {
-                    biddingPanel
+                    if viewModel.usesFullBidding {
+                        fullBiddingPanel
+                    } else {
+                        biddingPanel
+                    }
+                } else if viewModel.state.phase == .declaring {
+                    declarationPanel
                 } else if viewModel.state.phase == .finished {
                     resultPanel
                 }
@@ -187,6 +193,186 @@ struct BalootGamePlayView: View {
         }
     }
 
+    // MARK: - دورة المزايدة الكاملة
+
+    private var fullBiddingPanel: some View {
+        VStack(spacing: AppSpacing.md) {
+            if let upCard = viewModel.upCard {
+                VStack(spacing: AppSpacing.xxs) {
+                    Text("الورقة المكشوفة")
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColor.textSecondary)
+                    CardView(card: upCard)
+                }
+            }
+
+            Text(biddingStageTitle)
+                .font(AppTypography.headline)
+                .multilineTextAlignment(.center)
+
+            if viewModel.currentMultiplier != .none {
+                StatusBadge(viewModel.currentMultiplier.arabicName, systemImage: "flame.fill", tint: AppColor.danger)
+            }
+
+            if viewModel.isAwaitingHumanMultiplierDecision {
+                multiplierButtons
+            } else if viewModel.isHumanTurn && !viewModel.legalBidsForHuman.isEmpty {
+                bidOptionButtons
+            } else {
+                LoadingStateView(message: "بقية اللاعبين يزايدون…")
+            }
+
+            if !viewModel.bidHistory.isEmpty {
+                bidHistoryStrip
+            }
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private var biddingStageTitle: String {
+        switch viewModel.biddingStage {
+        case .firstRound: "الجولة الأولى: حكم على الورقة المكشوفة أو صن أو بس".localized
+        case .secondRound: "جولة الأشكال: اختر أي لون للحكم أو صن أو بس".localized
+        case .doubling: "جولة المضاعفة".localized
+        case .completed, .voided: "انتهت المزايدة".localized
+        }
+    }
+
+    @ViewBuilder
+    private var bidOptionButtons: some View {
+        // الخيارات تصل إلى ستة في جولة الأشكال، فتُلفّ تلقائيًا بدل أن تتزاحم.
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: AppSpacing.sm) { bidOptions }
+            VStack(spacing: AppSpacing.sm) {
+                HStack(spacing: AppSpacing.sm) { bidOptions }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var bidOptions: some View {
+        ForEach(Array(viewModel.legalBidsForHuman.enumerated()), id: \.offset) { _, bid in
+            Button {
+                viewModel.placeBid(bid)
+            } label: {
+                Text(bidLabel(bid))
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(bidTint(bid))
+            .accessibilityLabel(bidAccessibilityLabel(bid))
+        }
+    }
+
+    private func bidLabel(_ bid: Bid) -> String {
+        switch bid {
+        case .pass: "بس".localized
+        case .sun: "صن".localized
+        case .hokum(let suit): "\("حكم".localized) \(suit.symbol)"
+        }
+    }
+
+    private func bidAccessibilityLabel(_ bid: Bid) -> String {
+        switch bid {
+        case .pass: "بس، تمرير الدور".localized
+        case .sun: "شراء صن".localized
+        case .hokum(let suit): "\("شراء حكم".localized) \(suit.spokenName)"
+        }
+    }
+
+    private func bidTint(_ bid: Bid) -> Color {
+        switch bid {
+        case .pass: AppColor.textSecondary
+        case .sun: AppColor.accent
+        case .hokum: AppColor.primary
+        }
+    }
+
+    @ViewBuilder
+    private var multiplierButtons: some View {
+        VStack(spacing: AppSpacing.sm) {
+            if let declarerName = viewModel.declarerName {
+                Text("المشتري: \(declarerName)")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+            }
+            HStack(spacing: AppSpacing.sm) {
+                if let next = viewModel.nextAvailableMultiplier {
+                    Button(next.arabicName) { viewModel.raiseMultiplier(to: next) }
+                        .buttonStyle(.borderedProminent)
+                        .tint(AppColor.danger)
+                }
+                if viewModel.canLockMultiplier {
+                    Button("قفل") { viewModel.lockMultiplier() }
+                        .buttonStyle(.bordered)
+                        .tint(AppColor.accent)
+                }
+                Button("بس") { viewModel.passMultiplier() }
+                    .buttonStyle(.bordered)
+            }
+        }
+    }
+
+    private var bidHistoryStrip: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: AppSpacing.xs) {
+                ForEach(Array(viewModel.bidHistory.enumerated()), id: \.offset) { _, entry in
+                    Text("\(entry.playerName): \(bidLabel(entry.bid))")
+                        .font(.caption2)
+                        .padding(.horizontal, AppSpacing.xs)
+                        .padding(.vertical, 2)
+                        .background(AppColor.surfaceElevated, in: Capsule())
+                }
+            }
+        }
+        .accessibilityLabel("سجل المزايدة")
+    }
+
+    // MARK: - إعلان المشاريع
+
+    private var declarationPanel: some View {
+        VStack(spacing: AppSpacing.md) {
+            Text("إعلان المشاريع").font(AppTypography.headline)
+
+            if viewModel.isAwaitingHumanDeclaration {
+                let projects = viewModel.declarableProjectsForHuman
+                if projects.isEmpty {
+                    Text("لا يوجد مشروع في يدك")
+                        .font(AppTypography.subheadline)
+                        .foregroundStyle(AppColor.textSecondary)
+                    Button("متابعة") { viewModel.skipDeclaration() }
+                        .buttonStyle(.borderedProminent)
+                        .tint(AppColor.primary)
+                } else {
+                    ForEach(projects) { project in
+                        HStack {
+                            Text(project.kind.arabicName)
+                            Spacer()
+                            Text(project.cards.map(\.displayLabel).joined(separator: " "))
+                                .font(AppTypography.caption)
+                                .foregroundStyle(AppColor.textSecondary)
+                            Text("\(project.points)")
+                                .font(AppTypography.headline)
+                                .foregroundStyle(AppColor.success)
+                        }
+                        .accessibilityElement(children: .combine)
+                    }
+                    HStack(spacing: AppSpacing.sm) {
+                        Button("أعلن الكل") { viewModel.declareProjects(projects) }
+                            .buttonStyle(.borderedProminent)
+                            .tint(AppColor.success)
+                        Button("لا أعلن") { viewModel.skipDeclaration() }
+                            .buttonStyle(.bordered)
+                    }
+                }
+            } else {
+                LoadingStateView(message: "بقية اللاعبين يعلنون مشاريعهم…")
+            }
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
     private var resultPanel: some View {
         VStack(spacing: AppSpacing.sm) {
             Text("انتهت الجولة").font(AppTypography.headline)
@@ -204,6 +390,42 @@ struct BalootGamePlayView: View {
                         .foregroundStyle(AppColor.success)
                         .font(AppTypography.subheadline)
                 }
+                if result.multiplier != .none {
+                    StatusBadge(result.multiplier.arabicName, systemImage: "flame.fill", tint: AppColor.danger)
+                }
+                if let kabootID = result.kabootTeamID,
+                   let team = viewModel.state.teams.first(where: { $0.id == kabootID }) {
+                    Label("كبوت لصالح \(team.name)", systemImage: "sparkles")
+                        .font(AppTypography.subheadline)
+                        .foregroundStyle(AppColor.accent)
+                }
+                if result.didDeclarerFail {
+                    Label("طاح المشتري: كل النقاط للخصم", systemImage: "exclamationmark.triangle.fill")
+                        .font(AppTypography.subheadline)
+                        .foregroundStyle(AppColor.danger)
+                }
+                if !result.awardedProjects.isEmpty {
+                    VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                        Text("المشاريع المحتسَبة")
+                            .font(AppTypography.caption)
+                            .foregroundStyle(AppColor.textSecondary)
+                        ForEach(result.awardedProjects) { project in
+                            HStack {
+                                Text(viewModel.state.player(id: project.playerID)?.name ?? "")
+                                Text(project.kind.arabicName)
+                                Spacer()
+                                Text("\(project.points)")
+                            }
+                            .font(AppTypography.caption)
+                            .accessibilityElement(children: .combine)
+                        }
+                    }
+                }
+            } else if viewModel.biddingStage == .voided {
+                Text("مرّ الجميع في الجولتين — دورة ميتة بلا نقاط")
+                    .font(AppTypography.subheadline)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .multilineTextAlignment(.center)
             }
             Button("جولة جديدة") {
                 viewModel.startNewMatch()
@@ -260,10 +482,15 @@ struct BalootGamePlayView: View {
                         CardView(card: card)
                             .opacity(isPlayable ? 1 : 0.4)
                             .onTapGesture {
-                                if isPlayable { viewModel.play(card) }
+                                // الضغط على ورقة ممنوعة يشرح السبب بدل أن يُتجاهل بصمت.
+                                if isPlayable {
+                                    viewModel.play(card)
+                                } else if isHumanTurn {
+                                    viewModel.explainIllegalMove(card)
+                                }
                             }
                             .accessibilityAddTraits(.isButton)
-                            .accessibilityHint(isPlayable ? "اضغط للعب هذه الورقة" : "لا يمكن لعب هذه الورقة الآن")
+                            .accessibilityHint(isPlayable ? "اضغط للعب هذه الورقة" : "لا يمكن لعب هذه الورقة الآن، اضغط لمعرفة السبب")
                     }
                 }
                 .padding(.vertical, AppSpacing.xs)

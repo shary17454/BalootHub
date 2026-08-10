@@ -21,6 +21,20 @@ public struct GameState: Codable, Sendable {
     public var actionHistory: [GameAction]
     public var lastRoundResult: RoundScoreResult?
 
+    /// حالة دورة المزايدة الكاملة (الورقة المكشوفة، المزايدات، المشتري، المضاعف).
+    public var bidding: BiddingState
+    /// الأوراق التي لم تُوزَّع بعد في النمط الكامل (تُسلَّم بعد استقرار المزايدة).
+    ///
+    /// جزء من الحالة لا متغيّر خارجي، حتى تبقى إعادة التشغيل من سجل الأفعال منتجةً
+    /// نفس التوزيع تمامًا بنفس البذرة.
+    public var undealtCards: [PlayingCard]
+    /// المشاريع التي أعلنها اللاعبون فعلًا في مرحلة الإعلان.
+    public var declaredProjects: [Project]
+    /// المشاريع المحتسَبة بعد المفاضلة بين الفريقين، تُملأ عند إنهاء الجولة.
+    public var awardedProjects: [Project]
+    /// الفريق الذي أخذ الأكلات الثماني كلها (كبوت)، إن وُجد.
+    public var kabootTeamID: Team.ID?
+
     public init(
         phase: GamePhase = .setup,
         players: [Player] = [],
@@ -37,7 +51,12 @@ public struct GameState: Codable, Sendable {
         teamTrickPoints: [Team.ID: Int] = [:],
         roundNumber: Int = 1,
         actionHistory: [GameAction] = [],
-        lastRoundResult: RoundScoreResult? = nil
+        lastRoundResult: RoundScoreResult? = nil,
+        bidding: BiddingState = BiddingState(),
+        undealtCards: [PlayingCard] = [],
+        declaredProjects: [Project] = [],
+        awardedProjects: [Project] = [],
+        kabootTeamID: Team.ID? = nil
     ) {
         self.phase = phase
         self.players = players
@@ -55,6 +74,40 @@ public struct GameState: Codable, Sendable {
         self.roundNumber = roundNumber
         self.actionHistory = actionHistory
         self.lastRoundResult = lastRoundResult
+        self.bidding = bidding
+        self.undealtCards = undealtCards
+        self.declaredProjects = declaredProjects
+        self.awardedProjects = awardedProjects
+        self.kabootTeamID = kabootTeamID
+    }
+
+    // MARK: - فك ترميز متسامح
+
+    /// أي حقل أُضيف بعد حفظ الحالة يأخذ قيمته الافتراضية بدل إفشال فك الترميز كله.
+    /// حالات محفوظة (Replay، مباراة متوقفة) يجب أن تبقى قابلة للفتح بعد أي توسعة.
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        phase = try container.decode(GamePhase.self, forKey: .phase)
+        players = try container.decode([Player].self, forKey: .players)
+        teams = try container.decode([Team].self, forKey: .teams)
+        rules = try container.decodeIfPresent(BalootRulesConfiguration.self, forKey: .rules) ?? .standard
+        mode = try container.decodeIfPresent(GameMode.self, forKey: .mode)
+        trumpSuit = try container.decodeIfPresent(Suit.self, forKey: .trumpSuit)
+        dealerSeat = try container.decode(SeatPosition.self, forKey: .dealerSeat)
+        hands = try container.decode([Player.ID: [PlayingCard]].self, forKey: .hands)
+        originalHands = try container.decode([Player.ID: [PlayingCard]].self, forKey: .originalHands)
+        currentTrick = try container.decodeIfPresent(Trick.self, forKey: .currentTrick)
+        completedTricks = try container.decode([Trick].self, forKey: .completedTricks)
+        currentTurnPlayerID = try container.decodeIfPresent(Player.ID.self, forKey: .currentTurnPlayerID)
+        teamTrickPoints = try container.decode([Team.ID: Int].self, forKey: .teamTrickPoints)
+        roundNumber = try container.decode(Int.self, forKey: .roundNumber)
+        actionHistory = try container.decode([GameAction].self, forKey: .actionHistory)
+        lastRoundResult = try container.decodeIfPresent(RoundScoreResult.self, forKey: .lastRoundResult)
+        bidding = try container.decodeIfPresent(BiddingState.self, forKey: .bidding) ?? BiddingState()
+        undealtCards = try container.decodeIfPresent([PlayingCard].self, forKey: .undealtCards) ?? []
+        declaredProjects = try container.decodeIfPresent([Project].self, forKey: .declaredProjects) ?? []
+        awardedProjects = try container.decodeIfPresent([Project].self, forKey: .awardedProjects) ?? []
+        kabootTeamID = try container.decodeIfPresent(Team.ID.self, forKey: .kabootTeamID)
     }
 
     /// الأسماء المعروضة للاعبين والفريقين في جولة محلية.
@@ -130,6 +183,41 @@ public struct GameState: Codable, Sendable {
 
     public func player(id: Player.ID) -> Player? {
         players.first { $0.id == id }
+    }
+
+    /// اللاعب المشتري في الجولة الحالية.
+    public var declarer: Player? {
+        bidding.declarerID.flatMap { player(id: $0) }
+    }
+
+    /// معرّف فريق المشتري.
+    public var declaringTeamID: Team.ID? { declarer?.teamID }
+
+    /// الفريق المقابل لفريق معيّن.
+    public func opposingTeamID(of teamID: Team.ID) -> Team.ID? {
+        teams.first { $0.id != teamID }?.id
+    }
+
+    /// شريك لاعب معيّن (اللاعب الآخر في نفس الفريق).
+    public func partner(of playerID: Player.ID) -> Player? {
+        guard let me = player(id: playerID) else { return nil }
+        return players.first { $0.id != me.id && $0.teamID == me.teamID }
+    }
+
+    /// اللاعبون بترتيب الأدوار ابتداءً من مقعد معيّن.
+    public func playersInTurnOrder(startingAt seat: SeatPosition) -> [Player] {
+        var result: [Player] = []
+        var current = seat
+        for _ in 0..<players.count {
+            if let match = player(at: current) { result.append(match) }
+            current = current.next
+        }
+        return result
+    }
+
+    /// اللاعب الذي يبدأ المزايدة وأول أكلة: صاحب الدور بعد الموزّع.
+    public var firstToActPlayerID: Player.ID? {
+        player(at: dealerSeat.next)?.id
     }
 }
 

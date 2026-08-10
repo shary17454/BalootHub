@@ -190,7 +190,7 @@ struct ScoringTests {
 
     @Test("مجموع نقاط جولة صن كاملة يساوي 260 بعد المضاعفة الافتراضية")
     func fullSunRoundTotalsTo260() throws {
-        var state = GameState.newLocalMatch(rules: .standard)
+        var state = GameState.newLocalMatch(rules: .simpleBidding)
         state = try GameEngine.apply(.dealCards(seed: 7), to: state)
         guard let humanID = state.currentTurnPlayerID else {
             Issue.record("لا يوجد لاعب دور مزايدة")
@@ -235,7 +235,7 @@ struct ScoringTests {
 struct GameEngineTests {
     @Test("لا يمكن لعب ورقة خارج الدور")
     func cannotPlayOutOfTurn() throws {
-        var state = GameState.newLocalMatch()
+        var state = GameState.newLocalMatch(rules: .simpleBidding)
         state = try GameEngine.apply(.dealCards(seed: 1), to: state)
         guard let currentID = state.currentTurnPlayerID else {
             Issue.record("لا يوجد دور حالي")
@@ -253,7 +253,7 @@ struct GameEngineTests {
 
     @Test("لعب ورقة غير قانونية يرفضه المحرك")
     func illegalCardIsRejected() throws {
-        var state = GameState.newLocalMatch()
+        var state = GameState.newLocalMatch(rules: .simpleBidding)
         state = try GameEngine.apply(.dealCards(seed: 3), to: state)
         guard let currentID = state.currentTurnPlayerID else {
             Issue.record("لا يوجد دور حالي")
@@ -283,7 +283,7 @@ struct GameEngineTests {
 
     @Test("إعادة التشغيل من سجل الأفعال يُنتج نفس الحالة النهائية")
     func replayFromActionHistoryMatchesOriginal() throws {
-        let initial = GameState.newLocalMatch()
+        let initial = GameState.newLocalMatch(rules: .simpleBidding)
         var state = initial
         state = try GameEngine.apply(.dealCards(seed: 11), to: state)
         guard let currentID = state.currentTurnPlayerID else {
@@ -302,7 +302,7 @@ struct GameEngineTests {
     @Test("اللاعب الآلي البسيط يختار دائمًا ورقة من ضمن الأوراق القانونية")
     func simpleAgentAlwaysChoosesLegalCard() throws {
         for seed: UInt64 in [1, 2, 3, 4, 5] {
-            var state = GameState.newLocalMatch()
+            var state = GameState.newLocalMatch(rules: .simpleBidding)
             state = try GameEngine.apply(.dealCards(seed: seed), to: state)
             guard let currentID = state.currentTurnPlayerID, let hand = state.hands[currentID] else { continue }
             let agent = SimpleBalootAgent()
@@ -341,7 +341,7 @@ struct EngineRegressionTests {
     @Test("قرار الوكيل الخبير قابل للتكرار بنفس المدخلات")
     func expertDecisionIsReproducible() throws {
         let expert = ExpertBalootAgent(samples: 6)
-        var state = GameState.newLocalMatch()
+        var state = GameState.newLocalMatch(rules: .simpleBidding)
         state = try GameEngine.apply(.dealCards(seed: 99), to: state)
         let id = try #require(state.currentTurnPlayerID)
         let hand = try #require(state.hands[id])
@@ -361,7 +361,7 @@ struct EngineRegressionTests {
     @Test("مجموع جولة حكم كاملة يساوي 162 قبل المشاريع")
     func fullHokumRoundTotalsTo162() throws {
         let agent = SimpleBalootAgent()
-        var state = GameState.newLocalMatch()
+        var state = GameState.newLocalMatch(rules: .simpleBidding)
         state = try GameEngine.apply(.dealCards(seed: 2024), to: state)
         let id = try #require(state.currentTurnPlayerID)
         state = try GameEngine.apply(.chooseMode(playerID: id, mode: .hokum, trumpSuit: .hearts), to: state)
@@ -411,7 +411,7 @@ struct EngineRegressionTests {
     @Test("نقاط الأكلات الجارية تتراكم لكل فريق")
     func teamTrickPointsAccumulate() throws {
         let agent = SimpleBalootAgent()
-        var state = GameState.newLocalMatch()
+        var state = GameState.newLocalMatch(rules: .simpleBidding)
         state = try GameEngine.apply(.dealCards(seed: 5), to: state)
         let id = try #require(state.currentTurnPlayerID)
         state = try GameEngine.apply(.chooseMode(playerID: id, mode: .sun, trumpSuit: nil), to: state)
@@ -433,7 +433,7 @@ struct EngineRegressionTests {
     @Test("التوزيع من جديد يُصفّر أكلات ونقاط الجولة السابقة")
     func dealingResetsPreviousRound() throws {
         let agent = SimpleBalootAgent()
-        var state = GameState.newLocalMatch()
+        var state = GameState.newLocalMatch(rules: .simpleBidding)
         state = try GameEngine.apply(.dealCards(seed: 11), to: state)
         let id = try #require(state.currentTurnPlayerID)
         state = try GameEngine.apply(.chooseMode(playerID: id, mode: .sun, trumpSuit: nil), to: state)
@@ -466,7 +466,7 @@ struct EngineRegressionTests {
 
     @Test("الجولة المحلية البشرية تنشئ أربعة لاعبين بلا آليين")
     func localHumanMatchUsesFourHumanPlayers() throws {
-        var state = GameState.newLocalHumanMatch()
+        var state = GameState.newLocalHumanMatch(rules: .simpleBidding)
 
         #expect(state.players.count == 4)
         #expect(state.players.allSatisfy { $0.kind == .human })

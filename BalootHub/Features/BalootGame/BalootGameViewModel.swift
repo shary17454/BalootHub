@@ -79,9 +79,10 @@ final class BalootGameViewModel {
     private(set) var tableMode: BalootTableMode
 
     let variant: BalootGameVariant
-    // الوكيل الخبير يحاكي توزيعات محتملة قبل كل ورقة (انظر ``ExpertBalootAgent``).
-    // 8 عينات تحافظ على قوة اللعب مع تقليل زمن القرار على أجهزة المستخدمين.
-    private let agent: BalootAgent = ExpertBalootAgent(samples: 8)
+    /// مستوى الخصوم الآليين المختار.
+    private(set) var aiLevel: AIProfile.Level
+    // الخصم مبني على ``AIProfile`` فيختلف تفكيره بالمستوى والشخصية، لا بأخطاء عشوائية.
+    private var agent: BalootAgent
     private let rules: BalootRulesConfiguration
     /// مهمة أدوار اللاعبين الآليين الجارية، تُلغى قبل بدء غيرها حتى لا تتداخل
     /// جولتان (مثلًا عند الضغط على "جولة جديدة" أثناء لعب الآليين).
@@ -117,13 +118,42 @@ final class BalootGameViewModel {
     init(
         variant: BalootGameVariant = .free,
         tableMode: BalootTableMode = .versusAI,
-        rules: BalootRulesConfiguration = .standard
+        rules: BalootRulesConfiguration = .standard,
+        aiLevel: AIProfile.Level = .expert
     ) {
-        let initial = Self.makeInitialState(tableMode: tableMode, rules: rules)
-        self.state = initial
+        // «بلوت صن» و«بلوت حكم» يمثلان نمطًا واحدًا محددًا، فدورة المزايدة الكاملة
+        // بلا معنى فيهما: لا يوجد ما يُزايَد عليه أصلًا. يبقيان على الاختيار المباشر،
+        // بينما «بلوت كلاسيكي» يحصل على الدورة الحقيقية.
+        let effectiveRules = variant == .free ? rules : Self.forcedModeRules(from: rules)
+        self.state = Self.makeInitialState(tableMode: tableMode, rules: effectiveRules)
         self.variant = variant
         self.tableMode = tableMode
-        self.rules = rules
+        self.rules = effectiveRules
+        self.aiLevel = aiLevel
+        self.agent = ProfiledBalootAgent(profile: Self.profile(for: aiLevel))
+    }
+
+    /// قواعد الأنماط المقيّدة: اختيار مباشر واحتساب تلقائي للمشاريع بلا مرحلة إعلان.
+    private static func forcedModeRules(from base: BalootRulesConfiguration) -> BalootRulesConfiguration {
+        var rules = base
+        rules.biddingStyle = .simple
+        rules.projectsRequireDeclaration = false
+        rules.multipliersEnabled = false
+        return rules
+    }
+
+    private static func profile(for level: AIProfile.Level) -> AIProfile {
+        AIProfile.roster.first { $0.level == level }
+            ?? AIProfile(id: "ai.default", level: level, personality: .balanced, avatarSystemName: "person.fill")
+    }
+
+    /// يغيّر مستوى الخصوم ويبدأ مباراة جديدة به.
+    func setAILevel(_ level: AIProfile.Level) {
+        guard aiLevel != level else { return }
+        aiTask.cancel()
+        aiLevel = level
+        agent = ProfiledBalootAgent(profile: Self.profile(for: level))
+        startNewMatch()
     }
 
     deinit {
@@ -139,8 +169,11 @@ final class BalootGameViewModel {
         return playerID
     }
 
+    /// المراحل التي ينتظر فيها المحرك قرارًا من صاحب الدور.
+    private static let interactivePhases: Set<GamePhase> = [.bidding, .declaring, .playing]
+
     var isHumanTurn: Bool {
-        state.phase == .bidding || state.phase == .playing
+        Self.interactivePhases.contains(state.phase)
             ? activeHumanID == state.currentTurnPlayerID
             : false
     }
@@ -235,6 +268,106 @@ final class BalootGameViewModel {
         advanceAI()
     }
 
+    // MARK: - دورة المزايدة الكاملة
+
+    /// هل تستخدم هذه الجولة دورة المزايدة الحقيقية؟
+    var usesFullBidding: Bool { rules.biddingStyle == .full }
+
+    var biddingStage: BiddingState.Stage { state.bidding.stage }
+
+    /// الورقة المكشوفة التي تُزايَد عليها في الجولة الأولى.
+    var upCard: PlayingCard? { state.bidding.upCard }
+
+    /// المزايدات المتاحة للاعب البشري الآن — مصدرها المحرك نفسه، فلا تعرض الواجهة
+    /// خيارًا يرفضه المحرك بعد الضغط عليه.
+    var legalBidsForHuman: [Bid] {
+        guard usesFullBidding, state.phase == .bidding, isHumanTurn else { return [] }
+        return state.bidding.legalBids(rules: state.rules)
+    }
+
+    /// سجل المزايدات مقرونًا بأسماء أصحابها للعرض.
+    var bidHistory: [(playerName: String, bid: Bid)] {
+        state.bidding.bids.map { record in
+            (state.player(id: record.playerID)?.name ?? "", record.bid)
+        }
+    }
+
+    var declarerName: String? {
+        state.declarer?.name
+    }
+
+    var currentMultiplier: Multiplier { state.bidding.multiplier }
+
+    func placeBid(_ bid: Bid) {
+        guard let activeHumanID else { return }
+        perform(.placeBid(playerID: activeHumanID, bid: bid))
+        advanceAI()
+    }
+
+    // MARK: - المضاعفة
+
+    var isAwaitingHumanMultiplierDecision: Bool {
+        state.phase == .bidding && state.bidding.stage == .doubling && isHumanTurn
+    }
+
+    /// درجة التصعيد التالية المتاحة، أو `nil` إن بلغت المضاعفة سقفها أو أُقفلت.
+    var nextAvailableMultiplier: Multiplier? {
+        guard !state.bidding.isLocked,
+              let next = state.bidding.multiplier.next,
+              next <= state.rules.maximumMultiplier else { return nil }
+        return next
+    }
+
+    /// هل يستطيع اللاعب البشري «القفل» الآن؟
+    var canLockMultiplier: Bool {
+        guard state.rules.lockEnabled, state.bidding.multiplier != .none,
+              let activeHumanID, let player = state.player(id: activeHumanID) else { return false }
+        return player.teamID == state.bidding.multiplierRequesterTeamID
+    }
+
+    func raiseMultiplier(to level: Multiplier) {
+        guard let activeHumanID else { return }
+        perform(.raiseMultiplier(playerID: activeHumanID, level: level))
+        advanceAI()
+    }
+
+    func passMultiplier() {
+        guard let activeHumanID else { return }
+        perform(.passMultiplier(playerID: activeHumanID))
+        advanceAI()
+    }
+
+    func lockMultiplier() {
+        guard let activeHumanID else { return }
+        perform(.lockMultiplier(playerID: activeHumanID))
+        advanceAI()
+    }
+
+    // MARK: - إعلان المشاريع
+
+    var isAwaitingHumanDeclaration: Bool {
+        state.phase == .declaring && isHumanTurn
+    }
+
+    /// المشاريع الموجودة فعلًا في يد اللاعب البشري والقابلة للإعلان.
+    var declarableProjectsForHuman: [Project] {
+        guard let activeHumanID, state.phase == .declaring else { return [] }
+        return GameEngine.declarableProjects(for: activeHumanID, state: state)
+    }
+
+    /// المشاريع المحتسَبة بعد المفاضلة، تُعرض في لوحة النتيجة.
+    var awardedProjects: [Project] { state.awardedProjects }
+
+    func declareProjects(_ projects: [Project]) {
+        guard let activeHumanID else { return }
+        perform(.declareProjects(playerID: activeHumanID, projects: projects))
+        advanceAI()
+    }
+
+    func skipDeclaration() {
+        declareProjects([])
+    }
+
     func play(_ card: PlayingCard) {
         guard let activeHumanID else { return }
         perform(.playCard(playerID: activeHumanID, card: card))
@@ -243,6 +376,42 @@ final class BalootGameViewModel {
 
     func clearError() {
         errorMessage = nil
+    }
+
+    // MARK: - مساعد القواعد أثناء اللعب
+
+    /// يشرح **لماذا** لا يمكن لعب ورقة معيّنة، بدل تجاهل الضغطة بصمت.
+    ///
+    /// التفسير مشتق من ``LegalMoveValidator`` عبر المحرك، فهو نفس السبب الذي يرفض به
+    /// المحرك الحركة حرفيًا — لا شرحًا موازيًا قد يتناقض معه عند تغيير القواعد.
+    func explanation(forPlaying card: PlayingCard) -> String? {
+        guard let activeHumanID,
+              let reason = GameEngine.invalidMoveReason(playerID: activeHumanID, card: card, state: state)
+        else { return nil }
+        return Self.explanation(for: reason, trumpSuit: state.trumpSuit)
+    }
+
+    /// يعرض تفسير المنع للاعب. تستدعيها الواجهة عند الضغط على ورقة غير قانونية.
+    func explainIllegalMove(_ card: PlayingCard) {
+        errorMessage = explanation(forPlaying: card) ?? Self.moveErrorMessage
+    }
+
+    private static func explanation(for reason: IllegalMoveReason, trumpSuit: Suit?) -> String {
+        switch reason {
+        case .mustFollowSuit:
+            return "لا يمكنك لعب هذه الورقة لأن لديك ورقة من اللون المطلوب ويجب عليك التلزيم.".localized
+        case .mustPlayTrumpWhenVoidOfSuit:
+            let suitName = trumpSuit.map { " (\($0.spokenName))" } ?? ""
+            return "\("أنت لا تملك اللون المطلوب ويجب عليك القطع بالحكم وفق القاعدة الحالية.".localized)\(suitName)"
+        case .mustOvertrump:
+            return "يجب أن تعلو على أعلى حكم مطروح ما دام لديك ما يعلوه.".localized
+        case .cardNotInHand:
+            return "هذه الورقة ليست في يدك.".localized
+        case .notPlayersTurn:
+            return "ليس دورك الآن.".localized
+        case .wrongPhase:
+            return "لا يمكن لعب ورقة في هذه المرحلة.".localized
+        }
     }
 
     func finishRoundIfNeeded() {
@@ -315,9 +484,12 @@ final class BalootGameViewModel {
         })
     }
 
-    /// هل الدور الحالي للاعب آلي في مرحلة تسمح باللعب؟
+    /// هل الدور الحالي للاعب آلي في مرحلة تسمح بالقرار؟
+    ///
+    /// مرحلة الإعلان مشمولة: بدونها كانت الجولة تتجمّد عند أول لاعب آلي عليه أن
+    /// يُعلن مشاريعه، فلا يتقدم أحد ولا تظهر أي رسالة.
     private var isAITurn: Bool {
-        guard state.phase == .bidding || state.phase == .playing,
+        guard Self.interactivePhases.contains(state.phase),
               let playerID = state.currentTurnPlayerID,
               let player = state.player(id: playerID)
         else { return false }

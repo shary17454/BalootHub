@@ -7,11 +7,28 @@ import BalootEngine
 /// يظهر هنا بدل أن يكتشفه المستخدم على الطاولة.
 final class GamePlaythroughTests: XCTestCase {
 
+    /// قواعد تعزل **الاحتساب الأساسي** وحده: مزايدة مبسّطة بنمط مثبَّت، ومشروع البلوت
+    /// فقط، وبلا كبوت ولا مضاعفات.
+    ///
+    /// هذه الاختبارات تتحقق من أن جولة الحكم = 162 وجولة الصن = 260، وهو ثابت لا يجوز
+    /// أن ينكسر. تفعيل المشاريع الجديدة والكبوت فوقها كان سيجعلها تفشل لأسباب صحيحة
+    /// تمامًا (نقاط إضافية مشروعة)، فتتحوّل من حارس للاحتساب إلى ضجيج. المزايدة الكاملة
+    /// والمشاريع والكبوت مغطّاة في اختبارات الحزمة، وجولة المزايدة الكاملة في
+    /// ``testFullBiddingRoundCompletesEndToEnd`` أدناه.
+    private static let baseScoringRules: BalootRulesConfiguration = {
+        var rules = BalootRulesConfiguration.simpleBidding
+        rules.sequenceProjectsEnabled = false
+        rules.sameRankProjectsEnabled = false
+        rules.kabootEnabled = false
+        rules.multipliersEnabled = false
+        return rules
+    }()
+
     /// يلعب جولة كاملة بنمط محدد، ويعيد الحالة النهائية.
     /// يستخدم نفس المحرك والوكيل اللذين تستخدمهما الشاشة.
     private func playFullRound(mode: GameMode, trumpSuit: Suit?, seed: UInt64) throws -> GameState {
         let agent = SimpleBalootAgent()
-        var state = GameState.newLocalMatch()
+        var state = GameState.newLocalMatch(rules: Self.baseScoringRules)
 
         state = try GameEngine.apply(.dealCards(seed: seed), to: state)
         XCTAssertEqual(state.phase, .bidding, "بعد التوزيع يجب أن تبدأ المزايدة")
@@ -115,6 +132,48 @@ final class GamePlaythroughTests: XCTestCase {
         let sunTotal = sun.lastRoundResult?.teamPoints.values.reduce(0, +) ?? 0
         // لا توجد مشاريع بلوت في صن (لا يوجد نوع حكم)، فالمجموع ثابت.
         XCTAssertEqual(sunTotal, 260, "مجموع جولة الصن يجب أن يكون 130 × 2")
+    }
+
+    /// جولة كاملة بالقواعد الافتراضية للتطبيق (مزايدة كاملة + مشاريع + مضاعفات + كبوت):
+    /// تمر بكل المراحل وتنتهي بنتيجة، أو تنتهي دورةً ميتة — وكلاهما مسار صحيح.
+    func testFullBiddingRoundCompletesEndToEnd() throws {
+        let agent = ProfiledBalootAgent(profile: AIProfile.roster[0])
+
+        for seed in stride(from: UInt64(1_000), through: 1_012, by: 1) {
+            var state = GameState.newLocalMatch(rules: .standard)
+            // كل المقاعد آلية حتى تكتمل الجولة بلا تدخل.
+            state.players = state.players.map { player in
+                var updated = player
+                updated.kind = .ai
+                return updated
+            }
+
+            state = try GameEngine.apply(.dealCards(seed: seed), to: state)
+            XCTAssertEqual(state.phase, .bidding, "التوزيعة \(seed): لم تبدأ المزايدة")
+            XCTAssertNotNil(state.bidding.upCard, "التوزيعة \(seed): لا توجد ورقة مكشوفة")
+
+            state = try GameEngine.advanceAIPlayers(state: state, agent: agent)
+            XCTAssertEqual(state.phase, .finished, "التوزيعة \(seed): الجولة لم تنتهِ")
+
+            if state.bidding.stage == .voided {
+                XCTAssertTrue(state.completedTricks.isEmpty, "التوزيعة \(seed): دورة ميتة ومعها أكلات")
+                continue
+            }
+
+            XCTAssertNotNil(state.bidding.declarerID, "التوزيعة \(seed): لا يوجد مشترٍ")
+            XCTAssertEqual(state.completedTricks.count, 8, "التوزيعة \(seed): الأكلات ناقصة")
+
+            let result = try XCTUnwrap(state.lastRoundResult, "التوزيعة \(seed): بلا نتيجة")
+            let total = result.teamPoints.values.reduce(0, +)
+            XCTAssertGreaterThan(total, 0, "التوزيعة \(seed): نتيجة صفرية لجولة مكتملة")
+
+            // إعادة التشغيل من سجل الأفعال تُنتج نفس النتيجة تمامًا.
+            var initial = GameState.newLocalMatch(rules: .standard)
+            initial.players = state.players
+            initial.teams = state.teams
+            let replayed = try GameEngine.replay(initialState: initial, actions: state.actionHistory)
+            XCTAssertEqual(replayed.lastRoundResult, result, "التوزيعة \(seed): إعادة التشغيل خالفت الأصل")
+        }
     }
 
     /// مشروع البلوت يُحتسب في حكم فقط ولا يُحتسب في صن إطلاقًا،

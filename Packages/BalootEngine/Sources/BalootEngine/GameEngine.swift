@@ -6,6 +6,8 @@ public enum GameEngineError: Error, Sendable, Equatable {
     case illegalMove(IllegalMoveReason)
     case unknownPlayer
     case notPlayersTurn
+    /// خطأ متعلق بدورة المزايدة أو المضاعفة أو إعلان المشاريع.
+    case bidding(BiddingError)
 }
 
 /// المسؤول الوحيد عن الانتقال بين حالات اللعبة. لا يحتوي أي منطق واجهة.
@@ -22,6 +24,21 @@ public enum GameEngine {
 
         case .chooseMode(let playerID, let mode, let trumpSuit):
             try applyChooseMode(playerID: playerID, mode: mode, trumpSuit: trumpSuit, to: &newState)
+
+        case .placeBid(let playerID, let bid):
+            try BiddingEngine.placeBid(playerID: playerID, bid: bid, state: &newState)
+
+        case .raiseMultiplier(let playerID, let level):
+            try BiddingEngine.raiseMultiplier(playerID: playerID, level: level, state: &newState)
+
+        case .passMultiplier(let playerID):
+            try BiddingEngine.passMultiplier(playerID: playerID, state: &newState)
+
+        case .lockMultiplier(let playerID):
+            try BiddingEngine.lockMultiplier(playerID: playerID, state: &newState)
+
+        case .declareProjects(let playerID, let projects):
+            try BiddingEngine.declareProjects(playerID: playerID, projects: projects, state: &newState)
 
         case .playCard(let playerID, let card):
             try applyPlayCard(playerID: playerID, card: card, to: &newState)
@@ -45,6 +62,61 @@ public enum GameEngine {
         return state
     }
 
+    /// يعيد بناء الحالة حتى فعل معيّن فقط — أساس شاشة الـReplay خطوةً بخطوة.
+    ///
+    /// - Parameter step: عدد الأفعال المطبَّقة (0 = الحالة الابتدائية قبل أي فعل).
+    public static func replay(initialState: GameState, actions: [GameAction], upTo step: Int) throws -> GameState {
+        let bounded = max(0, min(step, actions.count))
+        return try replay(initialState: initialState, actions: Array(actions.prefix(bounded)))
+    }
+
+    // MARK: - استعلامات الحالة (مصدر حقيقة واحد للواجهة والتعليم والاختبارات)
+
+    /// المزايدات القانونية المتاحة الآن.
+    public static func legalBids(state: GameState) -> [Bid] {
+        guard state.phase == .bidding else { return [] }
+        return state.bidding.legalBids(rules: state.rules)
+    }
+
+    /// المشاريع التي يستطيع لاعب معيّن إعلانها.
+    public static func declarableProjects(for playerID: Player.ID, state: GameState) -> [Project] {
+        BiddingEngine.declarableProjects(for: playerID, state: state)
+    }
+
+    /// الأوراق القانونية للاعب معيّن في وضعه الحالي.
+    public static func legalCards(for playerID: Player.ID, state: GameState) -> [PlayingCard] {
+        guard state.phase == .playing, let mode = state.mode,
+              let hand = state.hands[playerID] else { return [] }
+        return LegalMoveValidator.legalCards(
+            hand: hand, trick: state.currentTrick, mode: mode,
+            trumpSuit: state.trumpSuit, rules: state.rules
+        )
+    }
+
+    /// نتيجة التحقق من لعب ورقة معيّنة، بلا تطبيق أي تغيير.
+    public static func validationResult(playerID: Player.ID, card: PlayingCard, state: GameState) -> Result<Void, IllegalMoveReason> {
+        guard state.phase == .playing, let mode = state.mode else { return .failure(.wrongPhase) }
+        guard state.currentTurnPlayerID == playerID else { return .failure(.notPlayersTurn) }
+        guard let hand = state.hands[playerID] else { return .failure(.cardNotInHand) }
+        return LegalMoveValidator.validate(
+            card: card, hand: hand, trick: state.currentTrick, mode: mode,
+            trumpSuit: state.trumpSuit, rules: state.rules
+        )
+    }
+
+    /// سبب رفض ورقة معيّنة، أو `nil` إن كانت قانونية.
+    ///
+    /// وجود هذا الاستعلام هو ما يسمح للواجهة أن **تشرح** المنع بدل أن تتجاهل الضغطة
+    /// بصمت، وللدروس أن تستخدم نفس التفسير الذي يستخدمه المحرك حرفيًا.
+    public static func invalidMoveReason(playerID: Player.ID, card: PlayingCard, state: GameState) -> IllegalMoveReason? {
+        if case .failure(let reason) = validationResult(playerID: playerID, card: card, state: state) {
+            return reason
+        }
+        return nil
+    }
+
+    // MARK: - قرارات اللاعب الآلي
+
     /// يحسب الفعل التالي للاعب الآلي صاحب الدور **دون تطبيقه**، ويُعيد `nil`
     /// إن لم يكن الدور للاعب آلي أو تعذّر تحديد فعل.
     ///
@@ -55,11 +127,13 @@ public enum GameEngine {
     public static func nextAIAction(state: GameState, agent: BalootAgent) -> GameAction? {
         switch state.phase {
         case .bidding:
+            return nextBiddingAction(state: state, agent: agent)
+
+        case .declaring:
             guard let playerID = state.currentTurnPlayerID,
-                  state.player(id: playerID)?.kind == .ai,
-                  let hand = state.hands[playerID] else { return nil }
-            let choice = agent.chooseMode(hand: hand, state: state)
-            return .chooseMode(playerID: playerID, mode: choice.mode, trumpSuit: choice.trumpSuit)
+                  state.player(id: playerID)?.kind == .ai else { return nil }
+            let available = BiddingEngine.declarableProjects(for: playerID, state: state)
+            return .declareProjects(playerID: playerID, projects: agent.chooseProjectsToDeclare(available: available, state: state))
 
         case .playing:
             guard let playerID = state.currentTurnPlayerID,
@@ -80,12 +154,42 @@ public enum GameEngine {
         }
     }
 
-    /// يُشغّل دور المزايدة أو اللعب تلقائيًا لكل اللاعبين الآليين بالتتابع،
+    private static func nextBiddingAction(state: GameState, agent: BalootAgent) -> GameAction? {
+        guard let playerID = state.currentTurnPlayerID,
+              state.player(id: playerID)?.kind == .ai,
+              let hand = state.hands[playerID] else { return nil }
+
+        switch state.bidding.stage {
+        case .firstRound, .secondRound:
+            guard state.rules.biddingStyle == .full else {
+                // النمط المبسّط: اختيار مباشر بلا دورة مزايدة.
+                let choice = agent.chooseMode(hand: hand, state: state)
+                return .chooseMode(playerID: playerID, mode: choice.mode, trumpSuit: choice.trumpSuit)
+            }
+            let legal = state.bidding.legalBids(rules: state.rules)
+            guard !legal.isEmpty else { return nil }
+            return .placeBid(playerID: playerID, bid: agent.chooseBid(hand: hand, legalBids: legal, state: state))
+
+        case .doubling:
+            switch agent.chooseMultiplierAction(hand: hand, state: state) {
+            case .raise(let level): return .raiseMultiplier(playerID: playerID, level: level)
+            case .lock: return .lockMultiplier(playerID: playerID)
+            case .pass: return .passMultiplier(playerID: playerID)
+            }
+
+        case .completed, .voided:
+            return nil
+        }
+    }
+
+    /// يُشغّل المزايدة أو الإعلان أو اللعب تلقائيًا لكل اللاعبين الآليين بالتتابع،
     /// ويتوقف عند دور لاعب إنسان أو عند انتهاء الجولة.
-    /// - Parameter maxSteps: سقف أمان ضد أي حلقة لا تنتهي. القيمة الافتراضية تكفي
-    ///   جولة كاملة كل لاعبيها آليون: مزايدة واحدة + 32 ورقة + إنهاء الجولة = 34 خطوة.
-    ///   كانت 32 فتتوقف قبل نهاية الجولة بخطوتين دون أي إشارة.
-    public static func advanceAIPlayers(state: GameState, agent: BalootAgent, maxSteps: Int = 40) throws -> GameState {
+    ///
+    /// - Parameter maxSteps: سقف أمان ضد أي حلقة لا تنتهي. الجولة الكاملة الآن أطول
+    ///   مما كانت: حتى 8 مزايدات + حتى 4 أفعال مضاعفة + 4 إعلانات + 32 ورقة + إنهاء
+    ///   الجولة = 49 خطوة، فرُفع السقف إلى 64 بهامش أمان. السقف القديم (40) كان
+    ///   يتوقف في منتصف جولة كل لاعبيها آليون دون أي إشارة.
+    public static func advanceAIPlayers(state: GameState, agent: BalootAgent, maxSteps: Int = 64) throws -> GameState {
         var current = state
         var steps = 0
 
@@ -109,37 +213,17 @@ public enum GameEngine {
         guard state.players.count == 4 else {
             throw GameEngineError.unknownPlayer
         }
-
-        var deck = Deck()
-        var generator = SeededGenerator(seed: seed)
-        deck.shuffle(using: &generator)
-
-        let dealtHands = deck.dealEqually()
-        var hands: [Player.ID: [PlayingCard]] = [:]
-        for (seat, cards) in zip(SeatPosition.allCases, dealtHands) {
-            if let player = state.player(at: seat) {
-                hands[player.id] = cards
-            }
-        }
-
-        state.hands = hands
-        state.originalHands = hands
-        // تصفير بقايا الجولة السابقة: بدونها تتراكم أكلات ونقاط جولة قديمة على جولة
-        // جديدة وُزّعت فوق نفس الحالة (وهو ما يفعله `replay` وأي إعادة توزيع).
-        state.completedTricks = []
-        state.currentTrick = nil
-        state.teamTrickPoints = [:]
-        state.lastRoundResult = nil
-        state.mode = nil
-        state.trumpSuit = nil
-        state.phase = .bidding
-        // المزايدة تبدأ من اللاعب التالي للموزّع.
-        state.currentTurnPlayerID = TurnManager.player(at: state.dealerSeat.next, in: state.players)?.id
+        try BiddingEngine.deal(seed: seed, state: &state)
     }
 
-    // MARK: - Choose mode (bidding)
+    // MARK: - Choose mode (النمط المبسّط)
 
     private static func applyChooseMode(playerID: Player.ID, mode: GameMode, trumpSuit: Suit?, to state: inout GameState) throws {
+        // في النمط الكامل هذا الفعل يتخطى دورة المزايدة كلها، فيُرفض صراحةً بدل أن
+        // يمر ويُنتج جولة بلا مشترٍ ولا مضاعف ولا سجل مزايدة.
+        guard state.rules.biddingStyle == .simple else {
+            throw GameEngineError.bidding(.unsupportedInBiddingStyle)
+        }
         guard state.phase == .bidding else {
             throw GameEngineError.wrongPhase(expected: .bidding, actual: state.phase)
         }
@@ -152,15 +236,24 @@ public enum GameEngine {
 
         state.mode = mode
         state.trumpSuit = mode == .hokum ? trumpSuit : nil
-        state.phase = .playing
+        state.bidding.declarerID = playerID
+        state.bidding.mode = mode
+        state.bidding.trumpSuit = state.trumpSuit
+        state.bidding.stage = .completed
 
-        let leaderID = state.currentTurnPlayerID ?? state.players.first?.id
-        guard let leaderID, let leaderPlayer = state.player(id: leaderID) else {
+        // القائد هو صاحب الدور الحالي إن وُجد، وإلا صاحب الدور الأول بعد الموزّع.
+        let leaderID = state.currentTurnPlayerID ?? state.firstToActPlayerID
+        guard let leaderID, state.player(id: leaderID) != nil else {
             throw GameEngineError.unknownPlayer
         }
-
-        state.currentTrick = Trick(leaderSeat: leaderPlayer.seat)
         state.currentTurnPlayerID = leaderID
+        try BiddingEngine.openDeclarationOrPlay(state: &state)
+        // مرحلة الإعلان تبدأ من صاحب الدور الأول؛ أما اللعب المباشر فيبدأ من القائد
+        // المحدَّد أعلاه حفاظًا على سلوك النمط المبسّط كما كان.
+        if state.phase == .playing, let leader = state.player(id: leaderID) {
+            state.currentTrick = Trick(leaderSeat: leader.seat)
+            state.currentTurnPlayerID = leaderID
+        }
     }
 
     // MARK: - Play card
@@ -240,15 +333,27 @@ public enum GameEngine {
             throw GameEngineError.wrongPhase(expected: .scoring, actual: state.phase)
         }
 
-        state.lastRoundResult = ScoreCalculator.finalRoundScore(
+        // المشاريع المعلنة هي المصدر عند اشتراط الإعلان؛ وإلا فالاكتشاف التلقائي.
+        let projects: [Project]? = state.rules.projectsEnabled
+            ? (state.rules.projectsRequireDeclaration ? state.declaredProjects : nil)
+            : []
+
+        let result = ScoreCalculator.finalRoundScore(
             completedTricks: state.completedTricks,
             originalHands: state.originalHands,
             players: state.players,
             teams: state.teams,
             mode: mode,
             trumpSuit: state.trumpSuit,
-            rules: state.rules
+            rules: state.rules,
+            multiplier: state.bidding.multiplier,
+            declaredProjects: projects,
+            declaringTeamID: state.declaringTeamID
         )
+
+        state.lastRoundResult = result
+        state.awardedProjects = result.awardedProjects
+        state.kabootTeamID = result.kabootTeamID
         state.phase = .finished
     }
 }

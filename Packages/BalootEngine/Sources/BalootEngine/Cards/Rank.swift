@@ -27,6 +27,25 @@ public enum Rank: String, CaseIterable, Codable, Sendable, Identifiable {
         }
     }
 
+    /// الترتيب **الطبيعي** للورقة (7, 8, 9, 10, J, Q, K, A) المستخدم في تكوين المشاريع
+    /// المتتالية (سرا/خمسين/مية).
+    ///
+    /// لا يصلح ``ordinal`` ولا ترتيب القوة لهذا الغرض: العشرة أقوى من الشايب في اللعب،
+    /// لكنها تسبقه في التسلسل الطبيعي، فاستخدام ترتيب القوة كان يجعل «10-J-Q» تسلسلًا
+    /// غير مكتشَف و«J-Q-K» يبدأ من موضع خاطئ.
+    public var sequenceOrder: Int {
+        switch self {
+        case .seven: 0
+        case .eight: 1
+        case .nine: 2
+        case .ten: 3
+        case .jack: 4
+        case .queen: 5
+        case .king: 6
+        case .ace: 7
+        }
+    }
+
     /// الرمز المختصر المعروض على الورقة.
     public var shortLabel: String {
         switch self {

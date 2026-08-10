@@ -11,7 +11,7 @@ struct SmartAgentTests {
     private func playRound(seed: UInt64, smartTeamIndex: Int) throws -> (smart: Int, simple: Int) {
         let smart = SmartBalootAgent()
         let simple = SimpleBalootAgent()
-        var state = GameState.newLocalMatch()
+        var state = GameState.newLocalMatch(rules: .simpleBidding)
         let smartTeamID = state.teams[smartTeamIndex].id
 
         func agent(for playerID: Player.ID) -> BalootAgent {
@@ -85,7 +85,7 @@ struct SmartAgentTests {
     @Test("المزايدة التقييمية تختار حكمًا بيد الحكم القوية وصنًّا بيد الآسات")
     func biddingEvaluatesHands() {
         let agent = SmartBalootAgent()
-        let state = GameState.newLocalMatch()
+        let state = GameState.newLocalMatch(rules: .simpleBidding)
 
         // يد حكم صريحة: ولد وتسعة وآس من نفس النوع مع طول.
         let hokumHand: [PlayingCard] = [
@@ -125,7 +125,7 @@ struct ExpertAgentTests {
     private func playRound(seed: UInt64, expertTeamIndex: Int) throws -> (expert: Int, smart: Int) {
         let expert = ExpertBalootAgent(samples: 8)
         let smart = SmartBalootAgent()
-        var state = GameState.newLocalMatch()
+        var state = GameState.newLocalMatch(rules: .simpleBidding)
         let expertTeamID = state.teams[expertTeamIndex].id
         state = try GameEngine.apply(.dealCards(seed: seed), to: state)
 
@@ -177,7 +177,7 @@ struct ExpertAgentTests {
     @Test("زمن اتخاذ القرار مقبول للاستخدام على الجهاز")
     func decisionLatencyIsAcceptable() throws {
         let expert = ExpertBalootAgent(samples: 8)
-        var state = GameState.newLocalMatch()
+        var state = GameState.newLocalMatch(rules: .simpleBidding)
         state = try GameEngine.apply(.dealCards(seed: 42), to: state)
         let id = try #require(state.currentTurnPlayerID)
         _ = try #require(state.hands[id])
