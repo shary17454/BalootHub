@@ -373,6 +373,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.trainingSessionPlan(for: attempts)
     }
 
+    private var nextScenarioRecommendation: WhatToPlayNextScenarioRecommendation {
+        WhatToPlayStatsAnalyzer.nextScenarioRecommendation(for: attempts)
+    }
+
     private var mastery: WhatToPlayMastery {
         WhatToPlayStatsAnalyzer.mastery(for: attempts)
     }
@@ -541,12 +545,13 @@ struct WhatToPlayTrainerView: View {
             }
 
             trainingSessionPlanView(trainingSessionPlan, progress: trainingSessionProgress)
+            nextScenarioRecommendationView(nextScenarioRecommendation)
 
             Button {
-                startRecommendedPractice()
+                startNextScenarioRecommendation()
             } label: {
                 Label(
-                    "\("ابدأ".localized) \(trainingSessionPlan.difficulty.displayTitle)",
+                    "\("ابدأ".localized) \(nextScenarioRecommendation.difficulty.displayTitle)",
                     systemImage: "play.fill"
                 )
                 .frame(maxWidth: .infinity)
@@ -557,6 +562,30 @@ struct WhatToPlayTrainerView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func nextScenarioRecommendationView(_ recommendation: WhatToPlayNextScenarioRecommendation) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(recommendation.title)
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(recommendation.detail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("\("المستوى".localized): \(recommendation.difficulty.displayTitle) · \("تركيز التدريب".localized): \(recommendation.focusKind.map(focusTitle) ?? "تلقائي".localized)")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(AppColor.accent)
+            }
+        } icon: {
+            Image(systemName: recommendation.iconName)
+                .foregroundStyle(AppColor.accent)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.sm)
+        .background(AppColor.accent.opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
     }
 
     private func trainingSessionPlanView(
@@ -1970,12 +1999,12 @@ struct WhatToPlayTrainerView: View {
         }
     }
 
-    private func startRecommendedPractice() {
-        let targetFocusRaw = trainingSessionPlan.focusKind?.rawValue ?? "auto"
-        if difficulty == trainingSessionPlan.difficulty, preferredFocusRaw == targetFocusRaw {
+    private func startNextScenarioRecommendation() {
+        let targetFocusRaw = nextScenarioRecommendation.focusKind?.rawValue ?? "auto"
+        if difficulty == nextScenarioRecommendation.difficulty, preferredFocusRaw == targetFocusRaw {
             nextScenario()
         } else {
-            difficulty = trainingSessionPlan.difficulty
+            difficulty = nextScenarioRecommendation.difficulty
             preferredFocusRaw = targetFocusRaw
             generateScenario()
         }

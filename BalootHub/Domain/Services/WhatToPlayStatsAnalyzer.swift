@@ -191,6 +191,14 @@ struct WhatToPlayTrainingSessionPlan: Equatable {
     }
 }
 
+struct WhatToPlayNextScenarioRecommendation: Equatable {
+    let difficulty: WhatToPlayDifficulty
+    let focusKind: WhatToPlayScenarioFocusKind?
+    let title: String
+    let detail: String
+    let iconName: String
+}
+
 enum WhatToPlayTrainingSessionProgressState: Equatable {
     case notStarted
     case inProgress
@@ -781,7 +789,7 @@ enum WhatToPlayStatsAnalyzer {
         let summary = summarize(attempts: attempts)
         let style = playStyle(for: attempts)
         let pulse = sessionPulse(for: attempts)
-        let focusKind = focusScenarioKind(attempts)?.focusKind
+        let focusKind = focusTrainingPriority(for: attempts)?.focusKind ?? focusScenarioKind(attempts)?.focusKind
 
         if style.kind == .measuring {
             return WhatToPlayTrainingSessionPlan(
@@ -843,6 +851,29 @@ enum WhatToPlayStatsAnalyzer {
             detail: "درّب نفس المستوى في دفعة قصيرة حتى تصبح قراراتك أكثر ثباتًا.".localized,
             successMetric: "هدف الجلسة: 3 إجابات صحيحة من 4.".localized,
             iconName: "target"
+        )
+    }
+
+    static func nextScenarioRecommendation(for attempts: [WhatToPlayAttempt]) -> WhatToPlayNextScenarioRecommendation {
+        let plan = trainingSessionPlan(for: attempts)
+        if let focusPriority = focusTrainingPriority(for: attempts) {
+            return WhatToPlayNextScenarioRecommendation(
+                difficulty: plan.difficulty,
+                focusKind: focusPriority.focusKind,
+                title: "الموقف القادم".localized,
+                detail: "\("ابدأ بموقف".localized) \(scenarioFocusTitle(focusPriority.focusKind)) \("على مستوى".localized) \(difficultyTitle(plan.difficulty)). \(focusPriority.detail)",
+                iconName: focusPriority.iconName
+            )
+        }
+
+        return WhatToPlayNextScenarioRecommendation(
+            difficulty: plan.difficulty,
+            focusKind: plan.focusKind,
+            title: "الموقف القادم".localized,
+            detail: plan.focusKind.map {
+                "\("ابدأ بموقف".localized) \(scenarioFocusTitle($0)) \("على مستوى".localized) \(difficultyTitle(plan.difficulty))."
+            } ?? "\("ابدأ بموقف تلقائي على مستوى".localized) \(difficultyTitle(plan.difficulty)).",
+            iconName: plan.iconName
         )
     }
 

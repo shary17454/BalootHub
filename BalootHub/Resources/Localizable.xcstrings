@@ -17398,6 +17398,46 @@
         }
       }
     },
+    "الموقف القادم" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next scenario"
+          }
+        }
+      }
+    },
+    "ابدأ بموقف" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start with a scenario"
+          }
+        }
+      }
+    },
+    "على مستوى" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "at level"
+          }
+        }
+      }
+    },
+    "ابدأ بموقف تلقائي على مستوى" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start with an automatic scenario at level"
+          }
+        }
+      }
+    },
     "ارجع خطوة تكتيكية" : {
       "localizations" : {
         "en" : {

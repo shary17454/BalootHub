@@ -1348,6 +1348,33 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(plan.successMetric, "هدف الجلسة: 3 إجابات صحيحة من 4.".localized)
     }
 
+    func testNextScenarioRecommendationUsesFocusTrainingPriorityWhenAvailable() {
+        let attempts = [
+            attempt(daysAgo: 6, correct: false, impact: -1, bestImpact: 1, focusKind: .openingLead),
+            attempt(daysAgo: 5, correct: true, impact: 1, bestImpact: 1, focusKind: .openingLead),
+            attempt(daysAgo: 4, correct: false, impact: -8, bestImpact: 4, focusKind: .trumpPressure),
+            attempt(daysAgo: 3, correct: true, impact: 2, bestImpact: 2, focusKind: .trumpPressure),
+            attempt(daysAgo: 2, correct: false, impact: -3, bestImpact: 2, focusKind: .followSuit),
+            attempt(daysAgo: 1, correct: true, impact: 2, bestImpact: 2, focusKind: .followSuit)
+        ]
+
+        let recommendation = WhatToPlayStatsAnalyzer.nextScenarioRecommendation(for: attempts)
+
+        XCTAssertEqual(recommendation.focusKind, .trumpPressure)
+        XCTAssertEqual(recommendation.title, "الموقف القادم".localized)
+        XCTAssertEqual(recommendation.iconName, "crown.fill")
+        XCTAssertTrue(recommendation.detail.contains("ضغط الحكم".localized))
+    }
+
+    func testNextScenarioRecommendationFallsBackToSessionPlanWithoutFocusPriority() {
+        let recommendation = WhatToPlayStatsAnalyzer.nextScenarioRecommendation(for: [])
+
+        XCTAssertEqual(recommendation.difficulty, .easy)
+        XCTAssertNil(recommendation.focusKind)
+        XCTAssertEqual(recommendation.title, "الموقف القادم".localized)
+        XCTAssertEqual(recommendation.iconName, "play.rectangle.fill")
+    }
+
     func testTrainingSessionProgressStartsNotStartedWithoutMatchingAttempts() {
         let plan = sessionPlan(difficulty: .hard, count: 3, target: 67)
         let attempts = [
