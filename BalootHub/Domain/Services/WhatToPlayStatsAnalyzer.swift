@@ -243,6 +243,8 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let correctAttemptsNeededForTarget: Int
     let totalExpectedImpact: Int
     let averageExpectedImpact: Int
+    let bestExpectedImpact: Int?
+    let worstExpectedImpact: Int?
     let impactTargetMet: Bool
     let averageExpectedImpactGap: Int
     let valueCapturePercent: Int
@@ -1150,6 +1152,8 @@ enum WhatToPlayStatsAnalyzer {
         let averageImpact = completed > 0
             ? Int((Double(totalImpact) / Double(completed)).rounded())
             : 0
+        let bestImpact = sessionAttempts.map(\.expectedImpact).max()
+        let worstImpact = sessionAttempts.map(\.expectedImpact).min()
         let accuracyTargetMet = completed > 0 && accuracy >= plan.targetAccuracyPercent
         let impactTargetMet = completed > 0 && averageImpact >= plan.targetAverageExpectedImpact
         let requiredCorrect = requiredCorrectAttempts(
@@ -1189,6 +1193,8 @@ enum WhatToPlayStatsAnalyzer {
                 correctAttemptsNeededForTarget: requiredCorrect,
                 totalExpectedImpact: 0,
                 averageExpectedImpact: 0,
+                bestExpectedImpact: nil,
+                worstExpectedImpact: nil,
                 impactTargetMet: false,
                 averageExpectedImpactGap: plan.targetAverageExpectedImpact,
                 valueCapturePercent: 0,
@@ -1226,6 +1232,8 @@ enum WhatToPlayStatsAnalyzer {
                 correctAttemptsNeededForTarget: correctNeeded,
                 totalExpectedImpact: totalImpact,
                 averageExpectedImpact: averageImpact,
+                bestExpectedImpact: bestImpact,
+                worstExpectedImpact: worstImpact,
                 impactTargetMet: impactTargetMet,
                 averageExpectedImpactGap: impactGap,
                 valueCapturePercent: sessionSummary.valueCapturePercent,
@@ -1263,6 +1271,8 @@ enum WhatToPlayStatsAnalyzer {
                 correctAttemptsNeededForTarget: 0,
                 totalExpectedImpact: totalImpact,
                 averageExpectedImpact: averageImpact,
+                bestExpectedImpact: bestImpact,
+                worstExpectedImpact: worstImpact,
                 impactTargetMet: true,
                 averageExpectedImpactGap: 0,
                 valueCapturePercent: sessionSummary.valueCapturePercent,
@@ -1299,6 +1309,8 @@ enum WhatToPlayStatsAnalyzer {
             correctAttemptsNeededForTarget: correctNeeded,
             totalExpectedImpact: totalImpact,
             averageExpectedImpact: averageImpact,
+            bestExpectedImpact: bestImpact,
+            worstExpectedImpact: worstImpact,
             impactTargetMet: impactTargetMet,
             averageExpectedImpactGap: impactGap,
             valueCapturePercent: sessionSummary.valueCapturePercent,

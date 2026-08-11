@@ -17530,6 +17530,20 @@
         }
       }
     },
+    "أفضل أثر" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bester Effekt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Best Impact" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Mejor impacto" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Meilleur impact" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सर्वश्रेष्ठ प्रभाव" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Dampak Terbaik" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Лучший эффект" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "En iyi etki" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "بہترین اثر" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "最佳影响" } }
+      }
+    },
     "أفضل سلسلة" : {
       "localizations" : {
         "en" : {
@@ -17538,6 +17552,20 @@
             "value" : "Best streak"
           }
         }
+      }
+    },
+    "أسوأ أثر" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Schlechtester Effekt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Worst Impact" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Peor impacto" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Pire impact" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सबसे खराब प्रभाव" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Dampak Terburuk" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Худший эффект" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "En kötü etki" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "بدترین اثر" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "最差影响" } }
       }
     },
     "أفضل ورقة" : {

@@ -688,6 +688,18 @@ struct WhatToPlayTrainerView: View {
                     title: "أثر الجلسة".localized,
                     value: impactText(progress.totalExpectedImpact)
                 )
+                if let bestExpectedImpact = progress.bestExpectedImpact {
+                    miniPlanMetric(
+                        title: "أفضل أثر".localized,
+                        value: impactText(bestExpectedImpact)
+                    )
+                }
+                if let worstExpectedImpact = progress.worstExpectedImpact {
+                    miniPlanMetric(
+                        title: "أسوأ أثر".localized,
+                        value: impactText(worstExpectedImpact)
+                    )
+                }
                 miniPlanMetric(
                     title: "باقي للدقة".localized,
                     value: "\(progress.correctAttemptsNeededForTarget)"
