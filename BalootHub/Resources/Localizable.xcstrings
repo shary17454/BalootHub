@@ -15,6 +15,34 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "预期影响" } }
       }
     },
+    "أثر الأفضل" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Effekt der besten Karte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Best impact" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Impacto de la mejor" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Impact de la meilleure" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सर्वश्रेष्ठ का प्रभाव" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Dampak terbaik" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Эффект лучшей карты" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "En iyi etkinin değeri" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "بہترین کا اثر" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "最佳影响" } }
+      }
+    },
+    "أثر ثاني أفضل" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Effekt der zweitbesten Karte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Second-best impact" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Impacto de la segunda mejor" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Impact de la deuxième meilleure" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "दूसरे सर्वश्रेष्ठ का प्रभाव" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Dampak terbaik kedua" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Эффект второй лучшей карты" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "İkinci en iyi etkinin değeri" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "دوسرے بہترین کا اثر" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "第二佳影响" } }
+      }
+    },
     "البذرة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Seed" } },

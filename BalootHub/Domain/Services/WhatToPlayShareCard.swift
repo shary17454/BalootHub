@@ -19,7 +19,9 @@ struct WhatToPlayShareCardContent: Equatable {
     let legalCardNames: [String]
     let selectedCardName: String?
     let bestCardName: String?
+    let bestExpectedImpact: Int?
     let secondBestCardName: String?
+    let secondBestExpectedImpact: Int?
     let lostExpectedPoints: Int?
     let lostAgainstSecondBestPoints: Int?
     let selectedRank: Int?
@@ -76,7 +78,9 @@ enum WhatToPlayShareCard {
             legalCardNames: sortedOptions(scenario.options).map { $0.card.accessibilityName },
             selectedCardName: selectedOption?.card.accessibilityName,
             bestCardName: best?.card.accessibilityName,
+            bestExpectedImpact: best?.expectedImpact,
             secondBestCardName: secondBest?.card.accessibilityName,
+            secondBestExpectedImpact: secondBest?.expectedImpact,
             lostExpectedPoints: lost,
             lostAgainstSecondBestPoints: lostAgainstSecondBest,
             selectedRank: selectedOption?.rank,
@@ -127,8 +131,14 @@ enum WhatToPlayShareCard {
             if let bestCardName = content.bestCardName {
                 lines.append("\("أفضل ورقة".localized): \(bestCardName)")
             }
+            if let bestExpectedImpact = content.bestExpectedImpact {
+                lines.append("\("أثر الأفضل".localized): \(impactText(bestExpectedImpact))")
+            }
             if let secondBestCardName = content.secondBestCardName {
                 lines.append("\("ثاني أفضل".localized): \(secondBestCardName)")
+            }
+            if let secondBestExpectedImpact = content.secondBestExpectedImpact {
+                lines.append("\("أثر ثاني أفضل".localized): \(impactText(secondBestExpectedImpact))")
             }
             if let selectedRank = content.selectedRank {
                 lines.append("\("ترتيب اختياري".localized): \(selectedRank)")

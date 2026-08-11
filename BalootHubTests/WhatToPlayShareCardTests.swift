@@ -83,6 +83,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertFalse(text.contains("أفضل ورقة:".localized))
         XCTAssertFalse(text.contains("الأفضل".localized))
         XCTAssertFalse(text.contains("ثاني أفضل:".localized))
+        XCTAssertFalse(text.contains("أثر الأفضل:".localized))
+        XCTAssertFalse(text.contains("أثر ثاني أفضل:".localized))
         XCTAssertFalse(text.contains("اختيار الخبير".localized))
     }
 
@@ -96,7 +98,9 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("مراجعة القرار".localized))
         XCTAssertTrue(text.contains("\("اختياري".localized): \(selected.card.accessibilityName)"))
         XCTAssertTrue(text.contains("\("أفضل ورقة".localized): \(best.card.accessibilityName)"))
+        XCTAssertTrue(text.contains("\("أثر الأفضل".localized): \(best.expectedImpact >= 0 ? "+\(best.expectedImpact)" : "\(best.expectedImpact)")"))
         XCTAssertTrue(text.contains("\("ثاني أفضل".localized): \(secondBest.card.accessibilityName)"))
+        XCTAssertTrue(text.contains("\("أثر ثاني أفضل".localized): \(secondBest.expectedImpact >= 0 ? "+\(secondBest.expectedImpact)" : "\(secondBest.expectedImpact)")"))
         XCTAssertTrue(text.contains("\("ترتيب اختياري".localized): \(selected.rank)"))
         XCTAssertTrue(text.contains("\("نقاط متوقعة ضائعة".localized): \(max(0, best.expectedImpact - selected.expectedImpact))"))
         XCTAssertTrue(text.contains("\("فارق عن ثاني أفضل".localized): \(max(0, secondBest.expectedImpact - selected.expectedImpact))"))
@@ -111,6 +115,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertFalse(WhatToPlayShareCard.content(for: scenario).includesAnswerReview)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).tacticalReasonTitle)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).secondBestCardName)
+        XCTAssertNil(WhatToPlayShareCard.content(for: scenario).bestExpectedImpact)
+        XCTAssertNil(WhatToPlayShareCard.content(for: scenario).secondBestExpectedImpact)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).lostAgainstSecondBestPoints)
 
         let reviewed = WhatToPlayShareCard.content(for: scenario, selectedOption: selected)
@@ -120,7 +126,9 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(reviewed.subtitle, "مراجعة قرار من Baloot Hub".localized)
         XCTAssertEqual(reviewed.selectedCardName, selected.card.accessibilityName)
         XCTAssertEqual(reviewed.bestCardName, selected.card.accessibilityName)
+        XCTAssertEqual(reviewed.bestExpectedImpact, selected.expectedImpact)
         XCTAssertEqual(reviewed.secondBestCardName, secondBest.card.accessibilityName)
+        XCTAssertEqual(reviewed.secondBestExpectedImpact, secondBest.expectedImpact)
         XCTAssertEqual(reviewed.lostExpectedPoints, 0)
         XCTAssertEqual(reviewed.lostAgainstSecondBestPoints, 0)
         XCTAssertEqual(reviewed.selectedImpact, selected.expectedImpact)

@@ -1970,8 +1970,14 @@ struct WhatToPlayTrainerView: View {
                         if let bestCardName = content.bestCardName {
                             shareChip("\("أفضل ورقة".localized): \(bestCardName)")
                         }
+                        if let bestExpectedImpact = content.bestExpectedImpact {
+                            shareChip("\("أثر الأفضل".localized): \(impactText(bestExpectedImpact))")
+                        }
                         if let secondBestCardName = content.secondBestCardName {
                             shareChip("\("ثاني أفضل".localized): \(secondBestCardName)")
+                        }
+                        if let secondBestExpectedImpact = content.secondBestExpectedImpact {
+                            shareChip("\("أثر ثاني أفضل".localized): \(impactText(secondBestExpectedImpact))")
                         }
                         if let selectedRank = content.selectedRank {
                             shareChip("\("ترتيب اختياري".localized): \(selectedRank)")
