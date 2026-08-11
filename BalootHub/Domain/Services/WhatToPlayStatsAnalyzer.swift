@@ -411,6 +411,9 @@ enum WhatToPlayDecisionPatternKind: Equatable {
     case clean
     case usefulAlternatives
     case pointLeaks
+    case opponentTrickClosure
+    case unprotectedPointDump
+    case costlyOpeningLead
 }
 
 struct WhatToPlayDecisionPattern: Equatable {
@@ -2152,6 +2155,10 @@ enum WhatToPlayStatsAnalyzer {
             )
         }
 
+        if let impactPattern = impactAwareDecisionPattern(recent: recent, mistakes: mistakes) {
+            return impactPattern
+        }
+
         let pointLeaks = mistakes.filter { $0.expectedImpact < 0 }
         let usefulAlternatives = mistakes.count - pointLeaks.count
         if pointLeaks.count >= usefulAlternatives {
@@ -2173,6 +2180,86 @@ enum WhatToPlayStatsAnalyzer {
             detail: "أغلب أخطائك ليست مدمرة، لكنها تفوّت أفضلية صغيرة. ركز على الفرق بين أفضل وثاني أفضل ورقة.".localized,
             iconName: "2.circle.fill"
         )
+    }
+
+    private static func impactAwareDecisionPattern(
+        recent: [WhatToPlayAttempt],
+        mistakes: [WhatToPlayAttempt]
+    ) -> WhatToPlayDecisionPattern? {
+        let trackedMistakes = mistakes.compactMap { attempt -> WhatToPlayOptionImpactBreakdown? in
+            guard attempt.expectedImpact < 0 else { return nil }
+            return attempt.impactBreakdown
+        }
+        guard trackedMistakes.count >= 2 else { return nil }
+
+        let opponentClosures = trackedMistakes.filter {
+            $0.completesTrick && $0.winsForPlayerTeam == false && $0.trickPointsSwing < 0
+        }.count
+        let unprotectedDumps = trackedMistakes.filter {
+            !$0.completesTrick && !$0.preservesLead && $0.playedCardPoints > 0 && $0.immediateImpact < 0
+        }.count
+        let costlyLeads = trackedMistakes.filter {
+            $0.preservesLead && $0.immediateImpact < 0
+        }.count
+
+        let candidates: [(kind: WhatToPlayDecisionPatternKind, count: Int)] = [
+            (.opponentTrickClosure, opponentClosures),
+            (.unprotectedPointDump, unprotectedDumps),
+            (.costlyOpeningLead, costlyLeads)
+        ]
+        let best = candidates.max { lhs, rhs in
+            if lhs.count == rhs.count {
+                return decisionPatternPriority(lhs.kind) < decisionPatternPriority(rhs.kind)
+            }
+            return lhs.count < rhs.count
+        }
+
+        guard let best, best.count >= 2 else { return nil }
+
+        switch best.kind {
+        case .opponentTrickClosure:
+            return WhatToPlayDecisionPattern(
+                kind: .opponentTrickClosure,
+                inspectedAttempts: recent.count,
+                affectedAttempts: best.count,
+                title: "تغلق الأكلة للخصم".localized,
+                detail: "أكثر من خطأ حديث أعطى الأكلة المكتملة للفريق الخصم. قبل الرمي، احسب من يربح الأكلة بعد ورقتك وهل تستحق النقاط التي ستضيفها.".localized,
+                iconName: "flag.slash.fill"
+            )
+        case .unprotectedPointDump:
+            return WhatToPlayDecisionPattern(
+                kind: .unprotectedPointDump,
+                inspectedAttempts: recent.count,
+                affectedAttempts: best.count,
+                title: "ترمي نقاطًا بلا حماية".localized,
+                detail: "تكرر رمي أوراق عليها نقاط قبل أن تُحسم الأكلة. لا تضف العشرة أو الآس إلا إذا كنت تكسب الأكلة أو شريكك غالبًا سيحميها.".localized,
+                iconName: "drop.triangle.fill"
+            )
+        case .costlyOpeningLead:
+            return WhatToPlayDecisionPattern(
+                kind: .costlyOpeningLead,
+                inspectedAttempts: recent.count,
+                affectedAttempts: best.count,
+                title: "افتتاحاتك مكلفة".localized,
+                detail: "بعض أخطائك جاءت من بداية الأكلة بورقة تخفض الأثر المتوقع. عند الافتتاح، اختر ورقة تكشف أقل قدر من قوتك أو تسحب الحكم لغرض واضح.".localized,
+                iconName: "arrow.up.forward.circle.fill"
+            )
+        case .noData, .clean, .usefulAlternatives, .pointLeaks:
+            return nil
+        }
+    }
+
+    private static func decisionPatternPriority(_ kind: WhatToPlayDecisionPatternKind) -> Int {
+        switch kind {
+        case .opponentTrickClosure:
+            return 3
+        case .unprotectedPointDump:
+            return 2
+        case .costlyOpeningLead:
+            return 1
+        case .noData, .clean, .usefulAlternatives, .pointLeaks:
+            return 0
+        }
     }
 
     static func coachingTip(for attempts: [WhatToPlayAttempt]) -> WhatToPlayCoachingTip {

@@ -1172,7 +1172,7 @@ struct WhatToPlayTrainerView: View {
             AppColor.success
         case .usefulAlternatives:
             AppColor.accent
-        case .pointLeaks:
+        case .pointLeaks, .opponentTrickClosure, .unprotectedPointDump, .costlyOpeningLead:
             AppColor.danger
         }
     }

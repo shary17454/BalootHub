@@ -1589,6 +1589,52 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(pattern.title, "أخطاء مكلفة".localized)
     }
 
+    func testDecisionPatternRecognizesOpponentTrickClosureFromImpactBreakdown() {
+        let attempts = [
+            attempt(daysAgo: 4, correct: false, impact: -8, impactBreakdown: .opponentTrickClosure(points: 18)),
+            attempt(daysAgo: 3, correct: false, impact: -3, impactBreakdown: .unprotectedPointDump(points: 10)),
+            attempt(daysAgo: 2, correct: false, impact: -6, impactBreakdown: .opponentTrickClosure(points: 14)),
+            attempt(daysAgo: 1, correct: true, impact: 2)
+        ]
+
+        let pattern = WhatToPlayStatsAnalyzer.decisionPattern(for: attempts)
+
+        XCTAssertEqual(pattern.kind, .opponentTrickClosure)
+        XCTAssertEqual(pattern.inspectedAttempts, 4)
+        XCTAssertEqual(pattern.affectedAttempts, 2)
+        XCTAssertEqual(pattern.title, "تغلق الأكلة للخصم".localized)
+    }
+
+    func testDecisionPatternRecognizesUnprotectedPointDumpFromImpactBreakdown() {
+        let attempts = [
+            attempt(daysAgo: 4, correct: false, impact: -4, impactBreakdown: .unprotectedPointDump(points: 10)),
+            attempt(daysAgo: 3, correct: false, impact: -5, impactBreakdown: .unprotectedPointDump(points: 11)),
+            attempt(daysAgo: 2, correct: false, impact: -2, impactBreakdown: .costlyOpeningLead(points: 0)),
+            attempt(daysAgo: 1, correct: true, impact: 3)
+        ]
+
+        let pattern = WhatToPlayStatsAnalyzer.decisionPattern(for: attempts)
+
+        XCTAssertEqual(pattern.kind, .unprotectedPointDump)
+        XCTAssertEqual(pattern.affectedAttempts, 2)
+        XCTAssertEqual(pattern.title, "ترمي نقاطًا بلا حماية".localized)
+    }
+
+    func testDecisionPatternRecognizesCostlyOpeningLeadFromImpactBreakdown() {
+        let attempts = [
+            attempt(daysAgo: 4, correct: false, impact: -4, impactBreakdown: .costlyOpeningLead(points: 4)),
+            attempt(daysAgo: 3, correct: false, impact: -3, impactBreakdown: .costlyOpeningLead(points: 0)),
+            attempt(daysAgo: 2, correct: false, impact: -1, impactBreakdown: .unprotectedPointDump(points: 10)),
+            attempt(daysAgo: 1, correct: true, impact: 3)
+        ]
+
+        let pattern = WhatToPlayStatsAnalyzer.decisionPattern(for: attempts)
+
+        XCTAssertEqual(pattern.kind, .costlyOpeningLead)
+        XCTAssertEqual(pattern.affectedAttempts, 2)
+        XCTAssertEqual(pattern.title, "افتتاحاتك مكلفة".localized)
+    }
+
     func testDecisionPatternUsesRecentLimit() {
         let attempts = [
             attempt(daysAgo: 5, correct: false, impact: -10),
@@ -2061,7 +2107,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         bestImpact: Int? = nil,
         selectedRank: Int? = nil,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
-        outcome: WhatToPlayOptionOutcome? = nil
+        outcome: WhatToPlayOptionOutcome? = nil,
+        impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil
     ) -> WhatToPlayAttempt {
         attempt(
             daysAgo: daysAgo,
@@ -2071,7 +2118,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             bestImpact: bestImpact,
             selectedRank: selectedRank,
             focusKind: focusKind,
-            outcome: outcome
+            outcome: outcome,
+            impactBreakdown: impactBreakdown
         )
     }
 
@@ -2085,7 +2133,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         secondBestCard: PlayingCard? = nil,
         secondBestImpact: Int? = nil,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
-        outcome: WhatToPlayOptionOutcome? = nil
+        outcome: WhatToPlayOptionOutcome? = nil,
+        impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil
     ) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
             createdAt: Date(timeIntervalSince1970: 2_000_000 - daysAgo * 86_400),
@@ -2100,7 +2149,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             bestExpectedImpact: bestImpact,
             secondBestExpectedImpact: secondBestImpact,
             focusKind: focusKind,
-            outcome: outcome
+            outcome: outcome,
+            impactBreakdown: impactBreakdown
         )
     }
 
@@ -2115,5 +2165,40 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         case .narrowChoice:
             "عندما تكون الخيارات قليلة، رتّبها حسب أقل خسارة لا حسب أعلى ورقة.".localized
         }
+    }
+}
+
+private extension WhatToPlayOptionImpactBreakdown {
+    static func opponentTrickClosure(points: Int) -> Self {
+        WhatToPlayOptionImpactBreakdown(
+            playedCardPoints: points,
+            immediateImpact: -points,
+            trickPointsSwing: -points,
+            completesTrick: true,
+            winsForPlayerTeam: false,
+            preservesLead: false
+        )
+    }
+
+    static func unprotectedPointDump(points: Int) -> Self {
+        WhatToPlayOptionImpactBreakdown(
+            playedCardPoints: points,
+            immediateImpact: -points,
+            trickPointsSwing: 0,
+            completesTrick: false,
+            winsForPlayerTeam: nil,
+            preservesLead: false
+        )
+    }
+
+    static func costlyOpeningLead(points: Int) -> Self {
+        WhatToPlayOptionImpactBreakdown(
+            playedCardPoints: points,
+            immediateImpact: -max(1, points),
+            trickPointsSwing: 0,
+            completesTrick: false,
+            winsForPlayerTeam: nil,
+            preservesLead: true
+        )
     }
 }

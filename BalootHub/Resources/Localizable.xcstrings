@@ -15,6 +15,90 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "预期影响" } }
       }
     },
+    "أكثر من خطأ حديث أعطى الأكلة المكتملة للفريق الخصم. قبل الرمي، احسب من يربح الأكلة بعد ورقتك وهل تستحق النقاط التي ستضيفها." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Mehr als ein aktueller Fehler gab den fertigen Stich dem Gegnerteam. Berechne vor dem Ausspielen, wer den Stich nach deiner Karte gewinnt und ob die Punkte es wert sind." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "More than one recent mistake handed the completed trick to the opponents. Before playing, calculate who wins the trick after your card and whether the points you add are worth it." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Más de un error reciente entregó la baza completa al rival. Antes de jugar, calcula quién gana la baza después de tu carta y si los puntos que añades valen la pena." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Plus d'une erreur récente a donné le pli terminé à l'équipe adverse. Avant de jouer, calcule qui gagne le pli après ta carte et si les points ajoutés en valent la peine." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "हाल की एक से अधिक गलतियों ने पूरी बाज़ी विरोधी टीम को दे दी। खेलने से पहले देखें कि आपकी पत्ती के बाद बाज़ी कौन जीतेगा और जो अंक आप जोड़ रहे हैं वे उचित हैं या नहीं।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Lebih dari satu kesalahan terbaru menyerahkan trik selesai kepada lawan. Sebelum bermain, hitung siapa yang menang setelah kartumu dan apakah poin yang kamu tambahkan sepadan." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Более одной недавней ошибки отдала завершенную взятку соперникам. Перед ходом посчитайте, кто выиграет взятку после вашей карты и стоят ли добавленные очки риска." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Son hatalardan birden fazlası tamamlanan eli rakibe verdi. Oynamadan önce kartından sonra eli kimin alacağını ve eklediğin puanların buna değip değmediğini hesapla." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "حالیہ ایک سے زیادہ غلطیوں نے مکمل چال مخالف ٹیم کو دے دی۔ پتا پھینکنے سے پہلے حساب کریں کہ آپ کے پتے کے بعد چال کون جیتے گا اور کیا شامل ہونے والے پوائنٹس قابل ہیں۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "最近不止一次失误把已完成的一墩送给对手。出牌前先计算你出牌后谁会赢这一墩，以及你加入的分值是否值得。" } }
+      }
+    },
+    "افتتاحاتك مكلفة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Deine Eröffnungen sind teuer" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your opening leads are costly" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tus salidas son costosas" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tes entames coûtent cher" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आपकी शुरुआती चालें महंगी पड़ रही हैं" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Pembukaanmu mahal" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Ваши первые ходы обходятся дорого" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Açılışların maliyetli" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ کی ابتدائی چالیں مہنگی پڑ رہی ہیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你的首攻代价较高" } }
+      }
+    },
+    "بعض أخطائك جاءت من بداية الأكلة بورقة تخفض الأثر المتوقع. عند الافتتاح، اختر ورقة تكشف أقل قدر من قوتك أو تسحب الحكم لغرض واضح." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Einige Fehler entstehen, weil du den Stich mit einer Karte beginnst, die den erwarteten Effekt senkt. Wähle beim Eröffnen eine Karte, die wenig Stärke verrät oder Trumpf aus einem klaren Grund zieht." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Some mistakes came from leading a trick with a card that lowers expected impact. When opening, choose a card that reveals less of your strength or pulls trump for a clear reason." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Algunos errores vinieron de iniciar la baza con una carta que reduce el impacto esperado. Al salir, elige una carta que revele menos fuerza o que saque triunfo con un motivo claro." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Certaines erreurs viennent d'une entame qui réduit l'impact attendu. À l'entame, choisis une carte qui révèle moins ta force ou qui tire l'atout pour une raison claire." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कुछ गलतियाँ ऐसी पत्ती से बाज़ी शुरू करने से आईं जो अपेक्षित प्रभाव घटाती है। शुरुआत में ऐसी पत्ती चुनें जो आपकी ताकत कम दिखाए या साफ कारण से हुकुम निकाले।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Beberapa kesalahan berasal dari membuka trik dengan kartu yang menurunkan dampak yang diharapkan. Saat membuka, pilih kartu yang tidak banyak membuka kekuatanmu atau menarik trump dengan alasan jelas." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Часть ошибок связана с началом взятки картой, снижающей ожидаемый эффект. При заходе выбирайте карту, которая меньше раскрывает силу, или тяните козырь с понятной целью." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Bazı hataların, beklenen etkiyi düşüren bir kartla eli açmaktan geldi. Açılışta gücünü az gösteren ya da net bir amaçla kozu çeken kartı seç." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "کچھ غلطیاں ایسی چال شروع کرنے سے ہوئیں جس سے متوقع اثر کم ہوا۔ آغاز پر ایسا پتا چنیں جو آپ کی طاقت کم ظاہر کرے یا واضح مقصد سے حکم نکالے۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "部分失误来自用会降低预期影响的牌开墩。首攻时选择较少暴露实力的牌，或在有明确目的时引出将牌。" } }
+      }
+    },
+    "تغلق الأكلة للخصم" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Du schließt den Stich für den Gegner" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You close the trick for the opponent" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Cierras la baza para el rival" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu fermes le pli pour l'adversaire" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आप बाज़ी विरोधी के लिए बंद कर रहे हैं" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kamu menutup trik untuk lawan" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Вы закрываете взятку в пользу соперника" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Eli rakip için kapatıyorsun" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ چال مخالف کے لیے بند کر رہے ہیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你把这一墩送给了对手" } }
+      }
+    },
+    "ترمي نقاطًا بلا حماية" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Du wirfst Punkte ungeschützt ab" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You throw points without cover" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tiras puntos sin protección" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu jettes des points sans protection" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आप बिना सुरक्षा के अंक फेंक रहे हैं" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kamu membuang poin tanpa perlindungan" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Вы сбрасываете очки без защиты" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Korumasız puan atıyorsun" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ بغیر حفاظت کے پوائنٹس پھینک رہے ہیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你在无保护地丢分牌" } }
+      }
+    },
+    "تكرر رمي أوراق عليها نقاط قبل أن تُحسم الأكلة. لا تضف العشرة أو الآس إلا إذا كنت تكسب الأكلة أو شريكك غالبًا سيحميها." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Du wirfst wiederholt Punktekarten, bevor der Stich entschieden ist. Lege Zehn oder Ass nur dazu, wenn du den Stich gewinnst oder dein Partner ihn wahrscheinlich schützt." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You repeatedly play point cards before the trick is decided. Do not add a ten or ace unless you are winning the trick or your partner will likely protect it." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Repites cartas con puntos antes de que la baza esté decidida. No añadas el diez o el as salvo que ganes la baza o tu compañero probablemente la proteja." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu joues souvent des cartes à points avant que le pli soit décidé. N'ajoute pas le dix ou l'as sauf si tu gagnes le pli ou si ton partenaire va probablement le protéger." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आप बाज़ी तय होने से पहले बार-बार अंक वाली पत्तियाँ खेल रहे हैं। दस या इक्का तभी डालें जब आप बाज़ी जीत रहे हों या साथी संभवतः उसे बचा लेगा।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kamu berulang kali memainkan kartu bernilai sebelum trik ditentukan. Jangan tambahkan sepuluh atau ace kecuali kamu menang trik atau pasanganmu kemungkinan melindunginya." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Вы часто кладете карты с очками до того, как взятка решена. Не добавляйте десятку или туза, если не выигрываете взятку или партнер, вероятно, ее защитит." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "El belli olmadan puanlı kartları tekrar tekrar oynuyorsun. Eli kazanmadıkça ya da ortağın muhtemelen korumadıkça onlu veya as ekleme." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ چال طے ہونے سے پہلے بار بار پوائنٹ والے پتے کھیل رہے ہیں۔ دس یا اکا تبھی ڈالیں جب آپ چال جیت رہے ہوں یا ساتھی غالباً اسے بچائے گا۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你多次在这一墩尚未确定前打出有分值的牌。除非你能赢这一墩，或队友很可能保护它，否则不要加入10或A。" } }
+      }
+    },
     "تفصيل الأثر" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Effektdetails" } },
