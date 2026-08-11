@@ -18284,6 +18284,16 @@
         }
       }
     },
+    "إعادة الموقف" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Replay scenario"
+          }
+        }
+      }
+    },
     "نمط قراراتك غير معروف" : {
       "localizations" : {
         "en" : {

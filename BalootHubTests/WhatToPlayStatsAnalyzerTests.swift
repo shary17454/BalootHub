@@ -80,6 +80,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(queue.map(\.expectedImpact), [-8, -5, -2])
         XCTAssertEqual(queue.first?.difficulty, .hard)
+        XCTAssertEqual(queue.first?.seed, 3)
         XCTAssertEqual(queue.first?.title, "راجع اختيارًا مكلفًا".localized)
     }
 

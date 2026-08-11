@@ -1125,6 +1125,16 @@ struct WhatToPlayTrainerView: View {
                     .foregroundStyle(AppColor.textSecondary)
                     .lineLimit(2)
                     .minimumScaleFactor(0.85)
+
+                Button {
+                    replayReviewItem(item)
+                } label: {
+                    Label("إعادة الموقف".localized, systemImage: "arrow.clockwise")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .tint(AppColor.primary)
+                .disabled(isGeneratingScenario)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -1495,6 +1505,16 @@ struct WhatToPlayTrainerView: View {
     private func nextScenario() {
         seed &+= 1
         generateScenario()
+    }
+
+    private func replayReviewItem(_ item: WhatToPlayReviewItem) {
+        seed = item.seed
+        selectedOption = nil
+        if difficulty == item.difficulty {
+            generateScenario()
+        } else {
+            difficulty = item.difficulty
+        }
     }
 
     private func startRecommendedPractice() {
