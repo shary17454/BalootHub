@@ -1340,6 +1340,30 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(plan.title, "جلسة تأسيس قصيرة".localized)
     }
 
+    func testNextTrainingSessionSeedIsStableForSameAttemptsAndPlan() {
+        let plan = WhatToPlayStatsAnalyzer.trainingSessionPlan(for: [])
+
+        let first = WhatToPlayStatsAnalyzer.nextTrainingSessionSeed(for: [], plan: plan)
+        let second = WhatToPlayStatsAnalyzer.nextTrainingSessionSeed(for: [], plan: plan)
+
+        XCTAssertEqual(first, second)
+        XCTAssertEqual(first, 9_003_600)
+    }
+
+    func testNextTrainingSessionSeedAdvancesOnlyForMatchingPlanAttempts() {
+        let plan = sessionPlan(difficulty: .medium, focusKind: .trumpPressure, count: 4, target: 70, impactTarget: 1)
+        let attempts = [
+            attempt(daysAgo: 4, difficulty: .easy, correct: true, impact: 2, focusKind: .trumpPressure),
+            attempt(daysAgo: 3, difficulty: .medium, correct: false, impact: -2, focusKind: .openingLead),
+            attempt(daysAgo: 2, difficulty: .medium, correct: true, impact: 3, focusKind: .trumpPressure),
+            attempt(daysAgo: 1, difficulty: .medium, correct: false, impact: -1, focusKind: .trumpPressure)
+        ]
+
+        let seed = WhatToPlayStatsAnalyzer.nextTrainingSessionSeed(for: attempts, plan: plan)
+
+        XCTAssertEqual(seed, 10_204_703)
+    }
+
     func testTrainingSessionPlanPrioritizesReviewWhenRecentAttemptsNeedIt() {
         let attempts = [
             attempt(daysAgo: 4, difficulty: .medium, correct: true, impact: 5, bestImpact: 5, focusKind: .openingLead),

@@ -2311,8 +2311,9 @@ struct WhatToPlayTrainerView: View {
 
     private func startTrainingSessionPlan() {
         let targetFocusRaw = trainingSessionPlan.focusKind?.rawValue ?? "auto"
+        seed = WhatToPlayStatsAnalyzer.nextTrainingSessionSeed(for: attempts, plan: trainingSessionPlan)
         if difficulty == trainingSessionPlan.difficulty, preferredFocusRaw == targetFocusRaw {
-            nextScenario()
+            generateScenario()
         } else {
             difficulty = trainingSessionPlan.difficulty
             preferredFocusRaw = targetFocusRaw
