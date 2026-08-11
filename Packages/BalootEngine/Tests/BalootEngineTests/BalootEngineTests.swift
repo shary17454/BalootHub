@@ -150,6 +150,91 @@ struct LegalMoveValidatorTests {
             Issue.record("توقعنا فشل التحقق")
         }
     }
+
+    @Test("سبب الرفض يميز وجوب القطع عن التعلية عند عدم وجود حكم مطروح")
+    func invalidReasonIsMustTrumpWhenVoidBeforeAnyTrumpIsPlayed() {
+        let hand = [
+            PlayingCard(suit: .diamonds, rank: .ace),
+            PlayingCard(suit: .clubs, rank: .jack)
+        ]
+        let trick = Trick(
+            playedCards: [PlayedCard(playerID: UUID(), card: PlayingCard(suit: .hearts, rank: .seven))],
+            leaderSeat: .south
+        )
+
+        let result = LegalMoveValidator.validate(
+            card: PlayingCard(suit: .diamonds, rank: .ace),
+            hand: hand,
+            trick: trick,
+            mode: .hokum,
+            trumpSuit: .clubs,
+            rules: .tournament
+        )
+
+        if case .failure(let reason) = result {
+            #expect(reason == .mustPlayTrumpWhenVoidOfSuit)
+        } else {
+            Issue.record("توقعنا فشل التحقق")
+        }
+    }
+
+    @Test("سبب الرفض يكون تعلية الحكم عند وجود حكم مطروح ولدى اللاعب أعلى منه")
+    func invalidReasonIsMustOvertrumpWhenHigherTrumpIsAvailable() {
+        let hand = [
+            PlayingCard(suit: .diamonds, rank: .ace),
+            PlayingCard(suit: .clubs, rank: .seven),
+            PlayingCard(suit: .clubs, rank: .jack)
+        ]
+        let trick = Trick(
+            playedCards: [
+                PlayedCard(playerID: UUID(), card: PlayingCard(suit: .hearts, rank: .seven)),
+                PlayedCard(playerID: UUID(), card: PlayingCard(suit: .clubs, rank: .nine))
+            ],
+            leaderSeat: .south
+        )
+
+        let result = LegalMoveValidator.validate(
+            card: PlayingCard(suit: .clubs, rank: .seven),
+            hand: hand,
+            trick: trick,
+            mode: .hokum,
+            trumpSuit: .clubs,
+            rules: .tournament
+        )
+
+        if case .failure(let reason) = result {
+            #expect(reason == .mustOvertrump)
+        } else {
+            Issue.record("توقعنا فشل التحقق")
+        }
+    }
+
+    @Test("سبب الرفض يكون تعلية الحكم عندما يكون اللون المطلوب هو الحكم")
+    func invalidReasonIsMustOvertrumpWhenRequiredSuitIsTrump() {
+        let hand = [
+            PlayingCard(suit: .clubs, rank: .seven),
+            PlayingCard(suit: .clubs, rank: .jack)
+        ]
+        let trick = Trick(
+            playedCards: [PlayedCard(playerID: UUID(), card: PlayingCard(suit: .clubs, rank: .nine))],
+            leaderSeat: .south
+        )
+
+        let result = LegalMoveValidator.validate(
+            card: PlayingCard(suit: .clubs, rank: .seven),
+            hand: hand,
+            trick: trick,
+            mode: .hokum,
+            trumpSuit: .clubs,
+            rules: .tournament
+        )
+
+        if case .failure(let reason) = result {
+            #expect(reason == .mustOvertrump)
+        } else {
+            Issue.record("توقعنا فشل التحقق")
+        }
+    }
 }
 
 // MARK: - Trick winner & scoring

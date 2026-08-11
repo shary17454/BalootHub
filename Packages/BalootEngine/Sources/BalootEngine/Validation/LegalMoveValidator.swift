@@ -73,9 +73,40 @@ public enum LegalMoveValidator {
 
         let legal = legalCards(hand: hand, trick: trick, mode: mode, trumpSuit: trumpSuit, rules: rules)
         guard legal.contains(card) else {
-            if let trick, let requiredSuit = trick.requiredSuit, hand.contains(where: { $0.suit == requiredSuit }) {
+            guard let trick, let requiredSuit = trick.requiredSuit else {
+                return .failure(.wrongPhase)
+            }
+
+            if mode == .hokum,
+               requiredSuit == trumpSuit,
+               rules.mustOvertrump,
+               card.suit == requiredSuit,
+               hand.contains(where: { $0.suit == requiredSuit }) {
+                return .failure(.mustOvertrump)
+            }
+
+            if hand.contains(where: { $0.suit == requiredSuit }) {
                 return .failure(.mustFollowSuit)
             }
+
+            if mode == .hokum,
+               let trumpSuit,
+               rules.mustTrumpWhenVoid,
+               hand.contains(where: { $0.suit == trumpSuit }) {
+                if rules.mustOvertrump,
+                   let highestTrumpInTrick = trick.playedCards
+                       .filter({ $0.card.suit == trumpSuit })
+                       .map({ $0.card.strength(mode: mode, trumpSuit: trumpSuit) })
+                       .max(),
+                   hand.contains(where: {
+                       $0.suit == trumpSuit &&
+                       $0.strength(mode: mode, trumpSuit: trumpSuit) > highestTrumpInTrick
+                   }) {
+                    return .failure(.mustOvertrump)
+                }
+                return .failure(.mustPlayTrumpWhenVoidOfSuit)
+            }
+
             if mode == .hokum, rules.mustOvertrump {
                 return .failure(.mustOvertrump)
             }
