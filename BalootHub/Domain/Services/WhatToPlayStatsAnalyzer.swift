@@ -2311,6 +2311,24 @@ enum WhatToPlayStatsAnalyzer {
             )
         }
 
+        if let highValueReview = reviewQueue(for: attempts, limit: 1).first,
+           highValueReview.valueLossSeverity == .high {
+            return WhatToPlayMicroDrill(
+                title: "خطة المراجعة".localized,
+                detail: "الأولوية الآن ليست كثرة المواقف، بل فهم سبب الخطأ الأخير.".localized,
+                iconName: "drop.fill",
+                steps: [
+                    "\("خسارة قيمة عالية".localized): \(highValueReview.lostExpectedPoints)",
+                    "\("أعد موقف".localized) \(difficultyTitle(highValueReview.difficulty))",
+                    "قارن أفضل وثاني أفضل".localized
+                ],
+                reviewItem: highValueReview,
+                seed: nil,
+                difficulty: highValueReview.difficulty,
+                focusKind: highValueReview.focusKind
+            )
+        }
+
         let coverage = practiceCoverage(for: attempts)
         if !coverage.isBalanced {
             let targetDifficulty = coverage.missingDifficulties.first ?? .easy
