@@ -42,6 +42,22 @@ public struct WhatToPlayOptionImpactBreakdown: Sendable, Codable, Equatable {
     public let winsForPlayerTeam: Bool?
     public let preservesLead: Bool
 
+    public init(
+        playedCardPoints: Int,
+        immediateImpact: Int,
+        trickPointsSwing: Int,
+        completesTrick: Bool,
+        winsForPlayerTeam: Bool?,
+        preservesLead: Bool
+    ) {
+        self.playedCardPoints = playedCardPoints
+        self.immediateImpact = immediateImpact
+        self.trickPointsSwing = trickPointsSwing
+        self.completesTrick = completesTrick
+        self.winsForPlayerTeam = winsForPlayerTeam
+        self.preservesLead = preservesLead
+    }
+
     public var signedImpact: Int {
         completesTrick ? trickPointsSwing : immediateImpact
     }

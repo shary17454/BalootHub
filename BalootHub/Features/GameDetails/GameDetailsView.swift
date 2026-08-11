@@ -1637,6 +1637,13 @@ struct WhatToPlayTrainerView: View {
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(optionOutcomeTint(outcome))
                 }
+                if let breakdown = attempt.impactBreakdown {
+                    Text(WhatToPlayImpactFormatter.detail(for: breakdown))
+                        .font(.caption2)
+                        .foregroundStyle(AppColor.textSecondary)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
 
             Spacer()
@@ -2131,7 +2138,8 @@ struct WhatToPlayTrainerView: View {
                 bestExpectedImpact: scenario.bestOption?.expectedImpact,
                 secondBestExpectedImpact: scenario.secondBestOption?.expectedImpact,
                 focusKind: scenario.context.focusKind,
-                outcome: evaluated.outcome
+                outcome: evaluated.outcome,
+                impactBreakdown: evaluated.impactBreakdown
             )
             modelContext.insert(attempt)
             try? modelContext.save()

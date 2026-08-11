@@ -205,6 +205,14 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         let selected = PlayingCard(suit: .spades, rank: .ace)
         let best = PlayingCard(suit: .hearts, rank: .jack)
         let secondBest = PlayingCard(suit: .diamonds, rank: .ace)
+        let breakdown = WhatToPlayOptionImpactBreakdown(
+            playedCardPoints: 11,
+            immediateImpact: -25,
+            trickPointsSwing: -25,
+            completesTrick: true,
+            winsForPlayerTeam: false,
+            preservesLead: false
+        )
         let attempt = WhatToPlayAttempt(
             difficulty: .hard,
             seed: 2_026,
@@ -217,7 +225,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             bestExpectedImpact: 4,
             secondBestExpectedImpact: 2,
             focusKind: .trumpPressure,
-            outcome: .losesTrick
+            outcome: .losesTrick,
+            impactBreakdown: breakdown
         )
 
         context.insert(attempt)
@@ -237,6 +246,13 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(saved.lostExpectedPoints, 10)
         XCTAssertEqual(saved.focusKind, .trumpPressure)
         XCTAssertEqual(saved.outcome, .losesTrick)
+        XCTAssertEqual(saved.impactBreakdown, breakdown)
+        XCTAssertEqual(saved.selectedCardPoints, 11)
+        XCTAssertEqual(saved.selectedImmediateImpact, -25)
+        XCTAssertEqual(saved.selectedTrickPointsSwing, -25)
+        XCTAssertEqual(saved.selectedCompletesTrick, true)
+        XCTAssertEqual(saved.selectedWinsForPlayerTeam, false)
+        XCTAssertEqual(saved.selectedPreservesLead, false)
     }
 
     func testAttemptWithoutBestExpectedImpactKeepsBackwardCompatibleZeroLoss() {
@@ -265,6 +281,25 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertNil(attempt.outcomeRaw)
         XCTAssertNil(attempt.outcome)
+    }
+
+    func testAttemptWithoutImpactBreakdownKeepsBackwardCompatibleNilBreakdown() {
+        let attempt = WhatToPlayAttempt(
+            difficulty: .medium,
+            seed: 99,
+            selectedCard: PlayingCard(suit: .clubs, rank: .seven),
+            bestCard: PlayingCard(suit: .clubs, rank: .ace),
+            isCorrect: false,
+            expectedImpact: -4
+        )
+
+        XCTAssertNil(attempt.selectedCardPoints)
+        XCTAssertNil(attempt.selectedImmediateImpact)
+        XCTAssertNil(attempt.selectedTrickPointsSwing)
+        XCTAssertNil(attempt.selectedCompletesTrick)
+        XCTAssertNil(attempt.selectedWinsForPlayerTeam)
+        XCTAssertNil(attempt.selectedPreservesLead)
+        XCTAssertNil(attempt.impactBreakdown)
     }
 
     func testAttemptWithoutSecondBestKeepsBackwardCompatibleNilSecondBest() {

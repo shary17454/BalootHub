@@ -21,6 +21,12 @@ final class WhatToPlayAttempt {
     var secondBestExpectedImpact: Int?
     var focusKindRaw: String?
     var outcomeRaw: String?
+    var selectedCardPoints: Int?
+    var selectedImmediateImpact: Int?
+    var selectedTrickPointsSwing: Int?
+    var selectedCompletesTrick: Bool?
+    var selectedWinsForPlayerTeam: Bool?
+    var selectedPreservesLead: Bool?
 
     init(
         id: UUID = UUID(),
@@ -36,7 +42,8 @@ final class WhatToPlayAttempt {
         bestExpectedImpact: Int? = nil,
         secondBestExpectedImpact: Int? = nil,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
-        outcome: WhatToPlayOptionOutcome? = nil
+        outcome: WhatToPlayOptionOutcome? = nil,
+        impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil
     ) {
         self.id = id
         self.createdAt = createdAt
@@ -55,6 +62,12 @@ final class WhatToPlayAttempt {
         self.secondBestExpectedImpact = secondBestExpectedImpact
         self.focusKindRaw = focusKind?.rawValue
         self.outcomeRaw = outcome?.rawValue
+        self.selectedCardPoints = impactBreakdown?.playedCardPoints
+        self.selectedImmediateImpact = impactBreakdown?.immediateImpact
+        self.selectedTrickPointsSwing = impactBreakdown?.trickPointsSwing
+        self.selectedCompletesTrick = impactBreakdown?.completesTrick
+        self.selectedWinsForPlayerTeam = impactBreakdown?.winsForPlayerTeam
+        self.selectedPreservesLead = impactBreakdown?.preservesLead
     }
 
     var difficulty: WhatToPlayDifficulty {
@@ -97,5 +110,23 @@ final class WhatToPlayAttempt {
     var outcome: WhatToPlayOptionOutcome? {
         guard let outcomeRaw else { return nil }
         return WhatToPlayOptionOutcome(rawValue: outcomeRaw)
+    }
+
+    var impactBreakdown: WhatToPlayOptionImpactBreakdown? {
+        guard let selectedCardPoints,
+              let selectedImmediateImpact,
+              let selectedTrickPointsSwing,
+              let selectedCompletesTrick,
+              let selectedPreservesLead
+        else { return nil }
+
+        return WhatToPlayOptionImpactBreakdown(
+            playedCardPoints: selectedCardPoints,
+            immediateImpact: selectedImmediateImpact,
+            trickPointsSwing: selectedTrickPointsSwing,
+            completesTrick: selectedCompletesTrick,
+            winsForPlayerTeam: selectedWinsForPlayerTeam,
+            preservesLead: selectedPreservesLead
+        )
     }
 }
