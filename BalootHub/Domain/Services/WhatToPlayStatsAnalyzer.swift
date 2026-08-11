@@ -158,6 +158,9 @@ struct WhatToPlayReviewItem: Equatable, Identifiable {
     let tacticalReasonTitle: String?
     let tacticalReasonDetail: String?
     let tacticalReasonIconName: String?
+    let simulationSummary: String?
+    let simulationTeamResult: String?
+    let simulationTrickPoints: Int?
 }
 
 struct WhatToPlayReviewPriority: Equatable {
@@ -865,8 +868,30 @@ enum WhatToPlayStatsAnalyzer {
                 iconName: reviewIconName(isCostly: isCostly, isMissedOpportunity: isMissedOpportunity),
                 tacticalReasonTitle: tacticalReason?.title,
                 tacticalReasonDetail: tacticalReason?.detail,
-                tacticalReasonIconName: tacticalReason?.iconName
+                tacticalReasonIconName: tacticalReason?.iconName,
+                simulationSummary: simulationSummary(for: attempt),
+                simulationTeamResult: simulationTeamResult(for: attempt),
+                simulationTrickPoints: attempt.simulationCompletedTrickPoints
             )
+        }
+    }
+
+    private static func simulationSummary(for attempt: WhatToPlayAttempt) -> String? {
+        guard let currentTrickCardCount = attempt.simulationCurrentTrickCardCount else { return nil }
+        if attempt.simulationCompletedTrickWonByPlayerTeam != nil {
+            return "تكتمل الأكلة وتنتقل للفائز.".localized
+        }
+        return "\("تبقى الأكلة مفتوحة".localized) · \(currentTrickCardCount) \("أوراق على الطاولة".localized)"
+    }
+
+    private static func simulationTeamResult(for attempt: WhatToPlayAttempt) -> String? {
+        switch attempt.simulationCompletedTrickWonByPlayerTeam {
+        case .some(true):
+            return "لفريقك".localized
+        case .some(false):
+            return "للخصم".localized
+        case .none:
+            return nil
         }
     }
 

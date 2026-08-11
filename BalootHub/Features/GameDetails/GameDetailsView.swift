@@ -1833,6 +1833,27 @@ struct WhatToPlayTrainerView: View {
                         .minimumScaleFactor(0.85)
                 }
 
+                if let simulationSummary = item.simulationSummary {
+                    Label {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("\("نتيجة المحاكاة".localized): \(simulationSummary)")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(AppColor.textPrimary)
+                            if let simulationTeamResult = item.simulationTeamResult {
+                                Text("\("اتجاه الأكلة".localized): \(simulationTeamResult)\(simulationPointsSuffix(item.simulationTrickPoints))")
+                                    .font(.caption2)
+                                    .foregroundStyle(AppColor.textSecondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                    } icon: {
+                        Image(systemName: item.simulationTeamResult == nil ? "rectangle.stack.fill" : "flag.checkered")
+                            .foregroundStyle(AppColor.accent)
+                    }
+                    .padding(AppSpacing.xs)
+                    .background(AppColor.accent.opacity(0.1), in: RoundedRectangle(cornerRadius: AppRadius.small))
+                }
+
                 if let title = item.tacticalReasonTitle,
                    let detail = item.tacticalReasonDetail,
                    let iconName = item.tacticalReasonIconName {
@@ -1891,6 +1912,11 @@ struct WhatToPlayTrainerView: View {
     private func secondBestImpactSuffix(_ impact: Int?) -> String {
         guard let impact else { return "" }
         return " · \(impactText(impact))"
+    }
+
+    private func simulationPointsSuffix(_ points: Int?) -> String {
+        guard let points else { return "" }
+        return " · \("نقاط الأكلة".localized): \(points)"
     }
 
     private func scenarioSummary(_ scenario: WhatToPlayScenario) -> some View {

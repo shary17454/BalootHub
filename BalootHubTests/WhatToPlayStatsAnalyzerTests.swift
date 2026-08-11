@@ -598,6 +598,85 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(queue.first?.focusKind, .followSuit)
     }
 
+    func testReviewQueueCarriesCompletedTrickSimulationOutcome() throws {
+        let winnerID = UUID()
+        let simulation = WhatToPlayOptionSimulation(
+            phaseAfterPlay: .playing,
+            currentTrickCardCount: 0,
+            completedTrickWinnerID: winnerID,
+            completedTrickWinnerTeamID: UUID(),
+            completedTrickWonByPlayerTeam: false,
+            completedTrickPoints: 18,
+            nextTurnPlayerID: winnerID,
+            playerRemainingCards: 4,
+            actionHistoryCount: 12
+        )
+
+        let item = try XCTUnwrap(
+            WhatToPlayStatsAnalyzer.reviewQueue(
+                for: [
+                    attempt(
+                        daysAgo: 1,
+                        correct: false,
+                        impact: -6,
+                        bestImpact: 2,
+                        simulation: simulation
+                    )
+                ]
+            ).first
+        )
+
+        XCTAssertEqual(item.simulationSummary, "تكتمل الأكلة وتنتقل للفائز.".localized)
+        XCTAssertEqual(item.simulationTeamResult, "للخصم".localized)
+        XCTAssertEqual(item.simulationTrickPoints, 18)
+    }
+
+    func testReviewQueueCarriesOpenTrickSimulationOutcome() throws {
+        let simulation = WhatToPlayOptionSimulation(
+            phaseAfterPlay: .playing,
+            currentTrickCardCount: 2,
+            completedTrickWinnerID: nil,
+            completedTrickWinnerTeamID: nil,
+            completedTrickWonByPlayerTeam: nil,
+            completedTrickPoints: 0,
+            nextTurnPlayerID: UUID(),
+            playerRemainingCards: 5,
+            actionHistoryCount: 10
+        )
+
+        let item = try XCTUnwrap(
+            WhatToPlayStatsAnalyzer.reviewQueue(
+                for: [
+                    attempt(
+                        daysAgo: 1,
+                        correct: false,
+                        impact: -2,
+                        bestImpact: 3,
+                        simulation: simulation
+                    )
+                ]
+            ).first
+        )
+
+        XCTAssertEqual(item.simulationSummary, "\("تبقى الأكلة مفتوحة".localized) · 2 \("أوراق على الطاولة".localized)")
+        XCTAssertNil(item.simulationTeamResult)
+        XCTAssertNil(item.simulationTrickPoints)
+    }
+
+    func testReviewQueueKeepsBackwardCompatibleNilSimulationOutcome() throws {
+        let item = try XCTUnwrap(
+            WhatToPlayStatsAnalyzer.reviewQueue(
+                for: [
+                    attempt(daysAgo: 1, correct: false, impact: -4, bestImpact: 2)
+                ]
+            ).first
+        )
+
+        XCTAssertNil(item.simulationSummary)
+        XCTAssertNil(item.simulationTeamResult)
+        XCTAssertNil(item.simulationTrickPoints)
+    }
+
     func testReviewQueueCarriesOpponentClosureTacticalReason() throws {
         let item = try XCTUnwrap(
             WhatToPlayStatsAnalyzer.reviewQueue(
@@ -2530,7 +2609,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         focusKind: WhatToPlayScenarioFocusKind? = nil,
         outcome: WhatToPlayOptionOutcome? = nil,
         impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil,
-        selectedCard: PlayingCard = PlayingCard(suit: .clubs, rank: .seven)
+        selectedCard: PlayingCard = PlayingCard(suit: .clubs, rank: .seven),
+        simulation: WhatToPlayOptionSimulation? = nil
     ) -> WhatToPlayAttempt {
         attempt(
             daysAgo: daysAgo,
@@ -2543,7 +2623,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             focusKind: focusKind,
             outcome: outcome,
             impactBreakdown: impactBreakdown,
-            selectedCard: selectedCard
+            selectedCard: selectedCard,
+            simulation: simulation
         )
     }
 
@@ -2559,7 +2640,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         focusKind: WhatToPlayScenarioFocusKind? = nil,
         outcome: WhatToPlayOptionOutcome? = nil,
         impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil,
-        selectedCard: PlayingCard = PlayingCard(suit: .clubs, rank: .seven)
+        selectedCard: PlayingCard = PlayingCard(suit: .clubs, rank: .seven),
+        simulation: WhatToPlayOptionSimulation? = nil
     ) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
             createdAt: Date(timeIntervalSince1970: 2_000_000 - daysAgo * 86_400),
@@ -2575,7 +2657,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             secondBestExpectedImpact: secondBestImpact,
             focusKind: focusKind,
             outcome: outcome,
-            impactBreakdown: impactBreakdown
+            impactBreakdown: impactBreakdown,
+            simulation: simulation
         )
     }
 
