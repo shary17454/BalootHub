@@ -1452,6 +1452,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.averageExpectedImpact, 0)
         XCTAssertFalse(progress.impactTargetMet)
         XCTAssertEqual(progress.averageExpectedImpactGap, 0)
+        XCTAssertEqual(progress.valueCapturePercent, 0)
+        XCTAssertEqual(progress.valueCaptureAttempts, 0)
         XCTAssertEqual(progress.impactTitle, "الأثر غير محسوب بعد".localized)
         XCTAssertEqual(progress.impactIconName, "chart.line.uptrend.xyaxis")
         XCTAssertNil(progress.reviewItem)
@@ -1470,11 +1472,11 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
     func testTrainingSessionProgressCountsRecentMatchingDifficultyOnly() {
         let plan = sessionPlan(difficulty: .medium, count: 4, target: 75)
         let attempts = [
-            attempt(daysAgo: 5, difficulty: .easy, correct: false, impact: -6),
-            attempt(daysAgo: 4, difficulty: .hard, correct: true, impact: 4),
-            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 4),
-            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: -2),
-            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 3)
+            attempt(daysAgo: 5, difficulty: .easy, correct: false, impact: -6, bestImpact: 8),
+            attempt(daysAgo: 4, difficulty: .hard, correct: true, impact: 4, bestImpact: 4),
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 4, bestImpact: 4),
+            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: -2, bestImpact: 5),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 3, bestImpact: 3)
         ]
 
         let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
@@ -1489,6 +1491,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.averageExpectedImpact, 2)
         XCTAssertTrue(progress.impactTargetMet)
         XCTAssertEqual(progress.averageExpectedImpactGap, 0)
+        XCTAssertEqual(progress.valueCaptureAttempts, 3)
+        XCTAssertEqual(progress.valueCapturePercent, 58)
         XCTAssertEqual(progress.impactTitle, "أثر الجلسة رابح".localized)
         XCTAssertEqual(progress.impactIconName, "checkmark.seal.fill")
         XCTAssertEqual(progress.reviewItem?.seed, 2)
@@ -1556,6 +1560,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.averageExpectedImpact, 1)
         XCTAssertTrue(progress.impactTargetMet)
         XCTAssertEqual(progress.averageExpectedImpactGap, 0)
+        XCTAssertEqual(progress.valueCaptureAttempts, 0)
+        XCTAssertEqual(progress.valueCapturePercent, 0)
         XCTAssertEqual(progress.reviewItem?.seed, 1)
         XCTAssertEqual(progress.remainingAttempts, 1)
     }

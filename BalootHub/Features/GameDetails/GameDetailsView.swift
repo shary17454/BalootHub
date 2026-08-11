@@ -669,6 +669,12 @@ struct WhatToPlayTrainerView: View {
                     title: "فجوة الأثر".localized,
                     value: impactGapText(progress.averageExpectedImpactGap)
                 )
+                if progress.valueCaptureAttempts > 0 {
+                    miniPlanMetric(
+                        title: "التقاط القيمة".localized,
+                        value: "\(progress.valueCapturePercent)%"
+                    )
+                }
             }
 
             HStack(spacing: AppSpacing.xs) {

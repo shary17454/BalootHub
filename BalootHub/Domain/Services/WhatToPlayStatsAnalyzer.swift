@@ -225,6 +225,8 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let averageExpectedImpact: Int
     let impactTargetMet: Bool
     let averageExpectedImpactGap: Int
+    let valueCapturePercent: Int
+    let valueCaptureAttempts: Int
     let impactTitle: String
     let impactDetail: String
     let impactIconName: String
@@ -941,6 +943,7 @@ enum WhatToPlayStatsAnalyzer {
                 .prefix(target)
         )
         let completed = sessionAttempts.count
+        let sessionSummary = summarize(attempts: sessionAttempts)
         let correct = sessionAttempts.filter(\.isCorrect).count
         let accuracy = completed > 0
             ? Int((Double(correct) / Double(completed) * 100).rounded())
@@ -990,6 +993,8 @@ enum WhatToPlayStatsAnalyzer {
                 averageExpectedImpact: 0,
                 impactTargetMet: false,
                 averageExpectedImpactGap: plan.targetAverageExpectedImpact,
+                valueCapturePercent: 0,
+                valueCaptureAttempts: 0,
                 impactTitle: impactReading.title,
                 impactDetail: impactReading.detail,
                 impactIconName: impactReading.iconName,
@@ -1025,6 +1030,8 @@ enum WhatToPlayStatsAnalyzer {
                 averageExpectedImpact: averageImpact,
                 impactTargetMet: impactTargetMet,
                 averageExpectedImpactGap: impactGap,
+                valueCapturePercent: sessionSummary.valueCapturePercent,
+                valueCaptureAttempts: sessionSummary.valueCaptureAttempts,
                 impactTitle: impactReading.title,
                 impactDetail: impactReading.detail,
                 impactIconName: impactReading.iconName,
@@ -1060,6 +1067,8 @@ enum WhatToPlayStatsAnalyzer {
                 averageExpectedImpact: averageImpact,
                 impactTargetMet: true,
                 averageExpectedImpactGap: 0,
+                valueCapturePercent: sessionSummary.valueCapturePercent,
+                valueCaptureAttempts: sessionSummary.valueCaptureAttempts,
                 impactTitle: impactReading.title,
                 impactDetail: impactReading.detail,
                 impactIconName: impactReading.iconName,
@@ -1094,6 +1103,8 @@ enum WhatToPlayStatsAnalyzer {
             averageExpectedImpact: averageImpact,
             impactTargetMet: impactTargetMet,
             averageExpectedImpactGap: impactGap,
+            valueCapturePercent: sessionSummary.valueCapturePercent,
+            valueCaptureAttempts: sessionSummary.valueCaptureAttempts,
             impactTitle: impactReading.title,
             impactDetail: impactReading.detail,
             impactIconName: impactReading.iconName,
