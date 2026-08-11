@@ -1199,6 +1199,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(drill.title, "خطة البداية".localized)
         XCTAssertEqual(drill.steps.count, 3)
         XCTAssertEqual(drill.steps.first, "ابدأ بمستوى سهل".localized)
+        XCTAssertEqual(drill.seed, 8_000_000)
+        XCTAssertEqual(drill.difficulty, .easy)
+        XCTAssertNil(drill.focusKind)
     }
 
     func testMicroDrillPrioritizesReviewWhenSessionNeedsReview() {
@@ -1214,6 +1217,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(drill.steps.first, "\("أعد موقف".localized) \("صعب".localized) · \("نقاط متوقعة ضائعة".localized): 11")
         XCTAssertEqual(drill.reviewItem?.difficulty, .hard)
         XCTAssertEqual(drill.reviewItem?.lostExpectedPoints, 11)
+        XCTAssertNil(drill.seed)
+        XCTAssertEqual(drill.difficulty, .hard)
     }
 
     func testMicroDrillTargetsCoverageBeforeGenericPractice() {
@@ -1227,6 +1232,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(drill.title, "خطة التوازن".localized)
         XCTAssertEqual(drill.steps.first, "أكمل المستويات الناقصة".localized)
+        XCTAssertEqual(drill.seed, 9_000_003)
+        XCTAssertEqual(drill.difficulty, .medium)
+        XCTAssertNil(drill.focusKind)
     }
 
     func testMicroDrillRaisesChallengeForSharpBalancedPlayer() {
@@ -1243,6 +1251,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(drill.title, "خطة التحدي".localized)
         XCTAssertEqual(drill.steps.first, "انتقل إلى الصعب".localized)
+        XCTAssertEqual(drill.seed, 10_200_006)
+        XCTAssertEqual(drill.difficulty, .hard)
+        XCTAssertEqual(drill.focusKind, .trumpPressure)
     }
 
     func testMicroDrillFallsBackToContinuationPlan() {
@@ -1259,6 +1270,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(drill.title, "خطة الاستمرار".localized)
         XCTAssertEqual(drill.steps.first, "ابدأ بالمستوى المقترح".localized)
+        XCTAssertNotNil(drill.seed)
+        XCTAssertNotNil(drill.difficulty)
     }
 
     func testPlayStyleStaysInMeasurementModeWithSmallSample() {

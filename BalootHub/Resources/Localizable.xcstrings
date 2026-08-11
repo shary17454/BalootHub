@@ -20198,6 +20198,16 @@
         }
       }
     },
+    "بدء الخطة المصغرة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start micro drill"
+          }
+        }
+      }
+    },
     "فرصة قيمة ضاعت" : {
       "localizations" : {
         "en" : {

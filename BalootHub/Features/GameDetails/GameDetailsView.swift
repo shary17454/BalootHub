@@ -913,6 +913,17 @@ struct WhatToPlayTrainerView: View {
                 .buttonStyle(.borderedProminent)
                 .tint(AppColor.primary)
                 .disabled(isGeneratingScenario)
+            } else if let seed = microDrill.seed,
+                      let difficulty = microDrill.difficulty {
+                Button {
+                    startMicroDrill(scenarioSeed: seed, difficulty: difficulty, focusKind: microDrill.focusKind)
+                } label: {
+                    Label("بدء الخطة المصغرة".localized, systemImage: "play.circle.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(AppColor.primary)
+                .disabled(isGeneratingScenario)
             }
         }
         .padding(AppSpacing.md)
@@ -2343,6 +2354,22 @@ struct WhatToPlayTrainerView: View {
             nextScenario()
         } else {
             difficulty = nextScenarioRecommendation.difficulty
+            preferredFocusRaw = targetFocusRaw
+            generateScenario()
+        }
+    }
+
+    private func startMicroDrill(
+        scenarioSeed: UInt64,
+        difficulty targetDifficulty: WhatToPlayDifficulty,
+        focusKind: WhatToPlayScenarioFocusKind?
+    ) {
+        let targetFocusRaw = focusKind?.rawValue ?? "auto"
+        seed = scenarioSeed
+        if difficulty == targetDifficulty, preferredFocusRaw == targetFocusRaw {
+            generateScenario()
+        } else {
+            difficulty = targetDifficulty
             preferredFocusRaw = targetFocusRaw
             generateScenario()
         }

@@ -359,6 +359,9 @@ struct WhatToPlayMicroDrill: Equatable {
     let iconName: String
     let steps: [String]
     let reviewItem: WhatToPlayReviewItem?
+    let seed: UInt64?
+    let difficulty: WhatToPlayDifficulty?
+    let focusKind: WhatToPlayScenarioFocusKind?
 }
 
 enum WhatToPlayStyleKind: Equatable {
@@ -1820,7 +1823,10 @@ enum WhatToPlayStatsAnalyzer {
                     "حل 3 مواقف متتالية".localized,
                     "راجع تفسير كل اختيار".localized
                 ],
-                reviewItem: nil
+                reviewItem: nil,
+                seed: microDrillSeed(attempts: attempts, difficulty: .easy, focusKind: nil),
+                difficulty: .easy,
+                focusKind: nil
             )
         }
 
@@ -1839,12 +1845,16 @@ enum WhatToPlayStatsAnalyzer {
                     "كرر المستوى المقترح".localized,
                     "لا تنتقل قبل إجابة صحيحة".localized
                 ],
-                reviewItem: reviewItem
+                reviewItem: reviewItem,
+                seed: nil,
+                difficulty: reviewItem?.difficulty,
+                focusKind: reviewItem?.focusKind
             )
         }
 
         let coverage = practiceCoverage(for: attempts)
         if !coverage.isBalanced {
+            let targetDifficulty = coverage.missingDifficulties.first ?? .easy
             return WhatToPlayMicroDrill(
                 title: "خطة التوازن".localized,
                 detail: "توصيات المدرب تصبح أدق عندما تغطي كل مستويات الصعوبة.".localized,
@@ -1854,7 +1864,10 @@ enum WhatToPlayStatsAnalyzer {
                     "حل موقفين من كل مستوى".localized,
                     "قارن أفضل وثاني أفضل".localized
                 ],
-                reviewItem: nil
+                reviewItem: nil,
+                seed: microDrillSeed(attempts: attempts, difficulty: targetDifficulty, focusKind: nil),
+                difficulty: targetDifficulty,
+                focusKind: nil
             )
         }
 
@@ -1868,10 +1881,14 @@ enum WhatToPlayStatsAnalyzer {
                     "استهدف 3 إجابات صحيحة".localized,
                     "شارك موقفًا صعبًا للمراجعة".localized
                 ],
-                reviewItem: nil
+                reviewItem: nil,
+                seed: microDrillSeed(attempts: attempts, difficulty: .hard, focusKind: .trumpPressure),
+                difficulty: .hard,
+                focusKind: .trumpPressure
             )
         }
 
+        let recommendation = nextScenarioRecommendation(for: attempts)
         return WhatToPlayMicroDrill(
             title: "خطة الاستمرار".localized,
             detail: "استمر على تدريب قصير ومتكرر، ثم ارفع الصعوبة عندما تثبت الدقة.".localized,
@@ -1881,8 +1898,21 @@ enum WhatToPlayStatsAnalyzer {
                 "حل 5 مواقف قصيرة".localized,
                 "راجع النقاط الضائعة".localized
             ],
-            reviewItem: nil
+            reviewItem: nil,
+            seed: microDrillSeed(attempts: attempts, difficulty: recommendation.difficulty, focusKind: recommendation.focusKind),
+            difficulty: recommendation.difficulty,
+            focusKind: recommendation.focusKind
         )
+    }
+
+    private static func microDrillSeed(
+        attempts: [WhatToPlayAttempt],
+        difficulty: WhatToPlayDifficulty,
+        focusKind: WhatToPlayScenarioFocusKind?
+    ) -> UInt64 {
+        let difficultyComponent = UInt64(difficultyOrder(difficulty)) * 1_000_000
+        let focusComponent = UInt64(focusKind.map(scenarioFocusOrder) ?? 0) * 100_000
+        return 8_000_000 + difficultyComponent + focusComponent + UInt64(attempts.count)
     }
 
     static func playStyle(for attempts: [WhatToPlayAttempt]) -> WhatToPlayPlayStyle {
