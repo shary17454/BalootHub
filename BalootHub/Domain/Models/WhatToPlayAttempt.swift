@@ -27,6 +27,13 @@ final class WhatToPlayAttempt {
     var selectedCompletesTrick: Bool?
     var selectedWinsForPlayerTeam: Bool?
     var selectedPreservesLead: Bool?
+    var simulationPhaseAfterPlayRaw: String?
+    var simulationCurrentTrickCardCount: Int?
+    var simulationCompletedTrickWonByPlayerTeam: Bool?
+    var simulationCompletedTrickPoints: Int?
+    var simulationNextTurnPlayerIDRaw: String?
+    var simulationPlayerRemainingCards: Int?
+    var simulationActionHistoryCount: Int?
 
     init(
         id: UUID = UUID(),
@@ -43,7 +50,8 @@ final class WhatToPlayAttempt {
         secondBestExpectedImpact: Int? = nil,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
         outcome: WhatToPlayOptionOutcome? = nil,
-        impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil
+        impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil,
+        simulation: WhatToPlayOptionSimulation? = nil
     ) {
         self.id = id
         self.createdAt = createdAt
@@ -68,6 +76,15 @@ final class WhatToPlayAttempt {
         self.selectedCompletesTrick = impactBreakdown?.completesTrick
         self.selectedWinsForPlayerTeam = impactBreakdown?.winsForPlayerTeam
         self.selectedPreservesLead = impactBreakdown?.preservesLead
+        self.simulationPhaseAfterPlayRaw = simulation?.phaseAfterPlay.rawValue
+        self.simulationCurrentTrickCardCount = simulation?.currentTrickCardCount
+        self.simulationCompletedTrickWonByPlayerTeam = simulation?.completedTrickWonByPlayerTeam
+        self.simulationCompletedTrickPoints = simulation?.completedTrickWinnerID == nil
+            ? nil
+            : simulation?.completedTrickPoints
+        self.simulationNextTurnPlayerIDRaw = simulation?.nextTurnPlayerID?.uuidString
+        self.simulationPlayerRemainingCards = simulation?.playerRemainingCards
+        self.simulationActionHistoryCount = simulation?.actionHistoryCount
     }
 
     var difficulty: WhatToPlayDifficulty {
@@ -133,5 +150,10 @@ final class WhatToPlayAttempt {
             winsForPlayerTeam: selectedWinsForPlayerTeam,
             preservesLead: selectedPreservesLead
         )
+    }
+
+    var simulationPhaseAfterPlay: GamePhase? {
+        guard let simulationPhaseAfterPlayRaw else { return nil }
+        return GamePhase(rawValue: simulationPhaseAfterPlayRaw)
     }
 }

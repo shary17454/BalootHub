@@ -2280,7 +2280,8 @@ struct WhatToPlayTrainerView: View {
                 secondBestExpectedImpact: scenario.secondBestOption?.expectedImpact,
                 focusKind: scenario.context.focusKind,
                 outcome: evaluated.outcome,
-                impactBreakdown: evaluated.impactBreakdown
+                impactBreakdown: evaluated.impactBreakdown,
+                simulation: evaluated.simulation
             )
             modelContext.insert(attempt)
             try? modelContext.save()

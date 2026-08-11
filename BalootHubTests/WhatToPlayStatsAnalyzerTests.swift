@@ -233,6 +233,18 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             winsForPlayerTeam: false,
             preservesLead: false
         )
+        let nextPlayerID = UUID()
+        let simulation = WhatToPlayOptionSimulation(
+            phaseAfterPlay: .playing,
+            currentTrickCardCount: 0,
+            completedTrickWinnerID: UUID(),
+            completedTrickWinnerTeamID: UUID(),
+            completedTrickWonByPlayerTeam: false,
+            completedTrickPoints: 25,
+            nextTurnPlayerID: nextPlayerID,
+            playerRemainingCards: 4,
+            actionHistoryCount: 18
+        )
         let attempt = WhatToPlayAttempt(
             difficulty: .hard,
             seed: 2_026,
@@ -246,7 +258,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             secondBestExpectedImpact: 2,
             focusKind: .trumpPressure,
             outcome: .losesTrick,
-            impactBreakdown: breakdown
+            impactBreakdown: breakdown,
+            simulation: simulation
         )
 
         context.insert(attempt)
@@ -273,6 +286,13 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(saved.selectedCompletesTrick, true)
         XCTAssertEqual(saved.selectedWinsForPlayerTeam, false)
         XCTAssertEqual(saved.selectedPreservesLead, false)
+        XCTAssertEqual(saved.simulationPhaseAfterPlay, .playing)
+        XCTAssertEqual(saved.simulationCurrentTrickCardCount, 0)
+        XCTAssertEqual(saved.simulationCompletedTrickWonByPlayerTeam, false)
+        XCTAssertEqual(saved.simulationCompletedTrickPoints, 25)
+        XCTAssertEqual(saved.simulationNextTurnPlayerIDRaw, nextPlayerID.uuidString)
+        XCTAssertEqual(saved.simulationPlayerRemainingCards, 4)
+        XCTAssertEqual(saved.simulationActionHistoryCount, 18)
     }
 
     func testAttemptWithoutBestExpectedImpactKeepsBackwardCompatibleZeroLoss() {
@@ -349,6 +369,26 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         )
 
         XCTAssertNil(attempt.selectedRank)
+    }
+
+    func testAttemptWithoutSimulationKeepsBackwardCompatibleNilSimulation() {
+        let attempt = WhatToPlayAttempt(
+            difficulty: .medium,
+            seed: 99,
+            selectedCard: PlayingCard(suit: .clubs, rank: .seven),
+            bestCard: PlayingCard(suit: .clubs, rank: .ace),
+            isCorrect: false,
+            expectedImpact: -4
+        )
+
+        XCTAssertNil(attempt.simulationPhaseAfterPlayRaw)
+        XCTAssertNil(attempt.simulationPhaseAfterPlay)
+        XCTAssertNil(attempt.simulationCurrentTrickCardCount)
+        XCTAssertNil(attempt.simulationCompletedTrickWonByPlayerTeam)
+        XCTAssertNil(attempt.simulationCompletedTrickPoints)
+        XCTAssertNil(attempt.simulationNextTurnPlayerIDRaw)
+        XCTAssertNil(attempt.simulationPlayerRemainingCards)
+        XCTAssertNil(attempt.simulationActionHistoryCount)
     }
 
     func testChoiceRankSummaryCountsExpertSecondBestAndFarChoices() {
