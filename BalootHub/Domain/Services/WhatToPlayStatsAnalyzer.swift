@@ -30,6 +30,15 @@ struct WhatToPlayDifficultyFocus: Equatable {
     let summary: WhatToPlayStatsSummary
 }
 
+struct WhatToPlayDifficultyImpactInsight: Equatable {
+    let difficulty: WhatToPlayDifficulty
+    let averageExpectedImpact: Int
+    let attempts: Int
+    let title: String
+    let detail: String
+    let iconName: String
+}
+
 enum WhatToPlayTrendDirection: Equatable {
     case improving
     case stable
@@ -253,6 +262,40 @@ enum WhatToPlayStatsAnalyzer {
             }
             .first
             .map { WhatToPlayDifficultyFocus(difficulty: $0.difficulty, summary: $0.summary) }
+    }
+
+    static func difficultyImpactInsight(
+        for attempts: [WhatToPlayAttempt],
+        minimumAttempts: Int = 2
+    ) -> WhatToPlayDifficultyImpactInsight? {
+        let candidates = summariesByDifficulty(attempts)
+            .filter { $0.summary.attempts >= minimumAttempts }
+        guard let weakest = candidates.min(by: { lhs, rhs in
+            if lhs.summary.averageExpectedImpact != rhs.summary.averageExpectedImpact {
+                return lhs.summary.averageExpectedImpact < rhs.summary.averageExpectedImpact
+            }
+            return difficultyOrder(lhs.difficulty) > difficultyOrder(rhs.difficulty)
+        }) else { return nil }
+
+        if weakest.summary.averageExpectedImpact < 0 {
+            return WhatToPlayDifficultyImpactInsight(
+                difficulty: weakest.difficulty,
+                averageExpectedImpact: weakest.summary.averageExpectedImpact,
+                attempts: weakest.summary.attempts,
+                title: "أكبر نزيف حسب الصعوبة".localized,
+                detail: "\("أكثر مستوى يخسر نقاطًا متوقعة الآن".localized): \(difficultyTitle(weakest.difficulty)). \("راجع اختيارات هذا المستوى قبل رفع التحدي.".localized)",
+                iconName: "drop.fill"
+            )
+        }
+
+        return WhatToPlayDifficultyImpactInsight(
+            difficulty: weakest.difficulty,
+            averageExpectedImpact: weakest.summary.averageExpectedImpact,
+            attempts: weakest.summary.attempts,
+            title: "لا يوجد نزيف واضح".localized,
+            detail: "متوسط الأثر المتوقع غير سلبي في المستويات التي تملك عينات كافية؛ يمكنك رفع الصعوبة تدريجيًا.".localized,
+            iconName: "checkmark.seal.fill"
+        )
     }
 
     static func performanceTrend(

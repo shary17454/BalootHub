@@ -120,6 +120,47 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(focus?.summary.averageExpectedImpact, -5)
     }
 
+    func testDifficultyImpactInsightRequiresEnoughSamples() {
+        let attempts = [
+            attempt(daysAgo: 1, difficulty: .hard, correct: false, impact: -10)
+        ]
+
+        XCTAssertNil(WhatToPlayStatsAnalyzer.difficultyImpactInsight(for: attempts))
+    }
+
+    func testDifficultyImpactInsightFindsWorstExpectedImpactDifficulty() {
+        let attempts = [
+            attempt(daysAgo: 6, difficulty: .easy, correct: true, impact: 2),
+            attempt(daysAgo: 5, difficulty: .easy, correct: false, impact: 0),
+            attempt(daysAgo: 4, difficulty: .medium, correct: true, impact: -2),
+            attempt(daysAgo: 3, difficulty: .medium, correct: false, impact: -6),
+            attempt(daysAgo: 2, difficulty: .hard, correct: false, impact: -1),
+            attempt(daysAgo: 1, difficulty: .hard, correct: true, impact: 1)
+        ]
+
+        let insight = WhatToPlayStatsAnalyzer.difficultyImpactInsight(for: attempts)
+
+        XCTAssertEqual(insight?.difficulty, .medium)
+        XCTAssertEqual(insight?.averageExpectedImpact, -4)
+        XCTAssertEqual(insight?.attempts, 2)
+        XCTAssertEqual(insight?.title, "أكبر نزيف حسب الصعوبة".localized)
+    }
+
+    func testDifficultyImpactInsightReportsNoLeakWhenAveragesAreNonNegative() {
+        let attempts = [
+            attempt(daysAgo: 4, difficulty: .easy, correct: true, impact: 2),
+            attempt(daysAgo: 3, difficulty: .easy, correct: false, impact: 0),
+            attempt(daysAgo: 2, difficulty: .medium, correct: true, impact: 4),
+            attempt(daysAgo: 1, difficulty: .medium, correct: false, impact: 0)
+        ]
+
+        let insight = WhatToPlayStatsAnalyzer.difficultyImpactInsight(for: attempts)
+
+        XCTAssertEqual(insight?.difficulty, .easy)
+        XCTAssertEqual(insight?.averageExpectedImpact, 1)
+        XCTAssertEqual(insight?.title, "لا يوجد نزيف واضح".localized)
+    }
+
     func testPerformanceTrendDetectsImprovement() {
         let attempts = [
             attempt(daysAgo: 6, correct: false, impact: -6),

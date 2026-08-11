@@ -324,6 +324,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.focusDifficulty(attempts)
     }
 
+    private var difficultyImpactInsight: WhatToPlayDifficultyImpactInsight? {
+        WhatToPlayStatsAnalyzer.difficultyImpactInsight(for: attempts)
+    }
+
     private var performanceTrend: WhatToPlayPerformanceTrend? {
         WhatToPlayStatsAnalyzer.performanceTrend(attempts: attempts)
     }
@@ -933,6 +937,10 @@ struct WhatToPlayTrainerView: View {
                     focusDifficultyView(focusDifficulty)
                 }
 
+                if let difficultyImpactInsight {
+                    difficultyImpactInsightView(difficultyImpactInsight)
+                }
+
                 practiceCoverageView(practiceCoverage)
             }
             .padding(AppSpacing.md)
@@ -957,6 +965,30 @@ struct WhatToPlayTrainerView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppSpacing.sm)
         .background(AppColor.accent.opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func difficultyImpactInsightView(_ insight: WhatToPlayDifficultyImpactInsight) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(insight.title)
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(insight.detail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("\("متوسط الأثر".localized): \(impactText(insight.averageExpectedImpact)) · \(insight.attempts) \("محاولات".localized)")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(insight.averageExpectedImpact < 0 ? AppColor.danger : AppColor.success)
+            }
+        } icon: {
+            Image(systemName: insight.iconName)
+                .foregroundStyle(insight.averageExpectedImpact < 0 ? AppColor.danger : AppColor.success)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.sm)
+        .background((insight.averageExpectedImpact < 0 ? AppColor.danger : AppColor.success).opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
         .accessibilityElement(children: .combine)
     }
 

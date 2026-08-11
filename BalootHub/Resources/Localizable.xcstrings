@@ -18144,6 +18144,76 @@
         }
       }
     },
+    "أكبر نزيف حسب الصعوبة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Biggest leak by difficulty"
+          }
+        }
+      }
+    },
+    "أكثر مستوى يخسر نقاطًا متوقعة الآن" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The level currently losing the most expected points"
+          }
+        }
+      }
+    },
+    "راجع اختيارات هذا المستوى قبل رفع التحدي." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review choices at this level before increasing the challenge."
+          }
+        }
+      }
+    },
+    "لا يوجد نزيف واضح" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No clear leak"
+          }
+        }
+      }
+    },
+    "متوسط الأثر المتوقع غير سلبي في المستويات التي تملك عينات كافية؛ يمكنك رفع الصعوبة تدريجيًا." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Average expected impact is not negative in levels with enough samples; you can increase difficulty gradually."
+          }
+        }
+      }
+    },
+    "متوسط الأثر" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Average impact"
+          }
+        }
+      }
+    },
+    "محاولات" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "attempts"
+          }
+        }
+      }
+    },
     "نمط قراراتك غير معروف" : {
       "localizations" : {
         "en" : {
