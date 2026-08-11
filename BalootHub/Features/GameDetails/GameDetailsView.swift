@@ -652,6 +652,13 @@ struct WhatToPlayTrainerView: View {
                     title: "متوسط الأثر المتوقع",
                     value: impactText(statsSummary.averageExpectedImpact)
                 )
+                if statsSummary.lostExpectedPoints > 0 {
+                    InfoRow(
+                        icon: "drop.fill",
+                        title: "نقاط متوقعة ضائعة".localized,
+                        value: "\(statsSummary.lostExpectedPoints)"
+                    )
+                }
                 masteryView(mastery, milestone: masteryMilestone)
                 playStyleView(playStyle)
                 decisionPatternView(decisionPattern)
@@ -1070,6 +1077,12 @@ struct WhatToPlayTrainerView: View {
                     .foregroundStyle(attempt.expectedImpact >= 0 ? AppColor.success : AppColor.danger)
                     .lineLimit(1)
                     .minimumScaleFactor(0.75)
+                if attempt.lostExpectedPoints > 0 {
+                    Text("-\(attempt.lostExpectedPoints)")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(AppColor.danger)
+                        .accessibilityLabel("\("نقاط متوقعة ضائعة".localized): \(attempt.lostExpectedPoints)")
+                }
             }
         }
         .padding(AppSpacing.sm)
@@ -1119,6 +1132,9 @@ struct WhatToPlayTrainerView: View {
                 HStack(spacing: AppSpacing.xs) {
                     StatusBadge(item.difficulty.displayTitle, systemImage: "slider.horizontal.3", tint: AppColor.primary)
                     StatusBadge(impactText(item.expectedImpact), systemImage: "chart.line.downtrend.xyaxis", tint: item.expectedImpact < 0 ? AppColor.danger : AppColor.accent)
+                    if item.lostExpectedPoints > 0 {
+                        StatusBadge("\(item.lostExpectedPoints)", systemImage: "drop.fill", tint: AppColor.danger)
+                    }
                 }
                 Text("\("اختيارك".localized): \(cardName(item.selectedCard)) · \("أفضل ورقة".localized): \(cardName(item.bestCard))")
                     .font(.caption2.weight(.semibold))
@@ -1349,7 +1365,8 @@ struct WhatToPlayTrainerView: View {
                 selectedCard: evaluated.card,
                 bestCard: bestCard,
                 isCorrect: evaluated.isExpertChoice,
-                expectedImpact: evaluated.expectedImpact
+                expectedImpact: evaluated.expectedImpact,
+                bestExpectedImpact: scenario.bestOption?.expectedImpact
             )
             modelContext.insert(attempt)
             try? modelContext.save()

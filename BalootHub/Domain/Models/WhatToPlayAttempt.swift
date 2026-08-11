@@ -14,6 +14,7 @@ final class WhatToPlayAttempt {
     var bestRankRaw: String
     var isCorrect: Bool
     var expectedImpact: Int
+    var bestExpectedImpact: Int?
 
     init(
         id: UUID = UUID(),
@@ -23,7 +24,8 @@ final class WhatToPlayAttempt {
         selectedCard: PlayingCard,
         bestCard: PlayingCard,
         isCorrect: Bool,
-        expectedImpact: Int
+        expectedImpact: Int,
+        bestExpectedImpact: Int? = nil
     ) {
         self.id = id
         self.createdAt = createdAt
@@ -35,6 +37,7 @@ final class WhatToPlayAttempt {
         self.bestRankRaw = bestCard.rank.rawValue
         self.isCorrect = isCorrect
         self.expectedImpact = expectedImpact
+        self.bestExpectedImpact = bestExpectedImpact
     }
 
     var difficulty: WhatToPlayDifficulty {
@@ -53,5 +56,10 @@ final class WhatToPlayAttempt {
               let rank = Rank(rawValue: bestRankRaw)
         else { return nil }
         return PlayingCard(suit: suit, rank: rank)
+    }
+
+    var lostExpectedPoints: Int {
+        guard let bestExpectedImpact else { return 0 }
+        return max(0, bestExpectedImpact - expectedImpact)
     }
 }

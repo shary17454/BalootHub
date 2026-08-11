@@ -20,6 +20,19 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.bestStreak, 2)
         XCTAssertEqual(summary.currentStreak, 1)
         XCTAssertEqual(summary.averageExpectedImpact, 2)
+        XCTAssertEqual(summary.lostExpectedPoints, 0)
+    }
+
+    func testSummaryAccumulatesLostExpectedPointsWhenBestImpactIsKnown() {
+        let attempts = [
+            attempt(daysAgo: 3, correct: true, impact: 4, bestImpact: 4),
+            attempt(daysAgo: 2, correct: false, impact: -3, bestImpact: 5),
+            attempt(daysAgo: 1, correct: false, impact: 2, bestImpact: 6)
+        ]
+
+        let summary = WhatToPlayStatsAnalyzer.summarize(attempts: attempts)
+
+        XCTAssertEqual(summary.lostExpectedPoints, 12)
     }
 
     func testAttemptPersistsInSwiftDataSchemaAndRestoresCards() throws {
@@ -34,7 +47,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             selectedCard: selected,
             bestCard: best,
             isCorrect: false,
-            expectedImpact: -6
+            expectedImpact: -6,
+            bestExpectedImpact: 4
         )
 
         context.insert(attempt)
@@ -47,6 +61,22 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(saved.bestCard, best)
         XCTAssertFalse(saved.isCorrect)
         XCTAssertEqual(saved.expectedImpact, -6)
+        XCTAssertEqual(saved.bestExpectedImpact, 4)
+        XCTAssertEqual(saved.lostExpectedPoints, 10)
+    }
+
+    func testAttemptWithoutBestExpectedImpactKeepsBackwardCompatibleZeroLoss() {
+        let attempt = WhatToPlayAttempt(
+            difficulty: .medium,
+            seed: 99,
+            selectedCard: PlayingCard(suit: .clubs, rank: .seven),
+            bestCard: PlayingCard(suit: .clubs, rank: .ace),
+            isCorrect: false,
+            expectedImpact: -4
+        )
+
+        XCTAssertNil(attempt.bestExpectedImpact)
+        XCTAssertEqual(attempt.lostExpectedPoints, 0)
     }
 
     func testRecentAttemptsReturnsNewestFirstWithLimit() {
@@ -82,6 +112,16 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(queue.first?.difficulty, .hard)
         XCTAssertEqual(queue.first?.seed, 3)
         XCTAssertEqual(queue.first?.title, "راجع اختيارًا مكلفًا".localized)
+    }
+
+    func testReviewQueueCarriesLostExpectedPoints() {
+        let attempts = [
+            attempt(daysAgo: 1, correct: false, impact: -4, bestImpact: 3)
+        ]
+
+        let queue = WhatToPlayStatsAnalyzer.reviewQueue(for: attempts)
+
+        XCTAssertEqual(queue.first?.lostExpectedPoints, 7)
     }
 
     func testReviewQueueUsesRecentTieBreakerForEqualImpact() {
@@ -960,15 +1000,21 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         )
     }
 
-    private func attempt(daysAgo: TimeInterval, correct: Bool, impact: Int) -> WhatToPlayAttempt {
-        attempt(daysAgo: daysAgo, difficulty: .medium, correct: correct, impact: impact)
+    private func attempt(
+        daysAgo: TimeInterval,
+        correct: Bool,
+        impact: Int,
+        bestImpact: Int? = nil
+    ) -> WhatToPlayAttempt {
+        attempt(daysAgo: daysAgo, difficulty: .medium, correct: correct, impact: impact, bestImpact: bestImpact)
     }
 
     private func attempt(
         daysAgo: TimeInterval,
         difficulty: WhatToPlayDifficulty,
         correct: Bool,
-        impact: Int
+        impact: Int,
+        bestImpact: Int? = nil
     ) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
             createdAt: Date(timeIntervalSince1970: 2_000_000 - daysAgo * 86_400),
@@ -977,7 +1023,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             selectedCard: PlayingCard(suit: .clubs, rank: .seven),
             bestCard: PlayingCard(suit: .clubs, rank: .seven),
             isCorrect: correct,
-            expectedImpact: impact
+            expectedImpact: impact,
+            bestExpectedImpact: bestImpact
         )
     }
 }

@@ -8,6 +8,7 @@ struct WhatToPlayStatsSummary: Equatable {
     let currentStreak: Int
     let bestStreak: Int
     let averageExpectedImpact: Int
+    let lostExpectedPoints: Int
 
     static let empty = WhatToPlayStatsSummary(
         attempts: 0,
@@ -15,7 +16,8 @@ struct WhatToPlayStatsSummary: Equatable {
         accuracyPercent: 0,
         currentStreak: 0,
         bestStreak: 0,
-        averageExpectedImpact: 0
+        averageExpectedImpact: 0,
+        lostExpectedPoints: 0
     )
 }
 
@@ -46,6 +48,7 @@ struct WhatToPlayReviewItem: Equatable, Identifiable {
     let selectedCard: PlayingCard?
     let bestCard: PlayingCard?
     let expectedImpact: Int
+    let lostExpectedPoints: Int
     let createdAt: Date
     let title: String
     let detail: String
@@ -218,6 +221,7 @@ enum WhatToPlayStatsAnalyzer {
         let accuracy = Int((Double(correct) / Double(chronological.count) * 100).rounded())
         let impact = chronological.reduce(0) { $0 + $1.expectedImpact }
         let averageImpact = Int((Double(impact) / Double(chronological.count)).rounded())
+        let lostExpectedPoints = chronological.reduce(0) { $0 + $1.lostExpectedPoints }
 
         var bestStreak = 0
         var running = 0
@@ -242,7 +246,8 @@ enum WhatToPlayStatsAnalyzer {
             accuracyPercent: accuracy,
             currentStreak: currentStreak,
             bestStreak: bestStreak,
-            averageExpectedImpact: averageImpact
+            averageExpectedImpact: averageImpact,
+            lostExpectedPoints: lostExpectedPoints
         )
     }
 
@@ -333,6 +338,7 @@ enum WhatToPlayStatsAnalyzer {
                 selectedCard: attempt.selectedCard,
                 bestCard: attempt.bestCard,
                 expectedImpact: attempt.expectedImpact,
+                lostExpectedPoints: attempt.lostExpectedPoints,
                 createdAt: attempt.createdAt,
                 title: isCostly ? "راجع اختيارًا مكلفًا".localized : "قارن الاختيار القريب".localized,
                 detail: isCostly
