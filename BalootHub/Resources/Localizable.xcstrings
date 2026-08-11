@@ -18056,6 +18056,34 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "平均损失分" } }
       }
     },
+    "راجع القيمة قبل الصعوبة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prüfe den Wert vor der Schwierigkeit" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Review value before difficulty" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Revisa el valor antes de la dificultad" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Révise la valeur avant la difficulté" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कठिनाई से पहले मूल्य की समीक्षा करें" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tinjau nilai sebelum kesulitan" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Разбери ценность перед сложностью" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Zorluktan önce değeri gözden geçir" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "مشکل سے پہلے قدر کا جائزہ لیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "先复盘价值，再提高难度" } }
+      }
+    },
+    "ابق على مستوى قريب وراجع لماذا اختار الخبير ورقة أعلى قيمة قبل رفع التحدي." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bleib auf einem nahen Niveau und prüfe, warum der Experte eine wertvollere Karte gewählt hat, bevor du die Herausforderung erhöhst." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Stay near this level and review why the expert chose a higher-value card before raising the challenge." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Mantente cerca de este nivel y revisa por qué el experto eligió una carta de mayor valor antes de subir el reto." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Reste proche de ce niveau et révise pourquoi l’expert a choisi une carte de plus grande valeur avant d’augmenter le défi." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "चुनौती बढ़ाने से पहले इसी स्तर के पास रहें और देखें कि विशेषज्ञ ने अधिक मूल्य वाला पत्ता क्यों चुना." } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tetap di level yang dekat dan tinjau mengapa ahli memilih kartu bernilai lebih tinggi sebelum menaikkan tantangan." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Останься на близком уровне и разбери, почему эксперт выбрал карту с большей ценностью, прежде чем повышать сложность." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Zorluğu artırmadan önce yakın bir seviyede kal ve uzmanın neden daha değerli bir kart seçtiğini incele." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "چیلنج بڑھانے سے پہلے اسی سطح کے قریب رہیں اور دیکھیں کہ ماہر نے زیادہ قدر والا پتا کیوں چنا." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "先保持接近当前的难度，复盘专家为何选择价值更高的牌，再提高挑战。" } }
+      }
+    },
     "الفارق بين الأفضل والثاني" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Abstand zwischen bestem und zweitem" } },

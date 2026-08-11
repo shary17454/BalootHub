@@ -904,6 +904,20 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(recommendation.title, "ارفع التحدي".localized)
     }
 
+    func testPracticeRecommendationKeepsDifficultyWhenAverageLostValueIsHigh() {
+        let attempts = [
+            attempt(daysAgo: 4, difficulty: .medium, correct: false, impact: -8, bestImpact: 8),
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 4, bestImpact: 4),
+            attempt(daysAgo: 2, difficulty: .medium, correct: true, impact: 4, bestImpact: 4),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 4, bestImpact: 4)
+        ]
+
+        let recommendation = WhatToPlayStatsAnalyzer.practiceRecommendation(for: attempts)
+
+        XCTAssertEqual(recommendation.difficulty, .medium)
+        XCTAssertEqual(recommendation.title, "راجع القيمة قبل الصعوبة".localized)
+    }
+
     func testPracticeRecommendationRespondsToDecline() {
         let attempts = [
             attempt(daysAgo: 6, difficulty: .medium, correct: true, impact: 5),

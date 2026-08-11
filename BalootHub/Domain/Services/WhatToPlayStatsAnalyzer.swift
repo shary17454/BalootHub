@@ -1026,6 +1026,15 @@ enum WhatToPlayStatsAnalyzer {
             )
         }
 
+        if summary.attempts >= 3 && summary.averageLostExpectedPoints >= 4 {
+            return WhatToPlayPracticeRecommendation(
+                difficulty: focusDifficulty(attempts)?.difficulty ?? highestAttemptedDifficulty(in: attempts) ?? .medium,
+                title: "راجع القيمة قبل الصعوبة".localized,
+                detail: "\("متوسط النقاط الضائعة".localized): \(summary.averageLostExpectedPoints). \("ابق على مستوى قريب وراجع لماذا اختار الخبير ورقة أعلى قيمة قبل رفع التحدي.".localized)",
+                iconName: "chart.bar.doc.horizontal.fill"
+            )
+        }
+
         if summary.currentStreak >= 3 && summary.accuracyPercent >= 75 {
             let next = nextDifficulty(after: highestAttemptedDifficulty(in: attempts) ?? .medium)
             return WhatToPlayPracticeRecommendation(
