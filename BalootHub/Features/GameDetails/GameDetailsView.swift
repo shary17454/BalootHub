@@ -332,6 +332,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.practiceRecommendation(for: attempts)
     }
 
+    private var trainingSessionPlan: WhatToPlayTrainingSessionPlan {
+        WhatToPlayStatsAnalyzer.trainingSessionPlan(for: attempts)
+    }
+
     private var mastery: WhatToPlayMastery {
         WhatToPlayStatsAnalyzer.mastery(for: attempts)
     }
@@ -473,6 +477,8 @@ struct WhatToPlayTrainerView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
 
+            trainingSessionPlanView(trainingSessionPlan)
+
             Button {
                 startRecommendedPractice()
             } label: {
@@ -488,6 +494,51 @@ struct WhatToPlayTrainerView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func trainingSessionPlanView(_ plan: WhatToPlayTrainingSessionPlan) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            Label(plan.title, systemImage: plan.iconName)
+                .font(AppTypography.subheadline.weight(.semibold))
+                .foregroundStyle(AppColor.textPrimary)
+
+            Text(plan.detail)
+                .font(AppTypography.caption)
+                .foregroundStyle(AppColor.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 3), spacing: AppSpacing.xs) {
+                miniPlanMetric(title: "المستوى".localized, value: plan.difficulty.displayTitle)
+                miniPlanMetric(title: "المواقف".localized, value: "\(plan.scenarioCount)")
+                miniPlanMetric(title: "هدف الدقة".localized, value: "\(plan.targetAccuracyPercent)%")
+            }
+
+            Label(plan.successMetric, systemImage: "checkmark.circle.fill")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(AppColor.success)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(AppSpacing.sm)
+        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func miniPlanMetric(title: String, value: String) -> some View {
+        VStack(spacing: 2) {
+            Text(title)
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(AppColor.textSecondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+            Text(value)
+                .font(AppTypography.caption.weight(.bold))
+                .foregroundStyle(AppColor.primary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, AppSpacing.xs)
+        .background(AppColor.background, in: RoundedRectangle(cornerRadius: AppRadius.small))
     }
 
     private var microDrillCard: some View {

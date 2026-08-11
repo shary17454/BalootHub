@@ -608,6 +608,78 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(style.title, "قراءة متذبذبة".localized)
     }
 
+    func testTrainingSessionPlanStartsWithShortFoundation() {
+        let plan = WhatToPlayStatsAnalyzer.trainingSessionPlan(for: [])
+
+        XCTAssertEqual(plan.difficulty, .easy)
+        XCTAssertEqual(plan.scenarioCount, 3)
+        XCTAssertEqual(plan.targetAccuracyPercent, 60)
+        XCTAssertEqual(plan.title, "جلسة تأسيس قصيرة".localized)
+    }
+
+    func testTrainingSessionPlanPrioritizesReviewWhenRecentAttemptsNeedIt() {
+        let attempts = [
+            attempt(daysAgo: 4, correct: true, impact: 5),
+            attempt(daysAgo: 3, correct: false, impact: -6),
+            attempt(daysAgo: 2, correct: false, impact: -4),
+            attempt(daysAgo: 1, correct: true, impact: -5)
+        ]
+
+        let plan = WhatToPlayStatsAnalyzer.trainingSessionPlan(for: attempts)
+
+        XCTAssertEqual(plan.title, "جلسة مراجعة مركزة".localized)
+        XCTAssertEqual(plan.scenarioCount, 3)
+        XCTAssertEqual(plan.successMetric, "هدف الجلسة: لا تكرر نفس سبب الخطأ مرتين.".localized)
+    }
+
+    func testTrainingSessionPlanRaisesLevelForExpertAlignedStyle() {
+        let attempts = [
+            attempt(daysAgo: 6, difficulty: .easy, correct: true, impact: 4),
+            attempt(daysAgo: 5, difficulty: .easy, correct: true, impact: 4),
+            attempt(daysAgo: 4, difficulty: .medium, correct: true, impact: 3),
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 3),
+            attempt(daysAgo: 2, difficulty: .hard, correct: true, impact: 2),
+            attempt(daysAgo: 1, difficulty: .hard, correct: false, impact: 0)
+        ]
+
+        let plan = WhatToPlayStatsAnalyzer.trainingSessionPlan(for: attempts)
+
+        XCTAssertEqual(plan.title, "جلسة رفع المستوى".localized)
+        XCTAssertEqual(plan.scenarioCount, 5)
+        XCTAssertEqual(plan.targetAccuracyPercent, 80)
+    }
+
+    func testTrainingSessionPlanTargetsPointLeakForCautiousStyle() {
+        let attempts = [
+            attempt(daysAgo: 4, correct: true, impact: -4),
+            attempt(daysAgo: 3, correct: true, impact: -2),
+            attempt(daysAgo: 2, correct: true, impact: -1),
+            attempt(daysAgo: 1, correct: false, impact: -5)
+        ]
+
+        let plan = WhatToPlayStatsAnalyzer.trainingSessionPlan(for: attempts)
+
+        XCTAssertEqual(plan.title, "جلسة تقليل النزيف".localized)
+        XCTAssertEqual(plan.successMetric, "هدف الجلسة: متوسط أثر غير سلبي.".localized)
+    }
+
+    func testTrainingSessionPlanStabilizesInconsistentReading() {
+        let attempts = [
+            attempt(daysAgo: 6, correct: true, impact: 3),
+            attempt(daysAgo: 5, correct: false, impact: -2),
+            attempt(daysAgo: 4, correct: false, impact: -2),
+            attempt(daysAgo: 3, correct: true, impact: 4),
+            attempt(daysAgo: 2, correct: true, impact: 2),
+            attempt(daysAgo: 1, correct: false, impact: -1)
+        ]
+
+        let plan = WhatToPlayStatsAnalyzer.trainingSessionPlan(for: attempts)
+
+        XCTAssertEqual(plan.title, "جلسة تثبيت القراءة".localized)
+        XCTAssertEqual(plan.scenarioCount, 4)
+        XCTAssertEqual(plan.successMetric, "هدف الجلسة: 3 إجابات صحيحة من 4.".localized)
+    }
+
     func testCoachingTipForEmptyAttemptsEncouragesBaseline() {
         let tip = WhatToPlayStatsAnalyzer.coachingTip(for: [])
 

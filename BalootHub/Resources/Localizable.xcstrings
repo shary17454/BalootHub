@@ -17804,6 +17804,186 @@
         }
       }
     },
+    "جلسة تأسيس قصيرة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Short foundation session"
+          }
+        }
+      }
+    },
+    "ابدأ بثلاثة مواقف سهلة لبناء خط أساس واضح قبل رفع الصعوبة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start with three easy scenarios to build a clear baseline before raising difficulty."
+          }
+        }
+      }
+    },
+    "هدف الجلسة: إجابتان صحيحتان من 3." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session target: 2 correct answers out of 3."
+          }
+        }
+      }
+    },
+    "جلسة مراجعة مركزة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Focused review session"
+          }
+        }
+      }
+    },
+    "اختر مواقف قليلة وراجع التفسير بعد كل قرار قبل الانتقال." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a few scenarios and review the explanation after every decision before moving on."
+          }
+        }
+      }
+    },
+    "هدف الجلسة: لا تكرر نفس سبب الخطأ مرتين." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session target: do not repeat the same mistake reason twice."
+          }
+        }
+      }
+    },
+    "جلسة رفع المستوى" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Level-up session"
+          }
+        }
+      }
+    },
+    "أداؤك يسمح بتحدٍ أعلى؛ اختبر قراءتك في مواقف أكثر ضغطًا." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your performance allows a higher challenge; test your reading in more pressured scenarios."
+          }
+        }
+      }
+    },
+    "هدف الجلسة: 4 إجابات صحيحة من 5." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session target: 4 correct answers out of 5."
+          }
+        }
+      }
+    },
+    "جلسة تقليل النزيف" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Point-leak reduction session"
+          }
+        }
+      }
+    },
+    "ركز على مقارنة أفضل وثاني أفضل حتى تقل خسارة النقاط المتوقعة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Focus on comparing best and second best until expected point loss drops."
+          }
+        }
+      }
+    },
+    "هدف الجلسة: متوسط أثر غير سلبي." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session target: non-negative average impact."
+          }
+        }
+      }
+    },
+    "جلسة تثبيت القراءة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reading stabilization session"
+          }
+        }
+      }
+    },
+    "درّب نفس المستوى في دفعة قصيرة حتى تصبح قراراتك أكثر ثباتًا." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Practice the same level in a short batch until your decisions become steadier."
+          }
+        }
+      }
+    },
+    "هدف الجلسة: 3 إجابات صحيحة من 4." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session target: 3 correct answers out of 4."
+          }
+        }
+      }
+    },
+    "المستوى" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Level"
+          }
+        }
+      }
+    },
+    "المواقف" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scenarios"
+          }
+        }
+      }
+    },
+    "هدف الدقة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accuracy target"
+          }
+        }
+      }
+    },
     "نقطة قوة" : {
       "localizations" : {
         "en" : {

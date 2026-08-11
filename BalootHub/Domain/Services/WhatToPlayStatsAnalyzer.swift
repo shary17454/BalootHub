@@ -52,6 +52,16 @@ struct WhatToPlayPracticeRecommendation: Equatable {
     let iconName: String
 }
 
+struct WhatToPlayTrainingSessionPlan: Equatable {
+    let difficulty: WhatToPlayDifficulty
+    let scenarioCount: Int
+    let targetAccuracyPercent: Int
+    let title: String
+    let detail: String
+    let successMetric: String
+    let iconName: String
+}
+
 enum WhatToPlayDecisionInsightKind: Equatable {
     case expertMatch
     case closeAlternative
@@ -305,6 +315,71 @@ enum WhatToPlayStatsAnalyzer {
             difficulty: .medium,
             title: "واصل التدريب المتوسط".localized,
             detail: "هذا المستوى يعطيك مواقف كافية لاختبار التلزيم والقطع وحماية الشريك بدون قفزة صعبة مبكرة.".localized,
+            iconName: "target"
+        )
+    }
+
+    static func trainingSessionPlan(for attempts: [WhatToPlayAttempt]) -> WhatToPlayTrainingSessionPlan {
+        let recommendation = practiceRecommendation(for: attempts)
+        let summary = summarize(attempts: attempts)
+        let style = playStyle(for: attempts)
+        let pulse = sessionPulse(for: attempts)
+
+        if style.kind == .measuring {
+            return WhatToPlayTrainingSessionPlan(
+                difficulty: .easy,
+                scenarioCount: 3,
+                targetAccuracyPercent: 60,
+                title: "جلسة تأسيس قصيرة".localized,
+                detail: "ابدأ بثلاثة مواقف سهلة لبناء خط أساس واضح قبل رفع الصعوبة.".localized,
+                successMetric: "هدف الجلسة: إجابتان صحيحتان من 3.".localized,
+                iconName: "play.rectangle.fill"
+            )
+        }
+
+        if pulse.state == .reviewNeeded {
+            return WhatToPlayTrainingSessionPlan(
+                difficulty: recommendation.difficulty,
+                scenarioCount: 3,
+                targetAccuracyPercent: 67,
+                title: "جلسة مراجعة مركزة".localized,
+                detail: "اختر مواقف قليلة وراجع التفسير بعد كل قرار قبل الانتقال.".localized,
+                successMetric: "هدف الجلسة: لا تكرر نفس سبب الخطأ مرتين.".localized,
+                iconName: "magnifyingglass.circle.fill"
+            )
+        }
+
+        if style.kind == .expertAligned || summary.currentStreak >= 3 {
+            return WhatToPlayTrainingSessionPlan(
+                difficulty: nextDifficulty(after: recommendation.difficulty),
+                scenarioCount: 5,
+                targetAccuracyPercent: 80,
+                title: "جلسة رفع المستوى".localized,
+                detail: "أداؤك يسمح بتحدٍ أعلى؛ اختبر قراءتك في مواقف أكثر ضغطًا.".localized,
+                successMetric: "هدف الجلسة: 4 إجابات صحيحة من 5.".localized,
+                iconName: "arrow.up.circle.fill"
+            )
+        }
+
+        if style.kind == .cautious || summary.averageExpectedImpact < 0 {
+            return WhatToPlayTrainingSessionPlan(
+                difficulty: recommendation.difficulty,
+                scenarioCount: 5,
+                targetAccuracyPercent: 70,
+                title: "جلسة تقليل النزيف".localized,
+                detail: "ركز على مقارنة أفضل وثاني أفضل حتى تقل خسارة النقاط المتوقعة.".localized,
+                successMetric: "هدف الجلسة: متوسط أثر غير سلبي.".localized,
+                iconName: "shield.lefthalf.filled"
+            )
+        }
+
+        return WhatToPlayTrainingSessionPlan(
+            difficulty: recommendation.difficulty,
+            scenarioCount: 4,
+            targetAccuracyPercent: 70,
+            title: "جلسة تثبيت القراءة".localized,
+            detail: "درّب نفس المستوى في دفعة قصيرة حتى تصبح قراراتك أكثر ثباتًا.".localized,
+            successMetric: "هدف الجلسة: 3 إجابات صحيحة من 4.".localized,
             iconName: "target"
         )
     }
