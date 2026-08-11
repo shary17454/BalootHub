@@ -17134,6 +17134,256 @@
         }
       }
     },
+    "خطة البداية" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Starter plan"
+          }
+        }
+      }
+    },
+    "ابدأ بخطوات قصيرة حتى تتكون بيانات كافية عن قراراتك." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start with short steps until enough data forms around your decisions."
+          }
+        }
+      }
+    },
+    "ابدأ بمستوى سهل" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start with easy level"
+          }
+        }
+      }
+    },
+    "حل 3 مواقف متتالية" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solve 3 consecutive scenarios"
+          }
+        }
+      }
+    },
+    "راجع تفسير كل اختيار" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review each choice explanation"
+          }
+        }
+      }
+    },
+    "خطة المراجعة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review plan"
+          }
+        }
+      }
+    },
+    "الأولوية الآن ليست كثرة المواقف، بل فهم سبب الخطأ الأخير." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The priority now is not more scenarios, but understanding the latest mistake."
+          }
+        }
+      }
+    },
+    "أعد قراءة بطاقة تحليل اختيارك" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reread your choice analysis card"
+          }
+        }
+      }
+    },
+    "كرر المستوى المقترح" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repeat the suggested level"
+          }
+        }
+      }
+    },
+    "لا تنتقل قبل إجابة صحيحة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Do not move on before a correct answer"
+          }
+        }
+      }
+    },
+    "خطة التوازن" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Balance plan"
+          }
+        }
+      }
+    },
+    "توصيات المدرب تصبح أدق عندما تغطي كل مستويات الصعوبة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trainer recommendations become more accurate when you cover all difficulty levels."
+          }
+        }
+      }
+    },
+    "أكمل المستويات الناقصة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Complete missing levels"
+          }
+        }
+      }
+    },
+    "حل موقفين من كل مستوى" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solve two scenarios from each level"
+          }
+        }
+      }
+    },
+    "قارن أفضل وثاني أفضل" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compare best and second best"
+          }
+        }
+      }
+    },
+    "خطة التحدي" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Challenge plan"
+          }
+        }
+      }
+    },
+    "أداؤك قوي؛ اجعل التدريب القادم على المواقف التي تضغط قراءة الشريك والخصم." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your performance is strong; make the next practice focus on scenarios that pressure partner and opponent reading."
+          }
+        }
+      }
+    },
+    "انتقل إلى الصعب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Move to hard"
+          }
+        }
+      }
+    },
+    "استهدف 3 إجابات صحيحة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aim for 3 correct answers"
+          }
+        }
+      }
+    },
+    "شارك موقفًا صعبًا للمراجعة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share a hard scenario for review"
+          }
+        }
+      }
+    },
+    "خطة الاستمرار" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuation plan"
+          }
+        }
+      }
+    },
+    "استمر على تدريب قصير ومتكرر، ثم ارفع الصعوبة عندما تثبت الدقة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep training in short repeated sessions, then raise difficulty when accuracy stabilizes."
+          }
+        }
+      }
+    },
+    "ابدأ بالمستوى المقترح" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start with the suggested level"
+          }
+        }
+      }
+    },
+    "حل 5 مواقف قصيرة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solve 5 short scenarios"
+          }
+        }
+      }
+    },
+    "راجع النقاط الضائعة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review lost points"
+          }
+        }
+      }
+    },
     "حل عدة مواقف حتى يظهر مستوى إتقانك الحقيقي في قراءة الطاولة." : {
       "localizations" : {
         "en" : {

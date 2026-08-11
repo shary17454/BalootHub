@@ -117,6 +117,13 @@ struct WhatToPlaySessionPulse: Equatable {
     let inspectedAttempts: Int
 }
 
+struct WhatToPlayMicroDrill: Equatable {
+    let title: String
+    let detail: String
+    let iconName: String
+    let steps: [String]
+}
+
 enum WhatToPlayStatsAnalyzer {
     static func summarize(attempts: [WhatToPlayAttempt]) -> WhatToPlayStatsSummary {
         guard !attempts.isEmpty else { return .empty }
@@ -492,6 +499,73 @@ enum WhatToPlayStatsAnalyzer {
             detail: "أداؤك الحالي مختلط؛ ركز على تقليل الخسارة في الاختيارات القريبة.".localized,
             iconName: "chart.xyaxis.line",
             inspectedAttempts: recent.count
+        )
+    }
+
+    static func microDrill(for attempts: [WhatToPlayAttempt]) -> WhatToPlayMicroDrill {
+        let pulse = sessionPulse(for: attempts)
+        if pulse.state == .noData {
+            return WhatToPlayMicroDrill(
+                title: "خطة البداية".localized,
+                detail: "ابدأ بخطوات قصيرة حتى تتكون بيانات كافية عن قراراتك.".localized,
+                iconName: "list.clipboard.fill",
+                steps: [
+                    "ابدأ بمستوى سهل".localized,
+                    "حل 3 مواقف متتالية".localized,
+                    "راجع تفسير كل اختيار".localized
+                ]
+            )
+        }
+
+        if pulse.state == .reviewNeeded {
+            return WhatToPlayMicroDrill(
+                title: "خطة المراجعة".localized,
+                detail: "الأولوية الآن ليست كثرة المواقف، بل فهم سبب الخطأ الأخير.".localized,
+                iconName: "magnifyingglass.circle.fill",
+                steps: [
+                    "أعد قراءة بطاقة تحليل اختيارك".localized,
+                    "كرر المستوى المقترح".localized,
+                    "لا تنتقل قبل إجابة صحيحة".localized
+                ]
+            )
+        }
+
+        let coverage = practiceCoverage(for: attempts)
+        if !coverage.isBalanced {
+            return WhatToPlayMicroDrill(
+                title: "خطة التوازن".localized,
+                detail: "توصيات المدرب تصبح أدق عندما تغطي كل مستويات الصعوبة.".localized,
+                iconName: "square.grid.3x3.fill",
+                steps: [
+                    "أكمل المستويات الناقصة".localized,
+                    "حل موقفين من كل مستوى".localized,
+                    "قارن أفضل وثاني أفضل".localized
+                ]
+            )
+        }
+
+        if mastery(for: attempts).level == .sharp {
+            return WhatToPlayMicroDrill(
+                title: "خطة التحدي".localized,
+                detail: "أداؤك قوي؛ اجعل التدريب القادم على المواقف التي تضغط قراءة الشريك والخصم.".localized,
+                iconName: "flame.fill",
+                steps: [
+                    "انتقل إلى الصعب".localized,
+                    "استهدف 3 إجابات صحيحة".localized,
+                    "شارك موقفًا صعبًا للمراجعة".localized
+                ]
+            )
+        }
+
+        return WhatToPlayMicroDrill(
+            title: "خطة الاستمرار".localized,
+            detail: "استمر على تدريب قصير ومتكرر، ثم ارفع الصعوبة عندما تثبت الدقة.".localized,
+            iconName: "target",
+            steps: [
+                "ابدأ بالمستوى المقترح".localized,
+                "حل 5 مواقف قصيرة".localized,
+                "راجع النقاط الضائعة".localized
+            ]
         )
     }
 

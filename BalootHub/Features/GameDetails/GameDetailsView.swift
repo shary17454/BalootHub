@@ -348,12 +348,17 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.sessionPulse(for: attempts)
     }
 
+    private var microDrill: WhatToPlayMicroDrill {
+        WhatToPlayStatsAnalyzer.microDrill(for: attempts)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
                 header
                 controls
                 practiceRecommendationCard
+                microDrillCard
                 statsCard
                 difficultyStatsCard
                 recentAttemptsCard
@@ -475,6 +480,42 @@ struct WhatToPlayTrainerView: View {
             .buttonStyle(.borderedProminent)
             .tint(AppColor.primary)
             .disabled(isGeneratingScenario)
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private var microDrillCard: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            Label(microDrill.title, systemImage: microDrill.iconName)
+                .font(AppTypography.headline)
+                .foregroundStyle(AppColor.primary)
+
+            Text(microDrill.detail)
+                .font(AppTypography.caption)
+                .foregroundStyle(AppColor.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            VStack(spacing: AppSpacing.xs) {
+                ForEach(Array(microDrill.steps.enumerated()), id: \.offset) { index, step in
+                    HStack(spacing: AppSpacing.sm) {
+                        Text("\(index + 1)")
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(.white)
+                            .frame(width: 22, height: 22)
+                            .background(AppColor.primary, in: Circle())
+                            .accessibilityHidden(true)
+                        Text(step)
+                            .font(AppTypography.subheadline)
+                            .foregroundStyle(AppColor.textPrimary)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Spacer(minLength: 0)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(AppSpacing.sm)
+                    .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+                }
+            }
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))

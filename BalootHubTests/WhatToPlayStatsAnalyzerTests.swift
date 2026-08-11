@@ -473,6 +473,72 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(pulse.title, "توقف للمراجعة".localized)
     }
 
+    func testMicroDrillStartsWithBaselinePlanWithoutAttempts() {
+        let drill = WhatToPlayStatsAnalyzer.microDrill(for: [])
+
+        XCTAssertEqual(drill.title, "خطة البداية".localized)
+        XCTAssertEqual(drill.steps.count, 3)
+        XCTAssertEqual(drill.steps.first, "ابدأ بمستوى سهل".localized)
+    }
+
+    func testMicroDrillPrioritizesReviewWhenSessionNeedsReview() {
+        let attempts = [
+            attempt(daysAgo: 3, correct: false, impact: -4),
+            attempt(daysAgo: 2, correct: false, impact: -6),
+            attempt(daysAgo: 1, correct: true, impact: -2)
+        ]
+
+        let drill = WhatToPlayStatsAnalyzer.microDrill(for: attempts)
+
+        XCTAssertEqual(drill.title, "خطة المراجعة".localized)
+        XCTAssertEqual(drill.steps.first, "أعد قراءة بطاقة تحليل اختيارك".localized)
+    }
+
+    func testMicroDrillTargetsCoverageBeforeGenericPractice() {
+        let attempts = [
+            attempt(daysAgo: 3, difficulty: .easy, correct: true, impact: 3),
+            attempt(daysAgo: 2, difficulty: .easy, correct: true, impact: 3),
+            attempt(daysAgo: 1, difficulty: .easy, correct: true, impact: 3)
+        ]
+
+        let drill = WhatToPlayStatsAnalyzer.microDrill(for: attempts)
+
+        XCTAssertEqual(drill.title, "خطة التوازن".localized)
+        XCTAssertEqual(drill.steps.first, "أكمل المستويات الناقصة".localized)
+    }
+
+    func testMicroDrillRaisesChallengeForSharpBalancedPlayer() {
+        let attempts = [
+            attempt(daysAgo: 6, difficulty: .easy, correct: true, impact: 10),
+            attempt(daysAgo: 5, difficulty: .easy, correct: true, impact: 10),
+            attempt(daysAgo: 4, difficulty: .medium, correct: true, impact: 10),
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 10),
+            attempt(daysAgo: 2, difficulty: .hard, correct: true, impact: 10),
+            attempt(daysAgo: 1, difficulty: .hard, correct: true, impact: 10)
+        ]
+
+        let drill = WhatToPlayStatsAnalyzer.microDrill(for: attempts)
+
+        XCTAssertEqual(drill.title, "خطة التحدي".localized)
+        XCTAssertEqual(drill.steps.first, "انتقل إلى الصعب".localized)
+    }
+
+    func testMicroDrillFallsBackToContinuationPlan() {
+        let attempts = [
+            attempt(daysAgo: 6, difficulty: .easy, correct: true, impact: 0),
+            attempt(daysAgo: 5, difficulty: .easy, correct: false, impact: 0),
+            attempt(daysAgo: 4, difficulty: .medium, correct: true, impact: 0),
+            attempt(daysAgo: 3, difficulty: .medium, correct: false, impact: 0),
+            attempt(daysAgo: 2, difficulty: .hard, correct: true, impact: 0),
+            attempt(daysAgo: 1, difficulty: .hard, correct: true, impact: 0)
+        ]
+
+        let drill = WhatToPlayStatsAnalyzer.microDrill(for: attempts)
+
+        XCTAssertEqual(drill.title, "خطة الاستمرار".localized)
+        XCTAssertEqual(drill.steps.first, "ابدأ بالمستوى المقترح".localized)
+    }
+
     func testCoachingTipForEmptyAttemptsEncouragesBaseline() {
         let tip = WhatToPlayStatsAnalyzer.coachingTip(for: [])
 
