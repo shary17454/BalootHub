@@ -219,7 +219,7 @@ struct BalootGamePlayView: View {
                 StatusBadge(viewModel.currentMultiplier.arabicName, systemImage: "flame.fill", tint: AppColor.danger)
             }
 
-            if viewModel.isAwaitingHumanMultiplierDecision {
+            if viewModel.isShowingHumanMultiplierControls {
                 multiplierButtons
             } else if viewModel.isHumanTurn && !viewModel.legalBidsForHuman.isEmpty {
                 bidOptionButtons
@@ -302,7 +302,7 @@ struct BalootGamePlayView: View {
                     .foregroundStyle(AppColor.textSecondary)
             }
             HStack(spacing: AppSpacing.sm) {
-                if let next = viewModel.nextAvailableMultiplier {
+                if viewModel.isAwaitingHumanMultiplierDecision, let next = viewModel.nextAvailableMultiplier {
                     Button(next.arabicName) { viewModel.raiseMultiplier(to: next) }
                         .buttonStyle(.borderedProminent)
                         .tint(AppColor.danger)
@@ -312,8 +312,10 @@ struct BalootGamePlayView: View {
                         .buttonStyle(.bordered)
                         .tint(AppColor.accent)
                 }
-                Button("بس") { viewModel.passMultiplier() }
-                    .buttonStyle(.bordered)
+                if viewModel.isAwaitingHumanMultiplierDecision {
+                    Button("بس") { viewModel.passMultiplier() }
+                        .buttonStyle(.bordered)
+                }
             }
         }
     }

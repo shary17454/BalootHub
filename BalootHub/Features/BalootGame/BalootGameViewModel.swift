@@ -281,6 +281,10 @@ final class BalootGameViewModel {
         state.phase == .bidding && state.bidding.stage == .doubling && isHumanTurn
     }
 
+    var isShowingHumanMultiplierControls: Bool {
+        isAwaitingHumanMultiplierDecision || canLockMultiplier
+    }
+
     /// درجة التصعيد التالية المتاحة، أو `nil` إن بلغت المضاعفة سقفها أو أُقفلت.
     var nextAvailableMultiplier: Multiplier? {
         guard !state.bidding.isLocked,
@@ -291,9 +295,17 @@ final class BalootGameViewModel {
 
     /// هل يستطيع اللاعب البشري «القفل» الآن؟
     var canLockMultiplier: Bool {
-        guard state.rules.lockEnabled, state.bidding.multiplier != .none,
-              let activeHumanID, let player = state.player(id: activeHumanID) else { return false }
-        return player.teamID == state.bidding.multiplierRequesterTeamID
+        guard state.phase == .bidding, state.bidding.stage == .doubling,
+              state.rules.lockEnabled, state.bidding.multiplier != .none,
+              humanMultiplierLockerID != nil else { return false }
+        return true
+    }
+
+    private var humanMultiplierLockerID: Player.ID? {
+        guard let requesterTeamID = state.bidding.multiplierRequesterTeamID else { return nil }
+        return state.players.first { player in
+            player.kind == .human && player.teamID == requesterTeamID
+        }?.id
     }
 
     func raiseMultiplier(to level: Multiplier) {
@@ -309,8 +321,8 @@ final class BalootGameViewModel {
     }
 
     func lockMultiplier() {
-        guard let activeHumanID else { return }
-        perform(.lockMultiplier(playerID: activeHumanID))
+        guard let playerID = humanMultiplierLockerID else { return }
+        perform(.lockMultiplier(playerID: playerID))
         advanceAI()
     }
 

@@ -260,7 +260,7 @@ enum BiddingEngine {
     }
 
     static func lockMultiplier(playerID: Player.ID, state: inout GameState) throws {
-        try validateDoublingTurn(playerID: playerID, state: state)
+        try validateLock(playerID: playerID, state: state)
         guard state.rules.lockEnabled else { throw GameEngineError.bidding(.lockNotAllowed) }
         // القفل يقوله من يملك المضاعفة الحالية ليمنع تصعيد الخصم عليها،
         // فلا معنى له قبل وجود مضاعفة أصلًا.
@@ -271,6 +271,18 @@ enum BiddingEngine {
         }
         state.bidding.isLocked = true
         try completeBidding(state: &state)
+    }
+
+    /// القفل ليس تصعيدًا من الفريق صاحب الدور الحالي، بل فعل جانبي للفريق الذي
+    /// يملك المضاعفة القائمة. بعد الدبل ينتقل حق التصعيد للفريق المقابل، ولو اشترطنا
+    /// `currentTurnPlayerID` هنا فلن يستطيع صاحب الدبل قفله أبدًا.
+    private static func validateLock(playerID: Player.ID, state: GameState) throws {
+        guard state.rules.multipliersEnabled else { throw GameEngineError.bidding(.multipliersDisabled) }
+        guard state.phase == .bidding else {
+            throw GameEngineError.wrongPhase(expected: .bidding, actual: state.phase)
+        }
+        guard state.bidding.stage == .doubling else { throw GameEngineError.bidding(.notDoublingStage) }
+        guard state.player(id: playerID) != nil else { throw GameEngineError.unknownPlayer }
     }
 
     private static func validateDoublingTurn(playerID: Player.ID, state: GameState) throws {

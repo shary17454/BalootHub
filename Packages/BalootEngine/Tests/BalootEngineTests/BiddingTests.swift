@@ -280,6 +280,36 @@ struct MultiplierTests {
         #expect(throws: GameEngineError.bidding(.lockNotAllowed)) {
             try GameEngine.apply(.lockMultiplier(playerID: opponentID), to: state)
         }
+
+        // صاحب الدبل يستطيع القفل حتى بعد انتقال حق التصعيد للفريق المقابل.
+        state = try GameEngine.apply(.lockMultiplier(playerID: doublerID), to: state)
+
+        #expect(state.bidding.stage == .completed)
+        #expect(state.bidding.isLocked)
+        #expect(state.bidding.multiplier == .double)
+        #expect(state.actionHistory.last == .lockMultiplier(playerID: doublerID))
+    }
+
+    @Test("قفل المضاعفة يُعاد من سجل الأفعال كما حدث")
+    func lockedMultiplierReplaysDeterministically() throws {
+        let initial = GameState.newLocalMatch(rules: .standard)
+        var state = try GameEngine.apply(.dealCards(seed: 17), to: initial)
+        let upSuit = try #require(state.bidding.upCard?.suit)
+        let buyerID = try #require(state.currentTurnPlayerID)
+        state = try GameEngine.apply(.placeBid(playerID: buyerID, bid: .hokum(suit: upSuit)), to: state)
+        for _ in 0..<3 {
+            state = try GameEngine.apply(.placeBid(playerID: try #require(state.currentTurnPlayerID), bid: .pass), to: state)
+        }
+        let doublerID = try #require(state.currentTurnPlayerID)
+        state = try GameEngine.apply(.raiseMultiplier(playerID: doublerID, level: .double), to: state)
+        state = try GameEngine.apply(.lockMultiplier(playerID: doublerID), to: state)
+
+        let replayed = try GameEngine.replay(initialState: initial, actions: state.actionHistory)
+
+        #expect(replayed.bidding == state.bidding)
+        #expect(replayed.phase == state.phase)
+        #expect(replayed.mode == state.mode)
+        #expect(replayed.trumpSuit == state.trumpSuit)
     }
 
     @Test("المضاعف يضرب نتيجة الجولة بالمعامل المعرَّف في القواعد")
