@@ -124,6 +124,24 @@ struct WhatToPlayMicroDrill: Equatable {
     let steps: [String]
 }
 
+enum WhatToPlayStyleKind: Equatable {
+    case measuring
+    case foundational
+    case cautious
+    case inconsistent
+    case expertAligned
+}
+
+struct WhatToPlayPlayStyle: Equatable {
+    let kind: WhatToPlayStyleKind
+    let title: String
+    let detail: String
+    let strength: String
+    let weakness: String
+    let advice: String
+    let iconName: String
+}
+
 enum WhatToPlayStatsAnalyzer {
     static func summarize(attempts: [WhatToPlayAttempt]) -> WhatToPlayStatsSummary {
         guard !attempts.isEmpty else { return .empty }
@@ -566,6 +584,67 @@ enum WhatToPlayStatsAnalyzer {
                 "حل 5 مواقف قصيرة".localized,
                 "راجع النقاط الضائعة".localized
             ]
+        )
+    }
+
+    static func playStyle(for attempts: [WhatToPlayAttempt]) -> WhatToPlayPlayStyle {
+        let summary = summarize(attempts: attempts)
+        guard summary.attempts >= 3 else {
+            return WhatToPlayPlayStyle(
+                kind: .measuring,
+                title: "أسلوبك تحت القياس".localized,
+                detail: "المدرب يحتاج عدة مواقف قبل أن يستنتج نمط قراراتك بثقة.".localized,
+                strength: "بدأت تجمع سجلًا قابلًا للتحليل.".localized,
+                weakness: "العينة الحالية قليلة ولا تكفي للحكم على أسلوبك.".localized,
+                advice: "حل 3 مواقف من نفس المستوى ثم راجع أول تقرير أسلوب.".localized,
+                iconName: "waveform.path.ecg"
+            )
+        }
+
+        if summary.accuracyPercent >= 80 && summary.averageExpectedImpact >= 0 {
+            return WhatToPlayPlayStyle(
+                kind: .expertAligned,
+                title: "قريب من الخبير".localized,
+                detail: "اختياراتك غالبًا تطابق أفضل قرار أو تحافظ على قيمة متوقعة جيدة.".localized,
+                strength: "تقرأ الأكلة وتختار الورقة الرابحة أو الأقل خسارة بثبات.".localized,
+                weakness: "الخطر القادم هو التعود على المواقف السهلة وعدم اختبار القراءة تحت ضغط.".localized,
+                advice: "ارفع الصعوبة وركز على مواقف الحكم وقراءة نية الشريك.".localized,
+                iconName: "checkmark.seal.fill"
+            )
+        }
+
+        if summary.accuracyPercent < 50 {
+            return WhatToPlayPlayStyle(
+                kind: .foundational,
+                title: "تحتاج تأسيس".localized,
+                detail: "قراراتك الحالية لا تزال بعيدة عن اختيار الخبير في أغلب المواقف.".localized,
+                strength: "لديك فرصة واضحة للتحسن السريع بمجرد ضبط التلزيم والقطع.".localized,
+                weakness: "أكبر نقطة ضعف هي اختيار الورقة قبل قراءة اللون المطلوب والحكم.".localized,
+                advice: "ابدأ بالسهل وكرر تفسير كل خطأ قبل طلب موقف جديد.".localized,
+                iconName: "target"
+            )
+        }
+
+        if summary.accuracyPercent >= 65 && summary.averageExpectedImpact < 0 {
+            return WhatToPlayPlayStyle(
+                kind: .cautious,
+                title: "لاعب حذر".localized,
+                detail: "تقترب من القرار الصحيح كثيرًا، لكن بعض الاختيارات تسرّب نقاطًا متوقعة.".localized,
+                strength: "غالبًا لا تبتعد كثيرًا عن أفضل خيار.".localized,
+                weakness: "تميل أحيانًا لحفظ الورقة أو التخلص الآمن عندما توجد فرصة أفضل.".localized,
+                advice: "راجع بطاقة أثر كل قرار وابحث عن الفرق بين الأفضل وثاني أفضل.".localized,
+                iconName: "shield.lefthalf.filled"
+            )
+        }
+
+        return WhatToPlayPlayStyle(
+            kind: .inconsistent,
+            title: "قراءة متذبذبة".localized,
+            detail: "نتائجك بين قرارات قوية وأخطاء مؤثرة؛ تحتاج نمط تدريب أكثر ثباتًا.".localized,
+            strength: "عند قراءة الموقف جيدًا تصل لاختيارات قريبة من الخبير.".localized,
+            weakness: "التذبذب يظهر غالبًا عند وجود حكم أو أكثر من خيار قريب.".localized,
+            advice: "درّب المستوى المقترح في جلسات قصيرة حتى تستقر الدقة.".localized,
+            iconName: "chart.xyaxis.line"
         )
     }
 

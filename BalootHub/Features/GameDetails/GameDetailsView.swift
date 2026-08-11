@@ -352,6 +352,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.microDrill(for: attempts)
     }
 
+    private var playStyle: WhatToPlayPlayStyle {
+        WhatToPlayStatsAnalyzer.playStyle(for: attempts)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
@@ -545,6 +549,7 @@ struct WhatToPlayTrainerView: View {
                     value: impactText(statsSummary.averageExpectedImpact)
                 )
                 masteryView(mastery, milestone: masteryMilestone)
+                playStyleView(playStyle)
                 sessionPulseView(sessionPulse)
                 coachingTipView(coachingTip)
                 if let performanceTrend {
@@ -575,6 +580,68 @@ struct WhatToPlayTrainerView: View {
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
         .accessibilityElement(children: .combine)
+    }
+
+    private func playStyleView(_ style: WhatToPlayPlayStyle) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            Label {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(style.title)
+                        .font(AppTypography.subheadline.weight(.semibold))
+                        .foregroundStyle(AppColor.textPrimary)
+                    Text(style.detail)
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColor.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            } icon: {
+                Image(systemName: style.iconName)
+                    .foregroundStyle(playStyleTint(style.kind))
+            }
+
+            VStack(spacing: AppSpacing.xs) {
+                styleLine(title: "نقطة قوة".localized, value: style.strength, tint: AppColor.success)
+                styleLine(title: "نقطة تحتاج تدريب".localized, value: style.weakness, tint: AppColor.accent)
+                styleLine(title: "النصيحة التالية".localized, value: style.advice, tint: playStyleTint(style.kind))
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.sm)
+        .background(playStyleTint(style.kind).opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func styleLine(title: String, value: String, tint: Color) -> some View {
+        HStack(alignment: .top, spacing: AppSpacing.xs) {
+            Circle()
+                .fill(tint)
+                .frame(width: 7, height: 7)
+                .padding(.top, 6)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(title)
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(tint)
+                Text(value)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func playStyleTint(_ kind: WhatToPlayStyleKind) -> Color {
+        switch kind {
+        case .measuring:
+            AppColor.textSecondary
+        case .foundational:
+            AppColor.danger
+        case .cautious, .inconsistent:
+            AppColor.accent
+        case .expertAligned:
+            AppColor.success
+        }
     }
 
     private func masteryView(_ mastery: WhatToPlayMastery, milestone: WhatToPlayMasteryMilestone?) -> some View {

@@ -539,6 +539,75 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(drill.steps.first, "ابدأ بالمستوى المقترح".localized)
     }
 
+    func testPlayStyleStaysInMeasurementModeWithSmallSample() {
+        let attempts = [
+            attempt(daysAgo: 2, correct: true, impact: 2),
+            attempt(daysAgo: 1, correct: false, impact: -2)
+        ]
+
+        let style = WhatToPlayStatsAnalyzer.playStyle(for: attempts)
+
+        XCTAssertEqual(style.kind, .measuring)
+        XCTAssertEqual(style.title, "أسلوبك تحت القياس".localized)
+    }
+
+    func testPlayStyleRecognizesExpertAlignedDecisions() {
+        let attempts = [
+            attempt(daysAgo: 5, correct: true, impact: 4),
+            attempt(daysAgo: 4, correct: true, impact: 2),
+            attempt(daysAgo: 3, correct: true, impact: 3),
+            attempt(daysAgo: 2, correct: true, impact: 1),
+            attempt(daysAgo: 1, correct: false, impact: 0)
+        ]
+
+        let style = WhatToPlayStatsAnalyzer.playStyle(for: attempts)
+
+        XCTAssertEqual(style.kind, .expertAligned)
+        XCTAssertEqual(style.title, "قريب من الخبير".localized)
+    }
+
+    func testPlayStyleRecognizesFoundationalNeeds() {
+        let attempts = [
+            attempt(daysAgo: 4, correct: false, impact: -8),
+            attempt(daysAgo: 3, correct: false, impact: -6),
+            attempt(daysAgo: 2, correct: true, impact: 2),
+            attempt(daysAgo: 1, correct: false, impact: -4)
+        ]
+
+        let style = WhatToPlayStatsAnalyzer.playStyle(for: attempts)
+
+        XCTAssertEqual(style.kind, .foundational)
+        XCTAssertEqual(style.title, "تحتاج تأسيس".localized)
+    }
+
+    func testPlayStyleRecognizesCautiousPointLeak() {
+        let attempts = [
+            attempt(daysAgo: 4, correct: true, impact: -4),
+            attempt(daysAgo: 3, correct: true, impact: -2),
+            attempt(daysAgo: 2, correct: true, impact: -1),
+            attempt(daysAgo: 1, correct: false, impact: -5)
+        ]
+
+        let style = WhatToPlayStatsAnalyzer.playStyle(for: attempts)
+
+        XCTAssertEqual(style.kind, .cautious)
+        XCTAssertEqual(style.title, "لاعب حذر".localized)
+    }
+
+    func testPlayStyleFallsBackToInconsistentReading() {
+        let attempts = [
+            attempt(daysAgo: 4, correct: true, impact: 3),
+            attempt(daysAgo: 3, correct: false, impact: -4),
+            attempt(daysAgo: 2, correct: true, impact: 2),
+            attempt(daysAgo: 1, correct: false, impact: -1)
+        ]
+
+        let style = WhatToPlayStatsAnalyzer.playStyle(for: attempts)
+
+        XCTAssertEqual(style.kind, .inconsistent)
+        XCTAssertEqual(style.title, "قراءة متذبذبة".localized)
+    }
+
     func testCoachingTipForEmptyAttemptsEncouragesBaseline() {
         let tip = WhatToPlayStatsAnalyzer.coachingTip(for: [])
 

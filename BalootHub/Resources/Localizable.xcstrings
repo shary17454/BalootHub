@@ -17564,6 +17564,276 @@
         }
       }
     },
+    "أسلوبك تحت القياس" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your style is being measured"
+          }
+        }
+      }
+    },
+    "المدرب يحتاج عدة مواقف قبل أن يستنتج نمط قراراتك بثقة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The trainer needs several scenarios before it can infer your decision pattern confidently."
+          }
+        }
+      }
+    },
+    "بدأت تجمع سجلًا قابلًا للتحليل." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You have started building an analyzable record."
+          }
+        }
+      }
+    },
+    "العينة الحالية قليلة ولا تكفي للحكم على أسلوبك." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The current sample is too small to judge your style."
+          }
+        }
+      }
+    },
+    "حل 3 مواقف من نفس المستوى ثم راجع أول تقرير أسلوب." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solve 3 scenarios at the same level, then review your first style report."
+          }
+        }
+      }
+    },
+    "قريب من الخبير" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close to expert"
+          }
+        }
+      }
+    },
+    "اختياراتك غالبًا تطابق أفضل قرار أو تحافظ على قيمة متوقعة جيدة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your choices often match the best decision or preserve solid expected value."
+          }
+        }
+      }
+    },
+    "تقرأ الأكلة وتختار الورقة الرابحة أو الأقل خسارة بثبات." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You read the trick and consistently choose the winning or least costly card."
+          }
+        }
+      }
+    },
+    "الخطر القادم هو التعود على المواقف السهلة وعدم اختبار القراءة تحت ضغط." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The next risk is getting used to easy scenarios without testing reads under pressure."
+          }
+        }
+      }
+    },
+    "ارفع الصعوبة وركز على مواقف الحكم وقراءة نية الشريك." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raise the difficulty and focus on Hokum scenarios and reading partner intent."
+          }
+        }
+      }
+    },
+    "قراراتك الحالية لا تزال بعيدة عن اختيار الخبير في أغلب المواقف." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your current decisions are still far from the expert choice in most scenarios."
+          }
+        }
+      }
+    },
+    "لديك فرصة واضحة للتحسن السريع بمجرد ضبط التلزيم والقطع." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You have a clear chance to improve quickly once follow-suit and trumping are controlled."
+          }
+        }
+      }
+    },
+    "أكبر نقطة ضعف هي اختيار الورقة قبل قراءة اللون المطلوب والحكم." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The biggest weakness is choosing before reading the required suit and trump."
+          }
+        }
+      }
+    },
+    "ابدأ بالسهل وكرر تفسير كل خطأ قبل طلب موقف جديد." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start on easy and repeat each mistake explanation before asking for a new scenario."
+          }
+        }
+      }
+    },
+    "لاعب حذر" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cautious player"
+          }
+        }
+      }
+    },
+    "تقترب من القرار الصحيح كثيرًا، لكن بعض الاختيارات تسرّب نقاطًا متوقعة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You often get close to the right decision, but some choices leak expected points."
+          }
+        }
+      }
+    },
+    "غالبًا لا تبتعد كثيرًا عن أفضل خيار." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You usually do not drift far from the best option."
+          }
+        }
+      }
+    },
+    "تميل أحيانًا لحفظ الورقة أو التخلص الآمن عندما توجد فرصة أفضل." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You sometimes keep the card or choose a safe discard when a better chance exists."
+          }
+        }
+      }
+    },
+    "راجع بطاقة أثر كل قرار وابحث عن الفرق بين الأفضل وثاني أفضل." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review the impact card for each decision and look for the gap between best and second best."
+          }
+        }
+      }
+    },
+    "قراءة متذبذبة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inconsistent reading"
+          }
+        }
+      }
+    },
+    "نتائجك بين قرارات قوية وأخطاء مؤثرة؛ تحتاج نمط تدريب أكثر ثباتًا." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your results alternate between strong decisions and costly mistakes; you need steadier practice."
+          }
+        }
+      }
+    },
+    "عند قراءة الموقف جيدًا تصل لاختيارات قريبة من الخبير." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When you read the scenario well, you reach choices close to the expert."
+          }
+        }
+      }
+    },
+    "التذبذب يظهر غالبًا عند وجود حكم أو أكثر من خيار قريب." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The inconsistency often appears when there is trump or more than one close option."
+          }
+        }
+      }
+    },
+    "درّب المستوى المقترح في جلسات قصيرة حتى تستقر الدقة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Practice the suggested level in short sessions until accuracy stabilizes."
+          }
+        }
+      }
+    },
+    "نقطة قوة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Strength"
+          }
+        }
+      }
+    },
+    "نقطة تحتاج تدريب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Needs practice"
+          }
+        }
+      }
+    },
+    "النصيحة التالية" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next advice"
+          }
+        }
+      }
+    },
     "موقف تدريبي من Baloot Hub" : {
       "localizations" : {
         "en" : {
