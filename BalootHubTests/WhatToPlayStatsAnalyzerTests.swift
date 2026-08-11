@@ -842,6 +842,36 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertTrue(action.detail.contains("تنقل الأكلة لفريقك".localized))
     }
 
+    func testScenarioBriefExplainsFollowSuitContext() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(
+            seed: 2026,
+            difficulty: .easy,
+            preferredFocus: .followSuit
+        )
+
+        let brief = WhatToPlayStatsAnalyzer.scenarioBrief(for: scenario)
+
+        XCTAssertEqual(brief.title, "التزم باللون المطلوب".localized)
+        XCTAssertEqual(brief.iconName, "suit.club.fill")
+        if let requiredSuit = scenario.context.requiredSuit {
+            XCTAssertTrue(brief.detail.contains(requiredSuit.spokenName))
+        }
+    }
+
+    func testScenarioBriefExplainsNarrowChoiceContext() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(
+            seed: 2026,
+            difficulty: .easy,
+            preferredFocus: .narrowChoice
+        )
+
+        let brief = WhatToPlayStatsAnalyzer.scenarioBrief(for: scenario)
+
+        XCTAssertEqual(brief.title, "خياراتك محدودة".localized)
+        XCTAssertEqual(brief.iconName, "2.circle.fill")
+        XCTAssertTrue(brief.detail.contains("\(scenario.context.legalOptionCount)"))
+    }
+
     func testMasteryStartsAtZeroWithoutAttempts() {
         let mastery = WhatToPlayStatsAnalyzer.mastery(for: [])
 

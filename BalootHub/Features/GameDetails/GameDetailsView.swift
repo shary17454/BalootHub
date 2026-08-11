@@ -1856,10 +1856,29 @@ struct WhatToPlayTrainerView: View {
     }
 
     private func legalOptions(_ scenario: WhatToPlayScenario) -> some View {
-        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+        let brief = WhatToPlayStatsAnalyzer.scenarioBrief(for: scenario)
+
+        return VStack(alignment: .leading, spacing: AppSpacing.sm) {
             Text("وش تلعب؟")
                 .font(AppTypography.headline)
                 .foregroundStyle(AppColor.textPrimary)
+
+            Label {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(brief.title)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(AppColor.textPrimary)
+                    Text(brief.detail)
+                        .font(.caption2)
+                        .foregroundStyle(AppColor.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            } icon: {
+                Image(systemName: brief.iconName)
+                    .foregroundStyle(AppColor.primary)
+            }
+            .padding(AppSpacing.sm)
+            .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
 
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 4), spacing: AppSpacing.xs) {
                 ForEach(scenario.options) { option in

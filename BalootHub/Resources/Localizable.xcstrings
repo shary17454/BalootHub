@@ -20168,6 +20168,96 @@
         }
       }
     },
+    "اقرأ بداية الأكلة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read the trick lead"
+          }
+        }
+      }
+    },
+    "أنت تفتتح الأكلة؛ اختر ورقة تكشف أقل معلومات وتحافظ على قوة يدك للأكلة المناسبة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You are leading the trick; choose a card that reveals less information and preserves your hand strength for the right trick."
+          }
+        }
+      }
+    },
+    "التزم باللون المطلوب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Follow the required suit"
+          }
+        }
+      }
+    },
+    "قارن هل تستطيع كسب الأكلة أم تقلل خسارة النقاط." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compare whether you can win the trick or reduce point loss."
+          }
+        }
+      }
+    },
+    "راجع اللون المطلوب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review the required suit"
+          }
+        }
+      }
+    },
+    "ابدأ بمعرفة اللون المطلوب ثم قرر هل الفوز بالأكلة ممكن أو الأفضل تقليل الخسارة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start by identifying the required suit, then decide whether winning the trick is possible or reducing loss is better."
+          }
+        }
+      }
+    },
+    "يوجد حكم على الطاولة؛ لا تصرف حكمًا أعلى إلا إذا كان العائد يستحق." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There is trump on the table; do not spend a higher trump unless the return is worth it."
+          }
+        }
+      }
+    },
+    "لا يوجد حكم على الطاولة؛ اسأل هل القطع الآن يحسم الأكلة أو يكشف قوتك مبكرًا." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There is no trump on the table; ask whether cutting now wins the trick or reveals your strength too early."
+          }
+        }
+      }
+    },
+    "رتّبها حسب الأثر المتوقع لا حسب أعلى ورقة فقط." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rank them by expected impact, not only by the highest card."
+          }
+        }
+      }
+    },
     "فتح موقف اليوم" : {
       "localizations" : {
         "en" : {

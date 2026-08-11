@@ -278,6 +278,12 @@ struct WhatToPlayNextDecisionAction: Equatable {
     let recommendedCard: PlayingCard?
 }
 
+struct WhatToPlayScenarioBrief: Equatable {
+    let title: String
+    let detail: String
+    let iconName: String
+}
+
 enum WhatToPlayMasteryLevel: Equatable {
     case starting
     case building
@@ -1446,6 +1452,50 @@ enum WhatToPlayStatsAnalyzer {
             focusKind: scenario.context.focusKind,
             bestCard: scenario.bestOption?.card
         )
+    }
+
+    static func scenarioBrief(for scenario: WhatToPlayScenario) -> WhatToPlayScenarioBrief {
+        scenarioBrief(context: scenario.context)
+    }
+
+    static func scenarioBrief(context: WhatToPlayScenarioContext) -> WhatToPlayScenarioBrief {
+        switch context.focusKind {
+        case .openingLead:
+            return WhatToPlayScenarioBrief(
+                title: "اقرأ بداية الأكلة".localized,
+                detail: "أنت تفتتح الأكلة؛ اختر ورقة تكشف أقل معلومات وتحافظ على قوة يدك للأكلة المناسبة.".localized,
+                iconName: "arrowshape.turn.up.forward.fill"
+            )
+        case .followSuit:
+            if let requiredSuit = context.requiredSuit {
+                return WhatToPlayScenarioBrief(
+                    title: "التزم باللون المطلوب".localized,
+                    detail: "\("اللون المطلوب".localized): \(requiredSuit.spokenName). \("قارن هل تستطيع كسب الأكلة أم تقلل خسارة النقاط.".localized)",
+                    iconName: "suit.club.fill"
+                )
+            }
+            return WhatToPlayScenarioBrief(
+                title: "راجع اللون المطلوب".localized,
+                detail: "ابدأ بمعرفة اللون المطلوب ثم قرر هل الفوز بالأكلة ممكن أو الأفضل تقليل الخسارة.".localized,
+                iconName: "suit.club.fill"
+            )
+        case .trumpPressure:
+            let trumpText = context.trumpSuit?.spokenName ?? "غير محدد".localized
+            let tableText = context.hasTrumpInCurrentTrick
+                ? "يوجد حكم على الطاولة؛ لا تصرف حكمًا أعلى إلا إذا كان العائد يستحق.".localized
+                : "لا يوجد حكم على الطاولة؛ اسأل هل القطع الآن يحسم الأكلة أو يكشف قوتك مبكرًا.".localized
+            return WhatToPlayScenarioBrief(
+                title: "\("ضغط الحكم".localized): \(trumpText)",
+                detail: tableText,
+                iconName: "crown.fill"
+            )
+        case .narrowChoice:
+            return WhatToPlayScenarioBrief(
+                title: "خياراتك محدودة".localized,
+                detail: "\("الأوراق القانونية".localized): \(context.legalOptionCount). \("رتّبها حسب الأثر المتوقع لا حسب أعلى ورقة فقط.".localized)",
+                iconName: "2.circle.fill"
+            )
+        }
     }
 
     static func nextDecisionAction(
