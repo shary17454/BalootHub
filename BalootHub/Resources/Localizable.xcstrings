@@ -16944,6 +16944,106 @@
         }
       }
     },
+    "بداية التدريب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Training start"
+          }
+        }
+      }
+    },
+    "حل عدة مواقف حتى يظهر مستوى إتقانك الحقيقي في قراءة الطاولة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solve several scenarios so your real mastery level in reading the table can appear."
+          }
+        }
+      }
+    },
+    "قراءة حادة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sharp reading"
+          }
+        }
+      }
+    },
+    "قراراتك قريبة من الخبير؛ ركز الآن على المواقف الصعبة وقراءة نية الشريك." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your decisions are close to the expert; now focus on hard scenarios and reading your partner's intent."
+          }
+        }
+      }
+    },
+    "متمكن" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confident"
+          }
+        }
+      }
+    },
+    "أساسك جيد، لكن تحسين الخيارات القريبة سيزيد نقاطك على المدى الطويل." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your foundation is good, but improving close choices will raise your points over the long run."
+          }
+        }
+      }
+    },
+    "تبني القراءة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Building reading"
+          }
+        }
+      }
+    },
+    "أنت تجمع خبرة مفيدة؛ راجع سبب كل قرار وكرر المواقف التي تخسر فيها نقاطًا متوقعة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You are building useful experience; review each decision and repeat scenarios where you lose expected points."
+          }
+        }
+      }
+    },
+    "تحتاج تأسيس" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Needs foundation"
+          }
+        }
+      }
+    },
+    "ابدأ بمواقف أسهل وركز على اللون المطلوب والحكم قبل التفكير في المخاطرة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start with easier scenarios and focus on the led suit and trump before thinking about risk."
+          }
+        }
+      }
+    },
     "آخر أداء" : {
       "localizations" : {
         "en" : {

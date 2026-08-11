@@ -282,6 +282,57 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(insight.lostExpectedPoints, 5)
     }
 
+    func testMasteryStartsAtZeroWithoutAttempts() {
+        let mastery = WhatToPlayStatsAnalyzer.mastery(for: [])
+
+        XCTAssertEqual(mastery.level, .starting)
+        XCTAssertEqual(mastery.score, 0)
+        XCTAssertEqual(mastery.title, "بداية التدريب".localized)
+    }
+
+    func testMasteryDetectsBuildingLevel() {
+        let attempts = [
+            attempt(daysAgo: 4, correct: true, impact: 0),
+            attempt(daysAgo: 3, correct: false, impact: 0),
+            attempt(daysAgo: 2, correct: false, impact: 0),
+            attempt(daysAgo: 1, correct: true, impact: 0)
+        ]
+
+        let mastery = WhatToPlayStatsAnalyzer.mastery(for: attempts)
+
+        XCTAssertEqual(mastery.level, .building)
+        XCTAssertEqual(mastery.score, 44)
+    }
+
+    func testMasteryDetectsConfidentLevel() {
+        let attempts = [
+            attempt(daysAgo: 4, correct: true, impact: 0),
+            attempt(daysAgo: 3, correct: false, impact: 0),
+            attempt(daysAgo: 2, correct: true, impact: 0),
+            attempt(daysAgo: 1, correct: true, impact: 0)
+        ]
+
+        let mastery = WhatToPlayStatsAnalyzer.mastery(for: attempts)
+
+        XCTAssertEqual(mastery.level, .confident)
+        XCTAssertEqual(mastery.score, 63)
+    }
+
+    func testMasteryDetectsSharpLevel() {
+        let attempts = [
+            attempt(daysAgo: 5, correct: true, impact: 10),
+            attempt(daysAgo: 4, correct: true, impact: 10),
+            attempt(daysAgo: 3, correct: true, impact: 10),
+            attempt(daysAgo: 2, correct: true, impact: 10),
+            attempt(daysAgo: 1, correct: true, impact: 10)
+        ]
+
+        let mastery = WhatToPlayStatsAnalyzer.mastery(for: attempts)
+
+        XCTAssertEqual(mastery.level, .sharp)
+        XCTAssertEqual(mastery.score, 100)
+    }
+
     func testCoachingTipForEmptyAttemptsEncouragesBaseline() {
         let tip = WhatToPlayStatsAnalyzer.coachingTip(for: [])
 

@@ -67,6 +67,21 @@ struct WhatToPlayDecisionInsight: Equatable {
     let lostExpectedPoints: Int
 }
 
+enum WhatToPlayMasteryLevel: Equatable {
+    case starting
+    case building
+    case confident
+    case sharp
+}
+
+struct WhatToPlayMastery: Equatable {
+    let level: WhatToPlayMasteryLevel
+    let score: Int
+    let title: String
+    let detail: String
+    let iconName: String
+}
+
 enum WhatToPlayStatsAnalyzer {
     static func summarize(attempts: [WhatToPlayAttempt]) -> WhatToPlayStatsSummary {
         guard !attempts.isEmpty else { return .empty }
@@ -288,6 +303,59 @@ enum WhatToPlayStatsAnalyzer {
             bestImpact: best.expectedImpact,
             secondBestImpact: scenario.secondBestOption?.expectedImpact
         )
+    }
+
+    static func mastery(for attempts: [WhatToPlayAttempt]) -> WhatToPlayMastery {
+        let summary = summarize(attempts: attempts)
+        guard summary.attempts > 0 else {
+            return WhatToPlayMastery(
+                level: .starting,
+                score: 0,
+                title: "بداية التدريب".localized,
+                detail: "حل عدة مواقف حتى يظهر مستوى إتقانك الحقيقي في قراءة الطاولة.".localized,
+                iconName: "flag.fill"
+            )
+        }
+
+        let accuracyScore = Double(summary.accuracyPercent) * 0.6
+        let streakScore = min(Double(summary.currentStreak), 5) / 5 * 20
+        let impactScore = Double(max(-10, min(10, summary.averageExpectedImpact)) + 10)
+        let score = max(0, min(100, Int((accuracyScore + streakScore + impactScore).rounded())))
+
+        switch score {
+        case 80...100:
+            return WhatToPlayMastery(
+                level: .sharp,
+                score: score,
+                title: "قراءة حادة".localized,
+                detail: "قراراتك قريبة من الخبير؛ ركز الآن على المواقف الصعبة وقراءة نية الشريك.".localized,
+                iconName: "bolt.fill"
+            )
+        case 60..<80:
+            return WhatToPlayMastery(
+                level: .confident,
+                score: score,
+                title: "متمكن".localized,
+                detail: "أساسك جيد، لكن تحسين الخيارات القريبة سيزيد نقاطك على المدى الطويل.".localized,
+                iconName: "checkmark.circle.fill"
+            )
+        case 35..<60:
+            return WhatToPlayMastery(
+                level: .building,
+                score: score,
+                title: "تبني القراءة".localized,
+                detail: "أنت تجمع خبرة مفيدة؛ راجع سبب كل قرار وكرر المواقف التي تخسر فيها نقاطًا متوقعة.".localized,
+                iconName: "chart.line.uptrend.xyaxis"
+            )
+        default:
+            return WhatToPlayMastery(
+                level: .starting,
+                score: score,
+                title: "تحتاج تأسيس".localized,
+                detail: "ابدأ بمواقف أسهل وركز على اللون المطلوب والحكم قبل التفكير في المخاطرة.".localized,
+                iconName: "target"
+            )
+        }
     }
 
     static func coachingTip(for attempts: [WhatToPlayAttempt]) -> WhatToPlayCoachingTip {

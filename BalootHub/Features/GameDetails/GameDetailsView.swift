@@ -332,6 +332,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.practiceRecommendation(for: attempts)
     }
 
+    private var mastery: WhatToPlayMastery {
+        WhatToPlayStatsAnalyzer.mastery(for: attempts)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
@@ -486,6 +490,7 @@ struct WhatToPlayTrainerView: View {
                     title: "متوسط الأثر المتوقع",
                     value: impactText(statsSummary.averageExpectedImpact)
                 )
+                masteryView(mastery)
                 coachingTipView(coachingTip)
                 if let performanceTrend {
                     performanceTrendView(performanceTrend)
@@ -515,6 +520,45 @@ struct WhatToPlayTrainerView: View {
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
         .accessibilityElement(children: .combine)
+    }
+
+    private func masteryView(_ mastery: WhatToPlayMastery) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            HStack(spacing: AppSpacing.sm) {
+                Image(systemName: mastery.iconName)
+                    .foregroundStyle(masteryTint(mastery.level))
+                    .accessibilityHidden(true)
+                Text(mastery.title)
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Spacer()
+                Text("\(mastery.score)/100")
+                    .font(AppTypography.subheadline.weight(.bold))
+                    .foregroundStyle(masteryTint(mastery.level))
+            }
+
+            ProgressView(value: Double(mastery.score), total: 100)
+                .tint(masteryTint(mastery.level))
+
+            Text(mastery.detail)
+                .font(AppTypography.caption)
+                .foregroundStyle(AppColor.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(AppSpacing.sm)
+        .background(masteryTint(mastery.level).opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func masteryTint(_ level: WhatToPlayMasteryLevel) -> Color {
+        switch level {
+        case .starting:
+            AppColor.danger
+        case .building:
+            AppColor.accent
+        case .confident, .sharp:
+            AppColor.success
+        }
     }
 
     private func performanceTrendView(_ trend: WhatToPlayPerformanceTrend) -> some View {
