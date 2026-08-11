@@ -17,21 +17,38 @@ struct WhatToPlayShareCardContent: Equatable {
     let turnPlayerName: String
     let tableCards: [PlayedCardLine]
     let legalCardNames: [String]
+    let selectedCardName: String?
+    let bestCardName: String?
+    let lostExpectedPoints: Int?
+    let selectedRank: Int?
     let prompt: String
 
     var isOpeningTrick: Bool {
         tableCards.isEmpty
     }
+
+    var includesAnswerReview: Bool {
+        selectedCardName != nil || bestCardName != nil
+    }
 }
 
 enum WhatToPlayShareCard {
-    static func content(for scenario: WhatToPlayScenario) -> WhatToPlayShareCardContent {
+    static func content(
+        for scenario: WhatToPlayScenario,
+        selectedOption: WhatToPlayOption? = nil
+    ) -> WhatToPlayShareCardContent {
         let state = scenario.state
         let played = state.currentTrick?.playedCards ?? []
         let mode = modeText(state)
+        let best = selectedOption == nil ? nil : scenario.bestOption
+        let lost = selectedOption.flatMap { selected in
+            best.map { max(0, $0.expectedImpact - selected.expectedImpact) }
+        }
         return WhatToPlayShareCardContent(
             title: "وش تلعب؟".localized,
-            subtitle: "موقف تدريبي من Baloot Hub".localized,
+            subtitle: selectedOption == nil
+                ? "موقف تدريبي من Baloot Hub".localized
+                : "مراجعة قرار من Baloot Hub".localized,
             contextLine: "\("أنت تلعب".localized) \(mode)",
             mode: mode,
             difficulty: difficultyText(scenario.difficulty),
@@ -45,12 +62,19 @@ enum WhatToPlayShareCard {
                 )
             },
             legalCardNames: sortedOptions(scenario.options).map { $0.card.accessibilityName },
-            prompt: "ما أفضل ورقة؟".localized
+            selectedCardName: selectedOption?.card.accessibilityName,
+            bestCardName: best?.card.accessibilityName,
+            lostExpectedPoints: lost,
+            selectedRank: selectedOption?.rank,
+            prompt: selectedOption == nil ? "ما أفضل ورقة؟".localized : "راجع القرار وتدرّب على قراءة الموقف.".localized
         )
     }
 
-    static func text(for scenario: WhatToPlayScenario) -> String {
-        let content = content(for: scenario)
+    static func text(
+        for scenario: WhatToPlayScenario,
+        selectedOption: WhatToPlayOption? = nil
+    ) -> String {
+        let content = content(for: scenario, selectedOption: selectedOption)
         var lines = [
             content.title,
             content.subtitle,
@@ -75,6 +99,23 @@ enum WhatToPlayShareCard {
         for cardName in content.legalCardNames {
             lines.append("- \(cardName)")
         }
+
+        if content.includesAnswerReview {
+            lines.append("\("مراجعة القرار".localized):")
+            if let selectedCardName = content.selectedCardName {
+                lines.append("\("اختياري".localized): \(selectedCardName)")
+            }
+            if let bestCardName = content.bestCardName {
+                lines.append("\("أفضل ورقة".localized): \(bestCardName)")
+            }
+            if let selectedRank = content.selectedRank {
+                lines.append("\("ترتيب اختياري".localized): \(selectedRank)")
+            }
+            if let lostExpectedPoints = content.lostExpectedPoints {
+                lines.append("\("نقاط متوقعة ضائعة".localized): \(lostExpectedPoints)")
+            }
+        }
+
         lines.append(content.prompt)
 
         return lines.joined(separator: "\n")

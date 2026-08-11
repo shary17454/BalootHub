@@ -512,6 +512,56 @@
         }
       }
     },
+    "اختياري" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My choice"
+          }
+        }
+      }
+    },
+    "ترتيب اختياري" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My choice rank"
+          }
+        }
+      }
+    },
+    "راجع القرار وتدرّب على قراءة الموقف." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review the decision and practice reading the scenario."
+          }
+        }
+      }
+    },
+    "مراجعة القرار" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decision review"
+          }
+        }
+      }
+    },
+    "مراجعة قرار من Baloot Hub" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decision review from Baloot Hub"
+          }
+        }
+      }
+    },
     "آلي غرب" : {
       "extractionState" : "stale",
       "localizations" : {

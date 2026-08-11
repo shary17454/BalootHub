@@ -85,6 +85,35 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertFalse(text.contains("اختيار الخبير".localized))
     }
 
+    func testShareTextIncludesAnswerReviewAfterSelection() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
+        let selected = try XCTUnwrap(scenario.options.last)
+        let best = try XCTUnwrap(scenario.bestOption)
+        let text = WhatToPlayShareCard.text(for: scenario, selectedOption: selected)
+
+        XCTAssertTrue(text.contains("مراجعة القرار".localized))
+        XCTAssertTrue(text.contains("\("اختياري".localized): \(selected.card.accessibilityName)"))
+        XCTAssertTrue(text.contains("\("أفضل ورقة".localized): \(best.card.accessibilityName)"))
+        XCTAssertTrue(text.contains("\("ترتيب اختياري".localized): \(selected.rank)"))
+        XCTAssertTrue(text.contains("\("نقاط متوقعة ضائعة".localized): \(max(0, best.expectedImpact - selected.expectedImpact))"))
+    }
+
+    func testShareCardContentMarksAnswerReviewOnlyAfterSelection() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
+        let selected = try XCTUnwrap(scenario.bestOption)
+
+        XCTAssertFalse(WhatToPlayShareCard.content(for: scenario).includesAnswerReview)
+
+        let reviewed = WhatToPlayShareCard.content(for: scenario, selectedOption: selected)
+
+        XCTAssertTrue(reviewed.includesAnswerReview)
+        XCTAssertEqual(reviewed.subtitle, "مراجعة قرار من Baloot Hub".localized)
+        XCTAssertEqual(reviewed.selectedCardName, selected.card.accessibilityName)
+        XCTAssertEqual(reviewed.bestCardName, selected.card.accessibilityName)
+        XCTAssertEqual(reviewed.lostExpectedPoints, 0)
+        XCTAssertEqual(reviewed.prompt, "راجع القرار وتدرّب على قراءة الموقف.".localized)
+    }
+
     private func contentMode(for scenario: WhatToPlayScenario) -> String {
         WhatToPlayShareCard.content(for: scenario).mode
     }

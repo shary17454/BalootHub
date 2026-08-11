@@ -483,7 +483,7 @@ struct WhatToPlayTrainerView: View {
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 if let scenario {
-                    ShareLink(item: WhatToPlayShareCard.text(for: scenario)) {
+                    ShareLink(item: WhatToPlayShareCard.text(for: scenario, selectedOption: selectedOption)) {
                         Image(systemName: "square.and.arrow.up")
                     }
                     .accessibilityLabel("مشاركة الموقف".localized)
@@ -1743,7 +1743,7 @@ struct WhatToPlayTrainerView: View {
     }
 
     private func shareCardPreview(_ scenario: WhatToPlayScenario) -> some View {
-        let content = WhatToPlayShareCard.content(for: scenario)
+        let content = WhatToPlayShareCard.content(for: scenario, selectedOption: selectedOption)
         return VStack(alignment: .leading, spacing: AppSpacing.md) {
             Label("بطاقة المشاركة".localized, systemImage: "square.and.arrow.up")
                 .font(AppTypography.headline)
@@ -1808,6 +1808,27 @@ struct WhatToPlayTrainerView: View {
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppSpacing.xs) {
                         ForEach(content.legalCardNames, id: \.self) { cardName in
                             shareChip(cardName)
+                        }
+                    }
+                }
+
+                if content.includesAnswerReview {
+                    VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                        Text("مراجعة القرار".localized)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.white.opacity(0.86))
+
+                        if let selectedCardName = content.selectedCardName {
+                            shareChip("\("اختياري".localized): \(selectedCardName)")
+                        }
+                        if let bestCardName = content.bestCardName {
+                            shareChip("\("أفضل ورقة".localized): \(bestCardName)")
+                        }
+                        if let selectedRank = content.selectedRank {
+                            shareChip("\("ترتيب اختياري".localized): \(selectedRank)")
+                        }
+                        if let lostExpectedPoints = content.lostExpectedPoints {
+                            shareChip("\("نقاط متوقعة ضائعة".localized): \(lostExpectedPoints)")
                         }
                     }
                 }
