@@ -51,6 +51,12 @@ struct WhatToPlayCoachingTip: Equatable {
     let iconName: String
 }
 
+struct WhatToPlayOutcomeInsight: Equatable {
+    let title: String
+    let detail: String
+    let iconName: String
+}
+
 struct WhatToPlayDifficultyFocus: Equatable {
     let difficulty: WhatToPlayDifficulty
     let summary: WhatToPlayStatsSummary
@@ -337,6 +343,40 @@ enum WhatToPlayStatsAnalyzer {
             winningTrickAttempts: winning,
             losingTrickAttempts: losing,
             openTrickAttempts: open
+        )
+    }
+
+    static func outcomeInsight(for summary: WhatToPlayOutcomeSummary, minimumTrackedAttempts: Int = 3) -> WhatToPlayOutcomeInsight? {
+        guard summary.trackedAttempts >= minimumTrackedAttempts else { return nil }
+
+        if summary.losingPercent >= 50 {
+            return WhatToPlayOutcomeInsight(
+                title: "خسارة الأكلة متكررة".localized,
+                detail: "نصف قراراتك المفحوصة أو أكثر تنهي الأكلة للخصم. راجع اللون المطلوب والحكم قبل رمي ورقة عالية.".localized,
+                iconName: "exclamationmark.triangle.fill"
+            )
+        }
+
+        if summary.winningPercent >= 50 {
+            return WhatToPlayOutcomeInsight(
+                title: "تحسم الأكلات بثبات".localized,
+                detail: "نصف قراراتك المفحوصة أو أكثر تكسب الأكلة لفريقك. ركز الآن على تقليل النقاط المتوقعة الضائعة عند البدائل القريبة.".localized,
+                iconName: "checkmark.seal.fill"
+            )
+        }
+
+        if summary.openTrickAttempts > summary.winningTrickAttempts + summary.losingTrickAttempts {
+            return WhatToPlayOutcomeInsight(
+                title: "قراراتك تترك الأكلة مفتوحة".localized,
+                detail: "أغلب قراراتك لا تحسم الأكلة فورًا؛ تابع قراءة ردود الخصوم بعد ورقتك ولا تعتمد على أثر الورقة وحدها.".localized,
+                iconName: "ellipsis.circle.fill"
+            )
+        }
+
+        return WhatToPlayOutcomeInsight(
+            title: "نتائج قراراتك متوازنة".localized,
+            detail: "لا يظهر ميل واضح لكسب أو خسارة الأكلة. استخدم مقارنة أفضل وثاني أفضل لتقليل الفوارق الصغيرة.".localized,
+            iconName: "scale.3d"
         )
     }
 

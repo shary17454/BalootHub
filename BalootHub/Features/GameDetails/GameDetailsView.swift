@@ -313,6 +313,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.outcomeSummary(for: attempts)
     }
 
+    private var outcomeInsight: WhatToPlayOutcomeInsight? {
+        WhatToPlayStatsAnalyzer.outcomeInsight(for: outcomeSummary)
+    }
+
     private var recentAttempts: [WhatToPlayAttempt] {
         WhatToPlayStatsAnalyzer.recentAttempts(attempts)
     }
@@ -703,7 +707,7 @@ struct WhatToPlayTrainerView: View {
                     )
                 }
                 if outcomeSummary.trackedAttempts > 0 {
-                    outcomeSummaryView(outcomeSummary)
+                    outcomeSummaryView(outcomeSummary, insight: outcomeInsight)
                 }
                 masteryView(mastery, milestone: masteryMilestone)
                 playStyleView(playStyle)
@@ -719,7 +723,7 @@ struct WhatToPlayTrainerView: View {
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
     }
 
-    private func outcomeSummaryView(_ summary: WhatToPlayOutcomeSummary) -> some View {
+    private func outcomeSummaryView(_ summary: WhatToPlayOutcomeSummary, insight: WhatToPlayOutcomeInsight?) -> some View {
         VStack(alignment: .leading, spacing: AppSpacing.xs) {
             Label("نتائج قراراتك".localized, systemImage: "rectangle.stack.badge.play.fill")
                 .font(AppTypography.subheadline.weight(.semibold))
@@ -735,6 +739,24 @@ struct WhatToPlayTrainerView: View {
                 .font(.caption2)
                 .foregroundStyle(AppColor.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
+
+            if let insight {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(insight.title)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(AppColor.textPrimary)
+                        Text(insight.detail)
+                            .font(.caption2)
+                            .foregroundStyle(AppColor.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                } icon: {
+                    Image(systemName: insight.iconName)
+                        .foregroundStyle(AppColor.primary)
+                }
+                .padding(.top, AppSpacing.xs)
+            }
         }
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))

@@ -63,6 +63,73 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(WhatToPlayStatsAnalyzer.outcomeSummary(for: attempts), .empty)
     }
 
+    func testOutcomeInsightWaitsForEnoughTrackedAttempts() {
+        let summary = WhatToPlayOutcomeSummary(
+            trackedAttempts: 2,
+            winningTrickAttempts: 1,
+            losingTrickAttempts: 1,
+            openTrickAttempts: 0
+        )
+
+        XCTAssertNil(WhatToPlayStatsAnalyzer.outcomeInsight(for: summary))
+    }
+
+    func testOutcomeInsightWarnsWhenLosingTricksOften() {
+        let summary = WhatToPlayOutcomeSummary(
+            trackedAttempts: 4,
+            winningTrickAttempts: 1,
+            losingTrickAttempts: 2,
+            openTrickAttempts: 1
+        )
+
+        let insight = WhatToPlayStatsAnalyzer.outcomeInsight(for: summary)
+
+        XCTAssertEqual(insight?.title, "خسارة الأكلة متكررة".localized)
+        XCTAssertEqual(insight?.iconName, "exclamationmark.triangle.fill")
+    }
+
+    func testOutcomeInsightRecognizesWinningTricksOften() {
+        let summary = WhatToPlayOutcomeSummary(
+            trackedAttempts: 4,
+            winningTrickAttempts: 2,
+            losingTrickAttempts: 1,
+            openTrickAttempts: 1
+        )
+
+        let insight = WhatToPlayStatsAnalyzer.outcomeInsight(for: summary)
+
+        XCTAssertEqual(insight?.title, "تحسم الأكلات بثبات".localized)
+        XCTAssertEqual(insight?.iconName, "checkmark.seal.fill")
+    }
+
+    func testOutcomeInsightDetectsOpenTrickPattern() {
+        let summary = WhatToPlayOutcomeSummary(
+            trackedAttempts: 5,
+            winningTrickAttempts: 1,
+            losingTrickAttempts: 1,
+            openTrickAttempts: 3
+        )
+
+        let insight = WhatToPlayStatsAnalyzer.outcomeInsight(for: summary)
+
+        XCTAssertEqual(insight?.title, "قراراتك تترك الأكلة مفتوحة".localized)
+        XCTAssertEqual(insight?.iconName, "ellipsis.circle.fill")
+    }
+
+    func testOutcomeInsightFallsBackToBalancedPattern() {
+        let summary = WhatToPlayOutcomeSummary(
+            trackedAttempts: 5,
+            winningTrickAttempts: 2,
+            losingTrickAttempts: 1,
+            openTrickAttempts: 2
+        )
+
+        let insight = WhatToPlayStatsAnalyzer.outcomeInsight(for: summary)
+
+        XCTAssertEqual(insight?.title, "نتائج قراراتك متوازنة".localized)
+        XCTAssertEqual(insight?.iconName, "scale.3d")
+    }
+
     func testAttemptPersistsInSwiftDataSchemaAndRestoresCards() throws {
         let configuration = ModelConfiguration(schema: PersistenceController.appSchema, isStoredInMemoryOnly: true)
         let container = try ModelContainer(for: PersistenceController.appSchema, configurations: [configuration])

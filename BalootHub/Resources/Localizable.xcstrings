@@ -16698,6 +16698,86 @@
         }
       }
     },
+    "خسارة الأكلة متكررة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trick losses are recurring"
+          }
+        }
+      }
+    },
+    "نصف قراراتك المفحوصة أو أكثر تنهي الأكلة للخصم. راجع اللون المطلوب والحكم قبل رمي ورقة عالية." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Half or more of your tracked decisions give the trick to the opponent. Review the led suit and trump before playing a high card."
+          }
+        }
+      }
+    },
+    "تحسم الأكلات بثبات" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You finish tricks steadily"
+          }
+        }
+      }
+    },
+    "نصف قراراتك المفحوصة أو أكثر تكسب الأكلة لفريقك. ركز الآن على تقليل النقاط المتوقعة الضائعة عند البدائل القريبة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Half or more of your tracked decisions win the trick for your team. Now focus on reducing expected points lost on close alternatives."
+          }
+        }
+      }
+    },
+    "قراراتك تترك الأكلة مفتوحة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your decisions leave tricks open"
+          }
+        }
+      }
+    },
+    "أغلب قراراتك لا تحسم الأكلة فورًا؛ تابع قراءة ردود الخصوم بعد ورقتك ولا تعتمد على أثر الورقة وحدها." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Most of your decisions do not decide the trick immediately; keep reading opponents' replies after your card and do not rely on the card impact alone."
+          }
+        }
+      }
+    },
+    "نتائج قراراتك متوازنة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your decision outcomes are balanced"
+          }
+        }
+      }
+    },
+    "لا يظهر ميل واضح لكسب أو خسارة الأكلة. استخدم مقارنة أفضل وثاني أفضل لتقليل الفوارق الصغيرة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No clear tendency toward winning or losing tricks appears. Use the best vs. second-best comparison to reduce small gaps."
+          }
+        }
+      }
+    },
     "نسبة كسب الأكلة" : {
       "localizations" : {
         "en" : {
