@@ -416,6 +416,32 @@ private extension CatalogSeeder {
             ]
         ),
         GameDefinition(
+            slug: "baloot-achievements",
+            arabicTitle: "الإنجازات والألقاب",
+            englishTitle: "Achievements and Titles",
+            shortDescription: "نظام ألقاب وإنجازات محلي للتقدم في البلوت، قابل للربط لاحقًا بـ Game Center.",
+            category: .balootTool,
+            playerCountText: "لاعب واحد (تقدم محلي)",
+            difficulty: .beginner,
+            estimatedDuration: "يتقدم مع الاستخدام",
+            iconName: "trophy.fill",
+            accentToken: "primary",
+            isPlayable: false,
+            sortOrder: 13,
+            sections: [
+                .objective: "إعطاء اللاعب أهدافًا طويلة المدى مثل أول كبوت، ملك الصن، شيخ الحكم، وحل تحديات الحساب.",
+                .playerCount: "الإنجازات فردية ومحفوظة محليًا، ولا تحتاج حسابًا أو اتصالًا بالإنترنت في النسخة الحالية.",
+                .setup: "تظهر الإنجازات في شاشة مستقلة، ويمكن لاحقًا ربط فتحها تلقائيًا بنتائج المحرك والسجل.",
+                .dealing: "لا توجد طريقة توزيع خاصة؛ الإنجازات تقرأ أحداث اللعب أو التسجيل أو التدريب عند اكتمال الربط الآلي.",
+                .cardRanking: "إنجازات الصن والحكم تعتمد مستقبلًا على نفس تصنيف BalootEngine للجولات ولا تُحسب من الواجهة.",
+                .howToPlay: "راجع قائمة الإنجازات، اعرف شرط كل لقب، وتابع تقدمك عبر اللعب والتدريب والتحديات.",
+                .scoring: "الإنجازات لا تمنح نقاط قوة داخل اللعب ولا تفتح أفضلية Pay-to-Win؛ هي تقدم وتجميع ألقاب فقط.",
+                .projects: "يمكن إضافة إنجازات للمشاريع مثل إتقان المشاريع عند اكتمال منطق المشاريع الكامل داخل المحرك.",
+                .roundEnd: "عند نهاية الجولة أو المباراة يمكن للمحرك لاحقًا إرسال حدث فتح إنجاز واحد قابل للإعادة والتحقق.",
+                .commonMistakes: "ربط الإنجاز بالواجهة مباشرة بدل أحداث المحرك أو السجل، أو جعله يغير قوة اللاعب داخل المباراة."
+            ]
+        ),
+        GameDefinition(
             slug: "baloot-scorekeeper",
             arabicTitle: "تسجيل البلوت",
             englishTitle: "Baloot Scorekeeper",
@@ -427,7 +453,7 @@ private extension CatalogSeeder {
             iconName: "list.clipboard.fill",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 13,
+            sortOrder: 14,
             sections: [
                 .objective: "تتبّع نقاط جلسة بلوت حقيقية بدقة، وإعلان الفريق الفائز فور بلوغ الهدف المتفق عليه.",
                 .playerCount: "يُسجَّل باسم فريقين، كل فريق من لاعبين على الطاولة.",
@@ -453,7 +479,7 @@ private extension CatalogSeeder {
             iconName: "quote.bubble.fill",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 14,
+            sortOrder: 15,
             sections: [
                 .objective: "توضيح قرارات المزايدة قبل اللعب حتى يعرف اللاعب متى يمر، ومتى يطلب صن أو حكم، ومتى تكون المضاعفة منطقية.",
                 .playerCount: "المزايدة تُفهم حول طاولة من أربعة لاعبين، لكن الدليل مخصص للتعلم الفردي.",
@@ -479,7 +505,7 @@ private extension CatalogSeeder {
             iconName: "rectangle.stack.badge.plus",
             accentToken: "accent",
             isPlayable: false,
-            sortOrder: 15,
+            sortOrder: 16,
             sections: [
                 .objective: "جمع أسماء المشاريع المشهورة وشروطها في مكان واحد ليسهل الرجوع إليها أثناء التعلم أو قبل الجلسة.",
                 .playerCount: "المشاريع تخص يد لاعب ضمن فريقين من أربعة لاعبين، لكن المرجع فردي.",
@@ -505,7 +531,7 @@ private extension CatalogSeeder {
             iconName: "mic.and.signal.meter.fill",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 16,
+            sortOrder: 17,
             sections: [
                 .objective: "توضيح الفروق بين اللعب ضد الذكاء الاصطناعي، اللعب المحلي بين الأشخاص، واللعب الشبكي بالصوت حتى يعرف اللاعب ما المتاح الآن وما يحتاج اتصالًا آمنًا.",
                 .playerCount: "اللعب ضد الذكاء يدعم لاعبًا واحدًا مع ثلاثة آليين. اللعب المحلي يدعم أربعة أشخاص على نفس الجهاز بتمريره حسب الدور. اللعب الصوتي عن بعد يحتاج غرفة Online لأربعة لاعبين.",
@@ -534,7 +560,7 @@ private extension CatalogSeeder {
             iconName: "6.circle.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 17,
+            sortOrder: 18,
             sections: [
                 .objective: "تحقيق أفضل نتيجة عبر تجنّب أوراق أو أكلات معيّنة تخسر نقاطًا، بحسب الصيغة المعتمدة من اللاعبين.",
                 .playerCount: "تُلعب غالبًا بأربعة لاعبين، وتختلف التفاصيل بين المجالس.",
@@ -560,7 +586,7 @@ private extension CatalogSeeder {
             iconName: "suit.club.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 18,
+            sortOrder: 19,
             sections: [
                 .objective: "تحقيق عدد الأكلات الذي التزم به اللاعب أو الفريق أثناء المزايدة، أو أكثر.",
                 .playerCount: "أربعة لاعبين، إما كل لاعب لنفسه أو في فريقين متقابلين حسب الصيغة المعتمدة.",
@@ -586,7 +612,7 @@ private extension CatalogSeeder {
             iconName: "suit.diamond.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 19,
+            sortOrder: 20,
             sections: [
                 .objective: "تحقيق أقل عدد نقاط سلبية (أو أعلى نقاط إيجابية حسب الجولة) عبر دورة من عدة أنماط لعب مختلفة.",
                 .playerCount: "أربعة لاعبين، كل لاعب يلعب لحسابه الخاص دون فرق ثابتة.",
@@ -612,7 +638,7 @@ private extension CatalogSeeder {
             iconName: "hand.raised.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 20,
+            sortOrder: 21,
             sections: [
                 .objective: "التخلص من كل الأوراق في يد اللاعب قبل بقية اللاعبين، أو تحقيق أقل عدد نقاط متبقية بحسب الصيغة.",
                 .playerCount: "من لاعبين حتى أربعة لاعبين، أفرادًا أو في فرق صغيرة.",

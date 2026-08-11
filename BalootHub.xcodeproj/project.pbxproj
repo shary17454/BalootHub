@@ -33,6 +33,7 @@
 		41C5D46DD8114F4EA837279D /* SettingsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58DE3BF27BC849B48E1249E4 /* SettingsRepository.swift */; };
 		10F7E300CEB243B0A5B5531F /* CatalogFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774F64E2FF1449F4BFBB8528 /* CatalogFilter.swift */; };
 		DDA37C25EA9445F6A7AF6F6F /* ScoreRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08D5EFA6DCEE4185BB3648B4 /* ScoreRules.swift */; };
+		91C0E4D6FA8D491CA2A82F43 /* AchievementCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F43B2E6742474EAC83E071 /* AchievementCenter.swift */; };
 		77D2F8E6A63B4F0E94D2A15C /* BalootAcademy.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A58DE91B234B9A8D2E7781 /* BalootAcademy.swift */; };
 		5F0C8B4A7D6E4B3EB15C229A /* DailyChallengeCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88C1D026EA1418FA1FEC017 /* DailyChallengeCenter.swift */; };
 		A2D4F9C77B8E4B7D9B2F6A31 /* ScoringQuiz.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B8D6F9A33124E5DB6D3A2F1 /* ScoringQuiz.swift */; };
@@ -41,6 +42,7 @@
 		9B68F276832B4D0191D79F10 /* RoundReplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63CE859BAE4F7DB4607E4B /* RoundReplayView.swift */; };
 		5C3207CE093746BEA8914BDB /* CatalogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BD7ECD51144879B505C6CB /* CatalogView.swift */; };
 		11DB90A3C4F54107B6920FA9 /* GameDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69C0BE86F2246FB8D1A7E46 /* GameDetailsView.swift */; };
+		760B33B8E4CF45069E83A1F8 /* AchievementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F7992AFC7994C918BD99B64 /* AchievementsView.swift */; };
 		2F5DAB8C1A664481B5A2F9E0 /* BalootAcademyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12F4C7E2B5849279DE053AA /* BalootAcademyView.swift */; };
 		C768421D8F15445490E32AB4 /* DailyChallengesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB39145A21E4CA2A44D6B28 /* DailyChallengesView.swift */; };
 		8A3E5D6C9F224CCB8D1076FA /* ScoringQuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B917E8B5C44A0CB153A9C2 /* ScoringQuizView.swift */; };
@@ -56,6 +58,7 @@
 		0F25653820F7429F931B4AF2 /* CatalogSeederTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DA4313DC03409888B1B43F /* CatalogSeederTests.swift */; };
 		B2D1EF02C3A55B2FAD1E2F30 /* CatalogIntegrityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C0DE01B2F44A1E9C0D1E2F /* CatalogIntegrityTests.swift */; };
 		D4F30124E5C77D41CF304152 /* GamePlaythroughTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E2F013D4B66C30BE2F3041 /* GamePlaythroughTests.swift */; };
+		B10976A06C974F59AF68D22E /* AchievementCenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A84C2F07DB64EC18473D128 /* AchievementCenterTests.swift */; };
 		31B5FD970C5946BFA8589248 /* BalootAcademyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821BF8DC70D1422390424FDB /* BalootAcademyTests.swift */; };
 		E2929817FB37462286040967 /* DailyChallengeCenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 166DFA625C7D4E779784254C /* DailyChallengeCenterTests.swift */; };
 		6B91A47E26184C3FA73A0E58 /* ScoringQuizTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C2D6F5E9A4B6D9C3E1F82 /* ScoringQuizTests.swift */; };
@@ -106,6 +109,7 @@
 		58DE3BF27BC849B48E1249E4 /* SettingsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRepository.swift; sourceTree = "<group>"; };
 		774F64E2FF1449F4BFBB8528 /* CatalogFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogFilter.swift; sourceTree = "<group>"; };
 		08D5EFA6DCEE4185BB3648B4 /* ScoreRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreRules.swift; sourceTree = "<group>"; };
+		A7F43B2E6742474EAC83E071 /* AchievementCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementCenter.swift; sourceTree = "<group>"; };
 		C3A58DE91B234B9A8D2E7781 /* BalootAcademy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootAcademy.swift; sourceTree = "<group>"; };
 		F88C1D026EA1418FA1FEC017 /* DailyChallengeCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyChallengeCenter.swift; sourceTree = "<group>"; };
 		4B8D6F9A33124E5DB6D3A2F1 /* ScoringQuiz.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoringQuiz.swift; sourceTree = "<group>"; };
@@ -114,6 +118,7 @@
 		4F63CE859BAE4F7DB4607E4B /* RoundReplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundReplayView.swift; sourceTree = "<group>"; };
 		45BD7ECD51144879B505C6CB /* CatalogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogView.swift; sourceTree = "<group>"; };
 		C69C0BE86F2246FB8D1A7E46 /* GameDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailsView.swift; sourceTree = "<group>"; };
+		8F7992AFC7994C918BD99B64 /* AchievementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementsView.swift; sourceTree = "<group>"; };
 		B12F4C7E2B5849279DE053AA /* BalootAcademyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootAcademyView.swift; sourceTree = "<group>"; };
 		0DB39145A21E4CA2A44D6B28 /* DailyChallengesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyChallengesView.swift; sourceTree = "<group>"; };
 		D4B917E8B5C44A0CB153A9C2 /* ScoringQuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoringQuizView.swift; sourceTree = "<group>"; };
@@ -129,6 +134,7 @@
 		05DA4313DC03409888B1B43F /* CatalogSeederTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogSeederTests.swift; sourceTree = "<group>"; };
 		A1C0DE01B2F44A1E9C0D1E2F /* CatalogIntegrityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogIntegrityTests.swift; sourceTree = "<group>"; };
 		C3E2F013D4B66C30BE2F3041 /* GamePlaythroughTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamePlaythroughTests.swift; sourceTree = "<group>"; };
+		4A84C2F07DB64EC18473D128 /* AchievementCenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementCenterTests.swift; sourceTree = "<group>"; };
 		821BF8DC70D1422390424FDB /* BalootAcademyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootAcademyTests.swift; sourceTree = "<group>"; };
 		166DFA625C7D4E779784254C /* DailyChallengeCenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyChallengeCenterTests.swift; sourceTree = "<group>"; };
 		0A7C2D6F5E9A4B6D9C3E1F82 /* ScoringQuizTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoringQuizTests.swift; sourceTree = "<group>"; };
@@ -253,6 +259,7 @@
 			children = (
 				774F64E2FF1449F4BFBB8528 /* CatalogFilter.swift */,
 				4758A99A56664E9C962452F2 /* PurchaseManager.swift */,
+				A7F43B2E6742474EAC83E071 /* AchievementCenter.swift */,
 				C3A58DE91B234B9A8D2E7781 /* BalootAcademy.swift */,
 				F88C1D026EA1418FA1FEC017 /* DailyChallengeCenter.swift */,
 				08D5EFA6DCEE4185BB3648B4 /* ScoreRules.swift */,
@@ -293,6 +300,7 @@
 			isa = PBXGroup;
 			children = (
 				C69C0BE86F2246FB8D1A7E46 /* GameDetailsView.swift */,
+				8F7992AFC7994C918BD99B64 /* AchievementsView.swift */,
 				B12F4C7E2B5849279DE053AA /* BalootAcademyView.swift */,
 				0DB39145A21E4CA2A44D6B28 /* DailyChallengesView.swift */,
 				D4B917E8B5C44A0CB153A9C2 /* ScoringQuizView.swift */,
@@ -378,6 +386,7 @@
 				05DA4313DC03409888B1B43F /* CatalogSeederTests.swift */,
 				A1C0DE01B2F44A1E9C0D1E2F /* CatalogIntegrityTests.swift */,
 				C3E2F013D4B66C30BE2F3041 /* GamePlaythroughTests.swift */,
+				4A84C2F07DB64EC18473D128 /* AchievementCenterTests.swift */,
 				821BF8DC70D1422390424FDB /* BalootAcademyTests.swift */,
 				166DFA625C7D4E779784254C /* DailyChallengeCenterTests.swift */,
 				0A7C2D6F5E9A4B6D9C3E1F82 /* ScoringQuizTests.swift */,
@@ -563,6 +572,7 @@
 				41C5D46DD8114F4EA837279D /* SettingsRepository.swift in Sources */,
 				10F7E300CEB243B0A5B5531F /* CatalogFilter.swift in Sources */,
 				DDA37C25EA9445F6A7AF6F6F /* ScoreRules.swift in Sources */,
+				91C0E4D6FA8D491CA2A82F43 /* AchievementCenter.swift in Sources */,
 				77D2F8E6A63B4F0E94D2A15C /* BalootAcademy.swift in Sources */,
 				5F0C8B4A7D6E4B3EB15C229A /* DailyChallengeCenter.swift in Sources */,
 				A2D4F9C77B8E4B7D9B2F6A31 /* ScoringQuiz.swift in Sources */,
@@ -571,6 +581,7 @@
 				9B68F276832B4D0191D79F10 /* RoundReplayView.swift in Sources */,
 				5C3207CE093746BEA8914BDB /* CatalogView.swift in Sources */,
 				11DB90A3C4F54107B6920FA9 /* GameDetailsView.swift in Sources */,
+				760B33B8E4CF45069E83A1F8 /* AchievementsView.swift in Sources */,
 				2F5DAB8C1A664481B5A2F9E0 /* BalootAcademyView.swift in Sources */,
 				C768421D8F15445490E32AB4 /* DailyChallengesView.swift in Sources */,
 				8A3E5D6C9F224CCB8D1076FA /* ScoringQuizView.swift in Sources */,
@@ -596,6 +607,7 @@
 				0F25653820F7429F931B4AF2 /* CatalogSeederTests.swift in Sources */,
 				B2D1EF02C3A55B2FAD1E2F30 /* CatalogIntegrityTests.swift in Sources */,
 				D4F30124E5C77D41CF304152 /* GamePlaythroughTests.swift in Sources */,
+				B10976A06C974F59AF68D22E /* AchievementCenterTests.swift in Sources */,
 				31B5FD970C5946BFA8589248 /* BalootAcademyTests.swift in Sources */,
 				E2929817FB37462286040967 /* DailyChallengeCenterTests.swift in Sources */,
 				6B91A47E26184C3FA73A0E58 /* ScoringQuizTests.swift in Sources */,
