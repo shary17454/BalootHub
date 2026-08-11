@@ -27,4 +27,18 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
             XCTAssertEqual(row.expectedImpact, option.expectedImpact)
         }
     }
+
+    func testRowsPreserveTacticalRationaleForEveryOption() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
+        let selected = try XCTUnwrap(scenario.bestOption)
+
+        let rows = WhatToPlayOptionComparison.rows(for: scenario, selectedCard: selected.card)
+
+        XCTAssertFalse(rows.isEmpty)
+        for row in rows {
+            let option = try XCTUnwrap(scenario.options.first { $0.card == row.card })
+            XCTAssertFalse(row.rationale.isEmpty)
+            XCTAssertEqual(row.rationale, option.explanation)
+        }
+    }
 }

@@ -1463,6 +1463,11 @@ struct WhatToPlayTrainerView: View {
                 Text("\("الترتيب".localized) \(row.rank)")
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
+                Text(row.rationale)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             Spacer()
