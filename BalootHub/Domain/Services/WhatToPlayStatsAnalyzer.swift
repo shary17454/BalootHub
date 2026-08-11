@@ -30,6 +30,21 @@ struct WhatToPlayDifficultyFocus: Equatable {
     let summary: WhatToPlayStatsSummary
 }
 
+enum WhatToPlayTrendDirection: Equatable {
+    case improving
+    case stable
+    case declining
+}
+
+struct WhatToPlayPerformanceTrend: Equatable {
+    let direction: WhatToPlayTrendDirection
+    let title: String
+    let detail: String
+    let iconName: String
+    let recentAccuracyPercent: Int
+    let previousAccuracyPercent: Int
+}
+
 enum WhatToPlayStatsAnalyzer {
     static func summarize(attempts: [WhatToPlayAttempt]) -> WhatToPlayStatsSummary {
         guard !attempts.isEmpty else { return .empty }
@@ -96,6 +111,57 @@ enum WhatToPlayStatsAnalyzer {
             }
             .first
             .map { WhatToPlayDifficultyFocus(difficulty: $0.difficulty, summary: $0.summary) }
+    }
+
+    static func performanceTrend(
+        attempts: [WhatToPlayAttempt],
+        recentWindow: Int = 5,
+        minimumWindow: Int = 3
+    ) -> WhatToPlayPerformanceTrend? {
+        guard recentWindow >= minimumWindow, attempts.count >= minimumWindow * 2 else { return nil }
+
+        let chronological = attempts.sorted { $0.createdAt < $1.createdAt }
+        let recent = Array(chronological.suffix(recentWindow))
+        let previousPool = chronological.dropLast(recent.count)
+        let previous = Array(previousPool.suffix(recent.count))
+
+        guard recent.count >= minimumWindow, previous.count >= minimumWindow else { return nil }
+
+        let recentSummary = summarize(attempts: recent)
+        let previousSummary = summarize(attempts: previous)
+        let accuracyDelta = recentSummary.accuracyPercent - previousSummary.accuracyPercent
+        let impactDelta = recentSummary.averageExpectedImpact - previousSummary.averageExpectedImpact
+
+        if accuracyDelta >= 15 || (accuracyDelta >= 0 && impactDelta >= 5) {
+            return WhatToPlayPerformanceTrend(
+                direction: .improving,
+                title: "اتجاهك يتحسن".localized,
+                detail: "آخر محاولاتك أفضل من السابق؛ استمر على نفس الصعوبة أو ارفعها إذا ثبتت الدقة.".localized,
+                iconName: "arrow.up.right.circle.fill",
+                recentAccuracyPercent: recentSummary.accuracyPercent,
+                previousAccuracyPercent: previousSummary.accuracyPercent
+            )
+        }
+
+        if accuracyDelta <= -15 || (accuracyDelta <= 0 && impactDelta <= -5) {
+            return WhatToPlayPerformanceTrend(
+                direction: .declining,
+                title: "راجع قراراتك الأخيرة".localized,
+                detail: "أداؤك الأخير انخفض؛ خذ وقتك في قراءة اللون المطلوب والحكم قبل اختيار الورقة.".localized,
+                iconName: "arrow.down.right.circle.fill",
+                recentAccuracyPercent: recentSummary.accuracyPercent,
+                previousAccuracyPercent: previousSummary.accuracyPercent
+            )
+        }
+
+        return WhatToPlayPerformanceTrend(
+            direction: .stable,
+            title: "أداؤك مستقر".localized,
+            detail: "نتائجك متقاربة بين المحاولات السابقة والأخيرة؛ ركز على تقليل خسارة النقاط في الخيارات الثانية.".localized,
+            iconName: "equal.circle.fill",
+            recentAccuracyPercent: recentSummary.accuracyPercent,
+            previousAccuracyPercent: previousSummary.accuracyPercent
+        )
     }
 
     static func coachingTip(for attempts: [WhatToPlayAttempt]) -> WhatToPlayCoachingTip {

@@ -16714,6 +16714,86 @@
         }
       }
     },
+    "اتجاهك يتحسن" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your trend is improving"
+          }
+        }
+      }
+    },
+    "آخر أداء" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recent performance"
+          }
+        }
+      }
+    },
+    "آخر محاولاتك أفضل من السابق؛ استمر على نفس الصعوبة أو ارفعها إذا ثبتت الدقة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your recent attempts are better than before; keep the same difficulty or raise it if accuracy stays steady."
+          }
+        }
+      }
+    },
+    "أداؤك الأخير انخفض؛ خذ وقتك في قراءة اللون المطلوب والحكم قبل اختيار الورقة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your recent performance declined; take time to read the led suit and trump before choosing a card."
+          }
+        }
+      }
+    },
+    "أداؤك مستقر" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your performance is stable"
+          }
+        }
+      }
+    },
+    "راجع قراراتك الأخيرة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review your recent decisions"
+          }
+        }
+      }
+    },
+    "السابق" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Previous"
+          }
+        }
+      }
+    },
+    "نتائجك متقاربة بين المحاولات السابقة والأخيرة؛ ركز على تقليل خسارة النقاط في الخيارات الثانية." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your results are close across previous and recent attempts; focus on reducing point loss in second-best options."
+          }
+        }
+      }
+    },
     "متوسط الأثر المتوقع" : {
       "localizations" : {
         "en" : {

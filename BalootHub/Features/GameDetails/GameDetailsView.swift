@@ -324,6 +324,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.focusDifficulty(attempts)
     }
 
+    private var performanceTrend: WhatToPlayPerformanceTrend? {
+        WhatToPlayStatsAnalyzer.performanceTrend(attempts: attempts)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
@@ -445,6 +449,9 @@ struct WhatToPlayTrainerView: View {
                     value: impactText(statsSummary.averageExpectedImpact)
                 )
                 coachingTipView(coachingTip)
+                if let performanceTrend {
+                    performanceTrendView(performanceTrend)
+                }
             }
         }
         .padding(AppSpacing.md)
@@ -470,6 +477,41 @@ struct WhatToPlayTrainerView: View {
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
         .accessibilityElement(children: .combine)
+    }
+
+    private func performanceTrendView(_ trend: WhatToPlayPerformanceTrend) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(trend.title)
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(trend.detail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("\("آخر أداء".localized): \(trend.recentAccuracyPercent)% · \("السابق".localized): \(trend.previousAccuracyPercent)%")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(trendTint(trend.direction))
+            }
+        } icon: {
+            Image(systemName: trend.iconName)
+                .foregroundStyle(trendTint(trend.direction))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.sm)
+        .background(trendTint(trend.direction).opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func trendTint(_ direction: WhatToPlayTrendDirection) -> Color {
+        switch direction {
+        case .improving:
+            AppColor.success
+        case .stable:
+            AppColor.accent
+        case .declining:
+            AppColor.danger
+        }
     }
 
     @ViewBuilder

@@ -120,6 +120,67 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(focus?.summary.averageExpectedImpact, -5)
     }
 
+    func testPerformanceTrendDetectsImprovement() {
+        let attempts = [
+            attempt(daysAgo: 6, correct: false, impact: -6),
+            attempt(daysAgo: 5, correct: false, impact: -4),
+            attempt(daysAgo: 4, correct: false, impact: -2),
+            attempt(daysAgo: 3, correct: true, impact: 2),
+            attempt(daysAgo: 2, correct: true, impact: 4),
+            attempt(daysAgo: 1, correct: true, impact: 6)
+        ]
+
+        let trend = WhatToPlayStatsAnalyzer.performanceTrend(attempts: attempts, recentWindow: 3)
+
+        XCTAssertEqual(trend?.direction, .improving)
+        XCTAssertEqual(trend?.recentAccuracyPercent, 100)
+        XCTAssertEqual(trend?.previousAccuracyPercent, 0)
+    }
+
+    func testPerformanceTrendDetectsDecline() {
+        let attempts = [
+            attempt(daysAgo: 6, correct: true, impact: 6),
+            attempt(daysAgo: 5, correct: true, impact: 4),
+            attempt(daysAgo: 4, correct: true, impact: 2),
+            attempt(daysAgo: 3, correct: false, impact: -2),
+            attempt(daysAgo: 2, correct: false, impact: -4),
+            attempt(daysAgo: 1, correct: false, impact: -6)
+        ]
+
+        let trend = WhatToPlayStatsAnalyzer.performanceTrend(attempts: attempts, recentWindow: 3)
+
+        XCTAssertEqual(trend?.direction, .declining)
+        XCTAssertEqual(trend?.recentAccuracyPercent, 0)
+        XCTAssertEqual(trend?.previousAccuracyPercent, 100)
+    }
+
+    func testPerformanceTrendDetectsStablePerformance() {
+        let attempts = [
+            attempt(daysAgo: 6, correct: true, impact: 2),
+            attempt(daysAgo: 5, correct: false, impact: -2),
+            attempt(daysAgo: 4, correct: true, impact: 2),
+            attempt(daysAgo: 3, correct: true, impact: 2),
+            attempt(daysAgo: 2, correct: false, impact: -2),
+            attempt(daysAgo: 1, correct: true, impact: 2)
+        ]
+
+        let trend = WhatToPlayStatsAnalyzer.performanceTrend(attempts: attempts, recentWindow: 3)
+
+        XCTAssertEqual(trend?.direction, .stable)
+        XCTAssertEqual(trend?.recentAccuracyPercent, 67)
+        XCTAssertEqual(trend?.previousAccuracyPercent, 67)
+    }
+
+    func testPerformanceTrendReturnsNilWithoutEnoughAttempts() {
+        let attempts = [
+            attempt(daysAgo: 3, correct: true, impact: 2),
+            attempt(daysAgo: 2, correct: false, impact: -2),
+            attempt(daysAgo: 1, correct: true, impact: 2)
+        ]
+
+        XCTAssertNil(WhatToPlayStatsAnalyzer.performanceTrend(attempts: attempts, recentWindow: 3))
+    }
+
     func testCoachingTipForEmptyAttemptsEncouragesBaseline() {
         let tip = WhatToPlayStatsAnalyzer.coachingTip(for: [])
 
