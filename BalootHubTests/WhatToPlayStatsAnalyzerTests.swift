@@ -1849,6 +1849,24 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(plan.targetAverageExpectedImpact, 2)
     }
 
+    func testTrainingSessionPlanReviewsValueBeforeRaisingDifficulty() {
+        let attempts = [
+            attempt(daysAgo: 4, difficulty: .medium, correct: false, impact: -8, bestImpact: 8),
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 4, bestImpact: 4),
+            attempt(daysAgo: 2, difficulty: .medium, correct: true, impact: 4, bestImpact: 4),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 4, bestImpact: 4)
+        ]
+
+        let plan = WhatToPlayStatsAnalyzer.trainingSessionPlan(for: attempts)
+
+        XCTAssertEqual(plan.difficulty, .medium)
+        XCTAssertEqual(plan.title, "جلسة مراجعة القيمة".localized)
+        XCTAssertEqual(plan.scenarioCount, 4)
+        XCTAssertEqual(plan.targetAccuracyPercent, 75)
+        XCTAssertEqual(plan.targetAverageExpectedImpact, 1)
+        XCTAssertEqual(plan.successMetric, "هدف الجلسة: متوسط نقاط ضائعة أقل من 4.".localized)
+    }
+
     func testTrainingSessionPlanTargetsPointLeakForCautiousStyle() {
         let attempts = [
             attempt(daysAgo: 4, correct: true, impact: -4),

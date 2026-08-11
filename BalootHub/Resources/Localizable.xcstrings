@@ -18070,6 +18070,48 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "先复盘价值，再提高难度" } }
       }
     },
+    "جلسة مراجعة القيمة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wert-Review-Sitzung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Value review session" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Sesión de revisión de valor" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Session de révision de valeur" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "मूल्य समीक्षा सत्र" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Sesi tinjauan nilai" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Сессия разбора ценности" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Değer inceleme oturumu" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "قدر کا جائزہ سیشن" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "价值复盘训练" } }
+      }
+    },
+    "الدقة وحدها لا تكفي هنا؛ ركز على تقليل الفارق بين اختيارك واختيار الخبير قبل رفع المستوى." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Genauigkeit allein reicht hier nicht; konzentriere dich darauf, den Abstand zwischen deiner Wahl und der Expertenwahl zu verringern, bevor du das Niveau erhöhst." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Accuracy alone is not enough here; focus on reducing the gap between your choice and the expert choice before raising the level." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "La precisión sola no basta aquí; céntrate en reducir la diferencia entre tu elección y la del experto antes de subir el nivel." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "La précision seule ne suffit pas ici ; concentre-toi sur la réduction de l’écart entre ton choix et celui de l’expert avant d’augmenter le niveau." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "यहाँ केवल सटीकता काफी नहीं है; स्तर बढ़ाने से पहले अपने चुनाव और विशेषज्ञ के चुनाव के बीच का अंतर घटाने पर ध्यान दें." } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Akurasi saja belum cukup di sini; fokuslah mengurangi selisih antara pilihanmu dan pilihan ahli sebelum menaikkan level." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Одной точности здесь недостаточно; сосредоточься на сокращении разрыва между своим выбором и выбором эксперта перед повышением уровня." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Burada yalnızca doğruluk yetmez; seviyeyi artırmadan önce seçiminle uzman seçimi arasındaki farkı azaltmaya odaklan." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "یہاں صرف درستگی کافی نہیں؛ سطح بڑھانے سے پہلے اپنے انتخاب اور ماہر کے انتخاب کے فرق کو کم کرنے پر توجہ دیں." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "这里只看准确率还不够；提高等级前，先专注缩小你的选择与专家选择之间的差距。" } }
+      }
+    },
+    "هدف الجلسة: متوسط نقاط ضائعة أقل من 4." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sitzungsziel: durchschnittlich weniger als 4 verlorene Punkte." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Session goal: average lost points below 4." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Objetivo de la sesión: puntos perdidos promedio por debajo de 4." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Objectif de session : points perdus moyens sous 4." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सत्र लक्ष्य: औसत खोए अंक 4 से कम." } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Target sesi: rata-rata poin hilang di bawah 4." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Цель сессии: средние потерянные очки ниже 4." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Oturum hedefi: ortalama kayıp puan 4’ün altında." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "سیشن کا ہدف: اوسط ضائع پوائنٹس 4 سے کم." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "训练目标：平均损失分低于 4。" } }
+      }
+    },
     "ابق على مستوى قريب وراجع لماذا اختار الخبير ورقة أعلى قيمة قبل رفع التحدي." : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Bleib auf einem nahen Niveau und prüfe, warum der Experte eine wertvollere Karte gewählt hat, bevor du die Herausforderung erhöhst." } },

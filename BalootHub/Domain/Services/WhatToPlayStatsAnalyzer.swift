@@ -1087,6 +1087,20 @@ enum WhatToPlayStatsAnalyzer {
             )
         }
 
+        if summary.attempts >= 3 && summary.averageLostExpectedPoints >= 4 {
+            return WhatToPlayTrainingSessionPlan(
+                difficulty: recommendation.difficulty,
+                focusKind: focusKind,
+                scenarioCount: 4,
+                targetAccuracyPercent: 75,
+                targetAverageExpectedImpact: 1,
+                title: "جلسة مراجعة القيمة".localized,
+                detail: "الدقة وحدها لا تكفي هنا؛ ركز على تقليل الفارق بين اختيارك واختيار الخبير قبل رفع المستوى.".localized,
+                successMetric: "هدف الجلسة: متوسط نقاط ضائعة أقل من 4.".localized,
+                iconName: "chart.bar.doc.horizontal.fill"
+            )
+        }
+
         if style.kind == .expertAligned || summary.currentStreak >= 3 {
             return WhatToPlayTrainingSessionPlan(
                 difficulty: nextDifficulty(after: recommendation.difficulty),
