@@ -18,6 +18,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
 
         XCTAssertTrue(text.contains("وش تلعب؟".localized))
         XCTAssertTrue(text.contains("\("النمط".localized):"))
+        XCTAssertTrue(text.contains("\("الصعوبة".localized):"))
+        XCTAssertTrue(text.contains("\("تركيز التدريب".localized):"))
         XCTAssertTrue(text.contains("\("الأكلة".localized):"))
         XCTAssertTrue(text.contains("\("الأوراق القانونية".localized):"))
         for option in scenario.options {
@@ -31,6 +33,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
 
         XCTAssertEqual(content.title, "وش تلعب؟".localized)
         XCTAssertEqual(content.mode.isEmpty, false)
+        XCTAssertEqual(content.difficulty.isEmpty, false)
+        XCTAssertEqual(content.focus.isEmpty, false)
         XCTAssertEqual(content.trickProgress, "\(scenario.state.completedTricks.count + 1) \("من".localized) 8")
         XCTAssertEqual(content.legalCardNames, scenario.options.sorted {
             if $0.card.suit.ordinal != $1.card.suit.ordinal {
@@ -38,6 +42,21 @@ final class WhatToPlayShareCardTests: XCTestCase {
             }
             return $0.card.rank.ordinal < $1.card.rank.ordinal
         }.map { $0.card.accessibilityName })
+    }
+
+    func testShareTextIncludesFocusedScenarioMetadata() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(
+            seed: 2026,
+            difficulty: .easy,
+            preferredFocus: .followSuit
+        )
+        let text = WhatToPlayShareCard.text(for: scenario)
+        let content = WhatToPlayShareCard.content(for: scenario)
+
+        XCTAssertEqual(content.difficulty, "سهل".localized)
+        XCTAssertEqual(content.focus, "اتباع اللون".localized)
+        XCTAssertTrue(text.contains("\("الصعوبة".localized): \("سهل".localized)"))
+        XCTAssertTrue(text.contains("\("تركيز التدريب".localized): \("اتباع اللون".localized)"))
     }
 
     func testShareCardContentKeepsTableCardsSeparateFromLegalOptions() throws {

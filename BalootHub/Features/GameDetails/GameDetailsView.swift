@@ -1322,6 +1322,11 @@ struct WhatToPlayTrainerView: View {
                     shareMetric("الدور".localized, content.turnPlayerName)
                 }
 
+                HStack(spacing: AppSpacing.xs) {
+                    shareMetric("الصعوبة".localized, content.difficulty)
+                    shareMetric("تركيز التدريب".localized, content.focus)
+                }
+
                 VStack(alignment: .leading, spacing: AppSpacing.xs) {
                     Text("الأوراق على الطاولة".localized)
                         .font(.caption.weight(.semibold))

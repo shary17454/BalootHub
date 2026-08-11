@@ -10,6 +10,8 @@ struct WhatToPlayShareCardContent: Equatable {
     let title: String
     let subtitle: String
     let mode: String
+    let difficulty: String
+    let focus: String
     let trickProgress: String
     let turnPlayerName: String
     let tableCards: [PlayedCardLine]
@@ -29,6 +31,8 @@ enum WhatToPlayShareCard {
             title: "وش تلعب؟".localized,
             subtitle: "موقف تدريبي من Baloot Hub".localized,
             mode: modeText(state),
+            difficulty: difficultyText(scenario.difficulty),
+            focus: focusText(scenario.context.focusKind),
             trickProgress: "\(state.completedTricks.count + 1) \("من".localized) 8",
             turnPlayerName: state.player(id: scenario.playerID)?.name ?? "أنت".localized,
             tableCards: played.map { playedCard in
@@ -48,6 +52,8 @@ enum WhatToPlayShareCard {
             content.title,
             content.subtitle,
             "\("النمط".localized): \(content.mode)",
+            "\("الصعوبة".localized): \(content.difficulty)",
+            "\("تركيز التدريب".localized): \(content.focus)",
             "\("الأكلة".localized): \(content.trickProgress)",
             "\("الدور".localized): \(content.turnPlayerName)"
         ]
@@ -85,5 +91,29 @@ enum WhatToPlayShareCard {
             return "\(mode.arabicName) \(suit.spokenName)"
         }
         return mode.arabicName
+    }
+
+    private static func difficultyText(_ difficulty: WhatToPlayDifficulty) -> String {
+        switch difficulty {
+        case .easy:
+            return "سهل".localized
+        case .medium:
+            return "متوسط".localized
+        case .hard:
+            return "صعب".localized
+        }
+    }
+
+    private static func focusText(_ focusKind: WhatToPlayScenarioFocusKind) -> String {
+        switch focusKind {
+        case .openingLead:
+            return "افتتاح الأكلة".localized
+        case .followSuit:
+            return "اتباع اللون".localized
+        case .trumpPressure:
+            return "ضغط الحكم".localized
+        case .narrowChoice:
+            return "خيارات محدودة".localized
+        }
     }
 }
