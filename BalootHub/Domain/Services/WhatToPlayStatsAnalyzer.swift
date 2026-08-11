@@ -395,6 +395,7 @@ enum WhatToPlayStatsAnalyzer {
 
     static func reviewQueue(for attempts: [WhatToPlayAttempt], limit: Int = 3) -> [WhatToPlayReviewItem] {
         guard limit > 0 else { return [] }
+        let missedOpportunityThreshold = 6
         return Array(
             attempts
                 .filter { !$0.isCorrect }
@@ -413,6 +414,7 @@ enum WhatToPlayStatsAnalyzer {
         )
         .map { attempt in
             let isCostly = attempt.expectedImpact < 0
+            let isMissedOpportunity = !isCostly && attempt.lostExpectedPoints >= missedOpportunityThreshold
             return WhatToPlayReviewItem(
                 id: attempt.id,
                 seed: UInt64(clamping: attempt.seedValue),
@@ -423,13 +425,43 @@ enum WhatToPlayStatsAnalyzer {
                 expectedImpact: attempt.expectedImpact,
                 lostExpectedPoints: attempt.lostExpectedPoints,
                 createdAt: attempt.createdAt,
-                title: isCostly ? "راجع اختيارًا مكلفًا".localized : "قارن الاختيار القريب".localized,
-                detail: isCostly
-                    ? "\("هذا القرار خسر أثرًا متوقعًا في مستوى".localized) \(difficultyTitle(attempt.difficulty)). \("ابدأ بمقارنة اختيارك مع أفضل ورقة.".localized)"
-                    : "\("الاختيار لم يكن الأفضل لكنه ليس نزيفًا واضحًا؛ ركز على سبب ترجيح ورقة الخبير.".localized)",
-                iconName: isCostly ? "exclamationmark.triangle.fill" : "2.circle.fill"
+                title: reviewTitle(isCostly: isCostly, isMissedOpportunity: isMissedOpportunity),
+                detail: reviewDetail(
+                    for: attempt,
+                    isCostly: isCostly,
+                    isMissedOpportunity: isMissedOpportunity
+                ),
+                iconName: reviewIconName(isCostly: isCostly, isMissedOpportunity: isMissedOpportunity)
             )
         }
+    }
+
+    private static func reviewTitle(isCostly: Bool, isMissedOpportunity: Bool) -> String {
+        if isCostly { return "راجع اختيارًا مكلفًا".localized }
+        if isMissedOpportunity { return "راجع فرصة ضائعة".localized }
+        return "قارن الاختيار القريب".localized
+    }
+
+    private static func reviewDetail(
+        for attempt: WhatToPlayAttempt,
+        isCostly: Bool,
+        isMissedOpportunity: Bool
+    ) -> String {
+        if isCostly {
+            return "\("هذا القرار خسر أثرًا متوقعًا في مستوى".localized) \(difficultyTitle(attempt.difficulty)). \("ابدأ بمقارنة اختيارك مع أفضل ورقة.".localized)"
+        }
+
+        if isMissedOpportunity {
+            return "\("قرارك لم يكن خاسرًا مباشرة، لكنه ضيّع نقاطًا متوقعة عن اختيار الخبير".localized): \(attempt.lostExpectedPoints). \("راجع لماذا كانت الورقة الأفضل أعلى قيمة.".localized)"
+        }
+
+        return "\("الاختيار لم يكن الأفضل لكنه ليس نزيفًا واضحًا؛ ركز على سبب ترجيح ورقة الخبير.".localized)"
+    }
+
+    private static func reviewIconName(isCostly: Bool, isMissedOpportunity: Bool) -> String {
+        if isCostly { return "exclamationmark.triangle.fill" }
+        if isMissedOpportunity { return "arrow.up.right.circle.fill" }
+        return "2.circle.fill"
     }
 
     static func performanceTrend(

@@ -130,6 +130,18 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(queue.first?.expectedImpact, 2)
     }
 
+    func testReviewQueueLabelsPositiveLargeGapAsMissedOpportunity() {
+        let attempts = [
+            attempt(daysAgo: 1, difficulty: .hard, correct: false, impact: 3, bestImpact: 12)
+        ]
+
+        let item = WhatToPlayStatsAnalyzer.reviewQueue(for: attempts).first
+
+        XCTAssertEqual(item?.title, "راجع فرصة ضائعة".localized)
+        XCTAssertEqual(item?.detail, "\("قرارك لم يكن خاسرًا مباشرة، لكنه ضيّع نقاطًا متوقعة عن اختيار الخبير".localized): 9. \("راجع لماذا كانت الورقة الأفضل أعلى قيمة.".localized)")
+        XCTAssertEqual(item?.iconName, "arrow.up.right.circle.fill")
+    }
+
     func testReviewQueueCarriesLostExpectedPoints() {
         let attempts = [
             attempt(daysAgo: 1, correct: false, impact: -4, bestImpact: 3)

@@ -18568,6 +18568,16 @@
         }
       }
     },
+    "راجع فرصة ضائعة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review a missed opportunity"
+          }
+        }
+      }
+    },
     "هذا القرار خسر أثرًا متوقعًا في مستوى" : {
       "localizations" : {
         "en" : {
@@ -18584,6 +18594,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Start by comparing your choice with the best card."
+          }
+        }
+      }
+    },
+    "قرارك لم يكن خاسرًا مباشرة، لكنه ضيّع نقاطًا متوقعة عن اختيار الخبير" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your decision was not directly losing, but it gave up expected points compared with the expert choice"
+          }
+        }
+      }
+    },
+    "راجع لماذا كانت الورقة الأفضل أعلى قيمة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review why the best card had higher value."
           }
         }
       }
