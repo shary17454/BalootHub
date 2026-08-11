@@ -401,6 +401,32 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(insight.lostExpectedPoints, 5)
     }
 
+    func testDecisionReviewUsesScenarioFocusAndDecisionKind() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
+        let selected = try XCTUnwrap(scenario.options.last)
+
+        let review = try XCTUnwrap(WhatToPlayStatsAnalyzer.decisionReview(for: selected, in: scenario))
+
+        XCTAssertEqual(review.title, "راجع القرار بهذه الطريقة".localized)
+        XCTAssertEqual(review.steps.count, 3)
+        XCTAssertEqual(review.steps.first, expectedFirstReviewStep(for: scenario.context.focusKind))
+        XCTAssertEqual(review.steps.last, "أعد الموقف إذا كان الفارق أكثر من نقطتين متوقعتين.".localized)
+    }
+
+    func testDecisionReviewUsesMissedWinningChanceRemedy() throws {
+        let insight = WhatToPlayStatsAnalyzer.decisionInsight(
+            selectedRank: 3,
+            selectedImpact: -3,
+            bestImpact: 7,
+            secondBestImpact: 2
+        )
+
+        let review = WhatToPlayStatsAnalyzer.decisionReview(insight: insight, focusKind: .followSuit)
+
+        XCTAssertEqual(review.steps.first, expectedFirstReviewStep(for: .followSuit))
+        XCTAssertTrue(review.steps.contains("ابحث عن الورقة التي كانت ستحوّل الأكلة من خسارة إلى ربح.".localized))
+    }
+
     func testMasteryStartsAtZeroWithoutAttempts() {
         let mastery = WhatToPlayStatsAnalyzer.mastery(for: [])
 
@@ -1028,5 +1054,18 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             expectedImpact: impact,
             bestExpectedImpact: bestImpact
         )
+    }
+
+    private func expectedFirstReviewStep(for focus: WhatToPlayScenarioFocusKind) -> String {
+        switch focus {
+        case .openingLead:
+            "قارن هل افتتاحك يكشف قوة يدك مبكرًا أو يحفظها للأكلة القادمة.".localized
+        case .followSuit:
+            "راجع اللون المطلوب أولًا، ثم اسأل هل تستطيع ربح الأكلة أم يجب تقليل خسارتها.".localized
+        case .trumpPressure:
+            "افحص الحكم الموجود على الطاولة قبل رمي ورقة عالية أو حكم أعلى.".localized
+        case .narrowChoice:
+            "عندما تكون الخيارات قليلة، رتّبها حسب أقل خسارة لا حسب أعلى ورقة.".localized
+        }
     }
 }

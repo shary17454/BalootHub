@@ -16924,6 +16924,116 @@
         }
       }
     },
+    "استخدم هذه الخطوات القصيرة قبل الانتقال للموقف التالي." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use these short steps before moving to the next scenario."
+          }
+        }
+      }
+    },
+    "افحص الحكم الموجود على الطاولة قبل رمي ورقة عالية أو حكم أعلى." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inspect the trump on the table before throwing a high card or a higher trump."
+          }
+        }
+      }
+    },
+    "اكتب سبب نجاح القرار في ذهنك وكرر نفس القراءة في موقف مشابه." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Note why the decision worked and repeat the same read in a similar scenario."
+          }
+        }
+      }
+    },
+    "ابحث عن الورقة التي كانت ستحوّل الأكلة من خسارة إلى ربح." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Find the card that would have turned the trick from a loss into a win."
+          }
+        }
+      }
+    },
+    "أعد الموقف إذا كان الفارق أكثر من نقطتين متوقعتين." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Replay the scenario if the gap is more than two expected points."
+          }
+        }
+      }
+    },
+    "حدد هل خسرت النقاط لأنك رميت ورقة ثمينة أو تركت ورقة أقل ضررًا." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Identify whether you lost points by throwing a valuable card or by missing a less damaging one."
+          }
+        }
+      }
+    },
+    "راجع القرار بهذه الطريقة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review the decision this way"
+          }
+        }
+      }
+    },
+    "راجع اللون المطلوب أولًا، ثم اسأل هل تستطيع ربح الأكلة أم يجب تقليل خسارتها." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review the required suit first, then ask whether you can win the trick or need to reduce the loss."
+          }
+        }
+      }
+    },
+    "عندما تكون الخيارات قليلة، رتّبها حسب أقل خسارة لا حسب أعلى ورقة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When choices are limited, rank them by least loss, not by highest card."
+          }
+        }
+      }
+    },
+    "قارن الفرق بين اختيارك وأفضل ورقة؛ هذا النوع من الفوارق الصغيرة يتراكم." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compare the gap between your choice and the best card; these small gaps add up."
+          }
+        }
+      }
+    },
+    "قارن هل افتتاحك يكشف قوة يدك مبكرًا أو يحفظها للأكلة القادمة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compare whether your lead reveals your hand strength early or preserves it for the next trick."
+          }
+        }
+      }
+    },
     "الخيار الأفضل كان يتوقع كسبًا، بينما اختيارك يميل لخسارة الأكلة أو نقاطها. هذه المواقف تستحق إعادة قراءة الطاولة." : {
       "localizations" : {
         "en" : {

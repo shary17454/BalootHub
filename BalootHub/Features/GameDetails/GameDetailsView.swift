@@ -1416,6 +1416,10 @@ struct WhatToPlayTrainerView: View {
                 decisionInsightView(insight)
             }
 
+            if let review = WhatToPlayStatsAnalyzer.decisionReview(for: option, in: scenario) {
+                decisionReviewView(review)
+            }
+
             Text(option.explanation)
                 .font(AppTypography.subheadline)
                 .foregroundStyle(AppColor.textPrimary)
@@ -1449,6 +1453,40 @@ struct WhatToPlayTrainerView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppSpacing.sm)
         .background(decisionInsightTint(insight.kind).opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func decisionReviewView(_ review: WhatToPlayDecisionReview) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            Label(review.title, systemImage: review.iconName)
+                .font(AppTypography.subheadline.weight(.semibold))
+                .foregroundStyle(AppColor.primary)
+
+            Text(review.detail)
+                .font(AppTypography.caption)
+                .foregroundStyle(AppColor.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            VStack(spacing: AppSpacing.xs) {
+                ForEach(Array(review.steps.enumerated()), id: \.offset) { index, step in
+                    HStack(alignment: .top, spacing: AppSpacing.xs) {
+                        Text("\(index + 1)")
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(.white)
+                            .frame(width: 20, height: 20)
+                            .background(AppColor.primary, in: Circle())
+                            .accessibilityHidden(true)
+                        Text(step)
+                            .font(AppTypography.caption)
+                            .foregroundStyle(AppColor.textPrimary)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Spacer(minLength: 0)
+                    }
+                }
+            }
+        }
+        .padding(AppSpacing.sm)
+        .background(AppColor.primary.opacity(0.10), in: RoundedRectangle(cornerRadius: AppRadius.medium))
         .accessibilityElement(children: .combine)
     }
 

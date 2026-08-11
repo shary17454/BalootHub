@@ -121,6 +121,13 @@ struct WhatToPlayDecisionInsight: Equatable {
     let lostExpectedPoints: Int
 }
 
+struct WhatToPlayDecisionReview: Equatable {
+    let title: String
+    let detail: String
+    let iconName: String
+    let steps: [String]
+}
+
 enum WhatToPlayMasteryLevel: Equatable {
     case starting
     case building
@@ -640,6 +647,51 @@ enum WhatToPlayStatsAnalyzer {
             selectedImpact: selected.expectedImpact,
             bestImpact: best.expectedImpact,
             secondBestImpact: scenario.secondBestOption?.expectedImpact
+        )
+    }
+
+    static func decisionReview(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayDecisionReview? {
+        guard let insight = decisionInsight(for: selected, in: scenario) else { return nil }
+        return decisionReview(insight: insight, focusKind: scenario.context.focusKind)
+    }
+
+    static func decisionReview(
+        insight: WhatToPlayDecisionInsight,
+        focusKind: WhatToPlayScenarioFocusKind
+    ) -> WhatToPlayDecisionReview {
+        let firstStep: String
+        switch focusKind {
+        case .openingLead:
+            firstStep = "قارن هل افتتاحك يكشف قوة يدك مبكرًا أو يحفظها للأكلة القادمة.".localized
+        case .followSuit:
+            firstStep = "راجع اللون المطلوب أولًا، ثم اسأل هل تستطيع ربح الأكلة أم يجب تقليل خسارتها.".localized
+        case .trumpPressure:
+            firstStep = "افحص الحكم الموجود على الطاولة قبل رمي ورقة عالية أو حكم أعلى.".localized
+        case .narrowChoice:
+            firstStep = "عندما تكون الخيارات قليلة، رتّبها حسب أقل خسارة لا حسب أعلى ورقة.".localized
+        }
+
+        let secondStep: String
+        switch insight.kind {
+        case .expertMatch:
+            secondStep = "اكتب سبب نجاح القرار في ذهنك وكرر نفس القراءة في موقف مشابه.".localized
+        case .closeAlternative:
+            secondStep = "قارن الفرق بين اختيارك وأفضل ورقة؛ هذا النوع من الفوارق الصغيرة يتراكم.".localized
+        case .missedWinningChance:
+            secondStep = "ابحث عن الورقة التي كانت ستحوّل الأكلة من خسارة إلى ربح.".localized
+        case .pointLeak:
+            secondStep = "حدد هل خسرت النقاط لأنك رميت ورقة ثمينة أو تركت ورقة أقل ضررًا.".localized
+        }
+
+        return WhatToPlayDecisionReview(
+            title: "راجع القرار بهذه الطريقة".localized,
+            detail: "استخدم هذه الخطوات القصيرة قبل الانتقال للموقف التالي.".localized,
+            iconName: "checklist",
+            steps: [
+                firstStep,
+                secondStep,
+                "أعد الموقف إذا كان الفارق أكثر من نقطتين متوقعتين.".localized
+            ]
         )
     }
 
