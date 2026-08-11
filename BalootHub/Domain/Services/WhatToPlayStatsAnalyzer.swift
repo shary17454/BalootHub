@@ -189,6 +189,19 @@ struct WhatToPlayPracticeCoverage: Equatable {
     }
 }
 
+struct WhatToPlayScenarioFocusCoverage: Equatable {
+    let sampledFocusKinds: Int
+    let totalFocusKinds: Int
+    let missingFocusKinds: [WhatToPlayScenarioFocusKind]
+    let title: String
+    let detail: String
+    let iconName: String
+
+    var isBalanced: Bool {
+        missingFocusKinds.isEmpty
+    }
+}
+
 enum WhatToPlaySessionState: Equatable {
     case noData
     case warmingUp
@@ -865,6 +878,37 @@ enum WhatToPlayStatsAnalyzer {
         )
     }
 
+    static func scenarioFocusCoverage(
+        for attempts: [WhatToPlayAttempt],
+        minimumAttemptsPerFocus: Int = 2
+    ) -> WhatToPlayScenarioFocusCoverage {
+        let missing = WhatToPlayScenarioFocusKind.allCases.filter { focusKind in
+            attempts.filter { $0.focusKind == focusKind }.count < minimumAttemptsPerFocus
+        }
+        let sampled = WhatToPlayScenarioFocusKind.allCases.count - missing.count
+
+        if missing.isEmpty {
+            return WhatToPlayScenarioFocusCoverage(
+                sampledFocusKinds: sampled,
+                totalFocusKinds: WhatToPlayScenarioFocusKind.allCases.count,
+                missingFocusKinds: [],
+                title: "تغطية مواقف متوازنة".localized,
+                detail: "لديك عينات كافية من كل أنواع مواقف وش تلعب، لذلك تصبح توصيات التركيز أدق.".localized,
+                iconName: "checkmark.seal.fill"
+            )
+        }
+
+        let names = missing.map(scenarioFocusTitle).joined(separator: "، ")
+        return WhatToPlayScenarioFocusCoverage(
+            sampledFocusKinds: sampled,
+            totalFocusKinds: WhatToPlayScenarioFocusKind.allCases.count,
+            missingFocusKinds: missing,
+            title: "أكمل أنواع المواقف".localized,
+            detail: "\("درّب هذه المواقف أكثر".localized): \(names).",
+            iconName: "scope"
+        )
+    }
+
     static func sessionPulse(for attempts: [WhatToPlayAttempt], window: Int = 3) -> WhatToPlaySessionPulse {
         guard attempts.count >= window, window > 0 else {
             return WhatToPlaySessionPulse(
@@ -1144,6 +1188,19 @@ enum WhatToPlayStatsAnalyzer {
 
     private static func scenarioFocusOrder(_ focusKind: WhatToPlayScenarioFocusKind) -> Int {
         WhatToPlayScenarioFocusKind.allCases.firstIndex(of: focusKind) ?? Int.max
+    }
+
+    private static func scenarioFocusTitle(_ focusKind: WhatToPlayScenarioFocusKind) -> String {
+        switch focusKind {
+        case .openingLead:
+            return "افتتاح الأكلة".localized
+        case .followSuit:
+            return "اتباع اللون".localized
+        case .trumpPressure:
+            return "ضغط الحكم".localized
+        case .narrowChoice:
+            return "خيارات محدودة".localized
+        }
     }
 
     private static func highestAttemptedDifficulty(in attempts: [WhatToPlayAttempt]) -> WhatToPlayDifficulty? {

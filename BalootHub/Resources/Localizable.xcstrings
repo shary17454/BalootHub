@@ -17288,6 +17288,46 @@
         }
       }
     },
+    "تغطية مواقف متوازنة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Balanced scenario coverage"
+          }
+        }
+      }
+    },
+    "لديك عينات كافية من كل أنواع مواقف وش تلعب، لذلك تصبح توصيات التركيز أدق." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You have enough samples from every What to Play scenario type, so focus recommendations become more accurate."
+          }
+        }
+      }
+    },
+    "أكمل أنواع المواقف" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Complete scenario types"
+          }
+        }
+      }
+    },
+    "درّب هذه المواقف أكثر" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Practice these scenarios more"
+          }
+        }
+      }
+    },
     "التغطية" : {
       "localizations" : {
         "en" : {

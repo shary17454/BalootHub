@@ -325,6 +325,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.summariesByScenarioFocus(attempts)
     }
 
+    private var scenarioFocusCoverage: WhatToPlayScenarioFocusCoverage {
+        WhatToPlayStatsAnalyzer.scenarioFocusCoverage(for: attempts)
+    }
+
     private var coachingTip: WhatToPlayCoachingTip {
         WhatToPlayStatsAnalyzer.coachingTip(for: attempts)
     }
@@ -1047,6 +1051,8 @@ struct WhatToPlayTrainerView: View {
                     .font(AppTypography.headline)
                     .foregroundStyle(AppColor.primary)
 
+                scenarioFocusCoverageView(scenarioFocusCoverage)
+
                 VStack(spacing: AppSpacing.sm) {
                     ForEach(scenarioFocusSummaries, id: \.focusKind) { entry in
                         HStack {
@@ -1075,6 +1081,30 @@ struct WhatToPlayTrainerView: View {
             .padding(AppSpacing.md)
             .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
         }
+    }
+
+    private func scenarioFocusCoverageView(_ coverage: WhatToPlayScenarioFocusCoverage) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(coverage.title)
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(coverage.detail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("\("التغطية".localized): \(coverage.sampledFocusKinds)/\(coverage.totalFocusKinds)")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(coverage.isBalanced ? AppColor.success : AppColor.accent)
+            }
+        } icon: {
+            Image(systemName: coverage.iconName)
+                .foregroundStyle(coverage.isBalanced ? AppColor.success : AppColor.accent)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.sm)
+        .background((coverage.isBalanced ? AppColor.success : AppColor.accent).opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
     }
 
     private func practiceCoverageView(_ coverage: WhatToPlayPracticeCoverage) -> some View {

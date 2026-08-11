@@ -618,6 +618,42 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(coverage.title, "تغطية متوازنة".localized)
     }
 
+    func testScenarioFocusCoverageReportsMissingFocusKinds() {
+        let attempts = [
+            attempt(daysAgo: 3, difficulty: .easy, correct: true, impact: 2, focusKind: .openingLead),
+            attempt(daysAgo: 2, difficulty: .easy, correct: false, impact: -2, focusKind: .openingLead),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 1, focusKind: .trumpPressure)
+        ]
+
+        let coverage = WhatToPlayStatsAnalyzer.scenarioFocusCoverage(for: attempts)
+
+        XCTAssertFalse(coverage.isBalanced)
+        XCTAssertEqual(coverage.sampledFocusKinds, 1)
+        XCTAssertEqual(coverage.totalFocusKinds, 4)
+        XCTAssertEqual(coverage.missingFocusKinds, [.followSuit, .trumpPressure, .narrowChoice])
+        XCTAssertEqual(coverage.title, "أكمل أنواع المواقف".localized)
+    }
+
+    func testScenarioFocusCoverageReportsBalancedCoverage() {
+        let attempts = [
+            attempt(daysAgo: 8, difficulty: .easy, correct: true, impact: 2, focusKind: .openingLead),
+            attempt(daysAgo: 7, difficulty: .easy, correct: false, impact: -2, focusKind: .openingLead),
+            attempt(daysAgo: 6, difficulty: .medium, correct: true, impact: 2, focusKind: .followSuit),
+            attempt(daysAgo: 5, difficulty: .medium, correct: false, impact: -2, focusKind: .followSuit),
+            attempt(daysAgo: 4, difficulty: .hard, correct: true, impact: 2, focusKind: .trumpPressure),
+            attempt(daysAgo: 3, difficulty: .hard, correct: false, impact: -2, focusKind: .trumpPressure),
+            attempt(daysAgo: 2, difficulty: .easy, correct: true, impact: 2, focusKind: .narrowChoice),
+            attempt(daysAgo: 1, difficulty: .easy, correct: false, impact: -2, focusKind: .narrowChoice)
+        ]
+
+        let coverage = WhatToPlayStatsAnalyzer.scenarioFocusCoverage(for: attempts)
+
+        XCTAssertTrue(coverage.isBalanced)
+        XCTAssertEqual(coverage.sampledFocusKinds, 4)
+        XCTAssertTrue(coverage.missingFocusKinds.isEmpty)
+        XCTAssertEqual(coverage.title, "تغطية مواقف متوازنة".localized)
+    }
+
     func testSessionPulseReportsNoData() {
         let pulse = WhatToPlayStatsAnalyzer.sessionPulse(for: [])
 
