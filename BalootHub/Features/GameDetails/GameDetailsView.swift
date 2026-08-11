@@ -682,6 +682,22 @@ struct WhatToPlayTrainerView: View {
 
             Label {
                 VStack(alignment: .leading, spacing: 2) {
+                    Text("\(progress.gradeTitle) · \(progress.gradePercent)/100")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(AppColor.textPrimary)
+                    Text(progress.gradeDetail)
+                        .font(.caption2)
+                        .foregroundStyle(AppColor.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            } icon: {
+                Image(systemName: progress.gradeIconName)
+                    .foregroundStyle(sessionGradeTint(progress.gradePercent, completed: progress.completedAttempts))
+            }
+            .padding(.top, AppSpacing.xs)
+
+            Label {
+                VStack(alignment: .leading, spacing: 2) {
                     Text(progress.impactTitle)
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(AppColor.textPrimary)
@@ -792,6 +808,14 @@ struct WhatToPlayTrainerView: View {
         guard completed > 0 else { return AppColor.textSecondary }
         if averageImpact > 0 { return AppColor.success }
         if averageImpact == 0 { return AppColor.accent }
+        return AppColor.danger
+    }
+
+    private func sessionGradeTint(_ grade: Int, completed: Int) -> Color {
+        guard completed > 0 else { return AppColor.textSecondary }
+        if grade >= 85 { return AppColor.success }
+        if grade >= 70 { return AppColor.accent }
+        if grade >= 50 { return AppColor.warning }
         return AppColor.danger
     }
 

@@ -232,6 +232,10 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let nextStepTitle: String
     let nextStepDetail: String
     let nextStepIconName: String
+    let gradePercent: Int
+    let gradeTitle: String
+    let gradeDetail: String
+    let gradeIconName: String
 }
 
 enum WhatToPlayDecisionInsightKind: Equatable {
@@ -940,6 +944,12 @@ enum WhatToPlayStatsAnalyzer {
             accuracyTargetMet: accuracyTargetMet,
             impactTargetMet: impactTargetMet
         )
+        let grade = trainingSessionGrade(
+            completedAttempts: completed,
+            accuracyPercent: accuracy,
+            averageExpectedImpact: averageImpact,
+            targetAverageExpectedImpact: plan.targetAverageExpectedImpact
+        )
 
         if completed == 0 {
             return WhatToPlayTrainingSessionProgress(
@@ -964,7 +974,11 @@ enum WhatToPlayStatsAnalyzer {
                 iconName: "play.circle.fill",
                 nextStepTitle: nextStep.title,
                 nextStepDetail: nextStep.detail,
-                nextStepIconName: nextStep.iconName
+                nextStepIconName: nextStep.iconName,
+                gradePercent: grade.percent,
+                gradeTitle: grade.title,
+                gradeDetail: grade.detail,
+                gradeIconName: grade.iconName
             )
         }
 
@@ -991,7 +1005,11 @@ enum WhatToPlayStatsAnalyzer {
                 iconName: "timer.circle.fill",
                 nextStepTitle: nextStep.title,
                 nextStepDetail: nextStep.detail,
-                nextStepIconName: nextStep.iconName
+                nextStepIconName: nextStep.iconName,
+                gradePercent: grade.percent,
+                gradeTitle: grade.title,
+                gradeDetail: grade.detail,
+                gradeIconName: grade.iconName
             )
         }
 
@@ -1018,7 +1036,11 @@ enum WhatToPlayStatsAnalyzer {
                 iconName: "checkmark.seal.fill",
                 nextStepTitle: nextStep.title,
                 nextStepDetail: nextStep.detail,
-                nextStepIconName: nextStep.iconName
+                nextStepIconName: nextStep.iconName,
+                gradePercent: grade.percent,
+                gradeTitle: grade.title,
+                gradeDetail: grade.detail,
+                gradeIconName: grade.iconName
             )
         }
 
@@ -1047,7 +1069,64 @@ enum WhatToPlayStatsAnalyzer {
             iconName: "arrow.counterclockwise.circle.fill",
             nextStepTitle: nextStep.title,
             nextStepDetail: nextStep.detail,
-            nextStepIconName: nextStep.iconName
+            nextStepIconName: nextStep.iconName,
+            gradePercent: grade.percent,
+            gradeTitle: grade.title,
+            gradeDetail: grade.detail,
+            gradeIconName: grade.iconName
+        )
+    }
+
+    private static func trainingSessionGrade(
+        completedAttempts: Int,
+        accuracyPercent: Int,
+        averageExpectedImpact: Int,
+        targetAverageExpectedImpact: Int
+    ) -> (percent: Int, title: String, detail: String, iconName: String) {
+        guard completedAttempts > 0 else {
+            return (
+                0,
+                "لا يوجد تقييم بعد".localized,
+                "ابدأ الجلسة حتى يظهر تقييم يجمع الدقة وأثر القرار.".localized,
+                "gauge.low"
+            )
+        }
+
+        let normalizedImpact = min(100, max(0, 50 + ((averageExpectedImpact - targetAverageExpectedImpact) * 10)))
+        let percent = min(100, max(0, Int((Double(accuracyPercent + normalizedImpact) / 2.0).rounded())))
+
+        if percent >= 85 {
+            return (
+                percent,
+                "جلسة ممتازة".localized,
+                "قراراتك قريبة من الخبير وتحقق أثرًا قويًا؛ انتقل لتحدٍ أصعب.".localized,
+                "gauge.high"
+            )
+        }
+
+        if percent >= 70 {
+            return (
+                percent,
+                "جلسة جيدة".localized,
+                "أداؤك ثابت، لكن راجع الفروق الصغيرة بين أفضل وثاني أفضل ورقة.".localized,
+                "gauge.medium"
+            )
+        }
+
+        if percent >= 50 {
+            return (
+                percent,
+                "جلسة تحتاج تثبيت".localized,
+                "لديك أساس قابل للبناء، لكن القرار يحتاج قراءة أهدأ قبل اللعب.".localized,
+                "gauge.medium"
+            )
+        }
+
+        return (
+            percent,
+            "جلسة تحتاج إعادة".localized,
+            "الدقة أو أثر القرار منخفض؛ أعد نفس الخطة ولا ترفع الصعوبة بعد.".localized,
+            "gauge.low"
         )
     }
 

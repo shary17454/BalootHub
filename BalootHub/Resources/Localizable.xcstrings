@@ -19378,6 +19378,106 @@
         }
       }
     },
+    "لا يوجد تقييم بعد" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No grade yet"
+          }
+        }
+      }
+    },
+    "ابدأ الجلسة حتى يظهر تقييم يجمع الدقة وأثر القرار." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start the session to see a grade that combines accuracy and decision impact."
+          }
+        }
+      }
+    },
+    "جلسة ممتازة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Excellent session"
+          }
+        }
+      }
+    },
+    "قراراتك قريبة من الخبير وتحقق أثرًا قويًا؛ انتقل لتحدٍ أصعب." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your decisions are close to the expert and deliver strong impact; move to a harder challenge."
+          }
+        }
+      }
+    },
+    "جلسة جيدة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Good session"
+          }
+        }
+      }
+    },
+    "أداؤك ثابت، لكن راجع الفروق الصغيرة بين أفضل وثاني أفضل ورقة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your performance is steady, but review the small differences between the best and second-best card."
+          }
+        }
+      }
+    },
+    "جلسة تحتاج تثبيت" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session needs stabilization"
+          }
+        }
+      }
+    },
+    "لديك أساس قابل للبناء، لكن القرار يحتاج قراءة أهدأ قبل اللعب." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You have a base to build on, but the decision needs a calmer read before playing."
+          }
+        }
+      }
+    },
+    "جلسة تحتاج إعادة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session needs repeat"
+          }
+        }
+      }
+    },
+    "الدقة أو أثر القرار منخفض؛ أعد نفس الخطة ولا ترفع الصعوبة بعد." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accuracy or decision impact is low; repeat the same plan and do not increase difficulty yet."
+          }
+        }
+      }
+    },
     "الأثر غير محسوب بعد" : {
       "localizations" : {
         "en" : {

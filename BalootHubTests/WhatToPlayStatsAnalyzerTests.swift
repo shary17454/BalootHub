@@ -1404,6 +1404,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.title, "ابدأ الجلسة".localized)
         XCTAssertEqual(progress.nextStepTitle, "الخطوة التالية".localized)
         XCTAssertEqual(progress.nextStepIconName, "play.circle.fill")
+        XCTAssertEqual(progress.gradePercent, 0)
+        XCTAssertEqual(progress.gradeTitle, "لا يوجد تقييم بعد".localized)
     }
 
     func testTrainingSessionProgressCountsRecentMatchingDifficultyOnly() {
@@ -1434,6 +1436,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.remainingAttempts, 1)
         XCTAssertEqual(progress.nextStepTitle, "أكمل الدفعة".localized)
         XCTAssertEqual(progress.nextStepIconName, "timer.circle.fill")
+        XCTAssertEqual(progress.gradePercent, 69)
+        XCTAssertEqual(progress.gradeTitle, "جلسة تحتاج تثبيت".localized)
     }
 
     func testTrainingSessionProgressNextStepCountsNeededCorrectAnswers() {
@@ -1518,6 +1522,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.reviewItem?.seed, 1)
         XCTAssertEqual(progress.title, "هدف الجلسة تحقق".localized)
         XCTAssertEqual(progress.nextStepTitle, "انتقل للتحدي التالي".localized)
+        XCTAssertEqual(progress.gradePercent, 69)
+        XCTAssertEqual(progress.gradeTitle, "جلسة تحتاج تثبيت".localized)
     }
 
     func testTrainingSessionProgressRequiresImpactTargetForSuccess() {
@@ -1538,6 +1544,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.averageExpectedImpactGap, 1)
         XCTAssertEqual(progress.detail, "أكملتها بدقة كافية، لكن متوسط الأثر أقل من هدف الخطة؛ راجع الاختيارات القريبة قبل تكرارها.".localized)
         XCTAssertEqual(progress.nextStepTitle, "راجع جودة القرار".localized)
+        XCTAssertEqual(progress.gradePercent, 54)
+        XCTAssertEqual(progress.gradeTitle, "جلسة تحتاج تثبيت".localized)
     }
 
     func testTrainingSessionProgressRequestsRepeatWhenAccuracyMissesTarget() {
@@ -1567,6 +1575,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.remainingAttempts, 0)
         XCTAssertEqual(progress.title, "أعد الجلسة".localized)
         XCTAssertEqual(progress.nextStepTitle, "أعد نفس الخطة".localized)
+        XCTAssertEqual(progress.gradePercent, 45)
+        XCTAssertEqual(progress.gradeTitle, "جلسة تحتاج إعادة".localized)
     }
 
     func testTrainingSessionProgressReviewItemComesFromCurrentPlannedBatch() {
