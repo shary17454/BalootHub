@@ -691,13 +691,13 @@ struct WhatToPlayTrainerView: View {
                 if let bestExpectedImpact = progress.bestExpectedImpact {
                     miniPlanMetric(
                         title: "أفضل أثر".localized,
-                        value: impactText(bestExpectedImpact)
+                        value: sessionImpactExtremeText(bestExpectedImpact, card: progress.bestExpectedImpactCard)
                     )
                 }
                 if let worstExpectedImpact = progress.worstExpectedImpact {
                     miniPlanMetric(
                         title: "أسوأ أثر".localized,
-                        value: impactText(worstExpectedImpact)
+                        value: sessionImpactExtremeText(worstExpectedImpact, card: progress.worstExpectedImpactCard)
                     )
                 }
                 miniPlanMetric(
@@ -852,6 +852,13 @@ struct WhatToPlayTrainerView: View {
                 (isMet ? AppColor.success : AppColor.danger).opacity(0.12),
                 in: RoundedRectangle(cornerRadius: AppRadius.small)
             )
+    }
+
+    private func sessionImpactExtremeText(_ impact: Int, card: PlayingCard?) -> String {
+        if let card {
+            return "\(impactText(impact)) · \(card.displayLabel)"
+        }
+        return impactText(impact)
     }
 
     private func trainingSessionNextStepButtonTitle(_ progress: WhatToPlayTrainingSessionProgress) -> String {

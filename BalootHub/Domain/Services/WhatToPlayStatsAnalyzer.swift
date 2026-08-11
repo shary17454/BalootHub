@@ -244,7 +244,9 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let totalExpectedImpact: Int
     let averageExpectedImpact: Int
     let bestExpectedImpact: Int?
+    let bestExpectedImpactCard: PlayingCard?
     let worstExpectedImpact: Int?
+    let worstExpectedImpactCard: PlayingCard?
     let impactTargetMet: Bool
     let averageExpectedImpactGap: Int
     let valueCapturePercent: Int
@@ -1154,6 +1156,8 @@ enum WhatToPlayStatsAnalyzer {
             : 0
         let bestImpact = sessionAttempts.map(\.expectedImpact).max()
         let worstImpact = sessionAttempts.map(\.expectedImpact).min()
+        let bestImpactAttempt = sessionImpactExtreme(in: sessionAttempts, preferHighest: true)
+        let worstImpactAttempt = sessionImpactExtreme(in: sessionAttempts, preferHighest: false)
         let accuracyTargetMet = completed > 0 && accuracy >= plan.targetAccuracyPercent
         let impactTargetMet = completed > 0 && averageImpact >= plan.targetAverageExpectedImpact
         let requiredCorrect = requiredCorrectAttempts(
@@ -1194,7 +1198,9 @@ enum WhatToPlayStatsAnalyzer {
                 totalExpectedImpact: 0,
                 averageExpectedImpact: 0,
                 bestExpectedImpact: nil,
+                bestExpectedImpactCard: nil,
                 worstExpectedImpact: nil,
+                worstExpectedImpactCard: nil,
                 impactTargetMet: false,
                 averageExpectedImpactGap: plan.targetAverageExpectedImpact,
                 valueCapturePercent: 0,
@@ -1233,7 +1239,9 @@ enum WhatToPlayStatsAnalyzer {
                 totalExpectedImpact: totalImpact,
                 averageExpectedImpact: averageImpact,
                 bestExpectedImpact: bestImpact,
+                bestExpectedImpactCard: bestImpactAttempt?.selectedCard,
                 worstExpectedImpact: worstImpact,
+                worstExpectedImpactCard: worstImpactAttempt?.selectedCard,
                 impactTargetMet: impactTargetMet,
                 averageExpectedImpactGap: impactGap,
                 valueCapturePercent: sessionSummary.valueCapturePercent,
@@ -1272,7 +1280,9 @@ enum WhatToPlayStatsAnalyzer {
                 totalExpectedImpact: totalImpact,
                 averageExpectedImpact: averageImpact,
                 bestExpectedImpact: bestImpact,
+                bestExpectedImpactCard: bestImpactAttempt?.selectedCard,
                 worstExpectedImpact: worstImpact,
+                worstExpectedImpactCard: worstImpactAttempt?.selectedCard,
                 impactTargetMet: true,
                 averageExpectedImpactGap: 0,
                 valueCapturePercent: sessionSummary.valueCapturePercent,
@@ -1310,7 +1320,9 @@ enum WhatToPlayStatsAnalyzer {
             totalExpectedImpact: totalImpact,
             averageExpectedImpact: averageImpact,
             bestExpectedImpact: bestImpact,
+            bestExpectedImpactCard: bestImpactAttempt?.selectedCard,
             worstExpectedImpact: worstImpact,
+            worstExpectedImpactCard: worstImpactAttempt?.selectedCard,
             impactTargetMet: impactTargetMet,
             averageExpectedImpactGap: impactGap,
             valueCapturePercent: sessionSummary.valueCapturePercent,
@@ -1338,6 +1350,22 @@ enum WhatToPlayStatsAnalyzer {
             gradeReasonTitle: grade.reasonTitle,
             gradeReasonDetail: grade.reasonDetail
         )
+    }
+
+    private static func sessionImpactExtreme(
+        in attempts: [WhatToPlayAttempt],
+        preferHighest: Bool
+    ) -> WhatToPlayAttempt? {
+        attempts.sorted { lhs, rhs in
+            if lhs.expectedImpact != rhs.expectedImpact {
+                return preferHighest
+                    ? lhs.expectedImpact > rhs.expectedImpact
+                    : lhs.expectedImpact < rhs.expectedImpact
+            }
+
+            return lhs.createdAt > rhs.createdAt
+        }
+        .first
     }
 
     private static func trainingSessionGrade(

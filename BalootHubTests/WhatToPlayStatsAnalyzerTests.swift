@@ -1853,7 +1853,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.totalExpectedImpact, 0)
         XCTAssertEqual(progress.averageExpectedImpact, 0)
         XCTAssertNil(progress.bestExpectedImpact)
+        XCTAssertNil(progress.bestExpectedImpactCard)
         XCTAssertNil(progress.worstExpectedImpact)
+        XCTAssertNil(progress.worstExpectedImpactCard)
         XCTAssertFalse(progress.impactTargetMet)
         XCTAssertEqual(progress.averageExpectedImpactGap, 0)
         XCTAssertEqual(progress.valueCapturePercent, 0)
@@ -1878,9 +1880,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         let attempts = [
             attempt(daysAgo: 5, difficulty: .easy, correct: false, impact: -6, bestImpact: 8),
             attempt(daysAgo: 4, difficulty: .hard, correct: true, impact: 4, bestImpact: 4),
-            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 4, bestImpact: 4),
-            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: -2, bestImpact: 5),
-            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 3, bestImpact: 3)
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 4, bestImpact: 4, selectedCard: PlayingCard(suit: .diamonds, rank: .ace)),
+            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: -2, bestImpact: 5, selectedCard: PlayingCard(suit: .hearts, rank: .seven)),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 3, bestImpact: 3, selectedCard: PlayingCard(suit: .spades, rank: .king))
         ]
 
         let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
@@ -1894,7 +1896,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.totalExpectedImpact, 5)
         XCTAssertEqual(progress.averageExpectedImpact, 2)
         XCTAssertEqual(progress.bestExpectedImpact, 4)
+        XCTAssertEqual(progress.bestExpectedImpactCard, PlayingCard(suit: .diamonds, rank: .ace))
         XCTAssertEqual(progress.worstExpectedImpact, -2)
+        XCTAssertEqual(progress.worstExpectedImpactCard, PlayingCard(suit: .hearts, rank: .seven))
         XCTAssertTrue(progress.impactTargetMet)
         XCTAssertEqual(progress.averageExpectedImpactGap, 0)
         XCTAssertEqual(progress.valueCaptureAttempts, 3)
@@ -1926,6 +1930,25 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.nextStepTitle, "أكمل الدفعة".localized)
         XCTAssertEqual(progress.nextStepIconName, "timer.circle.fill")
         XCTAssertTrue(progress.nextStepDetail.contains("2"))
+    }
+
+    func testTrainingSessionProgressImpactExtremeCardsUseNewestAttemptOnTie() {
+        let plan = sessionPlan(difficulty: .medium, count: 4, target: 50)
+        let newestBest = PlayingCard(suit: .spades, rank: .ace)
+        let newestWorst = PlayingCard(suit: .hearts, rank: .seven)
+        let attempts = [
+            attempt(daysAgo: 4, difficulty: .medium, correct: true, impact: 5, selectedCard: PlayingCard(suit: .clubs, rank: .ace)),
+            attempt(daysAgo: 3, difficulty: .medium, correct: false, impact: -4, selectedCard: PlayingCard(suit: .diamonds, rank: .seven)),
+            attempt(daysAgo: 2, difficulty: .medium, correct: true, impact: 5, selectedCard: newestBest),
+            attempt(daysAgo: 1, difficulty: .medium, correct: false, impact: -4, selectedCard: newestWorst)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.bestExpectedImpact, 5)
+        XCTAssertEqual(progress.bestExpectedImpactCard, newestBest)
+        XCTAssertEqual(progress.worstExpectedImpact, -4)
+        XCTAssertEqual(progress.worstExpectedImpactCard, newestWorst)
     }
 
     func testTrainingSessionProgressNextStepWarnsWhenAccuracyTargetIsUnreachable() {
@@ -2174,7 +2197,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         selectedRank: Int? = nil,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
         outcome: WhatToPlayOptionOutcome? = nil,
-        impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil
+        impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil,
+        selectedCard: PlayingCard = PlayingCard(suit: .clubs, rank: .seven)
     ) -> WhatToPlayAttempt {
         attempt(
             daysAgo: daysAgo,
@@ -2185,7 +2209,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             selectedRank: selectedRank,
             focusKind: focusKind,
             outcome: outcome,
-            impactBreakdown: impactBreakdown
+            impactBreakdown: impactBreakdown,
+            selectedCard: selectedCard
         )
     }
 
@@ -2200,13 +2225,14 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         secondBestImpact: Int? = nil,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
         outcome: WhatToPlayOptionOutcome? = nil,
-        impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil
+        impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil,
+        selectedCard: PlayingCard = PlayingCard(suit: .clubs, rank: .seven)
     ) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
             createdAt: Date(timeIntervalSince1970: 2_000_000 - daysAgo * 86_400),
             difficulty: difficulty,
             seed: UInt64(Int(daysAgo)),
-            selectedCard: PlayingCard(suit: .clubs, rank: .seven),
+            selectedCard: selectedCard,
             bestCard: PlayingCard(suit: .clubs, rank: .seven),
             secondBestCard: secondBestCard,
             isCorrect: correct,
