@@ -18144,6 +18144,106 @@
         }
       }
     },
+    "نمط قراراتك غير معروف" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your decision pattern is unknown"
+          }
+        }
+      }
+    },
+    "حل مواقف أكثر حتى يحدد المدرب هل أخطاؤك قريبة من الأفضل أم تخسر نقاطًا واضحة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solve more scenarios so the coach can tell whether your mistakes are close to best or clearly losing points."
+          }
+        }
+      }
+    },
+    "قراراتك الأخيرة نظيفة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your recent decisions are clean"
+          }
+        }
+      }
+    },
+    "آخر محاولاتك تطابق أفضل قرار؛ جرّب صعوبة أعلى أو ركز على تفسير سبب التفوق." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your recent attempts match the best decision; try a higher difficulty or focus on explaining why the best move wins."
+          }
+        }
+      }
+    },
+    "أخطاء مكلفة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Costly mistakes"
+          }
+        }
+      }
+    },
+    "معظم الأخطاء الأخيرة خفضت الأثر المتوقع؛ توقف قبل اللعب واسأل: هل أحمي النقاط أم أرمي ورقة رابحة؟" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Most recent mistakes lowered expected impact; pause before playing and ask: am I protecting points or throwing away a winning card?"
+          }
+        }
+      }
+    },
+    "اختيارات قريبة من الأفضل" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choices close to best"
+          }
+        }
+      }
+    },
+    "أغلب أخطائك ليست مدمرة، لكنها تفوّت أفضلية صغيرة. ركز على الفرق بين أفضل وثاني أفضل ورقة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Most of your mistakes are not destructive, but they miss a small edge. Focus on the difference between the best and second-best card."
+          }
+        }
+      }
+    },
+    "محاولات مفحوصة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inspected attempts"
+          }
+        }
+      }
+    },
+    "محاولات متأثرة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Affected attempts"
+          }
+        }
+      }
+    },
     "من" : {
       "localizations" : {
         "en" : {

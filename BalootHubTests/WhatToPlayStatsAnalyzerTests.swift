@@ -608,6 +608,77 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(style.title, "قراءة متذبذبة".localized)
     }
 
+    func testDecisionPatternReportsNoData() {
+        let pattern = WhatToPlayStatsAnalyzer.decisionPattern(for: [])
+
+        XCTAssertEqual(pattern.kind, .noData)
+        XCTAssertEqual(pattern.inspectedAttempts, 0)
+        XCTAssertEqual(pattern.affectedAttempts, 0)
+        XCTAssertEqual(pattern.title, "نمط قراراتك غير معروف".localized)
+    }
+
+    func testDecisionPatternReportsCleanRecentChoices() {
+        let attempts = [
+            attempt(daysAgo: 3, correct: true, impact: 4),
+            attempt(daysAgo: 2, correct: true, impact: 2),
+            attempt(daysAgo: 1, correct: true, impact: 1)
+        ]
+
+        let pattern = WhatToPlayStatsAnalyzer.decisionPattern(for: attempts)
+
+        XCTAssertEqual(pattern.kind, .clean)
+        XCTAssertEqual(pattern.inspectedAttempts, 3)
+        XCTAssertEqual(pattern.affectedAttempts, 0)
+        XCTAssertEqual(pattern.title, "قراراتك الأخيرة نظيفة".localized)
+    }
+
+    func testDecisionPatternRecognizesUsefulAlternatives() {
+        let attempts = [
+            attempt(daysAgo: 4, correct: true, impact: 3),
+            attempt(daysAgo: 3, correct: false, impact: 2),
+            attempt(daysAgo: 2, correct: false, impact: 0),
+            attempt(daysAgo: 1, correct: false, impact: -1)
+        ]
+
+        let pattern = WhatToPlayStatsAnalyzer.decisionPattern(for: attempts)
+
+        XCTAssertEqual(pattern.kind, .usefulAlternatives)
+        XCTAssertEqual(pattern.inspectedAttempts, 4)
+        XCTAssertEqual(pattern.affectedAttempts, 2)
+        XCTAssertEqual(pattern.title, "اختيارات قريبة من الأفضل".localized)
+    }
+
+    func testDecisionPatternRecognizesPointLeaks() {
+        let attempts = [
+            attempt(daysAgo: 4, correct: false, impact: -5),
+            attempt(daysAgo: 3, correct: false, impact: -2),
+            attempt(daysAgo: 2, correct: false, impact: 1),
+            attempt(daysAgo: 1, correct: true, impact: 3)
+        ]
+
+        let pattern = WhatToPlayStatsAnalyzer.decisionPattern(for: attempts)
+
+        XCTAssertEqual(pattern.kind, .pointLeaks)
+        XCTAssertEqual(pattern.inspectedAttempts, 4)
+        XCTAssertEqual(pattern.affectedAttempts, 2)
+        XCTAssertEqual(pattern.title, "أخطاء مكلفة".localized)
+    }
+
+    func testDecisionPatternUsesRecentLimit() {
+        let attempts = [
+            attempt(daysAgo: 5, correct: false, impact: -10),
+            attempt(daysAgo: 4, correct: false, impact: -10),
+            attempt(daysAgo: 3, correct: true, impact: 3),
+            attempt(daysAgo: 2, correct: true, impact: 2),
+            attempt(daysAgo: 1, correct: true, impact: 1)
+        ]
+
+        let pattern = WhatToPlayStatsAnalyzer.decisionPattern(for: attempts, limit: 3)
+
+        XCTAssertEqual(pattern.kind, .clean)
+        XCTAssertEqual(pattern.inspectedAttempts, 3)
+    }
+
     func testTrainingSessionPlanStartsWithShortFoundation() {
         let plan = WhatToPlayStatsAnalyzer.trainingSessionPlan(for: [])
 
@@ -698,7 +769,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
     func testTrainingSessionProgressCountsRecentMatchingDifficultyOnly() {
         let plan = sessionPlan(difficulty: .medium, count: 4, target: 75)
         let attempts = [
-            attempt(daysAgo: 5, difficulty: .medium, correct: false, impact: -6),
+            attempt(daysAgo: 5, difficulty: .easy, correct: false, impact: -6),
             attempt(daysAgo: 4, difficulty: .hard, correct: true, impact: 4),
             attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 4),
             attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: -2),

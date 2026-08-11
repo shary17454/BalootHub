@@ -360,6 +360,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.playStyle(for: attempts)
     }
 
+    private var decisionPattern: WhatToPlayDecisionPattern {
+        WhatToPlayStatsAnalyzer.decisionPattern(for: attempts)
+    }
+
     private var trainingSessionProgress: WhatToPlayTrainingSessionProgress {
         WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: trainingSessionPlan)
     }
@@ -641,6 +645,7 @@ struct WhatToPlayTrainerView: View {
                 )
                 masteryView(mastery, milestone: masteryMilestone)
                 playStyleView(playStyle)
+                decisionPatternView(decisionPattern)
                 sessionPulseView(sessionPulse)
                 coachingTipView(coachingTip)
                 if let performanceTrend {
@@ -671,6 +676,43 @@ struct WhatToPlayTrainerView: View {
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
         .accessibilityElement(children: .combine)
+    }
+
+    private func decisionPatternView(_ pattern: WhatToPlayDecisionPattern) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(pattern.title)
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(pattern.detail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("\("محاولات مفحوصة".localized): \(pattern.inspectedAttempts) · \("محاولات متأثرة".localized): \(pattern.affectedAttempts)")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(decisionPatternTint(pattern.kind))
+            }
+        } icon: {
+            Image(systemName: pattern.iconName)
+                .foregroundStyle(decisionPatternTint(pattern.kind))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.sm)
+        .background(decisionPatternTint(pattern.kind).opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func decisionPatternTint(_ kind: WhatToPlayDecisionPatternKind) -> Color {
+        switch kind {
+        case .noData:
+            AppColor.textSecondary
+        case .clean:
+            AppColor.success
+        case .usefulAlternatives:
+            AppColor.accent
+        case .pointLeaks:
+            AppColor.danger
+        }
     }
 
     private func playStyleView(_ style: WhatToPlayPlayStyle) -> some View {

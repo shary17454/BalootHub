@@ -171,6 +171,22 @@ struct WhatToPlayPlayStyle: Equatable {
     let iconName: String
 }
 
+enum WhatToPlayDecisionPatternKind: Equatable {
+    case noData
+    case clean
+    case usefulAlternatives
+    case pointLeaks
+}
+
+struct WhatToPlayDecisionPattern: Equatable {
+    let kind: WhatToPlayDecisionPatternKind
+    let inspectedAttempts: Int
+    let affectedAttempts: Int
+    let title: String
+    let detail: String
+    let iconName: String
+}
+
 enum WhatToPlayStatsAnalyzer {
     static func summarize(attempts: [WhatToPlayAttempt]) -> WhatToPlayStatsSummary {
         guard !attempts.isEmpty else { return .empty }
@@ -812,6 +828,54 @@ enum WhatToPlayStatsAnalyzer {
             weakness: "التذبذب يظهر غالبًا عند وجود حكم أو أكثر من خيار قريب.".localized,
             advice: "درّب المستوى المقترح في جلسات قصيرة حتى تستقر الدقة.".localized,
             iconName: "chart.xyaxis.line"
+        )
+    }
+
+    static func decisionPattern(for attempts: [WhatToPlayAttempt], limit: Int = 8) -> WhatToPlayDecisionPattern {
+        let recent = recentAttempts(attempts, limit: limit)
+        guard !recent.isEmpty else {
+            return WhatToPlayDecisionPattern(
+                kind: .noData,
+                inspectedAttempts: 0,
+                affectedAttempts: 0,
+                title: "نمط قراراتك غير معروف".localized,
+                detail: "حل مواقف أكثر حتى يحدد المدرب هل أخطاؤك قريبة من الأفضل أم تخسر نقاطًا واضحة.".localized,
+                iconName: "questionmark.circle.fill"
+            )
+        }
+
+        let mistakes = recent.filter { !$0.isCorrect }
+        guard !mistakes.isEmpty else {
+            return WhatToPlayDecisionPattern(
+                kind: .clean,
+                inspectedAttempts: recent.count,
+                affectedAttempts: 0,
+                title: "قراراتك الأخيرة نظيفة".localized,
+                detail: "آخر محاولاتك تطابق أفضل قرار؛ جرّب صعوبة أعلى أو ركز على تفسير سبب التفوق.".localized,
+                iconName: "checkmark.seal.fill"
+            )
+        }
+
+        let pointLeaks = mistakes.filter { $0.expectedImpact < 0 }
+        let usefulAlternatives = mistakes.count - pointLeaks.count
+        if pointLeaks.count >= usefulAlternatives {
+            return WhatToPlayDecisionPattern(
+                kind: .pointLeaks,
+                inspectedAttempts: recent.count,
+                affectedAttempts: pointLeaks.count,
+                title: "أخطاء مكلفة".localized,
+                detail: "معظم الأخطاء الأخيرة خفضت الأثر المتوقع؛ توقف قبل اللعب واسأل: هل أحمي النقاط أم أرمي ورقة رابحة؟".localized,
+                iconName: "exclamationmark.triangle.fill"
+            )
+        }
+
+        return WhatToPlayDecisionPattern(
+            kind: .usefulAlternatives,
+            inspectedAttempts: recent.count,
+            affectedAttempts: usefulAlternatives,
+            title: "اختيارات قريبة من الأفضل".localized,
+            detail: "أغلب أخطائك ليست مدمرة، لكنها تفوّت أفضلية صغيرة. ركز على الفرق بين أفضل وثاني أفضل ورقة.".localized,
+            iconName: "2.circle.fill"
         )
     }
 
