@@ -317,6 +317,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.choiceRankSummary(for: attempts)
     }
 
+    private var choiceRankInsight: WhatToPlayChoiceRankInsight? {
+        WhatToPlayStatsAnalyzer.choiceRankInsight(for: choiceRankSummary)
+    }
+
     private var outcomeInsight: WhatToPlayOutcomeInsight? {
         WhatToPlayStatsAnalyzer.outcomeInsight(for: outcomeSummary)
     }
@@ -714,7 +718,7 @@ struct WhatToPlayTrainerView: View {
                     outcomeSummaryView(outcomeSummary, insight: outcomeInsight)
                 }
                 if choiceRankSummary.trackedAttempts > 0 {
-                    choiceRankSummaryView(choiceRankSummary)
+                    choiceRankSummaryView(choiceRankSummary, insight: choiceRankInsight)
                 }
                 masteryView(mastery, milestone: masteryMilestone)
                 playStyleView(playStyle)
@@ -770,7 +774,10 @@ struct WhatToPlayTrainerView: View {
         .accessibilityElement(children: .combine)
     }
 
-    private func choiceRankSummaryView(_ summary: WhatToPlayChoiceRankSummary) -> some View {
+    private func choiceRankSummaryView(
+        _ summary: WhatToPlayChoiceRankSummary,
+        insight: WhatToPlayChoiceRankInsight?
+    ) -> some View {
         VStack(alignment: .leading, spacing: AppSpacing.xs) {
             Label("قربك من اختيار الخبير".localized, systemImage: "list.number")
                 .font(AppTypography.subheadline.weight(.semibold))
@@ -786,10 +793,39 @@ struct WhatToPlayTrainerView: View {
                 .font(.caption2)
                 .foregroundStyle(AppColor.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
+
+            if let insight {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(insight.title)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(AppColor.textPrimary)
+                        Text(insight.detail)
+                            .font(.caption2)
+                            .foregroundStyle(AppColor.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                } icon: {
+                    Image(systemName: insight.iconName)
+                        .foregroundStyle(choiceRankInsightTint(insight.kind))
+                }
+                .padding(.top, AppSpacing.xs)
+            }
         }
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
         .accessibilityElement(children: .combine)
+    }
+
+    private func choiceRankInsightTint(_ kind: WhatToPlayChoiceRankInsightKind) -> Color {
+        switch kind {
+        case .expertAligned:
+            AppColor.success
+        case .nearMisses:
+            AppColor.accent
+        case .farChoices:
+            AppColor.danger
+        }
     }
 
     private func miniMetric(_ title: String, _ value: String, _ tint: Color) -> some View {

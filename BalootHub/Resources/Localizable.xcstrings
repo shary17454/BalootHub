@@ -16638,6 +16638,66 @@
         }
       }
     },
+    "اختياراتك قريبة من الخبير" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your choices are close to the expert"
+          }
+        }
+      }
+    },
+    "أغلب قراراتك تطابق أفضل خيار؛ الخطوة القادمة هي رفع الصعوبة أو تفسير سبب تفوق الورقة قبل لعبها." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Most of your decisions match the best option; the next step is raising difficulty or explaining why the card is stronger before playing it."
+          }
+        }
+      }
+    },
+    "اختياراتك بعيدة عن التحليل" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your choices are far from the analysis"
+          }
+        }
+      }
+    },
+    "عدد الاختيارات خارج أفضل خيارين مرتفع؛ توقف قبل اللعب واقرأ اللون المطلوب والحكم والنقاط الموجودة على الطاولة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The number of choices outside the top two is high; pause before playing and read the required suit, trump, and points on the table."
+          }
+        }
+      }
+    },
+    "أخطاؤك قريبة وقابلة للتصحيح" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your mistakes are close and correctable"
+          }
+        }
+      }
+    },
+    "كثير من اختياراتك حول ثاني أفضل ورقة؛ ركز على الفرق الصغير بين كسب الأكلة وحفظ ورقة قوية لاحقًا." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Many of your choices are around the second-best card; focus on the small difference between winning the trick and saving a strong card for later."
+          }
+        }
+      }
+    },
     "بديل قريب" : {
       "localizations" : {
         "en" : {

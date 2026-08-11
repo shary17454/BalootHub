@@ -69,6 +69,19 @@ struct WhatToPlayChoiceRankSummary: Equatable {
     }
 }
 
+enum WhatToPlayChoiceRankInsightKind: Equatable {
+    case expertAligned
+    case nearMisses
+    case farChoices
+}
+
+struct WhatToPlayChoiceRankInsight: Equatable {
+    let kind: WhatToPlayChoiceRankInsightKind
+    let title: String
+    let detail: String
+    let iconName: String
+}
+
 struct WhatToPlayCoachingTip: Equatable {
     let title: String
     let detail: String
@@ -385,6 +398,38 @@ enum WhatToPlayStatsAnalyzer {
             expertPicks: expertPicks,
             secondBestPicks: secondBestPicks,
             farPicks: farPicks
+        )
+    }
+
+    static func choiceRankInsight(
+        for summary: WhatToPlayChoiceRankSummary,
+        minimumTrackedAttempts: Int = 3
+    ) -> WhatToPlayChoiceRankInsight? {
+        guard summary.trackedAttempts >= minimumTrackedAttempts else { return nil }
+
+        if summary.expertPickPercent >= 70 {
+            return WhatToPlayChoiceRankInsight(
+                kind: .expertAligned,
+                title: "اختياراتك قريبة من الخبير".localized,
+                detail: "أغلب قراراتك تطابق أفضل خيار؛ الخطوة القادمة هي رفع الصعوبة أو تفسير سبب تفوق الورقة قبل لعبها.".localized,
+                iconName: "checkmark.seal.fill"
+            )
+        }
+
+        if summary.farPicks > summary.expertPicks + summary.secondBestPicks {
+            return WhatToPlayChoiceRankInsight(
+                kind: .farChoices,
+                title: "اختياراتك بعيدة عن التحليل".localized,
+                detail: "عدد الاختيارات خارج أفضل خيارين مرتفع؛ توقف قبل اللعب واقرأ اللون المطلوب والحكم والنقاط الموجودة على الطاولة.".localized,
+                iconName: "exclamationmark.triangle.fill"
+            )
+        }
+
+        return WhatToPlayChoiceRankInsight(
+            kind: .nearMisses,
+            title: "أخطاؤك قريبة وقابلة للتصحيح".localized,
+            detail: "كثير من اختياراتك حول ثاني أفضل ورقة؛ ركز على الفرق الصغير بين كسب الأكلة وحفظ ورقة قوية لاحقًا.".localized,
+            iconName: "2.circle.fill"
         )
     }
 

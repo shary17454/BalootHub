@@ -256,6 +256,62 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(WhatToPlayStatsAnalyzer.choiceRankSummary(for: attempts), .empty)
     }
 
+    func testChoiceRankInsightWaitsForEnoughTrackedAttempts() {
+        let summary = WhatToPlayChoiceRankSummary(
+            trackedAttempts: 2,
+            expertPicks: 1,
+            secondBestPicks: 1,
+            farPicks: 0
+        )
+
+        XCTAssertNil(WhatToPlayStatsAnalyzer.choiceRankInsight(for: summary))
+    }
+
+    func testChoiceRankInsightRecognizesExpertAlignment() {
+        let summary = WhatToPlayChoiceRankSummary(
+            trackedAttempts: 10,
+            expertPicks: 7,
+            secondBestPicks: 2,
+            farPicks: 1
+        )
+
+        let insight = WhatToPlayStatsAnalyzer.choiceRankInsight(for: summary)
+
+        XCTAssertEqual(insight?.kind, .expertAligned)
+        XCTAssertEqual(insight?.title, "اختياراتك قريبة من الخبير".localized)
+        XCTAssertEqual(insight?.iconName, "checkmark.seal.fill")
+    }
+
+    func testChoiceRankInsightRecognizesFarChoices() {
+        let summary = WhatToPlayChoiceRankSummary(
+            trackedAttempts: 6,
+            expertPicks: 1,
+            secondBestPicks: 1,
+            farPicks: 4
+        )
+
+        let insight = WhatToPlayStatsAnalyzer.choiceRankInsight(for: summary)
+
+        XCTAssertEqual(insight?.kind, .farChoices)
+        XCTAssertEqual(insight?.title, "اختياراتك بعيدة عن التحليل".localized)
+        XCTAssertEqual(insight?.iconName, "exclamationmark.triangle.fill")
+    }
+
+    func testChoiceRankInsightFallsBackToNearMisses() {
+        let summary = WhatToPlayChoiceRankSummary(
+            trackedAttempts: 6,
+            expertPicks: 2,
+            secondBestPicks: 3,
+            farPicks: 1
+        )
+
+        let insight = WhatToPlayStatsAnalyzer.choiceRankInsight(for: summary)
+
+        XCTAssertEqual(insight?.kind, .nearMisses)
+        XCTAssertEqual(insight?.title, "أخطاؤك قريبة وقابلة للتصحيح".localized)
+        XCTAssertEqual(insight?.iconName, "2.circle.fill")
+    }
+
     func testRecentAttemptsReturnsNewestFirstWithLimit() {
         let attempts = [
             attempt(daysAgo: 5, correct: true, impact: 0),
