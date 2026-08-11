@@ -16404,6 +16404,16 @@
         }
       }
     },
+    "أثر كل قرار" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impact of each decision"
+          }
+        }
+      }
+    },
     "أفضل سلسلة" : {
       "localizations" : {
         "en" : {

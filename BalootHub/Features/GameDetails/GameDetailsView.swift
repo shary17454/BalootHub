@@ -320,12 +320,13 @@ struct WhatToPlayTrainerView: View {
                 statsCard
                 recentAttemptsCard
 
-                if let scenario {
-                    scenarioSummary(scenario)
-                    legalOptions(scenario)
-                    if let selectedOption {
-                        resultCard(selectedOption, scenario: scenario)
-                    }
+            if let scenario {
+                scenarioSummary(scenario)
+                legalOptions(scenario)
+                if let selectedOption {
+                    resultCard(selectedOption, scenario: scenario)
+                    optionComparisonCard(selectedOption: selectedOption, scenario: scenario)
+                }
                 } else if isGeneratingScenario {
                     EmptyStateView(
                         systemImage: "brain.head.profile",
@@ -622,6 +623,59 @@ struct WhatToPlayTrainerView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func optionComparisonCard(selectedOption: WhatToPlayOption, scenario: WhatToPlayScenario) -> some View {
+        let rows = WhatToPlayOptionComparison.rows(for: scenario, selectedCard: selectedOption.card)
+        return VStack(alignment: .leading, spacing: AppSpacing.md) {
+            Label("أثر كل قرار".localized, systemImage: "list.bullet.rectangle.fill")
+                .font(AppTypography.headline)
+                .foregroundStyle(AppColor.primary)
+
+            VStack(spacing: AppSpacing.sm) {
+                ForEach(rows) { row in
+                    optionComparisonRow(row)
+                }
+            }
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func optionComparisonRow(_ row: WhatToPlayOptionComparisonRow) -> some View {
+        HStack(spacing: AppSpacing.sm) {
+            MiniAnalysisCard(card: row.card, isSelected: row.isSelected)
+
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: AppSpacing.xs) {
+                    Text(row.card.accessibilityName)
+                        .font(AppTypography.subheadline.weight(.semibold))
+                        .foregroundStyle(AppColor.textPrimary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                    if row.isSelected {
+                        StatusBadge("اختيارك".localized, systemImage: "hand.point.up.left.fill", tint: AppColor.accent)
+                    }
+                    if row.isExpertChoice {
+                        StatusBadge("الأفضل".localized, systemImage: "star.fill", tint: AppColor.success)
+                    }
+                }
+                Text("\("الترتيب".localized) \(row.rank)")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+            }
+
+            Spacer()
+
+            Text(impactText(row.expectedImpact))
+                .font(AppTypography.caption.weight(.semibold))
+                .foregroundStyle(row.expectedImpact >= 0 ? AppColor.success : AppColor.danger)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+        }
+        .padding(AppSpacing.sm)
+        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
     }
 
     private func generateScenario() {
