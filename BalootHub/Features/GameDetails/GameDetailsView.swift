@@ -2812,9 +2812,9 @@ struct WhatToPlayTrainerView: View {
     }
 
     private func impactText(_ impact: Int) -> String {
-        if impact > 0 { return "+\(impact) نقطة متوقعة" }
-        if impact < 0 { return "\(impact) نقطة متوقعة" }
-        return "أثر محايد"
+        if impact > 0 { return "+\(impact) \("نقطة متوقعة".localized)" }
+        if impact < 0 { return "\(impact) \("نقطة متوقعة".localized)" }
+        return "أثر محايد".localized
     }
 
     private func impactGapText(_ gap: Int) -> String {
@@ -2829,9 +2829,9 @@ struct WhatToPlayTrainerView: View {
 private extension WhatToPlayDifficulty {
     var displayTitle: String {
         switch self {
-        case .easy: "سهل"
-        case .medium: "متوسط"
-        case .hard: "صعب"
+        case .easy: "سهل".localized
+        case .medium: "متوسط".localized
+        case .hard: "صعب".localized
         }
     }
 }
