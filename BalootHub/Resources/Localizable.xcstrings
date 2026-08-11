@@ -16618,6 +16618,136 @@
         }
       }
     },
+    "اختيار الخبير" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expert choice"
+          }
+        }
+      }
+    },
+    "بديل قريب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close alternative"
+          }
+        }
+      }
+    },
+    "يحسم الأكلة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wins the trick"
+          }
+        }
+      }
+    },
+    "يحافظ على الوضع" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Holds position"
+          }
+        }
+      }
+    },
+    "يفتح مخاطرة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opens risk"
+          }
+        }
+      }
+    },
+    "مكلف" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Costly"
+          }
+        }
+      }
+    },
+    "هذه أعلى ورقة حسب تحليل الخبير لهذا الموقف." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This is the top card according to the expert analysis for this scenario."
+          }
+        }
+      }
+    },
+    "قريب جدًا من اختيار الخبير ولا يخسر أثرًا متوقعًا." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Very close to the expert choice and does not lose expected impact."
+          }
+        }
+      }
+    },
+    "فرق بسيط عن الأفضل" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Small gap from best"
+          }
+        }
+      }
+    },
+    "مقبول إذا كان هدفك تقليل المخاطرة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acceptable if your goal is to reduce risk."
+          }
+        }
+      }
+    },
+    "هذا الخيار قد يكلّف فريقك نقاطًا متوقعة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This option may cost your team expected points"
+          }
+        }
+      }
+    },
+    "يربح الأكلة غالبًا، لكنه أقل من أفضل خيار بفارق" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "It often wins the trick, but trails the best option by"
+          }
+        }
+      }
+    },
+    "يبقي الأكلة مفتوحة ويخسر عن الأفضل" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keeps the trick open and trails the best by"
+          }
+        }
+      }
+    },
     "اختر ورقة في أول موقف ليبدأ التطبيق بتتبع دقتك وسلسلة إجاباتك." : {
       "localizations" : {
         "en" : {

@@ -1744,6 +1744,14 @@ struct WhatToPlayTrainerView: View {
                 Text(optionOutcomeText(row.outcome))
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(optionOutcomeTint(row.outcome))
+                Label(row.tacticalTag.title, systemImage: row.tacticalTag.systemImage)
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(optionTacticalTint(row.tacticalTag))
+                Text(row.tacticalSummary)
+                    .font(.caption2)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
                 Text(row.rationale)
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
@@ -1803,6 +1811,19 @@ struct WhatToPlayTrainerView: View {
             AppColor.danger
         case .leadsTrick, .developsTrick:
             AppColor.accent
+        }
+    }
+
+    private func optionTacticalTint(_ tag: WhatToPlayOptionTacticalTag) -> Color {
+        switch tag {
+        case .expertPick, .winsNow:
+            AppColor.success
+        case .closeAlternative, .holdsPosition:
+            AppColor.accent
+        case .opensRisk:
+            AppColor.warning
+        case .costly:
+            AppColor.danger
         }
     }
 

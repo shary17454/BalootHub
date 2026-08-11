@@ -81,4 +81,31 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
             XCTAssertEqual(row.rationale, option.explanation)
         }
     }
+
+    func testRowsTagExpertChoiceAsExpertPick() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
+        let selected = try XCTUnwrap(scenario.bestOption)
+
+        let rows = WhatToPlayOptionComparison.rows(for: scenario, selectedCard: selected.card)
+        let expertRow = try XCTUnwrap(rows.first(where: \.isExpertChoice))
+
+        XCTAssertEqual(expertRow.tacticalTag, .expertPick)
+        XCTAssertEqual(expertRow.tacticalTag.title, "اختيار الخبير".localized)
+        XCTAssertFalse(expertRow.tacticalSummary.isEmpty)
+    }
+
+    func testRowsExplainCostlyOptionsWithTacticalSummary() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let selected = try XCTUnwrap(scenario.options.first { $0.expectedImpact < 0 && !$0.isExpertChoice } ?? scenario.options.last)
+
+        let rows = WhatToPlayOptionComparison.rows(for: scenario, selectedCard: selected.card)
+        let selectedRow = try XCTUnwrap(rows.first { $0.card == selected.card })
+
+        if selected.expectedImpact < 0, !selected.isExpertChoice {
+            XCTAssertEqual(selectedRow.tacticalTag, .costly)
+            XCTAssertTrue(selectedRow.tacticalSummary.contains("هذا الخيار قد يكلّف فريقك نقاطًا متوقعة".localized))
+        } else {
+            XCTAssertFalse(selectedRow.tacticalSummary.isEmpty)
+        }
+    }
 }
