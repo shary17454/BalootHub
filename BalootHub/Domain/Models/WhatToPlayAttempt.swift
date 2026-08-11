@@ -8,6 +8,7 @@ final class WhatToPlayAttempt {
     var createdAt: Date
     var difficultyRaw: String
     var seedValue: Int64
+    var seedRaw: String?
     var selectedSuitRaw: String
     var selectedRankRaw: String
     var bestSuitRaw: String
@@ -57,6 +58,7 @@ final class WhatToPlayAttempt {
         self.createdAt = createdAt
         self.difficultyRaw = difficulty.rawValue
         self.seedValue = Int64(clamping: seed)
+        self.seedRaw = String(seed)
         self.selectedSuitRaw = selectedCard.suit.rawValue
         self.selectedRankRaw = selectedCard.rank.rawValue
         self.bestSuitRaw = bestCard.suit.rawValue
@@ -89,6 +91,17 @@ final class WhatToPlayAttempt {
 
     var difficulty: WhatToPlayDifficulty {
         WhatToPlayDifficulty(rawValue: difficultyRaw) ?? .medium
+    }
+
+    /// البذرة الأصلية لإعادة توليد الموقف.
+    ///
+    /// `seedValue` بقي للتوافق مع المحاولات المحفوظة سابقًا، لكنه `Int64` وكان يضغط
+    /// أي `UInt64` كبير عبر `clamping`. الحقل النصي يحفظ البذرة كاملة بلا فقدان.
+    var replaySeed: UInt64 {
+        if let seedRaw, let seed = UInt64(seedRaw) {
+            return seed
+        }
+        return UInt64(clamping: seedValue)
     }
 
     var selectedCard: PlayingCard? {

@@ -268,6 +268,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         let saved = try XCTUnwrap(try context.fetch(FetchDescriptor<WhatToPlayAttempt>()).first)
         XCTAssertEqual(saved.difficulty, .hard)
         XCTAssertEqual(saved.seedValue, 2_026)
+        XCTAssertEqual(saved.seedRaw, "2026")
+        XCTAssertEqual(saved.replaySeed, 2_026)
         XCTAssertEqual(saved.selectedCard, selected)
         XCTAssertEqual(saved.bestCard, best)
         XCTAssertEqual(saved.secondBestCard, secondBest)
@@ -293,6 +295,36 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(saved.simulationNextTurnPlayerIDRaw, nextPlayerID.uuidString)
         XCTAssertEqual(saved.simulationPlayerRemainingCards, 4)
         XCTAssertEqual(saved.simulationActionHistoryCount, 18)
+    }
+
+    func testAttemptStoresFullUInt64SeedForExactReplay() {
+        let largeSeed = UInt64.max
+        let attempt = WhatToPlayAttempt(
+            difficulty: .medium,
+            seed: largeSeed,
+            selectedCard: PlayingCard(suit: .clubs, rank: .seven),
+            bestCard: PlayingCard(suit: .clubs, rank: .eight),
+            isCorrect: false,
+            expectedImpact: -1
+        )
+
+        XCTAssertEqual(attempt.seedValue, Int64.max)
+        XCTAssertEqual(attempt.seedRaw, "\(UInt64.max)")
+        XCTAssertEqual(attempt.replaySeed, largeSeed)
+    }
+
+    func testAttemptReplaySeedFallsBackForLegacyRows() {
+        let attempt = WhatToPlayAttempt(
+            difficulty: .medium,
+            seed: 42,
+            selectedCard: PlayingCard(suit: .clubs, rank: .seven),
+            bestCard: PlayingCard(suit: .clubs, rank: .eight),
+            isCorrect: false,
+            expectedImpact: -1
+        )
+        attempt.seedRaw = nil
+
+        XCTAssertEqual(attempt.replaySeed, 42)
     }
 
     func testAttemptWithoutBestExpectedImpactKeepsBackwardCompatibleZeroLoss() {
@@ -547,6 +579,14 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(queue.first?.lostExpectedPoints, 7)
         XCTAssertEqual(queue.first?.valueLossSeverity, .high)
         XCTAssertEqual(queue.first?.valueLossTitle, "خسارة قيمة عالية".localized)
+    }
+
+    func testReviewQueueUsesExactReplaySeed() throws {
+        let attempt = attempt(daysAgo: 1, correct: false, impact: -4, bestImpact: 3, seed: UInt64.max)
+
+        let item = try XCTUnwrap(WhatToPlayStatsAnalyzer.reviewQueue(for: [attempt]).first)
+
+        XCTAssertEqual(item.seed, UInt64.max)
     }
 
     func testReviewQueueClassifiesMediumValueLoss() throws {
@@ -2610,7 +2650,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         outcome: WhatToPlayOptionOutcome? = nil,
         impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil,
         selectedCard: PlayingCard = PlayingCard(suit: .clubs, rank: .seven),
-        simulation: WhatToPlayOptionSimulation? = nil
+        simulation: WhatToPlayOptionSimulation? = nil,
+        seed: UInt64? = nil
     ) -> WhatToPlayAttempt {
         attempt(
             daysAgo: daysAgo,
@@ -2624,7 +2665,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             outcome: outcome,
             impactBreakdown: impactBreakdown,
             selectedCard: selectedCard,
-            simulation: simulation
+            simulation: simulation,
+            seed: seed
         )
     }
 
@@ -2641,12 +2683,13 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         outcome: WhatToPlayOptionOutcome? = nil,
         impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil,
         selectedCard: PlayingCard = PlayingCard(suit: .clubs, rank: .seven),
-        simulation: WhatToPlayOptionSimulation? = nil
+        simulation: WhatToPlayOptionSimulation? = nil,
+        seed: UInt64? = nil
     ) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
             createdAt: Date(timeIntervalSince1970: 2_000_000 - daysAgo * 86_400),
             difficulty: difficulty,
-            seed: UInt64(Int(daysAgo)),
+            seed: seed ?? UInt64(Int(daysAgo)),
             selectedCard: selectedCard,
             bestCard: PlayingCard(suit: .clubs, rank: .seven),
             secondBestCard: secondBestCard,
