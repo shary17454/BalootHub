@@ -1687,6 +1687,7 @@ struct WhatToPlayTrainerView: View {
 
     private func replayReviewItem(_ item: WhatToPlayReviewItem) {
         seed = item.seed
+        preferredFocusRaw = item.focusKind?.rawValue ?? "auto"
         selectedOption = nil
         if difficulty == item.difficulty {
             generateScenario()

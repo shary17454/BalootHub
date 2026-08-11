@@ -50,6 +50,7 @@ struct WhatToPlayReviewItem: Equatable, Identifiable {
     let id: UUID
     let seed: UInt64
     let difficulty: WhatToPlayDifficulty
+    let focusKind: WhatToPlayScenarioFocusKind?
     let selectedCard: PlayingCard?
     let bestCard: PlayingCard?
     let expectedImpact: Int
@@ -411,6 +412,7 @@ enum WhatToPlayStatsAnalyzer {
                 id: attempt.id,
                 seed: UInt64(clamping: attempt.seedValue),
                 difficulty: attempt.difficulty,
+                focusKind: attempt.focusKind,
                 selectedCard: attempt.selectedCard,
                 bestCard: attempt.bestCard,
                 expectedImpact: attempt.expectedImpact,

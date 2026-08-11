@@ -126,6 +126,23 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(queue.first?.lostExpectedPoints, 7)
     }
 
+    func testReviewQueueCarriesScenarioFocusForReplay() {
+        let attempts = [
+            attempt(
+                daysAgo: 1,
+                difficulty: .medium,
+                correct: false,
+                impact: -4,
+                bestImpact: 3,
+                focusKind: .followSuit
+            )
+        ]
+
+        let queue = WhatToPlayStatsAnalyzer.reviewQueue(for: attempts)
+
+        XCTAssertEqual(queue.first?.focusKind, .followSuit)
+    }
+
     func testReviewQueueUsesRecentTieBreakerForEqualImpact() {
         let attempts = [
             attempt(daysAgo: 3, correct: false, impact: -4),
