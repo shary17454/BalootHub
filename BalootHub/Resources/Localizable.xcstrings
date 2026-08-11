@@ -19088,6 +19088,86 @@
         }
       }
     },
+    "الأثر غير محسوب بعد" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impact not calculated yet"
+          }
+        }
+      }
+    },
+    "ابدأ أول موقف حتى يظهر أثر قرارات هذه الجلسة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start the first scenario so this session's decision impact appears."
+          }
+        }
+      }
+    },
+    "أثر الجلسة رابح" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session impact is positive"
+          }
+        }
+      }
+    },
+    "متوسط قراراتك في هذه الجلسة يضيف قيمة متوقعة لفريقك." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your average decisions in this session add expected value for your team."
+          }
+        }
+      }
+    },
+    "أثر الجلسة متعادل" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session impact is neutral"
+          }
+        }
+      }
+    },
+    "قراراتك لا تخسر نقاطًا متوقعة بوضوح، لكن ما زال بإمكانك رفع القيمة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your decisions are not clearly losing expected points, but you can still raise the value."
+          }
+        }
+      }
+    },
+    "أثر الجلسة سلبي" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session impact is negative"
+          }
+        }
+      }
+    },
+    "متوسط قراراتك يسرّب نقاطًا متوقعة؛ راجع أفضل وثاني أفضل قبل تكرار الجلسة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your average decisions are leaking expected points; review the best and second-best options before repeating the session."
+          }
+        }
+      }
+    },
     "محاولات" : {
       "localizations" : {
         "en" : {

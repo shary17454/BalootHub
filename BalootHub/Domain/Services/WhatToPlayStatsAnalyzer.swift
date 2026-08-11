@@ -214,6 +214,9 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let accuracyPercent: Int
     let totalExpectedImpact: Int
     let averageExpectedImpact: Int
+    let impactTitle: String
+    let impactDetail: String
+    let impactIconName: String
     let remainingAttempts: Int
     let title: String
     let detail: String
@@ -900,6 +903,10 @@ enum WhatToPlayStatsAnalyzer {
         let averageImpact = completed > 0
             ? Int((Double(totalImpact) / Double(completed)).rounded())
             : 0
+        let impactReading = trainingSessionImpactReading(
+            completedAttempts: completed,
+            averageExpectedImpact: averageImpact
+        )
         let remaining = max(0, target - completed)
 
         if completed == 0 {
@@ -911,6 +918,9 @@ enum WhatToPlayStatsAnalyzer {
                 accuracyPercent: 0,
                 totalExpectedImpact: 0,
                 averageExpectedImpact: 0,
+                impactTitle: impactReading.title,
+                impactDetail: impactReading.detail,
+                impactIconName: impactReading.iconName,
                 remainingAttempts: target,
                 title: "ابدأ الجلسة".localized,
                 detail: "لم تبدأ هذه الجلسة بعد؛ اضغط زر البدء لتوليد أول موقف.".localized,
@@ -927,6 +937,9 @@ enum WhatToPlayStatsAnalyzer {
                 accuracyPercent: accuracy,
                 totalExpectedImpact: totalImpact,
                 averageExpectedImpact: averageImpact,
+                impactTitle: impactReading.title,
+                impactDetail: impactReading.detail,
+                impactIconName: impactReading.iconName,
                 remainingAttempts: remaining,
                 title: "الجلسة قيد التنفيذ".localized,
                 detail: "أكمل بقية المواقف قبل الحكم على هدف الجلسة.".localized,
@@ -943,6 +956,9 @@ enum WhatToPlayStatsAnalyzer {
                 accuracyPercent: accuracy,
                 totalExpectedImpact: totalImpact,
                 averageExpectedImpact: averageImpact,
+                impactTitle: impactReading.title,
+                impactDetail: impactReading.detail,
+                impactIconName: impactReading.iconName,
                 remainingAttempts: 0,
                 title: "هدف الجلسة تحقق".localized,
                 detail: "أداؤك في هذه الدفعة وصل إلى هدف الخطة.".localized,
@@ -958,10 +974,48 @@ enum WhatToPlayStatsAnalyzer {
             accuracyPercent: accuracy,
             totalExpectedImpact: totalImpact,
             averageExpectedImpact: averageImpact,
+            impactTitle: impactReading.title,
+            impactDetail: impactReading.detail,
+            impactIconName: impactReading.iconName,
             remainingAttempts: 0,
             title: "أعد الجلسة".localized,
             detail: "أكملتها، لكن الدقة أقل من هدف الخطة؛ أعد نفس المستوى.".localized,
             iconName: "arrow.counterclockwise.circle.fill"
+        )
+    }
+
+    private static func trainingSessionImpactReading(
+        completedAttempts: Int,
+        averageExpectedImpact: Int
+    ) -> (title: String, detail: String, iconName: String) {
+        guard completedAttempts > 0 else {
+            return (
+                "الأثر غير محسوب بعد".localized,
+                "ابدأ أول موقف حتى يظهر أثر قرارات هذه الجلسة.".localized,
+                "chart.line.uptrend.xyaxis"
+            )
+        }
+
+        if averageExpectedImpact > 0 {
+            return (
+                "أثر الجلسة رابح".localized,
+                "متوسط قراراتك في هذه الجلسة يضيف قيمة متوقعة لفريقك.".localized,
+                "checkmark.seal.fill"
+            )
+        }
+
+        if averageExpectedImpact == 0 {
+            return (
+                "أثر الجلسة متعادل".localized,
+                "قراراتك لا تخسر نقاطًا متوقعة بوضوح، لكن ما زال بإمكانك رفع القيمة.".localized,
+                "equal.circle.fill"
+            )
+        }
+
+        return (
+            "أثر الجلسة سلبي".localized,
+            "متوسط قراراتك يسرّب نقاطًا متوقعة؛ راجع أفضل وثاني أفضل قبل تكرار الجلسة.".localized,
+            "exclamationmark.triangle.fill"
         )
     }
 

@@ -1388,6 +1388,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.targetAttempts, 3)
         XCTAssertEqual(progress.totalExpectedImpact, 0)
         XCTAssertEqual(progress.averageExpectedImpact, 0)
+        XCTAssertEqual(progress.impactTitle, "الأثر غير محسوب بعد".localized)
+        XCTAssertEqual(progress.impactIconName, "chart.line.uptrend.xyaxis")
         XCTAssertEqual(progress.remainingAttempts, 3)
         XCTAssertEqual(progress.title, "ابدأ الجلسة".localized)
     }
@@ -1410,6 +1412,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.accuracyPercent, 67)
         XCTAssertEqual(progress.totalExpectedImpact, 5)
         XCTAssertEqual(progress.averageExpectedImpact, 2)
+        XCTAssertEqual(progress.impactTitle, "أثر الجلسة رابح".localized)
+        XCTAssertEqual(progress.impactIconName, "checkmark.seal.fill")
         XCTAssertEqual(progress.remainingAttempts, 1)
     }
 
@@ -1471,6 +1475,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.accuracyPercent, 50)
         XCTAssertEqual(progress.totalExpectedImpact, -3)
         XCTAssertEqual(progress.averageExpectedImpact, -1)
+        XCTAssertEqual(progress.impactTitle, "أثر الجلسة سلبي".localized)
+        XCTAssertEqual(progress.impactIconName, "exclamationmark.triangle.fill")
         XCTAssertEqual(progress.remainingAttempts, 0)
         XCTAssertEqual(progress.title, "أعد الجلسة".localized)
     }

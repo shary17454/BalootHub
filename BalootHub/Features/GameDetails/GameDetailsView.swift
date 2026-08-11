@@ -656,8 +656,31 @@ struct WhatToPlayTrainerView: View {
                     value: impactText(progress.totalExpectedImpact)
                 )
             }
+
+            Label {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(progress.impactTitle)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(AppColor.textPrimary)
+                    Text(progress.impactDetail)
+                        .font(.caption2)
+                        .foregroundStyle(AppColor.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            } icon: {
+                Image(systemName: progress.impactIconName)
+                    .foregroundStyle(sessionImpactTint(progress.averageExpectedImpact, completed: progress.completedAttempts))
+            }
+            .padding(.top, AppSpacing.xs)
         }
         .padding(.top, AppSpacing.xs)
+    }
+
+    private func sessionImpactTint(_ averageImpact: Int, completed: Int) -> Color {
+        guard completed > 0 else { return AppColor.textSecondary }
+        if averageImpact > 0 { return AppColor.success }
+        if averageImpact == 0 { return AppColor.accent }
+        return AppColor.danger
     }
 
     private func miniPlanMetric(title: String, value: String) -> some View {
