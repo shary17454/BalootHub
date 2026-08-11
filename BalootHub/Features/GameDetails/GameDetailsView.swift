@@ -133,6 +133,18 @@ struct GameDetailsView: View {
                 .controlSize(.large)
             }
 
+            if item.slug == "baloot-training" {
+                Button {
+                    appEnvironment.navigate(to: .balootAcademy, tab: appEnvironment.selectedTab)
+                } label: {
+                    Label("فتح الأكاديمية", systemImage: "graduationcap.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(AppColor.primary)
+                .controlSize(.large)
+            }
+
             if item.slug == "what-to-play-trainer" {
                 Button {
                     appEnvironment.navigate(to: .whatToPlayTrainer, tab: appEnvironment.selectedTab)

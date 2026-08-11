@@ -71,6 +71,8 @@ struct RootTabView: View {
             NewScorekeeperSessionView()
         case .balootGamePlay(let slug):
             BalootGamePlayView(slug: slug)
+        case .balootAcademy:
+            BalootAcademyView()
         case .handAnalyzer:
             HandAnalyzerView()
         case .whatToPlayTrainer:
