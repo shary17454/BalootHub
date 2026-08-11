@@ -40,5 +40,6 @@ enum AppRoute: Hashable {
     case balootGamePlay(slug: String)
     case handAnalyzer
     case whatToPlayTrainer
+    case scoringQuiz
     case trainingIntro
 }

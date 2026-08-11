@@ -145,6 +145,18 @@ struct GameDetailsView: View {
                 .controlSize(.large)
             }
 
+            if item.slug == "score-calculation-challenge" {
+                Button {
+                    appEnvironment.navigate(to: .scoringQuiz, tab: appEnvironment.selectedTab)
+                } label: {
+                    Label("بدء التحدي", systemImage: "function")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(AppColor.primary)
+                .controlSize(.large)
+            }
+
             if item.isPlayable {
                 Button {
                     appEnvironment.navigate(to: .balootGamePlay(slug: item.slug), tab: appEnvironment.selectedTab)
