@@ -49,6 +49,23 @@ struct BiddingCycleTests {
         #expect(state.currentTurnPlayerID == state.player(at: state.dealerSeat.next)?.id)
     }
 
+    @Test("الصن والحكم خياران داخل لعبة البلوت الواحدة لا أوضاع مفروضة مسبقًا")
+    func sunAndHokumAreBidsInsideOneBalootGame() throws {
+        var state = GameState.newLocalMatch(rules: .standard)
+        state = try GameEngine.apply(.dealCards(seed: 31), to: state)
+
+        let upSuit = try #require(state.bidding.upCard?.suit)
+        let legal = GameEngine.legalBids(state: state)
+
+        #expect(state.phase == .bidding)
+        #expect(state.rules.biddingStyle == .full)
+        #expect(state.mode == nil)
+        #expect(state.trumpSuit == nil)
+        #expect(legal.contains(.pass))
+        #expect(legal.contains(.sun))
+        #expect(legal.contains(.hokum(suit: upSuit)))
+    }
+
     @Test("الجولة الأولى لا تسمح بالحكم إلا على لون الورقة المكشوفة")
     func firstRoundHokumLimitedToUpCardSuit() throws {
         var state = GameState.newLocalMatch(rules: .standard)
