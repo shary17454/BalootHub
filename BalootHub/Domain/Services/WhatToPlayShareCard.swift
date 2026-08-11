@@ -63,6 +63,7 @@ enum WhatToPlayShareCard {
         }
         let valueLossTitle = lost.map { WhatToPlayStatsAnalyzer.valueLossTitle(for: WhatToPlayStatsAnalyzer.valueLossSeverity(for: $0)) }
         let tacticalReason = selectedOption.flatMap(tacticalReason(for:))
+        let selectedSimulationDisplay = selectedOption.map { WhatToPlaySimulationFormatter.display(for: $0.simulation) }
         return WhatToPlayShareCardContent(
             title: "وش تلعب؟".localized,
             subtitle: selectedOption == nil
@@ -92,11 +93,9 @@ enum WhatToPlayShareCard {
             selectedRank: selectedOption?.rank,
             selectedImpact: selectedOption?.expectedImpact,
             selectedImpactDetail: selectedOption.map { WhatToPlayImpactFormatter.detail(for: $0.impactBreakdown) },
-            selectedSimulationSummary: selectedOption.map(simulationSummary(for:)),
-            selectedSimulationTeamResult: selectedOption.flatMap(simulationTeamResult(for:)),
-            selectedSimulationTrickPoints: selectedOption?.simulation.completedTrickWinnerID == nil
-                ? nil
-                : selectedOption?.simulation.completedTrickPoints,
+            selectedSimulationSummary: selectedSimulationDisplay?.summary,
+            selectedSimulationTeamResult: selectedSimulationDisplay?.teamResult,
+            selectedSimulationTrickPoints: selectedSimulationDisplay?.trickPoints,
             tacticalReasonTitle: tacticalReason?.title,
             tacticalReasonDetail: tacticalReason?.detail,
             tacticalReasonIconName: tacticalReason?.iconName,
@@ -197,24 +196,6 @@ enum WhatToPlayShareCard {
                 return lhs.card.suit.ordinal < rhs.card.suit.ordinal
             }
             return lhs.card.rank.ordinal < rhs.card.rank.ordinal
-        }
-    }
-
-    private static func simulationSummary(for option: WhatToPlayOption) -> String {
-        if option.simulation.completedTrickWinnerID != nil {
-            return "تكتمل الأكلة وتنتقل للفائز.".localized
-        }
-        return "\("تبقى الأكلة مفتوحة".localized) · \(option.simulation.currentTrickCardCount) \("أوراق على الطاولة".localized)"
-    }
-
-    private static func simulationTeamResult(for option: WhatToPlayOption) -> String? {
-        switch option.simulation.completedTrickWonByPlayerTeam {
-        case .some(true):
-            return "لفريقك".localized
-        case .some(false):
-            return "للخصم".localized
-        case .none:
-            return nil
         }
     }
 

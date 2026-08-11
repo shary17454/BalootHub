@@ -1775,14 +1775,14 @@ struct WhatToPlayTrainerView: View {
 
     @ViewBuilder
     private func attemptSimulationView(_ attempt: WhatToPlayAttempt) -> some View {
-        if let simulationSummary = attemptSimulationSummary(attempt) {
+        if let simulationDisplay = WhatToPlaySimulationFormatter.display(for: attempt) {
             VStack(alignment: .leading, spacing: 2) {
-                Text("\("نتيجة المحاكاة".localized): \(simulationSummary)")
+                Text("\("نتيجة المحاكاة".localized): \(simulationDisplay.summary)")
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(AppColor.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
-                if let teamResult = attemptSimulationTeamResult(attempt) {
-                    Text("\("اتجاه الأكلة".localized): \(teamResult)\(simulationPointsSuffix(attempt.simulationCompletedTrickPoints))")
+                if let teamResult = simulationDisplay.teamResult {
+                    Text("\("اتجاه الأكلة".localized): \(teamResult)\(simulationPointsSuffix(simulationDisplay.trickPoints))")
                         .font(.caption2)
                         .foregroundStyle(AppColor.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -2424,40 +2424,11 @@ struct WhatToPlayTrainerView: View {
     }
 
     private func simulationSummary(_ simulation: WhatToPlayOptionSimulation) -> String {
-        if simulation.completedTrickWinnerID != nil {
-            return "تكتمل الأكلة وتنتقل للفائز.".localized
-        }
-        return "\("تبقى الأكلة مفتوحة".localized) · \(simulation.currentTrickCardCount) \("أوراق على الطاولة".localized)"
+        WhatToPlaySimulationFormatter.display(for: simulation).summary
     }
 
     private func simulationTeamResult(_ simulation: WhatToPlayOptionSimulation) -> String? {
-        switch simulation.completedTrickWonByPlayerTeam {
-        case .some(true):
-            return "لفريقك".localized
-        case .some(false):
-            return "للخصم".localized
-        case .none:
-            return nil
-        }
-    }
-
-    private func attemptSimulationSummary(_ attempt: WhatToPlayAttempt) -> String? {
-        guard let currentTrickCardCount = attempt.simulationCurrentTrickCardCount else { return nil }
-        if attempt.simulationCompletedTrickWonByPlayerTeam != nil {
-            return "تكتمل الأكلة وتنتقل للفائز.".localized
-        }
-        return "\("تبقى الأكلة مفتوحة".localized) · \(currentTrickCardCount) \("أوراق على الطاولة".localized)"
-    }
-
-    private func attemptSimulationTeamResult(_ attempt: WhatToPlayAttempt) -> String? {
-        switch attempt.simulationCompletedTrickWonByPlayerTeam {
-        case .some(true):
-            return "لفريقك".localized
-        case .some(false):
-            return "للخصم".localized
-        case .none:
-            return nil
-        }
+        WhatToPlaySimulationFormatter.display(for: simulation).teamResult
     }
 
     private func retryPromptView(_ prompt: WhatToPlayRetryPrompt) -> some View {

@@ -47,6 +47,7 @@
 		D3C4E5F60718293A4B5C6D70 /* WhatToPlayOptionDisclosure.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C4E5F60718293A4B5C6D6F /* WhatToPlayOptionDisclosure.swift */; };
 		E4D5F60718293A4B5C6D7E80 /* WhatToPlayScenarioLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D5F60718293A4B5C6D7E7F /* WhatToPlayScenarioLoader.swift */; };
 		B1A2C3D4E5F60718293A4B5D /* WhatToPlayShareCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F60718293A4B5C /* WhatToPlayShareCard.swift */; };
+		A9B8C7D6E5F4012345678902 /* WhatToPlaySimulationFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9B8C7D6E5F4012345678901 /* WhatToPlaySimulationFormatter.swift */; };
 		C2B3D4E5F60718293A4B5C62 /* WhatToPlayStatsAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2B3D4E5F60718293A4B5C61 /* WhatToPlayStatsAnalyzer.swift */; };
 		32ACBC56B3044B9EBB30C480 /* BalootGamePlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E31630790994E7BB9617012 /* BalootGamePlayView.swift */; };
 		BF35E3077EDB42F186FE72CB /* BalootGameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE8450C865F4F15A45940DC /* BalootGameViewModel.swift */; };
@@ -84,6 +85,7 @@
 		D3C4E5F60718293A4B5C6D72 /* WhatToPlayOptionDisclosureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C4E5F60718293A4B5C6D71 /* WhatToPlayOptionDisclosureTests.swift */; };
 		E4D5F60718293A4B5C6D7E82 /* WhatToPlayScenarioLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D5F60718293A4B5C6D7E81 /* WhatToPlayScenarioLoaderTests.swift */; };
 		B1A2C3D4E5F60718293A4B5F /* WhatToPlayShareCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F60718293A4B5E /* WhatToPlayShareCardTests.swift */; };
+		A9B8C7D6E5F4012345678904 /* WhatToPlaySimulationFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9B8C7D6E5F4012345678903 /* WhatToPlaySimulationFormatterTests.swift */; };
 		C2B3D4E5F60718293A4B5C64 /* WhatToPlayStatsAnalyzerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2B3D4E5F60718293A4B5C63 /* WhatToPlayStatsAnalyzerTests.swift */; };
 		1534A5689A6145759E26A22A /* ScoreRulesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE9E72237F624BCFAA8EE59D /* ScoreRulesTests.swift */; };
 		F5E7838995964BF181779782 /* ScoreSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DAF1F1F27B4D3FB87ACC84 /* ScoreSessionTests.swift */; };
@@ -146,6 +148,7 @@
 		D3C4E5F60718293A4B5C6D6F /* WhatToPlayOptionDisclosure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayOptionDisclosure.swift; sourceTree = "<group>"; };
 		E4D5F60718293A4B5C6D7E7F /* WhatToPlayScenarioLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayScenarioLoader.swift; sourceTree = "<group>"; };
 		B1A2C3D4E5F60718293A4B5C /* WhatToPlayShareCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayShareCard.swift; sourceTree = "<group>"; };
+		A9B8C7D6E5F4012345678901 /* WhatToPlaySimulationFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlaySimulationFormatter.swift; sourceTree = "<group>"; };
 		C2B3D4E5F60718293A4B5C61 /* WhatToPlayStatsAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayStatsAnalyzer.swift; sourceTree = "<group>"; };
 		7E31630790994E7BB9617012 /* BalootGamePlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootGamePlayView.swift; sourceTree = "<group>"; };
 		FAE8450C865F4F15A45940DC /* BalootGameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootGameViewModel.swift; sourceTree = "<group>"; };
@@ -183,6 +186,7 @@
 		D3C4E5F60718293A4B5C6D71 /* WhatToPlayOptionDisclosureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayOptionDisclosureTests.swift; sourceTree = "<group>"; };
 		E4D5F60718293A4B5C6D7E81 /* WhatToPlayScenarioLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayScenarioLoaderTests.swift; sourceTree = "<group>"; };
 		B1A2C3D4E5F60718293A4B5E /* WhatToPlayShareCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayShareCardTests.swift; sourceTree = "<group>"; };
+		A9B8C7D6E5F4012345678903 /* WhatToPlaySimulationFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlaySimulationFormatterTests.swift; sourceTree = "<group>"; };
 		C2B3D4E5F60718293A4B5C63 /* WhatToPlayStatsAnalyzerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayStatsAnalyzerTests.swift; sourceTree = "<group>"; };
 		EE9E72237F624BCFAA8EE59D /* ScoreRulesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreRulesTests.swift; sourceTree = "<group>"; };
 		09DAF1F1F27B4D3FB87ACC84 /* ScoreSessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreSessionTests.swift; sourceTree = "<group>"; };
@@ -320,6 +324,7 @@
 				D3C4E5F60718293A4B5C6D6F /* WhatToPlayOptionDisclosure.swift */,
 				E4D5F60718293A4B5C6D7E7F /* WhatToPlayScenarioLoader.swift */,
 				B1A2C3D4E5F60718293A4B5C /* WhatToPlayShareCard.swift */,
+				A9B8C7D6E5F4012345678901 /* WhatToPlaySimulationFormatter.swift */,
 				C2B3D4E5F60718293A4B5C61 /* WhatToPlayStatsAnalyzer.swift */,
 			);
 			path = Services;
@@ -458,6 +463,7 @@
 				D3C4E5F60718293A4B5C6D71 /* WhatToPlayOptionDisclosureTests.swift */,
 				E4D5F60718293A4B5C6D7E81 /* WhatToPlayScenarioLoaderTests.swift */,
 				B1A2C3D4E5F60718293A4B5E /* WhatToPlayShareCardTests.swift */,
+				A9B8C7D6E5F4012345678903 /* WhatToPlaySimulationFormatterTests.swift */,
 				C2B3D4E5F60718293A4B5C63 /* WhatToPlayStatsAnalyzerTests.swift */,
 				EE9E72237F624BCFAA8EE59D /* ScoreRulesTests.swift */,
 				09DAF1F1F27B4D3FB87ACC84 /* ScoreSessionTests.swift */,
@@ -655,6 +661,7 @@
 				D3C4E5F60718293A4B5C6D70 /* WhatToPlayOptionDisclosure.swift in Sources */,
 				E4D5F60718293A4B5C6D7E80 /* WhatToPlayScenarioLoader.swift in Sources */,
 				B1A2C3D4E5F60718293A4B5D /* WhatToPlayShareCard.swift in Sources */,
+				A9B8C7D6E5F4012345678902 /* WhatToPlaySimulationFormatter.swift in Sources */,
 				C2B3D4E5F60718293A4B5C62 /* WhatToPlayStatsAnalyzer.swift in Sources */,
 				32ACBC56B3044B9EBB30C480 /* BalootGamePlayView.swift in Sources */,
 				BF35E3077EDB42F186FE72CB /* BalootGameViewModel.swift in Sources */,
@@ -702,6 +709,7 @@
 				D3C4E5F60718293A4B5C6D72 /* WhatToPlayOptionDisclosureTests.swift in Sources */,
 				E4D5F60718293A4B5C6D7E82 /* WhatToPlayScenarioLoaderTests.swift in Sources */,
 				B1A2C3D4E5F60718293A4B5F /* WhatToPlayShareCardTests.swift in Sources */,
+				A9B8C7D6E5F4012345678904 /* WhatToPlaySimulationFormatterTests.swift in Sources */,
 				C2B3D4E5F60718293A4B5C64 /* WhatToPlayStatsAnalyzerTests.swift in Sources */,
 				1534A5689A6145759E26A22A /* ScoreRulesTests.swift in Sources */,
 				F5E7838995964BF181779782 /* ScoreSessionTests.swift in Sources */,

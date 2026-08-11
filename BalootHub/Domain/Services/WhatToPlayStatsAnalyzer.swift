@@ -845,6 +845,7 @@ enum WhatToPlayStatsAnalyzer {
             let isMissedOpportunity = !isCostly && attempt.lostExpectedPoints >= missedOpportunityThreshold
             let severity = valueLossSeverity(for: attempt.lostExpectedPoints)
             let tacticalReason = tacticalReviewReason(for: attempt)
+            let simulationDisplay = WhatToPlaySimulationFormatter.display(for: attempt)
             return WhatToPlayReviewItem(
                 id: attempt.id,
                 seed: UInt64(clamping: attempt.seedValue),
@@ -869,29 +870,10 @@ enum WhatToPlayStatsAnalyzer {
                 tacticalReasonTitle: tacticalReason?.title,
                 tacticalReasonDetail: tacticalReason?.detail,
                 tacticalReasonIconName: tacticalReason?.iconName,
-                simulationSummary: simulationSummary(for: attempt),
-                simulationTeamResult: simulationTeamResult(for: attempt),
-                simulationTrickPoints: attempt.simulationCompletedTrickPoints
+                simulationSummary: simulationDisplay?.summary,
+                simulationTeamResult: simulationDisplay?.teamResult,
+                simulationTrickPoints: simulationDisplay?.trickPoints
             )
-        }
-    }
-
-    private static func simulationSummary(for attempt: WhatToPlayAttempt) -> String? {
-        guard let currentTrickCardCount = attempt.simulationCurrentTrickCardCount else { return nil }
-        if attempt.simulationCompletedTrickWonByPlayerTeam != nil {
-            return "تكتمل الأكلة وتنتقل للفائز.".localized
-        }
-        return "\("تبقى الأكلة مفتوحة".localized) · \(currentTrickCardCount) \("أوراق على الطاولة".localized)"
-    }
-
-    private static func simulationTeamResult(for attempt: WhatToPlayAttempt) -> String? {
-        switch attempt.simulationCompletedTrickWonByPlayerTeam {
-        case .some(true):
-            return "لفريقك".localized
-        case .some(false):
-            return "للخصم".localized
-        case .none:
-            return nil
         }
     }
 

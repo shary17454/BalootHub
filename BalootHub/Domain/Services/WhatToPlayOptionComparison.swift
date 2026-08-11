@@ -99,7 +99,8 @@ enum WhatToPlayOptionComparison {
         let bestImpact = scenario.bestOption?.expectedImpact ?? scenario.options.map(\.expectedImpact).max() ?? 0
         return sortedOptions(scenario.options)
             .map { option in
-                WhatToPlayOptionComparisonRow(
+                let simulationDisplay = WhatToPlaySimulationFormatter.display(for: option.simulation)
+                return WhatToPlayOptionComparisonRow(
                     card: option.card,
                     rank: option.rank,
                     expectedImpact: option.expectedImpact,
@@ -108,11 +109,9 @@ enum WhatToPlayOptionComparison {
                     lostExpectedPoints: max(0, bestImpact - option.expectedImpact),
                     outcome: option.outcome,
                     outcomeReason: option.outcomeReason,
-                    simulationSummary: simulationSummary(for: option.simulation),
-                    simulationTeamResult: simulationTeamResult(for: option.simulation),
-                    simulationTrickPoints: option.simulation.completedTrickWinnerID == nil
-                        ? nil
-                        : option.simulation.completedTrickPoints,
+                    simulationSummary: simulationDisplay.summary,
+                    simulationTeamResult: simulationDisplay.teamResult,
+                    simulationTrickPoints: simulationDisplay.trickPoints,
                     tacticalTag: tacticalTag(for: option, bestImpact: bestImpact),
                     tacticalSummary: tacticalSummary(for: option, bestImpact: bestImpact),
                     rationale: option.explanation,
@@ -127,24 +126,6 @@ enum WhatToPlayOptionComparison {
             if lhs.rank != rhs.rank { return lhs.rank < rhs.rank }
             if lhs.card.suit.ordinal != rhs.card.suit.ordinal { return lhs.card.suit.ordinal < rhs.card.suit.ordinal }
             return lhs.card.rank.ordinal < rhs.card.rank.ordinal
-        }
-    }
-
-    private static func simulationSummary(for simulation: WhatToPlayOptionSimulation) -> String {
-        if simulation.completedTrickWinnerID != nil {
-            return "تكتمل الأكلة وتنتقل للفائز.".localized
-        }
-        return "\("تبقى الأكلة مفتوحة".localized) · \(simulation.currentTrickCardCount) \("أوراق على الطاولة".localized)"
-    }
-
-    private static func simulationTeamResult(for simulation: WhatToPlayOptionSimulation) -> String? {
-        switch simulation.completedTrickWonByPlayerTeam {
-        case .some(true):
-            return "لفريقك".localized
-        case .some(false):
-            return "للخصم".localized
-        case .none:
-            return nil
         }
     }
 
