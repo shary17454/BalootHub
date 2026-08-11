@@ -22,11 +22,29 @@ public struct WhatToPlayOption: Identifiable, Sendable, Equatable {
     public let score: Int
     public let isExpertChoice: Bool
     public let expectedImpact: Int
+    public let impactBreakdown: WhatToPlayOptionImpactBreakdown
     public let outcome: WhatToPlayOptionOutcome
     public let outcomeReason: String
     public let explanation: String
 
     public var id: PlayingCard { card }
+}
+
+/// تفكيك أثر لعب ورقة معيّنة في موقف «وش تلعب؟».
+///
+/// هذا لا يحاول توقّع الجولة كاملة؛ بل يشرح الأثر المباشر القابل للإعادة من حالة
+/// المحرك: هل أغلقت الورقة الأكلة، كم نقطة كانت على الطاولة، ولأي فريق ذهبت.
+public struct WhatToPlayOptionImpactBreakdown: Sendable, Codable, Equatable {
+    public let playedCardPoints: Int
+    public let immediateImpact: Int
+    public let trickPointsSwing: Int
+    public let completesTrick: Bool
+    public let winsForPlayerTeam: Bool?
+    public let preservesLead: Bool
+
+    public var signedImpact: Int {
+        completesTrick ? trickPointsSwing : immediateImpact
+    }
 }
 
 /// ورقة موجودة في يد اللاعب لكنها غير قانونية في موقف «وش تلعب؟» الحالي.
@@ -194,11 +212,11 @@ public enum WhatToPlayTrainer {
 
         let expert = ExpertBalootAgent(samples: difficulty.expertSamples)
         let expertChoice = expert.chooseCard(hand: hand, legalCards: legal, state: state)
-        let evaluated: [(card: PlayingCard, score: Int, impact: Int, outcome: WhatToPlayOptionOutcome)] = legal.map { card in
-            let impact = expectedImpact(of: card, by: player, in: state)
-            let score = heuristicScore(card: card, impact: impact, expertChoice: expertChoice, state: state)
+        let evaluated: [(card: PlayingCard, score: Int, breakdown: WhatToPlayOptionImpactBreakdown, outcome: WhatToPlayOptionOutcome)] = legal.map { card in
+            let breakdown = impactBreakdown(of: card, by: player, in: state)
+            let score = heuristicScore(card: card, impact: breakdown.signedImpact, expertChoice: expertChoice, state: state)
             let outcome = optionOutcome(of: card, by: player, in: state)
-            return (card: card, score: score, impact: impact, outcome: outcome)
+            return (card: card, score: score, breakdown: breakdown, outcome: outcome)
         }
         .sorted { lhs, rhs in
             if lhs.card == expertChoice { return true }
@@ -214,10 +232,11 @@ public enum WhatToPlayTrainer {
                 rank: index + 1,
                 score: entry.score,
                 isExpertChoice: entry.card == expertChoice,
-                expectedImpact: entry.impact,
+                expectedImpact: entry.breakdown.signedImpact,
+                impactBreakdown: entry.breakdown,
                 outcome: entry.outcome,
                 outcomeReason: outcomeReason(for: entry.outcome),
-                explanation: explanation(for: entry.card, impact: entry.impact, isExpertChoice: entry.card == expertChoice, state: state)
+                explanation: explanation(for: entry.card, impact: entry.breakdown.signedImpact, isExpertChoice: entry.card == expertChoice, state: state)
             )
         }
     }
@@ -294,23 +313,61 @@ public enum WhatToPlayTrainer {
         return .openingLead
     }
 
-    private static func expectedImpact(of card: PlayingCard, by player: Player, in state: GameState) -> Int {
+    public static func impactBreakdown(
+        of card: PlayingCard,
+        by playerID: Player.ID,
+        in state: GameState
+    ) -> WhatToPlayOptionImpactBreakdown? {
+        guard let player = state.player(id: playerID),
+              GameEngine.legalCards(for: playerID, state: state).contains(card)
+        else { return nil }
+        return impactBreakdown(of: card, by: player, in: state)
+    }
+
+    private static func impactBreakdown(
+        of card: PlayingCard,
+        by player: Player,
+        in state: GameState
+    ) -> WhatToPlayOptionImpactBreakdown {
+        let mode = state.mode ?? .sun
+        let playedCardPoints = card.points(mode: mode, trumpSuit: state.trumpSuit)
         guard let after = try? GameEngine.apply(.playCard(playerID: player.id, card: card), to: state) else {
-            return Int.min
+            return WhatToPlayOptionImpactBreakdown(
+                playedCardPoints: playedCardPoints,
+                immediateImpact: Int.min,
+                trickPointsSwing: Int.min,
+                completesTrick: false,
+                winsForPlayerTeam: nil,
+                preservesLead: false
+            )
         }
 
         if let last = after.completedTricks.last,
            let winnerID = last.winnerPlayerID,
            let winner = after.player(id: winnerID) {
             let trickPoints = last.playedCards.reduce(0) {
-                $0 + $1.card.points(mode: state.mode ?? .sun, trumpSuit: state.trumpSuit)
+                $0 + $1.card.points(mode: mode, trumpSuit: state.trumpSuit)
             }
-            return winner.teamID == player.teamID ? trickPoints : -trickPoints
+            let wins = winner.teamID == player.teamID
+            return WhatToPlayOptionImpactBreakdown(
+                playedCardPoints: playedCardPoints,
+                immediateImpact: wins ? trickPoints : -trickPoints,
+                trickPointsSwing: wins ? trickPoints : -trickPoints,
+                completesTrick: true,
+                winsForPlayerTeam: wins,
+                preservesLead: wins
+            )
         }
 
-        let points = card.points(mode: state.mode ?? .sun, trumpSuit: state.trumpSuit)
         let isLeading = state.currentTrick?.playedCards.isEmpty ?? true
-        return isLeading ? leadValue(card: card, points: points, state: state) : -points
+        return WhatToPlayOptionImpactBreakdown(
+            playedCardPoints: playedCardPoints,
+            immediateImpact: isLeading ? leadValue(card: card, points: playedCardPoints, state: state) : -playedCardPoints,
+            trickPointsSwing: 0,
+            completesTrick: false,
+            winsForPlayerTeam: nil,
+            preservesLead: isLeading
+        )
     }
 
     private static func optionOutcome(of card: PlayingCard, by player: Player, in state: GameState) -> WhatToPlayOptionOutcome {

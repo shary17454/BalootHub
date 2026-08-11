@@ -106,6 +106,72 @@ struct WhatToPlayTrainerTests {
         }
     }
 
+    @Test("تفكيك أثر الخيار هو مصدر expectedImpact نفسه")
+    func optionImpactBreakdownDrivesExpectedImpact() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+
+        for option in scenario.options {
+            #expect(option.expectedImpact == option.impactBreakdown.signedImpact)
+            #expect(
+                WhatToPlayTrainer.impactBreakdown(
+                    of: option.card,
+                    by: scenario.playerID,
+                    in: scenario.state
+                ) == option.impactBreakdown
+            )
+        }
+    }
+
+    @Test("تفكيك الأكلة المكتملة يحدد لمن تذهب نقاط الطاولة")
+    func completedTrickBreakdownTracksTeamSwing() throws {
+        var state = GameState.newLocalHumanMatch(rules: .simpleBidding)
+        let south = try #require(state.player(at: .south))
+        let west = try #require(state.player(at: .west))
+        let north = try #require(state.player(at: .north))
+        let east = try #require(state.player(at: .east))
+        let winningCard = PlayingCard(suit: .hearts, rank: .ace)
+
+        state.phase = .playing
+        state.mode = .sun
+        state.currentTurnPlayerID = south.id
+        state.hands[south.id] = [winningCard]
+        state.currentTrick = Trick(
+            playedCards: [
+                PlayedCard(playerID: west.id, card: PlayingCard(suit: .hearts, rank: .seven)),
+                PlayedCard(playerID: north.id, card: PlayingCard(suit: .hearts, rank: .king)),
+                PlayedCard(playerID: east.id, card: PlayingCard(suit: .hearts, rank: .ten))
+            ],
+            leaderSeat: .west
+        )
+
+        let option = try #require(try WhatToPlayTrainer.analyzeOptions(state: state, playerID: south.id).first)
+
+        #expect(option.card == winningCard)
+        #expect(option.impactBreakdown.completesTrick)
+        #expect(option.impactBreakdown.winsForPlayerTeam == true)
+        #expect(option.impactBreakdown.playedCardPoints == 11)
+        #expect(option.impactBreakdown.trickPointsSwing == 25)
+        #expect(option.expectedImpact == 25)
+    }
+
+    @Test("تفكيك الأثر لا يقبل ورقة غير قانونية")
+    func impactBreakdownRejectsIllegalCard() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(
+            seed: 2026,
+            difficulty: .easy,
+            preferredFocus: .followSuit
+        )
+        let blocked = try #require(scenario.blockedCards.first?.card)
+
+        #expect(
+            WhatToPlayTrainer.impactBreakdown(
+                of: blocked,
+                by: scenario.playerID,
+                in: scenario.state
+            ) == nil
+        )
+    }
+
     @Test("سبب نتيجة الخيار يشرح نوع الأثر التكتيكي")
     func optionOutcomeReasonExplainsOutcome() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)

@@ -1,6 +1,90 @@
 {
   "sourceLanguage" : "ar",
   "strings" : {
+    "أثر افتتاحي" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Eröffnungseffekt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Opening impact" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Impacto de apertura" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Impact d'ouverture" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "शुरुआती प्रभाव" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Dampak pembuka" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Эффект захода" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Açılış etkisi" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "افتتاحی اثر" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "开局影响" } }
+      }
+    },
+    "لا تحسم الأكلة الآن" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Entscheidet den Stich jetzt nicht" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Does not decide the trick yet" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Aún no decide la baza" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ne décide pas encore le pli" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "अभी बाज़ी तय नहीं करती" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Belum menentukan trik" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Пока не решает взятку" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Eli henüz belirlemez" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "ابھی چال کا فیصلہ نہیں کرتی" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "暂不决定这一墩" } }
+      }
+    },
+    "لفريقك" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "für dein Team" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "for your team" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "para tu equipo" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "pour ton équipe" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आपकी टीम के लिए" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "untuk timmu" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "для вашей команды" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "takımın için" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ کی ٹیم کے لیے" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "给你的队伍" } }
+      }
+    },
+    "للخصم" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "für den Gegner" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "for the opponent" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "para el rival" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "pour l'adversaire" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "विरोधी के लिए" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "untuk lawan" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "для соперника" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "rakip için" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "مخالف کے لیے" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "给对手" } }
+      }
+    },
+    "نقاط الأكلة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Stichpunkte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Trick points" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Puntos de la baza" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Points du pli" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "बाज़ी के अंक" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Poin trik" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Очки взятки" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "El puanı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "چال کے پوائنٹس" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "这一墩分数" } }
+      }
+    },
+    "نقاط الورقة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Kartenpunkte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Card points" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Puntos de la carta" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Points de la carte" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कार्ड अंक" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Poin kartu" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Очки карты" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Kart puanı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "کارڈ پوائنٹس" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "牌面分数" } }
+      }
+    },
     "النصيحة التكتيكية" : {
       "localizations" : {
         "de" : {

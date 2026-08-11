@@ -5,6 +5,8 @@ struct WhatToPlayOptionComparisonRow: Identifiable, Equatable {
     let card: PlayingCard
     let rank: Int
     let expectedImpact: Int
+    let impactBreakdown: WhatToPlayOptionImpactBreakdown
+    let impactDetail: String
     let lostExpectedPoints: Int
     let outcome: WhatToPlayOptionOutcome
     let outcomeReason: String
@@ -74,6 +76,8 @@ enum WhatToPlayOptionComparison {
                     card: option.card,
                     rank: option.rank,
                     expectedImpact: option.expectedImpact,
+                    impactBreakdown: option.impactBreakdown,
+                    impactDetail: impactDetail(for: option.impactBreakdown),
                     lostExpectedPoints: max(0, bestImpact - option.expectedImpact),
                     outcome: option.outcome,
                     outcomeReason: option.outcomeReason,
@@ -84,6 +88,17 @@ enum WhatToPlayOptionComparison {
                     isExpertChoice: option.isExpertChoice
                 )
             }
+    }
+
+    private static func impactDetail(for breakdown: WhatToPlayOptionImpactBreakdown) -> String {
+        if breakdown.completesTrick {
+            let owner = (breakdown.winsForPlayerTeam ?? false) ? "لفريقك".localized : "للخصم".localized
+            return "\("نقاط الأكلة".localized): \(abs(breakdown.trickPointsSwing)) · \(owner)"
+        }
+        if breakdown.preservesLead {
+            return "\("نقاط الورقة".localized): \(breakdown.playedCardPoints) · \("أثر افتتاحي".localized): \(breakdown.immediateImpact)"
+        }
+        return "\("نقاط الورقة".localized): \(breakdown.playedCardPoints) · \("لا تحسم الأكلة الآن".localized)"
     }
 
     private static func tacticalTag(for option: WhatToPlayOption, bestImpact: Int) -> WhatToPlayOptionTacticalTag {
