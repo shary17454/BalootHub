@@ -1240,7 +1240,6 @@ enum WhatToPlayStatsAnalyzer {
         let bestImpactAttempt = sessionImpactExtreme(in: sessionAttempts, preferHighest: true)
         let worstImpactAttempt = sessionImpactExtreme(in: sessionAttempts, preferHighest: false)
         let accuracyTargetMet = completed > 0 && accuracy >= plan.targetAccuracyPercent
-        let impactTargetMet = completed > 0 && averageImpact >= plan.targetAverageExpectedImpact
         let requiredCorrect = requiredCorrectAttempts(
             targetAttempts: target,
             targetAccuracyPercent: plan.targetAccuracyPercent
@@ -1252,6 +1251,7 @@ enum WhatToPlayStatsAnalyzer {
         let accuracyTargetReachable = bestPossibleCorrect >= requiredCorrect
         let targetTotalImpact = target * plan.targetAverageExpectedImpact
         let impactNeeded = max(0, targetTotalImpact - totalImpact)
+        let impactTargetMet = completed > 0 && impactNeeded == 0
         let impactNeededPerRemaining = remaining > 0
             ? Int((Double(impactNeeded) / Double(remaining)).rounded(.up))
             : 0

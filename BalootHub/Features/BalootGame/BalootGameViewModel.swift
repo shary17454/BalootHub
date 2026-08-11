@@ -112,10 +112,11 @@ final class BalootGameViewModel {
         rules: BalootRulesConfiguration = .standard,
         aiLevel: AIProfile.Level = .expert
     ) {
-        self.state = Self.makeInitialState(tableMode: tableMode, rules: rules)
+        let playRules = Self.playRules(from: rules)
+        self.state = Self.makeInitialState(tableMode: tableMode, rules: playRules)
         self.variant = variant
         self.tableMode = tableMode
-        self.rules = rules
+        self.rules = playRules
         self.aiLevel = aiLevel
         self.agent = ProfiledBalootAgent(profile: Self.profile(for: aiLevel))
     }
@@ -242,7 +243,7 @@ final class BalootGameViewModel {
     // MARK: - دورة المزايدة الكاملة
 
     /// هل تستخدم هذه الجولة دورة المزايدة الحقيقية؟
-    var usesFullBidding: Bool { rules.biddingStyle == .full }
+    var usesFullBidding: Bool { state.rules.biddingStyle == .full }
 
     var biddingStage: BiddingState.Stage { state.bidding.stage }
 
@@ -443,6 +444,16 @@ final class BalootGameViewModel {
         case .localHumans:
             return GameState.newLocalHumanMatch(names: localizedNames(for: tableMode), rules: rules)
         }
+    }
+
+    /// شاشة اللعب دائمًا تمثّل لعبة البلوت الواقعية الواحدة: مزايدة كاملة ينتج عنها
+    /// صن أو حكم. يبقى `simpleBidding` متاحًا للمحرك والدروس والاختبارات فقط، لا كطريقة
+    /// لعب نهائية تفصل الصن والحكم إلى اختيار مباشر.
+    private static func playRules(from rules: BalootRulesConfiguration) -> BalootRulesConfiguration {
+        var playRules = rules
+        playRules.biddingStyle = .full
+        playRules.cardsBeforeBidding = max(1, min(playRules.cardsBeforeBidding, 7))
+        return playRules
     }
 
     /// يلعب اللاعبون الآليون **ورقة واحدة في كل خطوة** مع فاصل زمني قصير، بدل تنفيذ

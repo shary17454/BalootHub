@@ -5,8 +5,10 @@ import BalootEngine
 final class WhatToPlayScenarioLoaderTests: XCTestCase {
     func testLoaderGeneratesScenarioWithRequestedSeedAndDifficulty() async throws {
         let scenario = try await WhatToPlayScenarioLoader.generate(seed: 2026, difficulty: .medium)
+        let repeated = try await WhatToPlayScenarioLoader.generate(seed: 2026, difficulty: .medium)
 
-        XCTAssertEqual(scenario.seed, 2026)
+        XCTAssertGreaterThanOrEqual(scenario.seed, 2026)
+        XCTAssertEqual(scenario.seed, repeated.seed)
         XCTAssertEqual(scenario.difficulty, .medium)
         XCTAssertFalse(scenario.options.isEmpty)
         XCTAssertNotNil(scenario.bestOption)

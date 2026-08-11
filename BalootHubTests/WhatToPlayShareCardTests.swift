@@ -133,7 +133,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(reviewed.secondBestCardName, secondBest.card.accessibilityName)
         XCTAssertEqual(reviewed.secondBestExpectedImpact, secondBest.expectedImpact)
         XCTAssertEqual(reviewed.lostExpectedPoints, 0)
-        XCTAssertEqual(reviewed.lostAgainstSecondBestPoints, 0)
+        XCTAssertEqual(reviewed.lostAgainstSecondBestPoints, max(0, secondBest.expectedImpact - selected.expectedImpact))
         XCTAssertEqual(reviewed.valueLossTitle, "لا توجد خسارة قيمة".localized)
         XCTAssertEqual(reviewed.selectedImpact, selected.expectedImpact)
         XCTAssertEqual(reviewed.selectedImpactDetail, WhatToPlayImpactFormatter.detail(for: selected.impactBreakdown))

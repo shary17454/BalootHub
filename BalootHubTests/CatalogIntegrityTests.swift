@@ -124,6 +124,16 @@ final class CatalogIntegrityTests: XCTestCase {
         XCTAssertEqual(hokumViewModel.state.rules.biddingStyle, .full)
     }
 
+    /// إعدادات المجلس قد تُستخدم في المحرك لاختبارات أو دروس مبسطة، لكن شاشة اللعب
+    /// النهائية لا تفصل الصن والحكم؛ تفرض مزايدة بلوت كاملة دائمًا.
+    @MainActor
+    func testGameplayForcesFullBiddingEvenWhenRulesPresetIsSimple() {
+        let viewModel = BalootGameViewModel(rules: .simpleBidding)
+
+        XCTAssertTrue(viewModel.usesFullBidding)
+        XCTAssertEqual(viewModel.state.rules.biddingStyle, .full)
+    }
+
     /// الرتب والأيقونات يجب أن تكون فريدة/مرتبة حتى لا تتكرر البطاقات أو تختل الترتيب.
     func testSlugsAreUniqueAndSortOrdersAreDistinct() throws {
         let items = try allItems()

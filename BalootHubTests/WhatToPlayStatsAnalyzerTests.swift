@@ -1027,7 +1027,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
     func testDecisionReviewUsesScenarioFocusAndDecisionKind() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
-        let selected = try XCTUnwrap(scenario.options.last)
+        let selected = try XCTUnwrap(scenario.options.last { tacticalReasonTitle(for: $0.impactBreakdown) == nil })
 
         let review = try XCTUnwrap(WhatToPlayStatsAnalyzer.decisionReview(for: selected, in: scenario))
 
@@ -1639,31 +1639,35 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
     func testMicroDrillRaisesChallengeForSharpBalancedPlayer() {
         let attempts = [
-            attempt(daysAgo: 6, difficulty: .easy, correct: true, impact: 10),
-            attempt(daysAgo: 5, difficulty: .easy, correct: true, impact: 10),
-            attempt(daysAgo: 4, difficulty: .medium, correct: true, impact: 10),
-            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 10),
-            attempt(daysAgo: 2, difficulty: .hard, correct: true, impact: 10),
-            attempt(daysAgo: 1, difficulty: .hard, correct: true, impact: 10)
+            attempt(daysAgo: 8, difficulty: .easy, correct: true, impact: 10, focusKind: .openingLead),
+            attempt(daysAgo: 7, difficulty: .easy, correct: true, impact: 10, focusKind: .followSuit),
+            attempt(daysAgo: 6, difficulty: .medium, correct: true, impact: 10, focusKind: .trumpPressure),
+            attempt(daysAgo: 5, difficulty: .medium, correct: true, impact: 10, focusKind: .narrowChoice),
+            attempt(daysAgo: 4, difficulty: .hard, correct: true, impact: 10, focusKind: .openingLead),
+            attempt(daysAgo: 3, difficulty: .hard, correct: true, impact: 10, focusKind: .followSuit),
+            attempt(daysAgo: 2, difficulty: .easy, correct: true, impact: 10, focusKind: .trumpPressure),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 10, focusKind: .narrowChoice)
         ]
 
         let drill = WhatToPlayStatsAnalyzer.microDrill(for: attempts)
 
         XCTAssertEqual(drill.title, "خطة التحدي".localized)
         XCTAssertEqual(drill.steps.first, "انتقل إلى الصعب".localized)
-        XCTAssertEqual(drill.seed, 10_200_006)
+        XCTAssertEqual(drill.seed, 10_200_008)
         XCTAssertEqual(drill.difficulty, .hard)
         XCTAssertEqual(drill.focusKind, .trumpPressure)
     }
 
     func testMicroDrillFallsBackToContinuationPlan() {
         let attempts = [
-            attempt(daysAgo: 6, difficulty: .easy, correct: true, impact: 0),
-            attempt(daysAgo: 5, difficulty: .easy, correct: false, impact: 0),
-            attempt(daysAgo: 4, difficulty: .medium, correct: true, impact: 0),
-            attempt(daysAgo: 3, difficulty: .medium, correct: false, impact: 0),
-            attempt(daysAgo: 2, difficulty: .hard, correct: true, impact: 0),
-            attempt(daysAgo: 1, difficulty: .hard, correct: true, impact: 0)
+            attempt(daysAgo: 8, difficulty: .easy, correct: true, impact: 0, focusKind: .openingLead),
+            attempt(daysAgo: 7, difficulty: .easy, correct: false, impact: 0, focusKind: .followSuit),
+            attempt(daysAgo: 6, difficulty: .medium, correct: true, impact: 0, focusKind: .trumpPressure),
+            attempt(daysAgo: 5, difficulty: .medium, correct: false, impact: 0, focusKind: .narrowChoice),
+            attempt(daysAgo: 4, difficulty: .hard, correct: true, impact: 0, focusKind: .openingLead),
+            attempt(daysAgo: 3, difficulty: .hard, correct: false, impact: 0, focusKind: .followSuit),
+            attempt(daysAgo: 2, difficulty: .easy, correct: true, impact: 0, focusKind: .trumpPressure),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 0, focusKind: .narrowChoice)
         ]
 
         let drill = WhatToPlayStatsAnalyzer.microDrill(for: attempts)
@@ -2103,8 +2107,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.expectedImpactNeededForTarget, 0)
         XCTAssertEqual(progress.expectedImpactNeededPerRemainingAttempt, 0)
         XCTAssertFalse(progress.impactRecoveryHighPressure)
-        XCTAssertEqual(progress.lostExpectedPoints, 11)
-        XCTAssertEqual(progress.averageLostExpectedPoints, 4)
+        XCTAssertEqual(progress.lostExpectedPoints, 7)
+        XCTAssertEqual(progress.averageLostExpectedPoints, 2)
         XCTAssertEqual(progress.valueCaptureAttempts, 3)
         XCTAssertEqual(progress.valueCapturePercent, 58)
         XCTAssertEqual(progress.impactTitle, "أثر الجلسة رابح".localized)

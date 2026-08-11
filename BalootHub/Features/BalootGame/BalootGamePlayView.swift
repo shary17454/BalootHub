@@ -39,11 +39,7 @@ struct BalootGamePlayView: View {
                 topBar
                 Spacer()
                 if viewModel.state.phase == .bidding {
-                    if viewModel.usesFullBidding {
-                        fullBiddingPanel
-                    } else {
-                        biddingPanel
-                    }
+                    fullBiddingPanel
                 } else if viewModel.state.phase == .declaring {
                     declarationPanel
                 } else if viewModel.state.phase == .finished {
@@ -146,55 +142,6 @@ struct BalootGamePlayView: View {
             if let mode = viewModel.state.mode {
                 StatusBadge(mode.arabicName, systemImage: mode == .hokum ? "crown.fill" : "sun.max.fill", tint: AppColor.accent)
             }
-        }
-    }
-
-    private var biddingPanel: some View {
-        VStack(spacing: AppSpacing.md) {
-            if viewModel.isHumanTurn {
-                Text("زايد في البلوت".localized)
-                    .font(AppTypography.headline)
-                // خمسة أزرار في صف واحد تتزاحم على الشاشات الضيقة وعند تكبير الخط،
-                // فتتوزّع تلقائيًا على أكثر من سطر بدل قصّها.
-                ViewThatFits(in: .horizontal) {
-                    HStack(spacing: AppSpacing.sm) { bidButtons }
-                    VStack(spacing: AppSpacing.sm) {
-                        sunBidButton
-                        HStack(spacing: AppSpacing.sm) { hokumBidButtons }
-                    }
-                }
-            } else {
-                LoadingStateView(message: "بقية اللاعبين يزايدون على صن أو حكم…")
-            }
-        }
-        .padding(AppSpacing.md)
-        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
-    }
-
-    @ViewBuilder
-    private var bidButtons: some View {
-        sunBidButton
-        hokumBidButtons
-    }
-
-    private var sunBidButton: some View {
-        Button("صن") { viewModel.chooseMode(.sun, trumpSuit: nil) }
-            .buttonStyle(.borderedProminent)
-            .tint(AppColor.accent)
-    }
-
-    @ViewBuilder
-    private var hokumBidButtons: some View {
-        ForEach(Suit.allCases) { suit in
-            Button {
-                viewModel.chooseMode(.hokum, trumpSuit: suit)
-            } label: {
-                Text("حكم \(suit.symbol)")
-            }
-            .buttonStyle(.borderedProminent)
-            .tint(AppColor.primary)
-            // الرمز وحده لا يكفي قارئ الشاشة، فيُنطق اسم النوع كاملًا.
-            .accessibilityLabel("\("حكم".localized) \(suit.spokenName)")
         }
     }
 
