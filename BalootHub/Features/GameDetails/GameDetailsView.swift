@@ -217,6 +217,18 @@ struct GameDetailsView: View {
                 .controlSize(.large)
             }
 
+            if item.isBalootModeReference {
+                Button {
+                    appEnvironment.navigate(to: .balootGamePlay(slug: "baloot-classic"), tab: appEnvironment.selectedTab)
+                } label: {
+                    Label("العب البلوت الكامل: صن وحكم في نفس الطاولة", systemImage: "suit.spade.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(AppColor.primary)
+                .controlSize(.large)
+            }
+
             if item.category == .balootGame || item.slug == "baloot-scorekeeper" {
                 Button {
                     appEnvironment.selectedTab = .scorekeeper

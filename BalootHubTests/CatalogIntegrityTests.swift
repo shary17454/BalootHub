@@ -105,6 +105,10 @@ final class CatalogIntegrityTests: XCTestCase {
         XCTAssertFalse(hokum.isPlayable)
         XCTAssertEqual(sun.category, .balootTool)
         XCTAssertEqual(hokum.category, .balootTool)
+        XCTAssertTrue(sun.isBalootModeReference)
+        XCTAssertTrue(hokum.isBalootModeReference)
+        XCTAssertEqual(sun.displayAvailabilityTitle, "مرجع نمط".localized)
+        XCTAssertEqual(hokum.displayAvailabilityTitle, "مرجع نمط".localized)
     }
 
     /// حتى لو فُتح رابط قديم لصن أو حكم، يجب أن يدخل المستخدم لعبة البلوت الواحدة

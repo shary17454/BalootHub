@@ -47,9 +47,9 @@ struct GameCardView: View {
             HStack(spacing: AppSpacing.xs) {
                 StatusBadge(item.category.shortBadgeTitle, systemImage: item.category.iconName, tint: accentColor)
                 StatusBadge(
-                    item.isPlayable ? "متاح للعب" : "قواعد فقط",
-                    systemImage: item.isPlayable ? "play.fill" : "book.fill",
-                    tint: item.isPlayable ? AppColor.success : AppColor.textSecondary
+                    item.displayAvailabilityTitle,
+                    systemImage: item.availabilityIconName,
+                    tint: item.isPlayable ? AppColor.success : (item.isBalootModeReference ? AppColor.accent : AppColor.textSecondary)
                 )
             }
         }
@@ -59,7 +59,7 @@ struct GameCardView: View {
         .appShadow(AppShadow.card)
         .contentShape(RoundedRectangle(cornerRadius: AppRadius.large))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(item.displayTitle)، \(item.category.title)، \(item.isPlayable ? "متاح للعب" : "قواعد فقط")")
+        .accessibilityLabel("\(item.displayTitle)، \(item.category.title)، \(item.displayAvailabilityTitle)")
         .accessibilityHint("اضغط مرتين لعرض التفاصيل والقواعد")
     }
 }

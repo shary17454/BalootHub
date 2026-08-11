@@ -90,6 +90,35 @@ final class GameCatalogItem {
     /// المدة المتوقعة بلغة الجهاز الحالية.
     var displayDuration: String { estimatedDuration.localized }
 
+    /// مراجع تشرح أنماطًا داخل لعبة البلوت الواحدة، ولا تمثل ألعابًا مستقلة.
+    var isBalootModeReference: Bool {
+        switch slug {
+        case "baloot-sun",
+             "baloot-hokum",
+             "baloot-projects",
+             "baloot-double",
+             "baloot-ashkal",
+             "baloot-gahwa-lock",
+             "baloot-kaboot":
+            true
+        default:
+            false
+        }
+    }
+
+    /// عنوان حالة البطاقة في الكتالوج: يميّز مرجع النمط عن "قواعد فقط" العامة.
+    var displayAvailabilityTitle: String {
+        if isPlayable { return "متاح للعب".localized }
+        if isBalootModeReference { return "مرجع نمط".localized }
+        return "قواعد فقط".localized
+    }
+
+    var availabilityIconName: String {
+        if isPlayable { return "play.fill" }
+        if isBalootModeReference { return "rectangle.stack.fill" }
+        return "book.fill"
+    }
+
     /// يبحث عن قسم قواعد بترتيبه المعياري الثابت (انظر ``StandardRuleSectionKind``).
     func ruleSection(_ kind: StandardRuleSectionKind) -> GameRuleSection? {
         sortedRules.first { $0.order == kind.order }

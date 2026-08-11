@@ -90,6 +90,9 @@ final class CatalogFilterTests: XCTestCase {
         XCTAssertEqual(modes.count, modeSlugs.count)
         XCTAssertTrue(modes.allSatisfy { $0.category == .balootTool })
         XCTAssertTrue(modes.allSatisfy { !$0.isPlayable })
+        XCTAssertTrue(modes.allSatisfy(\.isBalootModeReference))
+        XCTAssertTrue(modes.allSatisfy { $0.displayAvailabilityTitle == "مرجع نمط".localized })
+        XCTAssertTrue(modes.allSatisfy { $0.availabilityIconName == "rectangle.stack.fill" })
     }
 
     func testNewLearningReferencesAreRulesOnly() {
