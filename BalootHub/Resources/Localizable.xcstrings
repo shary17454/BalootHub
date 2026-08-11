@@ -365,6 +365,104 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "这一墩分数" } }
       }
     },
+    "أوراق على الطاولة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Karten auf dem Tisch" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "cards on the table" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "cartas en la mesa" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "cartes sur la table" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "मेज़ पर पत्ते" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "kartu di meja" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "карт на столе" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "masadaki kartlar" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "میز پر کارڈز" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "桌上的牌" } }
+      }
+    },
+    "بعد الورقة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nach der Karte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "After the card" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Después de la carta" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Après la carte" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कार्ड के बाद" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Setelah kartu" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "После карты" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Karttan sonra" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "کارڈ کے بعد" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "出牌后" } }
+      }
+    },
+    "الدور التالي" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nächster Zug" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Next turn" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Siguiente turno" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tour suivant" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "अगली बारी" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Giliran berikutnya" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Следующий ход" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Sıradaki tur" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اگلی باری" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "下一手" } }
+      }
+    },
+    "الفائز بالأكلة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Stichgewinner" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Trick winner" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Ganador de la baza" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Vainqueur du pli" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "बाज़ी विजेता" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Pemenang trik" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Победитель взятки" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Eli kazanan" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "چال کا فاتح" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "本墩赢家" } }
+      }
+    },
+    "تكتمل الأكلة وتنتقل للفائز." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der Stich ist komplett und geht an den Gewinner." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The trick completes and goes to the winner." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "La baza se completa y pasa al ganador." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Le pli se termine et revient au gagnant." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "बाज़ी पूरी होती है और विजेता को मिलती है।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Trik selesai dan menjadi milik pemenang." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Взятка завершается и переходит победителю." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "El tamamlanır ve kazanana geçer." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "چال مکمل ہو کر فاتح کو ملتی ہے۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "这一墩结束并归赢家。" } }
+      }
+    },
+    "تبقى الأكلة مفتوحة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der Stich bleibt offen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The trick stays open" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "La baza sigue abierta" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Le pli reste ouvert" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "बाज़ी खुली रहती है" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Trik masih terbuka" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Взятка остается открытой" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "El açık kalır" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "چال ابھی کھلی رہتی ہے" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "这一墩仍未结束" } }
+      }
+    },
+    "ماذا يحدث لو لعبتها؟" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Was passiert, wenn du sie spielst?" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "What happens if you play it?" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¿Qué pasa si la juegas?" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Que se passe-t-il si tu la joues ?" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "अगर आप इसे खेलें तो क्या होगा?" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Apa yang terjadi jika kamu memainkannya?" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Что произойдет, если сыграть ее?" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Bunu oynarsan ne olur?" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اگر آپ یہ کھیلیں تو کیا ہوگا؟" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "如果打这张会怎样？" } }
+      }
+    },
     "نقاط الورقة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Kartenpunkte" } },

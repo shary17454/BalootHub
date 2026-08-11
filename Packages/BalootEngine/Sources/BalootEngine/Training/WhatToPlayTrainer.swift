@@ -23,6 +23,7 @@ public struct WhatToPlayOption: Identifiable, Sendable, Equatable {
     public let isExpertChoice: Bool
     public let expectedImpact: Int
     public let impactBreakdown: WhatToPlayOptionImpactBreakdown
+    public let simulation: WhatToPlayOptionSimulation
     public let outcome: WhatToPlayOptionOutcome
     public let outcomeReason: String
     public let explanation: String
@@ -60,6 +61,41 @@ public struct WhatToPlayOptionImpactBreakdown: Sendable, Codable, Equatable {
 
     public var signedImpact: Int {
         completesTrick ? trickPointsSwing : immediateImpact
+    }
+}
+
+/// محاكاة مختصرة لما يحدث مباشرة إذا لعب المستخدم هذه الورقة.
+///
+/// تحفظ نتيجة تطبيق فعل اللعب على المحرك نفسه، لا على تقدير واجهة المستخدم. هذا يجعل
+/// مدرب «وش تلعب؟» وReplay وSandbox يشتركون في مصدر حقيقة واحد عند شرح القرار.
+public struct WhatToPlayOptionSimulation: Sendable, Codable, Equatable {
+    public let phaseAfterPlay: GamePhase
+    public let currentTrickCardCount: Int
+    public let completedTrickWinnerID: Player.ID?
+    public let completedTrickWinnerTeamID: Team.ID?
+    public let completedTrickPoints: Int
+    public let nextTurnPlayerID: Player.ID?
+    public let playerRemainingCards: Int
+    public let actionHistoryCount: Int
+
+    public init(
+        phaseAfterPlay: GamePhase,
+        currentTrickCardCount: Int,
+        completedTrickWinnerID: Player.ID?,
+        completedTrickWinnerTeamID: Team.ID?,
+        completedTrickPoints: Int,
+        nextTurnPlayerID: Player.ID?,
+        playerRemainingCards: Int,
+        actionHistoryCount: Int
+    ) {
+        self.phaseAfterPlay = phaseAfterPlay
+        self.currentTrickCardCount = currentTrickCardCount
+        self.completedTrickWinnerID = completedTrickWinnerID
+        self.completedTrickWinnerTeamID = completedTrickWinnerTeamID
+        self.completedTrickPoints = completedTrickPoints
+        self.nextTurnPlayerID = nextTurnPlayerID
+        self.playerRemainingCards = playerRemainingCards
+        self.actionHistoryCount = actionHistoryCount
     }
 }
 
@@ -289,6 +325,7 @@ public enum WhatToPlayTrainer {
                 isExpertChoice: entry.card == expertChoice,
                 expectedImpact: entry.breakdown.signedImpact,
                 impactBreakdown: entry.breakdown,
+                simulation: simulation(of: entry.card, by: player, in: state),
                 outcome: entry.outcome,
                 outcomeReason: outcomeReason(for: entry.outcome),
                 explanation: explanation(for: entry.card, impact: entry.breakdown.signedImpact, isExpertChoice: entry.card == expertChoice, state: state)
@@ -438,6 +475,40 @@ public enum WhatToPlayTrainer {
         }
 
         return wasLeading ? .leadsTrick : .developsTrick
+    }
+
+    private static func simulation(of card: PlayingCard, by player: Player, in state: GameState) -> WhatToPlayOptionSimulation {
+        let mode = state.mode ?? .sun
+        guard let after = try? GameEngine.apply(.playCard(playerID: player.id, card: card), to: state) else {
+            return WhatToPlayOptionSimulation(
+                phaseAfterPlay: state.phase,
+                currentTrickCardCount: state.currentTrick?.playedCards.count ?? 0,
+                completedTrickWinnerID: nil,
+                completedTrickWinnerTeamID: nil,
+                completedTrickPoints: 0,
+                nextTurnPlayerID: state.currentTurnPlayerID,
+                playerRemainingCards: state.hands[player.id]?.count ?? 0,
+                actionHistoryCount: state.actionHistory.count
+            )
+        }
+
+        let completedTrick = after.completedTricks.last
+        let winnerID = completedTrick?.winnerPlayerID
+        let winnerTeamID = winnerID.flatMap { after.player(id: $0)?.teamID }
+        let completedTrickPoints = completedTrick?.playedCards.reduce(0) {
+            $0 + $1.card.points(mode: mode, trumpSuit: state.trumpSuit)
+        } ?? 0
+
+        return WhatToPlayOptionSimulation(
+            phaseAfterPlay: after.phase,
+            currentTrickCardCount: after.currentTrick?.playedCards.count ?? 0,
+            completedTrickWinnerID: winnerID,
+            completedTrickWinnerTeamID: winnerTeamID,
+            completedTrickPoints: completedTrickPoints,
+            nextTurnPlayerID: after.currentTurnPlayerID,
+            playerRemainingCards: after.hands[player.id]?.count ?? 0,
+            actionHistoryCount: after.actionHistory.count
+        )
     }
 
     private static func outcomeReason(for outcome: WhatToPlayOptionOutcome) -> String {

@@ -2328,6 +2328,8 @@ struct WhatToPlayTrainerView: View {
                 retryPromptView(retryPrompt)
             }
 
+            optionSimulationView(option.simulation, scenario: scenario)
+
             Text(option.explanation)
                 .font(AppTypography.subheadline)
                 .foregroundStyle(AppColor.textPrimary)
@@ -2336,6 +2338,41 @@ struct WhatToPlayTrainerView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func optionSimulationView(_ simulation: WhatToPlayOptionSimulation, scenario: WhatToPlayScenario) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            Label("ماذا يحدث لو لعبتها؟".localized, systemImage: "sparkles.rectangle.stack.fill")
+                .font(AppTypography.subheadline.weight(.semibold))
+                .foregroundStyle(AppColor.primary)
+
+            VStack(spacing: AppSpacing.xs) {
+                InfoRow(
+                    icon: simulation.completedTrickWinnerID == nil ? "rectangle.stack.fill" : "flag.checkered",
+                    title: "بعد الورقة".localized,
+                    value: simulationSummary(simulation)
+                )
+                if let nextTurnPlayerID = simulation.nextTurnPlayerID,
+                   let nextPlayer = scenario.state.player(id: nextTurnPlayerID) {
+                    InfoRow(icon: "arrow.turn.up.right", title: "الدور التالي".localized, value: nextPlayer.name)
+                }
+                if let winnerID = simulation.completedTrickWinnerID,
+                   let winner = scenario.state.player(id: winnerID) {
+                    InfoRow(icon: "crown.fill", title: "الفائز بالأكلة".localized, value: winner.name)
+                    InfoRow(icon: "sum", title: "نقاط الأكلة".localized, value: "\(simulation.completedTrickPoints)")
+                }
+            }
+        }
+        .padding(AppSpacing.sm)
+        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func simulationSummary(_ simulation: WhatToPlayOptionSimulation) -> String {
+        if simulation.completedTrickWinnerID != nil {
+            return "تكتمل الأكلة وتنتقل للفائز.".localized
+        }
+        return "\("تبقى الأكلة مفتوحة".localized) · \(simulation.currentTrickCardCount) \("أوراق على الطاولة".localized)"
     }
 
     private func retryPromptView(_ prompt: WhatToPlayRetryPrompt) -> some View {

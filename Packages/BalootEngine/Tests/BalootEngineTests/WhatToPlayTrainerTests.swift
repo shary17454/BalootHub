@@ -123,6 +123,30 @@ struct WhatToPlayTrainerTests {
         }
     }
 
+    @Test("محاكاة كل خيار تطابق الحالة الناتجة من تطبيق الورقة على المحرك")
+    func optionSimulationMatchesEngineResult() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+
+        for option in scenario.options {
+            let after = try GameEngine.apply(.playCard(playerID: scenario.playerID, card: option.card), to: scenario.state)
+            let completedTrick = after.completedTricks.last
+            let winnerID = completedTrick?.winnerPlayerID
+            let winnerTeamID = winnerID.flatMap { after.player(id: $0)?.teamID }
+            let completedTrickPoints = completedTrick?.playedCards.reduce(0) {
+                $0 + $1.card.points(mode: scenario.state.mode ?? .sun, trumpSuit: scenario.state.trumpSuit)
+            } ?? 0
+
+            #expect(option.simulation.phaseAfterPlay == after.phase)
+            #expect(option.simulation.currentTrickCardCount == (after.currentTrick?.playedCards.count ?? 0))
+            #expect(option.simulation.completedTrickWinnerID == winnerID)
+            #expect(option.simulation.completedTrickWinnerTeamID == winnerTeamID)
+            #expect(option.simulation.completedTrickPoints == completedTrickPoints)
+            #expect(option.simulation.nextTurnPlayerID == after.currentTurnPlayerID)
+            #expect(option.simulation.playerRemainingCards == (after.hands[scenario.playerID]?.count ?? 0))
+            #expect(option.simulation.actionHistoryCount == after.actionHistory.count)
+        }
+    }
+
     @Test("تفكيك أثر الخيار هو مصدر expectedImpact نفسه")
     func optionImpactBreakdownDrivesExpectedImpact() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
