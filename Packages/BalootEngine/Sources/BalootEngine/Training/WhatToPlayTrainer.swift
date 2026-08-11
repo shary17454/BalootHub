@@ -154,63 +154,102 @@ public enum WhatToPlayTrainer {
         seed: UInt64,
         difficulty: WhatToPlayDifficulty = .medium,
         preferredFocus: WhatToPlayScenarioFocusKind? = nil,
-        rules: BalootRulesConfiguration = .simpleBidding
+        rules: BalootRulesConfiguration = .standard
     ) throws -> WhatToPlayScenario {
         let agent = ExpertBalootAgent(samples: difficulty.expertSamples)
 
         let searchLimit = preferredFocus == nil ? 40 : 800
         for offset in 0..<searchLimit {
-            var scenarioRules = rules
-            scenarioRules.biddingStyle = .simple
-            scenarioRules.projectsRequireDeclaration = false
-
-            var state = GameState.newLocalMatch(rules: scenarioRules)
+            var state = GameState.newLocalMatch(rules: rules)
             state = try GameEngine.apply(.dealCards(seed: seed &+ UInt64(offset)), to: state)
 
             guard let humanID = state.players.first(where: { $0.kind == .human })?.id else {
                 throw ScenarioError.unknownPlayer
             }
 
-            if state.phase == .bidding, state.currentTurnPlayerID == humanID {
-                let hand = state.hands[humanID] ?? []
-                let recommendation = HandAnalyzer.analyze(hand: hand, rules: scenarioRules).recommendedBid
-                let mode = recommendation.mode ?? .sun
-                state = try GameEngine.apply(.chooseMode(playerID: humanID, mode: mode, trumpSuit: recommendation.trumpSuit), to: state)
-            }
-
-            state = try GameEngine.advanceAIPlayers(state: state, agent: agent)
-
             var guardSteps = 0
-            while state.phase == .playing, guardSteps < 64 {
+            while guardSteps < 96 {
                 guardSteps += 1
 
-                if state.currentTurnPlayerID != humanID {
-                    state = try GameEngine.advanceAIPlayers(state: state, agent: agent)
+                if state.phase == .playing, state.currentTurnPlayerID == humanID {
+                    let options = try analyzeOptions(state: state, playerID: humanID, difficulty: difficulty)
+                    guard options.count > 1 else { break }
+                    let context = scenarioContext(state: state, options: options)
+                    if preferredFocus == nil || context.focusKind == preferredFocus {
+                        return WhatToPlayScenario(
+                            seed: seed &+ UInt64(offset),
+                            difficulty: difficulty,
+                            playerID: humanID,
+                            state: state,
+                            context: context,
+                            options: options,
+                            blockedCards: blockedCards(state: state, playerID: humanID, legalOptions: options)
+                        )
+                    }
+
+                    guard let bestCard = options.first(where: \.isExpertChoice)?.card else { break }
+                    state = try GameEngine.apply(.playCard(playerID: humanID, card: bestCard), to: state)
                     continue
                 }
 
-                let options = try analyzeOptions(state: state, playerID: humanID, difficulty: difficulty)
-                guard options.count > 1 else { break }
-                let context = scenarioContext(state: state, options: options)
-                if preferredFocus == nil || context.focusKind == preferredFocus {
-                    return WhatToPlayScenario(
-                        seed: seed &+ UInt64(offset),
-                        difficulty: difficulty,
-                        playerID: humanID,
-                        state: state,
-                        context: context,
-                        options: options,
-                        blockedCards: blockedCards(state: state, playerID: humanID, legalOptions: options)
-                    )
-                }
-
-                guard let bestCard = options.first(where: \.isExpertChoice)?.card else { break }
-                state = try GameEngine.apply(.playCard(playerID: humanID, card: bestCard), to: state)
-                state = try GameEngine.advanceAIPlayers(state: state, agent: agent)
+                guard let action = nextTrainingAction(state: state, humanID: humanID, agent: agent) else { break }
+                state = try GameEngine.apply(action, to: state)
             }
         }
 
         throw ScenarioError.unableToGenerate
+    }
+
+    /// فعل تدريب واحد يتصرف عن كل اللاعبين في المزايدة والإعلان، ويتوقف عند دور
+    /// اللاعب البشري في اللعب فقط. بهذه الطريقة تأتي مواقف «وش تلعب؟» من جولة بلوت
+    /// كاملة فعلًا، لا من اختيار نمط مبسّط خارج دورة المزايدة.
+    private static func nextTrainingAction(state: GameState, humanID: Player.ID, agent: BalootAgent) -> GameAction? {
+        guard let playerID = state.currentTurnPlayerID,
+              let hand = state.hands[playerID] else {
+            return state.phase == .scoring ? .finishRound : nil
+        }
+
+        switch state.phase {
+        case .bidding:
+            switch state.bidding.stage {
+            case .firstRound, .secondRound:
+                if state.rules.biddingStyle == .simple {
+                    let recommendation = HandAnalyzer.analyze(hand: hand, rules: state.rules).recommendedBid
+                    let mode = recommendation.mode ?? .sun
+                    return .chooseMode(playerID: playerID, mode: mode, trumpSuit: recommendation.trumpSuit)
+                }
+
+                let legal = GameEngine.legalBids(state: state)
+                guard !legal.isEmpty else { return nil }
+                return .placeBid(playerID: playerID, bid: agent.chooseBid(hand: hand, legalBids: legal, state: state))
+
+            case .doubling:
+                switch agent.chooseMultiplierAction(hand: hand, state: state) {
+                case .raise(let level): return .raiseMultiplier(playerID: playerID, level: level)
+                case .lock: return .lockMultiplier(playerID: playerID)
+                case .pass: return .passMultiplier(playerID: playerID)
+                }
+
+            case .completed, .voided:
+                return nil
+            }
+
+        case .declaring:
+            let available = GameEngine.declarableProjects(for: playerID, state: state)
+            return .declareProjects(playerID: playerID, projects: agent.chooseProjectsToDeclare(available: available, state: state))
+
+        case .playing:
+            guard playerID != humanID else { return nil }
+            let legal = GameEngine.legalCards(for: playerID, state: state)
+            guard !legal.isEmpty else { return nil }
+            return .playCard(playerID: playerID, card: agent.chooseCard(hand: hand, legalCards: legal, state: state))
+
+        case .scoring:
+            return .finishRound
+
+        case .setup, .dealing, .finished:
+            return nil
+        }
     }
 
     /// يحلل كل الأوراق القانونية الحالية ويضع اختيار الخبير أولًا.

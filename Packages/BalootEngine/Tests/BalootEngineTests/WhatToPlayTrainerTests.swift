@@ -16,6 +16,23 @@ struct WhatToPlayTrainerTests {
         #expect(scenario.options.contains { $0.isExpertChoice })
     }
 
+    @Test("الموقف الافتراضي يأتي من مزايدة بلوت كاملة لا من اختيار مبسط")
+    func generatedScenarioUsesFullBiddingByDefault() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .easy)
+
+        #expect(scenario.state.rules.biddingStyle == .full)
+        #expect(scenario.state.actionHistory.contains {
+            if case .placeBid = $0 { return true }
+            return false
+        })
+        #expect(!scenario.state.actionHistory.contains {
+            if case .chooseMode = $0 { return true }
+            return false
+        })
+        #expect(scenario.state.bidding.declarerID != nil)
+        #expect(scenario.state.mode != nil)
+    }
+
     @Test("نفس البذرة والصعوبة تعطيان نفس الموقف والترتيب")
     func generationIsDeterministic() throws {
         let first = try WhatToPlayTrainer.generateScenario(seed: 99, difficulty: .medium)
