@@ -26,20 +26,10 @@ private final class GameTaskBox: @unchecked Sendable {
 enum BalootGameVariant: Equatable {
     /// مزايدة حرة بين صن وكل أنواع الحكم (بلوت كلاسيكي).
     case free
-    /// صن فقط — تُختار تلقائيًا دون مزايدة.
-    case sunOnly
-    /// حكم فقط — يختار اللاعب نوع الحكم لا أكثر.
-    case hokumOnly
 
     init(slug: String) {
-        switch slug {
-        case "baloot-sun", "baloot-hokum": self = .free
-        default: self = .free
-        }
+        self = .free
     }
-
-    var allowsSun: Bool { self != .hokumOnly }
-    var allowsHokum: Bool { self != .sunOnly }
 }
 
 enum BalootTableMode: String, CaseIterable, Identifiable {
@@ -122,25 +112,12 @@ final class BalootGameViewModel {
         rules: BalootRulesConfiguration = .standard,
         aiLevel: AIProfile.Level = .expert
     ) {
-        // «بلوت صن» و«بلوت حكم» يمثلان نمطًا واحدًا محددًا، فدورة المزايدة الكاملة
-        // بلا معنى فيهما: لا يوجد ما يُزايَد عليه أصلًا. يبقيان على الاختيار المباشر،
-        // بينما «بلوت كلاسيكي» يحصل على الدورة الحقيقية.
-        let effectiveRules = variant == .free ? rules : Self.forcedModeRules(from: rules)
-        self.state = Self.makeInitialState(tableMode: tableMode, rules: effectiveRules)
+        self.state = Self.makeInitialState(tableMode: tableMode, rules: rules)
         self.variant = variant
         self.tableMode = tableMode
-        self.rules = effectiveRules
+        self.rules = rules
         self.aiLevel = aiLevel
         self.agent = ProfiledBalootAgent(profile: Self.profile(for: aiLevel))
-    }
-
-    /// قواعد الأنماط المقيّدة: اختيار مباشر واحتساب تلقائي للمشاريع بلا مرحلة إعلان.
-    private static func forcedModeRules(from base: BalootRulesConfiguration) -> BalootRulesConfiguration {
-        var rules = base
-        rules.biddingStyle = .simple
-        rules.projectsRequireDeclaration = false
-        rules.multipliersEnabled = false
-        return rules
     }
 
     private static func profile(for level: AIProfile.Level) -> AIProfile {
@@ -254,17 +231,6 @@ final class BalootGameViewModel {
     func deal() {
         perform(.dealCards(seed: UInt64.random(in: .min ... .max)))
         advanceAI()
-        applyForcedModeIfNeeded()
-    }
-
-    /// في نمط "صن فقط" لا توجد مزايدة أصلًا، فيُختار النمط تلقائيًا بمجرد التوزيع
-    /// بدل ترك اللاعب أمام لوحة مزايدة بخيار واحد.
-    private func applyForcedModeIfNeeded() {
-        guard variant == .sunOnly,
-              state.phase == .bidding,
-              activeHumanID == state.currentTurnPlayerID
-        else { return }
-        chooseMode(.sun, trumpSuit: nil)
     }
 
     func chooseMode(_ mode: GameMode, trumpSuit: Suit?) {

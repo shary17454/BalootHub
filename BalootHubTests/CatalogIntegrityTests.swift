@@ -1,5 +1,6 @@
 import XCTest
 import SwiftData
+import BalootEngine
 @testable import BalootHub
 
 /// يتحقق من أن **كل** عنصر في الكتالوج جاهز فعليًا للفتح في الواجهة: بيانات مكتملة،
@@ -102,6 +103,19 @@ final class CatalogIntegrityTests: XCTestCase {
         let hokum = try XCTUnwrap(try allItems().first { $0.slug == "baloot-hokum" })
         XCTAssertFalse(sun.isPlayable)
         XCTAssertFalse(hokum.isPlayable)
+    }
+
+    /// حتى لو فُتح رابط قديم لصن أو حكم، يجب أن يدخل المستخدم لعبة البلوت الواحدة
+    /// ذات المزايدة الكاملة، لا نمطًا منفصلًا يفرض الصن أو الحكم مسبقًا.
+    @MainActor
+    func testLegacySunAndHokumLinksKeepFullBalootBidding() {
+        let sunViewModel = BalootGameViewModel(variant: BalootGameVariant(slug: "baloot-sun"), rules: .standard)
+        let hokumViewModel = BalootGameViewModel(variant: BalootGameVariant(slug: "baloot-hokum"), rules: .standard)
+
+        XCTAssertTrue(sunViewModel.usesFullBidding)
+        XCTAssertTrue(hokumViewModel.usesFullBidding)
+        XCTAssertEqual(sunViewModel.state.rules.biddingStyle, .full)
+        XCTAssertEqual(hokumViewModel.state.rules.biddingStyle, .full)
     }
 
     /// الرتب والأيقونات يجب أن تكون فريدة/مرتبة حتى لا تتكرر البطاقات أو تختل الترتيب.

@@ -14,8 +14,8 @@ struct BalootGamePlayView: View {
 
     init(slug: String) {
         self.slug = slug
-        // النمط يُشتق من عنصر الكتالوج، فيبدأ المحرك مقيّدًا بنمط اللعبة المفتوحة
-        // بدل أن تفتح كل الألعاب نفس الجولة الحرة.
+        // البلوت لعبة واحدة: الصن والحكم يحددهما مسار المزايدة داخل نفس الطاولة.
+        // روابط الكتالوج القديمة للصن/الحكم تُفتح كتجربة بلوت كاملة للتوافق فقط.
         _viewModel = State(initialValue: BalootGameViewModel(variant: BalootGameVariant(slug: slug), rules: HouseRulesStore.currentRules()))
     }
 
@@ -152,19 +152,15 @@ struct BalootGamePlayView: View {
     private var biddingPanel: some View {
         VStack(spacing: AppSpacing.md) {
             if viewModel.isHumanTurn {
-                // تعبير شرطي ⇒ `Text(String)` الذي لا يترجم تلقائيًا، بخلاف السلسلة
-                // الحرفية داخل `Text`. لذا تُترجم كل حالة صراحةً.
-                Text(viewModel.variant == .hokumOnly ? "اختر نوع الحكم".localized : "اختر نمط الجولة".localized)
+                Text("اختر نمط الجولة".localized)
                     .font(AppTypography.headline)
                 // خمسة أزرار في صف واحد تتزاحم على الشاشات الضيقة وعند تكبير الخط،
                 // فتتوزّع تلقائيًا على أكثر من سطر بدل قصّها.
                 ViewThatFits(in: .horizontal) {
                     HStack(spacing: AppSpacing.sm) { bidButtons }
                     VStack(spacing: AppSpacing.sm) {
-                        if viewModel.variant.allowsSun { sunBidButton }
-                        if viewModel.variant.allowsHokum {
-                            HStack(spacing: AppSpacing.sm) { hokumBidButtons }
-                        }
+                        sunBidButton
+                        HStack(spacing: AppSpacing.sm) { hokumBidButtons }
                     }
                 }
             } else {
@@ -177,8 +173,8 @@ struct BalootGamePlayView: View {
 
     @ViewBuilder
     private var bidButtons: some View {
-        if viewModel.variant.allowsSun { sunBidButton }
-        if viewModel.variant.allowsHokum { hokumBidButtons }
+        sunBidButton
+        hokumBidButtons
     }
 
     private var sunBidButton: some View {
