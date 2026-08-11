@@ -16954,6 +16954,26 @@
         }
       }
     },
+    "باقي" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remaining"
+          }
+        }
+      }
+    },
+    "نقطة إتقان للوصول إلى" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mastery points to reach"
+          }
+        }
+      }
+    },
     "حل عدة مواقف حتى يظهر مستوى إتقانك الحقيقي في قراءة الطاولة." : {
       "localizations" : {
         "en" : {

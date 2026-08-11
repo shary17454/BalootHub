@@ -82,6 +82,13 @@ struct WhatToPlayMastery: Equatable {
     let iconName: String
 }
 
+struct WhatToPlayMasteryMilestone: Equatable {
+    let targetScore: Int
+    let targetTitle: String
+    let pointsRemaining: Int
+    let detail: String
+}
+
 enum WhatToPlayStatsAnalyzer {
     static func summarize(attempts: [WhatToPlayAttempt]) -> WhatToPlayStatsSummary {
         guard !attempts.isEmpty else { return .empty }
@@ -356,6 +363,31 @@ enum WhatToPlayStatsAnalyzer {
                 iconName: "target"
             )
         }
+    }
+
+    static func masteryMilestone(for attempts: [WhatToPlayAttempt]) -> WhatToPlayMasteryMilestone? {
+        let mastery = mastery(for: attempts)
+        let target: (score: Int, title: String)?
+
+        switch mastery.score {
+        case ..<35:
+            target = (35, "تبني القراءة".localized)
+        case 35..<60:
+            target = (60, "متمكن".localized)
+        case 60..<80:
+            target = (80, "قراءة حادة".localized)
+        default:
+            target = nil
+        }
+
+        guard let target else { return nil }
+        let remaining = max(0, target.score - mastery.score)
+        return WhatToPlayMasteryMilestone(
+            targetScore: target.score,
+            targetTitle: target.title,
+            pointsRemaining: remaining,
+            detail: "\("باقي".localized) \(remaining) \("نقطة إتقان للوصول إلى".localized) \(target.title)."
+        )
     }
 
     static func coachingTip(for attempts: [WhatToPlayAttempt]) -> WhatToPlayCoachingTip {

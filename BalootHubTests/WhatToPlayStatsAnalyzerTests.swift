@@ -333,6 +333,46 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(mastery.score, 100)
     }
 
+    func testMasteryMilestoneTargetsBuildingFromStartingScore() {
+        let attempts = [
+            attempt(daysAgo: 2, correct: false, impact: -10),
+            attempt(daysAgo: 1, correct: false, impact: -10)
+        ]
+
+        let milestone = WhatToPlayStatsAnalyzer.masteryMilestone(for: attempts)
+
+        XCTAssertEqual(milestone?.targetScore, 35)
+        XCTAssertEqual(milestone?.targetTitle, "تبني القراءة".localized)
+        XCTAssertEqual(milestone?.pointsRemaining, 35)
+    }
+
+    func testMasteryMilestoneTargetsConfidentFromBuildingScore() {
+        let attempts = [
+            attempt(daysAgo: 4, correct: true, impact: 0),
+            attempt(daysAgo: 3, correct: false, impact: 0),
+            attempt(daysAgo: 2, correct: false, impact: 0),
+            attempt(daysAgo: 1, correct: true, impact: 0)
+        ]
+
+        let milestone = WhatToPlayStatsAnalyzer.masteryMilestone(for: attempts)
+
+        XCTAssertEqual(milestone?.targetScore, 60)
+        XCTAssertEqual(milestone?.targetTitle, "متمكن".localized)
+        XCTAssertEqual(milestone?.pointsRemaining, 16)
+    }
+
+    func testMasteryMilestoneReturnsNilAfterSharpLevel() {
+        let attempts = [
+            attempt(daysAgo: 5, correct: true, impact: 10),
+            attempt(daysAgo: 4, correct: true, impact: 10),
+            attempt(daysAgo: 3, correct: true, impact: 10),
+            attempt(daysAgo: 2, correct: true, impact: 10),
+            attempt(daysAgo: 1, correct: true, impact: 10)
+        ]
+
+        XCTAssertNil(WhatToPlayStatsAnalyzer.masteryMilestone(for: attempts))
+    }
+
     func testCoachingTipForEmptyAttemptsEncouragesBaseline() {
         let tip = WhatToPlayStatsAnalyzer.coachingTip(for: [])
 

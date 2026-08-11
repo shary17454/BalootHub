@@ -336,6 +336,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.mastery(for: attempts)
     }
 
+    private var masteryMilestone: WhatToPlayMasteryMilestone? {
+        WhatToPlayStatsAnalyzer.masteryMilestone(for: attempts)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
@@ -490,7 +494,7 @@ struct WhatToPlayTrainerView: View {
                     title: "متوسط الأثر المتوقع",
                     value: impactText(statsSummary.averageExpectedImpact)
                 )
-                masteryView(mastery)
+                masteryView(mastery, milestone: masteryMilestone)
                 coachingTipView(coachingTip)
                 if let performanceTrend {
                     performanceTrendView(performanceTrend)
@@ -522,7 +526,7 @@ struct WhatToPlayTrainerView: View {
         .accessibilityElement(children: .combine)
     }
 
-    private func masteryView(_ mastery: WhatToPlayMastery) -> some View {
+    private func masteryView(_ mastery: WhatToPlayMastery, milestone: WhatToPlayMasteryMilestone?) -> some View {
         VStack(alignment: .leading, spacing: AppSpacing.xs) {
             HStack(spacing: AppSpacing.sm) {
                 Image(systemName: mastery.iconName)
@@ -544,6 +548,19 @@ struct WhatToPlayTrainerView: View {
                 .font(AppTypography.caption)
                 .foregroundStyle(AppColor.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
+
+            if let milestone {
+                HStack(spacing: AppSpacing.xs) {
+                    Image(systemName: "flag.checkered")
+                        .accessibilityHidden(true)
+                    Text(milestone.detail)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.85)
+                }
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(masteryTint(mastery.level))
+                .padding(.top, 2)
+            }
         }
         .padding(AppSpacing.sm)
         .background(masteryTint(mastery.level).opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
