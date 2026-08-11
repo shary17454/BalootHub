@@ -30,7 +30,7 @@ final class CatalogFilterTests: XCTestCase {
         let items = makeItems()
         let result = CatalogSearch.apply(filter: .playable, query: "", to: items)
         XCTAssertTrue(result.allSatisfy(\.isPlayable))
-        XCTAssertTrue(result.contains { $0.slug == "baloot-hokum" })
+        XCTAssertEqual(result.map(\.slug), ["baloot-classic"])
     }
 
     func testRulesOnlyFilterExcludesPlayableItems() {

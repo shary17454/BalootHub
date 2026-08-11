@@ -88,21 +88,20 @@ final class CatalogIntegrityTests: XCTestCase {
         }
     }
 
-    /// الألعاب القابلة للعب الثلاث يجب أن تُشتق منها أنماط مختلفة فعلًا،
-    /// وإلا فتحت الثلاث نفس الجولة بلا فرق.
-    func testPlayableGamesMapToDistinctVariants() throws {
+    /// البلوت لعبة واحدة في الواقع: الصن والحكم يُختاران داخل المزايدة، وليسا مدخلين
+    /// منفصلين لطاولتين مختلفتين.
+    func testPlayableBalootIsSingleClassicEntry() throws {
         let playable = try allItems().filter(\.isPlayable).map(\.slug).sorted()
-        XCTAssertEqual(playable, ["baloot-classic", "baloot-hokum", "baloot-sun"])
+        XCTAssertEqual(playable, ["baloot-classic"])
 
         XCTAssertEqual(BalootGameVariant(slug: "baloot-classic"), .free)
-        XCTAssertEqual(BalootGameVariant(slug: "baloot-sun"), .sunOnly)
-        XCTAssertEqual(BalootGameVariant(slug: "baloot-hokum"), .hokumOnly)
+        XCTAssertEqual(BalootGameVariant(slug: "baloot-sun"), .free)
+        XCTAssertEqual(BalootGameVariant(slug: "baloot-hokum"), .free)
 
-        // كل نمط يجب أن يتيح خيارًا واحدًا على الأقل، وإلا علقت لوحة المزايدة فارغة.
-        for variant in [BalootGameVariant.free, .sunOnly, .hokumOnly] {
-            XCTAssertTrue(variant.allowsSun || variant.allowsHokum,
-                          "النمط \(variant) لا يتيح أي خيار مزايدة")
-        }
+        let sun = try XCTUnwrap(try allItems().first { $0.slug == "baloot-sun" })
+        let hokum = try XCTUnwrap(try allItems().first { $0.slug == "baloot-hokum" })
+        XCTAssertFalse(sun.isPlayable)
+        XCTAssertFalse(hokum.isPlayable)
     }
 
     /// الرتب والأيقونات يجب أن تكون فريدة/مرتبة حتى لا تتكرر البطاقات أو تختل الترتيب.
