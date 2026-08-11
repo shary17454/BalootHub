@@ -216,6 +216,41 @@ enum BiddingEngine {
         return state.opposingTeamID(of: requester)
     }
 
+    /// حركات المضاعفة القانونية للاعب محدد الآن.
+    ///
+    /// تعكس هذه الدالة شروط `raiseMultiplier` و`passMultiplier` و`lockMultiplier`
+    /// نفسها، لكنها لا تغيّر الحالة ولا ترمي أخطاء، لتستخدمها الواجهة والـAI قبل
+    /// محاولة تطبيق الفعل.
+    static func legalMultiplierActions(for playerID: Player.ID, state: GameState) -> [LegalMultiplierAction] {
+        guard state.rules.multipliersEnabled,
+              state.phase == .bidding,
+              state.bidding.stage == .doubling,
+              let player = state.player(id: playerID)
+        else { return [] }
+
+        var actions: [LegalMultiplierAction] = []
+
+        if state.currentTurnPlayerID == playerID,
+           player.teamID == eligibleRaisingTeamID(state: state) {
+            actions.append(.pass)
+
+            if !state.bidding.isLocked,
+               let next = state.bidding.multiplier.next,
+               next <= state.rules.maximumMultiplier {
+                actions.append(.raise(next))
+            }
+        }
+
+        if state.rules.lockEnabled,
+           !state.bidding.isLocked,
+           state.bidding.multiplier != .none,
+           player.teamID == state.bidding.multiplierRequesterTeamID {
+            actions.append(.lock)
+        }
+
+        return actions
+    }
+
     private static func firstEligibleRaiser(state: GameState) -> Player.ID? {
         guard let teamID = eligibleRaisingTeamID(state: state),
               let declarer = state.declarer else { return nil }

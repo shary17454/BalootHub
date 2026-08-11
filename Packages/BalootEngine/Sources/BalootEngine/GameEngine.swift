@@ -78,6 +78,11 @@ public enum GameEngine {
         return state.bidding.legalBids(rules: state.rules)
     }
 
+    /// حركات المضاعفة القانونية للاعب محدد في لحظة المزايدة الحالية.
+    public static func legalMultiplierActions(for playerID: Player.ID, state: GameState) -> [LegalMultiplierAction] {
+        BiddingEngine.legalMultiplierActions(for: playerID, state: state)
+    }
+
     /// المشاريع التي يستطيع لاعب معيّن إعلانها.
     public static func declarableProjects(for playerID: Player.ID, state: GameState) -> [Project] {
         BiddingEngine.declarableProjects(for: playerID, state: state)
@@ -171,14 +176,30 @@ public enum GameEngine {
             return .placeBid(playerID: playerID, bid: agent.chooseBid(hand: hand, legalBids: legal, state: state))
 
         case .doubling:
-            switch agent.chooseMultiplierAction(hand: hand, state: state) {
-            case .raise(let level): return .raiseMultiplier(playerID: playerID, level: level)
-            case .lock: return .lockMultiplier(playerID: playerID)
-            case .pass: return .passMultiplier(playerID: playerID)
-            }
+            let legal = legalMultiplierActions(for: playerID, state: state)
+            guard !legal.isEmpty else { return nil }
+            let decision = agent.chooseMultiplierAction(hand: hand, state: state)
+            return multiplierAction(playerID: playerID, decision: decision, legal: legal)
 
         case .completed, .voided:
             return nil
+        }
+    }
+
+    private static func multiplierAction(
+        playerID: Player.ID,
+        decision: MultiplierDecision,
+        legal: [LegalMultiplierAction]
+    ) -> GameAction? {
+        switch decision {
+        case .raise(let level) where legal.contains(.raise(level)):
+            return .raiseMultiplier(playerID: playerID, level: level)
+        case .lock where legal.contains(.lock):
+            return .lockMultiplier(playerID: playerID)
+        case .pass where legal.contains(.pass):
+            return .passMultiplier(playerID: playerID)
+        default:
+            return legal.contains(.pass) ? .passMultiplier(playerID: playerID) : nil
         }
     }
 

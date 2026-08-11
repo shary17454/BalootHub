@@ -200,6 +200,23 @@ struct BiddingCycleTests {
 
 @Suite("المضاعفات داخل اللعب")
 struct MultiplierTests {
+    private struct IllegalMultiplierAgent: BalootAgent {
+        func chooseCard(hand: [PlayingCard], legalCards: [PlayingCard], state: GameState) -> PlayingCard {
+            legalCards.first ?? PlayingCard(suit: .spades, rank: .seven)
+        }
+
+        func chooseMode(hand: [PlayingCard], state: GameState) -> (mode: GameMode, trumpSuit: Suit?) {
+            (.sun, nil)
+        }
+
+        func chooseBid(hand: [PlayingCard], legalBids: [Bid], state: GameState) -> Bid {
+            .pass
+        }
+
+        func chooseMultiplierAction(hand: [PlayingCard], state: GameState) -> MultiplierDecision {
+            .raise(.quadruple)
+        }
+    }
 
     /// يوصل الحالة إلى جولة المضاعفة بشراء حكم من أول لاعب.
     private func stateInDoublingStage(seed: UInt64 = 17) throws -> GameState {
@@ -222,6 +239,16 @@ struct MultiplierTests {
         let declarerTeam = try #require(state.declaringTeamID)
         let currentTeam = try #require(state.currentTurnPlayerID.flatMap { state.player(id: $0)?.teamID })
         #expect(currentTeam != declarerTeam)
+    }
+
+    @Test("حركات المضاعفة القانونية تعكس حق الدبل الابتدائي")
+    func legalMultiplierActionsExposeInitialDoubleRight() throws {
+        let state = try stateInDoublingStage()
+        let doublerID = try #require(state.currentTurnPlayerID)
+        let declarerID = try #require(state.bidding.declarerID)
+
+        #expect(GameEngine.legalMultiplierActions(for: doublerID, state: state) == [.pass, .raise(.double)])
+        #expect(GameEngine.legalMultiplierActions(for: declarerID, state: state).isEmpty)
     }
 
     @Test("فريق المشتري لا يملك حق الدبل الابتدائي")
@@ -258,6 +285,38 @@ struct MultiplierTests {
         #expect(nextTeam != doublerTeam)
     }
 
+    @Test("حركات المضاعفة القانونية بعد الدبل تسمح بالثري للفريق المقابل وبالقفل لصاحب الدبل")
+    func legalMultiplierActionsExposeEscalationAndLockRights() throws {
+        var state = try stateInDoublingStage()
+        let doublerID = try #require(state.currentTurnPlayerID)
+        state = try GameEngine.apply(.raiseMultiplier(playerID: doublerID, level: .double), to: state)
+        let raiserID = try #require(state.currentTurnPlayerID)
+
+        #expect(GameEngine.legalMultiplierActions(for: raiserID, state: state) == [.pass, .raise(.triple)])
+        #expect(GameEngine.legalMultiplierActions(for: doublerID, state: state) == [.lock])
+    }
+
+    @Test("قرار AI غير القانوني في المضاعفة يسقط إلى تمرير قانوني")
+    func aiIllegalMultiplierDecisionFallsBackToLegalPass() throws {
+        var state = try stateInDoublingStage()
+        state.players = state.players.map { player in
+            var updated = player
+            updated.kind = .ai
+            return updated
+        }
+        let playerID = try #require(state.currentTurnPlayerID)
+
+        let advanced = try GameEngine.advanceAIPlayers(
+            state: state,
+            agent: IllegalMultiplierAgent(),
+            maxSteps: 1
+        )
+
+        #expect(advanced.actionHistory.last == .passMultiplier(playerID: playerID))
+        #expect(advanced.bidding.doublingPasses == 1)
+        #expect(advanced.bidding.stage == .doubling)
+    }
+
     @Test("تمرير لاعبَي الفريق صاحب الحق يُنهي المضاعفة")
     func twoPassesCloseDoubling() throws {
         var state = try stateInDoublingStage()
@@ -288,6 +347,15 @@ struct MultiplierTests {
         #expect(state.bidding.isLocked)
         #expect(state.bidding.multiplier == .double)
         #expect(state.actionHistory.last == .lockMultiplier(playerID: doublerID))
+    }
+
+    @Test("حركات المضاعفة القانونية فارغة خارج مرحلة المضاعفة")
+    func legalMultiplierActionsAreEmptyOutsideDoubling() throws {
+        var state = GameState.newLocalMatch(rules: .standard)
+        state = try GameEngine.apply(.dealCards(seed: 17), to: state)
+        let playerID = try #require(state.currentTurnPlayerID)
+
+        #expect(GameEngine.legalMultiplierActions(for: playerID, state: state).isEmpty)
     }
 
     @Test("قفل المضاعفة يُعاد من سجل الأفعال كما حدث")
