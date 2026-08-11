@@ -866,6 +866,7 @@ struct WhatToPlayTrainerView: View {
                             .lineLimit(2)
                             .minimumScaleFactor(0.85)
                     }
+                    reviewSimulationView(reviewItem)
                     Button {
                         replayReviewItem(reviewItem)
                     } label: {
@@ -1833,26 +1834,7 @@ struct WhatToPlayTrainerView: View {
                         .minimumScaleFactor(0.85)
                 }
 
-                if let simulationSummary = item.simulationSummary {
-                    Label {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("\("نتيجة المحاكاة".localized): \(simulationSummary)")
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(AppColor.textPrimary)
-                            if let simulationTeamResult = item.simulationTeamResult {
-                                Text("\("اتجاه الأكلة".localized): \(simulationTeamResult)\(simulationPointsSuffix(item.simulationTrickPoints))")
-                                    .font(.caption2)
-                                    .foregroundStyle(AppColor.textSecondary)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                        }
-                    } icon: {
-                        Image(systemName: item.simulationTeamResult == nil ? "rectangle.stack.fill" : "flag.checkered")
-                            .foregroundStyle(AppColor.accent)
-                    }
-                    .padding(AppSpacing.xs)
-                    .background(AppColor.accent.opacity(0.1), in: RoundedRectangle(cornerRadius: AppRadius.small))
-                }
+                reviewSimulationView(item)
 
                 if let title = item.tacticalReasonTitle,
                    let detail = item.tacticalReasonDetail,
@@ -1907,6 +1889,30 @@ struct WhatToPlayTrainerView: View {
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
         .accessibilityElement(children: .combine)
+    }
+
+    @ViewBuilder
+    private func reviewSimulationView(_ item: WhatToPlayReviewItem) -> some View {
+        if let simulationSummary = item.simulationSummary {
+            Label {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("\("نتيجة المحاكاة".localized): \(simulationSummary)")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(AppColor.textPrimary)
+                    if let simulationTeamResult = item.simulationTeamResult {
+                        Text("\("اتجاه الأكلة".localized): \(simulationTeamResult)\(simulationPointsSuffix(item.simulationTrickPoints))")
+                            .font(.caption2)
+                            .foregroundStyle(AppColor.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            } icon: {
+                Image(systemName: item.simulationTeamResult == nil ? "rectangle.stack.fill" : "flag.checkered")
+                    .foregroundStyle(AppColor.accent)
+            }
+            .padding(AppSpacing.xs)
+            .background(AppColor.accent.opacity(0.1), in: RoundedRectangle(cornerRadius: AppRadius.small))
+        }
     }
 
     private func secondBestImpactSuffix(_ impact: Int?) -> String {
