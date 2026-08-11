@@ -116,6 +116,20 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(queue.first?.title, "راجع اختيارًا مكلفًا".localized)
     }
 
+    func testReviewQueuePrioritizesLargestLostExpectedPointsWhenKnown() {
+        let attempts = [
+            attempt(daysAgo: 3, difficulty: .easy, correct: false, impact: -5, bestImpact: -1),
+            attempt(daysAgo: 2, difficulty: .hard, correct: false, impact: 2, bestImpact: 14),
+            attempt(daysAgo: 1, difficulty: .medium, correct: false, impact: -9, bestImpact: -8)
+        ]
+
+        let queue = WhatToPlayStatsAnalyzer.reviewQueue(for: attempts, limit: 3)
+
+        XCTAssertEqual(queue.map(\.lostExpectedPoints), [12, 4, 1])
+        XCTAssertEqual(queue.first?.difficulty, .hard)
+        XCTAssertEqual(queue.first?.expectedImpact, 2)
+    }
+
     func testReviewQueueCarriesLostExpectedPoints() {
         let attempts = [
             attempt(daysAgo: 1, correct: false, impact: -4, bestImpact: 3)

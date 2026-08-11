@@ -399,9 +399,14 @@ enum WhatToPlayStatsAnalyzer {
             attempts
                 .filter { !$0.isCorrect }
                 .sorted { lhs, rhs in
+                    if lhs.lostExpectedPoints != rhs.lostExpectedPoints {
+                        return lhs.lostExpectedPoints > rhs.lostExpectedPoints
+                    }
+
                     if lhs.expectedImpact != rhs.expectedImpact {
                         return lhs.expectedImpact < rhs.expectedImpact
                     }
+
                     return lhs.createdAt > rhs.createdAt
                 }
                 .prefix(limit)
