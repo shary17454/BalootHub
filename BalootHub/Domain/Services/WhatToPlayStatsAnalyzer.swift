@@ -245,8 +245,10 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let averageExpectedImpact: Int
     let bestExpectedImpact: Int?
     let bestExpectedImpactCard: PlayingCard?
+    let bestExpectedImpactSeed: UInt64?
     let worstExpectedImpact: Int?
     let worstExpectedImpactCard: PlayingCard?
+    let worstExpectedImpactSeed: UInt64?
     let impactTargetMet: Bool
     let averageExpectedImpactGap: Int
     let valueCapturePercent: Int
@@ -1199,8 +1201,10 @@ enum WhatToPlayStatsAnalyzer {
                 averageExpectedImpact: 0,
                 bestExpectedImpact: nil,
                 bestExpectedImpactCard: nil,
+                bestExpectedImpactSeed: nil,
                 worstExpectedImpact: nil,
                 worstExpectedImpactCard: nil,
+                worstExpectedImpactSeed: nil,
                 impactTargetMet: false,
                 averageExpectedImpactGap: plan.targetAverageExpectedImpact,
                 valueCapturePercent: 0,
@@ -1240,8 +1244,10 @@ enum WhatToPlayStatsAnalyzer {
                 averageExpectedImpact: averageImpact,
                 bestExpectedImpact: bestImpact,
                 bestExpectedImpactCard: bestImpactAttempt?.selectedCard,
+                bestExpectedImpactSeed: bestImpactAttempt.map { UInt64(clamping: $0.seedValue) },
                 worstExpectedImpact: worstImpact,
                 worstExpectedImpactCard: worstImpactAttempt?.selectedCard,
+                worstExpectedImpactSeed: worstImpactAttempt.map { UInt64(clamping: $0.seedValue) },
                 impactTargetMet: impactTargetMet,
                 averageExpectedImpactGap: impactGap,
                 valueCapturePercent: sessionSummary.valueCapturePercent,
@@ -1281,8 +1287,10 @@ enum WhatToPlayStatsAnalyzer {
                 averageExpectedImpact: averageImpact,
                 bestExpectedImpact: bestImpact,
                 bestExpectedImpactCard: bestImpactAttempt?.selectedCard,
+                bestExpectedImpactSeed: bestImpactAttempt.map { UInt64(clamping: $0.seedValue) },
                 worstExpectedImpact: worstImpact,
                 worstExpectedImpactCard: worstImpactAttempt?.selectedCard,
+                worstExpectedImpactSeed: worstImpactAttempt.map { UInt64(clamping: $0.seedValue) },
                 impactTargetMet: true,
                 averageExpectedImpactGap: 0,
                 valueCapturePercent: sessionSummary.valueCapturePercent,
@@ -1321,8 +1329,10 @@ enum WhatToPlayStatsAnalyzer {
             averageExpectedImpact: averageImpact,
             bestExpectedImpact: bestImpact,
             bestExpectedImpactCard: bestImpactAttempt?.selectedCard,
+            bestExpectedImpactSeed: bestImpactAttempt.map { UInt64(clamping: $0.seedValue) },
             worstExpectedImpact: worstImpact,
             worstExpectedImpactCard: worstImpactAttempt?.selectedCard,
+            worstExpectedImpactSeed: worstImpactAttempt.map { UInt64(clamping: $0.seedValue) },
             impactTargetMet: impactTargetMet,
             averageExpectedImpactGap: impactGap,
             valueCapturePercent: sessionSummary.valueCapturePercent,

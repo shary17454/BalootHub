@@ -691,13 +691,21 @@ struct WhatToPlayTrainerView: View {
                 if let bestExpectedImpact = progress.bestExpectedImpact {
                     miniPlanMetric(
                         title: "أفضل أثر".localized,
-                        value: sessionImpactExtremeText(bestExpectedImpact, card: progress.bestExpectedImpactCard)
+                        value: sessionImpactExtremeText(
+                            bestExpectedImpact,
+                            card: progress.bestExpectedImpactCard,
+                            seed: progress.bestExpectedImpactSeed
+                        )
                     )
                 }
                 if let worstExpectedImpact = progress.worstExpectedImpact {
                     miniPlanMetric(
                         title: "أسوأ أثر".localized,
-                        value: sessionImpactExtremeText(worstExpectedImpact, card: progress.worstExpectedImpactCard)
+                        value: sessionImpactExtremeText(
+                            worstExpectedImpact,
+                            card: progress.worstExpectedImpactCard,
+                            seed: progress.worstExpectedImpactSeed
+                        )
                     )
                 }
                 miniPlanMetric(
@@ -854,11 +862,15 @@ struct WhatToPlayTrainerView: View {
             )
     }
 
-    private func sessionImpactExtremeText(_ impact: Int, card: PlayingCard?) -> String {
+    private func sessionImpactExtremeText(_ impact: Int, card: PlayingCard?, seed: UInt64?) -> String {
+        var parts = [impactText(impact)]
         if let card {
-            return "\(impactText(impact)) · \(card.displayLabel)"
+            parts.append(card.displayLabel)
         }
-        return impactText(impact)
+        if let seed {
+            parts.append("\("البذرة".localized) \(seed)")
+        }
+        return parts.joined(separator: " · ")
     }
 
     private func trainingSessionNextStepButtonTitle(_ progress: WhatToPlayTrainingSessionProgress) -> String {

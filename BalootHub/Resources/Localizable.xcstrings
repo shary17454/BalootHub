@@ -15,6 +15,20 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "预期影响" } }
       }
     },
+    "البذرة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Seed" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Seed" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Semilla" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Graine" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सीड" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Seed" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Seed" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Tohum" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "سیڈ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "种子" } }
+      }
+    },
     "أكثر من خطأ حديث أعطى الأكلة المكتملة للفريق الخصم. قبل الرمي، احسب من يربح الأكلة بعد ورقتك وهل تستحق النقاط التي ستضيفها." : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Mehr als ein aktueller Fehler gab den fertigen Stich dem Gegnerteam. Berechne vor dem Ausspielen, wer den Stich nach deiner Karte gewinnt und ob die Punkte es wert sind." } },

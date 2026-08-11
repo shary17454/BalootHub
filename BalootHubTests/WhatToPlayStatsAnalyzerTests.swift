@@ -1854,8 +1854,10 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.averageExpectedImpact, 0)
         XCTAssertNil(progress.bestExpectedImpact)
         XCTAssertNil(progress.bestExpectedImpactCard)
+        XCTAssertNil(progress.bestExpectedImpactSeed)
         XCTAssertNil(progress.worstExpectedImpact)
         XCTAssertNil(progress.worstExpectedImpactCard)
+        XCTAssertNil(progress.worstExpectedImpactSeed)
         XCTAssertFalse(progress.impactTargetMet)
         XCTAssertEqual(progress.averageExpectedImpactGap, 0)
         XCTAssertEqual(progress.valueCapturePercent, 0)
@@ -1897,8 +1899,10 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.averageExpectedImpact, 2)
         XCTAssertEqual(progress.bestExpectedImpact, 4)
         XCTAssertEqual(progress.bestExpectedImpactCard, PlayingCard(suit: .diamonds, rank: .ace))
+        XCTAssertEqual(progress.bestExpectedImpactSeed, 3)
         XCTAssertEqual(progress.worstExpectedImpact, -2)
         XCTAssertEqual(progress.worstExpectedImpactCard, PlayingCard(suit: .hearts, rank: .seven))
+        XCTAssertEqual(progress.worstExpectedImpactSeed, 2)
         XCTAssertTrue(progress.impactTargetMet)
         XCTAssertEqual(progress.averageExpectedImpactGap, 0)
         XCTAssertEqual(progress.valueCaptureAttempts, 3)
@@ -1947,8 +1951,10 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(progress.bestExpectedImpact, 5)
         XCTAssertEqual(progress.bestExpectedImpactCard, newestBest)
+        XCTAssertEqual(progress.bestExpectedImpactSeed, 2)
         XCTAssertEqual(progress.worstExpectedImpact, -4)
         XCTAssertEqual(progress.worstExpectedImpactCard, newestWorst)
+        XCTAssertEqual(progress.worstExpectedImpactSeed, 1)
     }
 
     func testTrainingSessionProgressNextStepWarnsWhenAccuracyTargetIsUnreachable() {
