@@ -176,6 +176,7 @@ struct WhatToPlayMicroDrill: Equatable {
     let detail: String
     let iconName: String
     let steps: [String]
+    let reviewItem: WhatToPlayReviewItem?
 }
 
 enum WhatToPlayStyleKind: Equatable {
@@ -808,20 +809,27 @@ enum WhatToPlayStatsAnalyzer {
                     "ابدأ بمستوى سهل".localized,
                     "حل 3 مواقف متتالية".localized,
                     "راجع تفسير كل اختيار".localized
-                ]
+                ],
+                reviewItem: nil
             )
         }
 
         if pulse.state == .reviewNeeded {
+            let reviewItem = reviewQueue(for: attempts, limit: 1).first
+            let firstStep = reviewItem.map {
+                "\("أعد موقف".localized) \(difficultyTitle($0.difficulty)) · \("نقاط متوقعة ضائعة".localized): \($0.lostExpectedPoints)"
+            } ?? "أعد قراءة بطاقة تحليل اختيارك".localized
+
             return WhatToPlayMicroDrill(
                 title: "خطة المراجعة".localized,
                 detail: "الأولوية الآن ليست كثرة المواقف، بل فهم سبب الخطأ الأخير.".localized,
                 iconName: "magnifyingglass.circle.fill",
                 steps: [
-                    "أعد قراءة بطاقة تحليل اختيارك".localized,
+                    firstStep,
                     "كرر المستوى المقترح".localized,
                     "لا تنتقل قبل إجابة صحيحة".localized
-                ]
+                ],
+                reviewItem: reviewItem
             )
         }
 
@@ -835,7 +843,8 @@ enum WhatToPlayStatsAnalyzer {
                     "أكمل المستويات الناقصة".localized,
                     "حل موقفين من كل مستوى".localized,
                     "قارن أفضل وثاني أفضل".localized
-                ]
+                ],
+                reviewItem: nil
             )
         }
 
@@ -848,7 +857,8 @@ enum WhatToPlayStatsAnalyzer {
                     "انتقل إلى الصعب".localized,
                     "استهدف 3 إجابات صحيحة".localized,
                     "شارك موقفًا صعبًا للمراجعة".localized
-                ]
+                ],
+                reviewItem: nil
             )
         }
 
@@ -860,7 +870,8 @@ enum WhatToPlayStatsAnalyzer {
                 "ابدأ بالمستوى المقترح".localized,
                 "حل 5 مواقف قصيرة".localized,
                 "راجع النقاط الضائعة".localized
-            ]
+            ],
+            reviewItem: nil
         )
     }
 

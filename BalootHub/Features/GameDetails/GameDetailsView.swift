@@ -625,6 +625,18 @@ struct WhatToPlayTrainerView: View {
                     .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
                 }
             }
+
+            if let reviewItem = microDrill.reviewItem {
+                Button {
+                    replayReviewItem(reviewItem)
+                } label: {
+                    Label("إعادة أهم خطأ".localized, systemImage: "arrow.clockwise.circle.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(AppColor.primary)
+                .disabled(isGeneratingScenario)
+            }
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))

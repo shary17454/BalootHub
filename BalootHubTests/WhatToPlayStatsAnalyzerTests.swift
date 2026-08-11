@@ -602,15 +602,17 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
     func testMicroDrillPrioritizesReviewWhenSessionNeedsReview() {
         let attempts = [
-            attempt(daysAgo: 3, correct: false, impact: -4),
-            attempt(daysAgo: 2, correct: false, impact: -6),
-            attempt(daysAgo: 1, correct: true, impact: -2)
+            attempt(daysAgo: 3, difficulty: .easy, correct: false, impact: -4, bestImpact: 0),
+            attempt(daysAgo: 2, difficulty: .hard, correct: false, impact: -6, bestImpact: 5),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: -2, bestImpact: -2)
         ]
 
         let drill = WhatToPlayStatsAnalyzer.microDrill(for: attempts)
 
         XCTAssertEqual(drill.title, "خطة المراجعة".localized)
-        XCTAssertEqual(drill.steps.first, "أعد قراءة بطاقة تحليل اختيارك".localized)
+        XCTAssertEqual(drill.steps.first, "\("أعد موقف".localized) \("صعب".localized) · \("نقاط متوقعة ضائعة".localized): 11")
+        XCTAssertEqual(drill.reviewItem?.difficulty, .hard)
+        XCTAssertEqual(drill.reviewItem?.lostExpectedPoints, 11)
     }
 
     func testMicroDrillTargetsCoverageBeforeGenericPractice() {

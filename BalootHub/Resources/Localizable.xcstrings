@@ -17214,6 +17214,16 @@
         }
       }
     },
+    "أعد موقف" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Replay scenario"
+          }
+        }
+      }
+    },
     "كرر المستوى المقترح" : {
       "localizations" : {
         "en" : {
@@ -18290,6 +18300,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Replay scenario"
+          }
+        }
+      }
+    },
+    "إعادة أهم خطأ" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Replay key mistake"
           }
         }
       }
