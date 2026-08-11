@@ -73,6 +73,17 @@ struct SettingsView: View {
                 Toggle("تأكيد قبل الحذف أو التراجع", isOn: binding(settings, \.confirmBeforeDelete))
             }
 
+            Section("قواعد اللعب") {
+                NavigationLink {
+                    HouseRulesView()
+                } label: {
+                    Label("قواعد مجلسي", systemImage: "slider.horizontal.3")
+                }
+                Text("تُستخدم هذه القواعد عند بدء طاولة بلوت جديدة، مع بقاء مسجل النقاط مستقلًا بصيغته الحالية.")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+            }
+
             Section("عن التطبيق") {
                 LabeledContent("الاسم", value: "البلوت".localized)
                 LabeledContent("الإصدار", value: Self.appVersion)

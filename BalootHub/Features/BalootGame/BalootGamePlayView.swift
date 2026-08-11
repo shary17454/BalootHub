@@ -16,7 +16,7 @@ struct BalootGamePlayView: View {
         self.slug = slug
         // النمط يُشتق من عنصر الكتالوج، فيبدأ المحرك مقيّدًا بنمط اللعبة المفتوحة
         // بدل أن تفتح كل الألعاب نفس الجولة الحرة.
-        _viewModel = State(initialValue: BalootGameViewModel(variant: BalootGameVariant(slug: slug)))
+        _viewModel = State(initialValue: BalootGameViewModel(variant: BalootGameVariant(slug: slug), rules: HouseRulesStore.currentRules()))
     }
 
     var body: some View {
