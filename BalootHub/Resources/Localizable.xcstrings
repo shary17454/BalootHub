@@ -17788,6 +17788,56 @@
         }
       }
     },
+    "أولوية التدريب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Training priority"
+          }
+        }
+      }
+    },
+    "تدرّب على اختيار ورقة البداية التي تكشف أقل معلومات وتحافظ على ورقة القوة للوقت المناسب." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Practice choosing an opening card that reveals minimal information and preserves power cards for the right moment."
+          }
+        }
+      }
+    },
+    "راجع التلزيم: ابدأ بمعرفة اللون المطلوب ثم قرر هل تكسب الأكلة أم تخفف خسارة النقاط." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review following suit: start by identifying the required suit, then decide whether to win the trick or reduce point loss."
+          }
+        }
+      }
+    },
+    "ركّز على ضغط الحكم: لا تقطع بلا هدف، واحسب هل التعلية أو حفظ الحكم أقوى للفريق." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Focus on trump pressure: do not trump without a goal, and judge whether overtrumping or saving trump is stronger for the team."
+          }
+        }
+      }
+    },
+    "في الخيارات المحدودة، قارن الأثر المتوقع لاختيارين فقط ولا ترم الورقة الأعلى تلقائيًا." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In narrow-choice spots, compare the expected impact of only two options and do not automatically throw the highest card."
+          }
+        }
+      }
+    },
     "التغطية" : {
       "localizations" : {
         "en" : {

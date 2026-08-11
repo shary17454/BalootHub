@@ -345,6 +345,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.scenarioFocusCoverage(for: attempts)
     }
 
+    private var focusTrainingPriority: WhatToPlayFocusTrainingPriority? {
+        WhatToPlayStatsAnalyzer.focusTrainingPriority(for: attempts)
+    }
+
     private var coachingTip: WhatToPlayCoachingTip {
         WhatToPlayStatsAnalyzer.coachingTip(for: attempts)
     }
@@ -1185,6 +1189,10 @@ struct WhatToPlayTrainerView: View {
 
                 scenarioFocusCoverageView(scenarioFocusCoverage)
 
+                if let focusTrainingPriority {
+                    focusTrainingPriorityView(focusTrainingPriority)
+                }
+
                 VStack(spacing: AppSpacing.sm) {
                     ForEach(scenarioFocusSummaries, id: \.focusKind) { entry in
                         HStack {
@@ -1213,6 +1221,30 @@ struct WhatToPlayTrainerView: View {
             .padding(AppSpacing.md)
             .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
         }
+    }
+
+    private func focusTrainingPriorityView(_ priority: WhatToPlayFocusTrainingPriority) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(priority.title)
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(priority.detail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("\("الدقة".localized): \(priority.summary.accuracyPercent)% · \("النقاط الضائعة".localized): \(priority.summary.lostExpectedPoints)")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(priority.summary.lostExpectedPoints > 0 ? AppColor.danger : AppColor.accent)
+            }
+        } icon: {
+            Image(systemName: priority.iconName)
+                .foregroundStyle(priority.summary.lostExpectedPoints > 0 ? AppColor.danger : AppColor.accent)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.sm)
+        .background((priority.summary.lostExpectedPoints > 0 ? AppColor.danger : AppColor.accent).opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
     }
 
     private func scenarioFocusCoverageView(_ coverage: WhatToPlayScenarioFocusCoverage) -> some View {

@@ -963,6 +963,59 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(coverage.title, "تغطية مواقف متوازنة".localized)
     }
 
+    func testFocusTrainingPriorityUsesLargestLostPointsByFocus() {
+        let attempts = [
+            attempt(daysAgo: 6, correct: false, impact: -1, bestImpact: 1, focusKind: .openingLead),
+            attempt(daysAgo: 5, correct: true, impact: 1, bestImpact: 1, focusKind: .openingLead),
+            attempt(daysAgo: 4, correct: false, impact: -8, bestImpact: 4, focusKind: .trumpPressure),
+            attempt(daysAgo: 3, correct: true, impact: 2, bestImpact: 2, focusKind: .trumpPressure),
+            attempt(daysAgo: 2, correct: false, impact: -3, bestImpact: 2, focusKind: .followSuit),
+            attempt(daysAgo: 1, correct: true, impact: 2, bestImpact: 2, focusKind: .followSuit)
+        ]
+
+        let priority = WhatToPlayStatsAnalyzer.focusTrainingPriority(for: attempts)
+
+        XCTAssertEqual(priority?.focusKind, .trumpPressure)
+        XCTAssertEqual(priority?.summary.lostExpectedPoints, 12)
+        XCTAssertEqual(priority?.title, "\("أولوية التدريب".localized): \("ضغط الحكم".localized)")
+        XCTAssertEqual(priority?.iconName, "crown.fill")
+    }
+
+    func testFocusTrainingPriorityUsesWorstAccuracyWhenLostPointsTie() {
+        let attempts = [
+            attempt(daysAgo: 6, correct: false, impact: -1, bestImpact: 3, focusKind: .openingLead),
+            attempt(daysAgo: 5, correct: true, impact: 1, bestImpact: 1, focusKind: .openingLead),
+            attempt(daysAgo: 4, correct: false, impact: -2, bestImpact: 2, focusKind: .followSuit),
+            attempt(daysAgo: 3, correct: false, impact: 0, bestImpact: 0, focusKind: .followSuit)
+        ]
+
+        let priority = WhatToPlayStatsAnalyzer.focusTrainingPriority(for: attempts)
+
+        XCTAssertEqual(priority?.focusKind, .followSuit)
+        XCTAssertEqual(priority?.summary.lostExpectedPoints, 4)
+        XCTAssertEqual(priority?.summary.accuracyPercent, 0)
+    }
+
+    func testFocusTrainingPriorityWaitsForEnoughAttemptsPerFocus() {
+        let attempts = [
+            attempt(daysAgo: 2, correct: false, impact: -10, bestImpact: 5, focusKind: .trumpPressure),
+            attempt(daysAgo: 1, correct: true, impact: 2, bestImpact: 2, focusKind: .openingLead)
+        ]
+
+        XCTAssertNil(WhatToPlayStatsAnalyzer.focusTrainingPriority(for: attempts))
+    }
+
+    func testFocusTrainingPriorityReturnsNilWhenFocusedPerformanceIsPerfect() {
+        let attempts = [
+            attempt(daysAgo: 4, correct: true, impact: 2, bestImpact: 2, focusKind: .openingLead),
+            attempt(daysAgo: 3, correct: true, impact: 3, bestImpact: 3, focusKind: .openingLead),
+            attempt(daysAgo: 2, correct: true, impact: 2, bestImpact: 2, focusKind: .followSuit),
+            attempt(daysAgo: 1, correct: true, impact: 3, bestImpact: 3, focusKind: .followSuit)
+        ]
+
+        XCTAssertNil(WhatToPlayStatsAnalyzer.focusTrainingPriority(for: attempts))
+    }
+
     func testSessionPulseReportsNoData() {
         let pulse = WhatToPlayStatsAnalyzer.sessionPulse(for: [])
 
@@ -1452,6 +1505,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         impact: Int,
         bestImpact: Int? = nil,
         selectedRank: Int? = nil,
+        focusKind: WhatToPlayScenarioFocusKind? = nil,
         outcome: WhatToPlayOptionOutcome? = nil
     ) -> WhatToPlayAttempt {
         attempt(
@@ -1461,6 +1515,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             impact: impact,
             bestImpact: bestImpact,
             selectedRank: selectedRank,
+            focusKind: focusKind,
             outcome: outcome
         )
     }

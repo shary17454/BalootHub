@@ -104,6 +104,14 @@ struct WhatToPlayScenarioFocusSummary: Equatable {
     let summary: WhatToPlayStatsSummary
 }
 
+struct WhatToPlayFocusTrainingPriority: Equatable {
+    let focusKind: WhatToPlayScenarioFocusKind
+    let summary: WhatToPlayStatsSummary
+    let title: String
+    let detail: String
+    let iconName: String
+}
+
 struct WhatToPlayDifficultyImpactInsight: Equatable {
     let difficulty: WhatToPlayDifficulty
     let averageExpectedImpact: Int
@@ -507,6 +515,41 @@ enum WhatToPlayStatsAnalyzer {
                 return scenarioFocusOrder(lhs.focusKind) < scenarioFocusOrder(rhs.focusKind)
             }
             .first
+    }
+
+    static func focusTrainingPriority(
+        for attempts: [WhatToPlayAttempt],
+        minimumAttempts: Int = 2
+    ) -> WhatToPlayFocusTrainingPriority? {
+        let candidate = summariesByScenarioFocus(attempts)
+            .filter { $0.summary.attempts >= minimumAttempts }
+            .filter { $0.summary.lostExpectedPoints > 0 || $0.summary.accuracyPercent < 100 }
+            .sorted { lhs, rhs in
+                if lhs.summary.lostExpectedPoints != rhs.summary.lostExpectedPoints {
+                    return lhs.summary.lostExpectedPoints > rhs.summary.lostExpectedPoints
+                }
+
+                if lhs.summary.accuracyPercent != rhs.summary.accuracyPercent {
+                    return lhs.summary.accuracyPercent < rhs.summary.accuracyPercent
+                }
+
+                if lhs.summary.averageExpectedImpact != rhs.summary.averageExpectedImpact {
+                    return lhs.summary.averageExpectedImpact < rhs.summary.averageExpectedImpact
+                }
+
+                return scenarioFocusOrder(lhs.focusKind) < scenarioFocusOrder(rhs.focusKind)
+            }
+            .first
+
+        guard let candidate else { return nil }
+
+        return WhatToPlayFocusTrainingPriority(
+            focusKind: candidate.focusKind,
+            summary: candidate.summary,
+            title: "\("أولوية التدريب".localized): \(scenarioFocusTitle(candidate.focusKind))",
+            detail: focusTrainingDetail(for: candidate.focusKind),
+            iconName: focusTrainingIcon(for: candidate.focusKind)
+        )
     }
 
     static func focusDifficulty(_ attempts: [WhatToPlayAttempt], minimumAttempts: Int = 2) -> WhatToPlayDifficultyFocus? {
@@ -1414,6 +1457,32 @@ enum WhatToPlayStatsAnalyzer {
             return "ضغط الحكم".localized
         case .narrowChoice:
             return "خيارات محدودة".localized
+        }
+    }
+
+    private static func focusTrainingDetail(for focusKind: WhatToPlayScenarioFocusKind) -> String {
+        switch focusKind {
+        case .openingLead:
+            return "تدرّب على اختيار ورقة البداية التي تكشف أقل معلومات وتحافظ على ورقة القوة للوقت المناسب.".localized
+        case .followSuit:
+            return "راجع التلزيم: ابدأ بمعرفة اللون المطلوب ثم قرر هل تكسب الأكلة أم تخفف خسارة النقاط.".localized
+        case .trumpPressure:
+            return "ركّز على ضغط الحكم: لا تقطع بلا هدف، واحسب هل التعلية أو حفظ الحكم أقوى للفريق.".localized
+        case .narrowChoice:
+            return "في الخيارات المحدودة، قارن الأثر المتوقع لاختيارين فقط ولا ترم الورقة الأعلى تلقائيًا.".localized
+        }
+    }
+
+    private static func focusTrainingIcon(for focusKind: WhatToPlayScenarioFocusKind) -> String {
+        switch focusKind {
+        case .openingLead:
+            return "arrowshape.turn.up.forward.fill"
+        case .followSuit:
+            return "suit.club.fill"
+        case .trumpPressure:
+            return "crown.fill"
+        case .narrowChoice:
+            return "2.circle.fill"
         }
     }
 
