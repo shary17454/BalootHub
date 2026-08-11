@@ -48,7 +48,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             bestCard: best,
             isCorrect: false,
             expectedImpact: -6,
-            bestExpectedImpact: 4
+            bestExpectedImpact: 4,
+            focusKind: .trumpPressure
         )
 
         context.insert(attempt)
@@ -63,6 +64,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(saved.expectedImpact, -6)
         XCTAssertEqual(saved.bestExpectedImpact, 4)
         XCTAssertEqual(saved.lostExpectedPoints, 10)
+        XCTAssertEqual(saved.focusKind, .trumpPressure)
     }
 
     func testAttemptWithoutBestExpectedImpactKeepsBackwardCompatibleZeroLoss() {
@@ -158,6 +160,23 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summaries.first?.summary.accuracyPercent, 0)
         XCTAssertEqual(summaries.last?.summary.attempts, 2)
         XCTAssertEqual(summaries.last?.summary.accuracyPercent, 50)
+    }
+
+    func testSummariesByScenarioFocusSkipLegacyAttemptsAndPreserveFocusOrder() {
+        let attempts = [
+            attempt(daysAgo: 4, difficulty: .easy, correct: true, impact: 4, bestImpact: 4, focusKind: .trumpPressure),
+            attempt(daysAgo: 3, difficulty: .easy, correct: false, impact: -2, bestImpact: 3, focusKind: .openingLead),
+            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: -4, bestImpact: 2, focusKind: .trumpPressure),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 1)
+        ]
+
+        let summaries = WhatToPlayStatsAnalyzer.summariesByScenarioFocus(attempts)
+
+        XCTAssertEqual(summaries.map(\.focusKind), [.openingLead, .trumpPressure])
+        XCTAssertEqual(summaries.first?.summary.lostExpectedPoints, 5)
+        XCTAssertEqual(summaries.last?.summary.attempts, 2)
+        XCTAssertEqual(summaries.last?.summary.accuracyPercent, 50)
+        XCTAssertEqual(summaries.last?.summary.lostExpectedPoints, 6)
     }
 
     func testFocusDifficultyRequiresMinimumAttemptsAndPicksLowestAccuracy() {
@@ -1042,7 +1061,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         difficulty: WhatToPlayDifficulty,
         correct: Bool,
         impact: Int,
-        bestImpact: Int? = nil
+        bestImpact: Int? = nil,
+        focusKind: WhatToPlayScenarioFocusKind? = nil
     ) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
             createdAt: Date(timeIntervalSince1970: 2_000_000 - daysAgo * 86_400),
@@ -1052,7 +1072,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             bestCard: PlayingCard(suit: .clubs, rank: .seven),
             isCorrect: correct,
             expectedImpact: impact,
-            bestExpectedImpact: bestImpact
+            bestExpectedImpact: bestImpact,
+            focusKind: focusKind
         )
     }
 

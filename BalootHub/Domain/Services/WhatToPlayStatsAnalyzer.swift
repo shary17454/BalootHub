@@ -32,6 +32,11 @@ struct WhatToPlayDifficultyFocus: Equatable {
     let summary: WhatToPlayStatsSummary
 }
 
+struct WhatToPlayScenarioFocusSummary: Equatable {
+    let focusKind: WhatToPlayScenarioFocusKind
+    let summary: WhatToPlayStatsSummary
+}
+
 struct WhatToPlayDifficultyImpactInsight: Equatable {
     let difficulty: WhatToPlayDifficulty
     let averageExpectedImpact: Int
@@ -269,6 +274,14 @@ enum WhatToPlayStatsAnalyzer {
             let filtered = attempts.filter { $0.difficulty == difficulty }
             guard !filtered.isEmpty else { return nil }
             return (difficulty, summarize(attempts: filtered))
+        }
+    }
+
+    static func summariesByScenarioFocus(_ attempts: [WhatToPlayAttempt]) -> [WhatToPlayScenarioFocusSummary] {
+        WhatToPlayScenarioFocusKind.allCases.compactMap { focusKind in
+            let filtered = attempts.filter { $0.focusKind == focusKind }
+            guard !filtered.isEmpty else { return nil }
+            return WhatToPlayScenarioFocusSummary(focusKind: focusKind, summary: summarize(attempts: filtered))
         }
     }
 

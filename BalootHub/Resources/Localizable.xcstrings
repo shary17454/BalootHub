@@ -6601,6 +6601,50 @@
         }
       }
     },
+    "شرح نمط الحكم داخل لعبة البلوت الواحدة؛ يحدده اللاعب المشتري ولونه أثناء دورة المزايدة." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explains Hokum inside the single Baloot game; the buying player chooses it and its suit during bidding."
+          }
+        }
+      }
+    },
+    "شرح نمط الصن داخل لعبة البلوت الواحدة؛ لا يُفتح كلعبة منفصلة بل يُشترى أثناء المزايدة." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explains Sun inside the single Baloot game; it is not opened as a separate game, it is bought during bidding."
+          }
+        }
+      }
+    },
+    "مرجع الحكم" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hokum Reference"
+          }
+        }
+      }
+    },
+    "مرجع الصن" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sun Reference"
+          }
+        }
+      }
+    },
     "بنت" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -16430,6 +16474,66 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Performance by difficulty"
+          }
+        }
+      }
+    },
+    "الأداء حسب تركيز التدريب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Performance by training focus"
+          }
+        }
+      }
+    },
+    "اتباع اللون" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Following suit"
+          }
+        }
+      }
+    },
+    "افتتاح الأكلة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leading the trick"
+          }
+        }
+      }
+    },
+    "النقاط الضائعة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lost points"
+          }
+        }
+      }
+    },
+    "خيارات محدودة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limited choices"
+          }
+        }
+      }
+    },
+    "ضغط الحكم" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trump pressure"
           }
         }
       }

@@ -8,17 +8,24 @@ enum CatalogSeeder {
         let context = ModelContext(container)
         let descriptor = FetchDescriptor<GameCatalogItem>()
         let existingItems = (try? context.fetch(descriptor)) ?? []
-        let existingSlugs = Set(existingItems.map(\.slug))
-        var didInsert = false
+        var existingBySlug: [String: GameCatalogItem] = [:]
+        for item in existingItems {
+            existingBySlug[item.slug] = item
+        }
+        var didChange = false
 
         for definition in Self.allDefinitions {
-            guard !existingSlugs.contains(definition.slug) else { continue }
-            let item = definition.makeItem()
-            context.insert(item)
-            didInsert = true
+            if let existing = existingBySlug[definition.slug] {
+                definition.apply(to: existing)
+                didChange = true
+            } else {
+                let item = definition.makeItem()
+                context.insert(item)
+                didChange = true
+            }
         }
 
-        if didInsert {
+        if didChange {
             try? context.save()
         }
     }
@@ -60,13 +67,40 @@ private struct GameDefinition {
             isPlayable: isPlayable,
             sortOrder: sortOrder
         )
+        apply(to: item)
+        return item
+    }
+
+    /// يحدّث العناصر المزروعة سابقًا بدون المساس بالمفضلة أو تاريخ الإنشاء.
+    ///
+    /// مهم تحديدًا لأن صن وحكم كانا يظهران في نسخ قديمة كمدخلين مستقلين، بينما
+    /// الواقع أن اللعب يدخل من بلوت واحد وتحدد المزايدة هل الجولة صن أو حكم.
+    func apply(to item: GameCatalogItem) {
+        item.arabicTitle = arabicTitle
+        item.englishTitle = englishTitle
+        item.shortDescription = shortDescription
+        item.category = category
+        item.playerCountText = playerCountText
+        item.difficulty = difficulty
+        item.estimatedDuration = estimatedDuration
+        item.iconName = iconName
+        item.accentToken = accentToken
+        item.isPlayable = isPlayable
+        item.sortOrder = sortOrder
+
         for kind in StandardRuleSectionKind.allCases {
             let body = sections[kind] ?? "سيُضاف هذا القسم قريبًا."
-            let section = GameRuleSection(title: kind.title, body: body, order: kind.order, iconName: kind.iconName)
-            section.game = item
-            item.rules.append(section)
+            if let section = item.ruleSection(kind) {
+                section.title = kind.title
+                section.body = body
+                section.order = kind.order
+                section.iconName = kind.iconName
+            } else {
+                let section = GameRuleSection(title: kind.title, body: body, order: kind.order, iconName: kind.iconName)
+                section.game = item
+                item.rules.append(section)
+            }
         }
-        return item
     }
 }
 
@@ -102,9 +136,9 @@ private extension CatalogSeeder {
         ),
         GameDefinition(
             slug: "baloot-sun",
-            arabicTitle: "بلوت صن",
+            arabicTitle: "مرجع الصن",
             englishTitle: "Baloot – Sun",
-            shortDescription: "مرجع يشرح نمط الصن داخل لعبة البلوت؛ اللعب الفعلي يتم من بلوت كلاسيكي ثم يُختار صن في المزايدة.",
+            shortDescription: "شرح نمط الصن داخل لعبة البلوت الواحدة؛ لا يُفتح كلعبة منفصلة بل يُشترى أثناء المزايدة.",
             category: .balootTool,
             playerCountText: "4 لاعبين (فريقان متقابلان)",
             difficulty: .beginner,
@@ -128,9 +162,9 @@ private extension CatalogSeeder {
         ),
         GameDefinition(
             slug: "baloot-hokum",
-            arabicTitle: "بلوت حكم",
+            arabicTitle: "مرجع الحكم",
             englishTitle: "Baloot – Hokum",
-            shortDescription: "مرجع يشرح نمط الحكم داخل لعبة البلوت؛ اللعب الفعلي يتم من بلوت كلاسيكي ثم يُشترى حكم ويُحدد لونه.",
+            shortDescription: "شرح نمط الحكم داخل لعبة البلوت الواحدة؛ يحدده اللاعب المشتري ولونه أثناء دورة المزايدة.",
             category: .balootTool,
             playerCountText: "4 لاعبين (فريقان متقابلان)",
             difficulty: .intermediate,

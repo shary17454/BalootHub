@@ -320,6 +320,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.summariesByDifficulty(attempts)
     }
 
+    private var scenarioFocusSummaries: [WhatToPlayScenarioFocusSummary] {
+        WhatToPlayStatsAnalyzer.summariesByScenarioFocus(attempts)
+    }
+
     private var coachingTip: WhatToPlayCoachingTip {
         WhatToPlayStatsAnalyzer.coachingTip(for: attempts)
     }
@@ -385,6 +389,7 @@ struct WhatToPlayTrainerView: View {
                 microDrillCard
                 statsCard
                 difficultyStatsCard
+                scenarioFocusStatsCard
                 recentAttemptsCard
                 reviewQueueCard
 
@@ -1016,6 +1021,44 @@ struct WhatToPlayTrainerView: View {
         .accessibilityElement(children: .combine)
     }
 
+    @ViewBuilder
+    private var scenarioFocusStatsCard: some View {
+        if !scenarioFocusSummaries.isEmpty {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                Label("الأداء حسب تركيز التدريب".localized, systemImage: "scope")
+                    .font(AppTypography.headline)
+                    .foregroundStyle(AppColor.primary)
+
+                VStack(spacing: AppSpacing.sm) {
+                    ForEach(scenarioFocusSummaries, id: \.focusKind) { entry in
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(focusTitle(entry.focusKind))
+                                    .font(AppTypography.subheadline.weight(.semibold))
+                                    .foregroundStyle(AppColor.textPrimary)
+                                Text("\("النقاط الضائعة".localized): \(entry.summary.lostExpectedPoints)")
+                                    .font(AppTypography.caption)
+                                    .foregroundStyle(AppColor.textSecondary)
+                            }
+                            Spacer()
+                            Text("\(entry.summary.correct)/\(entry.summary.attempts)")
+                                .font(AppTypography.caption.weight(.semibold))
+                                .foregroundStyle(AppColor.textSecondary)
+                            Text("\(entry.summary.accuracyPercent)%")
+                                .font(AppTypography.subheadline.weight(.bold))
+                                .foregroundStyle(entry.summary.accuracyPercent >= 70 ? AppColor.success : AppColor.accent)
+                        }
+                        .padding(AppSpacing.sm)
+                        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+                        .accessibilityElement(children: .combine)
+                    }
+                }
+            }
+            .padding(AppSpacing.md)
+            .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+        }
+    }
+
     private func practiceCoverageView(_ coverage: WhatToPlayPracticeCoverage) -> some View {
         Label {
             VStack(alignment: .leading, spacing: 2) {
@@ -1387,7 +1430,8 @@ struct WhatToPlayTrainerView: View {
                 bestCard: bestCard,
                 isCorrect: evaluated.isExpertChoice,
                 expectedImpact: evaluated.expectedImpact,
-                bestExpectedImpact: scenario.bestOption?.expectedImpact
+                bestExpectedImpact: scenario.bestOption?.expectedImpact,
+                focusKind: scenario.context.focusKind
             )
             modelContext.insert(attempt)
             try? modelContext.save()
@@ -1631,6 +1675,19 @@ struct WhatToPlayTrainerView: View {
             return "اقرأ الحكم المطروح قبل رمي ورقة عالية".localized
         case .narrowChoice:
             return "خياراتك محدودة؛ ركز على أقل ضرر ممكن".localized
+        }
+    }
+
+    private func focusTitle(_ focusKind: WhatToPlayScenarioFocusKind) -> String {
+        switch focusKind {
+        case .openingLead:
+            return "افتتاح الأكلة".localized
+        case .followSuit:
+            return "اتباع اللون".localized
+        case .trumpPressure:
+            return "ضغط الحكم".localized
+        case .narrowChoice:
+            return "خيارات محدودة".localized
         }
     }
 

@@ -28,7 +28,7 @@ public struct WhatToPlayOption: Identifiable, Sendable, Equatable {
 }
 
 /// محور الانتباه الأهم في موقف «وش تلعب؟».
-public enum WhatToPlayScenarioFocusKind: String, Sendable, Codable {
+public enum WhatToPlayScenarioFocusKind: String, Sendable, Codable, CaseIterable {
     case openingLead
     case followSuit
     case trumpPressure
