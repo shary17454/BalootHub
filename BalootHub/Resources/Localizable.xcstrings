@@ -18998,6 +18998,26 @@
         }
       }
     },
+    "متابعة الجلسة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue the session"
+          }
+        }
+      }
+    },
+    "إعادة الخطة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repeat the plan"
+          }
+        }
+      }
+    },
     "لم تبدأ هذه الجلسة بعد؛ اضغط زر البدء لتوليد أول موقف." : {
       "localizations" : {
         "en" : {

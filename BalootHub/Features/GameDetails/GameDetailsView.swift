@@ -619,7 +619,7 @@ struct WhatToPlayTrainerView: View {
         }
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .contain)
     }
 
     private func trainingSessionProgressView(_ progress: WhatToPlayTrainingSessionProgress) -> some View {
@@ -704,6 +704,16 @@ struct WhatToPlayTrainerView: View {
             }
             .padding(.top, AppSpacing.xs)
 
+            Button {
+                applyTrainingSessionNextStep(progress)
+            } label: {
+                Label(trainingSessionNextStepButtonTitle(progress), systemImage: progress.nextStepIconName)
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(progress.state == .needsRepeat ? AppColor.warning : AppColor.primary)
+            .disabled(isGeneratingScenario)
+
             if let reviewItem = progress.reviewItem {
                 VStack(alignment: .leading, spacing: AppSpacing.xs) {
                     Label("أهم موقف للمراجعة".localized, systemImage: reviewItem.iconName)
@@ -755,6 +765,19 @@ struct WhatToPlayTrainerView: View {
                 (isMet ? AppColor.success : AppColor.danger).opacity(0.12),
                 in: RoundedRectangle(cornerRadius: AppRadius.small)
             )
+    }
+
+    private func trainingSessionNextStepButtonTitle(_ progress: WhatToPlayTrainingSessionProgress) -> String {
+        switch progress.state {
+        case .notStarted:
+            "ابدأ الجلسة".localized
+        case .inProgress:
+            "متابعة الجلسة".localized
+        case .achieved:
+            "انتقل للتحدي التالي".localized
+        case .needsRepeat:
+            "إعادة الخطة".localized
+        }
     }
 
     private func sessionImpactTint(_ averageImpact: Int, completed: Int) -> Color {
@@ -2117,6 +2140,26 @@ struct WhatToPlayTrainerView: View {
             nextScenario()
         } else {
             difficulty = nextScenarioRecommendation.difficulty
+            preferredFocusRaw = targetFocusRaw
+            generateScenario()
+        }
+    }
+
+    private func applyTrainingSessionNextStep(_ progress: WhatToPlayTrainingSessionProgress) {
+        switch progress.state {
+        case .notStarted, .inProgress, .needsRepeat:
+            startTrainingSessionPlan()
+        case .achieved:
+            startNextScenarioRecommendation()
+        }
+    }
+
+    private func startTrainingSessionPlan() {
+        let targetFocusRaw = trainingSessionPlan.focusKind?.rawValue ?? "auto"
+        if difficulty == trainingSessionPlan.difficulty, preferredFocusRaw == targetFocusRaw {
+            nextScenario()
+        } else {
+            difficulty = trainingSessionPlan.difficulty
             preferredFocusRaw = targetFocusRaw
             generateScenario()
         }
