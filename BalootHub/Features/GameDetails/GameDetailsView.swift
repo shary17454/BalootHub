@@ -647,6 +647,14 @@ struct WhatToPlayTrainerView: View {
                     title: "الدقة الحالية".localized,
                     value: "\(progress.accuracyPercent)%"
                 )
+                miniPlanMetric(
+                    title: "متوسط الأثر".localized,
+                    value: impactText(progress.averageExpectedImpact)
+                )
+                miniPlanMetric(
+                    title: "أثر الجلسة".localized,
+                    value: impactText(progress.totalExpectedImpact)
+                )
             }
         }
         .padding(.top, AppSpacing.xs)

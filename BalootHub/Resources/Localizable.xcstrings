@@ -19078,6 +19078,16 @@
         }
       }
     },
+    "أثر الجلسة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session impact"
+          }
+        }
+      }
+    },
     "محاولات" : {
       "localizations" : {
         "en" : {

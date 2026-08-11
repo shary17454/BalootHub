@@ -212,6 +212,8 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let targetAttempts: Int
     let correctAttempts: Int
     let accuracyPercent: Int
+    let totalExpectedImpact: Int
+    let averageExpectedImpact: Int
     let remainingAttempts: Int
     let title: String
     let detail: String
@@ -894,6 +896,10 @@ enum WhatToPlayStatsAnalyzer {
         let accuracy = completed > 0
             ? Int((Double(correct) / Double(completed) * 100).rounded())
             : 0
+        let totalImpact = sessionAttempts.reduce(0) { $0 + $1.expectedImpact }
+        let averageImpact = completed > 0
+            ? Int((Double(totalImpact) / Double(completed)).rounded())
+            : 0
         let remaining = max(0, target - completed)
 
         if completed == 0 {
@@ -903,6 +909,8 @@ enum WhatToPlayStatsAnalyzer {
                 targetAttempts: target,
                 correctAttempts: 0,
                 accuracyPercent: 0,
+                totalExpectedImpact: 0,
+                averageExpectedImpact: 0,
                 remainingAttempts: target,
                 title: "ابدأ الجلسة".localized,
                 detail: "لم تبدأ هذه الجلسة بعد؛ اضغط زر البدء لتوليد أول موقف.".localized,
@@ -917,6 +925,8 @@ enum WhatToPlayStatsAnalyzer {
                 targetAttempts: target,
                 correctAttempts: correct,
                 accuracyPercent: accuracy,
+                totalExpectedImpact: totalImpact,
+                averageExpectedImpact: averageImpact,
                 remainingAttempts: remaining,
                 title: "الجلسة قيد التنفيذ".localized,
                 detail: "أكمل بقية المواقف قبل الحكم على هدف الجلسة.".localized,
@@ -931,6 +941,8 @@ enum WhatToPlayStatsAnalyzer {
                 targetAttempts: target,
                 correctAttempts: correct,
                 accuracyPercent: accuracy,
+                totalExpectedImpact: totalImpact,
+                averageExpectedImpact: averageImpact,
                 remainingAttempts: 0,
                 title: "هدف الجلسة تحقق".localized,
                 detail: "أداؤك في هذه الدفعة وصل إلى هدف الخطة.".localized,
@@ -944,6 +956,8 @@ enum WhatToPlayStatsAnalyzer {
             targetAttempts: target,
             correctAttempts: correct,
             accuracyPercent: accuracy,
+            totalExpectedImpact: totalImpact,
+            averageExpectedImpact: averageImpact,
             remainingAttempts: 0,
             title: "أعد الجلسة".localized,
             detail: "أكملتها، لكن الدقة أقل من هدف الخطة؛ أعد نفس المستوى.".localized,

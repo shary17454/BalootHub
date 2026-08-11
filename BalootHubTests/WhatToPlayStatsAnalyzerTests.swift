@@ -1386,6 +1386,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.state, .notStarted)
         XCTAssertEqual(progress.completedAttempts, 0)
         XCTAssertEqual(progress.targetAttempts, 3)
+        XCTAssertEqual(progress.totalExpectedImpact, 0)
+        XCTAssertEqual(progress.averageExpectedImpact, 0)
         XCTAssertEqual(progress.remainingAttempts, 3)
         XCTAssertEqual(progress.title, "ابدأ الجلسة".localized)
     }
@@ -1406,6 +1408,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.completedAttempts, 3)
         XCTAssertEqual(progress.correctAttempts, 2)
         XCTAssertEqual(progress.accuracyPercent, 67)
+        XCTAssertEqual(progress.totalExpectedImpact, 5)
+        XCTAssertEqual(progress.averageExpectedImpact, 2)
         XCTAssertEqual(progress.remainingAttempts, 1)
     }
 
@@ -1425,6 +1429,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.completedAttempts, 2)
         XCTAssertEqual(progress.correctAttempts, 1)
         XCTAssertEqual(progress.accuracyPercent, 50)
+        XCTAssertEqual(progress.totalExpectedImpact, 1)
+        XCTAssertEqual(progress.averageExpectedImpact, 1)
         XCTAssertEqual(progress.remainingAttempts, 1)
     }
 
@@ -1443,6 +1449,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.completedAttempts, 3)
         XCTAssertEqual(progress.correctAttempts, 2)
         XCTAssertEqual(progress.accuracyPercent, 67)
+        XCTAssertEqual(progress.totalExpectedImpact, 5)
+        XCTAssertEqual(progress.averageExpectedImpact, 2)
         XCTAssertEqual(progress.title, "هدف الجلسة تحقق".localized)
     }
 
@@ -1461,6 +1469,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.completedAttempts, 4)
         XCTAssertEqual(progress.correctAttempts, 2)
         XCTAssertEqual(progress.accuracyPercent, 50)
+        XCTAssertEqual(progress.totalExpectedImpact, -3)
+        XCTAssertEqual(progress.averageExpectedImpact, -1)
         XCTAssertEqual(progress.remainingAttempts, 0)
         XCTAssertEqual(progress.title, "أعد الجلسة".localized)
     }
