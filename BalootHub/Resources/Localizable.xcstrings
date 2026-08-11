@@ -16464,12 +16464,42 @@
         }
       }
     },
+    "الترتيب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rank"
+          }
+        }
+      }
+    },
     "السلسلة الحالية" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Current streak"
+          }
+        }
+      }
+    },
+    "الأفضل" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Best"
+          }
+        }
+      }
+    },
+    "اختر" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose"
           }
         }
       }
@@ -16550,6 +16580,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "What would you play?"
+          }
+        }
+      }
+    },
+    "ورقة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Card"
           }
         }
       }

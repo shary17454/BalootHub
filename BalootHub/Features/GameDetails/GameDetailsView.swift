@@ -538,16 +538,33 @@ struct WhatToPlayTrainerView: View {
                     } label: {
                         VStack(spacing: 6) {
                             MiniAnalysisCard(card: option.card, isSelected: selectedOption?.card == option.card)
-                            Text(option.rank == 1 ? "الأفضل" : "#\(option.rank)")
+                            Text(optionBadgeText(option))
                                 .font(.caption2.weight(.semibold))
-                                .foregroundStyle(option.rank == 1 ? AppColor.success : AppColor.textSecondary)
+                                .foregroundStyle(optionBadgeTint(option))
                         }
                     }
                     .buttonStyle(.plain)
-                    .accessibilityLabel("\(option.card.accessibilityName)، الترتيب \(option.rank)")
+                    .accessibilityLabel(optionAccessibilityLabel(option))
                 }
             }
         }
+    }
+
+    private func optionBadgeText(_ option: WhatToPlayOption) -> String {
+        WhatToPlayOptionDisclosure.badgeText(rank: option.rank, isRevealed: selectedOption != nil)
+    }
+
+    private func optionBadgeTint(_ option: WhatToPlayOption) -> Color {
+        guard selectedOption != nil else { return AppColor.textSecondary }
+        return option.rank == 1 ? AppColor.success : AppColor.textSecondary
+    }
+
+    private func optionAccessibilityLabel(_ option: WhatToPlayOption) -> String {
+        WhatToPlayOptionDisclosure.accessibilityLabel(
+            cardName: option.card.accessibilityName,
+            rank: option.rank,
+            isRevealed: selectedOption != nil
+        )
     }
 
     private func choose(_ option: WhatToPlayOption, in scenario: WhatToPlayScenario) {
