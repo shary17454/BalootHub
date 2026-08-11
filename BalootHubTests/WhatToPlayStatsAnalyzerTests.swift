@@ -2098,6 +2098,21 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertTrue(progress.nextStepDetail.contains("2"))
     }
 
+    func testTrainingSessionProgressNextStepTargetsLostValueWhileInProgress() {
+        let plan = sessionPlan(difficulty: .medium, count: 4, target: 50)
+        let attempts = [
+            attempt(daysAgo: 2, difficulty: .medium, correct: true, impact: 1, bestImpact: 8),
+            attempt(daysAgo: 1, difficulty: .medium, correct: false, impact: 2, bestImpact: 7)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.state, .inProgress)
+        XCTAssertEqual(progress.averageLostExpectedPoints, 6)
+        XCTAssertEqual(progress.nextStepTitle, "قلل النقاط الضائعة".localized)
+        XCTAssertEqual(progress.nextStepIconName, "chart.bar.doc.horizontal.fill")
+    }
+
     func testTrainingSessionProgressImpactExtremeCardsUseNewestAttemptOnTie() {
         let plan = sessionPlan(difficulty: .medium, count: 4, target: 50)
         let newestBest = PlayingCard(suit: .spades, rank: .ace)
@@ -2260,6 +2275,22 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.gradeImpactComponent, 40)
         XCTAssertEqual(progress.gradeTitle, "جلسة تحتاج إعادة".localized)
         XCTAssertEqual(progress.gradeReasonTitle, "التقييم متوازن".localized)
+    }
+
+    func testTrainingSessionProgressRepeatStepTargetsLostValue() {
+        let plan = sessionPlan(difficulty: .medium, count: 3, target: 67)
+        let attempts = [
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 1, bestImpact: 8),
+            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: 2, bestImpact: 7),
+            attempt(daysAgo: 1, difficulty: .medium, correct: false, impact: 1, bestImpact: 6)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.state, .needsRepeat)
+        XCTAssertEqual(progress.averageLostExpectedPoints, 6)
+        XCTAssertEqual(progress.nextStepTitle, "راجع القيمة الضائعة".localized)
+        XCTAssertEqual(progress.nextStepIconName, "drop.fill")
     }
 
     func testTrainingSessionGradeReasonIdentifiesAccuracyWeakness() {

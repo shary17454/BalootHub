@@ -1263,7 +1263,8 @@ enum WhatToPlayStatsAnalyzer {
             remainingAttempts: remaining,
             correctAttemptsNeededForTarget: correctNeeded,
             accuracyTargetMet: accuracyTargetMet,
-            impactTargetMet: impactTargetMet
+            impactTargetMet: impactTargetMet,
+            averageLostExpectedPoints: sessionSummary.averageLostExpectedPoints
         )
         let grade = trainingSessionGrade(
             completedAttempts: completed,
@@ -1597,7 +1598,8 @@ enum WhatToPlayStatsAnalyzer {
         remainingAttempts: Int,
         correctAttemptsNeededForTarget: Int,
         accuracyTargetMet: Bool,
-        impactTargetMet: Bool
+        impactTargetMet: Bool,
+        averageLostExpectedPoints: Int
     ) -> (title: String, detail: String, iconName: String) {
         switch state {
         case .notStarted:
@@ -1615,6 +1617,13 @@ enum WhatToPlayStatsAnalyzer {
                     "exclamationmark.triangle.fill"
                 )
             }
+            if averageLostExpectedPoints >= 4 {
+                return (
+                    "قلل النقاط الضائعة".localized,
+                    "\("متوسط الضياع".localized): \(averageLostExpectedPoints). \("قبل الموقف التالي، احذف الخيارات الضعيفة ثم قارن اختيارك بأفضل ورقة وثاني أفضل ورقة.".localized)",
+                    "chart.bar.doc.horizontal.fill"
+                )
+            }
             return (
                 "أكمل الدفعة".localized,
                 "\("باقي".localized) \(remainingAttempts) \("مواقف، وتحتاج".localized) \(neededCorrect) \("إجابات صحيحة إضافية للوصول لهدف الدقة.".localized)",
@@ -1627,6 +1636,13 @@ enum WhatToPlayStatsAnalyzer {
                 "arrow.up.circle.fill"
             )
         case .needsRepeat:
+            if averageLostExpectedPoints >= 4 {
+                return (
+                    "راجع القيمة الضائعة".localized,
+                    "\("متوسط الضياع".localized): \(averageLostExpectedPoints). \("أعد الجلسة وركّز على تقليل الفارق عن اختيار الخبير قبل رفع الصعوبة.".localized)",
+                    "drop.fill"
+                )
+            }
             if accuracyTargetMet && !impactTargetMet {
                 return (
                     "راجع جودة القرار".localized,

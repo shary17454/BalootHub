@@ -18098,6 +18098,34 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "先复盘价值，再提高难度" } }
       }
     },
+    "قلل النقاط الضائعة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Reduziere verlorene Punkte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reduce lost points" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Reduce los puntos perdidos" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Réduis les points perdus" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "खोए अंक घटाएँ" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kurangi poin hilang" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Сократи потерянные очки" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Kayıp puanı azalt" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "ضائع پوائنٹس کم کریں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "减少损失分" } }
+      }
+    },
+    "قبل الموقف التالي، احذف الخيارات الضعيفة ثم قارن اختيارك بأفضل ورقة وثاني أفضل ورقة." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Streiche vor der nächsten Situation die schwachen Optionen und vergleiche deine Wahl dann mit der besten und zweitbesten Karte." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Before the next scenario, remove weak options, then compare your choice with the best and second-best cards." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Antes del siguiente escenario, descarta las opciones débiles y compara tu elección con la mejor y la segunda mejor carta." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Avant le prochain scénario, élimine les options faibles, puis compare ton choix avec la meilleure et la deuxième meilleure carte." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "अगले परिदृश्य से पहले कमजोर विकल्प हटाएँ, फिर अपने चुनाव की तुलना सबसे अच्छे और दूसरे सबसे अच्छे पत्ते से करें." } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Sebelum skenario berikutnya, singkirkan opsi lemah, lalu bandingkan pilihanmu dengan kartu terbaik dan kedua terbaik." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Перед следующим сценарием отбрось слабые варианты, затем сравни свой выбор с лучшей и второй лучшей картой." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Sonraki senaryodan önce zayıf seçenekleri ele, sonra seçimini en iyi ve ikinci en iyi kartla karşılaştır." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اگلے منظرنامے سے پہلے کمزور انتخاب ہٹائیں، پھر اپنے انتخاب کا بہترین اور دوسرے بہترین پتے سے موازنہ کریں." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "进入下个局面前，先排除弱选项，再把你的选择与最佳和第二佳牌比较。" } }
+      }
+    },
     "جلسة مراجعة القيمة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Wert-Review-Sitzung" } },
@@ -18110,6 +18138,34 @@
         "tr" : { "stringUnit" : { "state" : "translated", "value" : "Değer inceleme oturumu" } },
         "ur" : { "stringUnit" : { "state" : "translated", "value" : "قدر کا جائزہ سیشن" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "价值复盘训练" } }
+      }
+    },
+    "راجع القيمة الضائعة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prüfe den verlorenen Wert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Review lost value" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Revisa el valor perdido" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Révise la valeur perdue" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "खोए मूल्य की समीक्षा करें" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tinjau nilai yang hilang" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Разбери потерянную ценность" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Kayıp değeri gözden geçir" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "ضائع قدر کا جائزہ لیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "复盘损失价值" } }
+      }
+    },
+    "أعد الجلسة وركّز على تقليل الفارق عن اختيار الخبير قبل رفع الصعوبة." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wiederhole die Sitzung und konzentriere dich darauf, den Abstand zur Expertenwahl zu verringern, bevor du die Schwierigkeit erhöhst." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Repeat the session and focus on reducing the gap from the expert choice before raising difficulty." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Repite la sesión y céntrate en reducir la diferencia con la elección del experto antes de subir la dificultad." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Répète la session et concentre-toi sur la réduction de l’écart avec le choix de l’expert avant d’augmenter la difficulté." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कठिनाई बढ़ाने से पहले सत्र दोहराएँ और विशेषज्ञ के चुनाव से अंतर कम करने पर ध्यान दें." } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Ulangi sesi dan fokus mengurangi selisih dari pilihan ahli sebelum menaikkan kesulitan." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Повтори сессию и сосредоточься на сокращении разрыва с выбором эксперта перед повышением сложности." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Zorluğu artırmadan önce oturumu tekrarla ve uzman seçimiyle aradaki farkı azaltmaya odaklan." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "مشکل بڑھانے سے پہلے سیشن دہرائیں اور ماہر کے انتخاب سے فرق کم کرنے پر توجہ دیں." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "提高难度前，重复本训练并专注缩小与专家选择的差距。" } }
       }
     },
     "الدقة وحدها لا تكفي هنا؛ ركز على تقليل الفارق بين اختيارك واختيار الخبير قبل رفع المستوى." : {
