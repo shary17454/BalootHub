@@ -1865,7 +1865,10 @@ struct WhatToPlayTrainerView: View {
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 4), spacing: AppSpacing.xs) {
                     ForEach(scenario.blockedCards) { blocked in
                         Button {
-                            illegalMoveExplanation = illegalMoveExplanation(for: blocked.reason, trumpSuit: scenario.state.trumpSuit)
+                            illegalMoveExplanation = RuleExplanationFormatter.illegalMoveExplanation(
+                                for: blocked.reason,
+                                trumpSuit: scenario.state.trumpSuit
+                            )
                         } label: {
                             VStack(spacing: 6) {
                                 MiniAnalysisCard(card: blocked.card, isSelected: false)
@@ -1877,7 +1880,12 @@ struct WhatToPlayTrainerView: View {
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel("\(blocked.card.accessibilityName)، \("ورقة غير قانونية".localized)")
-                        .accessibilityHint(illegalMoveExplanation(for: blocked.reason, trumpSuit: scenario.state.trumpSuit))
+                        .accessibilityHint(
+                            RuleExplanationFormatter.illegalMoveExplanation(
+                                for: blocked.reason,
+                                trumpSuit: scenario.state.trumpSuit
+                            )
+                        )
                     }
                 }
 
@@ -2186,24 +2194,6 @@ struct WhatToPlayTrainerView: View {
             AppColor.warning
         case .costly:
             AppColor.danger
-        }
-    }
-
-    private func illegalMoveExplanation(for reason: IllegalMoveReason, trumpSuit: Suit?) -> String {
-        switch reason {
-        case .mustFollowSuit:
-            return "لا يمكنك لعب هذه الورقة لأن لديك ورقة من اللون المطلوب ويجب عليك التلزيم.".localized
-        case .mustPlayTrumpWhenVoidOfSuit:
-            let suitName = trumpSuit.map { " (\($0.spokenName))" } ?? ""
-            return "\("أنت لا تملك اللون المطلوب ويجب عليك القطع بالحكم وفق القاعدة الحالية.".localized)\(suitName)"
-        case .mustOvertrump:
-            return "يجب أن تعلو على أعلى حكم مطروح ما دام لديك ما يعلوه.".localized
-        case .cardNotInHand:
-            return "هذه الورقة ليست في يدك.".localized
-        case .notPlayersTurn:
-            return "ليس دورك الآن.".localized
-        case .wrongPhase:
-            return "لا يمكن لعب ورقة في هذه المرحلة.".localized
         }
     }
 

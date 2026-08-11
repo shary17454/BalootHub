@@ -373,30 +373,12 @@ final class BalootGameViewModel {
         guard let activeHumanID,
               let reason = GameEngine.invalidMoveReason(playerID: activeHumanID, card: card, state: state)
         else { return nil }
-        return Self.explanation(for: reason, trumpSuit: state.trumpSuit)
+        return RuleExplanationFormatter.illegalMoveExplanation(for: reason, trumpSuit: state.trumpSuit)
     }
 
     /// يعرض تفسير المنع للاعب. تستدعيها الواجهة عند الضغط على ورقة غير قانونية.
     func explainIllegalMove(_ card: PlayingCard) {
         errorMessage = explanation(forPlaying: card) ?? Self.moveErrorMessage
-    }
-
-    private static func explanation(for reason: IllegalMoveReason, trumpSuit: Suit?) -> String {
-        switch reason {
-        case .mustFollowSuit:
-            return "لا يمكنك لعب هذه الورقة لأن لديك ورقة من اللون المطلوب ويجب عليك التلزيم.".localized
-        case .mustPlayTrumpWhenVoidOfSuit:
-            let suitName = trumpSuit.map { " (\($0.spokenName))" } ?? ""
-            return "\("أنت لا تملك اللون المطلوب ويجب عليك القطع بالحكم وفق القاعدة الحالية.".localized)\(suitName)"
-        case .mustOvertrump:
-            return "يجب أن تعلو على أعلى حكم مطروح ما دام لديك ما يعلوه.".localized
-        case .cardNotInHand:
-            return "هذه الورقة ليست في يدك.".localized
-        case .notPlayersTurn:
-            return "ليس دورك الآن.".localized
-        case .wrongPhase:
-            return "لا يمكن لعب ورقة في هذه المرحلة.".localized
-        }
     }
 
     func finishRoundIfNeeded() {
