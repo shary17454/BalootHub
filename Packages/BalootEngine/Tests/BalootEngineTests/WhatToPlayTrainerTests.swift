@@ -85,6 +85,25 @@ struct WhatToPlayTrainerTests {
         }
     }
 
+    @Test("سبب نتيجة الخيار يشرح نوع الأثر التكتيكي")
+    func optionOutcomeReasonExplainsOutcome() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+
+        for option in scenario.options {
+            #expect(!option.outcomeReason.isEmpty)
+            switch option.outcome {
+            case .leadsTrick:
+                #expect(option.outcomeReason.contains("تبدأ الأكلة"))
+            case .developsTrick:
+                #expect(option.outcomeReason.contains("لا تحسم الأكلة"))
+            case .winsTrick:
+                #expect(option.outcomeReason.contains("لفريقك"))
+            case .losesTrick:
+                #expect(option.outcomeReason.contains("لصالح الخصم"))
+            }
+        }
+    }
+
     @Test("سياق الموقف يطابق حالة الأكلة الحالية")
     func scenarioContextMatchesCurrentTrickState() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)

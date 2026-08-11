@@ -23,6 +23,7 @@ public struct WhatToPlayOption: Identifiable, Sendable, Equatable {
     public let isExpertChoice: Bool
     public let expectedImpact: Int
     public let outcome: WhatToPlayOptionOutcome
+    public let outcomeReason: String
     public let explanation: String
 
     public var id: PlayingCard { card }
@@ -183,6 +184,7 @@ public enum WhatToPlayTrainer {
                 isExpertChoice: entry.card == expertChoice,
                 expectedImpact: entry.impact,
                 outcome: entry.outcome,
+                outcomeReason: outcomeReason(for: entry.outcome),
                 explanation: explanation(for: entry.card, impact: entry.impact, isExpertChoice: entry.card == expertChoice, state: state)
             )
         }
@@ -268,6 +270,19 @@ public enum WhatToPlayTrainer {
         }
 
         return wasLeading ? .leadsTrick : .developsTrick
+    }
+
+    private static func outcomeReason(for outcome: WhatToPlayOptionOutcome) -> String {
+        switch outcome {
+        case .leadsTrick:
+            return "هذه الورقة تبدأ الأكلة، لذلك يعتمد أثرها النهائي على ردود بقية اللاعبين."
+        case .developsTrick:
+            return "هذه الورقة لا تحسم الأكلة فورًا؛ ما زالت نتيجة الأكلة معلقة على الأوراق التالية."
+        case .winsTrick:
+            return "هذه الورقة تحسم الأكلة لفريقك حسب الأوراق المطروحة وقواعد الحكم والصن."
+        case .losesTrick:
+            return "هذه الورقة تنهي الأكلة لصالح الخصم، لذلك تُحسب نقاطها عليه في هذا الموقف."
+        }
     }
 
     private static func heuristicScore(

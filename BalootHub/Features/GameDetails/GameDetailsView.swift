@@ -1512,6 +1512,11 @@ struct WhatToPlayTrainerView: View {
                 InfoRow(icon: optionOutcomeIcon(option.outcome), title: "نتيجة القرار".localized, value: optionOutcomeText(option.outcome))
             }
 
+            Text(option.outcomeReason.localized)
+                .font(AppTypography.caption)
+                .foregroundStyle(AppColor.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+
             if let insight = WhatToPlayStatsAnalyzer.decisionInsight(for: option, in: scenario) {
                 decisionInsightView(insight)
             }
@@ -1654,6 +1659,11 @@ struct WhatToPlayTrainerView: View {
                     .foregroundStyle(optionOutcomeTint(row.outcome))
                 Text(row.rationale)
                     .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text(row.outcomeReason.localized)
+                    .font(.caption2)
                     .foregroundStyle(AppColor.textSecondary)
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)

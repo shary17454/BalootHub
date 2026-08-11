@@ -16728,6 +16728,46 @@
         }
       }
     },
+    "هذه الورقة تبدأ الأكلة، لذلك يعتمد أثرها النهائي على ردود بقية اللاعبين." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This card leads the trick, so its final impact depends on the other players' replies."
+          }
+        }
+      }
+    },
+    "هذه الورقة لا تحسم الأكلة فورًا؛ ما زالت نتيجة الأكلة معلقة على الأوراق التالية." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This card does not decide the trick immediately; the trick outcome still depends on the next cards."
+          }
+        }
+      }
+    },
+    "هذه الورقة تحسم الأكلة لفريقك حسب الأوراق المطروحة وقواعد الحكم والصن." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This card wins the trick for your team based on the played cards and Sun/Hokum rules."
+          }
+        }
+      }
+    },
+    "هذه الورقة تنهي الأكلة لصالح الخصم، لذلك تُحسب نقاطها عليه في هذا الموقف." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This card gives the trick to the opponent, so its points count against you in this scenario."
+          }
+        }
+      }
+    },
     "السلسلة الحالية" : {
       "localizations" : {
         "en" : {

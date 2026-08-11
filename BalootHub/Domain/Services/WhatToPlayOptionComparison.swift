@@ -7,6 +7,7 @@ struct WhatToPlayOptionComparisonRow: Identifiable, Equatable {
     let expectedImpact: Int
     let lostExpectedPoints: Int
     let outcome: WhatToPlayOptionOutcome
+    let outcomeReason: String
     let rationale: String
     let isSelected: Bool
     let isExpertChoice: Bool
@@ -30,6 +31,7 @@ enum WhatToPlayOptionComparison {
                     expectedImpact: option.expectedImpact,
                     lostExpectedPoints: max(0, bestImpact - option.expectedImpact),
                     outcome: option.outcome,
+                    outcomeReason: option.outcomeReason,
                     rationale: option.explanation,
                     isSelected: option.card == selectedCard,
                     isExpertChoice: option.isExpertChoice
