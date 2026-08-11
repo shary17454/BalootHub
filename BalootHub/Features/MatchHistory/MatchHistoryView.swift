@@ -26,6 +26,14 @@ struct MatchHistoryView: View {
                 )
             } else {
                 List {
+                    Section {
+                        NavigationLink {
+                            PlayerStatsView()
+                        } label: {
+                            Label("أسلوب لعبك", systemImage: "chart.line.uptrend.xyaxis")
+                        }
+                    }
+
                     if !activeSessions.isEmpty {
                         Section("جلسات نشطة") {
                             ForEach(activeSessions) { session in
