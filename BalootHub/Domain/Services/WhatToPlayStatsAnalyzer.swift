@@ -238,6 +238,8 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let gradeTitle: String
     let gradeDetail: String
     let gradeIconName: String
+    let gradeReasonTitle: String
+    let gradeReasonDetail: String
 }
 
 enum WhatToPlayDecisionInsightKind: Equatable {
@@ -982,7 +984,9 @@ enum WhatToPlayStatsAnalyzer {
                 gradeImpactComponent: grade.impactComponent,
                 gradeTitle: grade.title,
                 gradeDetail: grade.detail,
-                gradeIconName: grade.iconName
+                gradeIconName: grade.iconName,
+                gradeReasonTitle: grade.reasonTitle,
+                gradeReasonDetail: grade.reasonDetail
             )
         }
 
@@ -1015,7 +1019,9 @@ enum WhatToPlayStatsAnalyzer {
                 gradeImpactComponent: grade.impactComponent,
                 gradeTitle: grade.title,
                 gradeDetail: grade.detail,
-                gradeIconName: grade.iconName
+                gradeIconName: grade.iconName,
+                gradeReasonTitle: grade.reasonTitle,
+                gradeReasonDetail: grade.reasonDetail
             )
         }
 
@@ -1048,7 +1054,9 @@ enum WhatToPlayStatsAnalyzer {
                 gradeImpactComponent: grade.impactComponent,
                 gradeTitle: grade.title,
                 gradeDetail: grade.detail,
-                gradeIconName: grade.iconName
+                gradeIconName: grade.iconName,
+                gradeReasonTitle: grade.reasonTitle,
+                gradeReasonDetail: grade.reasonDetail
             )
         }
 
@@ -1083,7 +1091,9 @@ enum WhatToPlayStatsAnalyzer {
             gradeImpactComponent: grade.impactComponent,
             gradeTitle: grade.title,
             gradeDetail: grade.detail,
-            gradeIconName: grade.iconName
+            gradeIconName: grade.iconName,
+            gradeReasonTitle: grade.reasonTitle,
+            gradeReasonDetail: grade.reasonDetail
         )
     }
 
@@ -1092,7 +1102,7 @@ enum WhatToPlayStatsAnalyzer {
         accuracyPercent: Int,
         averageExpectedImpact: Int,
         targetAverageExpectedImpact: Int
-    ) -> (percent: Int, accuracyComponent: Int, impactComponent: Int, title: String, detail: String, iconName: String) {
+    ) -> (percent: Int, accuracyComponent: Int, impactComponent: Int, title: String, detail: String, iconName: String, reasonTitle: String, reasonDetail: String) {
         guard completedAttempts > 0 else {
             return (
                 0,
@@ -1100,12 +1110,18 @@ enum WhatToPlayStatsAnalyzer {
                 0,
                 "لا يوجد تقييم بعد".localized,
                 "ابدأ الجلسة حتى يظهر تقييم يجمع الدقة وأثر القرار.".localized,
-                "gauge.low"
+                "gauge.low",
+                "سبب التقييم".localized,
+                "لا توجد محاولة في هذه الجلسة حتى الآن.".localized
             )
         }
 
         let normalizedImpact = min(100, max(0, 50 + ((averageExpectedImpact - targetAverageExpectedImpact) * 10)))
         let percent = min(100, max(0, Int((Double(accuracyPercent + normalizedImpact) / 2.0).rounded())))
+        let reason = trainingSessionGradeReason(
+            accuracyComponent: accuracyPercent,
+            impactComponent: normalizedImpact
+        )
 
         if percent >= 85 {
             return (
@@ -1114,7 +1130,9 @@ enum WhatToPlayStatsAnalyzer {
                 normalizedImpact,
                 "جلسة ممتازة".localized,
                 "قراراتك قريبة من الخبير وتحقق أثرًا قويًا؛ انتقل لتحدٍ أصعب.".localized,
-                "gauge.high"
+                "gauge.high",
+                reason.title,
+                reason.detail
             )
         }
 
@@ -1125,7 +1143,9 @@ enum WhatToPlayStatsAnalyzer {
                 normalizedImpact,
                 "جلسة جيدة".localized,
                 "أداؤك ثابت، لكن راجع الفروق الصغيرة بين أفضل وثاني أفضل ورقة.".localized,
-                "gauge.medium"
+                "gauge.medium",
+                reason.title,
+                reason.detail
             )
         }
 
@@ -1136,7 +1156,9 @@ enum WhatToPlayStatsAnalyzer {
                 normalizedImpact,
                 "جلسة تحتاج تثبيت".localized,
                 "لديك أساس قابل للبناء، لكن القرار يحتاج قراءة أهدأ قبل اللعب.".localized,
-                "gauge.medium"
+                "gauge.medium",
+                reason.title,
+                reason.detail
             )
         }
 
@@ -1146,7 +1168,34 @@ enum WhatToPlayStatsAnalyzer {
             normalizedImpact,
             "جلسة تحتاج إعادة".localized,
             "الدقة أو أثر القرار منخفض؛ أعد نفس الخطة ولا ترفع الصعوبة بعد.".localized,
-            "gauge.low"
+            "gauge.low",
+            reason.title,
+            reason.detail
+        )
+    }
+
+    private static func trainingSessionGradeReason(
+        accuracyComponent: Int,
+        impactComponent: Int
+    ) -> (title: String, detail: String) {
+        let gap = accuracyComponent - impactComponent
+        if gap >= 15 {
+            return (
+                "الأثر يخفض التقييم".localized,
+                "دقتك أفضل من أثر قراراتك؛ ركز على اختيار الورقة الأعلى قيمة لا الورقة الصحيحة فقط.".localized
+            )
+        }
+
+        if gap <= -15 {
+            return (
+                "الدقة تخفض التقييم".localized,
+                "أثر اختياراتك جيد عندما تصيب، لكنك تحتاج تقليل الأخطاء المباشرة.".localized
+            )
+        }
+
+        return (
+            "التقييم متوازن".localized,
+            "الدقة وأثر القرار قريبان؛ حسّن الاثنين معًا برفع جودة القراءة قبل اللعب.".localized
         )
     }
 

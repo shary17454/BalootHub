@@ -1408,6 +1408,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.gradeAccuracyComponent, 0)
         XCTAssertEqual(progress.gradeImpactComponent, 0)
         XCTAssertEqual(progress.gradeTitle, "لا يوجد تقييم بعد".localized)
+        XCTAssertEqual(progress.gradeReasonTitle, "سبب التقييم".localized)
+        XCTAssertEqual(progress.gradeReasonDetail, "لا توجد محاولة في هذه الجلسة حتى الآن.".localized)
     }
 
     func testTrainingSessionProgressCountsRecentMatchingDifficultyOnly() {
@@ -1442,6 +1444,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.gradeAccuracyComponent, 67)
         XCTAssertEqual(progress.gradeImpactComponent, 70)
         XCTAssertEqual(progress.gradeTitle, "جلسة تحتاج تثبيت".localized)
+        XCTAssertEqual(progress.gradeReasonTitle, "التقييم متوازن".localized)
     }
 
     func testTrainingSessionProgressNextStepCountsNeededCorrectAnswers() {
@@ -1530,6 +1533,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.gradeAccuracyComponent, 67)
         XCTAssertEqual(progress.gradeImpactComponent, 70)
         XCTAssertEqual(progress.gradeTitle, "جلسة تحتاج تثبيت".localized)
+        XCTAssertEqual(progress.gradeReasonTitle, "التقييم متوازن".localized)
     }
 
     func testTrainingSessionProgressRequiresImpactTargetForSuccess() {
@@ -1554,6 +1558,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.gradeAccuracyComponent, 67)
         XCTAssertEqual(progress.gradeImpactComponent, 40)
         XCTAssertEqual(progress.gradeTitle, "جلسة تحتاج تثبيت".localized)
+        XCTAssertEqual(progress.gradeReasonTitle, "الأثر يخفض التقييم".localized)
     }
 
     func testTrainingSessionProgressRequestsRepeatWhenAccuracyMissesTarget() {
@@ -1587,6 +1592,25 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.gradeAccuracyComponent, 50)
         XCTAssertEqual(progress.gradeImpactComponent, 40)
         XCTAssertEqual(progress.gradeTitle, "جلسة تحتاج إعادة".localized)
+        XCTAssertEqual(progress.gradeReasonTitle, "التقييم متوازن".localized)
+    }
+
+    func testTrainingSessionGradeReasonIdentifiesAccuracyWeakness() {
+        let plan = sessionPlan(difficulty: .medium, count: 4, target: 75)
+        let attempts = [
+            attempt(daysAgo: 4, difficulty: .medium, correct: false, impact: 5),
+            attempt(daysAgo: 3, difficulty: .medium, correct: false, impact: 5),
+            attempt(daysAgo: 2, difficulty: .medium, correct: true, impact: 5),
+            attempt(daysAgo: 1, difficulty: .medium, correct: false, impact: 5)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.state, .needsRepeat)
+        XCTAssertEqual(progress.gradePercent, 63)
+        XCTAssertEqual(progress.gradeAccuracyComponent, 25)
+        XCTAssertEqual(progress.gradeImpactComponent, 100)
+        XCTAssertEqual(progress.gradeReasonTitle, "الدقة تخفض التقييم".localized)
     }
 
     func testTrainingSessionProgressReviewItemComesFromCurrentPlannedBatch() {

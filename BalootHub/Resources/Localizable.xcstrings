@@ -19408,6 +19408,86 @@
         }
       }
     },
+    "سبب التقييم" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grade reason"
+          }
+        }
+      }
+    },
+    "لا توجد محاولة في هذه الجلسة حتى الآن." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There is no attempt in this session yet."
+          }
+        }
+      }
+    },
+    "الأثر يخفض التقييم" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impact lowers the grade"
+          }
+        }
+      }
+    },
+    "دقتك أفضل من أثر قراراتك؛ ركز على اختيار الورقة الأعلى قيمة لا الورقة الصحيحة فقط." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your accuracy is better than your decision impact; focus on the highest-value card, not only a technically correct card."
+          }
+        }
+      }
+    },
+    "الدقة تخفض التقييم" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accuracy lowers the grade"
+          }
+        }
+      }
+    },
+    "أثر اختياراتك جيد عندما تصيب، لكنك تحتاج تقليل الأخطاء المباشرة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your choices have good impact when you are right, but you need to reduce direct mistakes."
+          }
+        }
+      }
+    },
+    "التقييم متوازن" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Balanced grade"
+          }
+        }
+      }
+    },
+    "الدقة وأثر القرار قريبان؛ حسّن الاثنين معًا برفع جودة القراءة قبل اللعب." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accuracy and decision impact are close; improve both by raising the quality of your read before playing."
+          }
+        }
+      }
+    },
     "ابدأ الجلسة حتى يظهر تقييم يجمع الدقة وأثر القرار." : {
       "localizations" : {
         "en" : {

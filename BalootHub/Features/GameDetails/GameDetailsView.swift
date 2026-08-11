@@ -707,6 +707,11 @@ struct WhatToPlayTrainerView: View {
                 )
             }
 
+            Text("\(progress.gradeReasonTitle): \(progress.gradeReasonDetail)")
+                .font(.caption2)
+                .foregroundStyle(AppColor.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+
             Label {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(progress.impactTitle)
