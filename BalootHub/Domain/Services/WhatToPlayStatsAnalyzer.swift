@@ -52,6 +52,21 @@ struct WhatToPlayPracticeRecommendation: Equatable {
     let iconName: String
 }
 
+enum WhatToPlayDecisionInsightKind: Equatable {
+    case expertMatch
+    case closeAlternative
+    case missedWinningChance
+    case pointLeak
+}
+
+struct WhatToPlayDecisionInsight: Equatable {
+    let kind: WhatToPlayDecisionInsightKind
+    let title: String
+    let detail: String
+    let iconName: String
+    let lostExpectedPoints: Int
+}
+
 enum WhatToPlayStatsAnalyzer {
     static func summarize(attempts: [WhatToPlayAttempt]) -> WhatToPlayStatsSummary {
         guard !attempts.isEmpty else { return .empty }
@@ -216,6 +231,62 @@ enum WhatToPlayStatsAnalyzer {
             title: "واصل التدريب المتوسط".localized,
             detail: "هذا المستوى يعطيك مواقف كافية لاختبار التلزيم والقطع وحماية الشريك بدون قفزة صعبة مبكرة.".localized,
             iconName: "target"
+        )
+    }
+
+    static func decisionInsight(
+        selectedRank: Int,
+        selectedImpact: Int,
+        bestImpact: Int,
+        secondBestImpact: Int?
+    ) -> WhatToPlayDecisionInsight {
+        let lost = max(0, bestImpact - selectedImpact)
+        if selectedRank == 1 || lost == 0 {
+            return WhatToPlayDecisionInsight(
+                kind: .expertMatch,
+                title: "اختيار خبير".localized,
+                detail: "قرارك يطابق أفضل خيار في هذا الموقف، لذلك ركز على تذكر سبب نجاحه للمواقف المشابهة.".localized,
+                iconName: "checkmark.seal.fill",
+                lostExpectedPoints: 0
+            )
+        }
+
+        if selectedRank == 2 || lost <= 2 || secondBestImpact == selectedImpact {
+            return WhatToPlayDecisionInsight(
+                kind: .closeAlternative,
+                title: "اختيار قريب".localized,
+                detail: "قرارك قريب من الأفضل، لكن الفرق الصغير يتراكم مع الوقت؛ راجع لماذا رجّح الخبير الورقة الأولى.".localized,
+                iconName: "2.circle.fill",
+                lostExpectedPoints: lost
+            )
+        }
+
+        if selectedImpact < 0 && bestImpact > 0 {
+            return WhatToPlayDecisionInsight(
+                kind: .missedWinningChance,
+                title: "فاتتك فرصة ربح".localized,
+                detail: "الخيار الأفضل كان يتوقع كسبًا، بينما اختيارك يميل لخسارة الأكلة أو نقاطها. هذه المواقف تستحق إعادة قراءة الطاولة.".localized,
+                iconName: "exclamationmark.triangle.fill",
+                lostExpectedPoints: lost
+            )
+        }
+
+        return WhatToPlayDecisionInsight(
+            kind: .pointLeak,
+            title: "نزيف نقاط".localized,
+            detail: "اختيارك خسر قيمة متوقعة مقارنة بالأفضل. ابحث عن الورقة التي تقلل الخسارة حتى لو لم تربح الأكلة.".localized,
+            iconName: "drop.fill",
+            lostExpectedPoints: lost
+        )
+    }
+
+    static func decisionInsight(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayDecisionInsight? {
+        guard let best = scenario.bestOption else { return nil }
+        return decisionInsight(
+            selectedRank: selected.rank,
+            selectedImpact: selected.expectedImpact,
+            bestImpact: best.expectedImpact,
+            secondBestImpact: scenario.secondBestOption?.expectedImpact
         )
     }
 

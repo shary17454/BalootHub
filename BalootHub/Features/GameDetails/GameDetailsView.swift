@@ -787,6 +787,10 @@ struct WhatToPlayTrainerView: View {
                 InfoRow(icon: "chart.line.uptrend.xyaxis", title: "الأثر المتوقع", value: impactText(option.expectedImpact))
             }
 
+            if let insight = WhatToPlayStatsAnalyzer.decisionInsight(for: option, in: scenario) {
+                decisionInsightView(insight)
+            }
+
             Text(option.explanation)
                 .font(AppTypography.subheadline)
                 .foregroundStyle(AppColor.textPrimary)
@@ -795,6 +799,43 @@ struct WhatToPlayTrainerView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func decisionInsightView(_ insight: WhatToPlayDecisionInsight) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(insight.title)
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(insight.detail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                if insight.lostExpectedPoints > 0 {
+                    Text("\("نقاط متوقعة ضائعة".localized): \(insight.lostExpectedPoints)")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(AppColor.danger)
+                }
+            }
+        } icon: {
+            Image(systemName: insight.iconName)
+                .foregroundStyle(decisionInsightTint(insight.kind))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.sm)
+        .background(decisionInsightTint(insight.kind).opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func decisionInsightTint(_ kind: WhatToPlayDecisionInsightKind) -> Color {
+        switch kind {
+        case .expertMatch:
+            AppColor.success
+        case .closeAlternative:
+            AppColor.accent
+        case .missedWinningChance, .pointLeak:
+            AppColor.danger
+        }
     }
 
     private func optionComparisonCard(selectedOption: WhatToPlayOption, scenario: WhatToPlayScenario) -> some View {

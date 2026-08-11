@@ -233,6 +233,55 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(recommendation.title, "ارجع خطوة تكتيكية".localized)
     }
 
+    func testDecisionInsightRecognizesExpertMatch() {
+        let insight = WhatToPlayStatsAnalyzer.decisionInsight(
+            selectedRank: 1,
+            selectedImpact: 8,
+            bestImpact: 8,
+            secondBestImpact: 6
+        )
+
+        XCTAssertEqual(insight.kind, .expertMatch)
+        XCTAssertEqual(insight.lostExpectedPoints, 0)
+        XCTAssertEqual(insight.title, "اختيار خبير".localized)
+    }
+
+    func testDecisionInsightRecognizesCloseAlternative() {
+        let insight = WhatToPlayStatsAnalyzer.decisionInsight(
+            selectedRank: 2,
+            selectedImpact: 6,
+            bestImpact: 8,
+            secondBestImpact: 6
+        )
+
+        XCTAssertEqual(insight.kind, .closeAlternative)
+        XCTAssertEqual(insight.lostExpectedPoints, 2)
+    }
+
+    func testDecisionInsightRecognizesMissedWinningChance() {
+        let insight = WhatToPlayStatsAnalyzer.decisionInsight(
+            selectedRank: 4,
+            selectedImpact: -3,
+            bestImpact: 7,
+            secondBestImpact: 2
+        )
+
+        XCTAssertEqual(insight.kind, .missedWinningChance)
+        XCTAssertEqual(insight.lostExpectedPoints, 10)
+    }
+
+    func testDecisionInsightRecognizesPointLeak() {
+        let insight = WhatToPlayStatsAnalyzer.decisionInsight(
+            selectedRank: 3,
+            selectedImpact: 1,
+            bestImpact: 6,
+            secondBestImpact: 4
+        )
+
+        XCTAssertEqual(insight.kind, .pointLeak)
+        XCTAssertEqual(insight.lostExpectedPoints, 5)
+    }
+
     func testCoachingTipForEmptyAttemptsEncouragesBaseline() {
         let tip = WhatToPlayStatsAnalyzer.coachingTip(for: [])
 

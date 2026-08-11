@@ -16854,6 +16854,96 @@
         }
       }
     },
+    "اختيار خبير" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expert choice"
+          }
+        }
+      }
+    },
+    "اختيار قريب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close choice"
+          }
+        }
+      }
+    },
+    "اختيارك خسر قيمة متوقعة مقارنة بالأفضل. ابحث عن الورقة التي تقلل الخسارة حتى لو لم تربح الأكلة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your choice lost expected value compared with the best option. Look for the card that reduces loss even if it does not win the trick."
+          }
+        }
+      }
+    },
+    "الخيار الأفضل كان يتوقع كسبًا، بينما اختيارك يميل لخسارة الأكلة أو نقاطها. هذه المواقف تستحق إعادة قراءة الطاولة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The best option expected a gain, while your choice tends to lose the trick or its points. These scenarios are worth rereading carefully."
+          }
+        }
+      }
+    },
+    "قرارك قريب من الأفضل، لكن الفرق الصغير يتراكم مع الوقت؛ راجع لماذا رجّح الخبير الورقة الأولى." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your decision is close to the best option, but small differences add up; review why the expert preferred the first card."
+          }
+        }
+      }
+    },
+    "قرارك يطابق أفضل خيار في هذا الموقف، لذلك ركز على تذكر سبب نجاحه للمواقف المشابهة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your decision matches the best option in this scenario, so focus on remembering why it worked for similar positions."
+          }
+        }
+      }
+    },
+    "فاتتك فرصة ربح" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Missed winning chance"
+          }
+        }
+      }
+    },
+    "نزيف نقاط" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Point leak"
+          }
+        }
+      }
+    },
+    "نقاط متوقعة ضائعة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lost expected points"
+          }
+        }
+      }
+    },
     "آخر أداء" : {
       "localizations" : {
         "en" : {
