@@ -328,11 +328,16 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.performanceTrend(attempts: attempts)
     }
 
+    private var practiceRecommendation: WhatToPlayPracticeRecommendation {
+        WhatToPlayStatsAnalyzer.practiceRecommendation(for: attempts)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
                 header
                 controls
+                practiceRecommendationCard
                 statsCard
                 difficultyStatsCard
                 recentAttemptsCard
@@ -424,6 +429,39 @@ struct WhatToPlayTrainerView: View {
             .tint(AppColor.primary)
             .disabled(isGeneratingScenario)
         }
+    }
+
+    private var practiceRecommendationCard: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            Label("التدريب المقترح", systemImage: practiceRecommendation.iconName)
+                .font(AppTypography.headline)
+                .foregroundStyle(AppColor.primary)
+
+            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                Text(practiceRecommendation.title)
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(practiceRecommendation.detail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Button {
+                startRecommendedPractice()
+            } label: {
+                Label(
+                    "\("ابدأ".localized) \(practiceRecommendation.difficulty.displayTitle)",
+                    systemImage: "play.fill"
+                )
+                .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(AppColor.primary)
+            .disabled(isGeneratingScenario)
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
     }
 
     private var statsCard: some View {
@@ -839,6 +877,14 @@ struct WhatToPlayTrainerView: View {
     private func nextScenario() {
         seed &+= 1
         generateScenario()
+    }
+
+    private func startRecommendedPractice() {
+        if difficulty == practiceRecommendation.difficulty {
+            nextScenario()
+        } else {
+            difficulty = practiceRecommendation.difficulty
+        }
     }
 
     private func modeText(_ state: GameState) -> String {

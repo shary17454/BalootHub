@@ -45,6 +45,13 @@ struct WhatToPlayPerformanceTrend: Equatable {
     let previousAccuracyPercent: Int
 }
 
+struct WhatToPlayPracticeRecommendation: Equatable {
+    let difficulty: WhatToPlayDifficulty
+    let title: String
+    let detail: String
+    let iconName: String
+}
+
 enum WhatToPlayStatsAnalyzer {
     static func summarize(attempts: [WhatToPlayAttempt]) -> WhatToPlayStatsSummary {
         guard !attempts.isEmpty else { return .empty }
@@ -164,6 +171,54 @@ enum WhatToPlayStatsAnalyzer {
         )
     }
 
+    static func practiceRecommendation(for attempts: [WhatToPlayAttempt]) -> WhatToPlayPracticeRecommendation {
+        let summary = summarize(attempts: attempts)
+        guard summary.attempts > 0 else {
+            return WhatToPlayPracticeRecommendation(
+                difficulty: .easy,
+                title: "ابدأ من السهل".localized,
+                detail: "ابدأ بمواقف سهلة حتى يبني المدرب خط أساس واضحًا لطريقة لعبك.".localized,
+                iconName: "play.circle.fill"
+            )
+        }
+
+        if performanceTrend(attempts: attempts, recentWindow: 3)?.direction == .declining {
+            return WhatToPlayPracticeRecommendation(
+                difficulty: focusDifficulty(attempts)?.difficulty ?? .easy,
+                title: "ارجع خطوة تكتيكية".localized,
+                detail: "الأداء الأخير تراجع؛ العب مواقف أوضح قليلًا وراجع سبب كل ورقة قبل رفع الصعوبة.".localized,
+                iconName: "arrow.uturn.backward.circle.fill"
+            )
+        }
+
+        if let focus = focusDifficulty(attempts),
+           focus.summary.accuracyPercent < 70 || focus.summary.averageExpectedImpact < 0 {
+            return WhatToPlayPracticeRecommendation(
+                difficulty: focus.difficulty,
+                title: "درّب نقطة الضعف".localized,
+                detail: "\("أفضل تدريب الآن".localized): \(difficultyTitle(focus.difficulty)). \("كرر هذا المستوى حتى ترفع الدقة وتقلل خسارة النقاط المتوقعة.".localized)",
+                iconName: "scope"
+            )
+        }
+
+        if summary.currentStreak >= 3 && summary.accuracyPercent >= 75 {
+            let next = nextDifficulty(after: highestAttemptedDifficulty(in: attempts) ?? .medium)
+            return WhatToPlayPracticeRecommendation(
+                difficulty: next,
+                title: "ارفع التحدي".localized,
+                detail: "سلسلتك الحالية قوية؛ جرّب مستوى أعلى لاختبار القراءة تحت ضغط أكبر.".localized,
+                iconName: "arrow.up.circle.fill"
+            )
+        }
+
+        return WhatToPlayPracticeRecommendation(
+            difficulty: .medium,
+            title: "واصل التدريب المتوسط".localized,
+            detail: "هذا المستوى يعطيك مواقف كافية لاختبار التلزيم والقطع وحماية الشريك بدون قفزة صعبة مبكرة.".localized,
+            iconName: "target"
+        )
+    }
+
     static func coachingTip(for attempts: [WhatToPlayAttempt]) -> WhatToPlayCoachingTip {
         let summary = summarize(attempts: attempts)
         guard summary.attempts > 0 else {
@@ -207,5 +262,23 @@ enum WhatToPlayStatsAnalyzer {
 
     private static func difficultyOrder(_ difficulty: WhatToPlayDifficulty) -> Int {
         WhatToPlayDifficulty.allCases.firstIndex(of: difficulty) ?? Int.max
+    }
+
+    private static func highestAttemptedDifficulty(in attempts: [WhatToPlayAttempt]) -> WhatToPlayDifficulty? {
+        attempts.map(\.difficulty).max { difficultyOrder($0) < difficultyOrder($1) }
+    }
+
+    private static func nextDifficulty(after difficulty: WhatToPlayDifficulty) -> WhatToPlayDifficulty {
+        let order = difficultyOrder(difficulty)
+        let nextIndex = min(order + 1, WhatToPlayDifficulty.allCases.count - 1)
+        return WhatToPlayDifficulty.allCases[nextIndex]
+    }
+
+    private static func difficultyTitle(_ difficulty: WhatToPlayDifficulty) -> String {
+        switch difficulty {
+        case .easy: return "سهل".localized
+        case .medium: return "متوسط".localized
+        case .hard: return "صعب".localized
+        }
     }
 }

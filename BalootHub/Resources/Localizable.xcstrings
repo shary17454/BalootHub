@@ -16724,6 +16724,136 @@
         }
       }
     },
+    "ابدأ" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start"
+          }
+        }
+      }
+    },
+    "ابدأ من السهل" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start with easy"
+          }
+        }
+      }
+    },
+    "ابدأ بمواقف سهلة حتى يبني المدرب خط أساس واضحًا لطريقة لعبك." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start with easy scenarios so the trainer can build a clear baseline for your play style."
+          }
+        }
+      }
+    },
+    "الأداء الأخير تراجع؛ العب مواقف أوضح قليلًا وراجع سبب كل ورقة قبل رفع الصعوبة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recent performance declined; play slightly clearer scenarios and review each card choice before raising the difficulty."
+          }
+        }
+      }
+    },
+    "التدريب المقترح" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suggested practice"
+          }
+        }
+      }
+    },
+    "ارجع خطوة تكتيكية" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Take a tactical step back"
+          }
+        }
+      }
+    },
+    "ارفع التحدي" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raise the challenge"
+          }
+        }
+      }
+    },
+    "أفضل تدريب الآن" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Best practice now"
+          }
+        }
+      }
+    },
+    "درّب نقطة الضعف" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Train the weak point"
+          }
+        }
+      }
+    },
+    "سلسلتك الحالية قوية؛ جرّب مستوى أعلى لاختبار القراءة تحت ضغط أكبر." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your current streak is strong; try a higher level to test your reading under more pressure."
+          }
+        }
+      }
+    },
+    "كرر هذا المستوى حتى ترفع الدقة وتقلل خسارة النقاط المتوقعة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repeat this level until you raise accuracy and reduce expected point loss."
+          }
+        }
+      }
+    },
+    "واصل التدريب المتوسط" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep practicing medium"
+          }
+        }
+      }
+    },
+    "هذا المستوى يعطيك مواقف كافية لاختبار التلزيم والقطع وحماية الشريك بدون قفزة صعبة مبكرة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This level gives enough scenarios to test following suit, trumping, and protecting your partner without an early hard jump."
+          }
+        }
+      }
+    },
     "آخر أداء" : {
       "localizations" : {
         "en" : {

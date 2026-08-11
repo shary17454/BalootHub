@@ -181,6 +181,58 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertNil(WhatToPlayStatsAnalyzer.performanceTrend(attempts: attempts, recentWindow: 3))
     }
 
+    func testPracticeRecommendationStartsEasyWithoutAttempts() {
+        let recommendation = WhatToPlayStatsAnalyzer.practiceRecommendation(for: [])
+
+        XCTAssertEqual(recommendation.difficulty, .easy)
+        XCTAssertEqual(recommendation.title, "ابدأ من السهل".localized)
+    }
+
+    func testPracticeRecommendationUsesWeakFocusDifficulty() {
+        let attempts = [
+            attempt(daysAgo: 5, difficulty: .easy, correct: true, impact: 4),
+            attempt(daysAgo: 4, difficulty: .easy, correct: true, impact: 4),
+            attempt(daysAgo: 3, difficulty: .hard, correct: false, impact: -8),
+            attempt(daysAgo: 2, difficulty: .hard, correct: false, impact: -6),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 2)
+        ]
+
+        let recommendation = WhatToPlayStatsAnalyzer.practiceRecommendation(for: attempts)
+
+        XCTAssertEqual(recommendation.difficulty, .hard)
+        XCTAssertEqual(recommendation.title, "درّب نقطة الضعف".localized)
+    }
+
+    func testPracticeRecommendationRaisesChallengeAfterStrongStreak() {
+        let attempts = [
+            attempt(daysAgo: 4, difficulty: .easy, correct: true, impact: 4),
+            attempt(daysAgo: 3, difficulty: .easy, correct: true, impact: 4),
+            attempt(daysAgo: 2, difficulty: .easy, correct: true, impact: 4),
+            attempt(daysAgo: 1, difficulty: .easy, correct: true, impact: 4)
+        ]
+
+        let recommendation = WhatToPlayStatsAnalyzer.practiceRecommendation(for: attempts)
+
+        XCTAssertEqual(recommendation.difficulty, .medium)
+        XCTAssertEqual(recommendation.title, "ارفع التحدي".localized)
+    }
+
+    func testPracticeRecommendationRespondsToDecline() {
+        let attempts = [
+            attempt(daysAgo: 6, difficulty: .medium, correct: true, impact: 5),
+            attempt(daysAgo: 5, difficulty: .medium, correct: true, impact: 4),
+            attempt(daysAgo: 4, difficulty: .medium, correct: true, impact: 3),
+            attempt(daysAgo: 3, difficulty: .medium, correct: false, impact: -1),
+            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: -2),
+            attempt(daysAgo: 1, difficulty: .medium, correct: false, impact: -3)
+        ]
+
+        let recommendation = WhatToPlayStatsAnalyzer.practiceRecommendation(for: attempts)
+
+        XCTAssertEqual(recommendation.difficulty, .medium)
+        XCTAssertEqual(recommendation.title, "ارجع خطوة تكتيكية".localized)
+    }
+
     func testCoachingTipForEmptyAttemptsEncouragesBaseline() {
         let tip = WhatToPlayStatsAnalyzer.coachingTip(for: [])
 
