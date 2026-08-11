@@ -62,6 +62,25 @@ struct WhatToPlayTrainingSessionPlan: Equatable {
     let iconName: String
 }
 
+enum WhatToPlayTrainingSessionProgressState: Equatable {
+    case notStarted
+    case inProgress
+    case achieved
+    case needsRepeat
+}
+
+struct WhatToPlayTrainingSessionProgress: Equatable {
+    let state: WhatToPlayTrainingSessionProgressState
+    let completedAttempts: Int
+    let targetAttempts: Int
+    let correctAttempts: Int
+    let accuracyPercent: Int
+    let remainingAttempts: Int
+    let title: String
+    let detail: String
+    let iconName: String
+}
+
 enum WhatToPlayDecisionInsightKind: Equatable {
     case expertMatch
     case closeAlternative
@@ -381,6 +400,79 @@ enum WhatToPlayStatsAnalyzer {
             detail: "درّب نفس المستوى في دفعة قصيرة حتى تصبح قراراتك أكثر ثباتًا.".localized,
             successMetric: "هدف الجلسة: 3 إجابات صحيحة من 4.".localized,
             iconName: "target"
+        )
+    }
+
+    static func trainingSessionProgress(
+        for attempts: [WhatToPlayAttempt],
+        plan: WhatToPlayTrainingSessionPlan
+    ) -> WhatToPlayTrainingSessionProgress {
+        let target = max(1, plan.scenarioCount)
+        let sessionAttempts = Array(
+            attempts
+                .filter { $0.difficulty == plan.difficulty }
+                .sorted { $0.createdAt > $1.createdAt }
+                .prefix(target)
+        )
+        let completed = sessionAttempts.count
+        let correct = sessionAttempts.filter(\.isCorrect).count
+        let accuracy = completed > 0
+            ? Int((Double(correct) / Double(completed) * 100).rounded())
+            : 0
+        let remaining = max(0, target - completed)
+
+        if completed == 0 {
+            return WhatToPlayTrainingSessionProgress(
+                state: .notStarted,
+                completedAttempts: 0,
+                targetAttempts: target,
+                correctAttempts: 0,
+                accuracyPercent: 0,
+                remainingAttempts: target,
+                title: "ابدأ الجلسة".localized,
+                detail: "لم تبدأ هذه الجلسة بعد؛ اضغط زر البدء لتوليد أول موقف.".localized,
+                iconName: "play.circle.fill"
+            )
+        }
+
+        if completed < target {
+            return WhatToPlayTrainingSessionProgress(
+                state: .inProgress,
+                completedAttempts: completed,
+                targetAttempts: target,
+                correctAttempts: correct,
+                accuracyPercent: accuracy,
+                remainingAttempts: remaining,
+                title: "الجلسة قيد التنفيذ".localized,
+                detail: "أكمل بقية المواقف قبل الحكم على هدف الجلسة.".localized,
+                iconName: "timer.circle.fill"
+            )
+        }
+
+        if accuracy >= plan.targetAccuracyPercent {
+            return WhatToPlayTrainingSessionProgress(
+                state: .achieved,
+                completedAttempts: completed,
+                targetAttempts: target,
+                correctAttempts: correct,
+                accuracyPercent: accuracy,
+                remainingAttempts: 0,
+                title: "هدف الجلسة تحقق".localized,
+                detail: "أداؤك في هذه الدفعة وصل إلى هدف الخطة.".localized,
+                iconName: "checkmark.seal.fill"
+            )
+        }
+
+        return WhatToPlayTrainingSessionProgress(
+            state: .needsRepeat,
+            completedAttempts: completed,
+            targetAttempts: target,
+            correctAttempts: correct,
+            accuracyPercent: accuracy,
+            remainingAttempts: 0,
+            title: "أعد الجلسة".localized,
+            detail: "أكملتها، لكن الدقة أقل من هدف الخطة؛ أعد نفس المستوى.".localized,
+            iconName: "arrow.counterclockwise.circle.fill"
         )
     }
 

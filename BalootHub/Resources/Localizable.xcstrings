@@ -18044,6 +18044,106 @@
         }
       }
     },
+    "ابدأ الجلسة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start the session"
+          }
+        }
+      }
+    },
+    "لم تبدأ هذه الجلسة بعد؛ اضغط زر البدء لتوليد أول موقف." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This session has not started yet; tap start to generate the first scenario."
+          }
+        }
+      }
+    },
+    "الجلسة قيد التنفيذ" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session in progress"
+          }
+        }
+      }
+    },
+    "أكمل بقية المواقف قبل الحكم على هدف الجلسة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Complete the remaining scenarios before judging the session goal."
+          }
+        }
+      }
+    },
+    "هدف الجلسة تحقق" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session goal reached"
+          }
+        }
+      }
+    },
+    "أداؤك في هذه الدفعة وصل إلى هدف الخطة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your performance in this batch reached the plan target."
+          }
+        }
+      }
+    },
+    "أعد الجلسة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repeat the session"
+          }
+        }
+      }
+    },
+    "أكملتها، لكن الدقة أقل من هدف الخطة؛ أعد نفس المستوى." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You completed it, but accuracy is below the plan target; repeat the same level."
+          }
+        }
+      }
+    },
+    "المكتمل" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Completed"
+          }
+        }
+      }
+    },
+    "الدقة الحالية" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Current accuracy"
+          }
+        }
+      }
+    },
     "من" : {
       "localizations" : {
         "en" : {

@@ -360,6 +360,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.playStyle(for: attempts)
     }
 
+    private var trainingSessionProgress: WhatToPlayTrainingSessionProgress {
+        WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: trainingSessionPlan)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
@@ -477,7 +481,7 @@ struct WhatToPlayTrainerView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
 
-            trainingSessionPlanView(trainingSessionPlan)
+            trainingSessionPlanView(trainingSessionPlan, progress: trainingSessionProgress)
 
             Button {
                 startRecommendedPractice()
@@ -496,7 +500,10 @@ struct WhatToPlayTrainerView: View {
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
     }
 
-    private func trainingSessionPlanView(_ plan: WhatToPlayTrainingSessionPlan) -> some View {
+    private func trainingSessionPlanView(
+        _ plan: WhatToPlayTrainingSessionPlan,
+        progress: WhatToPlayTrainingSessionProgress
+    ) -> some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
             Label(plan.title, systemImage: plan.iconName)
                 .font(AppTypography.subheadline.weight(.semibold))
@@ -517,10 +524,43 @@ struct WhatToPlayTrainerView: View {
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(AppColor.success)
                 .fixedSize(horizontal: false, vertical: true)
+
+            trainingSessionProgressView(progress)
         }
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
         .accessibilityElement(children: .combine)
+    }
+
+    private func trainingSessionProgressView(_ progress: WhatToPlayTrainingSessionProgress) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Label(progress.title, systemImage: progress.iconName)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(progress.state == .achieved ? AppColor.success : AppColor.textPrimary)
+
+            Text(progress.detail)
+                .font(.caption2)
+                .foregroundStyle(AppColor.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            ProgressView(
+                value: Double(progress.completedAttempts),
+                total: Double(max(progress.targetAttempts, 1))
+            )
+            .tint(progress.state == .achieved ? AppColor.success : AppColor.primary)
+
+            HStack(spacing: AppSpacing.sm) {
+                miniPlanMetric(
+                    title: "المكتمل".localized,
+                    value: "\(progress.completedAttempts) \("من".localized) \(progress.targetAttempts)"
+                )
+                miniPlanMetric(
+                    title: "الدقة الحالية".localized,
+                    value: "\(progress.accuracyPercent)%"
+                )
+            }
+        }
+        .padding(.top, AppSpacing.xs)
     }
 
     private func miniPlanMetric(title: String, value: String) -> some View {

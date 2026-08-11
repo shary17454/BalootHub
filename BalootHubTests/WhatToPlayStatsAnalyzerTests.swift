@@ -680,6 +680,77 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(plan.successMetric, "هدف الجلسة: 3 إجابات صحيحة من 4.".localized)
     }
 
+    func testTrainingSessionProgressStartsNotStartedWithoutMatchingAttempts() {
+        let plan = sessionPlan(difficulty: .hard, count: 3, target: 67)
+        let attempts = [
+            attempt(daysAgo: 1, difficulty: .easy, correct: true, impact: 2)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.state, .notStarted)
+        XCTAssertEqual(progress.completedAttempts, 0)
+        XCTAssertEqual(progress.targetAttempts, 3)
+        XCTAssertEqual(progress.remainingAttempts, 3)
+        XCTAssertEqual(progress.title, "ابدأ الجلسة".localized)
+    }
+
+    func testTrainingSessionProgressCountsRecentMatchingDifficultyOnly() {
+        let plan = sessionPlan(difficulty: .medium, count: 4, target: 75)
+        let attempts = [
+            attempt(daysAgo: 5, difficulty: .medium, correct: false, impact: -6),
+            attempt(daysAgo: 4, difficulty: .hard, correct: true, impact: 4),
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 4),
+            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: -2),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 3)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.state, .inProgress)
+        XCTAssertEqual(progress.completedAttempts, 3)
+        XCTAssertEqual(progress.correctAttempts, 2)
+        XCTAssertEqual(progress.accuracyPercent, 67)
+        XCTAssertEqual(progress.remainingAttempts, 1)
+    }
+
+    func testTrainingSessionProgressAchievesTargetWhenPlannedBatchPasses() {
+        let plan = sessionPlan(difficulty: .easy, count: 3, target: 67)
+        let attempts = [
+            attempt(daysAgo: 4, difficulty: .easy, correct: false, impact: -8),
+            attempt(daysAgo: 3, difficulty: .easy, correct: true, impact: 2),
+            attempt(daysAgo: 2, difficulty: .easy, correct: true, impact: 4),
+            attempt(daysAgo: 1, difficulty: .easy, correct: false, impact: -1)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.state, .achieved)
+        XCTAssertEqual(progress.completedAttempts, 3)
+        XCTAssertEqual(progress.correctAttempts, 2)
+        XCTAssertEqual(progress.accuracyPercent, 67)
+        XCTAssertEqual(progress.title, "هدف الجلسة تحقق".localized)
+    }
+
+    func testTrainingSessionProgressRequestsRepeatWhenAccuracyMissesTarget() {
+        let plan = sessionPlan(difficulty: .hard, count: 4, target: 75)
+        let attempts = [
+            attempt(daysAgo: 4, difficulty: .hard, correct: true, impact: 3),
+            attempt(daysAgo: 3, difficulty: .hard, correct: false, impact: -3),
+            attempt(daysAgo: 2, difficulty: .hard, correct: true, impact: 2),
+            attempt(daysAgo: 1, difficulty: .hard, correct: false, impact: -5)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.state, .needsRepeat)
+        XCTAssertEqual(progress.completedAttempts, 4)
+        XCTAssertEqual(progress.correctAttempts, 2)
+        XCTAssertEqual(progress.accuracyPercent, 50)
+        XCTAssertEqual(progress.remainingAttempts, 0)
+        XCTAssertEqual(progress.title, "أعد الجلسة".localized)
+    }
+
     func testCoachingTipForEmptyAttemptsEncouragesBaseline() {
         let tip = WhatToPlayStatsAnalyzer.coachingTip(for: [])
 
@@ -721,6 +792,22 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         let tip = WhatToPlayStatsAnalyzer.coachingTip(for: attempts)
 
         XCTAssertEqual(tip.title, "سلسلة ممتازة".localized)
+    }
+
+    private func sessionPlan(
+        difficulty: WhatToPlayDifficulty,
+        count: Int,
+        target: Int
+    ) -> WhatToPlayTrainingSessionPlan {
+        WhatToPlayTrainingSessionPlan(
+            difficulty: difficulty,
+            scenarioCount: count,
+            targetAccuracyPercent: target,
+            title: "خطة اختبار",
+            detail: "تفاصيل اختبار",
+            successMetric: "هدف اختبار",
+            iconName: "target"
+        )
     }
 
     private func attempt(daysAgo: TimeInterval, correct: Bool, impact: Int) -> WhatToPlayAttempt {
