@@ -216,9 +216,11 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let correctAttempts: Int
     let accuracyPercent: Int
     let accuracyTargetMet: Bool
+    let correctAttemptsNeededForTarget: Int
     let totalExpectedImpact: Int
     let averageExpectedImpact: Int
     let impactTargetMet: Bool
+    let averageExpectedImpactGap: Int
     let impactTitle: String
     let impactDetail: String
     let impactIconName: String
@@ -919,6 +921,12 @@ enum WhatToPlayStatsAnalyzer {
             : 0
         let accuracyTargetMet = completed > 0 && accuracy >= plan.targetAccuracyPercent
         let impactTargetMet = completed > 0 && averageImpact >= plan.targetAverageExpectedImpact
+        let requiredCorrect = requiredCorrectAttempts(
+            targetAttempts: target,
+            targetAccuracyPercent: plan.targetAccuracyPercent
+        )
+        let correctNeeded = max(0, requiredCorrect - correct)
+        let impactGap = max(0, plan.targetAverageExpectedImpact - averageImpact)
         let impactReading = trainingSessionImpactReading(
             completedAttempts: completed,
             averageExpectedImpact: averageImpact
@@ -927,11 +935,8 @@ enum WhatToPlayStatsAnalyzer {
         let remaining = max(0, target - completed)
         let nextStep = trainingSessionNextStep(
             state: completed == 0 ? .notStarted : (completed < target ? .inProgress : (accuracyTargetMet && impactTargetMet ? .achieved : .needsRepeat)),
-            completedAttempts: completed,
-            targetAttempts: target,
-            correctAttempts: correct,
             remainingAttempts: remaining,
-            targetAccuracyPercent: plan.targetAccuracyPercent,
+            correctAttemptsNeededForTarget: correctNeeded,
             accuracyTargetMet: accuracyTargetMet,
             impactTargetMet: impactTargetMet
         )
@@ -944,9 +949,11 @@ enum WhatToPlayStatsAnalyzer {
                 correctAttempts: 0,
                 accuracyPercent: 0,
                 accuracyTargetMet: false,
+                correctAttemptsNeededForTarget: requiredCorrect,
                 totalExpectedImpact: 0,
                 averageExpectedImpact: 0,
                 impactTargetMet: false,
+                averageExpectedImpactGap: plan.targetAverageExpectedImpact,
                 impactTitle: impactReading.title,
                 impactDetail: impactReading.detail,
                 impactIconName: impactReading.iconName,
@@ -969,9 +976,11 @@ enum WhatToPlayStatsAnalyzer {
                 correctAttempts: correct,
                 accuracyPercent: accuracy,
                 accuracyTargetMet: accuracyTargetMet,
+                correctAttemptsNeededForTarget: correctNeeded,
                 totalExpectedImpact: totalImpact,
                 averageExpectedImpact: averageImpact,
                 impactTargetMet: impactTargetMet,
+                averageExpectedImpactGap: impactGap,
                 impactTitle: impactReading.title,
                 impactDetail: impactReading.detail,
                 impactIconName: impactReading.iconName,
@@ -994,9 +1003,11 @@ enum WhatToPlayStatsAnalyzer {
                 correctAttempts: correct,
                 accuracyPercent: accuracy,
                 accuracyTargetMet: true,
+                correctAttemptsNeededForTarget: 0,
                 totalExpectedImpact: totalImpact,
                 averageExpectedImpact: averageImpact,
                 impactTargetMet: true,
+                averageExpectedImpactGap: 0,
                 impactTitle: impactReading.title,
                 impactDetail: impactReading.detail,
                 impactIconName: impactReading.iconName,
@@ -1018,9 +1029,11 @@ enum WhatToPlayStatsAnalyzer {
             correctAttempts: correct,
             accuracyPercent: accuracy,
             accuracyTargetMet: accuracyTargetMet,
+            correctAttemptsNeededForTarget: correctNeeded,
             totalExpectedImpact: totalImpact,
             averageExpectedImpact: averageImpact,
             impactTargetMet: impactTargetMet,
+            averageExpectedImpactGap: impactGap,
             impactTitle: impactReading.title,
             impactDetail: impactReading.detail,
             impactIconName: impactReading.iconName,
@@ -1040,11 +1053,8 @@ enum WhatToPlayStatsAnalyzer {
 
     private static func trainingSessionNextStep(
         state: WhatToPlayTrainingSessionProgressState,
-        completedAttempts: Int,
-        targetAttempts: Int,
-        correctAttempts: Int,
         remainingAttempts: Int,
-        targetAccuracyPercent: Int,
+        correctAttemptsNeededForTarget: Int,
         accuracyTargetMet: Bool,
         impactTargetMet: Bool
     ) -> (title: String, detail: String, iconName: String) {
@@ -1056,8 +1066,7 @@ enum WhatToPlayStatsAnalyzer {
                 "play.circle.fill"
             )
         case .inProgress:
-            let requiredCorrect = Int((Double(targetAttempts * targetAccuracyPercent) / 100.0).rounded(.up))
-            let neededCorrect = max(0, requiredCorrect - correctAttempts)
+            let neededCorrect = correctAttemptsNeededForTarget
             if neededCorrect > remainingAttempts {
                 return (
                     "هدف الدقة تعثر".localized,
@@ -1097,6 +1106,20 @@ enum WhatToPlayStatsAnalyzer {
                 "arrow.counterclockwise.circle.fill"
             )
         }
+    }
+
+    private static func requiredCorrectAttempts(
+        targetAttempts: Int,
+        targetAccuracyPercent: Int
+    ) -> Int {
+        let target = max(1, targetAttempts)
+        for correct in 0...target {
+            let accuracy = Int((Double(correct) / Double(target) * 100).rounded())
+            if accuracy >= targetAccuracyPercent {
+                return correct
+            }
+        }
+        return target
     }
 
     private static func trainingSessionRepeatDetail(

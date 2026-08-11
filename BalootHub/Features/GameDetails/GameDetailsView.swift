@@ -659,6 +659,14 @@ struct WhatToPlayTrainerView: View {
                     title: "أثر الجلسة".localized,
                     value: impactText(progress.totalExpectedImpact)
                 )
+                miniPlanMetric(
+                    title: "باقي للدقة".localized,
+                    value: "\(progress.correctAttemptsNeededForTarget)"
+                )
+                miniPlanMetric(
+                    title: "فجوة الأثر".localized,
+                    value: impactGapText(progress.averageExpectedImpactGap)
+                )
             }
 
             HStack(spacing: AppSpacing.xs) {
@@ -2210,6 +2218,10 @@ struct WhatToPlayTrainerView: View {
         if impact > 0 { return "+\(impact) نقطة متوقعة" }
         if impact < 0 { return "\(impact) نقطة متوقعة" }
         return "أثر محايد"
+    }
+
+    private func impactGapText(_ gap: Int) -> String {
+        gap > 0 ? "\(gap)" : "مكتمل".localized
     }
 
     private func cardName(_ card: PlayingCard?) -> String {

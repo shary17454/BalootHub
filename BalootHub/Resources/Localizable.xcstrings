@@ -19348,6 +19348,36 @@
         }
       }
     },
+    "باقي للدقة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accuracy left"
+          }
+        }
+      }
+    },
+    "فجوة الأثر" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impact gap"
+          }
+        }
+      }
+    },
+    "مكتمل" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Complete"
+          }
+        }
+      }
+    },
     "الأثر غير محسوب بعد" : {
       "localizations" : {
         "en" : {
