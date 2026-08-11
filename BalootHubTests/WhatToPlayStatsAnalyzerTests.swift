@@ -21,6 +21,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.currentStreak, 1)
         XCTAssertEqual(summary.averageExpectedImpact, 2)
         XCTAssertEqual(summary.lostExpectedPoints, 0)
+        XCTAssertEqual(summary.valueCapturePercent, 0)
+        XCTAssertEqual(summary.valueCaptureAttempts, 0)
     }
 
     func testSummaryAccumulatesLostExpectedPointsWhenBestImpactIsKnown() {
@@ -33,6 +35,21 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         let summary = WhatToPlayStatsAnalyzer.summarize(attempts: attempts)
 
         XCTAssertEqual(summary.lostExpectedPoints, 12)
+        XCTAssertEqual(summary.valueCaptureAttempts, 3)
+        XCTAssertEqual(summary.valueCapturePercent, 40)
+    }
+
+    func testSummaryValueCaptureClampsSelectedImpactAndIgnoresNonPositiveBest() {
+        let attempts = [
+            attempt(daysAgo: 3, correct: true, impact: 10, bestImpact: 6),
+            attempt(daysAgo: 2, correct: false, impact: 3, bestImpact: 0),
+            attempt(daysAgo: 1, correct: false, impact: -4, bestImpact: 4)
+        ]
+
+        let summary = WhatToPlayStatsAnalyzer.summarize(attempts: attempts)
+
+        XCTAssertEqual(summary.valueCaptureAttempts, 2)
+        XCTAssertEqual(summary.valueCapturePercent, 60)
     }
 
     func testOutcomeSummaryCountsTrackedDecisionOutcomes() {

@@ -18588,6 +18588,26 @@
         }
       }
     },
+    "التقاط القيمة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Value capture"
+          }
+        }
+      }
+    },
+    "محاولات القيمة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Value attempts"
+          }
+        }
+      }
+    },
     "بطاقة المشاركة" : {
       "localizations" : {
         "en" : {

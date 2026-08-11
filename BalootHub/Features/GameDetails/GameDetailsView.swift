@@ -925,6 +925,16 @@ struct WhatToPlayTrainerView: View {
                     title: "متوسط الأثر المتوقع",
                     value: impactText(statsSummary.averageExpectedImpact)
                 )
+                if statsSummary.valueCaptureAttempts > 0 {
+                    InfoRow(
+                        icon: "speedometer",
+                        title: "التقاط القيمة".localized,
+                        value: "\(statsSummary.valueCapturePercent)%"
+                    )
+                    Text("\("محاولات القيمة".localized): \(statsSummary.valueCaptureAttempts)")
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColor.textSecondary)
+                }
                 if statsSummary.lostExpectedPoints > 0 {
                     InfoRow(
                         icon: "drop.fill",
