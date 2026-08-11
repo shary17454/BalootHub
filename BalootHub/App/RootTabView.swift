@@ -79,6 +79,8 @@ struct RootTabView: View {
             WhatToPlayTrainerView()
         case .scoringQuiz:
             ScoringQuizView()
+        case .dailyChallenges:
+            DailyChallengesView()
         case .trainingIntro:
             RulesView(slug: "baloot-training")
         }

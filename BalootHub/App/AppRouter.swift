@@ -42,5 +42,6 @@ enum AppRoute: Hashable {
     case handAnalyzer
     case whatToPlayTrainer
     case scoringQuiz
+    case dailyChallenges
     case trainingIntro
 }

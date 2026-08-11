@@ -169,6 +169,18 @@ struct GameDetailsView: View {
                 .controlSize(.large)
             }
 
+            if item.slug == "daily-baloot-challenges" {
+                Button {
+                    appEnvironment.navigate(to: .dailyChallenges, tab: appEnvironment.selectedTab)
+                } label: {
+                    Label("فتح التحديات", systemImage: "calendar.badge.checkmark")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(AppColor.primary)
+                .controlSize(.large)
+            }
+
             if item.isPlayable {
                 Button {
                     appEnvironment.navigate(to: .balootGamePlay(slug: item.slug), tab: appEnvironment.selectedTab)
