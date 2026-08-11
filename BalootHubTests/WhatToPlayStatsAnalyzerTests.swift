@@ -456,6 +456,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(insight.kind, .expertMatch)
         XCTAssertEqual(insight.lostExpectedPoints, 0)
+        XCTAssertEqual(insight.secondBestGap, 0)
         XCTAssertEqual(insight.title, "اختيار خبير".localized)
     }
 
@@ -469,6 +470,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(insight.kind, .closeAlternative)
         XCTAssertEqual(insight.lostExpectedPoints, 2)
+        XCTAssertEqual(insight.secondBestGap, 0)
     }
 
     func testDecisionInsightRecognizesMissedWinningChance() {
@@ -481,6 +483,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(insight.kind, .missedWinningChance)
         XCTAssertEqual(insight.lostExpectedPoints, 10)
+        XCTAssertEqual(insight.secondBestGap, 5)
     }
 
     func testDecisionInsightRecognizesPointLeak() {
@@ -493,6 +496,18 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(insight.kind, .pointLeak)
         XCTAssertEqual(insight.lostExpectedPoints, 5)
+        XCTAssertEqual(insight.secondBestGap, 3)
+    }
+
+    func testDecisionInsightKeepsSecondBestGapNilWhenUnavailable() {
+        let insight = WhatToPlayStatsAnalyzer.decisionInsight(
+            selectedRank: 3,
+            selectedImpact: 1,
+            bestImpact: 6,
+            secondBestImpact: nil
+        )
+
+        XCTAssertNil(insight.secondBestGap)
     }
 
     func testDecisionReviewUsesScenarioFocusAndDecisionKind() throws {

@@ -1544,6 +1544,11 @@ struct WhatToPlayTrainerView: View {
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(AppColor.danger)
                 }
+                if let secondBestGap = insight.secondBestGap, secondBestGap > 0 {
+                    Text("\("فارق عن ثاني أفضل".localized): \(secondBestGap)")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(AppColor.accent)
+                }
             }
         } icon: {
             Image(systemName: insight.iconName)

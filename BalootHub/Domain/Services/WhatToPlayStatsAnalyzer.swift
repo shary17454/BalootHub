@@ -146,6 +146,7 @@ struct WhatToPlayDecisionInsight: Equatable {
     let detail: String
     let iconName: String
     let lostExpectedPoints: Int
+    let secondBestGap: Int?
 }
 
 struct WhatToPlayDecisionReview: Equatable {
@@ -714,13 +715,15 @@ enum WhatToPlayStatsAnalyzer {
         secondBestImpact: Int?
     ) -> WhatToPlayDecisionInsight {
         let lost = max(0, bestImpact - selectedImpact)
+        let secondBestGap = secondBestImpact.map { max(0, $0 - selectedImpact) }
         if selectedRank == 1 || lost == 0 {
             return WhatToPlayDecisionInsight(
                 kind: .expertMatch,
                 title: "اختيار خبير".localized,
                 detail: "قرارك يطابق أفضل خيار في هذا الموقف، لذلك ركز على تذكر سبب نجاحه للمواقف المشابهة.".localized,
                 iconName: "checkmark.seal.fill",
-                lostExpectedPoints: 0
+                lostExpectedPoints: 0,
+                secondBestGap: secondBestGap
             )
         }
 
@@ -730,7 +733,8 @@ enum WhatToPlayStatsAnalyzer {
                 title: "اختيار قريب".localized,
                 detail: "قرارك قريب من الأفضل، لكن الفرق الصغير يتراكم مع الوقت؛ راجع لماذا رجّح الخبير الورقة الأولى.".localized,
                 iconName: "2.circle.fill",
-                lostExpectedPoints: lost
+                lostExpectedPoints: lost,
+                secondBestGap: secondBestGap
             )
         }
 
@@ -740,7 +744,8 @@ enum WhatToPlayStatsAnalyzer {
                 title: "فاتتك فرصة ربح".localized,
                 detail: "الخيار الأفضل كان يتوقع كسبًا، بينما اختيارك يميل لخسارة الأكلة أو نقاطها. هذه المواقف تستحق إعادة قراءة الطاولة.".localized,
                 iconName: "exclamationmark.triangle.fill",
-                lostExpectedPoints: lost
+                lostExpectedPoints: lost,
+                secondBestGap: secondBestGap
             )
         }
 
@@ -749,7 +754,8 @@ enum WhatToPlayStatsAnalyzer {
             title: "نزيف نقاط".localized,
             detail: "اختيارك خسر قيمة متوقعة مقارنة بالأفضل. ابحث عن الورقة التي تقلل الخسارة حتى لو لم تربح الأكلة.".localized,
             iconName: "drop.fill",
-            lostExpectedPoints: lost
+            lostExpectedPoints: lost,
+            secondBestGap: secondBestGap
         )
     }
 
