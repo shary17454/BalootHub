@@ -320,6 +320,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.coachingTip(for: attempts)
     }
 
+    private var focusDifficulty: WhatToPlayDifficultyFocus? {
+        WhatToPlayStatsAnalyzer.focusDifficulty(attempts)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
@@ -495,10 +499,34 @@ struct WhatToPlayTrainerView: View {
                         .accessibilityElement(children: .combine)
                     }
                 }
+
+                if let focusDifficulty {
+                    focusDifficultyView(focusDifficulty)
+                }
             }
             .padding(AppSpacing.md)
             .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
         }
+    }
+
+    private func focusDifficultyView(_ focus: WhatToPlayDifficultyFocus) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("\("ركّز على".localized): \(focus.difficulty.displayTitle)")
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text("\("دقتك هنا".localized): \(focus.summary.accuracyPercent)% (\(focus.summary.correct)/\(focus.summary.attempts))")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+            }
+        } icon: {
+            Image(systemName: "scope")
+                .foregroundStyle(AppColor.accent)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.sm)
+        .background(AppColor.accent.opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
     }
 
     @ViewBuilder

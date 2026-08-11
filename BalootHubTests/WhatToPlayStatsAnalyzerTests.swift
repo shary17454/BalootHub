@@ -82,6 +82,44 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summaries.last?.summary.accuracyPercent, 50)
     }
 
+    func testFocusDifficultyRequiresMinimumAttemptsAndPicksLowestAccuracy() {
+        let attempts = [
+            attempt(daysAgo: 5, difficulty: .easy, correct: false, impact: -20),
+            attempt(daysAgo: 4, difficulty: .medium, correct: true, impact: 4),
+            attempt(daysAgo: 3, difficulty: .medium, correct: false, impact: -2),
+            attempt(daysAgo: 2, difficulty: .hard, correct: false, impact: -8),
+            attempt(daysAgo: 1, difficulty: .hard, correct: false, impact: -6)
+        ]
+
+        let focus = WhatToPlayStatsAnalyzer.focusDifficulty(attempts)
+
+        XCTAssertEqual(focus?.difficulty, .hard)
+        XCTAssertEqual(focus?.summary.accuracyPercent, 0)
+    }
+
+    func testFocusDifficultyReturnsNilWithoutEnoughAttempts() {
+        let attempts = [
+            attempt(daysAgo: 1, difficulty: .easy, correct: false, impact: -10)
+        ]
+
+        XCTAssertNil(WhatToPlayStatsAnalyzer.focusDifficulty(attempts))
+    }
+
+    func testFocusDifficultyUsesExpectedImpactAsTieBreaker() {
+        let attempts = [
+            attempt(daysAgo: 4, difficulty: .medium, correct: true, impact: 0),
+            attempt(daysAgo: 3, difficulty: .medium, correct: false, impact: -10),
+            attempt(daysAgo: 2, difficulty: .hard, correct: true, impact: 6),
+            attempt(daysAgo: 1, difficulty: .hard, correct: false, impact: 0)
+        ]
+
+        let focus = WhatToPlayStatsAnalyzer.focusDifficulty(attempts)
+
+        XCTAssertEqual(focus?.difficulty, .medium)
+        XCTAssertEqual(focus?.summary.accuracyPercent, 50)
+        XCTAssertEqual(focus?.summary.averageExpectedImpact, -5)
+    }
+
     func testCoachingTipForEmptyAttemptsEncouragesBaseline() {
         let tip = WhatToPlayStatsAnalyzer.coachingTip(for: [])
 

@@ -16694,6 +16694,26 @@
         }
       }
     },
+    "دقتك هنا" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your accuracy here"
+          }
+        }
+      }
+    },
+    "ركّز على" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Focus on"
+          }
+        }
+      }
+    },
     "متوسط الأثر المتوقع" : {
       "localizations" : {
         "en" : {

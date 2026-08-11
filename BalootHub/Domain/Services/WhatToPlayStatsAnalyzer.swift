@@ -25,6 +25,11 @@ struct WhatToPlayCoachingTip: Equatable {
     let iconName: String
 }
 
+struct WhatToPlayDifficultyFocus: Equatable {
+    let difficulty: WhatToPlayDifficulty
+    let summary: WhatToPlayStatsSummary
+}
+
 enum WhatToPlayStatsAnalyzer {
     static func summarize(attempts: [WhatToPlayAttempt]) -> WhatToPlayStatsSummary {
         guard !attempts.isEmpty else { return .empty }
@@ -75,6 +80,24 @@ enum WhatToPlayStatsAnalyzer {
         }
     }
 
+    static func focusDifficulty(_ attempts: [WhatToPlayAttempt], minimumAttempts: Int = 2) -> WhatToPlayDifficultyFocus? {
+        summariesByDifficulty(attempts)
+            .filter { $0.summary.attempts >= minimumAttempts }
+            .sorted { lhs, rhs in
+                if lhs.summary.accuracyPercent != rhs.summary.accuracyPercent {
+                    return lhs.summary.accuracyPercent < rhs.summary.accuracyPercent
+                }
+
+                if lhs.summary.averageExpectedImpact != rhs.summary.averageExpectedImpact {
+                    return lhs.summary.averageExpectedImpact < rhs.summary.averageExpectedImpact
+                }
+
+                return difficultyOrder(lhs.difficulty) < difficultyOrder(rhs.difficulty)
+            }
+            .first
+            .map { WhatToPlayDifficultyFocus(difficulty: $0.difficulty, summary: $0.summary) }
+    }
+
     static func coachingTip(for attempts: [WhatToPlayAttempt]) -> WhatToPlayCoachingTip {
         let summary = summarize(attempts: attempts)
         guard summary.attempts > 0 else {
@@ -114,5 +137,9 @@ enum WhatToPlayStatsAnalyzer {
             detail: "بعد كل إجابة راجع بطاقة أثر كل قرار؛ الفرق بين اختيارك والخيار الثاني يعلمك متى تكون المخاطرة مقبولة.".localized,
             iconName: "lightbulb.fill"
         )
+    }
+
+    private static func difficultyOrder(_ difficulty: WhatToPlayDifficulty) -> Int {
+        WhatToPlayDifficulty.allCases.firstIndex(of: difficulty) ?? Int.max
     }
 }
