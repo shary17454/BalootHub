@@ -21,6 +21,15 @@ final class DailyChallengeCenterTests: XCTestCase {
         )
     }
 
+    func testDailyChallengeIDsAreScopedToDate() {
+        let firstDate = Date(timeIntervalSince1970: 1_785_888_000)
+        let secondDate = firstDate.addingTimeInterval(86_400)
+        let firstIDs = Set(DailyChallengeCenter.dailyChallenges(for: firstDate).map(\.id))
+        let secondIDs = Set(DailyChallengeCenter.dailyChallenges(for: secondDate).map(\.id))
+
+        XCTAssertTrue(firstIDs.isDisjoint(with: secondIDs))
+    }
+
     func testWeeklyChallengesRemainStableInsideSameWeek() {
         let firstDate = Date(timeIntervalSince1970: 1_785_888_000)
         let secondDate = firstDate.addingTimeInterval(2 * 86_400)
@@ -29,6 +38,15 @@ final class DailyChallengeCenterTests: XCTestCase {
             DailyChallengeCenter.weeklyChallenges(for: firstDate),
             DailyChallengeCenter.weeklyChallenges(for: secondDate)
         )
+    }
+
+    func testWeeklyChallengeIDsAreScopedToWeek() {
+        let firstDate = Date(timeIntervalSince1970: 1_785_888_000)
+        let nextWeek = firstDate.addingTimeInterval(7 * 86_400)
+        let firstIDs = Set(DailyChallengeCenter.weeklyChallenges(for: firstDate).map(\.id))
+        let nextWeekIDs = Set(DailyChallengeCenter.weeklyChallenges(for: nextWeek).map(\.id))
+
+        XCTAssertTrue(firstIDs.isDisjoint(with: nextWeekIDs))
     }
 
     func testGeneratedChallengesHaveUniqueIDsAndTargets() {
@@ -72,5 +90,17 @@ final class DailyChallengeCenterTests: XCTestCase {
         )
 
         XCTAssertNotEqual(openingSeed, followSuitSeed)
+    }
+
+    func testDailyWhatToPlayScenarioRequestIsCompleteForTrainerNavigation() throws {
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = try XCTUnwrap(DailyChallengeCenter.dailyChallenges(for: date).first { $0.category == .tactics })
+        let seed = try XCTUnwrap(challenge.whatToPlaySeed)
+        let difficulty = try XCTUnwrap(challenge.whatToPlayDifficulty)
+        let focusKind = try XCTUnwrap(challenge.whatToPlayFocusKind)
+
+        XCTAssertGreaterThan(seed, 0)
+        XCTAssertTrue(WhatToPlayDifficulty.allCases.contains(difficulty))
+        XCTAssertTrue(WhatToPlayScenarioFocusKind.allCases.contains(focusKind))
     }
 }

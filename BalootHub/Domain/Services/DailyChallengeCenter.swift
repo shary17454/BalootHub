@@ -58,7 +58,8 @@ enum DailyChallengeCenter {
         for date: Date = Date(),
         calendar: Calendar = Calendar(identifier: .gregorian)
     ) -> [BalootChallenge] {
-        var generator = ChallengeSeededGenerator(seed: dailySeed(for: date, calendar: calendar))
+        let dayKey = dailySeed(for: date, calendar: calendar)
+        var generator = ChallengeSeededGenerator(seed: dayKey)
         let hokumMargin = generator.nextInt(in: 20...60)
         let scoringTarget = generator.nextInt(in: 3...6)
         let tacticsTarget = generator.nextInt(in: 2...4)
@@ -72,7 +73,7 @@ enum DailyChallengeCenter {
         )
         return [
             makeChallenge(
-                id: "daily-win-hokum-\(generator.nextInt(in: 2...8))",
+                id: "daily-\(dayKey)-win-hokum-\(generator.nextInt(in: 2...8))",
                 cadence: .daily,
                 category: .match,
                 title: "فز بجولة حكم",
@@ -81,7 +82,7 @@ enum DailyChallengeCenter {
                 rewardTitle: "نجمة تدريب"
             ),
             makeChallenge(
-                id: "daily-score-\(generator.nextInt(in: 3...7))",
+                id: "daily-\(dayKey)-score-\(generator.nextInt(in: 3...7))",
                 cadence: .daily,
                 category: .scoring,
                 title: "حاسب البلوت",
@@ -90,7 +91,7 @@ enum DailyChallengeCenter {
                 rewardTitle: "شارة الحاسب"
             ),
             makeChallenge(
-                id: "daily-what-play-\(generator.nextInt(in: 2...5))",
+                id: "daily-\(dayKey)-what-play-\(generator.nextInt(in: 2...5))",
                 cadence: .daily,
                 category: .tactics,
                 title: "وش تلعب؟",
@@ -108,12 +109,13 @@ enum DailyChallengeCenter {
         for date: Date = Date(),
         calendar: Calendar = Calendar(identifier: .gregorian)
     ) -> [BalootChallenge] {
-        var generator = ChallengeSeededGenerator(seed: weeklySeed(for: date, calendar: calendar))
+        let weekKey = weeklySeed(for: date, calendar: calendar)
+        var generator = ChallengeSeededGenerator(seed: weekKey)
         let streakTarget = generator.nextInt(in: 3...5)
         let academyTarget = generator.nextInt(in: 4...8)
         return [
             makeChallenge(
-                id: "weekly-streak-\(generator.nextInt(in: 3...7))",
+                id: "weekly-\(weekKey)-streak-\(generator.nextInt(in: 3...7))",
                 cadence: .weekly,
                 category: .match,
                 title: "سلسلة انتصارات",
@@ -122,7 +124,7 @@ enum DailyChallengeCenter {
                 rewardTitle: "وسام الاستمرارية"
             ),
             makeChallenge(
-                id: "weekly-academy-\(generator.nextInt(in: 4...9))",
+                id: "weekly-\(weekKey)-academy-\(generator.nextInt(in: 4...9))",
                 cadence: .weekly,
                 category: .training,
                 title: "تقدم في الأكاديمية",
