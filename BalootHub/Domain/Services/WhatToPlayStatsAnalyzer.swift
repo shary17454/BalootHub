@@ -871,7 +871,17 @@ enum WhatToPlayStatsAnalyzer {
     }
 
     private static func tacticalReviewReason(for attempt: WhatToPlayAttempt) -> WhatToPlayReviewPriority? {
-        guard attempt.expectedImpact < 0, let breakdown = attempt.impactBreakdown else { return nil }
+        tacticalReviewReason(
+            expectedImpact: attempt.expectedImpact,
+            impactBreakdown: attempt.impactBreakdown
+        )
+    }
+
+    private static func tacticalReviewReason(
+        expectedImpact: Int,
+        impactBreakdown: WhatToPlayOptionImpactBreakdown?
+    ) -> WhatToPlayReviewPriority? {
+        guard expectedImpact < 0, let breakdown = impactBreakdown else { return nil }
 
         if breakdown.completesTrick,
            breakdown.winsForPlayerTeam == false,
@@ -1826,7 +1836,14 @@ enum WhatToPlayStatsAnalyzer {
 
     static func decisionReview(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayDecisionReview? {
         guard let insight = decisionInsight(for: selected, in: scenario) else { return nil }
-        return decisionReview(insight: insight, focusKind: scenario.context.focusKind)
+        return decisionReview(
+            insight: insight,
+            focusKind: scenario.context.focusKind,
+            tacticalReason: tacticalReviewReason(
+                expectedImpact: selected.expectedImpact,
+                impactBreakdown: selected.impactBreakdown
+            )
+        )
     }
 
     static func nextDecisionAction(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayNextDecisionAction? {
@@ -1990,6 +2007,14 @@ enum WhatToPlayStatsAnalyzer {
         insight: WhatToPlayDecisionInsight,
         focusKind: WhatToPlayScenarioFocusKind
     ) -> WhatToPlayDecisionReview {
+        decisionReview(insight: insight, focusKind: focusKind, tacticalReason: nil)
+    }
+
+    private static func decisionReview(
+        insight: WhatToPlayDecisionInsight,
+        focusKind: WhatToPlayScenarioFocusKind,
+        tacticalReason: WhatToPlayReviewPriority?
+    ) -> WhatToPlayDecisionReview {
         let firstStep: String
         switch focusKind {
         case .openingLead:
@@ -2014,15 +2039,21 @@ enum WhatToPlayStatsAnalyzer {
             secondStep = "حدد هل خسرت النقاط لأنك رميت ورقة ثمينة أو تركت ورقة أقل ضررًا.".localized
         }
 
+        var steps = [
+            firstStep,
+            secondStep,
+            "أعد الموقف إذا كان الفارق أكثر من نقطتين متوقعتين.".localized
+        ]
+
+        if let tacticalReason {
+            steps.append("\("سبب تكتيكي".localized): \(tacticalReason.title). \(tacticalReason.detail)")
+        }
+
         return WhatToPlayDecisionReview(
             title: "راجع القرار بهذه الطريقة".localized,
             detail: "استخدم هذه الخطوات القصيرة قبل الانتقال للموقف التالي.".localized,
             iconName: "checklist",
-            steps: [
-                firstStep,
-                secondStep,
-                "أعد الموقف إذا كان الفارق أكثر من نقطتين متوقعتين.".localized
-            ]
+            steps: steps
         )
     }
 

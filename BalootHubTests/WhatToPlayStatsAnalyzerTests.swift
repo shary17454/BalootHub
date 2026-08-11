@@ -1037,6 +1037,17 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(review.steps.last, "أعد الموقف إذا كان الفارق أكثر من نقطتين متوقعتين.".localized)
     }
 
+    func testDecisionReviewIncludesTacticalReasonForLeakingChoice() throws {
+        let (scenario, selected) = try scenarioWithTacticalLeakingChoice()
+
+        let review = try XCTUnwrap(WhatToPlayStatsAnalyzer.decisionReview(for: selected, in: scenario))
+        let tacticalStep = try XCTUnwrap(review.steps.last)
+
+        XCTAssertEqual(review.steps.count, 4)
+        XCTAssertTrue(tacticalStep.contains("سبب تكتيكي".localized))
+        XCTAssertTrue(tacticalStep.contains(expectedTacticalReasonTitle(for: selected.impactBreakdown)))
+    }
+
     func testDecisionReviewUsesMissedWinningChanceRemedy() throws {
         let insight = WhatToPlayStatsAnalyzer.decisionInsight(
             selectedRank: 3,
@@ -2477,6 +2488,48 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         case .narrowChoice:
             "عندما تكون الخيارات قليلة، رتّبها حسب أقل خسارة لا حسب أعلى ورقة.".localized
         }
+    }
+
+    private func scenarioWithTacticalLeakingChoice() throws -> (WhatToPlayScenario, WhatToPlayOption) {
+        for seed in 1...1_000 {
+            guard let scenario = try? WhatToPlayTrainer.generateScenario(seed: UInt64(seed), difficulty: .hard),
+                  let selected = scenario.options.first(where: { option in
+                      option.expectedImpact < 0 && tacticalReasonTitle(for: option.impactBreakdown) != nil
+                  })
+            else { continue }
+            return (scenario, selected)
+        }
+
+        throw NSError(domain: "WhatToPlayStatsAnalyzerTests", code: 1)
+    }
+
+    private func expectedTacticalReasonTitle(for breakdown: WhatToPlayOptionImpactBreakdown) -> String {
+        guard let title = tacticalReasonTitle(for: breakdown) else {
+            XCTFail("Expected tactical reason for generated option")
+            return ""
+        }
+        return title
+    }
+
+    private func tacticalReasonTitle(for breakdown: WhatToPlayOptionImpactBreakdown) -> String? {
+        if breakdown.completesTrick,
+           breakdown.winsForPlayerTeam == false,
+           breakdown.trickPointsSwing < 0 {
+            return "تغلق الأكلة للخصم".localized
+        }
+
+        if !breakdown.completesTrick,
+           !breakdown.preservesLead,
+           breakdown.playedCardPoints > 0,
+           breakdown.immediateImpact < 0 {
+            return "ترمي نقاطًا بلا حماية".localized
+        }
+
+        if breakdown.preservesLead, breakdown.immediateImpact < 0 {
+            return "افتتاح مكلف".localized
+        }
+
+        return nil
     }
 }
 
