@@ -2477,6 +2477,15 @@ enum WhatToPlayStatsAnalyzer {
             )
         }
 
+        let rankSummary = choiceRankSummary(for: attempts)
+        if rankSummary.trackedAttempts >= 3 && rankSummary.farPickPercent >= 40 {
+            return WhatToPlayCoachingTip(
+                title: "صفِّ الخيارات أولًا".localized,
+                detail: "نسبة الاختيارات خارج أفضل خيارين مرتفعة. قبل المقارنة النهائية، استبعد الورق الذي لا يكسب الأكلة ولا يقلل الخسارة.".localized,
+                iconName: "line.3.horizontal.decrease.circle.fill"
+            )
+        }
+
         if summary.currentStreak >= 3 {
             return WhatToPlayCoachingTip(
                 title: "سلسلة ممتازة".localized,

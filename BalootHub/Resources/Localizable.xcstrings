@@ -18370,6 +18370,34 @@
         }
       }
     },
+    "صفِّ الخيارات أولًا" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Filtere zuerst die Optionen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Filter choices first" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Filtra primero las opciones" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Filtre d'abord les options" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "पहले विकल्प छाँटें" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Saring pilihan dulu" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Сначала отфильтруйте варианты" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Önce seçenekleri ele" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "پہلے انتخاب چھانٹیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "先筛选选项" } }
+      }
+    },
+    "نسبة الاختيارات خارج أفضل خيارين مرتفعة. قبل المقارنة النهائية، استبعد الورق الذي لا يكسب الأكلة ولا يقلل الخسارة." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der Anteil der Entscheidungen außerhalb der zwei besten Optionen ist hoch. Streiche vor dem finalen Vergleich Karten, die weder die Stiche gewinnen noch den Verlust verringern." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your rate outside the top two options is high. Before the final comparison, remove cards that neither win the trick nor reduce the loss." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tu tasa fuera de las dos mejores opciones es alta. Antes de la comparación final, elimina cartas que no ganan la baza ni reducen la pérdida." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ton taux hors des deux meilleurs choix est élevé. Avant la comparaison finale, écarte les cartes qui ne gagnent pas le pli et ne réduisent pas la perte." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "शीर्ष दो विकल्पों से बाहर की दर अधिक है। अंतिम तुलना से पहले वे कार्ड हटाएँ जो न ट्रिक जीतते हैं न नुकसान घटाते हैं।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tingkat pilihan di luar dua teratas tinggi. Sebelum perbandingan akhir, singkirkan kartu yang tidak memenangkan trik dan tidak mengurangi kerugian." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Доля выборов вне двух лучших вариантов высока. Перед финальным сравнением уберите карты, которые не выигрывают взятку и не уменьшают потери." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "İlk iki seçenek dışındaki tercih oranın yüksek. Son karşılaştırmadan önce eli kazanmayan ve kaybı azaltmayan kartları ele." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "بہترین دو انتخاب سے باہر جانے کی شرح زیادہ ہے۔ آخری موازنے سے پہلے وہ کارڈ نکالیں جو نہ بازی جیتتے ہیں نہ نقصان کم کرتے ہیں۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你选择前两名之外选项的比例较高。最终比较前，先排除既不能赢墩也不能减少损失的牌。" } }
+      }
+    },
     "قبل اختيار الورقة، راجع اللون المطلوب والحكم الموجود ثم قارن هل تستطيع ربح الأكلة أو تقليل خسارتها." : {
       "localizations" : {
         "en" : {

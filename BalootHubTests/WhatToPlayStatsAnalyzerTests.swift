@@ -2265,6 +2265,20 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(tip.title, "قلل نزيف النقاط".localized)
     }
 
+    func testCoachingTipForFarChoiceRateFocusesOnFilteringOptions() {
+        let attempts = [
+            attempt(daysAgo: 4, correct: true, impact: 3, selectedRank: 1),
+            attempt(daysAgo: 3, correct: false, impact: 1, selectedRank: 4),
+            attempt(daysAgo: 2, correct: false, impact: 2, selectedRank: 3),
+            attempt(daysAgo: 1, correct: true, impact: 2, selectedRank: 1)
+        ]
+
+        let tip = WhatToPlayStatsAnalyzer.coachingTip(for: attempts)
+
+        XCTAssertEqual(tip.title, "صفِّ الخيارات أولًا".localized)
+        XCTAssertEqual(tip.iconName, "line.3.horizontal.decrease.circle.fill")
+    }
+
     func testCoachingTipForCurrentStreakEncouragesHarderPractice() {
         let attempts = [
             attempt(daysAgo: 3, correct: true, impact: 4),
