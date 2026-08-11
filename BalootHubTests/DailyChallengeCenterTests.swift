@@ -1,4 +1,5 @@
 import XCTest
+import BalootEngine
 @testable import BalootHub
 
 final class DailyChallengeCenterTests: XCTestCase {
@@ -36,5 +37,40 @@ final class DailyChallengeCenterTests: XCTestCase {
 
         XCTAssertEqual(ids.count, Set(ids).count)
         XCTAssertTrue(challenges.allSatisfy { $0.targetCount > 0 })
+    }
+
+    func testDailyWhatToPlayChallengeCarriesDeterministicScenarioRequest() throws {
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = DailyChallengeCenter.dailyChallenges(for: date).first { $0.category == .tactics }
+
+        let tactics = try XCTUnwrap(challenge)
+        let seed = try XCTUnwrap(tactics.whatToPlaySeed)
+        let difficulty = try XCTUnwrap(tactics.whatToPlayDifficulty)
+        let focusKind = try XCTUnwrap(tactics.whatToPlayFocusKind)
+
+        XCTAssertEqual(
+            seed,
+            DailyChallengeCenter.dailyWhatToPlaySeed(
+                for: date,
+                difficulty: difficulty,
+                focusKind: focusKind
+            )
+        )
+    }
+
+    func testDailyWhatToPlaySeedChangesByTrainingFocus() {
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let openingSeed = DailyChallengeCenter.dailyWhatToPlaySeed(
+            for: date,
+            difficulty: .medium,
+            focusKind: .openingLead
+        )
+        let followSuitSeed = DailyChallengeCenter.dailyWhatToPlaySeed(
+            for: date,
+            difficulty: .medium,
+            focusKind: .followSuit
+        )
+
+        XCTAssertNotEqual(openingSeed, followSuitSeed)
     }
 }

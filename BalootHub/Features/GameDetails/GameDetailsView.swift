@@ -147,7 +147,7 @@ struct GameDetailsView: View {
 
             if item.slug == "what-to-play-trainer" {
                 Button {
-                    appEnvironment.navigate(to: .whatToPlayTrainer, tab: appEnvironment.selectedTab)
+                    appEnvironment.navigate(to: .whatToPlayTrainer(), tab: appEnvironment.selectedTab)
                 } label: {
                     Label("فتح المدرب", systemImage: "brain.head.profile")
                         .frame(maxWidth: .infinity)
@@ -305,6 +305,16 @@ struct WhatToPlayTrainerView: View {
     @State private var illegalMoveExplanation: String?
     @State private var isGeneratingScenario = false
     @State private var generationTask: Task<Void, Never>?
+
+    init(
+        seed: UInt64? = nil,
+        difficulty: WhatToPlayDifficulty? = nil,
+        preferredFocus: WhatToPlayScenarioFocusKind? = nil
+    ) {
+        _difficulty = State(initialValue: difficulty ?? .medium)
+        _preferredFocusRaw = State(initialValue: preferredFocus?.rawValue ?? "auto")
+        _seed = State(initialValue: seed ?? 2026)
+    }
 
     private var statsSummary: WhatToPlayStatsSummary {
         WhatToPlayStatsAnalyzer.summarize(attempts: attempts)

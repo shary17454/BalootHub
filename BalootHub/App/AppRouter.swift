@@ -1,4 +1,5 @@
 import Foundation
+import BalootEngine
 
 /// تبويبات الشريط السفلي.
 enum AppTab: String, CaseIterable, Identifiable {
@@ -40,7 +41,7 @@ enum AppRoute: Hashable {
     case balootGamePlay(slug: String)
     case balootAcademy
     case handAnalyzer
-    case whatToPlayTrainer
+    case whatToPlayTrainer(seed: UInt64? = nil, difficulty: WhatToPlayDifficulty? = nil, focusKind: WhatToPlayScenarioFocusKind? = nil)
     case scoringQuiz
     case dailyChallenges
     case achievements

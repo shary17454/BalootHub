@@ -20168,6 +20168,26 @@
         }
       }
     },
+    "فتح موقف اليوم" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open today's scenario"
+          }
+        }
+      }
+    },
+    "موقف اليوم" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Today's scenario"
+          }
+        }
+      }
+    },
     "ورقة غير معروفة" : {
       "localizations" : {
         "en" : {

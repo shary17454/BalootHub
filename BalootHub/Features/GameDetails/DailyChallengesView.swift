@@ -1,6 +1,8 @@
 import SwiftUI
+import BalootEngine
 
 struct DailyChallengesView: View {
+    @Environment(AppEnvironment.self) private var appEnvironment
     @State private var cadence: ChallengeCadence = .daily
     @AppStorage("completedBalootChallengeIDs") private var completedChallengeIDs = ""
 
@@ -81,6 +83,28 @@ struct DailyChallengesView: View {
                 scoreBox(title: "المكافأة", value: challenge.rewardTitle)
             }
 
+            if let seed = challenge.whatToPlaySeed,
+               let difficulty = challenge.whatToPlayDifficulty,
+               let focusKind = challenge.whatToPlayFocusKind {
+                HStack {
+                    scoreBox(title: "موقف اليوم".localized, value: "\(seed)")
+                    scoreBox(title: "المستوى", value: difficultyTitle(difficulty))
+                    scoreBox(title: "التركيز", value: focusTitle(focusKind))
+                }
+
+                Button {
+                    appEnvironment.navigate(
+                        to: .whatToPlayTrainer(seed: seed, difficulty: difficulty, focusKind: focusKind),
+                        tab: appEnvironment.selectedTab
+                    )
+                } label: {
+                    Label("فتح موقف اليوم".localized, systemImage: "brain.head.profile")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .tint(AppColor.primary)
+            }
+
             Button {
                 toggleCompletion(challenge.id)
             } label: {
@@ -93,6 +117,23 @@ struct DailyChallengesView: View {
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
         .accessibilityElement(children: .combine)
+    }
+
+    private func difficultyTitle(_ difficulty: WhatToPlayDifficulty) -> String {
+        switch difficulty {
+        case .easy: "سهل".localized
+        case .medium: "متوسط".localized
+        case .hard: "صعب".localized
+        }
+    }
+
+    private func focusTitle(_ focusKind: WhatToPlayScenarioFocusKind) -> String {
+        switch focusKind {
+        case .openingLead: "افتتاح الأكلة".localized
+        case .followSuit: "اتباع اللون".localized
+        case .trumpPressure: "ضغط الحكم".localized
+        case .narrowChoice: "خيارات محدودة".localized
+        }
     }
 
     private func scoreBox(title: String, value: String) -> some View {
