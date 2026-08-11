@@ -33,6 +33,22 @@ struct WhatToPlayTrainerTests {
         #expect(scenario.state.mode != nil)
     }
 
+    @Test("كل مزايدة في موقف التدريب قانونية لصاحب الدور عند إعادة التشغيل")
+    func generatedScenarioBidsAreLegalForActingPlayer() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
+        var replay = GameState.newLocalMatch(rules: scenario.state.rules)
+        replay.players = scenario.state.players
+        replay.teams = scenario.state.teams
+
+        for action in scenario.state.actionHistory {
+            if case .placeBid(let playerID, let bid) = action {
+                #expect(replay.currentTurnPlayerID == playerID)
+                #expect(GameEngine.legalBids(for: playerID, state: replay).contains(bid))
+            }
+            replay = try GameEngine.apply(action, to: replay)
+        }
+    }
+
     @Test("نفس البذرة والصعوبة تعطيان نفس الموقف والترتيب")
     func generationIsDeterministic() throws {
         let first = try WhatToPlayTrainer.generateScenario(seed: 99, difficulty: .medium)

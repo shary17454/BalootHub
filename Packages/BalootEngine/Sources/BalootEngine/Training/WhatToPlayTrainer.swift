@@ -258,7 +258,7 @@ public enum WhatToPlayTrainer {
                     return .chooseMode(playerID: playerID, mode: mode, trumpSuit: recommendation.trumpSuit)
                 }
 
-                let legal = GameEngine.legalBids(state: state)
+                let legal = GameEngine.legalBids(for: playerID, state: state)
                 guard !legal.isEmpty else { return nil }
                 return .placeBid(playerID: playerID, bid: agent.chooseBid(hand: hand, legalBids: legal, state: state))
 
