@@ -2304,6 +2304,11 @@ struct WhatToPlayTrainerView: View {
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(AppColor.primary)
                 }
+                if action.expectedImprovement > 0 {
+                    Text("\("تحسن متوقع".localized): +\(action.expectedImprovement)")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(AppColor.success)
+                }
             }
         } icon: {
             Image(systemName: action.iconName)

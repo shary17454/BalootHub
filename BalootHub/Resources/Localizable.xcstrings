@@ -29,6 +29,20 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "种子" } }
       }
     },
+    "تحسن متوقع" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erwartete Verbesserung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Expected improvement" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Mejora esperada" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Amélioration attendue" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "अपेक्षित सुधार" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Peningkatan yang diharapkan" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Ожидаемое улучшение" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Beklenen iyileşme" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "متوقع بہتری" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "预期提升" } }
+      }
+    },
     "أكثر من خطأ حديث أعطى الأكلة المكتملة للفريق الخصم. قبل الرمي، احسب من يربح الأكلة بعد ورقتك وهل تستحق النقاط التي ستضيفها." : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Mehr als ein aktueller Fehler gab den fertigen Stich dem Gegnerteam. Berechne vor dem Ausspielen, wer den Stich nach deiner Karte gewinnt und ob die Punkte es wert sind." } },

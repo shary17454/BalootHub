@@ -302,6 +302,7 @@ struct WhatToPlayNextDecisionAction: Equatable {
     let detail: String
     let iconName: String
     let recommendedCard: PlayingCard?
+    let expectedImprovement: Int
 }
 
 struct WhatToPlayRetryPrompt: Equatable {
@@ -1792,28 +1793,32 @@ enum WhatToPlayStatsAnalyzer {
                 title: "ثبّت القراءة".localized,
                 detail: focusSuccessAction(for: focusKind),
                 iconName: "checkmark.seal.fill",
-                recommendedCard: bestCard
+                recommendedCard: bestCard,
+                expectedImprovement: 0
             )
         case .closeAlternative:
             return WhatToPlayNextDecisionAction(
                 title: "درّب الفارق الصغير".localized,
                 detail: "أعد قراءة نفس النوع من المواقف وركّز على سبب تفوق ورقة واحدة بنقطة أو نقطتين متوقعتين.".localized,
                 iconName: "equal.circle.fill",
-                recommendedCard: bestCard
+                recommendedCard: bestCard,
+                expectedImprovement: insight.lostExpectedPoints
             )
         case .missedWinningChance:
             return WhatToPlayNextDecisionAction(
                 title: "ابحث عن الورقة الرابحة".localized,
                 detail: "قبل اللعب، احسب هل عندك ورقة تنقل الأكلة لفريقك بدل الاكتفاء برمي ورقة قليلة الضرر.".localized,
                 iconName: "exclamationmark.triangle.fill",
-                recommendedCard: bestCard
+                recommendedCard: bestCard,
+                expectedImprovement: insight.lostExpectedPoints
             )
         case .pointLeak:
             return WhatToPlayNextDecisionAction(
                 title: "قلل النزيف القادم".localized,
                 detail: "في الموقف القادم ابدأ بسؤال واحد: ما أقل ورقة تخسر أقل نقاط متوقعة إذا كانت الأكلة للخصم؟".localized,
                 iconName: "drop.fill",
-                recommendedCard: bestCard
+                recommendedCard: bestCard,
+                expectedImprovement: insight.lostExpectedPoints
             )
         }
     }

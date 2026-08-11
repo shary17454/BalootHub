@@ -1007,6 +1007,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(action.title, "ثبّت القراءة".localized)
         XCTAssertTrue(action.detail.contains("الحكم".localized))
         XCTAssertEqual(action.recommendedCard, bestCard)
+        XCTAssertEqual(action.expectedImprovement, 0)
     }
 
     func testNextDecisionActionTargetsMissedWinningChance() {
@@ -1025,6 +1026,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(action.title, "ابحث عن الورقة الرابحة".localized)
         XCTAssertTrue(action.detail.contains("تنقل الأكلة لفريقك".localized))
+        XCTAssertEqual(action.expectedImprovement, insight.lostExpectedPoints)
     }
 
     func testRetryPromptIsNilForExpertMatch() throws {
