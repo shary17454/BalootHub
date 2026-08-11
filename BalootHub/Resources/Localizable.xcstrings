@@ -20628,6 +20628,34 @@
         }
       }
     },
+    "أثر مطلوب" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Benötigter Effekt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Impact needed" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Impacto necesario" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Impact nécessaire" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आवश्यक प्रभाव" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Dampak yang dibutuhkan" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Нужный эффект" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Gereken etki" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "درکار اثر" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "所需影响" } }
+      }
+    },
+    "لكل موقف متبقٍ" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Pro verbleibendem Szenario" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Per remaining scenario" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Por situación restante" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Par situation restante" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "हर बचे हुए स्थिति के लिए" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Per situasi tersisa" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "На оставшуюся ситуацию" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Kalan senaryo başına" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "ہر باقی صورتحال کے لیے" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "每个剩余局面" } }
+      }
+    },
     "مكتمل" : {
       "localizations" : {
         "en" : {

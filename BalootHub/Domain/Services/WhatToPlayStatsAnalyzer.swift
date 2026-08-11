@@ -253,6 +253,8 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let worstExpectedImpactSeed: UInt64?
     let impactTargetMet: Bool
     let averageExpectedImpactGap: Int
+    let expectedImpactNeededForTarget: Int
+    let expectedImpactNeededPerRemainingAttempt: Int
     let valueCapturePercent: Int
     let valueCaptureAttempts: Int
     let impactTitle: String
@@ -1174,6 +1176,11 @@ enum WhatToPlayStatsAnalyzer {
         let bestPossibleCorrect = min(target, correct + remaining)
         let bestPossibleAccuracy = Int((Double(bestPossibleCorrect) / Double(target) * 100).rounded())
         let accuracyTargetReachable = bestPossibleCorrect >= requiredCorrect
+        let targetTotalImpact = target * plan.targetAverageExpectedImpact
+        let impactNeeded = max(0, targetTotalImpact - totalImpact)
+        let impactNeededPerRemaining = remaining > 0
+            ? Int((Double(impactNeeded) / Double(remaining)).rounded(.up))
+            : 0
         let impactGap = max(0, plan.targetAverageExpectedImpact - averageImpact)
         let impactReading = trainingSessionImpactReading(
             completedAttempts: completed,
@@ -1215,6 +1222,8 @@ enum WhatToPlayStatsAnalyzer {
                 worstExpectedImpactSeed: nil,
                 impactTargetMet: false,
                 averageExpectedImpactGap: plan.targetAverageExpectedImpact,
+                expectedImpactNeededForTarget: max(0, targetTotalImpact),
+                expectedImpactNeededPerRemainingAttempt: max(0, plan.targetAverageExpectedImpact),
                 valueCapturePercent: 0,
                 valueCaptureAttempts: 0,
                 impactTitle: impactReading.title,
@@ -1260,6 +1269,8 @@ enum WhatToPlayStatsAnalyzer {
                 worstExpectedImpactSeed: worstImpactAttempt.map { UInt64(clamping: $0.seedValue) },
                 impactTargetMet: impactTargetMet,
                 averageExpectedImpactGap: impactGap,
+                expectedImpactNeededForTarget: impactNeeded,
+                expectedImpactNeededPerRemainingAttempt: impactNeededPerRemaining,
                 valueCapturePercent: sessionSummary.valueCapturePercent,
                 valueCaptureAttempts: sessionSummary.valueCaptureAttempts,
                 impactTitle: impactReading.title,
@@ -1305,6 +1316,8 @@ enum WhatToPlayStatsAnalyzer {
                 worstExpectedImpactSeed: worstImpactAttempt.map { UInt64(clamping: $0.seedValue) },
                 impactTargetMet: true,
                 averageExpectedImpactGap: 0,
+                expectedImpactNeededForTarget: 0,
+                expectedImpactNeededPerRemainingAttempt: 0,
                 valueCapturePercent: sessionSummary.valueCapturePercent,
                 valueCaptureAttempts: sessionSummary.valueCaptureAttempts,
                 impactTitle: impactReading.title,
@@ -1349,6 +1362,8 @@ enum WhatToPlayStatsAnalyzer {
             worstExpectedImpactSeed: worstImpactAttempt.map { UInt64(clamping: $0.seedValue) },
             impactTargetMet: impactTargetMet,
             averageExpectedImpactGap: impactGap,
+            expectedImpactNeededForTarget: impactNeeded,
+            expectedImpactNeededPerRemainingAttempt: 0,
             valueCapturePercent: sessionSummary.valueCapturePercent,
             valueCaptureAttempts: sessionSummary.valueCaptureAttempts,
             impactTitle: impactReading.title,

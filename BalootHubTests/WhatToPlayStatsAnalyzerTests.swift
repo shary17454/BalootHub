@@ -1883,6 +1883,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertNil(progress.worstExpectedImpactSeed)
         XCTAssertFalse(progress.impactTargetMet)
         XCTAssertEqual(progress.averageExpectedImpactGap, 0)
+        XCTAssertEqual(progress.expectedImpactNeededForTarget, 0)
+        XCTAssertEqual(progress.expectedImpactNeededPerRemainingAttempt, 0)
         XCTAssertEqual(progress.valueCapturePercent, 0)
         XCTAssertEqual(progress.valueCaptureAttempts, 0)
         XCTAssertEqual(progress.impactTitle, "الأثر غير محسوب بعد".localized)
@@ -1930,6 +1932,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.worstExpectedImpactSeed, 2)
         XCTAssertTrue(progress.impactTargetMet)
         XCTAssertEqual(progress.averageExpectedImpactGap, 0)
+        XCTAssertEqual(progress.expectedImpactNeededForTarget, 0)
+        XCTAssertEqual(progress.expectedImpactNeededPerRemainingAttempt, 0)
         XCTAssertEqual(progress.valueCaptureAttempts, 3)
         XCTAssertEqual(progress.valueCapturePercent, 58)
         XCTAssertEqual(progress.impactTitle, "أثر الجلسة رابح".localized)
@@ -1943,6 +1947,21 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.gradeImpactComponent, 70)
         XCTAssertEqual(progress.gradeTitle, "جلسة تحتاج تثبيت".localized)
         XCTAssertEqual(progress.gradeReasonTitle, "التقييم متوازن".localized)
+    }
+
+    func testTrainingSessionProgressReportsImpactNeededPerRemainingAttempt() {
+        let plan = sessionPlan(difficulty: .medium, count: 4, target: 50, impactTarget: 2)
+        let attempts = [
+            attempt(daysAgo: 2, difficulty: .medium, correct: true, impact: 1),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 2)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.state, .inProgress)
+        XCTAssertEqual(progress.expectedImpactNeededForTarget, 5)
+        XCTAssertEqual(progress.expectedImpactNeededPerRemainingAttempt, 3)
+        XCTAssertFalse(progress.impactTargetMet)
     }
 
     func testTrainingSessionProgressNextStepCountsNeededCorrectAnswers() {
@@ -2079,6 +2098,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.correctAttemptsNeededForTarget, 0)
         XCTAssertEqual(progress.averageExpectedImpact, 1)
         XCTAssertEqual(progress.averageExpectedImpactGap, 1)
+        XCTAssertEqual(progress.expectedImpactNeededForTarget, 4)
+        XCTAssertEqual(progress.expectedImpactNeededPerRemainingAttempt, 0)
         XCTAssertEqual(progress.detail, "أكملتها بدقة كافية، لكن متوسط الأثر أقل من هدف الخطة؛ راجع الاختيارات القريبة قبل تكرارها.".localized)
         XCTAssertEqual(progress.nextStepTitle, "راجع جودة القرار".localized)
         XCTAssertEqual(progress.gradePercent, 54)

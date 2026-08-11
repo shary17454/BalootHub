@@ -720,6 +720,18 @@ struct WhatToPlayTrainerView: View {
                     title: "فجوة الأثر".localized,
                     value: impactGapText(progress.averageExpectedImpactGap)
                 )
+                if progress.expectedImpactNeededForTarget > 0 {
+                    miniPlanMetric(
+                        title: "أثر مطلوب".localized,
+                        value: impactText(progress.expectedImpactNeededForTarget)
+                    )
+                    if progress.expectedImpactNeededPerRemainingAttempt > 0 {
+                        miniPlanMetric(
+                            title: "لكل موقف متبقٍ".localized,
+                            value: impactText(progress.expectedImpactNeededPerRemainingAttempt)
+                        )
+                    }
+                }
                 if progress.valueCaptureAttempts > 0 {
                     miniPlanMetric(
                         title: "التقاط القيمة".localized,
