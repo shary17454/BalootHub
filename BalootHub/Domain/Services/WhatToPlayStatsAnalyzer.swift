@@ -2122,6 +2122,26 @@ enum WhatToPlayStatsAnalyzer {
             )
         }
 
+        let focusCoverage = scenarioFocusCoverage(for: attempts)
+        if !focusCoverage.isBalanced {
+            let targetFocus = focusCoverage.missingFocusKinds.first ?? .openingLead
+            let targetDifficulty = nextScenarioRecommendation(for: attempts).difficulty
+            return WhatToPlayMicroDrill(
+                title: "خطة أنواع المواقف".localized,
+                detail: "تغطية أنواع المواقف تجعل توصيات المدرب أعدل؛ لا تدرّب الصعوبة فقط.".localized,
+                iconName: "scope",
+                steps: [
+                    "\("استهدف نوع موقف ناقص".localized): \(scenarioFocusTitle(targetFocus))",
+                    "حل موقفين من نوع الموقف الناقص".localized,
+                    "وازن بين الافتتاح والتلزيم والحكم".localized
+                ],
+                reviewItem: nil,
+                seed: microDrillSeed(attempts: attempts, difficulty: targetDifficulty, focusKind: targetFocus),
+                difficulty: targetDifficulty,
+                focusKind: targetFocus
+            )
+        }
+
         if mastery(for: attempts).level == .sharp {
             return WhatToPlayMicroDrill(
                 title: "خطة التحدي".localized,

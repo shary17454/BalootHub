@@ -43,6 +43,76 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "预期提升" } }
       }
     },
+    "استهدف نوع موقف ناقص" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ziele auf einen fehlenden Situationstyp" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Target a missing scenario type" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Practica un tipo de situación pendiente" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Cible un type de situation manquant" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "एक छूटे हुए स्थिति प्रकार को लक्षित करें" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Targetkan jenis situasi yang belum terlatih" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Отработайте недостающий тип ситуации" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Eksik bir senaryo türünü hedefle" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "ایک رہ گئی صورتحال کی قسم کو ہدف بنائیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "练习缺少的局面类型" } }
+      }
+    },
+    "تغطية أنواع المواقف تجعل توصيات المدرب أعدل؛ لا تدرّب الصعوبة فقط." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die Abdeckung verschiedener Situationstypen macht die Trainerempfehlungen fairer; trainiere nicht nur die Schwierigkeit." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Covering scenario types makes trainer recommendations fairer; do not train difficulty only." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Cubrir tipos de situación hace más justas las recomendaciones del entrenador; no entrenes solo la dificultad." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Couvrir les types de situations rend les recommandations du coach plus justes; ne travaille pas seulement la difficulté." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "स्थिति प्रकारों को कवर करने से कोच की सिफारिशें बेहतर होती हैं; केवल कठिनाई का अभ्यास न करें।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Mencakup jenis situasi membuat rekomendasi pelatih lebih adil; jangan hanya melatih tingkat kesulitan." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Покрытие типов ситуаций делает рекомендации тренера точнее; тренируйте не только сложность." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Senaryo türlerini kapsamak koç önerilerini daha dengeli yapar; yalnızca zorluğu çalıştırma." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "مختلف صورتحال کی اقسام کا احاطہ کوچ کی سفارشات کو بہتر بناتا ہے؛ صرف مشکل سطح کی مشق نہ کریں۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "覆盖不同局面类型会让教练建议更均衡；不要只训练难度。" } }
+      }
+    },
+    "خطة أنواع المواقف" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Plan für Situationstypen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Scenario Type Plan" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Plan de tipos de situación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Plan des types de situations" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "स्थिति प्रकार योजना" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Rencana Jenis Situasi" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "План типов ситуаций" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Senaryo Türü Planı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "صورتحال کی قسم کا منصوبہ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "局面类型计划" } }
+      }
+    },
+    "حل موقفين من نوع الموقف الناقص" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Löse zwei Aufgaben dieses fehlenden Situationstyps" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Solve two prompts from the missing scenario type" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Resuelve dos situaciones del tipo pendiente" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Résous deux situations du type manquant" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "छूटे हुए स्थिति प्रकार के दो प्रश्न हल करें" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Selesaikan dua prompt dari jenis situasi yang belum terlatih" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Решите две задачи недостающего типа ситуации" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Eksik senaryo türünden iki durum çöz" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "رہ گئی صورتحال کی قسم سے دو مشقیں حل کریں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "完成两个缺少局面类型的题目" } }
+      }
+    },
+    "وازن بين الافتتاح والتلزيم والحكم" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Balanciere Eröffnung, Bedienen und Trumpf" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Balance opening leads, following suit, and trump" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Equilibra salidas, seguir el palo y triunfo" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Équilibre entame, suivi de couleur et atout" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "शुरुआत, सूट का पालन और हुकुम में संतुलन रखें" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Seimbangkan pembukaan, mengikuti jenis, dan trump" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Балансируйте заходы, следование масти и козырь" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Açılış, renge uyma ve kozu dengele" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "افتتاح، رنگ کی پیروی اور حکم میں توازن رکھیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "平衡首攻、跟花色和将牌" } }
+      }
+    },
     "أكثر من خطأ حديث أعطى الأكلة المكتملة للفريق الخصم. قبل الرمي، احسب من يربح الأكلة بعد ورقتك وهل تستحق النقاط التي ستضيفها." : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Mehr als ein aktueller Fehler gab den fertigen Stich dem Gegnerteam. Berechne vor dem Ausspielen, wer den Stich nach deiner Karte gewinnt und ob die Punkte es wert sind." } },

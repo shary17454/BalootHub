@@ -1487,6 +1487,25 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertNil(drill.focusKind)
     }
 
+    func testMicroDrillTargetsMissingFocusCoverageAfterDifficultyCoverage() {
+        let attempts = [
+            attempt(daysAgo: 6, difficulty: .easy, correct: true, impact: 0, focusKind: .openingLead),
+            attempt(daysAgo: 5, difficulty: .easy, correct: false, impact: 0, bestImpact: 0, focusKind: .openingLead),
+            attempt(daysAgo: 4, difficulty: .medium, correct: true, impact: 0, focusKind: .openingLead),
+            attempt(daysAgo: 3, difficulty: .medium, correct: false, impact: 0, bestImpact: 0, focusKind: .openingLead),
+            attempt(daysAgo: 2, difficulty: .hard, correct: true, impact: 0, focusKind: .openingLead),
+            attempt(daysAgo: 1, difficulty: .hard, correct: true, impact: 0, focusKind: .openingLead)
+        ]
+
+        let drill = WhatToPlayStatsAnalyzer.microDrill(for: attempts)
+
+        XCTAssertEqual(drill.title, "خطة أنواع المواقف".localized)
+        XCTAssertEqual(drill.steps.first, "\("استهدف نوع موقف ناقص".localized): \("اتباع اللون".localized)")
+        XCTAssertEqual(drill.seed, 8_100_006)
+        XCTAssertEqual(drill.difficulty, .easy)
+        XCTAssertEqual(drill.focusKind, .followSuit)
+    }
+
     func testMicroDrillRaisesChallengeForSharpBalancedPlayer() {
         let attempts = [
             attempt(daysAgo: 6, difficulty: .easy, correct: true, impact: 10),
