@@ -103,4 +103,81 @@ final class DailyChallengeCenterTests: XCTestCase {
         XCTAssertTrue(WhatToPlayDifficulty.allCases.contains(difficulty))
         XCTAssertTrue(WhatToPlayScenarioFocusKind.allCases.contains(focusKind))
     }
+
+    func testWhatToPlayProgressCountsMatchingAttemptsInsideChallengeDay() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = try XCTUnwrap(DailyChallengeCenter.dailyChallenges(for: date, calendar: calendar).first { $0.category == .tactics })
+        let difficulty = try XCTUnwrap(challenge.whatToPlayDifficulty)
+        let focusKind = try XCTUnwrap(challenge.whatToPlayFocusKind)
+        let otherDifficulty = WhatToPlayDifficulty.allCases.first { $0 != difficulty } ?? .easy
+        let otherFocus = WhatToPlayScenarioFocusKind.allCases.first { $0 != focusKind } ?? .openingLead
+        let dayStart = calendar.startOfDay(for: date)
+        let attempts = [
+            attempt(at: dayStart.addingTimeInterval(60), difficulty: difficulty, focusKind: focusKind),
+            attempt(at: dayStart.addingTimeInterval(120), difficulty: difficulty, focusKind: focusKind),
+            attempt(at: dayStart.addingTimeInterval(-60), difficulty: difficulty, focusKind: focusKind),
+            attempt(at: dayStart.addingTimeInterval(180), difficulty: otherDifficulty, focusKind: focusKind),
+            attempt(at: dayStart.addingTimeInterval(240), difficulty: difficulty, focusKind: otherFocus)
+        ]
+
+        let progress = try XCTUnwrap(DailyChallengeCenter.progress(
+            for: challenge,
+            attempts: attempts,
+            now: date,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(progress.completedCount, min(2, challenge.targetCount))
+        XCTAssertEqual(progress.targetCount, challenge.targetCount)
+    }
+
+    func testWhatToPlayProgressCapsAtChallengeTarget() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = try XCTUnwrap(DailyChallengeCenter.dailyChallenges(for: date, calendar: calendar).first { $0.category == .tactics })
+        let difficulty = try XCTUnwrap(challenge.whatToPlayDifficulty)
+        let focusKind = try XCTUnwrap(challenge.whatToPlayFocusKind)
+        let dayStart = calendar.startOfDay(for: date)
+        let attempts = (0..<(challenge.targetCount + 3)).map {
+            attempt(at: dayStart.addingTimeInterval(TimeInterval($0 + 1)), difficulty: difficulty, focusKind: focusKind)
+        }
+
+        let progress = try XCTUnwrap(DailyChallengeCenter.progress(
+            for: challenge,
+            attempts: attempts,
+            now: date,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(progress.completedCount, challenge.targetCount)
+        XCTAssertTrue(progress.isComplete)
+    }
+
+    func testNonTacticsChallengesDoNotReturnWhatToPlayProgress() throws {
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = try XCTUnwrap(DailyChallengeCenter.dailyChallenges(for: date).first { $0.category == .match })
+
+        XCTAssertNil(DailyChallengeCenter.progress(for: challenge, attempts: []))
+    }
+
+    private func attempt(
+        at date: Date,
+        difficulty: WhatToPlayDifficulty,
+        focusKind: WhatToPlayScenarioFocusKind
+    ) -> WhatToPlayAttempt {
+        WhatToPlayAttempt(
+            createdAt: date,
+            difficulty: difficulty,
+            seed: 1,
+            selectedCard: PlayingCard(suit: .clubs, rank: .seven),
+            bestCard: PlayingCard(suit: .clubs, rank: .seven),
+            isCorrect: true,
+            selectedRank: 1,
+            expectedImpact: 1,
+            bestExpectedImpact: 1,
+            focusKind: focusKind,
+            outcome: .winsTrick
+        )
+    }
 }

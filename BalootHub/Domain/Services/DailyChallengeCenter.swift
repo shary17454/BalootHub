@@ -46,6 +46,15 @@ struct BalootChallenge: Identifiable, Equatable {
     let whatToPlayFocusKind: WhatToPlayScenarioFocusKind?
 }
 
+struct BalootChallengeProgress: Equatable {
+    let completedCount: Int
+    let targetCount: Int
+
+    var isComplete: Bool {
+        completedCount >= targetCount
+    }
+}
+
 enum DailyChallengeCenter {
     static func challenges(
         for date: Date = Date(),
@@ -170,6 +179,46 @@ enum DailyChallengeCenter {
         let difficultyComponent = UInt64(WhatToPlayDifficulty.allCases.firstIndex(of: difficulty) ?? 0) * 1_000_000
         let focusComponent = UInt64(WhatToPlayScenarioFocusKind.allCases.firstIndex(of: focusKind) ?? 0) * 100_000
         return 7_000_000 + dailySeed(for: date, calendar: calendar) + difficultyComponent + focusComponent
+    }
+
+    static func progress(
+        for challenge: BalootChallenge,
+        attempts: [WhatToPlayAttempt],
+        now: Date = Date(),
+        calendar: Calendar = Calendar(identifier: .gregorian)
+    ) -> BalootChallengeProgress? {
+        guard challenge.category == .tactics,
+              let difficulty = challenge.whatToPlayDifficulty,
+              let focusKind = challenge.whatToPlayFocusKind,
+              let interval = dateInterval(for: challenge.cadence, containing: now, calendar: calendar)
+        else { return nil }
+
+        let completed = attempts.filter { attempt in
+            attempt.createdAt >= interval.start
+                && attempt.createdAt < interval.end
+                && attempt.difficulty == difficulty
+                && attempt.focusKind == focusKind
+        }.count
+
+        return BalootChallengeProgress(
+            completedCount: min(completed, challenge.targetCount),
+            targetCount: challenge.targetCount
+        )
+    }
+
+    private static func dateInterval(
+        for cadence: ChallengeCadence,
+        containing date: Date,
+        calendar: Calendar
+    ) -> DateInterval? {
+        switch cadence {
+        case .daily:
+            let start = calendar.startOfDay(for: date)
+            guard let end = calendar.date(byAdding: .day, value: 1, to: start) else { return nil }
+            return DateInterval(start: start, end: end)
+        case .weekly:
+            return calendar.dateInterval(of: .weekOfYear, for: date)
+        }
     }
 
     private static func dailySeed(for date: Date, calendar: Calendar) -> UInt64 {

@@ -1,8 +1,10 @@
 import SwiftUI
+import SwiftData
 import BalootEngine
 
 struct DailyChallengesView: View {
     @Environment(AppEnvironment.self) private var appEnvironment
+    @Query(sort: \WhatToPlayAttempt.createdAt, order: .reverse) private var attempts: [WhatToPlayAttempt]
     @State private var cadence: ChallengeCadence = .daily
     @AppStorage("completedBalootChallengeIDs") private var completedChallengeIDs = ""
 
@@ -16,6 +18,13 @@ struct DailyChallengesView: View {
 
     private var completedSet: Set<String> {
         Set(completedChallengeIDs.split(separator: ",").map(String.init))
+    }
+
+    private var effectiveCompletedSet: Set<String> {
+        let automatic = allChallenges
+            .filter { DailyChallengeCenter.progress(for: $0, attempts: attempts)?.isComplete == true }
+            .map(\.id)
+        return completedSet.union(automatic)
     }
 
     var body: some View {
@@ -42,7 +51,7 @@ struct DailyChallengesView: View {
             Text("تتغير التحديات محليًا حسب التاريخ بدون حساب أو خادم، وتجمع بين اللعب والتدريب والحساب.")
                 .font(AppTypography.subheadline)
                 .foregroundStyle(AppColor.textSecondary)
-            StatusBadge("\(completedSet.count) مكتملة", systemImage: "checkmark.seal.fill", tint: AppColor.success)
+            StatusBadge("\(effectiveCompletedSet.count) مكتملة", systemImage: "checkmark.seal.fill", tint: AppColor.success)
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
@@ -58,7 +67,9 @@ struct DailyChallengesView: View {
     }
 
     private func challengeCard(_ challenge: BalootChallenge) -> some View {
-        let isCompleted = completedSet.contains(challenge.id)
+        let progress = DailyChallengeCenter.progress(for: challenge, attempts: attempts)
+        let isAutomaticallyCompleted = progress?.isComplete == true
+        let isCompleted = completedSet.contains(challenge.id) || isAutomaticallyCompleted
 
         return VStack(alignment: .leading, spacing: AppSpacing.md) {
             HStack(alignment: .top) {
@@ -81,6 +92,16 @@ struct DailyChallengesView: View {
             HStack {
                 scoreBox(title: "الهدف", value: "\(challenge.targetCount)")
                 scoreBox(title: "المكافأة", value: challenge.rewardTitle)
+                if let progress {
+                    scoreBox(title: "التقدم".localized, value: "\(progress.completedCount)/\(progress.targetCount)")
+                }
+            }
+
+            if let progress {
+                ProgressView(value: Double(progress.completedCount), total: Double(max(progress.targetCount, 1)))
+                    .tint(progress.isComplete ? AppColor.success : AppColor.primary)
+                    .accessibilityLabel("تقدم التحدي".localized)
+                    .accessibilityValue("\(progress.completedCount) \("من".localized) \(progress.targetCount)")
             }
 
             if let seed = challenge.whatToPlaySeed,
@@ -105,14 +126,22 @@ struct DailyChallengesView: View {
                 .tint(AppColor.primary)
             }
 
-            Button {
-                toggleCompletion(challenge.id)
-            } label: {
-                Label(isCompleted ? "إلغاء الإكمال" : "تحديد كمكتمل", systemImage: isCompleted ? "arrow.uturn.backward.circle.fill" : "checkmark.circle.fill")
+            if isAutomaticallyCompleted {
+                Label("مكتمل من التدريب".localized, systemImage: "checkmark.seal.fill")
                     .frame(maxWidth: .infinity)
+                    .padding(.vertical, AppSpacing.sm)
+                    .foregroundStyle(AppColor.success)
+                    .background(AppColor.success.opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+            } else {
+                Button {
+                    toggleCompletion(challenge.id)
+                } label: {
+                    Label(isCompleted ? "إلغاء الإكمال" : "تحديد كمكتمل", systemImage: isCompleted ? "arrow.uturn.backward.circle.fill" : "checkmark.circle.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(isCompleted ? AppColor.textSecondary : AppColor.success)
             }
-            .buttonStyle(.borderedProminent)
-            .tint(isCompleted ? AppColor.textSecondary : AppColor.success)
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))

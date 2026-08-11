@@ -482,6 +482,36 @@
         }
       }
     },
+    "التقدم" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Progress"
+          }
+        }
+      }
+    },
+    "تقدم التحدي" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Challenge progress"
+          }
+        }
+      }
+    },
+    "مكتمل من التدريب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Completed from training"
+          }
+        }
+      }
+    },
     "آلي غرب" : {
       "extractionState" : "stale",
       "localizations" : {
