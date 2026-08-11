@@ -16658,6 +16658,16 @@
         }
       }
     },
+    "فارق عن الأفضل" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gap from best"
+          }
+        }
+      }
+    },
     "السلسلة الحالية" : {
       "localizations" : {
         "en" : {

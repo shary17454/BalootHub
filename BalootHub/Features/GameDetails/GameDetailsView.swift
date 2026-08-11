@@ -1636,6 +1636,11 @@ struct WhatToPlayTrainerView: View {
                 Text("\("الترتيب".localized) \(row.rank)")
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
+                if row.lostExpectedPoints > 0 {
+                    Text("\("فارق عن الأفضل".localized): \(row.lostExpectedPoints)")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(AppColor.danger)
+                }
                 Text(row.rationale)
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)

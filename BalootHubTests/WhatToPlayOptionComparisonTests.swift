@@ -28,6 +28,19 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         }
     }
 
+    func testRowsCalculateLostExpectedPointsAgainstBestOption() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
+        let selected = try XCTUnwrap(scenario.options.last)
+        let bestImpact = try XCTUnwrap(scenario.bestOption?.expectedImpact)
+
+        let rows = WhatToPlayOptionComparison.rows(for: scenario, selectedCard: selected.card)
+
+        XCTAssertEqual(rows.first?.lostExpectedPoints, 0)
+        for row in rows {
+            XCTAssertEqual(row.lostExpectedPoints, max(0, bestImpact - row.expectedImpact))
+        }
+    }
+
     func testRowsPreserveTacticalRationaleForEveryOption() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
         let selected = try XCTUnwrap(scenario.bestOption)
