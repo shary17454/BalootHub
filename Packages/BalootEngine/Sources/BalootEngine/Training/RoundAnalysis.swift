@@ -23,11 +23,31 @@ public struct RoundDecisionAnalysis: Identifiable, Sendable, Equatable {
     }
 }
 
+/// تحليل قرار مزايدة واحد داخل جولة قابلة للإعادة.
+public struct RoundBiddingDecisionAnalysis: Identifiable, Sendable, Equatable {
+    public let stepIndex: Int
+    public let playerID: Player.ID
+    public let bid: Bid
+    public let recommendedBid: Bid
+    public let legalBids: [Bid]
+    public let handStrengthScore: Int
+    public let explanation: String
+
+    public var id: String {
+        "\(stepIndex)-\(bid)"
+    }
+
+    public var matchedRecommendation: Bool {
+        bid == recommendedBid
+    }
+}
+
 /// تقرير تحليل الجولة بعد انتهائها.
 public struct RoundAnalysisReport: Sendable, Equatable {
     public let playerID: Player.ID
     public let scoreOutOf100: Int
     public let decisions: [RoundDecisionAnalysis]
+    public let biddingDecisions: [RoundBiddingDecisionAnalysis]
     public let bestDecision: RoundDecisionAnalysis?
     public let worstDecision: RoundDecisionAnalysis?
     public let totalEstimatedLostPoints: Int
@@ -63,11 +83,33 @@ public enum RoundAnalyzer {
         var state = initialState
         state.actionHistory = []
         var decisions: [RoundDecisionAnalysis] = []
+        var biddingDecisions: [RoundBiddingDecisionAnalysis] = []
 
         for (index, action) in actions.enumerated() {
-            if case .playCard(let actorID, let card) = action,
+            if case .placeBid(let actorID, let bid) = action,
                actorID == playerID,
-               state.phase == .playing {
+               state.phase == .bidding,
+               let decision = biddingDecisionAnalysis(
+                    stepIndex: index,
+                    playerID: actorID,
+                    bid: bid,
+                    state: state
+               ) {
+                biddingDecisions.append(decision)
+            } else if case .chooseMode(let actorID, let mode, let trumpSuit) = action,
+                      actorID == playerID,
+                      state.phase == .bidding,
+                      let decision = simpleBiddingDecisionAnalysis(
+                        stepIndex: index,
+                        playerID: actorID,
+                        mode: mode,
+                        trumpSuit: trumpSuit,
+                        state: state
+                      ) {
+                biddingDecisions.append(decision)
+            } else if case .playCard(let actorID, let card) = action,
+                      actorID == playerID,
+                      state.phase == .playing {
                 if let decision = try decisionAnalysis(
                     stepIndex: index,
                     playerID: actorID,
@@ -82,11 +124,12 @@ public enum RoundAnalyzer {
             state = try GameEngine.apply(action, to: state)
         }
 
-        guard !decisions.isEmpty else { throw AnalysisError.noPlayableDecisions }
+        guard !decisions.isEmpty || !biddingDecisions.isEmpty else { throw AnalysisError.noPlayableDecisions }
 
         let totalLost = decisions.reduce(0) { $0 + $1.estimatedLostPoints }
         let nonExpertPenalty = decisions.filter { !$0.matchedExpert }.count * 4
-        let score = max(0, min(100, 100 - (totalLost * 2) - nonExpertPenalty))
+        let biddingPenalty = biddingDecisions.filter { !$0.matchedRecommendation }.count * 8
+        let score = max(0, min(100, 100 - (totalLost * 2) - nonExpertPenalty - biddingPenalty))
 
         let bestDecision = decisions
             .sorted { lhs, rhs in
@@ -108,13 +151,14 @@ public enum RoundAnalyzer {
             playerID: playerID,
             scoreOutOf100: score,
             decisions: decisions,
+            biddingDecisions: biddingDecisions,
             bestDecision: bestDecision,
             worstDecision: worstDecision,
             totalEstimatedLostPoints: totalLost,
-            tacticalMistakes: tacticalMistakes(from: decisions),
+            tacticalMistakes: tacticalMistakes(from: decisions, biddingDecisions: biddingDecisions),
             strengths: strengths(from: decisions),
-            weaknesses: weaknesses(from: decisions),
-            tips: tips(from: decisions)
+            weaknesses: weaknesses(from: decisions, biddingDecisions: biddingDecisions),
+            tips: tips(from: decisions, biddingDecisions: biddingDecisions)
         )
     }
 
@@ -154,6 +198,49 @@ public enum RoundAnalyzer {
         )
     }
 
+    private static func biddingDecisionAnalysis(
+        stepIndex: Int,
+        playerID: Player.ID,
+        bid: Bid,
+        state: GameState
+    ) -> RoundBiddingDecisionAnalysis? {
+        guard let hand = state.hands[playerID] else { return nil }
+        let legal = GameEngine.legalBids(state: state)
+        guard legal.contains(bid) else { return nil }
+        let analysis = HandAnalyzer.analyze(hand: hand, rules: state.rules, legalBids: legal)
+        return RoundBiddingDecisionAnalysis(
+            stepIndex: stepIndex,
+            playerID: playerID,
+            bid: bid,
+            recommendedBid: analysis.recommendedBid,
+            legalBids: legal,
+            handStrengthScore: analysis.strengthScore,
+            explanation: biddingExplanation(bid: bid, recommendedBid: analysis.recommendedBid, handStrengthScore: analysis.strengthScore)
+        )
+    }
+
+    private static func simpleBiddingDecisionAnalysis(
+        stepIndex: Int,
+        playerID: Player.ID,
+        mode: GameMode,
+        trumpSuit: Suit?,
+        state: GameState
+    ) -> RoundBiddingDecisionAnalysis? {
+        guard let hand = state.hands[playerID] else { return nil }
+        let bid: Bid = mode == .sun ? .sun : .hokum(suit: trumpSuit ?? .hearts)
+        let legal: [Bid] = [.pass, .sun] + Suit.allCases.map { Bid.hokum(suit: $0) }
+        let analysis = HandAnalyzer.analyze(hand: hand, rules: state.rules, legalBids: legal)
+        return RoundBiddingDecisionAnalysis(
+            stepIndex: stepIndex,
+            playerID: playerID,
+            bid: bid,
+            recommendedBid: analysis.recommendedBid,
+            legalBids: legal,
+            handStrengthScore: analysis.strengthScore,
+            explanation: biddingExplanation(bid: bid, recommendedBid: analysis.recommendedBid, handStrengthScore: analysis.strengthScore)
+        )
+    }
+
     private static func resettableInitialState(from state: GameState) -> GameState {
         GameState(
             players: state.players,
@@ -164,17 +251,29 @@ public enum RoundAnalyzer {
         )
     }
 
-    private static func tacticalMistakes(from decisions: [RoundDecisionAnalysis]) -> [String] {
-        decisions
+    private static func tacticalMistakes(
+        from decisions: [RoundDecisionAnalysis],
+        biddingDecisions: [RoundBiddingDecisionAnalysis]
+    ) -> [String] {
+        let biddingMistakes = biddingDecisions
+            .filter { !$0.matchedRecommendation }
+            .prefix(2)
+            .map { decision in
+                "في المزايدة، اخترت \(bidLabel(decision.bid)) بينما تقييم اليد يقترح \(bidLabel(decision.recommendedBid))."
+            }
+
+        let playMistakes = decisions
             .filter { !$0.matchedExpert }
             .sorted { lhs, rhs in
                 if lhs.estimatedLostPoints != rhs.estimatedLostPoints { return lhs.estimatedLostPoints > rhs.estimatedLostPoints }
                 return lhs.stepIndex < rhs.stepIndex
             }
-            .prefix(3)
+            .prefix(3 - min(2, biddingMistakes.count))
             .map { decision in
                 "في الأكلة \(decision.trickNumber)، لعبت \(decision.playedCard.displayLabel) بينما اختيار الخبير \(decision.bestCard.displayLabel)."
             }
+
+        return Array(biddingMistakes) + playMistakes
     }
 
     private static func strengths(from decisions: [RoundDecisionAnalysis]) -> [String] {
@@ -189,13 +288,33 @@ public enum RoundAnalyzer {
         return result.isEmpty ? ["توجد قرارات قابلة للتحسين، لكن الجولة أصبحت قابلة للتحليل خطوة بخطوة."] : result
     }
 
-    private static func weaknesses(from decisions: [RoundDecisionAnalysis]) -> [String] {
+    private static func weaknesses(
+        from decisions: [RoundDecisionAnalysis],
+        biddingDecisions: [RoundBiddingDecisionAnalysis]
+    ) -> [String] {
         let costly = decisions.filter { $0.estimatedLostPoints > 0 }
-        guard !costly.isEmpty else { return ["لا توجد نقطة ضعف واضحة في القرارات المحللة."] }
-        return ["توجد \(costly.count) قرارات كان يمكن أن تحقق أثرًا نقطيًا أفضل حسب تحليل الخبير."]
+        let biddingMisses = biddingDecisions.filter { !$0.matchedRecommendation }
+        var result: [String] = []
+        if !costly.isEmpty {
+            result.append("توجد \(costly.count) قرارات كان يمكن أن تحقق أثرًا نقطيًا أفضل حسب تحليل الخبير.")
+        }
+        if !biddingMisses.isEmpty {
+            result.append("توجد \(biddingMisses.count) قرارات مزايدة خالفت تقييم اليد وخيارات الشراء القانونية.")
+        }
+        return result.isEmpty ? ["لا توجد نقطة ضعف واضحة في القرارات المحللة."] : result
     }
 
-    private static func tips(from decisions: [RoundDecisionAnalysis]) -> [String] {
+    private static func tips(
+        from decisions: [RoundDecisionAnalysis],
+        biddingDecisions: [RoundBiddingDecisionAnalysis]
+    ) -> [String] {
+        if let biddingMiss = biddingDecisions.first(where: { !$0.matchedRecommendation }) {
+            return [
+                "راجع قرار المزايدة: \(bidLabel(biddingMiss.bid)) مقابل \(bidLabel(biddingMiss.recommendedBid)) حسب قوة اليد.",
+                "قبل الشراء، احصر الخيارات القانونية ثم قارن قوة الصن بأفضل حكم متاح فقط."
+            ]
+        }
+
         guard let worst = decisions.max(by: {
             if $0.estimatedLostPoints != $1.estimatedLostPoints { return $0.estimatedLostPoints < $1.estimatedLostPoints }
             return $0.selectedRank < $1.selectedRank
@@ -211,5 +330,23 @@ public enum RoundAnalyzer {
             "راجع الأكلة \(worst.trickNumber): الفرق بين \(worst.playedCard.displayLabel) و\(worst.bestCard.displayLabel) هو أوضح موضع للتحسين.",
             "عند وجود ورقة خاسرة، لا ترمِ ورقة عالية إلا إذا كان ذلك يحمي الشريك أو يسحب حكمًا مهمًا."
         ]
+    }
+
+    private static func biddingExplanation(bid: Bid, recommendedBid: Bid, handStrengthScore: Int) -> String {
+        if bid == recommendedBid {
+            return "قرار المزايدة يطابق تقييم اليد الحالي بدرجة قوة \(handStrengthScore)."
+        }
+        return "تقييم اليد بدرجة \(handStrengthScore) يرجّح \(bidLabel(recommendedBid)) بدل \(bidLabel(bid))."
+    }
+
+    private static func bidLabel(_ bid: Bid) -> String {
+        switch bid {
+        case .pass:
+            return "بس"
+        case .sun:
+            return "صن"
+        case .hokum(let suit):
+            return "حكم \(suit.arabicName)"
+        }
     }
 }

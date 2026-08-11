@@ -17,6 +17,18 @@ struct RoundAnalysisTests {
         #expect(report.worstDecision != nil)
     }
 
+    @Test("تحليل الجولة يلتقط قرارات المزايدة من سجل الأفعال")
+    func analyzesBiddingDecisionsFromReplayActions() throws {
+        let (initial, state) = try playableAIMatch(startingSeed: 2_026, level: .expert)
+        let playerID = try #require(firstPlayerWhoBid(in: state.actionHistory))
+
+        let report = try RoundAnalyzer.analyze(initialState: initial, actions: state.actionHistory, playerID: playerID)
+
+        #expect(!report.biddingDecisions.isEmpty)
+        #expect(report.biddingDecisions.allSatisfy { $0.playerID == playerID })
+        #expect(report.biddingDecisions.allSatisfy { $0.legalBids.contains($0.bid) })
+    }
+
     @Test("نفس سجل الأفعال يعطي نفس تقرير التحليل")
     func analysisIsDeterministic() throws {
         let (initial, state) = try playableAIMatch(startingSeed: 77, level: .pro)
@@ -44,6 +56,38 @@ struct RoundAnalysisTests {
         #expect(report.worstDecision?.playedCard == chosen.card)
         #expect(report.worstDecision?.selectedRank == chosen.rank)
         #expect(report.tacticalMistakes.isEmpty == chosen.isExpertChoice)
+    }
+
+    @Test("مخالفة توصية المزايدة تظهر في الأخطاء والنصائح")
+    func nonRecommendedBidIsReportedAsTacticalMistake() throws {
+        var rules = BalootRulesConfiguration.standard
+        rules.multipliersEnabled = false
+        rules.projectsRequireDeclaration = false
+
+        let initial = GameState.newLocalMatch(rules: rules)
+        var state = try GameEngine.apply(.dealCards(seed: 14), to: initial)
+        let playerID = try #require(state.currentTurnPlayerID)
+        let legal = GameEngine.legalBids(state: state)
+        let hand = try #require(state.hands[playerID])
+        let recommended = HandAnalyzer.analyze(hand: hand, rules: state.rules, legalBids: legal).recommendedBid
+        let forced = try #require(legal.first { $0 != recommended })
+
+        state = try GameEngine.apply(.placeBid(playerID: playerID, bid: forced), to: state)
+
+        let report = try RoundAnalyzer.analyze(
+            initialState: initial,
+            actions: state.actionHistory,
+            playerID: playerID
+        )
+
+        #expect(report.decisions.isEmpty)
+        #expect(report.biddingDecisions.count == 1)
+        #expect(report.biddingDecisions.first?.bid == forced)
+        #expect(report.biddingDecisions.first?.recommendedBid == recommended)
+        #expect(report.biddingDecisions.first?.matchedRecommendation == false)
+        #expect(report.tacticalMistakes.contains { $0.contains("في المزايدة") })
+        #expect(report.tips.contains { $0.contains("راجع قرار المزايدة") })
+        #expect(report.scoreOutOf100 < 100)
     }
 
     private func makeAIMatch() -> GameState {
@@ -80,6 +124,15 @@ struct RoundAnalysisTests {
     private func firstPlayerWhoPlayed(in actions: [GameAction]) -> Player.ID? {
         for action in actions {
             if case .playCard(let playerID, _) = action {
+                return playerID
+            }
+        }
+        return nil
+    }
+
+    private func firstPlayerWhoBid(in actions: [GameAction]) -> Player.ID? {
+        for action in actions {
+            if case .placeBid(let playerID, _) = action {
                 return playerID
             }
         }
