@@ -78,11 +78,13 @@ public enum WhatToPlayTrainer {
     public static func generateScenario(
         seed: UInt64,
         difficulty: WhatToPlayDifficulty = .medium,
+        preferredFocus: WhatToPlayScenarioFocusKind? = nil,
         rules: BalootRulesConfiguration = .simpleBidding
     ) throws -> WhatToPlayScenario {
         let agent = ExpertBalootAgent(samples: difficulty.expertSamples)
 
-        for offset in 0..<40 {
+        let searchLimit = preferredFocus == nil ? 40 : 800
+        for offset in 0..<searchLimit {
             var scenarioRules = rules
             scenarioRules.biddingStyle = .simple
             scenarioRules.projectsRequireDeclaration = false
@@ -104,25 +106,32 @@ public enum WhatToPlayTrainer {
             state = try GameEngine.advanceAIPlayers(state: state, agent: agent)
 
             var guardSteps = 0
-            while state.phase == .playing,
-                  state.currentTurnPlayerID != humanID,
-                  guardSteps < 64 {
+            while state.phase == .playing, guardSteps < 64 {
                 guardSteps += 1
+
+                if state.currentTurnPlayerID != humanID {
+                    state = try GameEngine.advanceAIPlayers(state: state, agent: agent)
+                    continue
+                }
+
+                let options = try analyzeOptions(state: state, playerID: humanID, difficulty: difficulty)
+                guard options.count > 1 else { break }
+                let context = scenarioContext(state: state, options: options)
+                if preferredFocus == nil || context.focusKind == preferredFocus {
+                    return WhatToPlayScenario(
+                        seed: seed &+ UInt64(offset),
+                        difficulty: difficulty,
+                        playerID: humanID,
+                        state: state,
+                        context: context,
+                        options: options
+                    )
+                }
+
+                guard let bestCard = options.first(where: \.isExpertChoice)?.card else { break }
+                state = try GameEngine.apply(.playCard(playerID: humanID, card: bestCard), to: state)
                 state = try GameEngine.advanceAIPlayers(state: state, agent: agent)
             }
-
-            guard state.phase == .playing, state.currentTurnPlayerID == humanID else { continue }
-            let options = try analyzeOptions(state: state, playerID: humanID, difficulty: difficulty)
-            guard options.count > 1 else { continue }
-
-            return WhatToPlayScenario(
-                seed: seed &+ UInt64(offset),
-                difficulty: difficulty,
-                playerID: humanID,
-                state: state,
-                context: scenarioContext(state: state, options: options),
-                options: options
-            )
         }
 
         throw ScenarioError.unableToGenerate

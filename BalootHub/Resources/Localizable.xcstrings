@@ -16518,12 +16518,32 @@
         }
       }
     },
+    "تلقائي" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatic"
+          }
+        }
+      }
+    },
     "خيارات محدودة" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Limited choices"
+          }
+        }
+      }
+    },
+    "نوع الموقف" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scenario type"
           }
         }
       }

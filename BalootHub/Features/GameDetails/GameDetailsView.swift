@@ -297,6 +297,7 @@ struct WhatToPlayTrainerView: View {
     @Query(sort: \WhatToPlayAttempt.createdAt, order: .reverse) private var attempts: [WhatToPlayAttempt]
 
     @State private var difficulty: WhatToPlayDifficulty = .medium
+    @State private var preferredFocusRaw = "auto"
     @State private var seed: UInt64 = 2026
     @State private var scenario: WhatToPlayScenario?
     @State private var selectedOption: WhatToPlayOption?
@@ -380,6 +381,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: trainingSessionPlan)
     }
 
+    private var preferredFocus: WhatToPlayScenarioFocusKind? {
+        WhatToPlayScenarioFocusKind(rawValue: preferredFocusRaw)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
@@ -428,6 +433,9 @@ struct WhatToPlayTrainerView: View {
         .onChange(of: difficulty) { _, _ in
             generateScenario()
         }
+        .onChange(of: preferredFocusRaw) { _, _ in
+            generateScenario()
+        }
         .onDisappear {
             generationTask?.cancel()
         }
@@ -470,6 +478,15 @@ struct WhatToPlayTrainerView: View {
                 }
             }
             .pickerStyle(.segmented)
+
+            Picker("نوع الموقف", selection: $preferredFocusRaw) {
+                Text("تلقائي".localized).tag("auto")
+                ForEach(WhatToPlayScenarioFocusKind.allCases, id: \.self) { focusKind in
+                    Text(focusTitle(focusKind)).tag(focusKind.rawValue)
+                }
+            }
+            .pickerStyle(.menu)
+            .accessibilityLabel("نوع الموقف".localized)
 
             Button {
                 nextScenario()
@@ -1612,9 +1629,14 @@ struct WhatToPlayTrainerView: View {
 
         let requestSeed = seed
         let requestDifficulty = difficulty
+        let requestFocus = preferredFocus
         generationTask = Task {
             do {
-                let generated = try await WhatToPlayScenarioLoader.generate(seed: requestSeed, difficulty: requestDifficulty)
+                let generated = try await WhatToPlayScenarioLoader.generate(
+                    seed: requestSeed,
+                    difficulty: requestDifficulty,
+                    preferredFocus: requestFocus
+                )
                 guard !Task.isCancelled else { return }
                 scenario = generated
                 errorMessage = nil

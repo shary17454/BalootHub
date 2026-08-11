@@ -31,6 +31,28 @@ struct WhatToPlayTrainerTests {
         #expect(first.context == second.context)
     }
 
+    @Test("طلب تركيز محدد يولد موقفًا مطابقًا له بشكل حتمي")
+    func generationHonorsPreferredFocusDeterministically() throws {
+        for focusKind in WhatToPlayScenarioFocusKind.allCases {
+            let first = try WhatToPlayTrainer.generateScenario(
+                seed: 2_026,
+                difficulty: .easy,
+                preferredFocus: focusKind
+            )
+            let second = try WhatToPlayTrainer.generateScenario(
+                seed: 2_026,
+                difficulty: .easy,
+                preferredFocus: focusKind
+            )
+
+            #expect(first.context.focusKind == focusKind)
+            #expect(second.context.focusKind == focusKind)
+            #expect(first.seed == second.seed)
+            #expect(first.options.map(\.card) == second.options.map(\.card))
+            #expect(first.bestOption?.card == second.bestOption?.card)
+        }
+    }
+
     @Test("تقييم اختيار المستخدم يعيد خيارًا معروفًا من نفس الموقف")
     func evaluatesUserChoiceAgainstScenarioOptions() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
