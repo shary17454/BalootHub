@@ -366,6 +366,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.farPicks, 1)
         XCTAssertEqual(summary.expertPickPercent, 25)
         XCTAssertEqual(summary.nearMissPercent, 50)
+        XCTAssertEqual(summary.farPickPercent, 25)
     }
 
     func testChoiceRankSummaryIgnoresLegacyAttemptsWithoutRank() {

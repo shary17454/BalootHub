@@ -77,6 +77,11 @@ struct WhatToPlayChoiceRankSummary: Equatable {
         guard trackedAttempts > 0 else { return 0 }
         return Int((Double(secondBestPicks) / Double(trackedAttempts) * 100).rounded())
     }
+
+    var farPickPercent: Int {
+        guard trackedAttempts > 0 else { return 0 }
+        return Int((Double(farPicks) / Double(trackedAttempts) * 100).rounded())
+    }
 }
 
 enum WhatToPlayChoiceRankInsightKind: Equatable {

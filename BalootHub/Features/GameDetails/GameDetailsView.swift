@@ -1136,7 +1136,7 @@ struct WhatToPlayTrainerView: View {
                 miniMetric("اختيارات بعيدة".localized, "\(summary.farPicks)", AppColor.danger)
             }
 
-            Text("\("محاولات مفحوصة".localized): \(summary.trackedAttempts) · \("نسبة اختيار الخبير".localized): \(summary.expertPickPercent)% · \("نسبة الاقتراب من ثاني أفضل".localized): \(summary.nearMissPercent)%")
+            Text("\("محاولات مفحوصة".localized): \(summary.trackedAttempts) · \("نسبة اختيار الخبير".localized): \(summary.expertPickPercent)% · \("نسبة الاقتراب من ثاني أفضل".localized): \(summary.nearMissPercent)% · \("نسبة الاختيارات البعيدة".localized): \(summary.farPickPercent)%")
                 .font(.caption2)
                 .foregroundStyle(AppColor.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)

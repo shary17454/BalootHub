@@ -17874,6 +17874,20 @@
         }
       }
     },
+    "نسبة الاختيارات البعيدة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Rate entfernter Entscheidungen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Far-choice rate" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tasa de elecciones lejanas" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Taux de choix éloignés" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "दूर विकल्प दर" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tingkat pilihan jauh" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Доля дальних выборов" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Uzak seçim oranı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "دور انتخاب کی شرح" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "偏离选择率" } }
+      }
+    },
     "هذه أعلى ورقة حسب تحليل الخبير لهذا الموقف." : {
       "localizations" : {
         "en" : {
