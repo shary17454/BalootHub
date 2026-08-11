@@ -20656,6 +20656,34 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "每个剩余局面" } }
       }
     },
+    "ضغط الأثر مرتفع" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Hoher Wirkungsdruck" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "High impact pressure" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Alta presión de impacto" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Forte pression d'impact" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "उच्च प्रभाव दबाव" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tekanan dampak tinggi" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Высокое давление по эффекту" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Yüksek etki baskısı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اثر کا دباؤ زیادہ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "影响压力高" } }
+      }
+    },
+    "ضغط الأثر طبيعي" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Normaler Wirkungsdruck" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Normal impact pressure" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Presión de impacto normal" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Pression d'impact normale" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सामान्य प्रभाव दबाव" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tekanan dampak normal" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Нормальное давление по эффекту" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Normal etki baskısı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اثر کا دباؤ معمول کے مطابق" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "影响压力正常" } }
+      }
+    },
     "مكتمل" : {
       "localizations" : {
         "en" : {

@@ -753,6 +753,12 @@ struct WhatToPlayTrainerView: View {
                     title: progress.impactTargetMet ? "تحقق هدف الأثر".localized : "لم يتحقق هدف الأثر".localized,
                     isMet: progress.impactTargetMet
                 )
+                if progress.expectedImpactNeededForTarget > 0 {
+                    sessionTargetBadge(
+                        title: progress.impactRecoveryHighPressure ? "ضغط الأثر مرتفع".localized : "ضغط الأثر طبيعي".localized,
+                        isMet: !progress.impactRecoveryHighPressure
+                    )
+                }
             }
 
             Label {

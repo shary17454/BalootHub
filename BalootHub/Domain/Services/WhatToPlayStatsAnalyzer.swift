@@ -255,6 +255,7 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let averageExpectedImpactGap: Int
     let expectedImpactNeededForTarget: Int
     let expectedImpactNeededPerRemainingAttempt: Int
+    let impactRecoveryHighPressure: Bool
     let valueCapturePercent: Int
     let valueCaptureAttempts: Int
     let impactTitle: String
@@ -1181,6 +1182,13 @@ enum WhatToPlayStatsAnalyzer {
         let impactNeededPerRemaining = remaining > 0
             ? Int((Double(impactNeeded) / Double(remaining)).rounded(.up))
             : 0
+        let highPressureThreshold = max(
+            plan.targetAverageExpectedImpact * 2,
+            plan.targetAverageExpectedImpact + 1
+        )
+        let impactRecoveryHighPressure = remaining > 0
+            && impactNeeded > 0
+            && impactNeededPerRemaining > highPressureThreshold
         let impactGap = max(0, plan.targetAverageExpectedImpact - averageImpact)
         let impactReading = trainingSessionImpactReading(
             completedAttempts: completed,
@@ -1224,6 +1232,7 @@ enum WhatToPlayStatsAnalyzer {
                 averageExpectedImpactGap: plan.targetAverageExpectedImpact,
                 expectedImpactNeededForTarget: max(0, targetTotalImpact),
                 expectedImpactNeededPerRemainingAttempt: max(0, plan.targetAverageExpectedImpact),
+                impactRecoveryHighPressure: false,
                 valueCapturePercent: 0,
                 valueCaptureAttempts: 0,
                 impactTitle: impactReading.title,
@@ -1271,6 +1280,7 @@ enum WhatToPlayStatsAnalyzer {
                 averageExpectedImpactGap: impactGap,
                 expectedImpactNeededForTarget: impactNeeded,
                 expectedImpactNeededPerRemainingAttempt: impactNeededPerRemaining,
+                impactRecoveryHighPressure: impactRecoveryHighPressure,
                 valueCapturePercent: sessionSummary.valueCapturePercent,
                 valueCaptureAttempts: sessionSummary.valueCaptureAttempts,
                 impactTitle: impactReading.title,
@@ -1318,6 +1328,7 @@ enum WhatToPlayStatsAnalyzer {
                 averageExpectedImpactGap: 0,
                 expectedImpactNeededForTarget: 0,
                 expectedImpactNeededPerRemainingAttempt: 0,
+                impactRecoveryHighPressure: false,
                 valueCapturePercent: sessionSummary.valueCapturePercent,
                 valueCaptureAttempts: sessionSummary.valueCaptureAttempts,
                 impactTitle: impactReading.title,
@@ -1364,6 +1375,7 @@ enum WhatToPlayStatsAnalyzer {
             averageExpectedImpactGap: impactGap,
             expectedImpactNeededForTarget: impactNeeded,
             expectedImpactNeededPerRemainingAttempt: 0,
+            impactRecoveryHighPressure: false,
             valueCapturePercent: sessionSummary.valueCapturePercent,
             valueCaptureAttempts: sessionSummary.valueCaptureAttempts,
             impactTitle: impactReading.title,
