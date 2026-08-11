@@ -241,6 +241,8 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let accuracyPercent: Int
     let accuracyTargetMet: Bool
     let correctAttemptsNeededForTarget: Int
+    let bestPossibleAccuracyPercent: Int
+    let accuracyTargetReachable: Bool
     let totalExpectedImpact: Int
     let averageExpectedImpact: Int
     let bestExpectedImpact: Int?
@@ -1168,13 +1170,16 @@ enum WhatToPlayStatsAnalyzer {
             targetAccuracyPercent: plan.targetAccuracyPercent
         )
         let correctNeeded = max(0, requiredCorrect - correct)
+        let remaining = max(0, target - completed)
+        let bestPossibleCorrect = min(target, correct + remaining)
+        let bestPossibleAccuracy = Int((Double(bestPossibleCorrect) / Double(target) * 100).rounded())
+        let accuracyTargetReachable = bestPossibleCorrect >= requiredCorrect
         let impactGap = max(0, plan.targetAverageExpectedImpact - averageImpact)
         let impactReading = trainingSessionImpactReading(
             completedAttempts: completed,
             averageExpectedImpact: averageImpact
         )
         let reviewItem = reviewQueue(for: sessionAttempts, limit: 1).first
-        let remaining = max(0, target - completed)
         let nextStep = trainingSessionNextStep(
             state: completed == 0 ? .notStarted : (completed < target ? .inProgress : (accuracyTargetMet && impactTargetMet ? .achieved : .needsRepeat)),
             remainingAttempts: remaining,
@@ -1198,6 +1203,8 @@ enum WhatToPlayStatsAnalyzer {
                 accuracyPercent: 0,
                 accuracyTargetMet: false,
                 correctAttemptsNeededForTarget: requiredCorrect,
+                bestPossibleAccuracyPercent: 100,
+                accuracyTargetReachable: true,
                 totalExpectedImpact: 0,
                 averageExpectedImpact: 0,
                 bestExpectedImpact: nil,
@@ -1241,6 +1248,8 @@ enum WhatToPlayStatsAnalyzer {
                 accuracyPercent: accuracy,
                 accuracyTargetMet: accuracyTargetMet,
                 correctAttemptsNeededForTarget: correctNeeded,
+                bestPossibleAccuracyPercent: bestPossibleAccuracy,
+                accuracyTargetReachable: accuracyTargetReachable,
                 totalExpectedImpact: totalImpact,
                 averageExpectedImpact: averageImpact,
                 bestExpectedImpact: bestImpact,
@@ -1284,6 +1293,8 @@ enum WhatToPlayStatsAnalyzer {
                 accuracyPercent: accuracy,
                 accuracyTargetMet: true,
                 correctAttemptsNeededForTarget: 0,
+                bestPossibleAccuracyPercent: accuracy,
+                accuracyTargetReachable: true,
                 totalExpectedImpact: totalImpact,
                 averageExpectedImpact: averageImpact,
                 bestExpectedImpact: bestImpact,
@@ -1326,6 +1337,8 @@ enum WhatToPlayStatsAnalyzer {
             accuracyPercent: accuracy,
             accuracyTargetMet: accuracyTargetMet,
             correctAttemptsNeededForTarget: correctNeeded,
+            bestPossibleAccuracyPercent: accuracy,
+            accuracyTargetReachable: accuracyTargetMet,
             totalExpectedImpact: totalImpact,
             averageExpectedImpact: averageImpact,
             bestExpectedImpact: bestImpact,

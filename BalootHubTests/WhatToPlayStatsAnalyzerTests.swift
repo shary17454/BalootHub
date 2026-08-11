@@ -1871,6 +1871,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.targetAttempts, 3)
         XCTAssertFalse(progress.accuracyTargetMet)
         XCTAssertEqual(progress.correctAttemptsNeededForTarget, 2)
+        XCTAssertEqual(progress.bestPossibleAccuracyPercent, 100)
+        XCTAssertTrue(progress.accuracyTargetReachable)
         XCTAssertEqual(progress.totalExpectedImpact, 0)
         XCTAssertEqual(progress.averageExpectedImpact, 0)
         XCTAssertNil(progress.bestExpectedImpact)
@@ -1916,6 +1918,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.accuracyPercent, 67)
         XCTAssertFalse(progress.accuracyTargetMet)
         XCTAssertEqual(progress.correctAttemptsNeededForTarget, 1)
+        XCTAssertEqual(progress.bestPossibleAccuracyPercent, 75)
+        XCTAssertTrue(progress.accuracyTargetReachable)
         XCTAssertEqual(progress.totalExpectedImpact, 5)
         XCTAssertEqual(progress.averageExpectedImpact, 2)
         XCTAssertEqual(progress.bestExpectedImpact, 4)
@@ -1990,6 +1994,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(progress.state, .inProgress)
         XCTAssertEqual(progress.remainingAttempts, 1)
+        XCTAssertEqual(progress.bestPossibleAccuracyPercent, 50)
+        XCTAssertFalse(progress.accuracyTargetReachable)
         XCTAssertEqual(progress.nextStepTitle, "هدف الدقة تعثر".localized)
         XCTAssertEqual(progress.nextStepIconName, "exclamationmark.triangle.fill")
     }

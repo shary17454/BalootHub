@@ -20576,6 +20576,48 @@
         }
       }
     },
+    "أفضل دقة ممكنة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bestmögliche Genauigkeit" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Best possible accuracy" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Mejor precisión posible" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Meilleure précision possible" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सर्वश्रेष्ठ संभव सटीकता" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Akurasi terbaik yang mungkin" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Лучшая возможная точность" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Olası en iyi doğruluk" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "بہترین ممکنہ درستگی" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "最高可达准确率" } }
+      }
+    },
+    "هدف الدقة ممكن" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Genauigkeitsziel erreichbar" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Accuracy goal reachable" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Objetivo de precisión alcanzable" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Objectif de précision atteignable" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सटीकता लक्ष्य संभव है" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Target akurasi masih bisa dicapai" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Цель точности достижима" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Doğruluk hedefi ulaşılabilir" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "درستگی کا ہدف ممکن ہے" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "准确率目标可达" } }
+      }
+    },
+    "هدف الدقة غير ممكن" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Genauigkeitsziel nicht mehr erreichbar" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Accuracy goal unreachable" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Objetivo de precisión inalcanzable" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Objectif de précision impossible" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सटीकता लक्ष्य अब संभव नहीं" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Target akurasi tidak lagi bisa dicapai" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Цель точности недостижима" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Doğruluk hedefi ulaşılamaz" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "درستگی کا ہدف ممکن نہیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "准确率目标不可达" } }
+      }
+    },
     "فجوة الأثر" : {
       "localizations" : {
         "en" : {

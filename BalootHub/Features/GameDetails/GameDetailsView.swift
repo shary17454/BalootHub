@@ -681,6 +681,10 @@ struct WhatToPlayTrainerView: View {
                     value: "\(progress.accuracyPercent)%"
                 )
                 miniPlanMetric(
+                    title: "أفضل دقة ممكنة".localized,
+                    value: "\(progress.bestPossibleAccuracyPercent)%"
+                )
+                miniPlanMetric(
                     title: "متوسط الأثر".localized,
                     value: impactText(progress.averageExpectedImpact)
                 )
@@ -728,6 +732,10 @@ struct WhatToPlayTrainerView: View {
                 sessionTargetBadge(
                     title: progress.accuracyTargetMet ? "تحقق هدف الدقة".localized : "لم يتحقق هدف الدقة".localized,
                     isMet: progress.accuracyTargetMet
+                )
+                sessionTargetBadge(
+                    title: progress.accuracyTargetReachable ? "هدف الدقة ممكن".localized : "هدف الدقة غير ممكن".localized,
+                    isMet: progress.accuracyTargetReachable
                 )
                 sessionTargetBadge(
                     title: progress.impactTargetMet ? "تحقق هدف الأثر".localized : "لم يتحقق هدف الأثر".localized,
