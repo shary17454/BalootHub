@@ -1627,7 +1627,9 @@ struct WhatToPlayTrainerView: View {
     }
 
     private func reviewQueueRow(_ item: WhatToPlayReviewItem) -> some View {
-        HStack(alignment: .top, spacing: AppSpacing.sm) {
+        let priority = WhatToPlayStatsAnalyzer.reviewPriority(for: item)
+
+        return HStack(alignment: .top, spacing: AppSpacing.sm) {
             Image(systemName: item.iconName)
                 .foregroundStyle(item.expectedImpact < 0 ? AppColor.danger : AppColor.accent)
                 .frame(width: 24)
@@ -1660,6 +1662,23 @@ struct WhatToPlayTrainerView: View {
                         .lineLimit(2)
                         .minimumScaleFactor(0.85)
                 }
+
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(priority.title)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(AppColor.textPrimary)
+                        Text(priority.detail)
+                            .font(.caption2)
+                            .foregroundStyle(AppColor.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                } icon: {
+                    Image(systemName: priority.iconName)
+                        .foregroundStyle(item.expectedImpact < 0 ? AppColor.danger : AppColor.accent)
+                }
+                .padding(AppSpacing.xs)
+                .background(AppColor.background.opacity(0.7), in: RoundedRectangle(cornerRadius: AppRadius.small))
 
                 Button {
                     replayReviewItem(item)

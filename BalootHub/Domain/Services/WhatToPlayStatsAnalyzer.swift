@@ -142,6 +142,12 @@ struct WhatToPlayReviewItem: Equatable, Identifiable {
     let iconName: String
 }
 
+struct WhatToPlayReviewPriority: Equatable {
+    let title: String
+    let detail: String
+    let iconName: String
+}
+
 enum WhatToPlayTrendDirection: Equatable {
     case improving
     case stable
@@ -737,6 +743,34 @@ enum WhatToPlayStatsAnalyzer {
         if isCostly { return "exclamationmark.triangle.fill" }
         if isMissedOpportunity { return "arrow.up.right.circle.fill" }
         return "2.circle.fill"
+    }
+
+    static func reviewPriority(for item: WhatToPlayReviewItem) -> WhatToPlayReviewPriority {
+        if item.expectedImpact < 0 {
+            return WhatToPlayReviewPriority(
+                title: "أولوية عالية".localized,
+                detail: "\("اختيارك خسر أثرًا متوقعًا".localized): \(impactTextValue(item.expectedImpact)). \("ابدأ بإعادة هذا الموقف قبل أي تدريب جديد.".localized)",
+                iconName: "exclamationmark.triangle.fill"
+            )
+        }
+
+        if item.lostExpectedPoints >= 6 {
+            return WhatToPlayReviewPriority(
+                title: "فرصة قيمة ضاعت".localized,
+                detail: "\("الفارق عن اختيار الخبير".localized): \(item.lostExpectedPoints). \("راجع سبب ارتفاع قيمة أفضل ورقة.".localized)",
+                iconName: "arrow.up.right.circle.fill"
+            )
+        }
+
+        return WhatToPlayReviewPriority(
+            title: "فرق تكتيكي قريب".localized,
+            detail: "القرار ليس مكلفًا مباشرة، لكن مراجعة الفارق الصغير تثبت عادة اختيار أفضل ورقة.".localized,
+            iconName: "2.circle.fill"
+        )
+    }
+
+    private static func impactTextValue(_ value: Int) -> String {
+        value > 0 ? "+\(value)" : "\(value)"
     }
 
     static func performanceTrend(

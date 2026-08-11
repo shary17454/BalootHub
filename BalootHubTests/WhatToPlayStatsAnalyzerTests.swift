@@ -437,6 +437,47 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(queue.first?.focusKind, .followSuit)
     }
 
+    func testReviewPriorityMarksNegativeImpactAsHighPriority() throws {
+        let item = try XCTUnwrap(
+            WhatToPlayStatsAnalyzer.reviewQueue(
+                for: [attempt(daysAgo: 1, correct: false, impact: -4, bestImpact: 3)]
+            ).first
+        )
+
+        let priority = WhatToPlayStatsAnalyzer.reviewPriority(for: item)
+
+        XCTAssertEqual(priority.title, "أولوية عالية".localized)
+        XCTAssertEqual(priority.iconName, "exclamationmark.triangle.fill")
+        XCTAssertTrue(priority.detail.contains("-4"))
+    }
+
+    func testReviewPriorityMarksPositiveGapAsMissedValue() throws {
+        let item = try XCTUnwrap(
+            WhatToPlayStatsAnalyzer.reviewQueue(
+                for: [attempt(daysAgo: 1, correct: false, impact: 3, bestImpact: 12)]
+            ).first
+        )
+
+        let priority = WhatToPlayStatsAnalyzer.reviewPriority(for: item)
+
+        XCTAssertEqual(priority.title, "فرصة قيمة ضاعت".localized)
+        XCTAssertEqual(priority.iconName, "arrow.up.right.circle.fill")
+        XCTAssertTrue(priority.detail.contains("9"))
+    }
+
+    func testReviewPriorityMarksSmallGapAsTacticalDifference() throws {
+        let item = try XCTUnwrap(
+            WhatToPlayStatsAnalyzer.reviewQueue(
+                for: [attempt(daysAgo: 1, correct: false, impact: 4, bestImpact: 5)]
+            ).first
+        )
+
+        let priority = WhatToPlayStatsAnalyzer.reviewPriority(for: item)
+
+        XCTAssertEqual(priority.title, "فرق تكتيكي قريب".localized)
+        XCTAssertEqual(priority.iconName, "2.circle.fill")
+    }
+
     func testReviewQueueUsesRecentTieBreakerForEqualImpact() {
         let attempts = [
             attempt(daysAgo: 3, correct: false, impact: -4),

@@ -20168,6 +20168,86 @@
         }
       }
     },
+    "أولوية عالية" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "High priority"
+          }
+        }
+      }
+    },
+    "اختيارك خسر أثرًا متوقعًا" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your choice lost expected impact"
+          }
+        }
+      }
+    },
+    "ابدأ بإعادة هذا الموقف قبل أي تدريب جديد." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Replay this scenario before any new practice."
+          }
+        }
+      }
+    },
+    "فرصة قيمة ضاعت" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Missed value opportunity"
+          }
+        }
+      }
+    },
+    "الفارق عن اختيار الخبير" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gap from the expert choice"
+          }
+        }
+      }
+    },
+    "راجع سبب ارتفاع قيمة أفضل ورقة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review why the best card had higher value."
+          }
+        }
+      }
+    },
+    "فرق تكتيكي قريب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close tactical gap"
+          }
+        }
+      }
+    },
+    "القرار ليس مكلفًا مباشرة، لكن مراجعة الفارق الصغير تثبت عادة اختيار أفضل ورقة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The decision is not directly costly, but reviewing the small gap reinforces the habit of choosing the best card."
+          }
+        }
+      }
+    },
     "اقرأ بداية الأكلة" : {
       "localizations" : {
         "en" : {
