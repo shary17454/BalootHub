@@ -301,6 +301,8 @@ struct WhatToPlayTrainerView: View {
     @State private var scenario: WhatToPlayScenario?
     @State private var selectedOption: WhatToPlayOption?
     @State private var errorMessage: String?
+    @State private var isGeneratingScenario = false
+    @State private var generationTask: Task<Void, Never>?
 
     private var statsSummary: WhatToPlayStatsSummary {
         WhatToPlayStatsAnalyzer.summarize(attempts: attempts)
@@ -324,13 +326,19 @@ struct WhatToPlayTrainerView: View {
                     if let selectedOption {
                         resultCard(selectedOption, scenario: scenario)
                     }
+                } else if isGeneratingScenario {
+                    EmptyStateView(
+                        systemImage: "brain.head.profile",
+                        title: "جارٍ تجهيز موقف".localized,
+                        message: "يحلل المحرك موقفًا حقيقيًا في الخلفية بدون إيقاف الواجهة.".localized
+                    )
                 } else if let errorMessage {
                     ErrorStateView(message: errorMessage)
                 } else {
                     EmptyStateView(
                         systemImage: "brain.head.profile",
-                        title: "جارٍ تجهيز موقف",
-                        message: "يولّد المحرك جولة بلوت حقيقية ثم يوقفها عند دورك."
+                        title: "جارٍ تجهيز موقف".localized,
+                        message: "يولّد المحرك جولة بلوت حقيقية ثم يوقفها عند دورك.".localized
                     )
                 }
             }
@@ -344,6 +352,9 @@ struct WhatToPlayTrainerView: View {
         }
         .onChange(of: difficulty) { _, _ in
             generateScenario()
+        }
+        .onDisappear {
+            generationTask?.cancel()
         }
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
@@ -359,6 +370,7 @@ struct WhatToPlayTrainerView: View {
                 } label: {
                     Image(systemName: "arrow.clockwise")
                 }
+                .disabled(isGeneratingScenario)
                 .accessibilityLabel("موقف جديد")
             }
         }
@@ -392,6 +404,7 @@ struct WhatToPlayTrainerView: View {
             }
             .buttonStyle(.bordered)
             .tint(AppColor.primary)
+            .disabled(isGeneratingScenario)
         }
     }
 
@@ -612,13 +625,26 @@ struct WhatToPlayTrainerView: View {
     }
 
     private func generateScenario() {
+        generationTask?.cancel()
         selectedOption = nil
         errorMessage = nil
-        do {
-            scenario = try WhatToPlayTrainer.generateScenario(seed: seed, difficulty: difficulty)
-        } catch {
-            scenario = nil
-            errorMessage = "تعذّر توليد موقف تدريبي صالح. جرّب موقفًا جديدًا."
+        scenario = nil
+        isGeneratingScenario = true
+
+        let requestSeed = seed
+        let requestDifficulty = difficulty
+        generationTask = Task {
+            do {
+                let generated = try await WhatToPlayScenarioLoader.generate(seed: requestSeed, difficulty: requestDifficulty)
+                guard !Task.isCancelled else { return }
+                scenario = generated
+                errorMessage = nil
+            } catch {
+                guard !Task.isCancelled else { return }
+                scenario = nil
+                errorMessage = "تعذّر توليد موقف تدريبي صالح. جرّب موقفًا جديدًا.".localized
+            }
+            isGeneratingScenario = false
         }
     }
 

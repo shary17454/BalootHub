@@ -16544,6 +16544,26 @@
         }
       }
     },
+    "تعذّر توليد موقف تدريبي صالح. جرّب موقفًا جديدًا." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not generate a valid training scenario. Try a new scenario."
+          }
+        }
+      }
+    },
+    "جارٍ تجهيز موقف" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preparing a scenario"
+          }
+        }
+      }
+    },
     "مشاركة الموقف" : {
       "localizations" : {
         "en" : {
@@ -16560,6 +16580,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Average expected impact"
+          }
+        }
+      }
+    },
+    "يحلل المحرك موقفًا حقيقيًا في الخلفية بدون إيقاف الواجهة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The engine is analyzing a real scenario in the background without blocking the interface."
+          }
+        }
+      }
+    },
+    "يولّد المحرك جولة بلوت حقيقية ثم يوقفها عند دورك." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The engine generates a real Baloot round, then pauses it on your turn."
           }
         }
       }

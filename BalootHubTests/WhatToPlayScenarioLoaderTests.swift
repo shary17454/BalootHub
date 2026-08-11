@@ -1,0 +1,14 @@
+import XCTest
+import BalootEngine
+@testable import BalootHub
+
+final class WhatToPlayScenarioLoaderTests: XCTestCase {
+    func testLoaderGeneratesScenarioWithRequestedSeedAndDifficulty() async throws {
+        let scenario = try await WhatToPlayScenarioLoader.generate(seed: 2026, difficulty: .medium)
+
+        XCTAssertEqual(scenario.seed, 2026)
+        XCTAssertEqual(scenario.difficulty, .medium)
+        XCTAssertFalse(scenario.options.isEmpty)
+        XCTAssertNotNil(scenario.bestOption)
+    }
+}
