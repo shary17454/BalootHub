@@ -119,7 +119,7 @@ struct SmartAgentTests {
 }
 
 /// يثبت أن الوكيل الخبير (البحث بالمحاكاة) يلعب قانونيًا ويتفوق على الوكيل الذكي.
-@Suite("ExpertBalootAgent")
+@Suite("ExpertBalootAgent", .serialized)
 struct ExpertAgentTests {
 
     private func playRound(seed: UInt64, expertTeamIndex: Int) throws -> (expert: Int, smart: Int) {

@@ -50,11 +50,17 @@ public enum HandAnalyzer {
     public static func analyze(
         hand: [PlayingCard],
         rules: BalootRulesConfiguration = .standard,
-        policy: BiddingPolicy = .standard
+        policy: BiddingPolicy = .standard,
+        legalBids: [Bid]? = nil
     ) -> HandAnalysis {
         let normalized = normalizedHand(hand)
         let evaluation = HandEvaluator.evaluate(hand: normalized)
-        let recommended = recommendation(for: normalized, evaluation: evaluation, policy: policy)
+        let recommended = recommendation(
+            for: normalized,
+            evaluation: evaluation,
+            policy: policy,
+            legalBids: legalBids
+        )
         let projects = detectableProjects(for: normalized, recommendedBid: recommended, rules: rules)
         let projectPoints = projects.reduce(0) { $0 + $1.points }
         let confidence = confidence(for: recommended, evaluation: evaluation, policy: policy, projectPoints: projectPoints)
@@ -87,25 +93,69 @@ public enum HandAnalyzer {
         }
     }
 
-    private static func recommendation(for hand: [PlayingCard], evaluation: HandEvaluation, policy: BiddingPolicy) -> Bid {
-        var bestBid: Bid = .pass
-        var bestMargin = 0
+    private static func recommendation(
+        for hand: [PlayingCard],
+        evaluation: HandEvaluation,
+        policy: BiddingPolicy,
+        legalBids: [Bid]?
+    ) -> Bid {
+        let options = normalizedBidOptions(legalBids)
+        guard options.contains(where: \.isBuy) else { return .pass }
 
-        let sunMargin = evaluation.sunScore + policy.sunBias - (policy.sunThreshold - policy.riskTolerance)
-        if sunMargin >= bestMargin {
-            bestBid = .sun
-            bestMargin = sunMargin
-        }
-
-        if let bestHokum = evaluation.bestHokum, bestHokum.score != Int.min {
-            let hokumMargin = bestHokum.score + policy.hokumBias - (policy.hokumThreshold - policy.riskTolerance)
-            if hokumMargin > bestMargin {
-                bestBid = .hokum(suit: bestHokum.suit)
-                bestMargin = hokumMargin
+        var best: (bid: Bid, margin: Int)?
+        for bid in options where bid.isBuy {
+            guard let score = score(for: bid, hand: hand, evaluation: evaluation, policy: policy) else { continue }
+            let margin = score - threshold(for: bid, policy: policy)
+            guard margin >= 0 else { continue }
+            if best == nil || margin > best!.margin {
+                best = (bid, margin)
             }
         }
 
-        return bestBid
+        return best?.bid ?? .pass
+    }
+
+    private static func normalizedBidOptions(_ legalBids: [Bid]?) -> [Bid] {
+        guard let legalBids else {
+            return [.pass, .sun] + Suit.allCases.map { Bid.hokum(suit: $0) }
+        }
+
+        var seen: Set<Bid> = []
+        var result: [Bid] = []
+        for bid in legalBids where !seen.contains(bid) {
+            seen.insert(bid)
+            result.append(bid)
+        }
+        return result.isEmpty ? [.pass] : result
+    }
+
+    private static func score(
+        for bid: Bid,
+        hand: [PlayingCard],
+        evaluation: HandEvaluation,
+        policy: BiddingPolicy
+    ) -> Int? {
+        switch bid {
+        case .pass:
+            return nil
+        case .sun:
+            return evaluation.sunScore + policy.sunBias
+        case .hokum(let suit):
+            let raw = HandEvaluator.hokumScore(hand: hand, trumpSuit: suit)
+            guard raw != Int.min else { return nil }
+            return raw + policy.hokumBias
+        }
+    }
+
+    private static func threshold(for bid: Bid, policy: BiddingPolicy) -> Int {
+        switch bid {
+        case .pass:
+            return Int.max
+        case .sun:
+            return policy.sunThreshold - policy.riskTolerance
+        case .hokum:
+            return policy.hokumThreshold - policy.riskTolerance
+        }
     }
 
     private static func detectableProjects(

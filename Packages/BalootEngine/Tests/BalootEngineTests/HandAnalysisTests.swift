@@ -27,6 +27,30 @@ struct HandAnalysisTests {
         #expect(analysis.tacticalAdvice.contains("حكم سباتي"))
     }
 
+    @Test("تحليل موقف مزايدة فعلي لا يقترح حكمًا غير قانوني")
+    func constrainedBiddingAnalysisDoesNotRecommendUnavailableTrumpSuit() {
+        let hand = [
+            PlayingCard(suit: .spades, rank: .jack),
+            PlayingCard(suit: .spades, rank: .nine),
+            PlayingCard(suit: .spades, rank: .ace),
+            PlayingCard(suit: .spades, rank: .king),
+            PlayingCard(suit: .spades, rank: .queen),
+            PlayingCard(suit: .hearts, rank: .seven),
+            PlayingCard(suit: .diamonds, rank: .seven),
+            PlayingCard(suit: .clubs, rank: .eight)
+        ]
+
+        let freeAnalysis = HandAnalyzer.analyze(hand: hand)
+        let firstRoundAnalysis = HandAnalyzer.analyze(
+            hand: hand,
+            legalBids: [.pass, .sun, .hokum(suit: .hearts)]
+        )
+
+        #expect(freeAnalysis.recommendedBid == .hokum(suit: .spades))
+        #expect(firstRoundAnalysis.recommendedBid == .pass)
+        #expect(firstRoundAnalysis.tacticalAdvice.contains("تمرير"))
+    }
+
     @Test("اليد الضعيفة تقترح بس")
     func weakHandRecommendsPass() {
         let hand = [
