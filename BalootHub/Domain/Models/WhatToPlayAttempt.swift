@@ -12,9 +12,12 @@ final class WhatToPlayAttempt {
     var selectedRankRaw: String
     var bestSuitRaw: String
     var bestRankRaw: String
+    var secondBestSuitRaw: String?
+    var secondBestRankRaw: String?
     var isCorrect: Bool
     var expectedImpact: Int
     var bestExpectedImpact: Int?
+    var secondBestExpectedImpact: Int?
     var focusKindRaw: String?
     var outcomeRaw: String?
 
@@ -25,9 +28,11 @@ final class WhatToPlayAttempt {
         seed: UInt64,
         selectedCard: PlayingCard,
         bestCard: PlayingCard,
+        secondBestCard: PlayingCard? = nil,
         isCorrect: Bool,
         expectedImpact: Int,
         bestExpectedImpact: Int? = nil,
+        secondBestExpectedImpact: Int? = nil,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
         outcome: WhatToPlayOptionOutcome? = nil
     ) {
@@ -39,9 +44,12 @@ final class WhatToPlayAttempt {
         self.selectedRankRaw = selectedCard.rank.rawValue
         self.bestSuitRaw = bestCard.suit.rawValue
         self.bestRankRaw = bestCard.rank.rawValue
+        self.secondBestSuitRaw = secondBestCard?.suit.rawValue
+        self.secondBestRankRaw = secondBestCard?.rank.rawValue
         self.isCorrect = isCorrect
         self.expectedImpact = expectedImpact
         self.bestExpectedImpact = bestExpectedImpact
+        self.secondBestExpectedImpact = secondBestExpectedImpact
         self.focusKindRaw = focusKind?.rawValue
         self.outcomeRaw = outcome?.rawValue
     }
@@ -60,6 +68,15 @@ final class WhatToPlayAttempt {
     var bestCard: PlayingCard? {
         guard let suit = Suit(rawValue: bestSuitRaw),
               let rank = Rank(rawValue: bestRankRaw)
+        else { return nil }
+        return PlayingCard(suit: suit, rank: rank)
+    }
+
+    var secondBestCard: PlayingCard? {
+        guard let secondBestSuitRaw,
+              let secondBestRankRaw,
+              let suit = Suit(rawValue: secondBestSuitRaw),
+              let rank = Rank(rawValue: secondBestRankRaw)
         else { return nil }
         return PlayingCard(suit: suit, rank: rank)
     }

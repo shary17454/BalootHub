@@ -1316,6 +1316,13 @@ struct WhatToPlayTrainerView: View {
                     .foregroundStyle(AppColor.textSecondary)
                     .lineLimit(2)
                     .minimumScaleFactor(0.85)
+                if let secondBestCard = item.secondBestCard {
+                    Text("\("ثاني أفضل".localized): \(cardName(secondBestCard))\(secondBestImpactSuffix(item.secondBestExpectedImpact))")
+                        .font(.caption2)
+                        .foregroundStyle(AppColor.textSecondary)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.85)
+                }
 
                 Button {
                     replayReviewItem(item)
@@ -1332,6 +1339,11 @@ struct WhatToPlayTrainerView: View {
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
         .accessibilityElement(children: .combine)
+    }
+
+    private func secondBestImpactSuffix(_ impact: Int?) -> String {
+        guard let impact else { return "" }
+        return " · \(impactText(impact))"
     }
 
     private func scenarioSummary(_ scenario: WhatToPlayScenario) -> some View {
@@ -1555,9 +1567,11 @@ struct WhatToPlayTrainerView: View {
                 seed: scenario.seed,
                 selectedCard: evaluated.card,
                 bestCard: bestCard,
+                secondBestCard: scenario.secondBestOption?.card,
                 isCorrect: evaluated.isExpertChoice,
                 expectedImpact: evaluated.expectedImpact,
                 bestExpectedImpact: scenario.bestOption?.expectedImpact,
+                secondBestExpectedImpact: scenario.secondBestOption?.expectedImpact,
                 focusKind: scenario.context.focusKind,
                 outcome: evaluated.outcome
             )

@@ -16608,6 +16608,16 @@
         }
       }
     },
+    "ثاني أفضل" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Second best"
+          }
+        }
+      }
+    },
     "اختر ورقة في أول موقف ليبدأ التطبيق بتتبع دقتك وسلسلة إجاباتك." : {
       "localizations" : {
         "en" : {

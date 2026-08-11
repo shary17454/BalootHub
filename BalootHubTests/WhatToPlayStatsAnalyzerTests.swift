@@ -136,14 +136,17 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         let context = ModelContext(container)
         let selected = PlayingCard(suit: .spades, rank: .ace)
         let best = PlayingCard(suit: .hearts, rank: .jack)
+        let secondBest = PlayingCard(suit: .diamonds, rank: .ace)
         let attempt = WhatToPlayAttempt(
             difficulty: .hard,
             seed: 2_026,
             selectedCard: selected,
             bestCard: best,
+            secondBestCard: secondBest,
             isCorrect: false,
             expectedImpact: -6,
             bestExpectedImpact: 4,
+            secondBestExpectedImpact: 2,
             focusKind: .trumpPressure,
             outcome: .losesTrick
         )
@@ -156,9 +159,11 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(saved.seedValue, 2_026)
         XCTAssertEqual(saved.selectedCard, selected)
         XCTAssertEqual(saved.bestCard, best)
+        XCTAssertEqual(saved.secondBestCard, secondBest)
         XCTAssertFalse(saved.isCorrect)
         XCTAssertEqual(saved.expectedImpact, -6)
         XCTAssertEqual(saved.bestExpectedImpact, 4)
+        XCTAssertEqual(saved.secondBestExpectedImpact, 2)
         XCTAssertEqual(saved.lostExpectedPoints, 10)
         XCTAssertEqual(saved.focusKind, .trumpPressure)
         XCTAssertEqual(saved.outcome, .losesTrick)
@@ -190,6 +195,22 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertNil(attempt.outcomeRaw)
         XCTAssertNil(attempt.outcome)
+    }
+
+    func testAttemptWithoutSecondBestKeepsBackwardCompatibleNilSecondBest() {
+        let attempt = WhatToPlayAttempt(
+            difficulty: .medium,
+            seed: 99,
+            selectedCard: PlayingCard(suit: .clubs, rank: .seven),
+            bestCard: PlayingCard(suit: .clubs, rank: .ace),
+            isCorrect: false,
+            expectedImpact: -4
+        )
+
+        XCTAssertNil(attempt.secondBestSuitRaw)
+        XCTAssertNil(attempt.secondBestRankRaw)
+        XCTAssertNil(attempt.secondBestCard)
+        XCTAssertNil(attempt.secondBestExpectedImpact)
     }
 
     func testRecentAttemptsReturnsNewestFirstWithLimit() {
@@ -261,6 +282,26 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         let queue = WhatToPlayStatsAnalyzer.reviewQueue(for: attempts)
 
         XCTAssertEqual(queue.first?.lostExpectedPoints, 7)
+    }
+
+    func testReviewQueueCarriesSecondBestForReplayReview() {
+        let secondBest = PlayingCard(suit: .diamonds, rank: .ace)
+        let attempts = [
+            attempt(
+                daysAgo: 1,
+                difficulty: .hard,
+                correct: false,
+                impact: -4,
+                bestImpact: 3,
+                secondBestCard: secondBest,
+                secondBestImpact: 1
+            )
+        ]
+
+        let queue = WhatToPlayStatsAnalyzer.reviewQueue(for: attempts)
+
+        XCTAssertEqual(queue.first?.secondBestCard, secondBest)
+        XCTAssertEqual(queue.first?.secondBestExpectedImpact, 1)
     }
 
     func testReviewQueueCarriesScenarioFocusForReplay() {
@@ -1329,6 +1370,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         correct: Bool,
         impact: Int,
         bestImpact: Int? = nil,
+        secondBestCard: PlayingCard? = nil,
+        secondBestImpact: Int? = nil,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
         outcome: WhatToPlayOptionOutcome? = nil
     ) -> WhatToPlayAttempt {
@@ -1338,9 +1381,11 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             seed: UInt64(Int(daysAgo)),
             selectedCard: PlayingCard(suit: .clubs, rank: .seven),
             bestCard: PlayingCard(suit: .clubs, rank: .seven),
+            secondBestCard: secondBestCard,
             isCorrect: correct,
             expectedImpact: impact,
             bestExpectedImpact: bestImpact,
+            secondBestExpectedImpact: secondBestImpact,
             focusKind: focusKind,
             outcome: outcome
         )

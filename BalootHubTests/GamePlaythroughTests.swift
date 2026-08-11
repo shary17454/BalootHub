@@ -176,6 +176,20 @@ final class GamePlaythroughTests: XCTestCase {
         }
     }
 
+    /// الصن والحكم ليسا لعبتين منفصلتين: كلاهما خيار شراء داخل مزايدة البلوت الواحدة.
+    func testClassicBalootBiddingOffersSunAndHokumInOneGame() throws {
+        var state = GameState.newLocalMatch(rules: .standard)
+        state = try GameEngine.apply(.dealCards(seed: 14), to: state)
+
+        let upCard = try XCTUnwrap(state.bidding.upCard)
+        let legalBids = GameEngine.legalBids(state: state)
+
+        XCTAssertEqual(state.phase, .bidding)
+        XCTAssertTrue(legalBids.contains(.pass))
+        XCTAssertTrue(legalBids.contains(.sun))
+        XCTAssertTrue(legalBids.contains(.hokum(suit: upCard.suit)))
+    }
+
     /// مشروع البلوت يُحتسب في حكم فقط ولا يُحتسب في صن إطلاقًا،
     /// لأن الشرط هو امتلاك ملك وبنت **نوع الحكم** ولا حكم في الصن.
     func testBelotProjectAppliesOnlyInHokum() throws {

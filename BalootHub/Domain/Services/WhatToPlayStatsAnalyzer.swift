@@ -83,8 +83,10 @@ struct WhatToPlayReviewItem: Equatable, Identifiable {
     let focusKind: WhatToPlayScenarioFocusKind?
     let selectedCard: PlayingCard?
     let bestCard: PlayingCard?
+    let secondBestCard: PlayingCard?
     let expectedImpact: Int
     let lostExpectedPoints: Int
+    let secondBestExpectedImpact: Int?
     let createdAt: Date
     let title: String
     let detail: String
@@ -503,8 +505,10 @@ enum WhatToPlayStatsAnalyzer {
                 focusKind: attempt.focusKind,
                 selectedCard: attempt.selectedCard,
                 bestCard: attempt.bestCard,
+                secondBestCard: attempt.secondBestCard,
                 expectedImpact: attempt.expectedImpact,
                 lostExpectedPoints: attempt.lostExpectedPoints,
+                secondBestExpectedImpact: attempt.secondBestExpectedImpact,
                 createdAt: attempt.createdAt,
                 title: reviewTitle(isCostly: isCostly, isMissedOpportunity: isMissedOpportunity),
                 detail: reviewDetail(
