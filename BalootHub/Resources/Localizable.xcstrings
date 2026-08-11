@@ -18878,6 +18878,16 @@
         }
       }
     },
+    "هدف الأثر" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impact target"
+          }
+        }
+      }
+    },
     "نقطة قوة" : {
       "localizations" : {
         "en" : {

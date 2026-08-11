@@ -165,6 +165,7 @@ struct WhatToPlayTrainingSessionPlan: Equatable {
     let focusKind: WhatToPlayScenarioFocusKind?
     let scenarioCount: Int
     let targetAccuracyPercent: Int
+    let targetAverageExpectedImpact: Int
     let title: String
     let detail: String
     let successMetric: String
@@ -175,6 +176,7 @@ struct WhatToPlayTrainingSessionPlan: Equatable {
         focusKind: WhatToPlayScenarioFocusKind? = nil,
         scenarioCount: Int,
         targetAccuracyPercent: Int,
+        targetAverageExpectedImpact: Int,
         title: String,
         detail: String,
         successMetric: String,
@@ -184,6 +186,7 @@ struct WhatToPlayTrainingSessionPlan: Equatable {
         self.focusKind = focusKind
         self.scenarioCount = scenarioCount
         self.targetAccuracyPercent = targetAccuracyPercent
+        self.targetAverageExpectedImpact = targetAverageExpectedImpact
         self.title = title
         self.detail = detail
         self.successMetric = successMetric
@@ -802,6 +805,7 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: .easy,
                 scenarioCount: 3,
                 targetAccuracyPercent: 60,
+                targetAverageExpectedImpact: 0,
                 title: "جلسة تأسيس قصيرة".localized,
                 detail: "ابدأ بثلاثة مواقف سهلة لبناء خط أساس واضح قبل رفع الصعوبة.".localized,
                 successMetric: "هدف الجلسة: إجابتان صحيحتان من 3.".localized,
@@ -815,6 +819,7 @@ enum WhatToPlayStatsAnalyzer {
                 focusKind: focusKind,
                 scenarioCount: 3,
                 targetAccuracyPercent: 67,
+                targetAverageExpectedImpact: 0,
                 title: "جلسة مراجعة مركزة".localized,
                 detail: "اختر مواقف قليلة وراجع التفسير بعد كل قرار قبل الانتقال.".localized,
                 successMetric: "هدف الجلسة: لا تكرر نفس سبب الخطأ مرتين.".localized,
@@ -828,6 +833,7 @@ enum WhatToPlayStatsAnalyzer {
                 focusKind: focusKind,
                 scenarioCount: 5,
                 targetAccuracyPercent: 80,
+                targetAverageExpectedImpact: 2,
                 title: "جلسة رفع المستوى".localized,
                 detail: "أداؤك يسمح بتحدٍ أعلى؛ اختبر قراءتك في مواقف أكثر ضغطًا.".localized,
                 successMetric: "هدف الجلسة: 4 إجابات صحيحة من 5.".localized,
@@ -841,6 +847,7 @@ enum WhatToPlayStatsAnalyzer {
                 focusKind: focusKind,
                 scenarioCount: 5,
                 targetAccuracyPercent: 70,
+                targetAverageExpectedImpact: 0,
                 title: "جلسة تقليل النزيف".localized,
                 detail: "ركز على مقارنة أفضل وثاني أفضل حتى تقل خسارة النقاط المتوقعة.".localized,
                 successMetric: "هدف الجلسة: متوسط أثر غير سلبي.".localized,
@@ -853,6 +860,7 @@ enum WhatToPlayStatsAnalyzer {
             focusKind: focusKind,
             scenarioCount: 4,
             targetAccuracyPercent: 70,
+            targetAverageExpectedImpact: 1,
             title: "جلسة تثبيت القراءة".localized,
             detail: "درّب نفس المستوى في دفعة قصيرة حتى تصبح قراراتك أكثر ثباتًا.".localized,
             successMetric: "هدف الجلسة: 3 إجابات صحيحة من 4.".localized,

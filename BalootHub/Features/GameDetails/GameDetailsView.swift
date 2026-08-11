@@ -607,6 +607,7 @@ struct WhatToPlayTrainerView: View {
                 miniPlanMetric(title: "تركيز التدريب".localized, value: plan.focusKind.map(focusTitle) ?? "تلقائي".localized)
                 miniPlanMetric(title: "المواقف".localized, value: "\(plan.scenarioCount)")
                 miniPlanMetric(title: "هدف الدقة".localized, value: "\(plan.targetAccuracyPercent)%")
+                miniPlanMetric(title: "هدف الأثر".localized, value: "≥ \(impactText(plan.targetAverageExpectedImpact))")
             }
 
             Label(plan.successMetric, systemImage: "checkmark.circle.fill")

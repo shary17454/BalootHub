@@ -1281,6 +1281,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(plan.difficulty, .easy)
         XCTAssertEqual(plan.scenarioCount, 3)
         XCTAssertEqual(plan.targetAccuracyPercent, 60)
+        XCTAssertEqual(plan.targetAverageExpectedImpact, 0)
         XCTAssertEqual(plan.title, "جلسة تأسيس قصيرة".localized)
     }
 
@@ -1297,6 +1298,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(plan.title, "جلسة مراجعة مركزة".localized)
         XCTAssertEqual(plan.focusKind, WhatToPlayScenarioFocusKind.trumpPressure)
         XCTAssertEqual(plan.scenarioCount, 3)
+        XCTAssertEqual(plan.targetAverageExpectedImpact, 0)
         XCTAssertEqual(plan.successMetric, "هدف الجلسة: لا تكرر نفس سبب الخطأ مرتين.".localized)
     }
 
@@ -1315,6 +1317,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(plan.title, "جلسة رفع المستوى".localized)
         XCTAssertEqual(plan.scenarioCount, 5)
         XCTAssertEqual(plan.targetAccuracyPercent, 80)
+        XCTAssertEqual(plan.targetAverageExpectedImpact, 2)
     }
 
     func testTrainingSessionPlanTargetsPointLeakForCautiousStyle() {
@@ -1328,6 +1331,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         let plan = WhatToPlayStatsAnalyzer.trainingSessionPlan(for: attempts)
 
         XCTAssertEqual(plan.title, "جلسة تقليل النزيف".localized)
+        XCTAssertEqual(plan.targetAverageExpectedImpact, 0)
         XCTAssertEqual(plan.successMetric, "هدف الجلسة: متوسط أثر غير سلبي.".localized)
     }
 
@@ -1345,6 +1349,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(plan.title, "جلسة تثبيت القراءة".localized)
         XCTAssertEqual(plan.scenarioCount, 4)
+        XCTAssertEqual(plan.targetAverageExpectedImpact, 1)
         XCTAssertEqual(plan.successMetric, "هدف الجلسة: 3 إجابات صحيحة من 4.".localized)
     }
 
@@ -1559,6 +1564,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             focusKind: focusKind,
             scenarioCount: count,
             targetAccuracyPercent: target,
+            targetAverageExpectedImpact: 0,
             title: "خطة اختبار",
             detail: "تفاصيل اختبار",
             successMetric: "هدف اختبار",
