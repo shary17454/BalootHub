@@ -17,6 +17,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         let text = WhatToPlayShareCard.text(for: scenario)
 
         XCTAssertTrue(text.contains("وش تلعب؟".localized))
+        XCTAssertTrue(text.contains("\("أنت تلعب".localized) \(contentMode(for: scenario))"))
         XCTAssertTrue(text.contains("\("النمط".localized):"))
         XCTAssertTrue(text.contains("\("الصعوبة".localized):"))
         XCTAssertTrue(text.contains("\("تركيز التدريب".localized):"))
@@ -32,6 +33,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         let content = WhatToPlayShareCard.content(for: scenario)
 
         XCTAssertEqual(content.title, "وش تلعب؟".localized)
+        XCTAssertEqual(content.contextLine, "\("أنت تلعب".localized) \(content.mode)")
         XCTAssertEqual(content.mode.isEmpty, false)
         XCTAssertEqual(content.difficulty.isEmpty, false)
         XCTAssertEqual(content.focus.isEmpty, false)
@@ -57,6 +59,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(content.focus, "اتباع اللون".localized)
         XCTAssertTrue(text.contains("\("الصعوبة".localized): \("سهل".localized)"))
         XCTAssertTrue(text.contains("\("تركيز التدريب".localized): \("اتباع اللون".localized)"))
+        XCTAssertTrue(text.contains(content.contextLine))
     }
 
     func testShareCardContentKeepsTableCardsSeparateFromLegalOptions() throws {
@@ -80,5 +83,9 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertFalse(text.contains("أفضل ورقة:".localized))
         XCTAssertFalse(text.contains("الأفضل".localized))
         XCTAssertFalse(text.contains("اختيار الخبير".localized))
+    }
+
+    private func contentMode(for scenario: WhatToPlayScenario) -> String {
+        WhatToPlayShareCard.content(for: scenario).mode
     }
 }

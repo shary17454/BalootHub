@@ -18968,6 +18968,16 @@
         }
       }
     },
+    "أنت تلعب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You are playing"
+          }
+        }
+      }
+    },
     "يحلل المحرك موقفًا حقيقيًا في الخلفية بدون إيقاف الواجهة." : {
       "localizations" : {
         "en" : {

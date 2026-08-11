@@ -9,6 +9,7 @@ struct WhatToPlayShareCardContent: Equatable {
 
     let title: String
     let subtitle: String
+    let contextLine: String
     let mode: String
     let difficulty: String
     let focus: String
@@ -27,10 +28,12 @@ enum WhatToPlayShareCard {
     static func content(for scenario: WhatToPlayScenario) -> WhatToPlayShareCardContent {
         let state = scenario.state
         let played = state.currentTrick?.playedCards ?? []
+        let mode = modeText(state)
         return WhatToPlayShareCardContent(
             title: "وش تلعب؟".localized,
             subtitle: "موقف تدريبي من Baloot Hub".localized,
-            mode: modeText(state),
+            contextLine: "\("أنت تلعب".localized) \(mode)",
+            mode: mode,
             difficulty: difficultyText(scenario.difficulty),
             focus: focusText(scenario.context.focusKind),
             trickProgress: "\(state.completedTricks.count + 1) \("من".localized) 8",
@@ -51,6 +54,7 @@ enum WhatToPlayShareCard {
         var lines = [
             content.title,
             content.subtitle,
+            content.contextLine,
             "\("النمط".localized): \(content.mode)",
             "\("الصعوبة".localized): \(content.difficulty)",
             "\("تركيز التدريب".localized): \(content.focus)",
