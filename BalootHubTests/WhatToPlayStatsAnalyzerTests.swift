@@ -883,6 +883,48 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertTrue(action.detail.contains("تنقل الأكلة لفريقك".localized))
     }
 
+    func testRetryPromptIsNilForExpertMatch() throws {
+        let insight = WhatToPlayStatsAnalyzer.decisionInsight(
+            selectedRank: 1,
+            selectedImpact: 8,
+            bestImpact: 8,
+            secondBestImpact: 6
+        )
+
+        let prompt = WhatToPlayStatsAnalyzer.retryPrompt(insight: insight)
+
+        XCTAssertNil(prompt)
+    }
+
+    func testRetryPromptExplainsUncountedRetryForLargeMiss() {
+        let insight = WhatToPlayStatsAnalyzer.decisionInsight(
+            selectedRank: 4,
+            selectedImpact: -3,
+            bestImpact: 7,
+            secondBestImpact: 2
+        )
+
+        let prompt = WhatToPlayStatsAnalyzer.retryPrompt(insight: insight)
+
+        XCTAssertEqual(prompt?.title, "أعد نفس الموقف".localized)
+        XCTAssertTrue(prompt?.detail.contains("لن تُحسب الإعادة".localized) == true)
+        XCTAssertEqual(prompt?.iconName, "arrow.counterclockwise.circle.fill")
+    }
+
+    func testRetryPromptExplainsSmallGapPractice() {
+        let insight = WhatToPlayStatsAnalyzer.decisionInsight(
+            selectedRank: 2,
+            selectedImpact: 6,
+            bestImpact: 8,
+            secondBestImpact: 6
+        )
+
+        let prompt = WhatToPlayStatsAnalyzer.retryPrompt(insight: insight)
+
+        XCTAssertEqual(prompt?.title, "أعد نفس الموقف".localized)
+        XCTAssertTrue(prompt?.detail.contains("الفرق بسيط".localized) == true)
+    }
+
     func testScenarioBriefExplainsFollowSuitContext() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(
             seed: 2026,

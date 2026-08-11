@@ -452,6 +452,36 @@
         }
       }
     },
+    "أعد نفس الموقف" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retry the same scenario"
+          }
+        }
+      }
+    },
+    "الفرق بسيط؛ أعد الموقف مرة واحدة وحاول تمييز سبب ترجيح الخبير للورقة الأفضل." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The gap is small; retry the scenario once and focus on why the expert preferred the best card."
+          }
+        }
+      }
+    },
+    "لن تُحسب الإعادة كمحاولة جديدة. ركّز على الورقة الأفضل قبل الانتقال للموقف التالي." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The retry will not count as a new attempt. Focus on the best card before moving to the next scenario."
+          }
+        }
+      }
+    },
     "آلي غرب" : {
       "extractionState" : "stale",
       "localizations" : {

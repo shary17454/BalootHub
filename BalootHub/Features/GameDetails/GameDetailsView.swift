@@ -304,6 +304,7 @@ struct WhatToPlayTrainerView: View {
     @State private var errorMessage: String?
     @State private var illegalMoveExplanation: String?
     @State private var isGeneratingScenario = false
+    @State private var isRetryingCurrentScenario = false
     @State private var generationTask: Task<Void, Never>?
 
     init(
@@ -2005,7 +2006,7 @@ struct WhatToPlayTrainerView: View {
     private func choose(_ option: WhatToPlayOption, in scenario: WhatToPlayScenario) {
         guard let evaluated = WhatToPlayTrainer.evaluateChoice(card: option.card, in: scenario) else { return }
         illegalMoveExplanation = nil
-        if selectedOption == nil, let bestCard = scenario.bestOption?.card {
+        if selectedOption == nil, !isRetryingCurrentScenario, let bestCard = scenario.bestOption?.card {
             let attempt = WhatToPlayAttempt(
                 difficulty: scenario.difficulty,
                 seed: scenario.seed,
@@ -2024,6 +2025,7 @@ struct WhatToPlayTrainerView: View {
             try? modelContext.save()
         }
         selectedOption = evaluated
+        isRetryingCurrentScenario = false
     }
 
     private func resultCard(_ option: WhatToPlayOption, scenario: WhatToPlayScenario) -> some View {
@@ -2061,6 +2063,10 @@ struct WhatToPlayTrainerView: View {
                 nextDecisionActionView(nextAction)
             }
 
+            if let retryPrompt = WhatToPlayStatsAnalyzer.retryPrompt(for: option, in: scenario) {
+                retryPromptView(retryPrompt)
+            }
+
             Text(option.explanation)
                 .font(AppTypography.subheadline)
                 .foregroundStyle(AppColor.textPrimary)
@@ -2069,6 +2075,31 @@ struct WhatToPlayTrainerView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func retryPromptView(_ prompt: WhatToPlayRetryPrompt) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            Label(prompt.title, systemImage: prompt.iconName)
+                .font(AppTypography.subheadline.weight(.semibold))
+                .foregroundStyle(AppColor.primary)
+
+            Text(prompt.detail)
+                .font(AppTypography.caption)
+                .foregroundStyle(AppColor.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Button {
+                retryCurrentScenario()
+            } label: {
+                Label("أعد نفس الموقف".localized, systemImage: "arrow.counterclockwise")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(AppColor.primary)
+        }
+        .padding(AppSpacing.sm)
+        .background(AppColor.primary.opacity(0.10), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .contain)
     }
 
     private func nextDecisionActionView(_ action: WhatToPlayNextDecisionAction) -> some View {
@@ -2307,6 +2338,7 @@ struct WhatToPlayTrainerView: View {
         selectedOption = nil
         errorMessage = nil
         illegalMoveExplanation = nil
+        isRetryingCurrentScenario = false
         scenario = nil
         isGeneratingScenario = true
 
@@ -2334,6 +2366,7 @@ struct WhatToPlayTrainerView: View {
 
     private func nextScenario() {
         seed &+= 1
+        isRetryingCurrentScenario = false
         generateScenario()
     }
 
@@ -2341,6 +2374,7 @@ struct WhatToPlayTrainerView: View {
         seed = item.seed
         preferredFocusRaw = item.focusKind?.rawValue ?? "auto"
         selectedOption = nil
+        isRetryingCurrentScenario = false
         if difficulty == item.difficulty {
             generateScenario()
         } else {
@@ -2350,6 +2384,7 @@ struct WhatToPlayTrainerView: View {
 
     private func startNextScenarioRecommendation() {
         let targetFocusRaw = nextScenarioRecommendation.focusKind?.rawValue ?? "auto"
+        isRetryingCurrentScenario = false
         if difficulty == nextScenarioRecommendation.difficulty, preferredFocusRaw == targetFocusRaw {
             nextScenario()
         } else {
@@ -2366,6 +2401,7 @@ struct WhatToPlayTrainerView: View {
     ) {
         let targetFocusRaw = focusKind?.rawValue ?? "auto"
         seed = scenarioSeed
+        isRetryingCurrentScenario = false
         if difficulty == targetDifficulty, preferredFocusRaw == targetFocusRaw {
             generateScenario()
         } else {
@@ -2373,6 +2409,12 @@ struct WhatToPlayTrainerView: View {
             preferredFocusRaw = targetFocusRaw
             generateScenario()
         }
+    }
+
+    private func retryCurrentScenario() {
+        selectedOption = nil
+        illegalMoveExplanation = nil
+        isRetryingCurrentScenario = true
     }
 
     private func applyTrainingSessionNextStep(_ progress: WhatToPlayTrainingSessionProgress) {

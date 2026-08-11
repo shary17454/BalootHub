@@ -284,6 +284,12 @@ struct WhatToPlayNextDecisionAction: Equatable {
     let recommendedCard: PlayingCard?
 }
 
+struct WhatToPlayRetryPrompt: Equatable {
+    let title: String
+    let detail: String
+    let iconName: String
+}
+
 struct WhatToPlayScenarioBrief: Equatable {
     let title: String
     let detail: String
@@ -1488,6 +1494,29 @@ enum WhatToPlayStatsAnalyzer {
             insight: insight,
             focusKind: scenario.context.focusKind,
             bestCard: scenario.bestOption?.card
+        )
+    }
+
+    static func retryPrompt(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayRetryPrompt? {
+        guard let insight = decisionInsight(for: selected, in: scenario) else { return nil }
+        return retryPrompt(insight: insight)
+    }
+
+    static func retryPrompt(insight: WhatToPlayDecisionInsight) -> WhatToPlayRetryPrompt? {
+        guard insight.kind != .expertMatch else { return nil }
+
+        if insight.lostExpectedPoints <= 2 {
+            return WhatToPlayRetryPrompt(
+                title: "أعد نفس الموقف".localized,
+                detail: "الفرق بسيط؛ أعد الموقف مرة واحدة وحاول تمييز سبب ترجيح الخبير للورقة الأفضل.".localized,
+                iconName: "arrow.counterclockwise.circle.fill"
+            )
+        }
+
+        return WhatToPlayRetryPrompt(
+            title: "أعد نفس الموقف".localized,
+            detail: "لن تُحسب الإعادة كمحاولة جديدة. ركّز على الورقة الأفضل قبل الانتقال للموقف التالي.".localized,
+            iconName: "arrow.counterclockwise.circle.fill"
         )
     }
 
