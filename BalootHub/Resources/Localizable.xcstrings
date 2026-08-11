@@ -19318,6 +19318,16 @@
         }
       }
     },
+    "أهم موقف للمراجعة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Top review scenario"
+          }
+        }
+      }
+    },
     "نمط قراراتك غير معروف" : {
       "localizations" : {
         "en" : {

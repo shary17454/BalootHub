@@ -1390,6 +1390,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.averageExpectedImpact, 0)
         XCTAssertEqual(progress.impactTitle, "الأثر غير محسوب بعد".localized)
         XCTAssertEqual(progress.impactIconName, "chart.line.uptrend.xyaxis")
+        XCTAssertNil(progress.reviewItem)
         XCTAssertEqual(progress.remainingAttempts, 3)
         XCTAssertEqual(progress.title, "ابدأ الجلسة".localized)
     }
@@ -1414,6 +1415,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.averageExpectedImpact, 2)
         XCTAssertEqual(progress.impactTitle, "أثر الجلسة رابح".localized)
         XCTAssertEqual(progress.impactIconName, "checkmark.seal.fill")
+        XCTAssertEqual(progress.reviewItem?.seed, 2)
         XCTAssertEqual(progress.remainingAttempts, 1)
     }
 
@@ -1435,6 +1437,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.accuracyPercent, 50)
         XCTAssertEqual(progress.totalExpectedImpact, 1)
         XCTAssertEqual(progress.averageExpectedImpact, 1)
+        XCTAssertEqual(progress.reviewItem?.seed, 1)
         XCTAssertEqual(progress.remainingAttempts, 1)
     }
 
@@ -1455,6 +1458,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.accuracyPercent, 67)
         XCTAssertEqual(progress.totalExpectedImpact, 5)
         XCTAssertEqual(progress.averageExpectedImpact, 2)
+        XCTAssertEqual(progress.reviewItem?.seed, 1)
         XCTAssertEqual(progress.title, "هدف الجلسة تحقق".localized)
     }
 
@@ -1477,8 +1481,28 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.averageExpectedImpact, -1)
         XCTAssertEqual(progress.impactTitle, "أثر الجلسة سلبي".localized)
         XCTAssertEqual(progress.impactIconName, "exclamationmark.triangle.fill")
+        XCTAssertEqual(progress.reviewItem?.seed, 1)
         XCTAssertEqual(progress.remainingAttempts, 0)
         XCTAssertEqual(progress.title, "أعد الجلسة".localized)
+    }
+
+    func testTrainingSessionProgressReviewItemComesFromCurrentPlannedBatch() {
+        let plan = sessionPlan(difficulty: .medium, focusKind: .followSuit, count: 3, target: 67)
+        let attempts = [
+            attempt(daysAgo: 8, difficulty: .medium, correct: false, impact: -20, bestImpact: 10, focusKind: .followSuit),
+            attempt(daysAgo: 7, difficulty: .hard, correct: false, impact: -12, bestImpact: 8, focusKind: .followSuit),
+            attempt(daysAgo: 6, difficulty: .medium, correct: false, impact: -10, bestImpact: 6, focusKind: .trumpPressure),
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 3, bestImpact: 3, focusKind: .followSuit),
+            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: -3, bestImpact: 4, focusKind: .followSuit),
+            attempt(daysAgo: 1, difficulty: .medium, correct: false, impact: -1, bestImpact: 2, focusKind: .followSuit)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.completedAttempts, 3)
+        XCTAssertEqual(progress.reviewItem?.seed, 2)
+        XCTAssertEqual(progress.reviewItem?.lostExpectedPoints, 7)
+        XCTAssertEqual(progress.reviewItem?.focusKind, .followSuit)
     }
 
     func testCoachingTipForEmptyAttemptsEncouragesBaseline() {

@@ -638,7 +638,10 @@ struct WhatToPlayTrainerView: View {
             )
             .tint(progress.state == .achieved ? AppColor.success : AppColor.primary)
 
-            HStack(spacing: AppSpacing.sm) {
+            LazyVGrid(columns: [
+                GridItem(.flexible(), spacing: AppSpacing.xs),
+                GridItem(.flexible(), spacing: AppSpacing.xs)
+            ], spacing: AppSpacing.xs) {
                 miniPlanMetric(
                     title: "المكتمل".localized,
                     value: "\(progress.completedAttempts) \("من".localized) \(progress.targetAttempts)"
@@ -672,6 +675,41 @@ struct WhatToPlayTrainerView: View {
                     .foregroundStyle(sessionImpactTint(progress.averageExpectedImpact, completed: progress.completedAttempts))
             }
             .padding(.top, AppSpacing.xs)
+
+            if let reviewItem = progress.reviewItem {
+                VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                    Label("أهم موقف للمراجعة".localized, systemImage: reviewItem.iconName)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(AppColor.danger)
+                    Text(reviewItem.detail)
+                        .font(.caption2)
+                        .foregroundStyle(AppColor.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text("\("اختيارك".localized): \(cardName(reviewItem.selectedCard)) · \("أفضل ورقة".localized): \(cardName(reviewItem.bestCard))")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(AppColor.textSecondary)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.85)
+                    if let secondBestCard = reviewItem.secondBestCard {
+                        Text("\("ثاني أفضل".localized): \(cardName(secondBestCard))\(secondBestImpactSuffix(reviewItem.secondBestExpectedImpact))")
+                            .font(.caption2)
+                            .foregroundStyle(AppColor.textSecondary)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.85)
+                    }
+                    Button {
+                        replayReviewItem(reviewItem)
+                    } label: {
+                        Label("إعادة الموقف".localized, systemImage: "arrow.clockwise")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(AppColor.primary)
+                    .disabled(isGeneratingScenario)
+                }
+                .padding(AppSpacing.sm)
+                .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+            }
         }
         .padding(.top, AppSpacing.xs)
     }

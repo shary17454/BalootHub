@@ -217,6 +217,7 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let impactTitle: String
     let impactDetail: String
     let impactIconName: String
+    let reviewItem: WhatToPlayReviewItem?
     let remainingAttempts: Int
     let title: String
     let detail: String
@@ -907,6 +908,7 @@ enum WhatToPlayStatsAnalyzer {
             completedAttempts: completed,
             averageExpectedImpact: averageImpact
         )
+        let reviewItem = reviewQueue(for: sessionAttempts, limit: 1).first
         let remaining = max(0, target - completed)
 
         if completed == 0 {
@@ -921,6 +923,7 @@ enum WhatToPlayStatsAnalyzer {
                 impactTitle: impactReading.title,
                 impactDetail: impactReading.detail,
                 impactIconName: impactReading.iconName,
+                reviewItem: nil,
                 remainingAttempts: target,
                 title: "ابدأ الجلسة".localized,
                 detail: "لم تبدأ هذه الجلسة بعد؛ اضغط زر البدء لتوليد أول موقف.".localized,
@@ -940,6 +943,7 @@ enum WhatToPlayStatsAnalyzer {
                 impactTitle: impactReading.title,
                 impactDetail: impactReading.detail,
                 impactIconName: impactReading.iconName,
+                reviewItem: reviewItem,
                 remainingAttempts: remaining,
                 title: "الجلسة قيد التنفيذ".localized,
                 detail: "أكمل بقية المواقف قبل الحكم على هدف الجلسة.".localized,
@@ -959,6 +963,7 @@ enum WhatToPlayStatsAnalyzer {
                 impactTitle: impactReading.title,
                 impactDetail: impactReading.detail,
                 impactIconName: impactReading.iconName,
+                reviewItem: reviewItem,
                 remainingAttempts: 0,
                 title: "هدف الجلسة تحقق".localized,
                 detail: "أداؤك في هذه الدفعة وصل إلى هدف الخطة.".localized,
@@ -977,6 +982,7 @@ enum WhatToPlayStatsAnalyzer {
             impactTitle: impactReading.title,
             impactDetail: impactReading.detail,
             impactIconName: impactReading.iconName,
+            reviewItem: reviewItem,
             remainingAttempts: 0,
             title: "أعد الجلسة".localized,
             detail: "أكملتها، لكن الدقة أقل من هدف الخطة؛ أعد نفس المستوى.".localized,
