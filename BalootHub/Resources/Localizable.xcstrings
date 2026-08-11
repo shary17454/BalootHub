@@ -17554,6 +17554,16 @@
         }
       }
     },
+    "بطاقة المشاركة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share card"
+          }
+        }
+      }
+    },
     "موقف تدريبي من Baloot Hub" : {
       "localizations" : {
         "en" : {

@@ -365,6 +365,7 @@ struct WhatToPlayTrainerView: View {
 
             if let scenario {
                 scenarioSummary(scenario)
+                shareCardPreview(scenario)
                 legalOptions(scenario)
                 if let selectedOption {
                     resultCard(selectedOption, scenario: scenario)
@@ -856,6 +857,115 @@ struct WhatToPlayTrainerView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func shareCardPreview(_ scenario: WhatToPlayScenario) -> some View {
+        let content = WhatToPlayShareCard.content(for: scenario)
+        return VStack(alignment: .leading, spacing: AppSpacing.md) {
+            Label("بطاقة المشاركة".localized, systemImage: "square.and.arrow.up")
+                .font(AppTypography.headline)
+                .foregroundStyle(AppColor.primary)
+
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(content.title)
+                            .font(AppTypography.title)
+                            .foregroundStyle(.white)
+                        Text(content.subtitle)
+                            .font(AppTypography.caption)
+                            .foregroundStyle(.white.opacity(0.78))
+                    }
+                    Spacer(minLength: AppSpacing.md)
+                    Text("Baloot Hub")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(AppColor.primary)
+                        .padding(.horizontal, AppSpacing.sm)
+                        .padding(.vertical, AppSpacing.xxs)
+                        .background(.white, in: Capsule())
+                }
+
+                HStack(spacing: AppSpacing.xs) {
+                    shareMetric("النمط".localized, content.mode)
+                    shareMetric("الأكلة".localized, content.trickProgress)
+                    shareMetric("الدور".localized, content.turnPlayerName)
+                }
+
+                VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                    Text("الأوراق على الطاولة".localized)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.86))
+
+                    if content.isOpeningTrick {
+                        Text("أنت تفتتح الأكلة.".localized)
+                            .font(AppTypography.caption)
+                            .foregroundStyle(.white.opacity(0.78))
+                    } else {
+                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppSpacing.xs) {
+                            ForEach(Array(content.tableCards.enumerated()), id: \.offset) { _, line in
+                                shareChip("\(line.playerName): \(line.cardName)")
+                            }
+                        }
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                    Text("الأوراق القانونية".localized)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.86))
+
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppSpacing.xs) {
+                        ForEach(content.legalCardNames, id: \.self) { cardName in
+                            shareChip(cardName)
+                        }
+                    }
+                }
+
+                Text(content.prompt)
+                    .font(AppTypography.headline)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.top, AppSpacing.xs)
+            }
+            .padding(AppSpacing.md)
+            .background(
+                LinearGradient(
+                    colors: [AppColor.primary, AppColor.primary.opacity(0.72), AppColor.accent.opacity(0.78)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                ),
+                in: RoundedRectangle(cornerRadius: AppRadius.large)
+            )
+            .accessibilityElement(children: .combine)
+        }
+    }
+
+    private func shareMetric(_ title: String, _ value: String) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(title)
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.white.opacity(0.68))
+            Text(value)
+                .font(.caption.weight(.bold))
+                .foregroundStyle(.white)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.xs)
+        .background(.white.opacity(0.16), in: RoundedRectangle(cornerRadius: AppRadius.small))
+    }
+
+    private func shareChip(_ text: String) -> some View {
+        Text(text)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.white)
+            .lineLimit(1)
+            .minimumScaleFactor(0.72)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, AppSpacing.sm)
+            .padding(.vertical, AppSpacing.xs)
+            .background(.white.opacity(0.14), in: RoundedRectangle(cornerRadius: AppRadius.small))
     }
 
     private func currentTrick(_ scenario: WhatToPlayScenario) -> some View {
