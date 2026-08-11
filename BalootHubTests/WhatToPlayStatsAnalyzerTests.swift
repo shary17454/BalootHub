@@ -1102,6 +1102,45 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(action.expectedImprovement, insight.lostExpectedPoints)
     }
 
+    func testNextDecisionActionKeepsSmallCloseAlternativeCoaching() {
+        let insight = WhatToPlayStatsAnalyzer.decisionInsight(
+            selectedRank: 2,
+            selectedImpact: 6,
+            bestImpact: 8,
+            secondBestImpact: 6
+        )
+
+        let action = WhatToPlayStatsAnalyzer.nextDecisionAction(
+            insight: insight,
+            focusKind: .narrowChoice,
+            bestCard: PlayingCard(suit: .diamonds, rank: .ace)
+        )
+
+        XCTAssertEqual(action.title, "درّب الفارق الصغير".localized)
+        XCTAssertTrue(action.detail.contains("نقطة أو نقطتين"))
+        XCTAssertEqual(action.expectedImprovement, 2)
+    }
+
+    func testNextDecisionActionDoesNotCallLargeSecondBestGapSmall() {
+        let insight = WhatToPlayStatsAnalyzer.decisionInsight(
+            selectedRank: 2,
+            selectedImpact: 1,
+            bestImpact: 8,
+            secondBestImpact: 1
+        )
+
+        let action = WhatToPlayStatsAnalyzer.nextDecisionAction(
+            insight: insight,
+            focusKind: .narrowChoice,
+            bestCard: PlayingCard(suit: .diamonds, rank: .ace)
+        )
+
+        XCTAssertEqual(action.title, "راجع القيمة الضائعة".localized)
+        XCTAssertTrue(action.detail.contains("\("الفارق عن اختيار الخبير".localized): 7"))
+        XCTAssertFalse(action.detail.contains("نقطة أو نقطتين"))
+        XCTAssertEqual(action.expectedImprovement, 7)
+    }
+
     func testRetryPromptIsNilForExpertMatch() throws {
         let insight = WhatToPlayStatsAnalyzer.decisionInsight(
             selectedRank: 1,

@@ -1978,8 +1978,8 @@ enum WhatToPlayStatsAnalyzer {
             )
         case .closeAlternative:
             return WhatToPlayNextDecisionAction(
-                title: "درّب الفارق الصغير".localized,
-                detail: "أعد قراءة نفس النوع من المواقف وركّز على سبب تفوق ورقة واحدة بنقطة أو نقطتين متوقعتين.".localized,
+                title: closeAlternativeActionTitle(insight: insight),
+                detail: closeAlternativeActionDetail(insight: insight),
                 iconName: "equal.circle.fill",
                 recommendedCard: bestCard,
                 expectedImprovement: insight.lostExpectedPoints
@@ -2001,6 +2001,20 @@ enum WhatToPlayStatsAnalyzer {
                 expectedImprovement: insight.lostExpectedPoints
             )
         }
+    }
+
+    private static func closeAlternativeActionTitle(insight: WhatToPlayDecisionInsight) -> String {
+        insight.lostExpectedPoints <= 2
+            ? "درّب الفارق الصغير".localized
+            : "راجع القيمة الضائعة".localized
+    }
+
+    private static func closeAlternativeActionDetail(insight: WhatToPlayDecisionInsight) -> String {
+        if insight.lostExpectedPoints <= 2 {
+            return "أعد قراءة نفس النوع من المواقف وركّز على سبب تفوق ورقة واحدة بنقطة أو نقطتين متوقعتين.".localized
+        }
+
+        return "\("الفارق عن اختيار الخبير".localized): \(insight.lostExpectedPoints). \("راجع سبب ارتفاع قيمة أفضل ورقة.".localized)"
     }
 
     static func decisionReview(
