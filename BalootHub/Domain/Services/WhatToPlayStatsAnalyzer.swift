@@ -21,6 +21,30 @@ struct WhatToPlayStatsSummary: Equatable {
     )
 }
 
+struct WhatToPlayOutcomeSummary: Equatable {
+    let trackedAttempts: Int
+    let winningTrickAttempts: Int
+    let losingTrickAttempts: Int
+    let openTrickAttempts: Int
+
+    static let empty = WhatToPlayOutcomeSummary(
+        trackedAttempts: 0,
+        winningTrickAttempts: 0,
+        losingTrickAttempts: 0,
+        openTrickAttempts: 0
+    )
+
+    var winningPercent: Int {
+        guard trackedAttempts > 0 else { return 0 }
+        return Int((Double(winningTrickAttempts) / Double(trackedAttempts) * 100).rounded())
+    }
+
+    var losingPercent: Int {
+        guard trackedAttempts > 0 else { return 0 }
+        return Int((Double(losingTrickAttempts) / Double(trackedAttempts) * 100).rounded())
+    }
+}
+
 struct WhatToPlayCoachingTip: Equatable {
     let title: String
     let detail: String
@@ -297,6 +321,22 @@ enum WhatToPlayStatsAnalyzer {
             bestStreak: bestStreak,
             averageExpectedImpact: averageImpact,
             lostExpectedPoints: lostExpectedPoints
+        )
+    }
+
+    static func outcomeSummary(for attempts: [WhatToPlayAttempt]) -> WhatToPlayOutcomeSummary {
+        let outcomes = attempts.compactMap(\.outcome)
+        guard !outcomes.isEmpty else { return .empty }
+
+        let winning = outcomes.filter { $0 == .winsTrick }.count
+        let losing = outcomes.filter { $0 == .losesTrick }.count
+        let open = outcomes.count - winning - losing
+
+        return WhatToPlayOutcomeSummary(
+            trackedAttempts: outcomes.count,
+            winningTrickAttempts: winning,
+            losingTrickAttempts: losing,
+            openTrickAttempts: open
         )
     }
 

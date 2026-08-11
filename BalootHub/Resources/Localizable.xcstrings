@@ -16688,6 +16688,36 @@
         }
       }
     },
+    "نتائج قراراتك" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your decision outcomes"
+          }
+        }
+      }
+    },
+    "نسبة كسب الأكلة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trick win rate"
+          }
+        }
+      }
+    },
+    "نسبة خسارة الأكلة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trick loss rate"
+          }
+        }
+      }
+    },
     "يفتتح الأكلة" : {
       "localizations" : {
         "en" : {

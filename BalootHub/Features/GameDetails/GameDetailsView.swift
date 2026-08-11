@@ -309,6 +309,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.summarize(attempts: attempts)
     }
 
+    private var outcomeSummary: WhatToPlayOutcomeSummary {
+        WhatToPlayStatsAnalyzer.outcomeSummary(for: attempts)
+    }
+
     private var recentAttempts: [WhatToPlayAttempt] {
         WhatToPlayStatsAnalyzer.recentAttempts(attempts)
     }
@@ -698,6 +702,9 @@ struct WhatToPlayTrainerView: View {
                         value: "\(statsSummary.lostExpectedPoints)"
                     )
                 }
+                if outcomeSummary.trackedAttempts > 0 {
+                    outcomeSummaryView(outcomeSummary)
+                }
                 masteryView(mastery, milestone: masteryMilestone)
                 playStyleView(playStyle)
                 decisionPatternView(decisionPattern)
@@ -710,6 +717,44 @@ struct WhatToPlayTrainerView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func outcomeSummaryView(_ summary: WhatToPlayOutcomeSummary) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Label("نتائج قراراتك".localized, systemImage: "rectangle.stack.badge.play.fill")
+                .font(AppTypography.subheadline.weight(.semibold))
+                .foregroundStyle(AppColor.textPrimary)
+
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 3), spacing: AppSpacing.xs) {
+                miniMetric("يكسب الأكلة".localized, "\(summary.winningTrickAttempts)", AppColor.success)
+                miniMetric("يخسر الأكلة".localized, "\(summary.losingTrickAttempts)", AppColor.danger)
+                miniMetric("يبقي الأكلة مفتوحة".localized, "\(summary.openTrickAttempts)", AppColor.accent)
+            }
+
+            Text("\("محاولات مفحوصة".localized): \(summary.trackedAttempts) · \("نسبة كسب الأكلة".localized): \(summary.winningPercent)% · \("نسبة خسارة الأكلة".localized): \(summary.losingPercent)%")
+                .font(.caption2)
+                .foregroundStyle(AppColor.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(AppSpacing.sm)
+        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func miniMetric(_ title: String, _ value: String, _ tint: Color) -> some View {
+        VStack(spacing: 2) {
+            Text(value)
+                .font(AppTypography.subheadline.weight(.bold))
+                .foregroundStyle(tint)
+            Text(title)
+                .font(.caption2)
+                .foregroundStyle(AppColor.textSecondary)
+                .lineLimit(2)
+                .multilineTextAlignment(.center)
+                .minimumScaleFactor(0.8)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, AppSpacing.xs)
     }
 
     private func coachingTipView(_ tip: WhatToPlayCoachingTip) -> some View {

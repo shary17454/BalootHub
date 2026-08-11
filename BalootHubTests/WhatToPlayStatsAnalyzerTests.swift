@@ -35,6 +35,34 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.lostExpectedPoints, 12)
     }
 
+    func testOutcomeSummaryCountsTrackedDecisionOutcomes() {
+        let attempts = [
+            attempt(daysAgo: 5, correct: true, impact: 5, outcome: .winsTrick),
+            attempt(daysAgo: 4, correct: false, impact: -6, outcome: .losesTrick),
+            attempt(daysAgo: 3, correct: false, impact: 0, outcome: .leadsTrick),
+            attempt(daysAgo: 2, correct: true, impact: 1, outcome: .developsTrick),
+            attempt(daysAgo: 1, correct: false, impact: -1)
+        ]
+
+        let summary = WhatToPlayStatsAnalyzer.outcomeSummary(for: attempts)
+
+        XCTAssertEqual(summary.trackedAttempts, 4)
+        XCTAssertEqual(summary.winningTrickAttempts, 1)
+        XCTAssertEqual(summary.losingTrickAttempts, 1)
+        XCTAssertEqual(summary.openTrickAttempts, 2)
+        XCTAssertEqual(summary.winningPercent, 25)
+        XCTAssertEqual(summary.losingPercent, 25)
+    }
+
+    func testOutcomeSummaryIgnoresLegacyAttemptsWithoutOutcome() {
+        let attempts = [
+            attempt(daysAgo: 2, correct: true, impact: 5),
+            attempt(daysAgo: 1, correct: false, impact: -6)
+        ]
+
+        XCTAssertEqual(WhatToPlayStatsAnalyzer.outcomeSummary(for: attempts), .empty)
+    }
+
     func testAttemptPersistsInSwiftDataSchemaAndRestoresCards() throws {
         let configuration = ModelConfiguration(schema: PersistenceController.appSchema, isStoredInMemoryOnly: true)
         let container = try ModelContainer(for: PersistenceController.appSchema, configurations: [configuration])
@@ -1215,9 +1243,17 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         daysAgo: TimeInterval,
         correct: Bool,
         impact: Int,
-        bestImpact: Int? = nil
+        bestImpact: Int? = nil,
+        outcome: WhatToPlayOptionOutcome? = nil
     ) -> WhatToPlayAttempt {
-        attempt(daysAgo: daysAgo, difficulty: .medium, correct: correct, impact: impact, bestImpact: bestImpact)
+        attempt(
+            daysAgo: daysAgo,
+            difficulty: .medium,
+            correct: correct,
+            impact: impact,
+            bestImpact: bestImpact,
+            outcome: outcome
+        )
     }
 
     private func attempt(
@@ -1226,7 +1262,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         correct: Bool,
         impact: Int,
         bestImpact: Int? = nil,
-        focusKind: WhatToPlayScenarioFocusKind? = nil
+        focusKind: WhatToPlayScenarioFocusKind? = nil,
+        outcome: WhatToPlayOptionOutcome? = nil
     ) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
             createdAt: Date(timeIntervalSince1970: 2_000_000 - daysAgo * 86_400),
@@ -1237,7 +1274,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             isCorrect: correct,
             expectedImpact: impact,
             bestExpectedImpact: bestImpact,
-            focusKind: focusKind
+            focusKind: focusKind,
+            outcome: outcome
         )
     }
 
