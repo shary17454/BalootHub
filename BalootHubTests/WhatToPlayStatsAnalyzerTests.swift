@@ -422,6 +422,57 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(coverage.title, "تغطية متوازنة".localized)
     }
 
+    func testSessionPulseReportsNoData() {
+        let pulse = WhatToPlayStatsAnalyzer.sessionPulse(for: [])
+
+        XCTAssertEqual(pulse.state, .noData)
+        XCTAssertEqual(pulse.inspectedAttempts, 0)
+        XCTAssertEqual(pulse.title, "لا توجد جلسة بعد".localized)
+    }
+
+    func testSessionPulseReportsWarmingUpBeforeWindowIsReady() {
+        let attempts = [
+            attempt(daysAgo: 2, correct: true, impact: 2),
+            attempt(daysAgo: 1, correct: false, impact: -2)
+        ]
+
+        let pulse = WhatToPlayStatsAnalyzer.sessionPulse(for: attempts, window: 3)
+
+        XCTAssertEqual(pulse.state, .warmingUp)
+        XCTAssertEqual(pulse.inspectedAttempts, 2)
+        XCTAssertEqual(pulse.title, "بداية جلسة".localized)
+    }
+
+    func testSessionPulseReportsFocusedRecentWindow() {
+        let attempts = [
+            attempt(daysAgo: 4, correct: false, impact: -10),
+            attempt(daysAgo: 3, correct: true, impact: 2),
+            attempt(daysAgo: 2, correct: true, impact: 3),
+            attempt(daysAgo: 1, correct: true, impact: 4)
+        ]
+
+        let pulse = WhatToPlayStatsAnalyzer.sessionPulse(for: attempts, window: 3)
+
+        XCTAssertEqual(pulse.state, .focused)
+        XCTAssertEqual(pulse.inspectedAttempts, 3)
+        XCTAssertEqual(pulse.title, "جلسة مركزة".localized)
+    }
+
+    func testSessionPulseReportsReviewNeededForRecentMistakes() {
+        let attempts = [
+            attempt(daysAgo: 4, correct: true, impact: 5),
+            attempt(daysAgo: 3, correct: false, impact: -2),
+            attempt(daysAgo: 2, correct: false, impact: -4),
+            attempt(daysAgo: 1, correct: true, impact: -6)
+        ]
+
+        let pulse = WhatToPlayStatsAnalyzer.sessionPulse(for: attempts, window: 3)
+
+        XCTAssertEqual(pulse.state, .reviewNeeded)
+        XCTAssertEqual(pulse.inspectedAttempts, 3)
+        XCTAssertEqual(pulse.title, "توقف للمراجعة".localized)
+    }
+
     func testCoachingTipForEmptyAttemptsEncouragesBaseline() {
         let tip = WhatToPlayStatsAnalyzer.coachingTip(for: [])
 

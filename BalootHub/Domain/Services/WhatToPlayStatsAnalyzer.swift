@@ -102,6 +102,21 @@ struct WhatToPlayPracticeCoverage: Equatable {
     }
 }
 
+enum WhatToPlaySessionState: Equatable {
+    case noData
+    case warmingUp
+    case focused
+    case reviewNeeded
+}
+
+struct WhatToPlaySessionPulse: Equatable {
+    let state: WhatToPlaySessionState
+    let title: String
+    let detail: String
+    let iconName: String
+    let inspectedAttempts: Int
+}
+
 enum WhatToPlayStatsAnalyzer {
     static func summarize(attempts: [WhatToPlayAttempt]) -> WhatToPlayStatsSummary {
         guard !attempts.isEmpty else { return .empty }
@@ -431,6 +446,52 @@ enum WhatToPlayStatsAnalyzer {
             title: "أكمل تغطية التدريب".localized,
             detail: "\("درّب هذه المستويات أكثر".localized): \(names).",
             iconName: "square.grid.3x3.fill"
+        )
+    }
+
+    static func sessionPulse(for attempts: [WhatToPlayAttempt], window: Int = 3) -> WhatToPlaySessionPulse {
+        guard attempts.count >= window, window > 0 else {
+            return WhatToPlaySessionPulse(
+                state: attempts.isEmpty ? .noData : .warmingUp,
+                title: attempts.isEmpty ? "لا توجد جلسة بعد".localized : "بداية جلسة".localized,
+                detail: attempts.isEmpty
+                    ? "ابدأ أول موقف حتى تظهر قراءة الجلسة الحالية.".localized
+                    : "أكمل عدة مواقف متتالية حتى يعطيك المدرب قراءة آنية أوضح.".localized,
+                iconName: "timer",
+                inspectedAttempts: attempts.count
+            )
+        }
+
+        let recent = Array(recentAttempts(attempts, limit: window))
+        let mistakes = recent.filter { !$0.isCorrect }.count
+        let averageImpact = summarize(attempts: recent).averageExpectedImpact
+
+        if mistakes == 0 && averageImpact >= 0 {
+            return WhatToPlaySessionPulse(
+                state: .focused,
+                title: "جلسة مركزة".localized,
+                detail: "آخر قراراتك صحيحة أو رابحة؛ استمر أو جرّب موقفًا أصعب.".localized,
+                iconName: "bolt.circle.fill",
+                inspectedAttempts: recent.count
+            )
+        }
+
+        if mistakes >= 2 || averageImpact < -3 {
+            return WhatToPlaySessionPulse(
+                state: .reviewNeeded,
+                title: "توقف للمراجعة".localized,
+                detail: "آخر محاولاتك فيها أخطاء مؤثرة؛ راجع السبب قبل طلب موقف جديد.".localized,
+                iconName: "pause.circle.fill",
+                inspectedAttempts: recent.count
+            )
+        }
+
+        return WhatToPlaySessionPulse(
+            state: .warmingUp,
+            title: "جلسة قيد البناء".localized,
+            detail: "أداؤك الحالي مختلط؛ ركز على تقليل الخسارة في الاختيارات القريبة.".localized,
+            iconName: "chart.xyaxis.line",
+            inspectedAttempts: recent.count
         )
     }
 

@@ -344,6 +344,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.practiceCoverage(for: attempts)
     }
 
+    private var sessionPulse: WhatToPlaySessionPulse {
+        WhatToPlayStatsAnalyzer.sessionPulse(for: attempts)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
@@ -499,6 +503,7 @@ struct WhatToPlayTrainerView: View {
                     value: impactText(statsSummary.averageExpectedImpact)
                 )
                 masteryView(mastery, milestone: masteryMilestone)
+                sessionPulseView(sessionPulse)
                 coachingTipView(coachingTip)
                 if let performanceTrend {
                     performanceTrendView(performanceTrend)
@@ -569,6 +574,43 @@ struct WhatToPlayTrainerView: View {
         .padding(AppSpacing.sm)
         .background(masteryTint(mastery.level).opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
         .accessibilityElement(children: .combine)
+    }
+
+    private func sessionPulseView(_ pulse: WhatToPlaySessionPulse) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(pulse.title)
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(pulse.detail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("\("آخر محاولات مفحوصة".localized): \(pulse.inspectedAttempts)")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(sessionPulseTint(pulse.state))
+            }
+        } icon: {
+            Image(systemName: pulse.iconName)
+                .foregroundStyle(sessionPulseTint(pulse.state))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.sm)
+        .background(sessionPulseTint(pulse.state).opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func sessionPulseTint(_ state: WhatToPlaySessionState) -> Color {
+        switch state {
+        case .noData:
+            AppColor.textSecondary
+        case .warmingUp:
+            AppColor.accent
+        case .focused:
+            AppColor.success
+        case .reviewNeeded:
+            AppColor.danger
+        }
     }
 
     private func masteryTint(_ level: WhatToPlayMasteryLevel) -> Color {

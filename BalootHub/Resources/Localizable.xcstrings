@@ -17024,6 +17024,116 @@
         }
       }
     },
+    "لا توجد جلسة بعد" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No session yet"
+          }
+        }
+      }
+    },
+    "ابدأ أول موقف حتى تظهر قراءة الجلسة الحالية." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start the first scenario so the current session readout can appear."
+          }
+        }
+      }
+    },
+    "بداية جلسة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session start"
+          }
+        }
+      }
+    },
+    "أكمل عدة مواقف متتالية حتى يعطيك المدرب قراءة آنية أوضح." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Complete several consecutive scenarios so the trainer can give a clearer live readout."
+          }
+        }
+      }
+    },
+    "جلسة مركزة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Focused session"
+          }
+        }
+      }
+    },
+    "آخر قراراتك صحيحة أو رابحة؛ استمر أو جرّب موقفًا أصعب." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your latest decisions are correct or profitable; continue or try a harder scenario."
+          }
+        }
+      }
+    },
+    "توقف للمراجعة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pause to review"
+          }
+        }
+      }
+    },
+    "آخر محاولاتك فيها أخطاء مؤثرة؛ راجع السبب قبل طلب موقف جديد." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your latest attempts include impactful mistakes; review the reason before asking for a new scenario."
+          }
+        }
+      }
+    },
+    "جلسة قيد البناء" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Session in progress"
+          }
+        }
+      }
+    },
+    "أداؤك الحالي مختلط؛ ركز على تقليل الخسارة في الاختيارات القريبة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your current performance is mixed; focus on reducing loss in close choices."
+          }
+        }
+      }
+    },
+    "آخر محاولات مفحوصة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recent attempts inspected"
+          }
+        }
+      }
+    },
     "حل عدة مواقف حتى يظهر مستوى إتقانك الحقيقي في قراءة الطاولة." : {
       "localizations" : {
         "en" : {
