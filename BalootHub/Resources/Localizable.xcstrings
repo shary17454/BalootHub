@@ -18126,6 +18126,62 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "先保持接近当前的难度，复盘专家为何选择价值更高的牌，再提高挑战。" } }
       }
     },
+    "لا توجد خسارة قيمة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Kein Wertverlust" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No value lost" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Sin pérdida de valor" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Aucune valeur perdue" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कोई मूल्य नहीं खोया" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tidak ada nilai hilang" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Потери ценности нет" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Değer kaybı yok" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "قدر کا کوئی نقصان نہیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "没有价值损失" } }
+      }
+    },
+    "خسارة قيمة بسيطة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Geringer Wertverlust" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Small value loss" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Pérdida de valor pequeña" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Petite perte de valeur" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "छोटी मूल्य हानि" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kehilangan nilai kecil" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Небольшая потеря ценности" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Küçük değer kaybı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "قدر کا معمولی نقصان" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "小幅价值损失" } }
+      }
+    },
+    "خسارة قيمة متوسطة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Mittlerer Wertverlust" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Moderate value loss" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Pérdida de valor media" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Perte de valeur moyenne" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "मध्यम मूल्य हानि" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kehilangan nilai sedang" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Средняя потеря ценности" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Orta değer kaybı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "قدر کا درمیانہ نقصان" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "中等价值损失" } }
+      }
+    },
+    "خسارة قيمة عالية" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Hoher Wertverlust" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "High value loss" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Pérdida de valor alta" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Forte perte de valeur" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "बड़ी मूल्य हानि" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kehilangan nilai tinggi" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Высокая потеря ценности" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Yüksek değer kaybı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "قدر کا بڑا نقصان" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "高价值损失" } }
+      }
+    },
     "الفارق بين الأفضل والثاني" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Abstand zwischen bestem und zweitem" } },

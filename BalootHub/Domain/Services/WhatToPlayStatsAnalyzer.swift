@@ -299,6 +299,13 @@ enum WhatToPlayDecisionInsightKind: Equatable {
     case pointLeak
 }
 
+enum WhatToPlayValueLossSeverity: Equatable {
+    case none
+    case low
+    case medium
+    case high
+}
+
 struct WhatToPlayDecisionInsight: Equatable {
     let kind: WhatToPlayDecisionInsightKind
     let title: String
@@ -306,6 +313,8 @@ struct WhatToPlayDecisionInsight: Equatable {
     let iconName: String
     let lostExpectedPoints: Int
     let secondBestGap: Int?
+    let valueLossSeverity: WhatToPlayValueLossSeverity
+    let valueLossTitle: String
 }
 
 struct WhatToPlayDecisionReview: Equatable {
@@ -1695,6 +1704,8 @@ enum WhatToPlayStatsAnalyzer {
     ) -> WhatToPlayDecisionInsight {
         let lost = max(0, bestImpact - selectedImpact)
         let secondBestGap = secondBestImpact.map { max(0, $0 - selectedImpact) }
+        let severity = valueLossSeverity(for: lost)
+        let severityTitle = valueLossTitle(for: severity)
         if selectedRank == 1 || lost == 0 {
             return WhatToPlayDecisionInsight(
                 kind: .expertMatch,
@@ -1702,7 +1713,9 @@ enum WhatToPlayStatsAnalyzer {
                 detail: "قرارك يطابق أفضل خيار في هذا الموقف، لذلك ركز على تذكر سبب نجاحه للمواقف المشابهة.".localized,
                 iconName: "checkmark.seal.fill",
                 lostExpectedPoints: 0,
-                secondBestGap: secondBestGap
+                secondBestGap: secondBestGap,
+                valueLossSeverity: .none,
+                valueLossTitle: valueLossTitle(for: .none)
             )
         }
 
@@ -1713,7 +1726,9 @@ enum WhatToPlayStatsAnalyzer {
                 detail: "قرارك قريب من الأفضل، لكن الفرق الصغير يتراكم مع الوقت؛ راجع لماذا رجّح الخبير الورقة الأولى.".localized,
                 iconName: "2.circle.fill",
                 lostExpectedPoints: lost,
-                secondBestGap: secondBestGap
+                secondBestGap: secondBestGap,
+                valueLossSeverity: severity,
+                valueLossTitle: severityTitle
             )
         }
 
@@ -1724,7 +1739,9 @@ enum WhatToPlayStatsAnalyzer {
                 detail: "الخيار الأفضل كان يتوقع كسبًا، بينما اختيارك يميل لخسارة الأكلة أو نقاطها. هذه المواقف تستحق إعادة قراءة الطاولة.".localized,
                 iconName: "exclamationmark.triangle.fill",
                 lostExpectedPoints: lost,
-                secondBestGap: secondBestGap
+                secondBestGap: secondBestGap,
+                valueLossSeverity: severity,
+                valueLossTitle: severityTitle
             )
         }
 
@@ -1734,8 +1751,36 @@ enum WhatToPlayStatsAnalyzer {
             detail: "اختيارك خسر قيمة متوقعة مقارنة بالأفضل. ابحث عن الورقة التي تقلل الخسارة حتى لو لم تربح الأكلة.".localized,
             iconName: "drop.fill",
             lostExpectedPoints: lost,
-            secondBestGap: secondBestGap
+            secondBestGap: secondBestGap,
+            valueLossSeverity: severity,
+            valueLossTitle: severityTitle
         )
+    }
+
+    static func valueLossSeverity(for lostExpectedPoints: Int) -> WhatToPlayValueLossSeverity {
+        switch lostExpectedPoints {
+        case ...0:
+            .none
+        case 1...2:
+            .low
+        case 3...5:
+            .medium
+        default:
+            .high
+        }
+    }
+
+    static func valueLossTitle(for severity: WhatToPlayValueLossSeverity) -> String {
+        switch severity {
+        case .none:
+            "لا توجد خسارة قيمة".localized
+        case .low:
+            "خسارة قيمة بسيطة".localized
+        case .medium:
+            "خسارة قيمة متوسطة".localized
+        case .high:
+            "خسارة قيمة عالية".localized
+        }
     }
 
     static func decisionInsight(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayDecisionInsight? {

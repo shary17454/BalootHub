@@ -945,6 +945,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(insight.kind, .expertMatch)
         XCTAssertEqual(insight.lostExpectedPoints, 0)
         XCTAssertEqual(insight.secondBestGap, 0)
+        XCTAssertEqual(insight.valueLossSeverity, .none)
+        XCTAssertEqual(insight.valueLossTitle, "لا توجد خسارة قيمة".localized)
         XCTAssertEqual(insight.title, "اختيار خبير".localized)
     }
 
@@ -959,6 +961,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(insight.kind, .closeAlternative)
         XCTAssertEqual(insight.lostExpectedPoints, 2)
         XCTAssertEqual(insight.secondBestGap, 0)
+        XCTAssertEqual(insight.valueLossSeverity, .low)
     }
 
     func testDecisionInsightRecognizesMissedWinningChance() {
@@ -972,6 +975,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(insight.kind, .missedWinningChance)
         XCTAssertEqual(insight.lostExpectedPoints, 10)
         XCTAssertEqual(insight.secondBestGap, 5)
+        XCTAssertEqual(insight.valueLossSeverity, .high)
     }
 
     func testDecisionInsightRecognizesPointLeak() {
@@ -985,6 +989,15 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(insight.kind, .pointLeak)
         XCTAssertEqual(insight.lostExpectedPoints, 5)
         XCTAssertEqual(insight.secondBestGap, 3)
+        XCTAssertEqual(insight.valueLossSeverity, .medium)
+    }
+
+    func testValueLossSeverityUsesStableThresholds() {
+        XCTAssertEqual(WhatToPlayStatsAnalyzer.valueLossSeverity(for: 0), .none)
+        XCTAssertEqual(WhatToPlayStatsAnalyzer.valueLossSeverity(for: 2), .low)
+        XCTAssertEqual(WhatToPlayStatsAnalyzer.valueLossSeverity(for: 3), .medium)
+        XCTAssertEqual(WhatToPlayStatsAnalyzer.valueLossSeverity(for: 5), .medium)
+        XCTAssertEqual(WhatToPlayStatsAnalyzer.valueLossSeverity(for: 6), .high)
     }
 
     func testDecisionInsightKeepsSecondBestGapNilWhenUnavailable() {

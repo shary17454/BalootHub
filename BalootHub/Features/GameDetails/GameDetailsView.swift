@@ -2394,6 +2394,9 @@ struct WhatToPlayTrainerView: View {
                     Text("\("نقاط متوقعة ضائعة".localized): \(insight.lostExpectedPoints)")
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(AppColor.danger)
+                    Text(insight.valueLossTitle)
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(valueLossSeverityTint(insight.valueLossSeverity))
                 }
                 if let secondBestGap = insight.secondBestGap, secondBestGap > 0 {
                     Text("\("فارق عن ثاني أفضل".localized): \(secondBestGap)")
@@ -2452,6 +2455,19 @@ struct WhatToPlayTrainerView: View {
         case .closeAlternative:
             AppColor.accent
         case .missedWinningChance, .pointLeak:
+            AppColor.danger
+        }
+    }
+
+    private func valueLossSeverityTint(_ severity: WhatToPlayValueLossSeverity) -> Color {
+        switch severity {
+        case .none:
+            AppColor.success
+        case .low:
+            AppColor.accent
+        case .medium:
+            AppColor.warning
+        case .high:
             AppColor.danger
         }
     }
