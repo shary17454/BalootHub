@@ -28,6 +28,9 @@ struct WhatToPlayShareCardContent: Equatable {
     let selectedRank: Int?
     let selectedImpact: Int?
     let selectedImpactDetail: String?
+    let selectedSimulationSummary: String?
+    let selectedSimulationTeamResult: String?
+    let selectedSimulationTrickPoints: Int?
     let tacticalReasonTitle: String?
     let tacticalReasonDetail: String?
     let tacticalReasonIconName: String?
@@ -89,6 +92,11 @@ enum WhatToPlayShareCard {
             selectedRank: selectedOption?.rank,
             selectedImpact: selectedOption?.expectedImpact,
             selectedImpactDetail: selectedOption.map { WhatToPlayImpactFormatter.detail(for: $0.impactBreakdown) },
+            selectedSimulationSummary: selectedOption.map(simulationSummary(for:)),
+            selectedSimulationTeamResult: selectedOption.flatMap(simulationTeamResult(for:)),
+            selectedSimulationTrickPoints: selectedOption?.simulation.completedTrickWinnerID == nil
+                ? nil
+                : selectedOption?.simulation.completedTrickPoints,
             tacticalReasonTitle: tacticalReason?.title,
             tacticalReasonDetail: tacticalReason?.detail,
             tacticalReasonIconName: tacticalReason?.iconName,
@@ -161,6 +169,15 @@ enum WhatToPlayShareCard {
             if let selectedImpactDetail = content.selectedImpactDetail {
                 lines.append("\("تفصيل الأثر".localized): \(selectedImpactDetail)")
             }
+            if let selectedSimulationSummary = content.selectedSimulationSummary {
+                lines.append("\("نتيجة المحاكاة".localized): \(selectedSimulationSummary)")
+            }
+            if let selectedSimulationTeamResult = content.selectedSimulationTeamResult {
+                lines.append("\("اتجاه الأكلة".localized): \(selectedSimulationTeamResult)")
+            }
+            if let selectedSimulationTrickPoints = content.selectedSimulationTrickPoints {
+                lines.append("\("نقاط الأكلة".localized): \(selectedSimulationTrickPoints)")
+            }
             if let tacticalReasonTitle = content.tacticalReasonTitle {
                 lines.append("\("سبب تكتيكي".localized): \(tacticalReasonTitle)")
             }
@@ -180,6 +197,24 @@ enum WhatToPlayShareCard {
                 return lhs.card.suit.ordinal < rhs.card.suit.ordinal
             }
             return lhs.card.rank.ordinal < rhs.card.rank.ordinal
+        }
+    }
+
+    private static func simulationSummary(for option: WhatToPlayOption) -> String {
+        if option.simulation.completedTrickWinnerID != nil {
+            return "تكتمل الأكلة وتنتقل للفائز.".localized
+        }
+        return "\("تبقى الأكلة مفتوحة".localized) · \(option.simulation.currentTrickCardCount) \("أوراق على الطاولة".localized)"
+    }
+
+    private static func simulationTeamResult(for option: WhatToPlayOption) -> String? {
+        switch option.simulation.completedTrickWonByPlayerTeam {
+        case .some(true):
+            return "لفريقك".localized
+        case .some(false):
+            return "للخصم".localized
+        case .none:
+            return nil
         }
     }
 

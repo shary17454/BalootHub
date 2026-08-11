@@ -86,6 +86,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertFalse(text.contains("أثر الأفضل:".localized))
         XCTAssertFalse(text.contains("أثر ثاني أفضل:".localized))
         XCTAssertFalse(text.contains("اختيار الخبير".localized))
+        XCTAssertFalse(text.contains("نتيجة المحاكاة".localized))
+        XCTAssertFalse(text.contains("اتجاه الأكلة".localized))
     }
 
     func testShareTextIncludesAnswerReviewAfterSelection() throws {
@@ -108,6 +110,11 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("فارق عن ثاني أفضل".localized): \(max(0, secondBest.expectedImpact - selected.expectedImpact))"))
         XCTAssertTrue(text.contains("\("الأثر المتوقع".localized): \(selected.expectedImpact >= 0 ? "+\(selected.expectedImpact)" : "\(selected.expectedImpact)")"))
         XCTAssertTrue(text.contains("\("تفصيل الأثر".localized): \(WhatToPlayImpactFormatter.detail(for: selected.impactBreakdown))"))
+        XCTAssertTrue(text.contains("\("نتيجة المحاكاة".localized):"))
+        if let wonByPlayerTeam = selected.simulation.completedTrickWonByPlayerTeam {
+            XCTAssertTrue(text.contains("\("اتجاه الأكلة".localized): \(wonByPlayerTeam ? "لفريقك".localized : "للخصم".localized)"))
+            XCTAssertTrue(text.contains("\("نقاط الأكلة".localized): \(selected.simulation.completedTrickPoints)"))
+        }
     }
 
     func testShareCardContentMarksAnswerReviewOnlyAfterSelection() throws {
@@ -121,6 +128,9 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).secondBestExpectedImpact)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).lostAgainstSecondBestPoints)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).valueLossTitle)
+        XCTAssertNil(WhatToPlayShareCard.content(for: scenario).selectedSimulationSummary)
+        XCTAssertNil(WhatToPlayShareCard.content(for: scenario).selectedSimulationTeamResult)
+        XCTAssertNil(WhatToPlayShareCard.content(for: scenario).selectedSimulationTrickPoints)
 
         let reviewed = WhatToPlayShareCard.content(for: scenario, selectedOption: selected)
         let secondBest = try XCTUnwrap(scenario.secondBestOption)
@@ -137,6 +147,15 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(reviewed.valueLossTitle, "لا توجد خسارة قيمة".localized)
         XCTAssertEqual(reviewed.selectedImpact, selected.expectedImpact)
         XCTAssertEqual(reviewed.selectedImpactDetail, WhatToPlayImpactFormatter.detail(for: selected.impactBreakdown))
+        XCTAssertNotNil(reviewed.selectedSimulationSummary)
+        XCTAssertEqual(
+            reviewed.selectedSimulationTeamResult,
+            selected.simulation.completedTrickWonByPlayerTeam.map { $0 ? "لفريقك".localized : "للخصم".localized }
+        )
+        XCTAssertEqual(
+            reviewed.selectedSimulationTrickPoints,
+            selected.simulation.completedTrickWinnerID == nil ? nil : selected.simulation.completedTrickPoints
+        )
         XCTAssertEqual(reviewed.prompt, "راجع القرار وتدرّب على قراءة الموقف.".localized)
     }
 

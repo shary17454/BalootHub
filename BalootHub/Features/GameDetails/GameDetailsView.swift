@@ -2359,6 +2359,9 @@ struct WhatToPlayTrainerView: View {
                 if let winnerID = simulation.completedTrickWinnerID,
                    let winner = scenario.state.player(id: winnerID) {
                     InfoRow(icon: "crown.fill", title: "الفائز بالأكلة".localized, value: winner.name)
+                    if let teamResult = simulationTeamResult(simulation) {
+                        InfoRow(icon: "person.2.fill", title: "اتجاه الأكلة".localized, value: teamResult)
+                    }
                     InfoRow(icon: "sum", title: "نقاط الأكلة".localized, value: "\(simulation.completedTrickPoints)")
                 }
             }
@@ -2373,6 +2376,17 @@ struct WhatToPlayTrainerView: View {
             return "تكتمل الأكلة وتنتقل للفائز.".localized
         }
         return "\("تبقى الأكلة مفتوحة".localized) · \(simulation.currentTrickCardCount) \("أوراق على الطاولة".localized)"
+    }
+
+    private func simulationTeamResult(_ simulation: WhatToPlayOptionSimulation) -> String? {
+        switch simulation.completedTrickWonByPlayerTeam {
+        case .some(true):
+            return "لفريقك".localized
+        case .some(false):
+            return "للخصم".localized
+        case .none:
+            return nil
+        }
     }
 
     private func retryPromptView(_ prompt: WhatToPlayRetryPrompt) -> some View {

@@ -132,6 +132,7 @@ struct WhatToPlayTrainerTests {
             let completedTrick = after.completedTricks.last
             let winnerID = completedTrick?.winnerPlayerID
             let winnerTeamID = winnerID.flatMap { after.player(id: $0)?.teamID }
+            let playerTeamID = try #require(scenario.state.player(id: scenario.playerID)?.teamID)
             let completedTrickPoints = completedTrick?.playedCards.reduce(0) {
                 $0 + $1.card.points(mode: scenario.state.mode ?? .sun, trumpSuit: scenario.state.trumpSuit)
             } ?? 0
@@ -140,6 +141,7 @@ struct WhatToPlayTrainerTests {
             #expect(option.simulation.currentTrickCardCount == (after.currentTrick?.playedCards.count ?? 0))
             #expect(option.simulation.completedTrickWinnerID == winnerID)
             #expect(option.simulation.completedTrickWinnerTeamID == winnerTeamID)
+            #expect(option.simulation.completedTrickWonByPlayerTeam == winnerTeamID.map { $0 == playerTeamID })
             #expect(option.simulation.completedTrickPoints == completedTrickPoints)
             #expect(option.simulation.nextTurnPlayerID == after.currentTurnPlayerID)
             #expect(option.simulation.playerRemainingCards == (after.hands[scenario.playerID]?.count ?? 0))

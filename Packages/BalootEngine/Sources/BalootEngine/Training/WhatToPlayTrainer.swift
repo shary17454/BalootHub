@@ -73,6 +73,7 @@ public struct WhatToPlayOptionSimulation: Sendable, Codable, Equatable {
     public let currentTrickCardCount: Int
     public let completedTrickWinnerID: Player.ID?
     public let completedTrickWinnerTeamID: Team.ID?
+    public let completedTrickWonByPlayerTeam: Bool?
     public let completedTrickPoints: Int
     public let nextTurnPlayerID: Player.ID?
     public let playerRemainingCards: Int
@@ -83,6 +84,7 @@ public struct WhatToPlayOptionSimulation: Sendable, Codable, Equatable {
         currentTrickCardCount: Int,
         completedTrickWinnerID: Player.ID?,
         completedTrickWinnerTeamID: Team.ID?,
+        completedTrickWonByPlayerTeam: Bool?,
         completedTrickPoints: Int,
         nextTurnPlayerID: Player.ID?,
         playerRemainingCards: Int,
@@ -92,6 +94,7 @@ public struct WhatToPlayOptionSimulation: Sendable, Codable, Equatable {
         self.currentTrickCardCount = currentTrickCardCount
         self.completedTrickWinnerID = completedTrickWinnerID
         self.completedTrickWinnerTeamID = completedTrickWinnerTeamID
+        self.completedTrickWonByPlayerTeam = completedTrickWonByPlayerTeam
         self.completedTrickPoints = completedTrickPoints
         self.nextTurnPlayerID = nextTurnPlayerID
         self.playerRemainingCards = playerRemainingCards
@@ -485,6 +488,7 @@ public enum WhatToPlayTrainer {
                 currentTrickCardCount: state.currentTrick?.playedCards.count ?? 0,
                 completedTrickWinnerID: nil,
                 completedTrickWinnerTeamID: nil,
+                completedTrickWonByPlayerTeam: nil,
                 completedTrickPoints: 0,
                 nextTurnPlayerID: state.currentTurnPlayerID,
                 playerRemainingCards: state.hands[player.id]?.count ?? 0,
@@ -495,6 +499,7 @@ public enum WhatToPlayTrainer {
         let completedTrick = after.completedTricks.last
         let winnerID = completedTrick?.winnerPlayerID
         let winnerTeamID = winnerID.flatMap { after.player(id: $0)?.teamID }
+        let wonByPlayerTeam = winnerTeamID.map { $0 == player.teamID }
         let completedTrickPoints = completedTrick?.playedCards.reduce(0) {
             $0 + $1.card.points(mode: mode, trumpSuit: state.trumpSuit)
         } ?? 0
@@ -504,6 +509,7 @@ public enum WhatToPlayTrainer {
             currentTrickCardCount: after.currentTrick?.playedCards.count ?? 0,
             completedTrickWinnerID: winnerID,
             completedTrickWinnerTeamID: winnerTeamID,
+            completedTrickWonByPlayerTeam: wonByPlayerTeam,
             completedTrickPoints: completedTrickPoints,
             nextTurnPlayerID: after.currentTurnPlayerID,
             playerRemainingCards: after.hands[player.id]?.count ?? 0,

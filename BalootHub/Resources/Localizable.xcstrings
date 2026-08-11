@@ -393,6 +393,20 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "出牌后" } }
       }
     },
+    "اتجاه الأكلة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Stichrichtung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Trick direction" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Dirección de la baza" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Sens du pli" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "बाज़ी की दिशा" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Arah trik" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Направление взятки" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Elin yönü" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "چال کا رخ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "这一墩归属" } }
+      }
+    },
     "الدور التالي" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Nächster Zug" } },
@@ -447,6 +461,20 @@
         "tr" : { "stringUnit" : { "state" : "translated", "value" : "El açık kalır" } },
         "ur" : { "stringUnit" : { "state" : "translated", "value" : "چال ابھی کھلی رہتی ہے" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "这一墩仍未结束" } }
+      }
+    },
+    "نتيجة المحاكاة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Simulationsergebnis" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Simulation result" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Resultado de la simulación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Résultat de la simulation" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सिमुलेशन परिणाम" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Hasil simulasi" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Результат симуляции" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Simülasyon sonucu" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "محاکات کا نتیجہ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "模拟结果" } }
       }
     },
     "ماذا يحدث لو لعبتها؟" : {
