@@ -7,15 +7,20 @@ enum CatalogSeeder {
     static func seedIfNeeded(container: ModelContainer) {
         let context = ModelContext(container)
         let descriptor = FetchDescriptor<GameCatalogItem>()
-        let existingCount = (try? context.fetchCount(descriptor)) ?? 0
-        guard existingCount == 0 else { return }
+        let existingItems = (try? context.fetch(descriptor)) ?? []
+        let existingSlugs = Set(existingItems.map(\.slug))
+        var didInsert = false
 
         for definition in Self.allDefinitions {
+            guard !existingSlugs.contains(definition.slug) else { continue }
             let item = definition.makeItem()
             context.insert(item)
+            didInsert = true
         }
 
-        try? context.save()
+        if didInsert {
+            try? context.save()
+        }
     }
 
     /// يبني بيانات معاينة داخل الذاكرة (تُستخدم في SwiftUI Previews فقط، منفصلة عن بيانات الإنتاج).
@@ -333,6 +338,58 @@ private extension CatalogSeeder {
             ]
         ),
         GameDefinition(
+            slug: "hand-analyzer",
+            arabicTitle: "حلّل يدي",
+            englishTitle: "Analyze My Hand",
+            shortDescription: "أداة تدريبية لإدخال أوراقك يدويًا والحصول على توصية شراء: بس، صن، أو حكم مع أفضل لون ومشاريع اليد.",
+            category: .balootTool,
+            playerCountText: "لاعب واحد (تحليل يد)",
+            difficulty: .intermediate,
+            estimatedDuration: "دقيقة واحدة لكل يد",
+            iconName: "wand.and.stars",
+            accentToken: "accent",
+            isPlayable: false,
+            sortOrder: 10,
+            sections: [
+                .objective: "مساعدة اللاعب على فهم قوة يده قبل الشراء: هل يمر، يشتري صن، أو يختار حكمًا بلون محدد.",
+                .playerCount: "الأداة فردية، لكنها تحلل يد لاعب واحد ضمن منطق جولة بلوت كاملة.",
+                .setup: "اختر ثماني أوراق يدويًا من حزمة البلوت. لا تستخدم الأداة الكاميرا ولا تحتاج أي صلاحية خصوصية.",
+                .dealing: "لا توزّع الأداة أوراقًا عشوائية؛ المستخدم يدخل اليد التي يريد تحليلها كما يراها على الطاولة.",
+                .cardRanking: "يعتمد التحليل على ترتيب الصن والحكم نفسه المستخدم في محرك BalootEngine، لا على ترتيب بصري مستقل.",
+                .howToPlay: "بعد اختيار 8 أوراق يعرض التطبيق تقييم الصن، أفضل حكم، المشاريع المكتشفة، وثقة التوصية.",
+                .scoring: "تدخل قيمة المشاريع المكتشفة في قوة التوصية، لكن القرار لا يعتمد على المشاريع وحدها إذا كانت اليد ضعيفة في الأكلات.",
+                .projects: "تُكتشف المشاريع بواسطة ProjectDetector نفسه: سرا، خمسين، مية، أربعمية، والبلوت عند وجود حكم مناسب.",
+                .roundEnd: "يمكن مسح اليد وإدخال موقف جديد فورًا، أو استخدام النتيجة كمرجع قبل اتخاذ قرار الشراء في جلسة حقيقية.",
+                .commonMistakes: "الاعتماد على مشروع صغير فقط للشراء، أو اختيار حكم بلون قصير لا يملك سيطرة كافية على الأكلات."
+            ]
+        ),
+        GameDefinition(
+            slug: "what-to-play-trainer",
+            arabicTitle: "وش تلعب؟",
+            englishTitle: "What Should I Play?",
+            shortDescription: "مدرب مواقف يعرض يدًا حقيقية من جولة بلوت ويقارن اختيارك بقرار Expert AI مع تفسير الأثر المتوقع.",
+            category: .balootTool,
+            playerCountText: "لاعب واحد (تدريب موقف)",
+            difficulty: .advanced,
+            estimatedDuration: "دقيقة إلى دقيقتين لكل موقف",
+            iconName: "brain.head.profile",
+            accentToken: "primary",
+            isPlayable: false,
+            sortOrder: 11,
+            sections: [
+                .objective: "تدريب اللاعب على اختيار أفضل ورقة في موقف لعب فعلي بدل حفظ القواعد نظريًا فقط.",
+                .playerCount: "الأداة فردية، لكنها تولد موقفًا من طاولة بلوت كاملة تضم لاعبًا بشريًا وثلاثة وكلاء ذكاء اصطناعي.",
+                .setup: "اختر مستوى الصعوبة ثم أنشئ موقفًا. يستخدم التطبيق بذرة محلية لتوليد جولة قابلة للتكرار دون إنترنت.",
+                .dealing: "الموقف يبدأ من توزيع حقيقي داخل BalootEngine، ثم يتقدم الذكاء الاصطناعي حتى يصل الدور إلى اللاعب البشري.",
+                .cardRanking: "كل خيار معروض هو ورقة قانونية حسب LegalMoveValidator وترتيب صن/حكم المعتمد في المحرك.",
+                .howToPlay: "اختر ورقة من الخيارات القانونية. بعدها يعرض التطبيق ترتيب اختيارك، ورقة الخبير، ثاني أفضل خيار عند وجوده، وتفسير القرار.",
+                .scoring: "الأثر المتوقع يقدّر ربح أو خسارة نقاط الأكلة الحالية، ويستخدم ExpertBalootAgent لترجيح القرار الأفضل.",
+                .projects: "المواقف الحالية تركز على قرار لعب الورقة. يمكن توسيعها لاحقًا لتضم إعلان المشاريع ضمن نفس سجل الأحداث.",
+                .roundEnd: "يمكن توليد موقف جديد مباشرة، ويظل كل موقف قابلًا للإعادة من نفس البذرة والصعوبة لاختبارات Replay.",
+                .commonMistakes: "اختيار ورقة ثمينة في أكلة خاسرة، أو فتح الحكم مبكرًا بلا حاجة، أو تجاهل أن خيارًا أقل نقاطًا قد يحمي يد الشريك."
+            ]
+        ),
+        GameDefinition(
             slug: "baloot-scorekeeper",
             arabicTitle: "تسجيل البلوت",
             englishTitle: "Baloot Scorekeeper",
@@ -344,7 +401,7 @@ private extension CatalogSeeder {
             iconName: "list.clipboard.fill",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 10,
+            sortOrder: 12,
             sections: [
                 .objective: "تتبّع نقاط جلسة بلوت حقيقية بدقة، وإعلان الفريق الفائز فور بلوغ الهدف المتفق عليه.",
                 .playerCount: "يُسجَّل باسم فريقين، كل فريق من لاعبين على الطاولة.",
@@ -370,7 +427,7 @@ private extension CatalogSeeder {
             iconName: "quote.bubble.fill",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 11,
+            sortOrder: 13,
             sections: [
                 .objective: "توضيح قرارات المزايدة قبل اللعب حتى يعرف اللاعب متى يمر، ومتى يطلب صن أو حكم، ومتى تكون المضاعفة منطقية.",
                 .playerCount: "المزايدة تُفهم حول طاولة من أربعة لاعبين، لكن الدليل مخصص للتعلم الفردي.",
@@ -396,7 +453,7 @@ private extension CatalogSeeder {
             iconName: "rectangle.stack.badge.plus",
             accentToken: "accent",
             isPlayable: false,
-            sortOrder: 12,
+            sortOrder: 14,
             sections: [
                 .objective: "جمع أسماء المشاريع المشهورة وشروطها في مكان واحد ليسهل الرجوع إليها أثناء التعلم أو قبل الجلسة.",
                 .playerCount: "المشاريع تخص يد لاعب ضمن فريقين من أربعة لاعبين، لكن المرجع فردي.",
@@ -422,7 +479,7 @@ private extension CatalogSeeder {
             iconName: "mic.and.signal.meter.fill",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 13,
+            sortOrder: 15,
             sections: [
                 .objective: "توضيح الفروق بين اللعب ضد الذكاء الاصطناعي، اللعب المحلي بين الأشخاص، واللعب الشبكي بالصوت حتى يعرف اللاعب ما المتاح الآن وما يحتاج اتصالًا آمنًا.",
                 .playerCount: "اللعب ضد الذكاء يدعم لاعبًا واحدًا مع ثلاثة آليين. اللعب المحلي يدعم أربعة أشخاص على نفس الجهاز بتمريره حسب الدور. اللعب الصوتي عن بعد يحتاج غرفة Online لأربعة لاعبين.",
@@ -451,7 +508,7 @@ private extension CatalogSeeder {
             iconName: "6.circle.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 14,
+            sortOrder: 16,
             sections: [
                 .objective: "تحقيق أفضل نتيجة عبر تجنّب أوراق أو أكلات معيّنة تخسر نقاطًا، بحسب الصيغة المعتمدة من اللاعبين.",
                 .playerCount: "تُلعب غالبًا بأربعة لاعبين، وتختلف التفاصيل بين المجالس.",
@@ -477,7 +534,7 @@ private extension CatalogSeeder {
             iconName: "suit.club.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 15,
+            sortOrder: 17,
             sections: [
                 .objective: "تحقيق عدد الأكلات الذي التزم به اللاعب أو الفريق أثناء المزايدة، أو أكثر.",
                 .playerCount: "أربعة لاعبين، إما كل لاعب لنفسه أو في فريقين متقابلين حسب الصيغة المعتمدة.",
@@ -503,7 +560,7 @@ private extension CatalogSeeder {
             iconName: "suit.diamond.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 16,
+            sortOrder: 18,
             sections: [
                 .objective: "تحقيق أقل عدد نقاط سلبية (أو أعلى نقاط إيجابية حسب الجولة) عبر دورة من عدة أنماط لعب مختلفة.",
                 .playerCount: "أربعة لاعبين، كل لاعب يلعب لحسابه الخاص دون فرق ثابتة.",
@@ -529,7 +586,7 @@ private extension CatalogSeeder {
             iconName: "hand.raised.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 17,
+            sortOrder: 19,
             sections: [
                 .objective: "التخلص من كل الأوراق في يد اللاعب قبل بقية اللاعبين، أو تحقيق أقل عدد نقاط متبقية بحسب الصيغة.",
                 .playerCount: "من لاعبين حتى أربعة لاعبين، أفرادًا أو في فرق صغيرة.",

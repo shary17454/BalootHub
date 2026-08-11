@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import BalootEngine
 
 struct GameDetailsView: View {
     let slug: String
@@ -120,6 +121,30 @@ struct GameDetailsView: View {
             .tint(AppColor.primary)
             .controlSize(.large)
 
+            if item.slug == "hand-analyzer" {
+                Button {
+                    appEnvironment.navigate(to: .handAnalyzer, tab: appEnvironment.selectedTab)
+                } label: {
+                    Label("فتح أداة التحليل", systemImage: "wand.and.stars")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(AppColor.primary)
+                .controlSize(.large)
+            }
+
+            if item.slug == "what-to-play-trainer" {
+                Button {
+                    appEnvironment.navigate(to: .whatToPlayTrainer, tab: appEnvironment.selectedTab)
+                } label: {
+                    Label("فتح المدرب", systemImage: "brain.head.profile")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(AppColor.primary)
+                .controlSize(.large)
+            }
+
             if item.isPlayable {
                 Button {
                     appEnvironment.navigate(to: .balootGamePlay(slug: item.slug), tab: appEnvironment.selectedTab)
@@ -183,4 +208,437 @@ private struct InfoRow: View {
     }
     .environment(AppEnvironment())
     .modelContainer(PersistenceController.makePreviewContainer())
+}
+
+struct WhatToPlayTrainerView: View {
+    @State private var difficulty: WhatToPlayDifficulty = .medium
+    @State private var seed: UInt64 = 2026
+    @State private var scenario: WhatToPlayScenario?
+    @State private var selectedOption: WhatToPlayOption?
+    @State private var errorMessage: String?
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                header
+                controls
+
+                if let scenario {
+                    scenarioSummary(scenario)
+                    legalOptions(scenario)
+                    if let selectedOption {
+                        resultCard(selectedOption, scenario: scenario)
+                    }
+                } else if let errorMessage {
+                    ErrorStateView(message: errorMessage)
+                } else {
+                    EmptyStateView(
+                        systemImage: "brain.head.profile",
+                        title: "جارٍ تجهيز موقف",
+                        message: "يولّد المحرك جولة بلوت حقيقية ثم يوقفها عند دورك."
+                    )
+                }
+            }
+            .padding(AppSpacing.md)
+        }
+        .background(AppColor.background)
+        .navigationTitle("وش تلعب؟")
+        .navigationBarTitleDisplayMode(.inline)
+        .task {
+            if scenario == nil { generateScenario() }
+        }
+        .onChange(of: difficulty) { _, _ in
+            generateScenario()
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    nextScenario()
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                }
+                .accessibilityLabel("موقف جديد")
+            }
+        }
+    }
+
+    private var header: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Text("اختر أفضل ورقة")
+                .font(AppTypography.title)
+                .foregroundStyle(AppColor.textPrimary)
+            Text("يعرض التطبيق الأوراق القانونية فقط، ثم يقارن قرارك بقرار Expert AI ويشرح الأثر المتوقع.")
+                .font(AppTypography.subheadline)
+                .foregroundStyle(AppColor.textSecondary)
+        }
+    }
+
+    private var controls: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            Picker("الصعوبة", selection: $difficulty) {
+                ForEach(WhatToPlayDifficulty.allCases, id: \.self) { level in
+                    Text(level.displayTitle).tag(level)
+                }
+            }
+            .pickerStyle(.segmented)
+
+            Button {
+                nextScenario()
+            } label: {
+                Label("موقف جديد", systemImage: "shuffle")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .tint(AppColor.primary)
+        }
+    }
+
+    private func scenarioSummary(_ scenario: WhatToPlayScenario) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            Label("الموقف", systemImage: "tablecells.fill")
+                .font(AppTypography.headline)
+                .foregroundStyle(AppColor.primary)
+
+            VStack(spacing: AppSpacing.xs) {
+                InfoRow(icon: "number", title: "البذرة", value: "\(scenario.seed)")
+                InfoRow(icon: "flag.checkered", title: "النمط", value: modeText(scenario.state))
+                InfoRow(icon: "person.crop.circle.fill", title: "الدور", value: scenario.state.player(id: scenario.playerID)?.name ?? "أنت")
+                InfoRow(icon: "list.number", title: "الأكلة", value: "\(scenario.state.completedTricks.count + 1) من 8")
+            }
+
+            currentTrick(scenario)
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func currentTrick(_ scenario: WhatToPlayScenario) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            Text("الأوراق على الطاولة")
+                .font(AppTypography.subheadline.weight(.semibold))
+                .foregroundStyle(AppColor.textPrimary)
+
+            let played = scenario.state.currentTrick?.playedCards ?? []
+            if played.isEmpty {
+                Text("أنت تفتتح الأكلة.")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+            } else {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 2), spacing: AppSpacing.xs) {
+                    ForEach(Array(played.enumerated()), id: \.offset) { _, playedCard in
+                        VStack(spacing: 4) {
+                            MiniAnalysisCard(card: playedCard.card, isSelected: false)
+                            Text(scenario.state.player(id: playedCard.playerID)?.name ?? "لاعب")
+                                .font(.caption2)
+                                .foregroundStyle(AppColor.textSecondary)
+                                .lineLimit(1)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func legalOptions(_ scenario: WhatToPlayScenario) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            Text("وش تلعب؟")
+                .font(AppTypography.headline)
+                .foregroundStyle(AppColor.textPrimary)
+
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 4), spacing: AppSpacing.xs) {
+                ForEach(scenario.options) { option in
+                    Button {
+                        selectedOption = WhatToPlayTrainer.evaluateChoice(card: option.card, in: scenario)
+                    } label: {
+                        VStack(spacing: 6) {
+                            MiniAnalysisCard(card: option.card, isSelected: selectedOption?.card == option.card)
+                            Text(option.rank == 1 ? "الأفضل" : "#\(option.rank)")
+                                .font(.caption2.weight(.semibold))
+                                .foregroundStyle(option.rank == 1 ? AppColor.success : AppColor.textSecondary)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("\(option.card.accessibilityName)، الترتيب \(option.rank)")
+                }
+            }
+        }
+    }
+
+    private func resultCard(_ option: WhatToPlayOption, scenario: WhatToPlayScenario) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            Label(option.isExpertChoice ? "قرار مطابق للخبير" : "تحليل اختيارك", systemImage: option.isExpertChoice ? "checkmark.seal.fill" : "lightbulb.fill")
+                .font(AppTypography.headline)
+                .foregroundStyle(option.isExpertChoice ? AppColor.success : AppColor.primary)
+
+            VStack(spacing: AppSpacing.xs) {
+                InfoRow(icon: "hand.point.up.left.fill", title: "اختيارك", value: option.card.accessibilityName)
+                if let best = scenario.bestOption {
+                    InfoRow(icon: "star.fill", title: "أفضل ورقة", value: best.card.accessibilityName)
+                }
+                if let second = scenario.secondBestOption {
+                    InfoRow(icon: "2.circle.fill", title: "ثاني أفضل", value: second.card.accessibilityName)
+                }
+                InfoRow(icon: "chart.line.uptrend.xyaxis", title: "الأثر المتوقع", value: impactText(option.expectedImpact))
+            }
+
+            Text(option.explanation)
+                .font(AppTypography.subheadline)
+                .foregroundStyle(AppColor.textPrimary)
+                .padding(AppSpacing.md)
+                .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func generateScenario() {
+        selectedOption = nil
+        errorMessage = nil
+        do {
+            scenario = try WhatToPlayTrainer.generateScenario(seed: seed, difficulty: difficulty)
+        } catch {
+            scenario = nil
+            errorMessage = "تعذّر توليد موقف تدريبي صالح. جرّب موقفًا جديدًا."
+        }
+    }
+
+    private func nextScenario() {
+        seed &+= 1
+        generateScenario()
+    }
+
+    private func modeText(_ state: GameState) -> String {
+        guard let mode = state.mode else { return "غير محدد" }
+        if mode == .hokum, let suit = state.trumpSuit {
+            return "\(mode.arabicName) \(suit.spokenName)"
+        }
+        return mode.arabicName
+    }
+
+    private func impactText(_ impact: Int) -> String {
+        if impact > 0 { return "+\(impact) نقطة متوقعة" }
+        if impact < 0 { return "\(impact) نقطة متوقعة" }
+        return "أثر محايد"
+    }
+}
+
+private extension WhatToPlayDifficulty {
+    var displayTitle: String {
+        switch self {
+        case .easy: "سهل"
+        case .medium: "متوسط"
+        case .hard: "صعب"
+        }
+    }
+}
+
+struct HandAnalyzerView: View {
+    @State private var selectedCards: Set<PlayingCard> = []
+
+    private var sortedSelectedCards: [PlayingCard] {
+        selectedCards.sorted { lhs, rhs in
+            if lhs.suit.ordinal != rhs.suit.ordinal { return lhs.suit.ordinal < rhs.suit.ordinal }
+            return lhs.rank.sequenceOrder < rhs.rank.sequenceOrder
+        }
+    }
+
+    private var analysis: HandAnalysis? {
+        guard selectedCards.count == 8 else { return nil }
+        return HandAnalyzer.analyze(hand: sortedSelectedCards)
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                intro
+                selectedHand
+                cardPicker
+                if let analysis {
+                    analysisSummary(analysis)
+                } else {
+                    EmptyStateView(
+                        systemImage: "hand.draw.fill",
+                        title: "اختر 8 أوراق",
+                        message: "بعد اكتمال اليد يعرض التطبيق تقييم القوة، أفضل شراء، المشاريع، ونصيحة تكتيكية."
+                    )
+                }
+            }
+            .padding(AppSpacing.md)
+        }
+        .background(AppColor.background)
+        .navigationTitle("حلّل يدي")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("مسح") { selectedCards.removeAll() }
+                    .disabled(selectedCards.isEmpty)
+            }
+        }
+    }
+
+    private var intro: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Text("أدخل أوراقك يدويًا")
+                .font(AppTypography.title)
+                .foregroundStyle(AppColor.textPrimary)
+            Text("التحليل يستخدم نفس تقييم اليد والمشاريع داخل BalootEngine، ولا يحتاج كاميرا أو اتصالًا بالإنترنت.")
+                .font(AppTypography.subheadline)
+                .foregroundStyle(AppColor.textSecondary)
+        }
+    }
+
+    private var selectedHand: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            HStack {
+                Text("يدك")
+                    .font(AppTypography.headline)
+                Spacer()
+                Text("\(selectedCards.count) / 8")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(selectedCards.count == 8 ? AppColor.success : AppColor.textSecondary)
+            }
+
+            if selectedCards.isEmpty {
+                Text("لم تختر أوراقًا بعد.")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: AppSpacing.xs) {
+                        ForEach(sortedSelectedCards) { card in
+                            MiniAnalysisCard(card: card, isSelected: true)
+                                .onTapGesture { selectedCards.remove(card) }
+                        }
+                    }
+                }
+            }
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+    }
+
+    private var cardPicker: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            Text("اختر الأوراق")
+                .font(AppTypography.headline)
+
+            ForEach(Suit.allCases) { suit in
+                VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                    Text(suit.spokenName)
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColor.textSecondary)
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 4), spacing: AppSpacing.xs) {
+                        ForEach(Rank.allCases) { rank in
+                            let card = PlayingCard(suit: suit, rank: rank)
+                            let selected = selectedCards.contains(card)
+                            Button {
+                                toggle(card)
+                            } label: {
+                                MiniAnalysisCard(card: card, isSelected: selected)
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(!selected && selectedCards.count >= 8)
+                            .opacity(!selected && selectedCards.count >= 8 ? 0.35 : 1)
+                            .accessibilityLabel("\(card.accessibilityName)\(selected ? "، مختارة" : "")")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func toggle(_ card: PlayingCard) {
+        if selectedCards.contains(card) {
+            selectedCards.remove(card)
+        } else if selectedCards.count < 8 {
+            selectedCards.insert(card)
+        }
+    }
+
+    private func analysisSummary(_ analysis: HandAnalysis) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            Label("نتيجة التحليل", systemImage: "chart.bar.xaxis")
+                .font(AppTypography.title)
+                .foregroundStyle(AppColor.primary)
+
+            VStack(spacing: AppSpacing.xs) {
+                InfoRow(icon: "hand.thumbsup.fill", title: "التوصية", value: recommendationText(analysis.recommendedBid))
+                InfoRow(icon: "gauge.with.dots.needle.67percent", title: "قوة اليد", value: "\(analysis.strengthScore)")
+                InfoRow(icon: "checkmark.seal.fill", title: "الثقة", value: confidenceText(analysis.confidence))
+                InfoRow(icon: "sun.max.fill", title: "تقييم الصن", value: "\(analysis.evaluation.sunScore)")
+                if let best = analysis.evaluation.bestHokum {
+                    InfoRow(icon: "crown.fill", title: "أفضل حكم", value: "\(best.suit.spokenName) · \(best.score)")
+                }
+                InfoRow(icon: "star.fill", title: "المشاريع", value: projectsText(analysis.projects))
+            }
+
+            Text(adviceText(analysis))
+                .font(AppTypography.subheadline)
+                .foregroundStyle(AppColor.textPrimary)
+                .padding(AppSpacing.md)
+                .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func recommendationText(_ bid: Bid) -> String {
+        switch bid {
+        case .pass:
+            return "بس"
+        case .sun:
+            return "اشترِ صن"
+        case .hokum(let suit):
+            return "اشترِ حكم \(suit.spokenName)"
+        }
+    }
+
+    private func confidenceText(_ confidence: HandAnalysis.Confidence) -> String {
+        switch confidence {
+        case .low: "منخفضة"
+        case .medium: "متوسطة"
+        case .high: "عالية"
+        }
+    }
+
+    private func projectsText(_ projects: [Project]) -> String {
+        guard !projects.isEmpty else { return "لا يوجد" }
+        return projects
+            .map { "\($0.kind.arabicName) \($0.points)" }
+            .joined(separator: " · ")
+    }
+
+    private func adviceText(_ analysis: HandAnalysis) -> String {
+        switch analysis.recommendedBid {
+        case .pass:
+            return "اليد لا تتجاوز عتبة شراء آمنة حاليًا. الأفضل التمرير وانتظار فرصة أوضح بدل شراء ضعيف يعرّض الفريق للطياح."
+        case .sun:
+            return "قوة اليد في الصن أعلى من الحكم. اعتمد على الآسات والعشرات، وحاول حماية أوراق الشريك بدل تحويل الجولة إلى حكم بلا سيطرة واضحة."
+        case .hokum(let suit):
+            let projectHint = analysis.totalProjectPoints > 0 ? " ومعك مشاريع تضيف \(analysis.totalProjectPoints) نقطة" : ""
+            return "أفضلية اليد في \(suit.spokenName) واضحة\(projectHint). الشراء مناسب إذا لم تظهر مزايدة أقوى من الخصم."
+        }
+    }
+}
+
+private struct MiniAnalysisCard: View {
+    let card: PlayingCard
+    let isSelected: Bool
+
+    private var isRed: Bool { card.suit.isRed }
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Text(card.rank.shortLabel)
+                .font(.system(.subheadline, design: .rounded).weight(.bold))
+            Text(card.suit.symbol)
+                .font(.subheadline)
+        }
+        .foregroundStyle(isRed ? AppColor.danger : AppColor.textPrimary)
+        .minimumScaleFactor(0.7)
+        .frame(maxWidth: .infinity)
+        .frame(height: 42)
+        .background(isSelected ? AppColor.primary.opacity(0.16) : AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.small))
+        .overlay(RoundedRectangle(cornerRadius: AppRadius.small).stroke(isSelected ? AppColor.primary : AppColor.border, lineWidth: isSelected ? 2 : 1))
+    }
 }
