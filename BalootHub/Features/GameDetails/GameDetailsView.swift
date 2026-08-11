@@ -696,6 +696,17 @@ struct WhatToPlayTrainerView: View {
             }
             .padding(.top, AppSpacing.xs)
 
+            HStack(spacing: AppSpacing.xs) {
+                miniPlanMetric(
+                    title: "مكون الدقة".localized,
+                    value: "\(progress.gradeAccuracyComponent)%"
+                )
+                miniPlanMetric(
+                    title: "مكون الأثر".localized,
+                    value: "\(progress.gradeImpactComponent)%"
+                )
+            }
+
             Label {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(progress.impactTitle)

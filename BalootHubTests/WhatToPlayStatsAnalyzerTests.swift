@@ -1405,6 +1405,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.nextStepTitle, "الخطوة التالية".localized)
         XCTAssertEqual(progress.nextStepIconName, "play.circle.fill")
         XCTAssertEqual(progress.gradePercent, 0)
+        XCTAssertEqual(progress.gradeAccuracyComponent, 0)
+        XCTAssertEqual(progress.gradeImpactComponent, 0)
         XCTAssertEqual(progress.gradeTitle, "لا يوجد تقييم بعد".localized)
     }
 
@@ -1437,6 +1439,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.nextStepTitle, "أكمل الدفعة".localized)
         XCTAssertEqual(progress.nextStepIconName, "timer.circle.fill")
         XCTAssertEqual(progress.gradePercent, 69)
+        XCTAssertEqual(progress.gradeAccuracyComponent, 67)
+        XCTAssertEqual(progress.gradeImpactComponent, 70)
         XCTAssertEqual(progress.gradeTitle, "جلسة تحتاج تثبيت".localized)
     }
 
@@ -1523,6 +1527,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.title, "هدف الجلسة تحقق".localized)
         XCTAssertEqual(progress.nextStepTitle, "انتقل للتحدي التالي".localized)
         XCTAssertEqual(progress.gradePercent, 69)
+        XCTAssertEqual(progress.gradeAccuracyComponent, 67)
+        XCTAssertEqual(progress.gradeImpactComponent, 70)
         XCTAssertEqual(progress.gradeTitle, "جلسة تحتاج تثبيت".localized)
     }
 
@@ -1545,6 +1551,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.detail, "أكملتها بدقة كافية، لكن متوسط الأثر أقل من هدف الخطة؛ راجع الاختيارات القريبة قبل تكرارها.".localized)
         XCTAssertEqual(progress.nextStepTitle, "راجع جودة القرار".localized)
         XCTAssertEqual(progress.gradePercent, 54)
+        XCTAssertEqual(progress.gradeAccuracyComponent, 67)
+        XCTAssertEqual(progress.gradeImpactComponent, 40)
         XCTAssertEqual(progress.gradeTitle, "جلسة تحتاج تثبيت".localized)
     }
 
@@ -1576,6 +1584,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.title, "أعد الجلسة".localized)
         XCTAssertEqual(progress.nextStepTitle, "أعد نفس الخطة".localized)
         XCTAssertEqual(progress.gradePercent, 45)
+        XCTAssertEqual(progress.gradeAccuracyComponent, 50)
+        XCTAssertEqual(progress.gradeImpactComponent, 40)
         XCTAssertEqual(progress.gradeTitle, "جلسة تحتاج إعادة".localized)
     }
 

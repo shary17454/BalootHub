@@ -233,6 +233,8 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let nextStepDetail: String
     let nextStepIconName: String
     let gradePercent: Int
+    let gradeAccuracyComponent: Int
+    let gradeImpactComponent: Int
     let gradeTitle: String
     let gradeDetail: String
     let gradeIconName: String
@@ -976,6 +978,8 @@ enum WhatToPlayStatsAnalyzer {
                 nextStepDetail: nextStep.detail,
                 nextStepIconName: nextStep.iconName,
                 gradePercent: grade.percent,
+                gradeAccuracyComponent: grade.accuracyComponent,
+                gradeImpactComponent: grade.impactComponent,
                 gradeTitle: grade.title,
                 gradeDetail: grade.detail,
                 gradeIconName: grade.iconName
@@ -1007,6 +1011,8 @@ enum WhatToPlayStatsAnalyzer {
                 nextStepDetail: nextStep.detail,
                 nextStepIconName: nextStep.iconName,
                 gradePercent: grade.percent,
+                gradeAccuracyComponent: grade.accuracyComponent,
+                gradeImpactComponent: grade.impactComponent,
                 gradeTitle: grade.title,
                 gradeDetail: grade.detail,
                 gradeIconName: grade.iconName
@@ -1038,6 +1044,8 @@ enum WhatToPlayStatsAnalyzer {
                 nextStepDetail: nextStep.detail,
                 nextStepIconName: nextStep.iconName,
                 gradePercent: grade.percent,
+                gradeAccuracyComponent: grade.accuracyComponent,
+                gradeImpactComponent: grade.impactComponent,
                 gradeTitle: grade.title,
                 gradeDetail: grade.detail,
                 gradeIconName: grade.iconName
@@ -1071,6 +1079,8 @@ enum WhatToPlayStatsAnalyzer {
             nextStepDetail: nextStep.detail,
             nextStepIconName: nextStep.iconName,
             gradePercent: grade.percent,
+            gradeAccuracyComponent: grade.accuracyComponent,
+            gradeImpactComponent: grade.impactComponent,
             gradeTitle: grade.title,
             gradeDetail: grade.detail,
             gradeIconName: grade.iconName
@@ -1082,9 +1092,11 @@ enum WhatToPlayStatsAnalyzer {
         accuracyPercent: Int,
         averageExpectedImpact: Int,
         targetAverageExpectedImpact: Int
-    ) -> (percent: Int, title: String, detail: String, iconName: String) {
+    ) -> (percent: Int, accuracyComponent: Int, impactComponent: Int, title: String, detail: String, iconName: String) {
         guard completedAttempts > 0 else {
             return (
+                0,
+                0,
                 0,
                 "لا يوجد تقييم بعد".localized,
                 "ابدأ الجلسة حتى يظهر تقييم يجمع الدقة وأثر القرار.".localized,
@@ -1098,6 +1110,8 @@ enum WhatToPlayStatsAnalyzer {
         if percent >= 85 {
             return (
                 percent,
+                accuracyPercent,
+                normalizedImpact,
                 "جلسة ممتازة".localized,
                 "قراراتك قريبة من الخبير وتحقق أثرًا قويًا؛ انتقل لتحدٍ أصعب.".localized,
                 "gauge.high"
@@ -1107,6 +1121,8 @@ enum WhatToPlayStatsAnalyzer {
         if percent >= 70 {
             return (
                 percent,
+                accuracyPercent,
+                normalizedImpact,
                 "جلسة جيدة".localized,
                 "أداؤك ثابت، لكن راجع الفروق الصغيرة بين أفضل وثاني أفضل ورقة.".localized,
                 "gauge.medium"
@@ -1116,6 +1132,8 @@ enum WhatToPlayStatsAnalyzer {
         if percent >= 50 {
             return (
                 percent,
+                accuracyPercent,
+                normalizedImpact,
                 "جلسة تحتاج تثبيت".localized,
                 "لديك أساس قابل للبناء، لكن القرار يحتاج قراءة أهدأ قبل اللعب.".localized,
                 "gauge.medium"
@@ -1124,6 +1142,8 @@ enum WhatToPlayStatsAnalyzer {
 
         return (
             percent,
+            accuracyPercent,
+            normalizedImpact,
             "جلسة تحتاج إعادة".localized,
             "الدقة أو أثر القرار منخفض؛ أعد نفس الخطة ولا ترفع الصعوبة بعد.".localized,
             "gauge.low"

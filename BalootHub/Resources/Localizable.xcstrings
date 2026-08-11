@@ -19388,6 +19388,26 @@
         }
       }
     },
+    "مكون الدقة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accuracy component"
+          }
+        }
+      }
+    },
+    "مكون الأثر" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impact component"
+          }
+        }
+      }
+    },
     "ابدأ الجلسة حتى يظهر تقييم يجمع الدقة وأثر القرار." : {
       "localizations" : {
         "en" : {
