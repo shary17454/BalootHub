@@ -1167,6 +1167,11 @@ struct WhatToPlayTrainerView: View {
                     .foregroundStyle(AppColor.textSecondary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
+                if let outcome = attempt.outcome {
+                    Text(optionOutcomeText(outcome))
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(optionOutcomeTint(outcome))
+                }
             }
 
             Spacer()
@@ -1486,7 +1491,8 @@ struct WhatToPlayTrainerView: View {
                 isCorrect: evaluated.isExpertChoice,
                 expectedImpact: evaluated.expectedImpact,
                 bestExpectedImpact: scenario.bestOption?.expectedImpact,
-                focusKind: scenario.context.focusKind
+                focusKind: scenario.context.focusKind,
+                outcome: evaluated.outcome
             )
             modelContext.insert(attempt)
             try? modelContext.save()

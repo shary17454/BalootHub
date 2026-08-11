@@ -49,7 +49,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             isCorrect: false,
             expectedImpact: -6,
             bestExpectedImpact: 4,
-            focusKind: .trumpPressure
+            focusKind: .trumpPressure,
+            outcome: .losesTrick
         )
 
         context.insert(attempt)
@@ -65,6 +66,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(saved.bestExpectedImpact, 4)
         XCTAssertEqual(saved.lostExpectedPoints, 10)
         XCTAssertEqual(saved.focusKind, .trumpPressure)
+        XCTAssertEqual(saved.outcome, .losesTrick)
     }
 
     func testAttemptWithoutBestExpectedImpactKeepsBackwardCompatibleZeroLoss() {
@@ -79,6 +81,20 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertNil(attempt.bestExpectedImpact)
         XCTAssertEqual(attempt.lostExpectedPoints, 0)
+    }
+
+    func testAttemptWithoutOutcomeKeepsBackwardCompatibleNilOutcome() {
+        let attempt = WhatToPlayAttempt(
+            difficulty: .medium,
+            seed: 99,
+            selectedCard: PlayingCard(suit: .clubs, rank: .seven),
+            bestCard: PlayingCard(suit: .clubs, rank: .ace),
+            isCorrect: false,
+            expectedImpact: -4
+        )
+
+        XCTAssertNil(attempt.outcomeRaw)
+        XCTAssertNil(attempt.outcome)
     }
 
     func testRecentAttemptsReturnsNewestFirstWithLimit() {

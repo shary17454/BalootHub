@@ -16,6 +16,7 @@ final class WhatToPlayAttempt {
     var expectedImpact: Int
     var bestExpectedImpact: Int?
     var focusKindRaw: String?
+    var outcomeRaw: String?
 
     init(
         id: UUID = UUID(),
@@ -27,7 +28,8 @@ final class WhatToPlayAttempt {
         isCorrect: Bool,
         expectedImpact: Int,
         bestExpectedImpact: Int? = nil,
-        focusKind: WhatToPlayScenarioFocusKind? = nil
+        focusKind: WhatToPlayScenarioFocusKind? = nil,
+        outcome: WhatToPlayOptionOutcome? = nil
     ) {
         self.id = id
         self.createdAt = createdAt
@@ -41,6 +43,7 @@ final class WhatToPlayAttempt {
         self.expectedImpact = expectedImpact
         self.bestExpectedImpact = bestExpectedImpact
         self.focusKindRaw = focusKind?.rawValue
+        self.outcomeRaw = outcome?.rawValue
     }
 
     var difficulty: WhatToPlayDifficulty {
@@ -69,5 +72,10 @@ final class WhatToPlayAttempt {
     var focusKind: WhatToPlayScenarioFocusKind? {
         guard let focusKindRaw else { return nil }
         return WhatToPlayScenarioFocusKind(rawValue: focusKindRaw)
+    }
+
+    var outcome: WhatToPlayOptionOutcome? {
+        guard let outcomeRaw else { return nil }
+        return WhatToPlayOptionOutcome(rawValue: outcomeRaw)
     }
 }
