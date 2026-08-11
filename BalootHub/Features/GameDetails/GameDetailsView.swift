@@ -1043,6 +1043,16 @@ struct WhatToPlayTrainerView: View {
                         value: "\(statsSummary.lostExpectedPoints)"
                     )
                 }
+                if statsSummary.secondBestComparisonAttempts > 0 {
+                    InfoRow(
+                        icon: "arrow.left.and.right",
+                        title: "فارق عن ثاني أفضل".localized,
+                        value: "\(statsSummary.lostAgainstSecondBestPoints)"
+                    )
+                    Text("\("محاولات المقارنة".localized): \(statsSummary.secondBestComparisonAttempts)")
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColor.textSecondary)
+                }
                 if outcomeSummary.trackedAttempts > 0 {
                     outcomeSummaryView(outcomeSummary, insight: outcomeInsight)
                 }

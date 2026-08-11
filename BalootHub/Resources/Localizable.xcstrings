@@ -19712,6 +19712,20 @@
         }
       }
     },
+    "محاولات المقارنة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Vergleichsversuche" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Comparison attempts" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Intentos de comparación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tentatives comparées" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "तुलना प्रयास" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Percobaan perbandingan" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Попытки сравнения" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Karşılaştırma denemeleri" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "تقابلی کوششیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "对比尝试" } }
+      }
+    },
     "بطاقة المشاركة" : {
       "localizations" : {
         "en" : {

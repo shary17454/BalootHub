@@ -21,6 +21,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.currentStreak, 1)
         XCTAssertEqual(summary.averageExpectedImpact, 2)
         XCTAssertEqual(summary.lostExpectedPoints, 0)
+        XCTAssertEqual(summary.lostAgainstSecondBestPoints, 0)
+        XCTAssertEqual(summary.secondBestComparisonAttempts, 0)
         XCTAssertEqual(summary.valueCapturePercent, 0)
         XCTAssertEqual(summary.valueCaptureAttempts, 0)
     }
@@ -37,6 +39,20 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.lostExpectedPoints, 12)
         XCTAssertEqual(summary.valueCaptureAttempts, 3)
         XCTAssertEqual(summary.valueCapturePercent, 40)
+    }
+
+    func testSummaryAccumulatesGapAgainstSecondBestWhenKnown() {
+        let attempts = [
+            attempt(daysAgo: 3, correct: true, impact: 6, bestImpact: 8, secondBestImpact: 6),
+            attempt(daysAgo: 2, correct: false, impact: 1, bestImpact: 7, secondBestImpact: 5),
+            attempt(daysAgo: 1, correct: false, impact: -2, bestImpact: 4)
+        ]
+
+        let summary = WhatToPlayStatsAnalyzer.summarize(attempts: attempts)
+
+        XCTAssertEqual(summary.secondBestComparisonAttempts, 2)
+        XCTAssertEqual(summary.lostAgainstSecondBestPoints, 4)
+        XCTAssertEqual(summary.lostExpectedPoints, 14)
     }
 
     func testSummaryValueCaptureClampsSelectedImpactAndIgnoresNonPositiveBest() {
@@ -2268,6 +2284,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         impact: Int,
         bestImpact: Int? = nil,
         selectedRank: Int? = nil,
+        secondBestImpact: Int? = nil,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
         outcome: WhatToPlayOptionOutcome? = nil,
         impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil,
@@ -2280,6 +2297,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             impact: impact,
             bestImpact: bestImpact,
             selectedRank: selectedRank,
+            secondBestImpact: secondBestImpact,
             focusKind: focusKind,
             outcome: outcome,
             impactBreakdown: impactBreakdown,

@@ -9,6 +9,8 @@ struct WhatToPlayStatsSummary: Equatable {
     let bestStreak: Int
     let averageExpectedImpact: Int
     let lostExpectedPoints: Int
+    let lostAgainstSecondBestPoints: Int
+    let secondBestComparisonAttempts: Int
     let valueCapturePercent: Int
     let valueCaptureAttempts: Int
 
@@ -20,6 +22,8 @@ struct WhatToPlayStatsSummary: Equatable {
         bestStreak: 0,
         averageExpectedImpact: 0,
         lostExpectedPoints: 0,
+        lostAgainstSecondBestPoints: 0,
+        secondBestComparisonAttempts: 0,
         valueCapturePercent: 0,
         valueCaptureAttempts: 0
     )
@@ -450,6 +454,8 @@ enum WhatToPlayStatsAnalyzer {
         let impact = chronological.reduce(0) { $0 + $1.expectedImpact }
         let averageImpact = Int((Double(impact) / Double(chronological.count)).rounded())
         let lostExpectedPoints = chronological.reduce(0) { $0 + $1.lostExpectedPoints }
+        let secondBestComparisons = chronological.filter { $0.secondBestExpectedImpact != nil }
+        let lostAgainstSecondBestPoints = secondBestComparisons.reduce(0) { $0 + $1.lostAgainstSecondBestPoints }
         let valueAttempts = chronological.compactMap { attempt -> (selected: Int, best: Int)? in
             guard let best = attempt.bestExpectedImpact, best > 0 else { return nil }
             return (selected: max(0, min(attempt.expectedImpact, best)), best: best)
@@ -485,6 +491,8 @@ enum WhatToPlayStatsAnalyzer {
             bestStreak: bestStreak,
             averageExpectedImpact: averageImpact,
             lostExpectedPoints: lostExpectedPoints,
+            lostAgainstSecondBestPoints: lostAgainstSecondBestPoints,
+            secondBestComparisonAttempts: secondBestComparisons.count,
             valueCapturePercent: valueCapturePercent,
             valueCaptureAttempts: valueAttempts.count
         )

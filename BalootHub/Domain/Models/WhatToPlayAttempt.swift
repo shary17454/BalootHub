@@ -102,6 +102,11 @@ final class WhatToPlayAttempt {
         return max(0, bestExpectedImpact - expectedImpact)
     }
 
+    var lostAgainstSecondBestPoints: Int {
+        guard let secondBestExpectedImpact else { return 0 }
+        return max(0, secondBestExpectedImpact - expectedImpact)
+    }
+
     var focusKind: WhatToPlayScenarioFocusKind? {
         guard let focusKindRaw else { return nil }
         return WhatToPlayScenarioFocusKind(rawValue: focusKindRaw)
