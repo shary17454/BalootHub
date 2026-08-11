@@ -144,6 +144,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             bestCard: best,
             secondBestCard: secondBest,
             isCorrect: false,
+            selectedRank: 3,
             expectedImpact: -6,
             bestExpectedImpact: 4,
             secondBestExpectedImpact: 2,
@@ -161,6 +162,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(saved.bestCard, best)
         XCTAssertEqual(saved.secondBestCard, secondBest)
         XCTAssertFalse(saved.isCorrect)
+        XCTAssertEqual(saved.selectedRank, 3)
         XCTAssertEqual(saved.expectedImpact, -6)
         XCTAssertEqual(saved.bestExpectedImpact, 4)
         XCTAssertEqual(saved.secondBestExpectedImpact, 2)
@@ -211,6 +213,47 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertNil(attempt.secondBestRankRaw)
         XCTAssertNil(attempt.secondBestCard)
         XCTAssertNil(attempt.secondBestExpectedImpact)
+    }
+
+    func testAttemptWithoutSelectedRankKeepsBackwardCompatibleNilRank() {
+        let attempt = WhatToPlayAttempt(
+            difficulty: .medium,
+            seed: 99,
+            selectedCard: PlayingCard(suit: .clubs, rank: .seven),
+            bestCard: PlayingCard(suit: .clubs, rank: .ace),
+            isCorrect: false,
+            expectedImpact: -4
+        )
+
+        XCTAssertNil(attempt.selectedRank)
+    }
+
+    func testChoiceRankSummaryCountsExpertSecondBestAndFarChoices() {
+        let attempts = [
+            attempt(daysAgo: 5, correct: true, impact: 4, selectedRank: 1),
+            attempt(daysAgo: 4, correct: false, impact: 2, selectedRank: 2),
+            attempt(daysAgo: 3, correct: false, impact: 1, selectedRank: 2),
+            attempt(daysAgo: 2, correct: false, impact: -4, selectedRank: 4),
+            attempt(daysAgo: 1, correct: false, impact: -3)
+        ]
+
+        let summary = WhatToPlayStatsAnalyzer.choiceRankSummary(for: attempts)
+
+        XCTAssertEqual(summary.trackedAttempts, 4)
+        XCTAssertEqual(summary.expertPicks, 1)
+        XCTAssertEqual(summary.secondBestPicks, 2)
+        XCTAssertEqual(summary.farPicks, 1)
+        XCTAssertEqual(summary.expertPickPercent, 25)
+        XCTAssertEqual(summary.nearMissPercent, 50)
+    }
+
+    func testChoiceRankSummaryIgnoresLegacyAttemptsWithoutRank() {
+        let attempts = [
+            attempt(daysAgo: 2, correct: true, impact: 5),
+            attempt(daysAgo: 1, correct: false, impact: -6)
+        ]
+
+        XCTAssertEqual(WhatToPlayStatsAnalyzer.choiceRankSummary(for: attempts), .empty)
     }
 
     func testRecentAttemptsReturnsNewestFirstWithLimit() {
@@ -1352,6 +1395,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         correct: Bool,
         impact: Int,
         bestImpact: Int? = nil,
+        selectedRank: Int? = nil,
         outcome: WhatToPlayOptionOutcome? = nil
     ) -> WhatToPlayAttempt {
         attempt(
@@ -1360,6 +1404,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             correct: correct,
             impact: impact,
             bestImpact: bestImpact,
+            selectedRank: selectedRank,
             outcome: outcome
         )
     }
@@ -1370,6 +1415,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         correct: Bool,
         impact: Int,
         bestImpact: Int? = nil,
+        selectedRank: Int? = nil,
         secondBestCard: PlayingCard? = nil,
         secondBestImpact: Int? = nil,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
@@ -1383,6 +1429,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             bestCard: PlayingCard(suit: .clubs, rank: .seven),
             secondBestCard: secondBestCard,
             isCorrect: correct,
+            selectedRank: selectedRank,
             expectedImpact: impact,
             bestExpectedImpact: bestImpact,
             secondBestExpectedImpact: secondBestImpact,

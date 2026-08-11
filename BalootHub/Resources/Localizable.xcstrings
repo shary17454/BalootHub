@@ -16628,6 +16628,16 @@
         }
       }
     },
+    "قربك من اختيار الخبير" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "How close you are to the expert choice"
+          }
+        }
+      }
+    },
     "بديل قريب" : {
       "localizations" : {
         "en" : {
@@ -16674,6 +16684,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Costly"
+          }
+        }
+      }
+    },
+    "اختيارات بعيدة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Far choices"
+          }
+        }
+      }
+    },
+    "نسبة اختيار الخبير" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expert choice rate"
+          }
+        }
+      }
+    },
+    "نسبة الاقتراب من ثاني أفضل" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Second-best proximity rate"
           }
         }
       }

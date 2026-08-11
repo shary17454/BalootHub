@@ -313,6 +313,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.outcomeSummary(for: attempts)
     }
 
+    private var choiceRankSummary: WhatToPlayChoiceRankSummary {
+        WhatToPlayStatsAnalyzer.choiceRankSummary(for: attempts)
+    }
+
     private var outcomeInsight: WhatToPlayOutcomeInsight? {
         WhatToPlayStatsAnalyzer.outcomeInsight(for: outcomeSummary)
     }
@@ -709,6 +713,9 @@ struct WhatToPlayTrainerView: View {
                 if outcomeSummary.trackedAttempts > 0 {
                     outcomeSummaryView(outcomeSummary, insight: outcomeInsight)
                 }
+                if choiceRankSummary.trackedAttempts > 0 {
+                    choiceRankSummaryView(choiceRankSummary)
+                }
                 masteryView(mastery, milestone: masteryMilestone)
                 playStyleView(playStyle)
                 decisionPatternView(decisionPattern)
@@ -757,6 +764,28 @@ struct WhatToPlayTrainerView: View {
                 }
                 .padding(.top, AppSpacing.xs)
             }
+        }
+        .padding(AppSpacing.sm)
+        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func choiceRankSummaryView(_ summary: WhatToPlayChoiceRankSummary) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Label("قربك من اختيار الخبير".localized, systemImage: "list.number")
+                .font(AppTypography.subheadline.weight(.semibold))
+                .foregroundStyle(AppColor.textPrimary)
+
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 3), spacing: AppSpacing.xs) {
+                miniMetric("اختيار الخبير".localized, "\(summary.expertPicks)", AppColor.success)
+                miniMetric("ثاني أفضل".localized, "\(summary.secondBestPicks)", AppColor.accent)
+                miniMetric("اختيارات بعيدة".localized, "\(summary.farPicks)", AppColor.danger)
+            }
+
+            Text("\("محاولات مفحوصة".localized): \(summary.trackedAttempts) · \("نسبة اختيار الخبير".localized): \(summary.expertPickPercent)% · \("نسبة الاقتراب من ثاني أفضل".localized): \(summary.nearMissPercent)%")
+                .font(.caption2)
+                .foregroundStyle(AppColor.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
@@ -1569,6 +1598,7 @@ struct WhatToPlayTrainerView: View {
                 bestCard: bestCard,
                 secondBestCard: scenario.secondBestOption?.card,
                 isCorrect: evaluated.isExpertChoice,
+                selectedRank: evaluated.rank,
                 expectedImpact: evaluated.expectedImpact,
                 bestExpectedImpact: scenario.bestOption?.expectedImpact,
                 secondBestExpectedImpact: scenario.secondBestOption?.expectedImpact,

@@ -45,6 +45,30 @@ struct WhatToPlayOutcomeSummary: Equatable {
     }
 }
 
+struct WhatToPlayChoiceRankSummary: Equatable {
+    let trackedAttempts: Int
+    let expertPicks: Int
+    let secondBestPicks: Int
+    let farPicks: Int
+
+    static let empty = WhatToPlayChoiceRankSummary(
+        trackedAttempts: 0,
+        expertPicks: 0,
+        secondBestPicks: 0,
+        farPicks: 0
+    )
+
+    var expertPickPercent: Int {
+        guard trackedAttempts > 0 else { return 0 }
+        return Int((Double(expertPicks) / Double(trackedAttempts) * 100).rounded())
+    }
+
+    var nearMissPercent: Int {
+        guard trackedAttempts > 0 else { return 0 }
+        return Int((Double(secondBestPicks) / Double(trackedAttempts) * 100).rounded())
+    }
+}
+
 struct WhatToPlayCoachingTip: Equatable {
     let title: String
     let detail: String
@@ -345,6 +369,22 @@ enum WhatToPlayStatsAnalyzer {
             winningTrickAttempts: winning,
             losingTrickAttempts: losing,
             openTrickAttempts: open
+        )
+    }
+
+    static func choiceRankSummary(for attempts: [WhatToPlayAttempt]) -> WhatToPlayChoiceRankSummary {
+        let ranks = attempts.compactMap(\.selectedRank)
+        guard !ranks.isEmpty else { return .empty }
+
+        let expertPicks = ranks.filter { $0 == 1 }.count
+        let secondBestPicks = ranks.filter { $0 == 2 }.count
+        let farPicks = ranks.filter { $0 > 2 }.count
+
+        return WhatToPlayChoiceRankSummary(
+            trackedAttempts: ranks.count,
+            expertPicks: expertPicks,
+            secondBestPicks: secondBestPicks,
+            farPicks: farPicks
         )
     }
 
