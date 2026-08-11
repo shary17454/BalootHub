@@ -265,6 +265,13 @@ struct WhatToPlayDecisionReview: Equatable {
     let steps: [String]
 }
 
+struct WhatToPlayNextDecisionAction: Equatable {
+    let title: String
+    let detail: String
+    let iconName: String
+    let recommendedCard: PlayingCard?
+}
+
 enum WhatToPlayMasteryLevel: Equatable {
     case starting
     case building
@@ -1384,6 +1391,52 @@ enum WhatToPlayStatsAnalyzer {
         return decisionReview(insight: insight, focusKind: scenario.context.focusKind)
     }
 
+    static func nextDecisionAction(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayNextDecisionAction? {
+        guard let insight = decisionInsight(for: selected, in: scenario) else { return nil }
+        return nextDecisionAction(
+            insight: insight,
+            focusKind: scenario.context.focusKind,
+            bestCard: scenario.bestOption?.card
+        )
+    }
+
+    static func nextDecisionAction(
+        insight: WhatToPlayDecisionInsight,
+        focusKind: WhatToPlayScenarioFocusKind,
+        bestCard: PlayingCard?
+    ) -> WhatToPlayNextDecisionAction {
+        switch insight.kind {
+        case .expertMatch:
+            return WhatToPlayNextDecisionAction(
+                title: "ثبّت القراءة".localized,
+                detail: focusSuccessAction(for: focusKind),
+                iconName: "checkmark.seal.fill",
+                recommendedCard: bestCard
+            )
+        case .closeAlternative:
+            return WhatToPlayNextDecisionAction(
+                title: "درّب الفارق الصغير".localized,
+                detail: "أعد قراءة نفس النوع من المواقف وركّز على سبب تفوق ورقة واحدة بنقطة أو نقطتين متوقعتين.".localized,
+                iconName: "equal.circle.fill",
+                recommendedCard: bestCard
+            )
+        case .missedWinningChance:
+            return WhatToPlayNextDecisionAction(
+                title: "ابحث عن الورقة الرابحة".localized,
+                detail: "قبل اللعب، احسب هل عندك ورقة تنقل الأكلة لفريقك بدل الاكتفاء برمي ورقة قليلة الضرر.".localized,
+                iconName: "exclamationmark.triangle.fill",
+                recommendedCard: bestCard
+            )
+        case .pointLeak:
+            return WhatToPlayNextDecisionAction(
+                title: "قلل النزيف القادم".localized,
+                detail: "في الموقف القادم ابدأ بسؤال واحد: ما أقل ورقة تخسر أقل نقاط متوقعة إذا كانت الأكلة للخصم؟".localized,
+                iconName: "drop.fill",
+                recommendedCard: bestCard
+            )
+        }
+    }
+
     static func decisionReview(
         insight: WhatToPlayDecisionInsight,
         focusKind: WhatToPlayScenarioFocusKind
@@ -1422,6 +1475,19 @@ enum WhatToPlayStatsAnalyzer {
                 "أعد الموقف إذا كان الفارق أكثر من نقطتين متوقعتين.".localized
             ]
         )
+    }
+
+    private static func focusSuccessAction(for focusKind: WhatToPlayScenarioFocusKind) -> String {
+        switch focusKind {
+        case .openingLead:
+            return "احتفظ بنفس منطق الافتتاح: لا تكشف قوتك إلا عندما يعطيك ذلك سيطرة واضحة.".localized
+        case .followSuit:
+            return "استمر في قراءة اللون المطلوب أولًا ثم قارن بين ربح الأكلة وتقليل الخسارة.".localized
+        case .trumpPressure:
+            return "ثبت عادة فحص الحكم على الطاولة قبل صرف حكم قوي أو ورقة عالية.".localized
+        case .narrowChoice:
+            return "عند ضيق الخيارات، استمر في ترتيبها حسب الأثر المتوقع لا حسب شكل الورقة.".localized
+        }
     }
 
     static func mastery(for attempts: [WhatToPlayAttempt]) -> WhatToPlayMastery {

@@ -17668,6 +17668,126 @@
         }
       }
     },
+    "ثبّت القراءة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lock in the read"
+          }
+        }
+      }
+    },
+    "درّب الفارق الصغير" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Train the small gap"
+          }
+        }
+      }
+    },
+    "أعد قراءة نفس النوع من المواقف وركّز على سبب تفوق ورقة واحدة بنقطة أو نقطتين متوقعتين." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Replay this type of scenario and focus on why one card is better by one or two expected points."
+          }
+        }
+      }
+    },
+    "ابحث عن الورقة الرابحة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Find the winning card"
+          }
+        }
+      }
+    },
+    "قبل اللعب، احسب هل عندك ورقة تنقل الأكلة لفريقك بدل الاكتفاء برمي ورقة قليلة الضرر." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Before playing, check whether you have a card that moves the trick to your team instead of only throwing a low-damage card."
+          }
+        }
+      }
+    },
+    "قلل النزيف القادم" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reduce the next leak"
+          }
+        }
+      }
+    },
+    "في الموقف القادم ابدأ بسؤال واحد: ما أقل ورقة تخسر أقل نقاط متوقعة إذا كانت الأكلة للخصم؟" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In the next scenario, start with one question: what is the lowest card that loses the fewest expected points if the trick belongs to the opponent?"
+          }
+        }
+      }
+    },
+    "احتفظ بنفس منطق الافتتاح: لا تكشف قوتك إلا عندما يعطيك ذلك سيطرة واضحة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep the same lead logic: do not reveal your strength unless it gives you clear control."
+          }
+        }
+      }
+    },
+    "استمر في قراءة اللون المطلوب أولًا ثم قارن بين ربح الأكلة وتقليل الخسارة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep reading the required suit first, then compare winning the trick against reducing the loss."
+          }
+        }
+      }
+    },
+    "ثبت عادة فحص الحكم على الطاولة قبل صرف حكم قوي أو ورقة عالية." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Build the habit of checking the trump on the table before spending a strong trump or high card."
+          }
+        }
+      }
+    },
+    "عند ضيق الخيارات، استمر في ترتيبها حسب الأثر المتوقع لا حسب شكل الورقة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "When options are tight, keep ranking them by expected impact, not by how the card looks."
+          }
+        }
+      }
+    },
+    "ورقة المراجعة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review card"
+          }
+        }
+      }
+    },
     "عندما تكون الخيارات قليلة، رتّبها حسب أقل خسارة لا حسب أعلى ورقة." : {
       "localizations" : {
         "en" : {

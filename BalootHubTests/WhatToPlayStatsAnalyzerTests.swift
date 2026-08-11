@@ -787,6 +787,44 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertTrue(review.steps.contains("ابحث عن الورقة التي كانت ستحوّل الأكلة من خسارة إلى ربح.".localized))
     }
 
+    func testNextDecisionActionReinforcesExpertMatchByFocus() {
+        let insight = WhatToPlayStatsAnalyzer.decisionInsight(
+            selectedRank: 1,
+            selectedImpact: 8,
+            bestImpact: 8,
+            secondBestImpact: 5
+        )
+        let bestCard = PlayingCard(suit: .spades, rank: .ace)
+
+        let action = WhatToPlayStatsAnalyzer.nextDecisionAction(
+            insight: insight,
+            focusKind: .trumpPressure,
+            bestCard: bestCard
+        )
+
+        XCTAssertEqual(action.title, "ثبّت القراءة".localized)
+        XCTAssertTrue(action.detail.contains("الحكم".localized))
+        XCTAssertEqual(action.recommendedCard, bestCard)
+    }
+
+    func testNextDecisionActionTargetsMissedWinningChance() {
+        let insight = WhatToPlayStatsAnalyzer.decisionInsight(
+            selectedRank: 4,
+            selectedImpact: -3,
+            bestImpact: 7,
+            secondBestImpact: 2
+        )
+
+        let action = WhatToPlayStatsAnalyzer.nextDecisionAction(
+            insight: insight,
+            focusKind: .followSuit,
+            bestCard: PlayingCard(suit: .hearts, rank: .king)
+        )
+
+        XCTAssertEqual(action.title, "ابحث عن الورقة الرابحة".localized)
+        XCTAssertTrue(action.detail.contains("تنقل الأكلة لفريقك".localized))
+    }
+
     func testMasteryStartsAtZeroWithoutAttempts() {
         let mastery = WhatToPlayStatsAnalyzer.mastery(for: [])
 

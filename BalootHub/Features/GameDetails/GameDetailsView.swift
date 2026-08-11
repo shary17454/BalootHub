@@ -1982,6 +1982,10 @@ struct WhatToPlayTrainerView: View {
                 decisionReviewView(review)
             }
 
+            if let nextAction = WhatToPlayStatsAnalyzer.nextDecisionAction(for: option, in: scenario) {
+                nextDecisionActionView(nextAction)
+            }
+
             Text(option.explanation)
                 .font(AppTypography.subheadline)
                 .foregroundStyle(AppColor.textPrimary)
@@ -1990,6 +1994,32 @@ struct WhatToPlayTrainerView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func nextDecisionActionView(_ action: WhatToPlayNextDecisionAction) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(action.title)
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(action.detail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                if let recommendedCard = action.recommendedCard {
+                    Text("\("ورقة المراجعة".localized): \(recommendedCard.accessibilityName)")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(AppColor.primary)
+                }
+            }
+        } icon: {
+            Image(systemName: action.iconName)
+                .foregroundStyle(AppColor.primary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.sm)
+        .background(AppColor.primary.opacity(0.10), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
     }
 
     private func decisionInsightView(_ insight: WhatToPlayDecisionInsight) -> some View {
