@@ -316,6 +316,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.summariesByDifficulty(attempts)
     }
 
+    private var coachingTip: WhatToPlayCoachingTip {
+        WhatToPlayStatsAnalyzer.coachingTip(for: attempts)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
@@ -436,10 +440,32 @@ struct WhatToPlayTrainerView: View {
                     title: "متوسط الأثر المتوقع",
                     value: impactText(statsSummary.averageExpectedImpact)
                 )
+                coachingTipView(coachingTip)
             }
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func coachingTipView(_ tip: WhatToPlayCoachingTip) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(tip.title)
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(tip.detail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        } icon: {
+            Image(systemName: tip.iconName)
+                .foregroundStyle(AppColor.accent)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.sm)
+        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
     }
 
     @ViewBuilder

@@ -16544,6 +16544,106 @@
         }
       }
     },
+    "ابدأ القياس" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start measuring"
+          }
+        }
+      }
+    },
+    "أنت تكرر قرارات قريبة من الخبير. ارفع الصعوبة أو ركز على مواقف الحكم لاختبار قراءة أقوى." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You are repeating expert-like decisions. Raise the difficulty or focus on Hokum scenarios to test stronger reading."
+          }
+        }
+      }
+    },
+    "استمر بالمقارنة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep comparing"
+          }
+        }
+      }
+    },
+    "اختياراتك الأخيرة تخسر نقاطًا متوقعة؛ جرّب حفظ الورق العالي عندما لا تستطيع الفوز بالأكلة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your recent choices are losing expected points; try saving high cards when you cannot win the trick."
+          }
+        }
+      }
+    },
+    "بعد كل إجابة راجع بطاقة أثر كل قرار؛ الفرق بين اختيارك والخيار الثاني يعلمك متى تكون المخاطرة مقبولة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "After each answer, review the impact card; the gap between your choice and the second option teaches when risk is acceptable."
+          }
+        }
+      }
+    },
+    "قبل اختيار الورقة، راجع اللون المطلوب والحكم الموجود ثم قارن هل تستطيع ربح الأكلة أو تقليل خسارتها." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Before choosing a card, review the required suit and available trump, then decide whether you can win the trick or reduce the loss."
+          }
+        }
+      }
+    },
+    "خفف السرعة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Slow down"
+          }
+        }
+      }
+    },
+    "سلسلة ممتازة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Excellent streak"
+          }
+        }
+      }
+    },
+    "حل عدة مواقف من كل مستوى حتى يعطيك المدرب قراءة أدق لأسلوبك." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solve several scenarios from each level so the trainer can read your style more accurately."
+          }
+        }
+      }
+    },
+    "قلل نزيف النقاط" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reduce point leakage"
+          }
+        }
+      }
+    },
     "ما أفضل ورقة؟" : {
       "localizations" : {
         "en" : {

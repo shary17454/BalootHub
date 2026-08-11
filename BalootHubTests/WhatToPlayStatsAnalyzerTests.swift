@@ -82,6 +82,49 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summaries.last?.summary.accuracyPercent, 50)
     }
 
+    func testCoachingTipForEmptyAttemptsEncouragesBaseline() {
+        let tip = WhatToPlayStatsAnalyzer.coachingTip(for: [])
+
+        XCTAssertEqual(tip.title, "ابدأ القياس".localized)
+        XCTAssertEqual(tip.iconName, "target")
+    }
+
+    func testCoachingTipForLowAccuracyFocusesOnSlowingDown() {
+        let attempts = [
+            attempt(daysAgo: 3, correct: false, impact: 2),
+            attempt(daysAgo: 2, correct: false, impact: 2),
+            attempt(daysAgo: 1, correct: true, impact: 2)
+        ]
+
+        let tip = WhatToPlayStatsAnalyzer.coachingTip(for: attempts)
+
+        XCTAssertEqual(tip.title, "خفف السرعة".localized)
+    }
+
+    func testCoachingTipForNegativeImpactFocusesOnPointLoss() {
+        let attempts = [
+            attempt(daysAgo: 3, correct: true, impact: -6),
+            attempt(daysAgo: 2, correct: true, impact: -2),
+            attempt(daysAgo: 1, correct: false, impact: -4)
+        ]
+
+        let tip = WhatToPlayStatsAnalyzer.coachingTip(for: attempts)
+
+        XCTAssertEqual(tip.title, "قلل نزيف النقاط".localized)
+    }
+
+    func testCoachingTipForCurrentStreakEncouragesHarderPractice() {
+        let attempts = [
+            attempt(daysAgo: 3, correct: true, impact: 4),
+            attempt(daysAgo: 2, correct: true, impact: 2),
+            attempt(daysAgo: 1, correct: true, impact: 3)
+        ]
+
+        let tip = WhatToPlayStatsAnalyzer.coachingTip(for: attempts)
+
+        XCTAssertEqual(tip.title, "سلسلة ممتازة".localized)
+    }
+
     private func attempt(daysAgo: TimeInterval, correct: Bool, impact: Int) -> WhatToPlayAttempt {
         attempt(daysAgo: daysAgo, difficulty: .medium, correct: correct, impact: impact)
     }

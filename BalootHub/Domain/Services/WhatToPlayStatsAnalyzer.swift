@@ -19,6 +19,12 @@ struct WhatToPlayStatsSummary: Equatable {
     )
 }
 
+struct WhatToPlayCoachingTip: Equatable {
+    let title: String
+    let detail: String
+    let iconName: String
+}
+
 enum WhatToPlayStatsAnalyzer {
     static func summarize(attempts: [WhatToPlayAttempt]) -> WhatToPlayStatsSummary {
         guard !attempts.isEmpty else { return .empty }
@@ -67,5 +73,46 @@ enum WhatToPlayStatsAnalyzer {
             guard !filtered.isEmpty else { return nil }
             return (difficulty, summarize(attempts: filtered))
         }
+    }
+
+    static func coachingTip(for attempts: [WhatToPlayAttempt]) -> WhatToPlayCoachingTip {
+        let summary = summarize(attempts: attempts)
+        guard summary.attempts > 0 else {
+            return WhatToPlayCoachingTip(
+                title: "ابدأ القياس".localized,
+                detail: "حل عدة مواقف من كل مستوى حتى يعطيك المدرب قراءة أدق لأسلوبك.".localized,
+                iconName: "target"
+            )
+        }
+
+        if summary.accuracyPercent < 50 {
+            return WhatToPlayCoachingTip(
+                title: "خفف السرعة".localized,
+                detail: "قبل اختيار الورقة، راجع اللون المطلوب والحكم الموجود ثم قارن هل تستطيع ربح الأكلة أو تقليل خسارتها.".localized,
+                iconName: "pause.circle.fill"
+            )
+        }
+
+        if summary.averageExpectedImpact < 0 {
+            return WhatToPlayCoachingTip(
+                title: "قلل نزيف النقاط".localized,
+                detail: "اختياراتك الأخيرة تخسر نقاطًا متوقعة؛ جرّب حفظ الورق العالي عندما لا تستطيع الفوز بالأكلة.".localized,
+                iconName: "shield.lefthalf.filled"
+            )
+        }
+
+        if summary.currentStreak >= 3 {
+            return WhatToPlayCoachingTip(
+                title: "سلسلة ممتازة".localized,
+                detail: "أنت تكرر قرارات قريبة من الخبير. ارفع الصعوبة أو ركز على مواقف الحكم لاختبار قراءة أقوى.".localized,
+                iconName: "flame.fill"
+            )
+        }
+
+        return WhatToPlayCoachingTip(
+            title: "استمر بالمقارنة".localized,
+            detail: "بعد كل إجابة راجع بطاقة أثر كل قرار؛ الفرق بين اختيارك والخيار الثاني يعلمك متى تكون المخاطرة مقبولة.".localized,
+            iconName: "lightbulb.fill"
+        )
     }
 }
