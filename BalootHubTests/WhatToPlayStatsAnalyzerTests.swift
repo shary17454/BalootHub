@@ -373,6 +373,55 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertNil(WhatToPlayStatsAnalyzer.masteryMilestone(for: attempts))
     }
 
+    func testPracticeCoverageReportsMissingDifficulties() {
+        let attempts = [
+            attempt(daysAgo: 2, difficulty: .easy, correct: true, impact: 2),
+            attempt(daysAgo: 1, difficulty: .easy, correct: false, impact: -2)
+        ]
+
+        let coverage = WhatToPlayStatsAnalyzer.practiceCoverage(for: attempts)
+
+        XCTAssertFalse(coverage.isBalanced)
+        XCTAssertEqual(coverage.sampledDifficulties, 1)
+        XCTAssertEqual(coverage.totalDifficulties, 3)
+        XCTAssertEqual(coverage.missingDifficulties, [.medium, .hard])
+        XCTAssertEqual(coverage.title, "أكمل تغطية التدريب".localized)
+    }
+
+    func testPracticeCoverageRequiresMinimumAttemptsPerDifficulty() {
+        let attempts = [
+            attempt(daysAgo: 5, difficulty: .easy, correct: true, impact: 2),
+            attempt(daysAgo: 4, difficulty: .easy, correct: true, impact: 2),
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 2),
+            attempt(daysAgo: 2, difficulty: .hard, correct: true, impact: 2),
+            attempt(daysAgo: 1, difficulty: .hard, correct: true, impact: 2)
+        ]
+
+        let coverage = WhatToPlayStatsAnalyzer.practiceCoverage(for: attempts)
+
+        XCTAssertFalse(coverage.isBalanced)
+        XCTAssertEqual(coverage.sampledDifficulties, 2)
+        XCTAssertEqual(coverage.missingDifficulties, [.medium])
+    }
+
+    func testPracticeCoverageReportsBalancedCoverage() {
+        let attempts = [
+            attempt(daysAgo: 6, difficulty: .easy, correct: true, impact: 2),
+            attempt(daysAgo: 5, difficulty: .easy, correct: false, impact: -2),
+            attempt(daysAgo: 4, difficulty: .medium, correct: true, impact: 2),
+            attempt(daysAgo: 3, difficulty: .medium, correct: false, impact: -2),
+            attempt(daysAgo: 2, difficulty: .hard, correct: true, impact: 2),
+            attempt(daysAgo: 1, difficulty: .hard, correct: false, impact: -2)
+        ]
+
+        let coverage = WhatToPlayStatsAnalyzer.practiceCoverage(for: attempts)
+
+        XCTAssertTrue(coverage.isBalanced)
+        XCTAssertEqual(coverage.sampledDifficulties, 3)
+        XCTAssertTrue(coverage.missingDifficulties.isEmpty)
+        XCTAssertEqual(coverage.title, "تغطية متوازنة".localized)
+    }
+
     func testCoachingTipForEmptyAttemptsEncouragesBaseline() {
         let tip = WhatToPlayStatsAnalyzer.coachingTip(for: [])
 

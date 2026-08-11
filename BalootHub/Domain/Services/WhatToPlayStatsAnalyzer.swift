@@ -89,6 +89,19 @@ struct WhatToPlayMasteryMilestone: Equatable {
     let detail: String
 }
 
+struct WhatToPlayPracticeCoverage: Equatable {
+    let sampledDifficulties: Int
+    let totalDifficulties: Int
+    let missingDifficulties: [WhatToPlayDifficulty]
+    let title: String
+    let detail: String
+    let iconName: String
+
+    var isBalanced: Bool {
+        missingDifficulties.isEmpty
+    }
+}
+
 enum WhatToPlayStatsAnalyzer {
     static func summarize(attempts: [WhatToPlayAttempt]) -> WhatToPlayStatsSummary {
         guard !attempts.isEmpty else { return .empty }
@@ -387,6 +400,37 @@ enum WhatToPlayStatsAnalyzer {
             targetTitle: target.title,
             pointsRemaining: remaining,
             detail: "\("باقي".localized) \(remaining) \("نقطة إتقان للوصول إلى".localized) \(target.title)."
+        )
+    }
+
+    static func practiceCoverage(
+        for attempts: [WhatToPlayAttempt],
+        minimumAttemptsPerDifficulty: Int = 2
+    ) -> WhatToPlayPracticeCoverage {
+        let missing = WhatToPlayDifficulty.allCases.filter { difficulty in
+            attempts.filter { $0.difficulty == difficulty }.count < minimumAttemptsPerDifficulty
+        }
+        let sampled = WhatToPlayDifficulty.allCases.count - missing.count
+
+        if missing.isEmpty {
+            return WhatToPlayPracticeCoverage(
+                sampledDifficulties: sampled,
+                totalDifficulties: WhatToPlayDifficulty.allCases.count,
+                missingDifficulties: [],
+                title: "تغطية متوازنة".localized,
+                detail: "لديك عينات كافية من كل مستويات وش تلعب، لذلك تصبح توصيات المدرب أدق.".localized,
+                iconName: "checkmark.seal.fill"
+            )
+        }
+
+        let names = missing.map(difficultyTitle).joined(separator: "، ")
+        return WhatToPlayPracticeCoverage(
+            sampledDifficulties: sampled,
+            totalDifficulties: WhatToPlayDifficulty.allCases.count,
+            missingDifficulties: missing,
+            title: "أكمل تغطية التدريب".localized,
+            detail: "\("درّب هذه المستويات أكثر".localized): \(names).",
+            iconName: "square.grid.3x3.fill"
         )
     }
 

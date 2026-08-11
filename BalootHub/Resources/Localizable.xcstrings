@@ -16974,6 +16974,56 @@
         }
       }
     },
+    "تغطية متوازنة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Balanced coverage"
+          }
+        }
+      }
+    },
+    "لديك عينات كافية من كل مستويات وش تلعب، لذلك تصبح توصيات المدرب أدق." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You have enough samples from every What to Play level, so the trainer recommendations become more accurate."
+          }
+        }
+      }
+    },
+    "أكمل تغطية التدريب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Complete practice coverage"
+          }
+        }
+      }
+    },
+    "درّب هذه المستويات أكثر" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Practice these levels more"
+          }
+        }
+      }
+    },
+    "التغطية" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coverage"
+          }
+        }
+      }
+    },
     "حل عدة مواقف حتى يظهر مستوى إتقانك الحقيقي في قراءة الطاولة." : {
       "localizations" : {
         "en" : {

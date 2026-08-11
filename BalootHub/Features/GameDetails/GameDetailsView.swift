@@ -340,6 +340,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.masteryMilestone(for: attempts)
     }
 
+    private var practiceCoverage: WhatToPlayPracticeCoverage {
+        WhatToPlayStatsAnalyzer.practiceCoverage(for: attempts)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
@@ -644,6 +648,8 @@ struct WhatToPlayTrainerView: View {
                 if let focusDifficulty {
                     focusDifficultyView(focusDifficulty)
                 }
+
+                practiceCoverageView(practiceCoverage)
             }
             .padding(AppSpacing.md)
             .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
@@ -667,6 +673,30 @@ struct WhatToPlayTrainerView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppSpacing.sm)
         .background(AppColor.accent.opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func practiceCoverageView(_ coverage: WhatToPlayPracticeCoverage) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(coverage.title)
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(coverage.detail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("\("التغطية".localized): \(coverage.sampledDifficulties)/\(coverage.totalDifficulties)")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(coverage.isBalanced ? AppColor.success : AppColor.accent)
+            }
+        } icon: {
+            Image(systemName: coverage.iconName)
+                .foregroundStyle(coverage.isBalanced ? AppColor.success : AppColor.accent)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.sm)
+        .background((coverage.isBalanced ? AppColor.success : AppColor.accent).opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
         .accessibilityElement(children: .combine)
     }
 
