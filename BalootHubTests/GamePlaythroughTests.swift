@@ -190,6 +190,30 @@ final class GamePlaythroughTests: XCTestCase {
         XCTAssertTrue(legalBids.contains(.hokum(suit: upCard.suit)))
     }
 
+    /// إذا مرّ الأربعة في الجولة الأولى، تبقى نفس لعبة البلوت مفتوحة لجولة الأشكال:
+    /// صن أو حكم بلون آخر، لا انتقال إلى لعبة منفصلة.
+    func testSecondBiddingRoundKeepsSunAndHokumInsideSameGame() throws {
+        var state = GameState.newLocalMatch(rules: .standard)
+        state = try GameEngine.apply(.dealCards(seed: 14), to: state)
+
+        let upCard = try XCTUnwrap(state.bidding.upCard)
+        for _ in 0..<4 {
+            let playerID = try XCTUnwrap(state.currentTurnPlayerID)
+            state = try GameEngine.apply(.placeBid(playerID: playerID, bid: .pass), to: state)
+        }
+
+        let legalBids = GameEngine.legalBids(state: state)
+
+        XCTAssertEqual(state.phase, .bidding)
+        XCTAssertEqual(state.bidding.stage, .secondRound)
+        XCTAssertTrue(legalBids.contains(.pass))
+        XCTAssertTrue(legalBids.contains(.sun))
+        for suit in Suit.allCases where suit != upCard.suit {
+            XCTAssertTrue(legalBids.contains(.hokum(suit: suit)))
+        }
+        XCTAssertFalse(legalBids.contains(.hokum(suit: upCard.suit)))
+    }
+
     /// مشروع البلوت يُحتسب في حكم فقط ولا يُحتسب في صن إطلاقًا،
     /// لأن الشرط هو امتلاك ملك وبنت **نوع الحكم** ولا حكم في الصن.
     func testBelotProjectAppliesOnlyInHokum() throws {
