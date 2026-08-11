@@ -2435,6 +2435,16 @@
         }
       }
     },
+    "زايد في البلوت" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bid in Baloot"
+          }
+        }
+      }
+    },
     "اختر نوع الحكم" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -6411,6 +6421,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "其他玩家正在选择本局模式…"
+          }
+        }
+      }
+    },
+    "بقية اللاعبين يزايدون على صن أو حكم…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The other players are bidding Sun or Hokum…"
           }
         }
       }

@@ -13,7 +13,7 @@ public protocol BalootAgent: Sendable {
     /// يختار ورقة للعب من بين الأوراق القانونية المتاحة فقط.
     func chooseCard(hand: [PlayingCard], legalCards: [PlayingCard], state: GameState) -> PlayingCard
 
-    /// يختار نمط الجولة (صن أو حكم) ونوع الحكم إن لزم، في النمط المبسّط.
+    /// يختار نتيجة شراء الجولة (صن أو حكم) ونوع الحكم إن لزم، في النمط المبسّط.
     func chooseMode(hand: [PlayingCard], state: GameState) -> (mode: GameMode, trumpSuit: Suit?)
 
     /// يختار مزايدة من بين المزايدات القانونية في دورة المزايدة الكاملة.

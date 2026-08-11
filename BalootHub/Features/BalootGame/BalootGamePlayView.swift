@@ -152,7 +152,7 @@ struct BalootGamePlayView: View {
     private var biddingPanel: some View {
         VStack(spacing: AppSpacing.md) {
             if viewModel.isHumanTurn {
-                Text("اختر نمط الجولة".localized)
+                Text("زايد في البلوت".localized)
                     .font(AppTypography.headline)
                 // خمسة أزرار في صف واحد تتزاحم على الشاشات الضيقة وعند تكبير الخط،
                 // فتتوزّع تلقائيًا على أكثر من سطر بدل قصّها.
@@ -164,7 +164,7 @@ struct BalootGamePlayView: View {
                     }
                 }
             } else {
-                LoadingStateView(message: "بقية اللاعبين يقررون نمط الجولة…")
+                LoadingStateView(message: "بقية اللاعبين يزايدون على صن أو حكم…")
             }
         }
         .padding(AppSpacing.md)

@@ -1,6 +1,6 @@
 import Foundation
 
-/// نمط الجولة المُختار بعد المزايدة.
+/// نتيجة شراء الجولة بعد مزايدة البلوت الواحدة: إما صن أو حكم.
 public enum GameMode: String, Codable, Sendable, CaseIterable {
     /// صن: لا يوجد نوع حكم، وتُحتسب كل الأنواع بنفس الترتيب.
     case sun
