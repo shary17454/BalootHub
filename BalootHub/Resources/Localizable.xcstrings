@@ -18888,6 +18888,46 @@
         }
       }
     },
+    "تحقق هدف الدقة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accuracy target met"
+          }
+        }
+      }
+    },
+    "لم يتحقق هدف الدقة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accuracy target not met"
+          }
+        }
+      }
+    },
+    "تحقق هدف الأثر" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impact target met"
+          }
+        }
+      }
+    },
+    "لم يتحقق هدف الأثر" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impact target not met"
+          }
+        }
+      }
+    },
     "نقطة قوة" : {
       "localizations" : {
         "en" : {

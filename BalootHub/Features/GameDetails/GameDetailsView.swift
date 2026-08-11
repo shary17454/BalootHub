@@ -661,6 +661,17 @@ struct WhatToPlayTrainerView: View {
                 )
             }
 
+            HStack(spacing: AppSpacing.xs) {
+                sessionTargetBadge(
+                    title: progress.accuracyTargetMet ? "تحقق هدف الدقة".localized : "لم يتحقق هدف الدقة".localized,
+                    isMet: progress.accuracyTargetMet
+                )
+                sessionTargetBadge(
+                    title: progress.impactTargetMet ? "تحقق هدف الأثر".localized : "لم يتحقق هدف الأثر".localized,
+                    isMet: progress.impactTargetMet
+                )
+            }
+
             Label {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(progress.impactTitle)
@@ -713,6 +724,21 @@ struct WhatToPlayTrainerView: View {
             }
         }
         .padding(.top, AppSpacing.xs)
+    }
+
+    private func sessionTargetBadge(title: String, isMet: Bool) -> some View {
+        Label(title, systemImage: isMet ? "checkmark.circle.fill" : "xmark.circle.fill")
+            .font(.caption2.weight(.semibold))
+            .foregroundStyle(isMet ? AppColor.success : AppColor.danger)
+            .lineLimit(1)
+            .minimumScaleFactor(0.75)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, AppSpacing.xs)
+            .padding(.horizontal, AppSpacing.xs)
+            .background(
+                (isMet ? AppColor.success : AppColor.danger).opacity(0.12),
+                in: RoundedRectangle(cornerRadius: AppRadius.small)
+            )
     }
 
     private func sessionImpactTint(_ averageImpact: Int, completed: Int) -> Color {
