@@ -27,6 +27,14 @@ public struct WhatToPlayOption: Identifiable, Sendable, Equatable {
     public var id: PlayingCard { card }
 }
 
+/// محور الانتباه الأهم في موقف «وش تلعب؟».
+public enum WhatToPlayScenarioFocusKind: String, Sendable, Codable {
+    case openingLead
+    case followSuit
+    case trumpPressure
+    case narrowChoice
+}
+
 /// قراءة موجزة لسياق موقف «وش تلعب؟» من حالة المحرك.
 public struct WhatToPlayScenarioContext: Sendable, Equatable {
     public let trickNumber: Int
@@ -37,6 +45,7 @@ public struct WhatToPlayScenarioContext: Sendable, Equatable {
     public let mode: GameMode?
     public let trumpSuit: Suit?
     public let hasTrumpInCurrentTrick: Bool
+    public let focusKind: WhatToPlayScenarioFocusKind
 }
 
 /// موقف «وش تلعب؟» قابل للإعادة من نفس البذرة.
@@ -179,8 +188,32 @@ public enum WhatToPlayTrainer {
             legalOptionCount: options.count,
             mode: state.mode,
             trumpSuit: trumpSuit,
-            hasTrumpInCurrentTrick: hasTrump
+            hasTrumpInCurrentTrick: hasTrump,
+            focusKind: scenarioFocusKind(
+                isLeading: trick?.playedCards.isEmpty ?? true,
+                requiredSuit: trick?.requiredSuit,
+                hasTrumpInCurrentTrick: hasTrump,
+                legalOptionCount: options.count
+            )
         )
+    }
+
+    public static func scenarioFocusKind(
+        isLeading: Bool,
+        requiredSuit: Suit?,
+        hasTrumpInCurrentTrick: Bool,
+        legalOptionCount: Int
+    ) -> WhatToPlayScenarioFocusKind {
+        if hasTrumpInCurrentTrick {
+            return .trumpPressure
+        }
+        if !isLeading, requiredSuit != nil {
+            return .followSuit
+        }
+        if legalOptionCount <= 2 {
+            return .narrowChoice
+        }
+        return .openingLead
     }
 
     private static func expectedImpact(of card: PlayingCard, by player: Player, in state: GameState) -> Int {

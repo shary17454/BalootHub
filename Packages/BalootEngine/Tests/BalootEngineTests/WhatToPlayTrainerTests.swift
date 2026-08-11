@@ -54,6 +54,14 @@ struct WhatToPlayTrainerTests {
         #expect(scenario.context.legalOptionCount == scenario.options.count)
         #expect(scenario.context.mode == scenario.state.mode)
         #expect(scenario.context.trumpSuit == scenario.state.trumpSuit)
+        #expect(
+            scenario.context.focusKind == WhatToPlayTrainer.scenarioFocusKind(
+                isLeading: scenario.context.isLeading,
+                requiredSuit: scenario.context.requiredSuit,
+                hasTrumpInCurrentTrick: scenario.context.hasTrumpInCurrentTrick,
+                legalOptionCount: scenario.context.legalOptionCount
+            )
+        )
     }
 
     @Test("سياق الموقف يكتشف وجود الحكم على الطاولة في حكم فقط")
@@ -67,5 +75,41 @@ struct WhatToPlayTrainerTests {
         }
 
         #expect(scenario.context.hasTrumpInCurrentTrick == hasTrump)
+    }
+
+    @Test("تركيز الموقف يعطي أولوية لضغط الحكم ثم اللون المطلوب ثم ضيق الخيارات")
+    func scenarioFocusPrioritizesActionablePressure() {
+        #expect(
+            WhatToPlayTrainer.scenarioFocusKind(
+                isLeading: false,
+                requiredSuit: .clubs,
+                hasTrumpInCurrentTrick: true,
+                legalOptionCount: 2
+            ) == .trumpPressure
+        )
+        #expect(
+            WhatToPlayTrainer.scenarioFocusKind(
+                isLeading: false,
+                requiredSuit: .clubs,
+                hasTrumpInCurrentTrick: false,
+                legalOptionCount: 2
+            ) == .followSuit
+        )
+        #expect(
+            WhatToPlayTrainer.scenarioFocusKind(
+                isLeading: true,
+                requiredSuit: nil,
+                hasTrumpInCurrentTrick: false,
+                legalOptionCount: 2
+            ) == .narrowChoice
+        )
+        #expect(
+            WhatToPlayTrainer.scenarioFocusKind(
+                isLeading: true,
+                requiredSuit: nil,
+                hasTrumpInCurrentTrick: false,
+                legalOptionCount: 4
+            ) == .openingLead
+        )
     }
 }

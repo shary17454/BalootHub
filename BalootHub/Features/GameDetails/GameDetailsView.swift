@@ -1183,6 +1183,7 @@ struct WhatToPlayTrainerView: View {
                 InfoRow(icon: "person.crop.circle.fill", title: "الدور", value: scenario.state.player(id: scenario.playerID)?.name ?? "أنت")
                 InfoRow(icon: "list.number", title: "الأكلة", value: "\(scenario.state.completedTricks.count + 1) من 8")
                 InfoRow(icon: "arrow.turn.up.left", title: "قراءة الدور".localized, value: turnContextText(scenario.context))
+                InfoRow(icon: "scope", title: "تركيز التدريب".localized, value: focusText(scenario.context.focusKind))
                 InfoRow(icon: "rectangle.stack.fill", title: "الأوراق القانونية".localized, value: "\(scenario.context.legalOptionCount)")
                 if let requiredSuit = scenario.context.requiredSuit {
                     InfoRow(icon: "suit.club.fill", title: "اللون المطلوب".localized, value: requiredSuit.spokenName)
@@ -1580,6 +1581,19 @@ struct WhatToPlayTrainerView: View {
             return "أنت تفتتح الأكلة".localized
         }
         return "\("أنت ترد بعد".localized) \(context.playedCardCount) \("ورقة".localized)"
+    }
+
+    private func focusText(_ focusKind: WhatToPlayScenarioFocusKind) -> String {
+        switch focusKind {
+        case .openingLead:
+            return "اختر افتتاحًا يحفظ قوتك ويقرأ رد الخصوم".localized
+        case .followSuit:
+            return "اتبع اللون المطلوب ووازن بين ربح الأكلة وتقليل الخسارة".localized
+        case .trumpPressure:
+            return "اقرأ الحكم المطروح قبل رمي ورقة عالية".localized
+        case .narrowChoice:
+            return "خياراتك محدودة؛ ركز على أقل ضرر ممكن".localized
+        }
     }
 
     private func impactText(_ impact: Int) -> String {

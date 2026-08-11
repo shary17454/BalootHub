@@ -16374,6 +16374,26 @@
         }
       }
     },
+    "اتبع اللون المطلوب ووازن بين ربح الأكلة وتقليل الخسارة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Follow the required suit and balance winning the trick with reducing loss"
+          }
+        }
+      }
+    },
+    "اختر افتتاحًا يحفظ قوتك ويقرأ رد الخصوم" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a lead that preserves your strength and reads opponents' responses"
+          }
+        }
+      }
+    },
     "اللون المطلوب" : {
       "localizations" : {
         "en" : {
@@ -18484,6 +18504,16 @@
         }
       }
     },
+    "اقرأ الحكم المطروح قبل رمي ورقة عالية" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read the trump already played before throwing a high card"
+          }
+        }
+      }
+    },
     "حاضر" : {
       "localizations" : {
         "en" : {
@@ -18500,6 +18530,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Turn read"
+          }
+        }
+      }
+    },
+    "تركيز التدريب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Training focus"
+          }
+        }
+      }
+    },
+    "خياراتك محدودة؛ ركز على أقل ضرر ممكن" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your choices are limited; focus on the least damaging play"
           }
         }
       }
