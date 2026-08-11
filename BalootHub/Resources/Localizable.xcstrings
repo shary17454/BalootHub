@@ -18182,6 +18182,20 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "高价值损失" } }
       }
     },
+    "شدة خسارة القيمة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Schwere des Wertverlusts" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Value loss severity" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Gravedad de la pérdida de valor" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Gravité de la perte de valeur" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "मूल्य हानि की गंभीरता" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tingkat kehilangan nilai" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Тяжесть потери ценности" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Değer kaybı şiddeti" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "قدر کے نقصان کی شدت" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "价值损失严重度" } }
+      }
+    },
     "الفارق بين الأفضل والثاني" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Abstand zwischen bestem und zweitem" } },

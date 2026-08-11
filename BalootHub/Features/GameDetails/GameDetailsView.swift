@@ -2007,6 +2007,9 @@ struct WhatToPlayTrainerView: View {
                         if let lostExpectedPoints = content.lostExpectedPoints {
                             shareChip("\("نقاط متوقعة ضائعة".localized): \(lostExpectedPoints)")
                         }
+                        if let valueLossTitle = content.valueLossTitle {
+                            shareChip("\("شدة خسارة القيمة".localized): \(valueLossTitle)")
+                        }
                         if let lostAgainstSecondBestPoints = content.lostAgainstSecondBestPoints {
                             shareChip("\("فارق عن ثاني أفضل".localized): \(lostAgainstSecondBestPoints)")
                         }

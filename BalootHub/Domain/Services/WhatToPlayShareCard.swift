@@ -24,6 +24,7 @@ struct WhatToPlayShareCardContent: Equatable {
     let secondBestExpectedImpact: Int?
     let lostExpectedPoints: Int?
     let lostAgainstSecondBestPoints: Int?
+    let valueLossTitle: String?
     let selectedRank: Int?
     let selectedImpact: Int?
     let selectedImpactDetail: String?
@@ -57,6 +58,7 @@ enum WhatToPlayShareCard {
         let lostAgainstSecondBest = selectedOption.flatMap { selected in
             secondBest.map { max(0, $0.expectedImpact - selected.expectedImpact) }
         }
+        let valueLossTitle = lost.map { WhatToPlayStatsAnalyzer.valueLossTitle(for: WhatToPlayStatsAnalyzer.valueLossSeverity(for: $0)) }
         let tacticalReason = selectedOption.flatMap(tacticalReason(for:))
         return WhatToPlayShareCardContent(
             title: "وش تلعب؟".localized,
@@ -83,6 +85,7 @@ enum WhatToPlayShareCard {
             secondBestExpectedImpact: secondBest?.expectedImpact,
             lostExpectedPoints: lost,
             lostAgainstSecondBestPoints: lostAgainstSecondBest,
+            valueLossTitle: valueLossTitle,
             selectedRank: selectedOption?.rank,
             selectedImpact: selectedOption?.expectedImpact,
             selectedImpactDetail: selectedOption.map { WhatToPlayImpactFormatter.detail(for: $0.impactBreakdown) },
@@ -145,6 +148,9 @@ enum WhatToPlayShareCard {
             }
             if let lostExpectedPoints = content.lostExpectedPoints {
                 lines.append("\("نقاط متوقعة ضائعة".localized): \(lostExpectedPoints)")
+            }
+            if let valueLossTitle = content.valueLossTitle {
+                lines.append("\("شدة خسارة القيمة".localized): \(valueLossTitle)")
             }
             if let lostAgainstSecondBestPoints = content.lostAgainstSecondBestPoints {
                 lines.append("\("فارق عن ثاني أفضل".localized): \(lostAgainstSecondBestPoints)")
