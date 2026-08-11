@@ -286,37 +286,49 @@ final class BalootGameViewModel {
         isAwaitingHumanMultiplierDecision || canLockMultiplier
     }
 
+    /// حركات المضاعفة القانونية للاعب البشري الآن، مصدرها المحرك نفسه.
+    private var legalMultiplierActionsForHuman: [LegalMultiplierAction] {
+        guard let activeHumanID else { return [] }
+        return GameEngine.legalMultiplierActions(for: activeHumanID, state: state)
+    }
+
+    /// حركات القفل القانونية لأي لاعب بشري يملك المضاعفة الحالية.
+    private var legalHumanLockActions: [(playerID: Player.ID, actions: [LegalMultiplierAction])] {
+        state.players
+            .filter { $0.kind == .human }
+            .map { player in
+                (player.id, GameEngine.legalMultiplierActions(for: player.id, state: state))
+            }
+            .filter { $0.actions.contains(.lock) }
+    }
+
     /// درجة التصعيد التالية المتاحة، أو `nil` إن بلغت المضاعفة سقفها أو أُقفلت.
     var nextAvailableMultiplier: Multiplier? {
-        guard !state.bidding.isLocked,
-              let next = state.bidding.multiplier.next,
-              next <= state.rules.maximumMultiplier else { return nil }
-        return next
+        legalMultiplierActionsForHuman.compactMap { action -> Multiplier? in
+            if case .raise(let level) = action { return level }
+            return nil
+        }.first
     }
 
     /// هل يستطيع اللاعب البشري «القفل» الآن؟
     var canLockMultiplier: Bool {
-        guard state.phase == .bidding, state.bidding.stage == .doubling,
-              state.rules.lockEnabled, state.bidding.multiplier != .none,
-              humanMultiplierLockerID != nil else { return false }
-        return true
+        humanMultiplierLockerID != nil
     }
 
     private var humanMultiplierLockerID: Player.ID? {
-        guard let requesterTeamID = state.bidding.multiplierRequesterTeamID else { return nil }
-        return state.players.first { player in
-            player.kind == .human && player.teamID == requesterTeamID
-        }?.id
+        legalHumanLockActions.first?.playerID
     }
 
     func raiseMultiplier(to level: Multiplier) {
         guard let activeHumanID else { return }
+        guard legalMultiplierActionsForHuman.contains(.raise(level)) else { return }
         perform(.raiseMultiplier(playerID: activeHumanID, level: level))
         advanceAI()
     }
 
     func passMultiplier() {
         guard let activeHumanID else { return }
+        guard legalMultiplierActionsForHuman.contains(.pass) else { return }
         perform(.passMultiplier(playerID: activeHumanID))
         advanceAI()
     }

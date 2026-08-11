@@ -179,14 +179,14 @@ public enum GameEngine {
             let legal = legalMultiplierActions(for: playerID, state: state)
             guard !legal.isEmpty else { return nil }
             let decision = agent.chooseMultiplierAction(hand: hand, state: state)
-            return multiplierAction(playerID: playerID, decision: decision, legal: legal)
+            return legalMultiplierGameAction(playerID: playerID, decision: decision, legal: legal)
 
         case .completed, .voided:
             return nil
         }
     }
 
-    private static func multiplierAction(
+    static func legalMultiplierGameAction(
         playerID: Player.ID,
         decision: MultiplierDecision,
         legal: [LegalMultiplierAction]

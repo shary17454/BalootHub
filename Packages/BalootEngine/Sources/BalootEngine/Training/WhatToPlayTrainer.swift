@@ -263,11 +263,13 @@ public enum WhatToPlayTrainer {
                 return .placeBid(playerID: playerID, bid: agent.chooseBid(hand: hand, legalBids: legal, state: state))
 
             case .doubling:
-                switch agent.chooseMultiplierAction(hand: hand, state: state) {
-                case .raise(let level): return .raiseMultiplier(playerID: playerID, level: level)
-                case .lock: return .lockMultiplier(playerID: playerID)
-                case .pass: return .passMultiplier(playerID: playerID)
-                }
+                let legal = GameEngine.legalMultiplierActions(for: playerID, state: state)
+                guard !legal.isEmpty else { return nil }
+                return GameEngine.legalMultiplierGameAction(
+                    playerID: playerID,
+                    decision: agent.chooseMultiplierAction(hand: hand, state: state),
+                    legal: legal
+                )
 
             case .completed, .voided:
                 return nil
