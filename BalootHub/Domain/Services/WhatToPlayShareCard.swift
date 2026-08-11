@@ -1,31 +1,71 @@
 import Foundation
 import BalootEngine
 
+struct WhatToPlayShareCardContent: Equatable {
+    struct PlayedCardLine: Equatable {
+        let playerName: String
+        let cardName: String
+    }
+
+    let title: String
+    let subtitle: String
+    let mode: String
+    let trickProgress: String
+    let turnPlayerName: String
+    let tableCards: [PlayedCardLine]
+    let legalCardNames: [String]
+    let prompt: String
+
+    var isOpeningTrick: Bool {
+        tableCards.isEmpty
+    }
+}
+
 enum WhatToPlayShareCard {
+    static func content(for scenario: WhatToPlayScenario) -> WhatToPlayShareCardContent {
+        let state = scenario.state
+        let played = state.currentTrick?.playedCards ?? []
+        return WhatToPlayShareCardContent(
+            title: "وش تلعب؟".localized,
+            subtitle: "موقف تدريبي من Baloot Hub".localized,
+            mode: modeText(state),
+            trickProgress: "\(state.completedTricks.count + 1) \("من".localized) 8",
+            turnPlayerName: state.player(id: scenario.playerID)?.name ?? "أنت".localized,
+            tableCards: played.map { playedCard in
+                WhatToPlayShareCardContent.PlayedCardLine(
+                    playerName: state.player(id: playedCard.playerID)?.name ?? "لاعب".localized,
+                    cardName: playedCard.card.accessibilityName
+                )
+            },
+            legalCardNames: sortedOptions(scenario.options).map { $0.card.accessibilityName },
+            prompt: "ما أفضل ورقة؟".localized
+        )
+    }
+
     static func text(for scenario: WhatToPlayScenario) -> String {
+        let content = content(for: scenario)
         var lines = [
-            "وش تلعب؟".localized,
-            "\("النمط".localized): \(modeText(scenario.state))",
-            "\("الأكلة".localized): \(scenario.state.completedTricks.count + 1) \("من".localized) 8",
-            "\("الدور".localized): \(scenario.state.player(id: scenario.playerID)?.name ?? "أنت".localized)"
+            content.title,
+            content.subtitle,
+            "\("النمط".localized): \(content.mode)",
+            "\("الأكلة".localized): \(content.trickProgress)",
+            "\("الدور".localized): \(content.turnPlayerName)"
         ]
 
-        let played = scenario.state.currentTrick?.playedCards ?? []
-        if played.isEmpty {
+        if content.isOpeningTrick {
             lines.append("أنت تفتتح الأكلة.".localized)
         } else {
             lines.append("\("الأوراق على الطاولة".localized):")
-            for playedCard in played {
-                let playerName = scenario.state.player(id: playedCard.playerID)?.name ?? "لاعب".localized
-                lines.append("- \(playerName): \(playedCard.card.accessibilityName)")
+            for playedCard in content.tableCards {
+                lines.append("- \(playedCard.playerName): \(playedCard.cardName)")
             }
         }
 
         lines.append("\("الأوراق القانونية".localized):")
-        for option in sortedOptions(scenario.options) {
-            lines.append("- \(option.card.accessibilityName)")
+        for cardName in content.legalCardNames {
+            lines.append("- \(cardName)")
         }
-        lines.append("ما أفضل ورقة؟".localized)
+        lines.append(content.prompt)
 
         return lines.joined(separator: "\n")
     }

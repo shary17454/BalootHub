@@ -17554,6 +17554,16 @@
         }
       }
     },
+    "موقف تدريبي من Baloot Hub" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Training scenario from Baloot Hub"
+          }
+        }
+      }
+    },
     "يحلل المحرك موقفًا حقيقيًا في الخلفية بدون إيقاف الواجهة." : {
       "localizations" : {
         "en" : {
