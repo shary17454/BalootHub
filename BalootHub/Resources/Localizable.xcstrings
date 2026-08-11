@@ -19088,6 +19088,156 @@
         }
       }
     },
+    "الخطوة التالية" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next step"
+          }
+        }
+      }
+    },
+    "ابدأ أول موقف واحسب قرارك قبل كشف تحليل الخبير." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start the first scenario and think through your decision before revealing the expert analysis."
+          }
+        }
+      }
+    },
+    "هدف الدقة تعثر" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accuracy target is out of reach"
+          }
+        }
+      }
+    },
+    "مواقف؛ حتى لو أجبتها كلها صح ستحتاج إعادة الجلسة لتحقق هدف الدقة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "scenarios left; even if you answer them all correctly, you will need to repeat the session to meet the accuracy target."
+          }
+        }
+      }
+    },
+    "أكمل الدفعة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Complete the batch"
+          }
+        }
+      }
+    },
+    "مواقف، وتحتاج" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "scenarios left, and you need"
+          }
+        }
+      }
+    },
+    "إجابات صحيحة إضافية للوصول لهدف الدقة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "more correct answers to reach the accuracy target."
+          }
+        }
+      }
+    },
+    "انتقل للتحدي التالي" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Move to the next challenge"
+          }
+        }
+      }
+    },
+    "حققت الدقة والأثر المطلوبين؛ ارفع الصعوبة أو ركز على نوع موقف أضعف." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You met the required accuracy and impact; raise the difficulty or focus on a weaker scenario type."
+          }
+        }
+      }
+    },
+    "راجع جودة القرار" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review decision quality"
+          }
+        }
+      }
+    },
+    "الدقة كافية لكن الأثر ضعيف؛ قارن اختيارك بثاني أفضل ورقة قبل بدء جلسة جديدة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accuracy is enough but impact is weak; compare your choice with the second-best card before starting a new session."
+          }
+        }
+      }
+    },
+    "ثبّت الأساس" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stabilize the basics"
+          }
+        }
+      }
+    },
+    "أثرك مقبول لكن الدقة لم تصل؛ كرر نفس الخطة وراجع سبب كل رفض قانوني أو تكتيكي." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your impact is acceptable but accuracy is short; repeat the same plan and review each legal or tactical rejection reason."
+          }
+        }
+      }
+    },
+    "أعد نفس الخطة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repeat the same plan"
+          }
+        }
+      }
+    },
+    "الدقة والأثر لم يصلا للهدف؛ ابدأ من نفس المستوى ولا ترفع الصعوبة بعد." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accuracy and impact did not reach the target; start from the same level and do not raise the difficulty yet."
+          }
+        }
+      }
+    },
     "المكتمل" : {
       "localizations" : {
         "en" : {

@@ -227,6 +227,9 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let title: String
     let detail: String
     let iconName: String
+    let nextStepTitle: String
+    let nextStepDetail: String
+    let nextStepIconName: String
 }
 
 enum WhatToPlayDecisionInsightKind: Equatable {
@@ -922,6 +925,16 @@ enum WhatToPlayStatsAnalyzer {
         )
         let reviewItem = reviewQueue(for: sessionAttempts, limit: 1).first
         let remaining = max(0, target - completed)
+        let nextStep = trainingSessionNextStep(
+            state: completed == 0 ? .notStarted : (completed < target ? .inProgress : (accuracyTargetMet && impactTargetMet ? .achieved : .needsRepeat)),
+            completedAttempts: completed,
+            targetAttempts: target,
+            correctAttempts: correct,
+            remainingAttempts: remaining,
+            targetAccuracyPercent: plan.targetAccuracyPercent,
+            accuracyTargetMet: accuracyTargetMet,
+            impactTargetMet: impactTargetMet
+        )
 
         if completed == 0 {
             return WhatToPlayTrainingSessionProgress(
@@ -941,7 +954,10 @@ enum WhatToPlayStatsAnalyzer {
                 remainingAttempts: target,
                 title: "ابدأ الجلسة".localized,
                 detail: "لم تبدأ هذه الجلسة بعد؛ اضغط زر البدء لتوليد أول موقف.".localized,
-                iconName: "play.circle.fill"
+                iconName: "play.circle.fill",
+                nextStepTitle: nextStep.title,
+                nextStepDetail: nextStep.detail,
+                nextStepIconName: nextStep.iconName
             )
         }
 
@@ -963,7 +979,10 @@ enum WhatToPlayStatsAnalyzer {
                 remainingAttempts: remaining,
                 title: "الجلسة قيد التنفيذ".localized,
                 detail: "أكمل بقية المواقف قبل الحكم على هدف الجلسة.".localized,
-                iconName: "timer.circle.fill"
+                iconName: "timer.circle.fill",
+                nextStepTitle: nextStep.title,
+                nextStepDetail: nextStep.detail,
+                nextStepIconName: nextStep.iconName
             )
         }
 
@@ -985,7 +1004,10 @@ enum WhatToPlayStatsAnalyzer {
                 remainingAttempts: 0,
                 title: "هدف الجلسة تحقق".localized,
                 detail: "أداؤك في هذه الدفعة وصل إلى هدف الخطة.".localized,
-                iconName: "checkmark.seal.fill"
+                iconName: "checkmark.seal.fill",
+                nextStepTitle: nextStep.title,
+                nextStepDetail: nextStep.detail,
+                nextStepIconName: nextStep.iconName
             )
         }
 
@@ -1009,8 +1031,72 @@ enum WhatToPlayStatsAnalyzer {
                 accuracyTargetMet: accuracyTargetMet,
                 impactTargetMet: impactTargetMet
             ),
-            iconName: "arrow.counterclockwise.circle.fill"
+            iconName: "arrow.counterclockwise.circle.fill",
+            nextStepTitle: nextStep.title,
+            nextStepDetail: nextStep.detail,
+            nextStepIconName: nextStep.iconName
         )
+    }
+
+    private static func trainingSessionNextStep(
+        state: WhatToPlayTrainingSessionProgressState,
+        completedAttempts: Int,
+        targetAttempts: Int,
+        correctAttempts: Int,
+        remainingAttempts: Int,
+        targetAccuracyPercent: Int,
+        accuracyTargetMet: Bool,
+        impactTargetMet: Bool
+    ) -> (title: String, detail: String, iconName: String) {
+        switch state {
+        case .notStarted:
+            return (
+                "الخطوة التالية".localized,
+                "ابدأ أول موقف واحسب قرارك قبل كشف تحليل الخبير.".localized,
+                "play.circle.fill"
+            )
+        case .inProgress:
+            let requiredCorrect = Int((Double(targetAttempts * targetAccuracyPercent) / 100.0).rounded(.up))
+            let neededCorrect = max(0, requiredCorrect - correctAttempts)
+            if neededCorrect > remainingAttempts {
+                return (
+                    "هدف الدقة تعثر".localized,
+                    "\("باقي".localized) \(remainingAttempts) \("مواقف؛ حتى لو أجبتها كلها صح ستحتاج إعادة الجلسة لتحقق هدف الدقة.".localized)",
+                    "exclamationmark.triangle.fill"
+                )
+            }
+            return (
+                "أكمل الدفعة".localized,
+                "\("باقي".localized) \(remainingAttempts) \("مواقف، وتحتاج".localized) \(neededCorrect) \("إجابات صحيحة إضافية للوصول لهدف الدقة.".localized)",
+                "timer.circle.fill"
+            )
+        case .achieved:
+            return (
+                "انتقل للتحدي التالي".localized,
+                "حققت الدقة والأثر المطلوبين؛ ارفع الصعوبة أو ركز على نوع موقف أضعف.".localized,
+                "arrow.up.circle.fill"
+            )
+        case .needsRepeat:
+            if accuracyTargetMet && !impactTargetMet {
+                return (
+                    "راجع جودة القرار".localized,
+                    "الدقة كافية لكن الأثر ضعيف؛ قارن اختيارك بثاني أفضل ورقة قبل بدء جلسة جديدة.".localized,
+                    "chart.line.downtrend.xyaxis"
+                )
+            }
+            if !accuracyTargetMet && impactTargetMet {
+                return (
+                    "ثبّت الأساس".localized,
+                    "أثرك مقبول لكن الدقة لم تصل؛ كرر نفس الخطة وراجع سبب كل رفض قانوني أو تكتيكي.".localized,
+                    "target"
+                )
+            }
+            return (
+                "أعد نفس الخطة".localized,
+                "الدقة والأثر لم يصلا للهدف؛ ابدأ من نفس المستوى ولا ترفع الصعوبة بعد.".localized,
+                "arrow.counterclockwise.circle.fill"
+            )
+        }
     }
 
     private static func trainingSessionRepeatDetail(

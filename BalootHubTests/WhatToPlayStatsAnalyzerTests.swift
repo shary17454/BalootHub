@@ -1400,6 +1400,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertNil(progress.reviewItem)
         XCTAssertEqual(progress.remainingAttempts, 3)
         XCTAssertEqual(progress.title, "ابدأ الجلسة".localized)
+        XCTAssertEqual(progress.nextStepTitle, "الخطوة التالية".localized)
+        XCTAssertEqual(progress.nextStepIconName, "play.circle.fill")
     }
 
     func testTrainingSessionProgressCountsRecentMatchingDifficultyOnly() {
@@ -1426,6 +1428,40 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.impactIconName, "checkmark.seal.fill")
         XCTAssertEqual(progress.reviewItem?.seed, 2)
         XCTAssertEqual(progress.remainingAttempts, 1)
+        XCTAssertEqual(progress.nextStepTitle, "أكمل الدفعة".localized)
+        XCTAssertEqual(progress.nextStepIconName, "timer.circle.fill")
+    }
+
+    func testTrainingSessionProgressNextStepCountsNeededCorrectAnswers() {
+        let plan = sessionPlan(difficulty: .medium, count: 5, target: 60)
+        let attempts = [
+            attempt(daysAgo: 2, difficulty: .medium, correct: true, impact: 2),
+            attempt(daysAgo: 1, difficulty: .medium, correct: false, impact: -1)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.state, .inProgress)
+        XCTAssertEqual(progress.remainingAttempts, 3)
+        XCTAssertEqual(progress.nextStepTitle, "أكمل الدفعة".localized)
+        XCTAssertEqual(progress.nextStepIconName, "timer.circle.fill")
+        XCTAssertTrue(progress.nextStepDetail.contains("2"))
+    }
+
+    func testTrainingSessionProgressNextStepWarnsWhenAccuracyTargetIsUnreachable() {
+        let plan = sessionPlan(difficulty: .medium, count: 4, target: 75)
+        let attempts = [
+            attempt(daysAgo: 3, difficulty: .medium, correct: false, impact: -3),
+            attempt(daysAgo: 2, difficulty: .medium, correct: true, impact: 2),
+            attempt(daysAgo: 1, difficulty: .medium, correct: false, impact: -2)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.state, .inProgress)
+        XCTAssertEqual(progress.remainingAttempts, 1)
+        XCTAssertEqual(progress.nextStepTitle, "هدف الدقة تعثر".localized)
+        XCTAssertEqual(progress.nextStepIconName, "exclamationmark.triangle.fill")
     }
 
     func testTrainingSessionProgressCountsMatchingDifficultyAndFocusOnly() {
@@ -1473,6 +1509,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertTrue(progress.impactTargetMet)
         XCTAssertEqual(progress.reviewItem?.seed, 1)
         XCTAssertEqual(progress.title, "هدف الجلسة تحقق".localized)
+        XCTAssertEqual(progress.nextStepTitle, "انتقل للتحدي التالي".localized)
     }
 
     func testTrainingSessionProgressRequiresImpactTargetForSuccess() {
@@ -1490,6 +1527,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertFalse(progress.impactTargetMet)
         XCTAssertEqual(progress.averageExpectedImpact, 1)
         XCTAssertEqual(progress.detail, "أكملتها بدقة كافية، لكن متوسط الأثر أقل من هدف الخطة؛ راجع الاختيارات القريبة قبل تكرارها.".localized)
+        XCTAssertEqual(progress.nextStepTitle, "راجع جودة القرار".localized)
     }
 
     func testTrainingSessionProgressRequestsRepeatWhenAccuracyMissesTarget() {
@@ -1516,6 +1554,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.reviewItem?.seed, 1)
         XCTAssertEqual(progress.remainingAttempts, 0)
         XCTAssertEqual(progress.title, "أعد الجلسة".localized)
+        XCTAssertEqual(progress.nextStepTitle, "أعد نفس الخطة".localized)
     }
 
     func testTrainingSessionProgressReviewItemComesFromCurrentPlannedBatch() {

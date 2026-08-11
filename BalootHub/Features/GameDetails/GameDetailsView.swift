@@ -688,6 +688,22 @@ struct WhatToPlayTrainerView: View {
             }
             .padding(.top, AppSpacing.xs)
 
+            Label {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(progress.nextStepTitle)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(AppColor.textPrimary)
+                    Text(progress.nextStepDetail)
+                        .font(.caption2)
+                        .foregroundStyle(AppColor.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            } icon: {
+                Image(systemName: progress.nextStepIconName)
+                    .foregroundStyle(AppColor.primary)
+            }
+            .padding(.top, AppSpacing.xs)
+
             if let reviewItem = progress.reviewItem {
                 VStack(alignment: .leading, spacing: AppSpacing.xs) {
                     Label("أهم موقف للمراجعة".localized, systemImage: reviewItem.iconName)
