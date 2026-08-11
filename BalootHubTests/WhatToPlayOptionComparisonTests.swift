@@ -89,6 +89,31 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         }
     }
 
+    func testRowsPreserveSimulationSummaryForEveryOption() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let selected = try XCTUnwrap(scenario.bestOption)
+
+        let rows = WhatToPlayOptionComparison.rows(for: scenario, selectedCard: selected.card)
+
+        XCTAssertEqual(rows.count, scenario.options.count)
+        for row in rows {
+            let option = try XCTUnwrap(scenario.options.first { $0.card == row.card })
+            XCTAssertFalse(row.simulationSummary.isEmpty)
+            if option.simulation.completedTrickWinnerID == nil {
+                XCTAssertTrue(row.simulationSummary.contains("تبقى الأكلة مفتوحة".localized))
+                XCTAssertNil(row.simulationTeamResult)
+                XCTAssertNil(row.simulationTrickPoints)
+            } else {
+                XCTAssertEqual(row.simulationSummary, "تكتمل الأكلة وتنتقل للفائز.".localized)
+                XCTAssertEqual(
+                    row.simulationTeamResult,
+                    option.simulation.completedTrickWonByPlayerTeam.map { $0 ? "لفريقك".localized : "للخصم".localized }
+                )
+                XCTAssertEqual(row.simulationTrickPoints, option.simulation.completedTrickPoints)
+            }
+        }
+    }
+
     func testRowsCalculateLostExpectedPointsAgainstBestOption() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
         let selected = try XCTUnwrap(scenario.options.last)

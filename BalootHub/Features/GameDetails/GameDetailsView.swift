@@ -2628,6 +2628,19 @@ struct WhatToPlayTrainerView: View {
                     .foregroundStyle(row.expectedImpact >= 0 ? AppColor.success : AppColor.danger)
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
+                Label(row.simulationSummary, systemImage: row.simulationTeamResult == nil ? "rectangle.stack.fill" : "flag.checkered")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(row.simulationTeamResult == "للخصم".localized ? AppColor.warning : AppColor.primary)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+                if let simulationTeamResult = row.simulationTeamResult {
+                    let pointsSuffix = row.simulationTrickPoints.map { " · \("نقاط الأكلة".localized): \($0)" } ?? ""
+                    Text("\("اتجاه الأكلة".localized): \(simulationTeamResult)\(pointsSuffix)")
+                        .font(.caption2)
+                        .foregroundStyle(simulationTeamResult == "للخصم".localized ? AppColor.danger : AppColor.success)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                }
                 Label(row.tacticalTag.title, systemImage: row.tacticalTag.systemImage)
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(optionTacticalTint(row.tacticalTag))
