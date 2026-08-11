@@ -483,7 +483,7 @@ struct WhatToPlayTrainerView: View {
                 startRecommendedPractice()
             } label: {
                 Label(
-                    "\("ابدأ".localized) \(practiceRecommendation.difficulty.displayTitle)",
+                    "\("ابدأ".localized) \(trainingSessionPlan.difficulty.displayTitle)",
                     systemImage: "play.fill"
                 )
                 .frame(maxWidth: .infinity)
@@ -1323,10 +1323,10 @@ struct WhatToPlayTrainerView: View {
     }
 
     private func startRecommendedPractice() {
-        if difficulty == practiceRecommendation.difficulty {
+        if difficulty == trainingSessionPlan.difficulty {
             nextScenario()
         } else {
-            difficulty = practiceRecommendation.difficulty
+            difficulty = trainingSessionPlan.difficulty
         }
     }
 
