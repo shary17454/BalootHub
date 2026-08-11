@@ -28,6 +28,19 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         }
     }
 
+    func testRowsPreserveOutcomeForEveryOption() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
+        let selected = try XCTUnwrap(scenario.bestOption)
+
+        let rows = WhatToPlayOptionComparison.rows(for: scenario, selectedCard: selected.card)
+
+        XCTAssertEqual(rows.count, scenario.options.count)
+        for row in rows {
+            let option = try XCTUnwrap(scenario.options.first { $0.card == row.card })
+            XCTAssertEqual(row.outcome, option.outcome)
+        }
+    }
+
     func testRowsCalculateLostExpectedPointsAgainstBestOption() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
         let selected = try XCTUnwrap(scenario.options.last)

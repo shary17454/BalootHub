@@ -16678,6 +16678,56 @@
         }
       }
     },
+    "نتيجة القرار" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decision outcome"
+          }
+        }
+      }
+    },
+    "يفتتح الأكلة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leads the trick"
+          }
+        }
+      }
+    },
+    "يبقي الأكلة مفتوحة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keeps the trick open"
+          }
+        }
+      }
+    },
+    "يكسب الأكلة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wins the trick"
+          }
+        }
+      }
+    },
+    "يخسر الأكلة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loses the trick"
+          }
+        }
+      }
+    },
     "السلسلة الحالية" : {
       "localizations" : {
         "en" : {

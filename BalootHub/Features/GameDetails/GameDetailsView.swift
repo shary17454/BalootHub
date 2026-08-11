@@ -1509,6 +1509,7 @@ struct WhatToPlayTrainerView: View {
                     InfoRow(icon: "2.circle.fill", title: "ثاني أفضل", value: second.card.accessibilityName)
                 }
                 InfoRow(icon: "chart.line.uptrend.xyaxis", title: "الأثر المتوقع", value: impactText(option.expectedImpact))
+                InfoRow(icon: optionOutcomeIcon(option.outcome), title: "نتيجة القرار".localized, value: optionOutcomeText(option.outcome))
             }
 
             if let insight = WhatToPlayStatsAnalyzer.decisionInsight(for: option, in: scenario) {
@@ -1648,6 +1649,9 @@ struct WhatToPlayTrainerView: View {
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(AppColor.danger)
                 }
+                Text(optionOutcomeText(row.outcome))
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(optionOutcomeTint(row.outcome))
                 Text(row.rationale)
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
@@ -1666,6 +1670,43 @@ struct WhatToPlayTrainerView: View {
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
         .accessibilityElement(children: .combine)
+    }
+
+    private func optionOutcomeText(_ outcome: WhatToPlayOptionOutcome) -> String {
+        switch outcome {
+        case .leadsTrick:
+            "يفتتح الأكلة".localized
+        case .developsTrick:
+            "يبقي الأكلة مفتوحة".localized
+        case .winsTrick:
+            "يكسب الأكلة".localized
+        case .losesTrick:
+            "يخسر الأكلة".localized
+        }
+    }
+
+    private func optionOutcomeIcon(_ outcome: WhatToPlayOptionOutcome) -> String {
+        switch outcome {
+        case .leadsTrick:
+            "arrowshape.turn.up.forward.fill"
+        case .developsTrick:
+            "ellipsis.circle.fill"
+        case .winsTrick:
+            "checkmark.circle.fill"
+        case .losesTrick:
+            "xmark.circle.fill"
+        }
+    }
+
+    private func optionOutcomeTint(_ outcome: WhatToPlayOptionOutcome) -> Color {
+        switch outcome {
+        case .winsTrick:
+            AppColor.success
+        case .losesTrick:
+            AppColor.danger
+        case .leadsTrick, .developsTrick:
+            AppColor.accent
+        }
     }
 
     private func generateScenario() {

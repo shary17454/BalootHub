@@ -64,6 +64,27 @@ struct WhatToPlayTrainerTests {
         #expect(result?.rank == scenario.options.count)
     }
 
+    @Test("نتيجة كل خيار تطابق تطبيق الورقة على المحرك")
+    func optionOutcomeMatchesEngineResult() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let player = try #require(scenario.state.player(id: scenario.playerID))
+        let wasLeading = scenario.state.currentTrick?.playedCards.isEmpty ?? true
+
+        for option in scenario.options {
+            let after = try GameEngine.apply(.playCard(playerID: scenario.playerID, card: option.card), to: scenario.state)
+            let expected: WhatToPlayOptionOutcome
+            if let last = after.completedTricks.last,
+               let winnerID = last.winnerPlayerID,
+               let winner = after.player(id: winnerID) {
+                expected = winner.teamID == player.teamID ? .winsTrick : .losesTrick
+            } else {
+                expected = wasLeading ? .leadsTrick : .developsTrick
+            }
+
+            #expect(option.outcome == expected)
+        }
+    }
+
     @Test("سياق الموقف يطابق حالة الأكلة الحالية")
     func scenarioContextMatchesCurrentTrickState() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)

@@ -22,9 +22,18 @@ public struct WhatToPlayOption: Identifiable, Sendable, Equatable {
     public let score: Int
     public let isExpertChoice: Bool
     public let expectedImpact: Int
+    public let outcome: WhatToPlayOptionOutcome
     public let explanation: String
 
     public var id: PlayingCard { card }
+}
+
+/// نتيجة لعب خيار معيّن على حالة الأكلة الحالية.
+public enum WhatToPlayOptionOutcome: String, Sendable, Codable, Equatable {
+    case leadsTrick
+    case developsTrick
+    case winsTrick
+    case losesTrick
 }
 
 /// محور الانتباه الأهم في موقف «وش تلعب؟».
@@ -152,10 +161,11 @@ public enum WhatToPlayTrainer {
 
         let expert = ExpertBalootAgent(samples: difficulty.expertSamples)
         let expertChoice = expert.chooseCard(hand: hand, legalCards: legal, state: state)
-        let evaluated: [(card: PlayingCard, score: Int, impact: Int)] = legal.map { card in
+        let evaluated: [(card: PlayingCard, score: Int, impact: Int, outcome: WhatToPlayOptionOutcome)] = legal.map { card in
             let impact = expectedImpact(of: card, by: player, in: state)
             let score = heuristicScore(card: card, impact: impact, expertChoice: expertChoice, state: state)
-            return (card: card, score: score, impact: impact)
+            let outcome = optionOutcome(of: card, by: player, in: state)
+            return (card: card, score: score, impact: impact, outcome: outcome)
         }
         .sorted { lhs, rhs in
             if lhs.card == expertChoice { return true }
@@ -172,6 +182,7 @@ public enum WhatToPlayTrainer {
                 score: entry.score,
                 isExpertChoice: entry.card == expertChoice,
                 expectedImpact: entry.impact,
+                outcome: entry.outcome,
                 explanation: explanation(for: entry.card, impact: entry.impact, isExpertChoice: entry.card == expertChoice, state: state)
             )
         }
@@ -242,6 +253,21 @@ public enum WhatToPlayTrainer {
         let points = card.points(mode: state.mode ?? .sun, trumpSuit: state.trumpSuit)
         let isLeading = state.currentTrick?.playedCards.isEmpty ?? true
         return isLeading ? leadValue(card: card, points: points, state: state) : -points
+    }
+
+    private static func optionOutcome(of card: PlayingCard, by player: Player, in state: GameState) -> WhatToPlayOptionOutcome {
+        let wasLeading = state.currentTrick?.playedCards.isEmpty ?? true
+        guard let after = try? GameEngine.apply(.playCard(playerID: player.id, card: card), to: state) else {
+            return wasLeading ? .leadsTrick : .developsTrick
+        }
+
+        if let last = after.completedTricks.last,
+           let winnerID = last.winnerPlayerID,
+           let winner = after.player(id: winnerID) {
+            return winner.teamID == player.teamID ? .winsTrick : .losesTrick
+        }
+
+        return wasLeading ? .leadsTrick : .developsTrick
     }
 
     private static func heuristicScore(
