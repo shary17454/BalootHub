@@ -78,6 +78,19 @@ public enum GameEngine {
         return state.bidding.legalBids(rules: state.rules)
     }
 
+    /// المزايدات القانونية للاعب محدد الآن.
+    ///
+    /// هذه هي الدالة الأنسب للواجهة: لا يكفي أن تكون مرحلة اللعبة `bidding`، بل يجب
+    /// أن يكون اللاعب نفسه صاحب الدور. بدون هذا الشرط قد تعرض واجهة متعددة البشر
+    /// خيارات مزايدة للاعب غير نشط إذا قرأت الحالة في لحظة انتقال.
+    public static func legalBids(for playerID: Player.ID, state: GameState) -> [Bid] {
+        guard state.phase == .bidding,
+              state.currentTurnPlayerID == playerID,
+              state.player(id: playerID) != nil
+        else { return [] }
+        return state.bidding.legalBids(rules: state.rules)
+    }
+
     /// حركات المضاعفة القانونية للاعب محدد في لحظة المزايدة الحالية.
     public static func legalMultiplierActions(for playerID: Player.ID, state: GameState) -> [LegalMultiplierAction] {
         BiddingEngine.legalMultiplierActions(for: playerID, state: state)

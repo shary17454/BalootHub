@@ -253,8 +253,8 @@ final class BalootGameViewModel {
     /// المزايدات المتاحة للاعب البشري الآن — مصدرها المحرك نفسه، فلا تعرض الواجهة
     /// خيارًا يرفضه المحرك بعد الضغط عليه.
     var legalBidsForHuman: [Bid] {
-        guard usesFullBidding, state.phase == .bidding, isHumanTurn else { return [] }
-        return state.bidding.legalBids(rules: state.rules)
+        guard usesFullBidding, let activeHumanID else { return [] }
+        return GameEngine.legalBids(for: activeHumanID, state: state)
     }
 
     /// سجل المزايدات مقرونًا بأسماء أصحابها للعرض.

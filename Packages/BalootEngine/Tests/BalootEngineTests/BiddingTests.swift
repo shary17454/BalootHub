@@ -80,6 +80,20 @@ struct BiddingCycleTests {
         }
     }
 
+    @Test("استعلام مزايدات اللاعب لا يعرض خيارات إلا لصاحب الدور")
+    func legalBidsForPlayerRequiresCurrentTurn() throws {
+        var state = GameState.newLocalMatch(rules: .standard)
+        state = try GameEngine.apply(.dealCards(seed: 14), to: state)
+
+        let currentID = try #require(state.currentTurnPlayerID)
+        let waitingID = try #require(state.players.first { $0.id != currentID }?.id)
+        let upSuit = try #require(state.bidding.upCard?.suit)
+
+        #expect(GameEngine.legalBids(for: currentID, state: state).contains(.sun))
+        #expect(GameEngine.legalBids(for: currentID, state: state).contains(.hokum(suit: upSuit)))
+        #expect(GameEngine.legalBids(for: waitingID, state: state).isEmpty)
+    }
+
     @Test("شراء حكم بلون غير المكشوف في الجولة الأولى يُرفض")
     func illegalFirstRoundHokumIsRejected() throws {
         var state = GameState.newLocalMatch(rules: .standard)
