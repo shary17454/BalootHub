@@ -19,7 +19,9 @@ struct WhatToPlayShareCardContent: Equatable {
     let legalCardNames: [String]
     let selectedCardName: String?
     let bestCardName: String?
+    let secondBestCardName: String?
     let lostExpectedPoints: Int?
+    let lostAgainstSecondBestPoints: Int?
     let selectedRank: Int?
     let selectedImpact: Int?
     let selectedImpactDetail: String?
@@ -46,8 +48,12 @@ enum WhatToPlayShareCard {
         let played = state.currentTrick?.playedCards ?? []
         let mode = modeText(state)
         let best = selectedOption == nil ? nil : scenario.bestOption
+        let secondBest = selectedOption == nil ? nil : scenario.secondBestOption
         let lost = selectedOption.flatMap { selected in
             best.map { max(0, $0.expectedImpact - selected.expectedImpact) }
+        }
+        let lostAgainstSecondBest = selectedOption.flatMap { selected in
+            secondBest.map { max(0, $0.expectedImpact - selected.expectedImpact) }
         }
         let tacticalReason = selectedOption.flatMap(tacticalReason(for:))
         return WhatToPlayShareCardContent(
@@ -70,7 +76,9 @@ enum WhatToPlayShareCard {
             legalCardNames: sortedOptions(scenario.options).map { $0.card.accessibilityName },
             selectedCardName: selectedOption?.card.accessibilityName,
             bestCardName: best?.card.accessibilityName,
+            secondBestCardName: secondBest?.card.accessibilityName,
             lostExpectedPoints: lost,
+            lostAgainstSecondBestPoints: lostAgainstSecondBest,
             selectedRank: selectedOption?.rank,
             selectedImpact: selectedOption?.expectedImpact,
             selectedImpactDetail: selectedOption.map { WhatToPlayImpactFormatter.detail(for: $0.impactBreakdown) },
@@ -119,11 +127,17 @@ enum WhatToPlayShareCard {
             if let bestCardName = content.bestCardName {
                 lines.append("\("أفضل ورقة".localized): \(bestCardName)")
             }
+            if let secondBestCardName = content.secondBestCardName {
+                lines.append("\("ثاني أفضل".localized): \(secondBestCardName)")
+            }
             if let selectedRank = content.selectedRank {
                 lines.append("\("ترتيب اختياري".localized): \(selectedRank)")
             }
             if let lostExpectedPoints = content.lostExpectedPoints {
                 lines.append("\("نقاط متوقعة ضائعة".localized): \(lostExpectedPoints)")
+            }
+            if let lostAgainstSecondBestPoints = content.lostAgainstSecondBestPoints {
+                lines.append("\("فارق عن ثاني أفضل".localized): \(lostAgainstSecondBestPoints)")
             }
             if let selectedImpact = content.selectedImpact {
                 lines.append("\("الأثر المتوقع".localized): \(impactText(selectedImpact))")

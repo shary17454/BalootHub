@@ -1970,11 +1970,17 @@ struct WhatToPlayTrainerView: View {
                         if let bestCardName = content.bestCardName {
                             shareChip("\("أفضل ورقة".localized): \(bestCardName)")
                         }
+                        if let secondBestCardName = content.secondBestCardName {
+                            shareChip("\("ثاني أفضل".localized): \(secondBestCardName)")
+                        }
                         if let selectedRank = content.selectedRank {
                             shareChip("\("ترتيب اختياري".localized): \(selectedRank)")
                         }
                         if let lostExpectedPoints = content.lostExpectedPoints {
                             shareChip("\("نقاط متوقعة ضائعة".localized): \(lostExpectedPoints)")
+                        }
+                        if let lostAgainstSecondBestPoints = content.lostAgainstSecondBestPoints {
+                            shareChip("\("فارق عن ثاني أفضل".localized): \(lostAgainstSecondBestPoints)")
                         }
                         if let tacticalReasonTitle = content.tacticalReasonTitle {
                             shareChip("\("سبب تكتيكي".localized): \(tacticalReasonTitle)")
