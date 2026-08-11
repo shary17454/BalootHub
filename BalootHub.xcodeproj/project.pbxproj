@@ -35,6 +35,7 @@
 		DDA37C25EA9445F6A7AF6F6F /* ScoreRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08D5EFA6DCEE4185BB3648B4 /* ScoreRules.swift */; };
 		32ACBC56B3044B9EBB30C480 /* BalootGamePlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E31630790994E7BB9617012 /* BalootGamePlayView.swift */; };
 		BF35E3077EDB42F186FE72CB /* BalootGameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE8450C865F4F15A45940DC /* BalootGameViewModel.swift */; };
+		9B68F276832B4D0191D79F10 /* RoundReplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63CE859BAE4F7DB4607E4B /* RoundReplayView.swift */; };
 		5C3207CE093746BEA8914BDB /* CatalogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BD7ECD51144879B505C6CB /* CatalogView.swift */; };
 		11DB90A3C4F54107B6920FA9 /* GameDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69C0BE86F2246FB8D1A7E46 /* GameDetailsView.swift */; };
 		0283C1815C604A66995536D0 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B10AC6CA684350A7089C28 /* HomeView.swift */; };
@@ -98,6 +99,7 @@
 		08D5EFA6DCEE4185BB3648B4 /* ScoreRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreRules.swift; sourceTree = "<group>"; };
 		7E31630790994E7BB9617012 /* BalootGamePlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootGamePlayView.swift; sourceTree = "<group>"; };
 		FAE8450C865F4F15A45940DC /* BalootGameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootGameViewModel.swift; sourceTree = "<group>"; };
+		4F63CE859BAE4F7DB4607E4B /* RoundReplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundReplayView.swift; sourceTree = "<group>"; };
 		45BD7ECD51144879B505C6CB /* CatalogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogView.swift; sourceTree = "<group>"; };
 		C69C0BE86F2246FB8D1A7E46 /* GameDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailsView.swift; sourceTree = "<group>"; };
 		77B10AC6CA684350A7089C28 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -253,6 +255,7 @@
 			children = (
 				7E31630790994E7BB9617012 /* BalootGamePlayView.swift */,
 				FAE8450C865F4F15A45940DC /* BalootGameViewModel.swift */,
+				4F63CE859BAE4F7DB4607E4B /* RoundReplayView.swift */,
 			);
 			path = BalootGame;
 			sourceTree = "<group>";
@@ -535,6 +538,7 @@
 				DDA37C25EA9445F6A7AF6F6F /* ScoreRules.swift in Sources */,
 				32ACBC56B3044B9EBB30C480 /* BalootGamePlayView.swift in Sources */,
 				BF35E3077EDB42F186FE72CB /* BalootGameViewModel.swift in Sources */,
+				9B68F276832B4D0191D79F10 /* RoundReplayView.swift in Sources */,
 				5C3207CE093746BEA8914BDB /* CatalogView.swift in Sources */,
 				11DB90A3C4F54107B6920FA9 /* GameDetailsView.swift in Sources */,
 				0283C1815C604A66995536D0 /* HomeView.swift in Sources */,

@@ -364,6 +364,20 @@ final class BalootGameViewModel {
     /// المشاريع المحتسَبة بعد المفاضلة، تُعرض في لوحة النتيجة.
     var awardedProjects: [Project] { state.awardedProjects }
 
+    var canReplayCurrentRound: Bool {
+        state.phase == .finished && !state.actionHistory.isEmpty
+    }
+
+    var currentRoundReplayInitialState: GameState {
+        GameState(
+            players: state.players,
+            teams: state.teams,
+            rules: state.rules,
+            dealerSeat: state.dealerSeat,
+            roundNumber: state.roundNumber
+        )
+    }
+
     func declareProjects(_ projects: [Project]) {
         guard let activeHumanID else { return }
         perform(.declareProjects(playerID: activeHumanID, projects: projects))

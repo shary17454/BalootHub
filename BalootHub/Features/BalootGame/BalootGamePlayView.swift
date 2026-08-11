@@ -10,6 +10,7 @@ struct BalootGamePlayView: View {
     @State private var viewModel: BalootGameViewModel
     @State private var isPresentingStopConfirm = false
     @State private var isPresentingRules = false
+    @State private var isPresentingReplay = false
 
     init(slug: String) {
         self.slug = slug
@@ -81,6 +82,14 @@ struct BalootGamePlayView: View {
         }
         .sheet(isPresented: $isPresentingRules) {
             NavigationStack { RulesView(slug: slug) }
+        }
+        .sheet(isPresented: $isPresentingReplay) {
+            NavigationStack {
+                RoundReplayView(
+                    initialState: viewModel.currentRoundReplayInitialState,
+                    actions: viewModel.state.actionHistory
+                )
+            }
         }
         .confirmationDialog("هل تريد إنهاء هذه الجولة والخروج؟", isPresented: $isPresentingStopConfirm, titleVisibility: .visible) {
             Button("إنهاء والخروج", role: .destructive) { dismiss() }
@@ -432,6 +441,14 @@ struct BalootGamePlayView: View {
                     .font(AppTypography.subheadline)
                     .foregroundStyle(AppColor.textSecondary)
                     .multilineTextAlignment(.center)
+            }
+            if viewModel.canReplayCurrentRound {
+                Button {
+                    isPresentingReplay = true
+                } label: {
+                    Label("إعادة الجولة", systemImage: "play.rectangle.fill")
+                }
+                .buttonStyle(.bordered)
             }
             Button("جولة جديدة") {
                 viewModel.startNewMatch()
