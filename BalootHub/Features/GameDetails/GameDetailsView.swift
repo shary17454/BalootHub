@@ -312,12 +312,17 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.recentAttempts(attempts)
     }
 
+    private var difficultySummaries: [(difficulty: WhatToPlayDifficulty, summary: WhatToPlayStatsSummary)] {
+        WhatToPlayStatsAnalyzer.summariesByDifficulty(attempts)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
                 header
                 controls
                 statsCard
+                difficultyStatsCard
                 recentAttemptsCard
 
             if let scenario {
@@ -435,6 +440,39 @@ struct WhatToPlayTrainerView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    @ViewBuilder
+    private var difficultyStatsCard: some View {
+        if !difficultySummaries.isEmpty {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                Label("الأداء حسب الصعوبة", systemImage: "chart.bar.doc.horizontal")
+                    .font(AppTypography.headline)
+                    .foregroundStyle(AppColor.primary)
+
+                VStack(spacing: AppSpacing.sm) {
+                    ForEach(difficultySummaries, id: \.difficulty) { entry in
+                        HStack {
+                            Label(entry.difficulty.displayTitle, systemImage: "slider.horizontal.3")
+                                .font(AppTypography.subheadline.weight(.semibold))
+                                .foregroundStyle(AppColor.textPrimary)
+                            Spacer()
+                            Text("\(entry.summary.correct)/\(entry.summary.attempts)")
+                                .font(AppTypography.caption.weight(.semibold))
+                                .foregroundStyle(AppColor.textSecondary)
+                            Text("\(entry.summary.accuracyPercent)%")
+                                .font(AppTypography.subheadline.weight(.bold))
+                                .foregroundStyle(entry.summary.accuracyPercent >= 70 ? AppColor.success : AppColor.accent)
+                        }
+                        .padding(AppSpacing.sm)
+                        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+                        .accessibilityElement(children: .combine)
+                    }
+                }
+            }
+            .padding(AppSpacing.md)
+            .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+        }
     }
 
     @ViewBuilder

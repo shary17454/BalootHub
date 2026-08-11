@@ -1,4 +1,5 @@
 import Foundation
+import BalootEngine
 
 struct WhatToPlayStatsSummary: Equatable {
     let attempts: Int
@@ -58,5 +59,13 @@ enum WhatToPlayStatsAnalyzer {
     static func recentAttempts(_ attempts: [WhatToPlayAttempt], limit: Int = 5) -> [WhatToPlayAttempt] {
         guard limit > 0 else { return [] }
         return Array(attempts.sorted { $0.createdAt > $1.createdAt }.prefix(limit))
+    }
+
+    static func summariesByDifficulty(_ attempts: [WhatToPlayAttempt]) -> [(difficulty: WhatToPlayDifficulty, summary: WhatToPlayStatsSummary)] {
+        WhatToPlayDifficulty.allCases.compactMap { difficulty in
+            let filtered = attempts.filter { $0.difficulty == difficulty }
+            guard !filtered.isEmpty else { return nil }
+            return (difficulty, summarize(attempts: filtered))
+        }
     }
 }

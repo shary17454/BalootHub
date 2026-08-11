@@ -67,10 +67,34 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertTrue(WhatToPlayStatsAnalyzer.recentAttempts([attempt(daysAgo: 1, correct: true, impact: 0)], limit: 0).isEmpty)
     }
 
+    func testSummariesByDifficultySkipEmptyLevelsAndPreserveDifficultyOrder() {
+        let attempts = [
+            attempt(daysAgo: 3, difficulty: .hard, correct: true, impact: 4),
+            attempt(daysAgo: 2, difficulty: .easy, correct: false, impact: -2),
+            attempt(daysAgo: 1, difficulty: .hard, correct: false, impact: -6)
+        ]
+
+        let summaries = WhatToPlayStatsAnalyzer.summariesByDifficulty(attempts)
+
+        XCTAssertEqual(summaries.map(\.difficulty), [.easy, .hard])
+        XCTAssertEqual(summaries.first?.summary.accuracyPercent, 0)
+        XCTAssertEqual(summaries.last?.summary.attempts, 2)
+        XCTAssertEqual(summaries.last?.summary.accuracyPercent, 50)
+    }
+
     private func attempt(daysAgo: TimeInterval, correct: Bool, impact: Int) -> WhatToPlayAttempt {
+        attempt(daysAgo: daysAgo, difficulty: .medium, correct: correct, impact: impact)
+    }
+
+    private func attempt(
+        daysAgo: TimeInterval,
+        difficulty: WhatToPlayDifficulty,
+        correct: Bool,
+        impact: Int
+    ) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
             createdAt: Date(timeIntervalSince1970: 2_000_000 - daysAgo * 86_400),
-            difficulty: .medium,
+            difficulty: difficulty,
             seed: UInt64(Int(daysAgo)),
             selectedCard: PlayingCard(suit: .clubs, rank: .seven),
             bestCard: PlayingCard(suit: .clubs, rank: .seven),

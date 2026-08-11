@@ -16384,6 +16384,16 @@
         }
       }
     },
+    "الأداء حسب الصعوبة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Performance by difficulty"
+          }
+        }
+      }
+    },
     "أنت تفتتح الأكلة." : {
       "localizations" : {
         "en" : {
