@@ -96,6 +96,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("أفضل ورقة".localized): \(best.card.accessibilityName)"))
         XCTAssertTrue(text.contains("\("ترتيب اختياري".localized): \(selected.rank)"))
         XCTAssertTrue(text.contains("\("نقاط متوقعة ضائعة".localized): \(max(0, best.expectedImpact - selected.expectedImpact))"))
+        XCTAssertTrue(text.contains("\("الأثر المتوقع".localized): \(selected.expectedImpact >= 0 ? "+\(selected.expectedImpact)" : "\(selected.expectedImpact)")"))
+        XCTAssertTrue(text.contains("\("تفصيل الأثر".localized): \(WhatToPlayImpactFormatter.detail(for: selected.impactBreakdown))"))
     }
 
     func testShareCardContentMarksAnswerReviewOnlyAfterSelection() throws {
@@ -111,6 +113,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(reviewed.selectedCardName, selected.card.accessibilityName)
         XCTAssertEqual(reviewed.bestCardName, selected.card.accessibilityName)
         XCTAssertEqual(reviewed.lostExpectedPoints, 0)
+        XCTAssertEqual(reviewed.selectedImpact, selected.expectedImpact)
+        XCTAssertEqual(reviewed.selectedImpactDetail, WhatToPlayImpactFormatter.detail(for: selected.impactBreakdown))
         XCTAssertEqual(reviewed.prompt, "راجع القرار وتدرّب على قراءة الموقف.".localized)
     }
 

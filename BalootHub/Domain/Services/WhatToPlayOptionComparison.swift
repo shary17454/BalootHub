@@ -77,7 +77,7 @@ enum WhatToPlayOptionComparison {
                     rank: option.rank,
                     expectedImpact: option.expectedImpact,
                     impactBreakdown: option.impactBreakdown,
-                    impactDetail: impactDetail(for: option.impactBreakdown),
+                    impactDetail: WhatToPlayImpactFormatter.detail(for: option.impactBreakdown),
                     lostExpectedPoints: max(0, bestImpact - option.expectedImpact),
                     outcome: option.outcome,
                     outcomeReason: option.outcomeReason,
@@ -88,17 +88,6 @@ enum WhatToPlayOptionComparison {
                     isExpertChoice: option.isExpertChoice
                 )
             }
-    }
-
-    private static func impactDetail(for breakdown: WhatToPlayOptionImpactBreakdown) -> String {
-        if breakdown.completesTrick {
-            let owner = (breakdown.winsForPlayerTeam ?? false) ? "لفريقك".localized : "للخصم".localized
-            return "\("نقاط الأكلة".localized): \(abs(breakdown.trickPointsSwing)) · \(owner)"
-        }
-        if breakdown.preservesLead {
-            return "\("نقاط الورقة".localized): \(breakdown.playedCardPoints) · \("أثر افتتاحي".localized): \(breakdown.immediateImpact)"
-        }
-        return "\("نقاط الورقة".localized): \(breakdown.playedCardPoints) · \("لا تحسم الأكلة الآن".localized)"
     }
 
     private static func tacticalTag(for option: WhatToPlayOption, bestImpact: Int) -> WhatToPlayOptionTacticalTag {
@@ -129,5 +118,18 @@ enum WhatToPlayOptionComparison {
             return "\("يربح الأكلة غالبًا، لكنه أقل من أفضل خيار بفارق".localized) \(lost)."
         }
         return "\("يبقي الأكلة مفتوحة ويخسر عن الأفضل".localized): \(lost)."
+    }
+}
+
+enum WhatToPlayImpactFormatter {
+    static func detail(for breakdown: WhatToPlayOptionImpactBreakdown) -> String {
+        if breakdown.completesTrick {
+            let owner = (breakdown.winsForPlayerTeam ?? false) ? "لفريقك".localized : "للخصم".localized
+            return "\("نقاط الأكلة".localized): \(abs(breakdown.trickPointsSwing)) · \(owner)"
+        }
+        if breakdown.preservesLead {
+            return "\("نقاط الورقة".localized): \(breakdown.playedCardPoints) · \("أثر افتتاحي".localized): \(breakdown.immediateImpact)"
+        }
+        return "\("نقاط الورقة".localized): \(breakdown.playedCardPoints) · \("لا تحسم الأكلة الآن".localized)"
     }
 }

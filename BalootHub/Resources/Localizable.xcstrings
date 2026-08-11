@@ -1,6 +1,34 @@
 {
   "sourceLanguage" : "ar",
   "strings" : {
+    "الأثر المتوقع" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erwarteter Effekt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Expected Impact" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Impacto esperado" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Impact attendu" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "अपेक्षित प्रभाव" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Dampak yang Diharapkan" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Ожидаемый эффект" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Beklenen Etki" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "متوقع اثر" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "预期影响" } }
+      }
+    },
+    "تفصيل الأثر" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Effektdetails" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Impact Detail" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Detalle del impacto" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Détail de l'impact" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "प्रभाव विवरण" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Detail Dampak" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Детали эффекта" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Etki Detayı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اثر کی تفصیل" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "影响详情" } }
+      }
+    },
     "أثر افتتاحي" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Eröffnungseffekt" } },

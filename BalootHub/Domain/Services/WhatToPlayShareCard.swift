@@ -21,6 +21,8 @@ struct WhatToPlayShareCardContent: Equatable {
     let bestCardName: String?
     let lostExpectedPoints: Int?
     let selectedRank: Int?
+    let selectedImpact: Int?
+    let selectedImpactDetail: String?
     let prompt: String
 
     var isOpeningTrick: Bool {
@@ -66,6 +68,8 @@ enum WhatToPlayShareCard {
             bestCardName: best?.card.accessibilityName,
             lostExpectedPoints: lost,
             selectedRank: selectedOption?.rank,
+            selectedImpact: selectedOption?.expectedImpact,
+            selectedImpactDetail: selectedOption.map { WhatToPlayImpactFormatter.detail(for: $0.impactBreakdown) },
             prompt: selectedOption == nil ? "ما أفضل ورقة؟".localized : "راجع القرار وتدرّب على قراءة الموقف.".localized
         )
     }
@@ -114,6 +118,12 @@ enum WhatToPlayShareCard {
             if let lostExpectedPoints = content.lostExpectedPoints {
                 lines.append("\("نقاط متوقعة ضائعة".localized): \(lostExpectedPoints)")
             }
+            if let selectedImpact = content.selectedImpact {
+                lines.append("\("الأثر المتوقع".localized): \(impactText(selectedImpact))")
+            }
+            if let selectedImpactDetail = content.selectedImpactDetail {
+                lines.append("\("تفصيل الأثر".localized): \(selectedImpactDetail)")
+            }
         }
 
         lines.append(content.prompt)
@@ -161,4 +171,9 @@ enum WhatToPlayShareCard {
             return "خيارات محدودة".localized
         }
     }
+
+    private static func impactText(_ value: Int) -> String {
+        value >= 0 ? "+\(value)" : "\(value)"
+    }
+
 }
