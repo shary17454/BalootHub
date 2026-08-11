@@ -17298,6 +17298,26 @@
         }
       }
     },
+    "لماذا لا أستطيع لعب هذه الأوراق؟" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Why can't I play these cards?"
+          }
+        }
+      }
+    },
+    "ورقة غير قانونية" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Illegal card"
+          }
+        }
+      }
+    },
     "المحاولات" : {
       "localizations" : {
         "en" : {

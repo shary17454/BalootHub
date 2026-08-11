@@ -29,6 +29,14 @@ public struct WhatToPlayOption: Identifiable, Sendable, Equatable {
     public var id: PlayingCard { card }
 }
 
+/// ورقة موجودة في يد اللاعب لكنها غير قانونية في موقف «وش تلعب؟» الحالي.
+public struct WhatToPlayBlockedCard: Identifiable, Sendable, Equatable {
+    public let card: PlayingCard
+    public let reason: IllegalMoveReason
+
+    public var id: PlayingCard { card }
+}
+
 /// نتيجة لعب خيار معيّن على حالة الأكلة الحالية.
 public enum WhatToPlayOptionOutcome: String, Sendable, Codable, Equatable {
     case leadsTrick
@@ -66,6 +74,7 @@ public struct WhatToPlayScenario: Sendable {
     public let state: GameState
     public let context: WhatToPlayScenarioContext
     public let options: [WhatToPlayOption]
+    public let blockedCards: [WhatToPlayBlockedCard]
 
     public var bestOption: WhatToPlayOption? {
         options.first { $0.rank == 1 }
@@ -134,7 +143,8 @@ public enum WhatToPlayTrainer {
                         playerID: humanID,
                         state: state,
                         context: context,
-                        options: options
+                        options: options,
+                        blockedCards: blockedCards(state: state, playerID: humanID, legalOptions: options)
                     )
                 }
 
@@ -193,6 +203,30 @@ public enum WhatToPlayTrainer {
     /// يقيّم اختيار المستخدم مقارنة باختيار الخبير.
     public static func evaluateChoice(card: PlayingCard, in scenario: WhatToPlayScenario) -> WhatToPlayOption? {
         scenario.options.first { $0.card == card }
+    }
+
+    /// كل أوراق يد اللاعب غير القانونية في هذا الموقف، مع سبب الرفض من المحرك.
+    public static func blockedCards(
+        state: GameState,
+        playerID: Player.ID,
+        legalOptions: [WhatToPlayOption]
+    ) -> [WhatToPlayBlockedCard] {
+        guard let hand = state.hands[playerID] else { return [] }
+        let legalCards = Set(legalOptions.map(\.card))
+        return hand
+            .filter { !legalCards.contains($0) }
+            .compactMap { card in
+                guard let reason = GameEngine.invalidMoveReason(playerID: playerID, card: card, state: state) else {
+                    return nil
+                }
+                return WhatToPlayBlockedCard(card: card, reason: reason)
+            }
+            .sorted { lhs, rhs in
+                if lhs.card.suit.ordinal != rhs.card.suit.ordinal {
+                    return lhs.card.suit.ordinal < rhs.card.suit.ordinal
+                }
+                return lhs.card.rank.ordinal < rhs.card.rank.ordinal
+            }
     }
 
     public static func scenarioContext(state: GameState, options: [WhatToPlayOption]) -> WhatToPlayScenarioContext {

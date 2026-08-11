@@ -27,6 +27,7 @@ struct WhatToPlayTrainerTests {
         #expect(first.state.trumpSuit == second.state.trumpSuit)
         #expect(first.state.hands[first.playerID] == second.state.hands[second.playerID])
         #expect(first.options.map(\.card) == second.options.map(\.card))
+        #expect(first.blockedCards == second.blockedCards)
         #expect(first.bestOption?.card == second.bestOption?.card)
         #expect(first.context == second.context)
     }
@@ -62,6 +63,26 @@ struct WhatToPlayTrainerTests {
 
         #expect(result?.card == card)
         #expect(result?.rank == scenario.options.count)
+    }
+
+    @Test("الأوراق غير القانونية في الموقف تأتي من سبب رفض المحرك نفسه")
+    func blockedCardsUseEngineInvalidMoveReasons() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(
+            seed: 2026,
+            difficulty: .easy,
+            preferredFocus: .followSuit
+        )
+        let hand = try #require(scenario.state.hands[scenario.playerID])
+        let legalCards = Set(scenario.options.map(\.card))
+        let blockedCards = Set(scenario.blockedCards.map(\.card))
+
+        #expect(!scenario.blockedCards.isEmpty)
+        #expect(blockedCards.isDisjoint(with: legalCards))
+        #expect(blockedCards.count + legalCards.count == hand.count)
+
+        for blocked in scenario.blockedCards {
+            #expect(GameEngine.invalidMoveReason(playerID: scenario.playerID, card: blocked.card, state: scenario.state) == blocked.reason)
+        }
     }
 
     @Test("نتيجة كل خيار تطابق تطبيق الورقة على المحرك")

@@ -302,6 +302,7 @@ struct WhatToPlayTrainerView: View {
     @State private var scenario: WhatToPlayScenario?
     @State private var selectedOption: WhatToPlayOption?
     @State private var errorMessage: String?
+    @State private var illegalMoveExplanation: String?
     @State private var isGeneratingScenario = false
     @State private var generationTask: Task<Void, Never>?
 
@@ -430,6 +431,7 @@ struct WhatToPlayTrainerView: View {
                 scenarioSummary(scenario)
                 shareCardPreview(scenario)
                 legalOptions(scenario)
+                blockedCardsView(scenario)
                 if let selectedOption {
                     resultCard(selectedOption, scenario: scenario)
                     optionComparisonCard(selectedOption: selectedOption, scenario: scenario)
@@ -1852,6 +1854,52 @@ struct WhatToPlayTrainerView: View {
         }
     }
 
+    @ViewBuilder
+    private func blockedCardsView(_ scenario: WhatToPlayScenario) -> some View {
+        if !scenario.blockedCards.isEmpty {
+            VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                Label("لماذا لا أستطيع لعب هذه الأوراق؟".localized, systemImage: "questionmark.circle.fill")
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 4), spacing: AppSpacing.xs) {
+                    ForEach(scenario.blockedCards) { blocked in
+                        Button {
+                            illegalMoveExplanation = illegalMoveExplanation(for: blocked.reason, trumpSuit: scenario.state.trumpSuit)
+                        } label: {
+                            VStack(spacing: 6) {
+                                MiniAnalysisCard(card: blocked.card, isSelected: false)
+                                    .opacity(0.55)
+                                Image(systemName: "lock.fill")
+                                    .font(.caption2.weight(.semibold))
+                                    .foregroundStyle(AppColor.textSecondary)
+                            }
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("\(blocked.card.accessibilityName)، \("ورقة غير قانونية".localized)")
+                        .accessibilityHint(illegalMoveExplanation(for: blocked.reason, trumpSuit: scenario.state.trumpSuit))
+                    }
+                }
+
+                if let illegalMoveExplanation {
+                    Label {
+                        Text(illegalMoveExplanation)
+                            .font(AppTypography.caption)
+                            .foregroundStyle(AppColor.textPrimary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    } icon: {
+                        Image(systemName: "info.circle.fill")
+                            .foregroundStyle(AppColor.primary)
+                    }
+                    .padding(AppSpacing.sm)
+                    .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+                }
+            }
+            .padding(AppSpacing.md)
+            .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+        }
+    }
+
     private func optionBadgeText(_ option: WhatToPlayOption) -> String {
         WhatToPlayOptionDisclosure.badgeText(rank: option.rank, isRevealed: selectedOption != nil)
     }
@@ -1873,6 +1921,7 @@ struct WhatToPlayTrainerView: View {
 
     private func choose(_ option: WhatToPlayOption, in scenario: WhatToPlayScenario) {
         guard let evaluated = WhatToPlayTrainer.evaluateChoice(card: option.card, in: scenario) else { return }
+        illegalMoveExplanation = nil
         if selectedOption == nil, let bestCard = scenario.bestOption?.card {
             let attempt = WhatToPlayAttempt(
                 difficulty: scenario.difficulty,
@@ -2140,10 +2189,29 @@ struct WhatToPlayTrainerView: View {
         }
     }
 
+    private func illegalMoveExplanation(for reason: IllegalMoveReason, trumpSuit: Suit?) -> String {
+        switch reason {
+        case .mustFollowSuit:
+            return "لا يمكنك لعب هذه الورقة لأن لديك ورقة من اللون المطلوب ويجب عليك التلزيم.".localized
+        case .mustPlayTrumpWhenVoidOfSuit:
+            let suitName = trumpSuit.map { " (\($0.spokenName))" } ?? ""
+            return "\("أنت لا تملك اللون المطلوب ويجب عليك القطع بالحكم وفق القاعدة الحالية.".localized)\(suitName)"
+        case .mustOvertrump:
+            return "يجب أن تعلو على أعلى حكم مطروح ما دام لديك ما يعلوه.".localized
+        case .cardNotInHand:
+            return "هذه الورقة ليست في يدك.".localized
+        case .notPlayersTurn:
+            return "ليس دورك الآن.".localized
+        case .wrongPhase:
+            return "لا يمكن لعب ورقة في هذه المرحلة.".localized
+        }
+    }
+
     private func generateScenario() {
         generationTask?.cancel()
         selectedOption = nil
         errorMessage = nil
+        illegalMoveExplanation = nil
         scenario = nil
         isGeneratingScenario = true
 
