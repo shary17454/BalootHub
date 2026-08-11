@@ -21920,6 +21920,26 @@
         }
       }
     },
+    "بدل" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "instead of"
+          }
+        }
+      }
+    },
+    "قرار المزايدة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bidding decision"
+          }
+        }
+      }
+    },
     "ورقة غير معروفة" : {
       "localizations" : {
         "en" : {

@@ -471,6 +471,13 @@ struct BalootGamePlayView: View {
             }
 
             VStack(spacing: AppSpacing.xs) {
+                if let bidding = report.biddingDecisions.first {
+                    analysisRow(
+                        icon: bidding.matchedRecommendation ? "hand.thumbsup.fill" : "exclamationmark.bubble.fill",
+                        title: "قرار المزايدة".localized,
+                        value: biddingAnalysisValue(bidding)
+                    )
+                }
                 if let best = report.bestDecision {
                     analysisRow(
                         icon: "checkmark.seal.fill",
@@ -501,6 +508,23 @@ struct BalootGamePlayView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+    }
+
+    private func biddingAnalysisValue(_ decision: RoundBiddingDecisionAnalysis) -> String {
+        let bid = bidAnalysisLabel(decision.bid)
+        guard !decision.matchedRecommendation else { return bid }
+        return "\(bid) \("بدل".localized) \(bidAnalysisLabel(decision.recommendedBid))"
+    }
+
+    private func bidAnalysisLabel(_ bid: Bid) -> String {
+        switch bid {
+        case .pass:
+            return "بس".localized
+        case .sun:
+            return "صن".localized
+        case .hokum(let suit):
+            return "\("حكم".localized) \(suit.symbol)"
+        }
     }
 
     private func analysisRow(icon: String, title: String, value: String) -> some View {
