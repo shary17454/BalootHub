@@ -562,6 +562,126 @@
         }
       }
     },
+    "أنت تبدأ الأكلة: لا تكشف ورقتك القوية بلا سبب واضح." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You are leading the trick: do not reveal a strong card without a clear reason."
+          }
+        }
+      }
+    },
+    "ابدأ بحصر الأوراق القانونية من هذا اللون." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start by narrowing the legal cards from this suit."
+          }
+        }
+      }
+    },
+    "لا يوجد لون مطلوب واضح؛ اقرأ الأوراق المطروحة قبل حساب الربح." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There is no clear required suit; read the played cards before calculating the win."
+          }
+        }
+      }
+    },
+    "الحكم موجود على الطاولة؛ لا تعلّي إلا إذا كان العائد يستحق." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trump is already on the table; only overtrump when the return is worth it."
+          }
+        }
+      }
+    },
+    "الحكم لم يظهر في الأكلة؛ احسب هل القطع الآن أفضل أم حفظ الحكم." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trump has not appeared in this trick; decide whether cutting now is better than saving trump."
+          }
+        }
+      }
+    },
+    "صن: لا يوجد حكم، فقارن قوة اللون والنقاط بدل انتظار القطع." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sun: there is no trump, so compare suit strength and points instead of expecting a cut."
+          }
+        }
+      }
+    },
+    "الأوراق قبل دورك" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cards before your turn"
+          }
+        }
+      }
+    },
+    "كلما زادت الأوراق زادت دقة حساب ربح الأكلة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "More played cards make the trick-win calculation more precise."
+          }
+        }
+      }
+    },
+    "خياراتك قليلة؛ اختر أقل خسارة متوقعة لا أعلى شكل للورقة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your options are limited; choose the lowest expected loss, not the highest-looking card."
+          }
+        }
+      }
+    },
+    "رتّب الخيارات بين ربح الأكلة، تقليل الخسارة، وحفظ ورقة قوية لاحقًا." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rank options between winning the trick, reducing loss, and saving a strong card for later."
+          }
+        }
+      }
+    },
+    "افحص قبل اللعب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check before playing"
+          }
+        }
+      }
+    },
+    "استخدم هذه القراءة السريعة قبل لمس الورقة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use this quick read before tapping a card."
+          }
+        }
+      }
+    },
     "آلي غرب" : {
       "extractionState" : "stale",
       "localizations" : {

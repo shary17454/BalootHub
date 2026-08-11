@@ -1909,6 +1909,7 @@ struct WhatToPlayTrainerView: View {
 
     private func legalOptions(_ scenario: WhatToPlayScenario) -> some View {
         let brief = WhatToPlayStatsAnalyzer.scenarioBrief(for: scenario)
+        let checklist = WhatToPlayStatsAnalyzer.preDecisionChecklist(for: scenario)
 
         return VStack(alignment: .leading, spacing: AppSpacing.sm) {
             Text("وش تلعب؟")
@@ -1932,6 +1933,8 @@ struct WhatToPlayTrainerView: View {
             .padding(AppSpacing.sm)
             .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
 
+            preDecisionChecklistView(checklist)
+
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 4), spacing: AppSpacing.xs) {
                 ForEach(scenario.options) { option in
                     Button {
@@ -1949,6 +1952,45 @@ struct WhatToPlayTrainerView: View {
                 }
             }
         }
+    }
+
+    private func preDecisionChecklistView(_ checklist: WhatToPlayPreDecisionChecklist) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Label {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(checklist.title)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(AppColor.textPrimary)
+                    Text(checklist.detail)
+                        .font(.caption2)
+                        .foregroundStyle(AppColor.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            } icon: {
+                Image(systemName: checklist.iconName)
+                    .foregroundStyle(AppColor.accent)
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                ForEach(Array(checklist.items.enumerated()), id: \.offset) { index, item in
+                    HStack(alignment: .top, spacing: AppSpacing.xs) {
+                        Text("\(index + 1)")
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(.white)
+                            .frame(width: 18, height: 18)
+                            .background(AppColor.accent, in: Circle())
+                            .accessibilityHidden(true)
+                        Text(item)
+                            .font(.caption2)
+                            .foregroundStyle(AppColor.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            }
+        }
+        .padding(AppSpacing.sm)
+        .background(AppColor.accent.opacity(0.10), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
     }
 
     @ViewBuilder

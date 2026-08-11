@@ -955,6 +955,68 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertTrue(brief.detail.contains("\(scenario.context.legalOptionCount)"))
     }
 
+    func testPreDecisionChecklistExplainsOpeningLead() {
+        let context = WhatToPlayScenarioContext(
+            trickNumber: 1,
+            isLeading: true,
+            requiredSuit: nil,
+            playedCardCount: 0,
+            legalOptionCount: 5,
+            mode: .sun,
+            trumpSuit: nil,
+            hasTrumpInCurrentTrick: false,
+            focusKind: .openingLead
+        )
+
+        let checklist = WhatToPlayStatsAnalyzer.preDecisionChecklist(context: context)
+
+        XCTAssertEqual(checklist.title, "افحص قبل اللعب".localized)
+        XCTAssertEqual(checklist.iconName, "checklist")
+        XCTAssertEqual(checklist.items.count, 4)
+        XCTAssertTrue(checklist.items[0].contains("تبدأ الأكلة".localized))
+        XCTAssertTrue(checklist.items[1].contains("صن".localized))
+    }
+
+    func testPreDecisionChecklistExplainsRequiredSuitAndTrumpPressure() {
+        let context = WhatToPlayScenarioContext(
+            trickNumber: 4,
+            isLeading: false,
+            requiredSuit: .clubs,
+            playedCardCount: 2,
+            legalOptionCount: 3,
+            mode: .hokum,
+            trumpSuit: .hearts,
+            hasTrumpInCurrentTrick: true,
+            focusKind: .trumpPressure
+        )
+
+        let checklist = WhatToPlayStatsAnalyzer.preDecisionChecklist(context: context)
+
+        XCTAssertEqual(checklist.items.count, 4)
+        XCTAssertTrue(checklist.items[0].contains(Suit.clubs.spokenName))
+        XCTAssertTrue(checklist.items[1].contains(Suit.hearts.spokenName))
+        XCTAssertTrue(checklist.items[1].contains("الحكم موجود على الطاولة".localized))
+        XCTAssertTrue(checklist.items[2].contains("2"))
+    }
+
+    func testPreDecisionChecklistCallsOutNarrowChoices() {
+        let context = WhatToPlayScenarioContext(
+            trickNumber: 5,
+            isLeading: false,
+            requiredSuit: .spades,
+            playedCardCount: 3,
+            legalOptionCount: 2,
+            mode: .sun,
+            trumpSuit: nil,
+            hasTrumpInCurrentTrick: false,
+            focusKind: .narrowChoice
+        )
+
+        let checklist = WhatToPlayStatsAnalyzer.preDecisionChecklist(context: context)
+
+        XCTAssertTrue(checklist.items.last?.contains("خياراتك قليلة".localized) == true)
+    }
+
     func testMasteryStartsAtZeroWithoutAttempts() {
         let mastery = WhatToPlayStatsAnalyzer.mastery(for: [])
 

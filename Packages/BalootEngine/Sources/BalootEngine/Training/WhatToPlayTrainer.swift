@@ -64,6 +64,28 @@ public struct WhatToPlayScenarioContext: Sendable, Equatable {
     public let trumpSuit: Suit?
     public let hasTrumpInCurrentTrick: Bool
     public let focusKind: WhatToPlayScenarioFocusKind
+
+    public init(
+        trickNumber: Int,
+        isLeading: Bool,
+        requiredSuit: Suit?,
+        playedCardCount: Int,
+        legalOptionCount: Int,
+        mode: GameMode?,
+        trumpSuit: Suit?,
+        hasTrumpInCurrentTrick: Bool,
+        focusKind: WhatToPlayScenarioFocusKind
+    ) {
+        self.trickNumber = trickNumber
+        self.isLeading = isLeading
+        self.requiredSuit = requiredSuit
+        self.playedCardCount = playedCardCount
+        self.legalOptionCount = legalOptionCount
+        self.mode = mode
+        self.trumpSuit = trumpSuit
+        self.hasTrumpInCurrentTrick = hasTrumpInCurrentTrick
+        self.focusKind = focusKind
+    }
 }
 
 /// موقف «وش تلعب؟» قابل للإعادة من نفس البذرة.

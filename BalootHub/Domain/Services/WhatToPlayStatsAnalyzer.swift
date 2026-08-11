@@ -296,6 +296,13 @@ struct WhatToPlayScenarioBrief: Equatable {
     let iconName: String
 }
 
+struct WhatToPlayPreDecisionChecklist: Equatable {
+    let title: String
+    let detail: String
+    let iconName: String
+    let items: [String]
+}
+
 enum WhatToPlayMasteryLevel: Equatable {
     case starting
     case building
@@ -1522,6 +1529,46 @@ enum WhatToPlayStatsAnalyzer {
 
     static func scenarioBrief(for scenario: WhatToPlayScenario) -> WhatToPlayScenarioBrief {
         scenarioBrief(context: scenario.context)
+    }
+
+    static func preDecisionChecklist(for scenario: WhatToPlayScenario) -> WhatToPlayPreDecisionChecklist {
+        preDecisionChecklist(context: scenario.context)
+    }
+
+    static func preDecisionChecklist(context: WhatToPlayScenarioContext) -> WhatToPlayPreDecisionChecklist {
+        var items: [String] = []
+
+        if context.isLeading {
+            items.append("أنت تبدأ الأكلة: لا تكشف ورقتك القوية بلا سبب واضح.".localized)
+        } else if let requiredSuit = context.requiredSuit {
+            items.append("\("اللون المطلوب".localized): \(requiredSuit.spokenName). \("ابدأ بحصر الأوراق القانونية من هذا اللون.".localized)")
+        } else {
+            items.append("لا يوجد لون مطلوب واضح؛ اقرأ الأوراق المطروحة قبل حساب الربح.".localized)
+        }
+
+        if context.mode == .hokum, let trumpSuit = context.trumpSuit {
+            let trumpState = context.hasTrumpInCurrentTrick
+                ? "الحكم موجود على الطاولة؛ لا تعلّي إلا إذا كان العائد يستحق.".localized
+                : "الحكم لم يظهر في الأكلة؛ احسب هل القطع الآن أفضل أم حفظ الحكم.".localized
+            items.append("\("الحكم".localized): \(trumpSuit.spokenName). \(trumpState)")
+        } else {
+            items.append("صن: لا يوجد حكم، فقارن قوة اللون والنقاط بدل انتظار القطع.".localized)
+        }
+
+        items.append("\("الأوراق قبل دورك".localized): \(context.playedCardCount). \("كلما زادت الأوراق زادت دقة حساب ربح الأكلة.".localized)")
+
+        if context.legalOptionCount <= 2 {
+            items.append("خياراتك قليلة؛ اختر أقل خسارة متوقعة لا أعلى شكل للورقة.".localized)
+        } else {
+            items.append("رتّب الخيارات بين ربح الأكلة، تقليل الخسارة، وحفظ ورقة قوية لاحقًا.".localized)
+        }
+
+        return WhatToPlayPreDecisionChecklist(
+            title: "افحص قبل اللعب".localized,
+            detail: "استخدم هذه القراءة السريعة قبل لمس الورقة.".localized,
+            iconName: "checklist",
+            items: items
+        )
     }
 
     static func scenarioBrief(context: WhatToPlayScenarioContext) -> WhatToPlayScenarioBrief {
