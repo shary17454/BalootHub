@@ -16364,6 +16364,26 @@
         }
       }
     },
+    "الحكم على الطاولة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trump on table"
+          }
+        }
+      }
+    },
+    "اللون المطلوب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Required suit"
+          }
+        }
+      }
+    },
     "الأوراق على الطاولة" : {
       "localizations" : {
         "en" : {
@@ -18440,6 +18460,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Card"
+          }
+        }
+      }
+    },
+    "أنت ترد بعد" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You respond after"
+          }
+        }
+      }
+    },
+    "أنت تفتتح الأكلة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You are leading the trick"
+          }
+        }
+      }
+    },
+    "حاضر" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Present"
+          }
+        }
+      }
+    },
+    "قراءة الدور" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turn read"
           }
         }
       }

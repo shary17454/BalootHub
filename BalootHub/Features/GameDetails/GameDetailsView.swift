@@ -1182,6 +1182,14 @@ struct WhatToPlayTrainerView: View {
                 InfoRow(icon: "flag.checkered", title: "النمط", value: modeText(scenario.state))
                 InfoRow(icon: "person.crop.circle.fill", title: "الدور", value: scenario.state.player(id: scenario.playerID)?.name ?? "أنت")
                 InfoRow(icon: "list.number", title: "الأكلة", value: "\(scenario.state.completedTricks.count + 1) من 8")
+                InfoRow(icon: "arrow.turn.up.left", title: "قراءة الدور".localized, value: turnContextText(scenario.context))
+                InfoRow(icon: "rectangle.stack.fill", title: "الأوراق القانونية".localized, value: "\(scenario.context.legalOptionCount)")
+                if let requiredSuit = scenario.context.requiredSuit {
+                    InfoRow(icon: "suit.club.fill", title: "اللون المطلوب".localized, value: requiredSuit.spokenName)
+                }
+                if scenario.context.hasTrumpInCurrentTrick {
+                    InfoRow(icon: "crown.fill", title: "الحكم على الطاولة".localized, value: scenario.context.trumpSuit?.spokenName ?? "حاضر".localized)
+                }
             }
 
             currentTrick(scenario)
@@ -1565,6 +1573,13 @@ struct WhatToPlayTrainerView: View {
             return "\(mode.arabicName) \(suit.spokenName)"
         }
         return mode.arabicName
+    }
+
+    private func turnContextText(_ context: WhatToPlayScenarioContext) -> String {
+        if context.isLeading {
+            return "أنت تفتتح الأكلة".localized
+        }
+        return "\("أنت ترد بعد".localized) \(context.playedCardCount) \("ورقة".localized)"
     }
 
     private func impactText(_ impact: Int) -> String {

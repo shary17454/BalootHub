@@ -27,12 +27,25 @@ public struct WhatToPlayOption: Identifiable, Sendable, Equatable {
     public var id: PlayingCard { card }
 }
 
+/// قراءة موجزة لسياق موقف «وش تلعب؟» من حالة المحرك.
+public struct WhatToPlayScenarioContext: Sendable, Equatable {
+    public let trickNumber: Int
+    public let isLeading: Bool
+    public let requiredSuit: Suit?
+    public let playedCardCount: Int
+    public let legalOptionCount: Int
+    public let mode: GameMode?
+    public let trumpSuit: Suit?
+    public let hasTrumpInCurrentTrick: Bool
+}
+
 /// موقف «وش تلعب؟» قابل للإعادة من نفس البذرة.
 public struct WhatToPlayScenario: Sendable {
     public let seed: UInt64
     public let difficulty: WhatToPlayDifficulty
     public let playerID: Player.ID
     public let state: GameState
+    public let context: WhatToPlayScenarioContext
     public let options: [WhatToPlayOption]
 
     public var bestOption: WhatToPlayOption? {
@@ -98,6 +111,7 @@ public enum WhatToPlayTrainer {
                 difficulty: difficulty,
                 playerID: humanID,
                 state: state,
+                context: scenarioContext(state: state, options: options),
                 options: options
             )
         }
@@ -148,6 +162,25 @@ public enum WhatToPlayTrainer {
     /// يقيّم اختيار المستخدم مقارنة باختيار الخبير.
     public static func evaluateChoice(card: PlayingCard, in scenario: WhatToPlayScenario) -> WhatToPlayOption? {
         scenario.options.first { $0.card == card }
+    }
+
+    public static func scenarioContext(state: GameState, options: [WhatToPlayOption]) -> WhatToPlayScenarioContext {
+        let trick = state.currentTrick
+        let trumpSuit = state.trumpSuit
+        let hasTrump = state.mode == .hokum
+            && trumpSuit != nil
+            && (trick?.playedCards.contains { $0.card.suit == trumpSuit } ?? false)
+
+        return WhatToPlayScenarioContext(
+            trickNumber: state.completedTricks.count + 1,
+            isLeading: trick?.playedCards.isEmpty ?? true,
+            requiredSuit: trick?.requiredSuit,
+            playedCardCount: trick?.playedCards.count ?? 0,
+            legalOptionCount: options.count,
+            mode: state.mode,
+            trumpSuit: trumpSuit,
+            hasTrumpInCurrentTrick: hasTrump
+        )
     }
 
     private static func expectedImpact(of card: PlayingCard, by player: Player, in state: GameState) -> Int {

@@ -28,6 +28,7 @@ struct WhatToPlayTrainerTests {
         #expect(first.state.hands[first.playerID] == second.state.hands[second.playerID])
         #expect(first.options.map(\.card) == second.options.map(\.card))
         #expect(first.bestOption?.card == second.bestOption?.card)
+        #expect(first.context == second.context)
     }
 
     @Test("تقييم اختيار المستخدم يعيد خيارًا معروفًا من نفس الموقف")
@@ -39,5 +40,32 @@ struct WhatToPlayTrainerTests {
 
         #expect(result?.card == card)
         #expect(result?.rank == scenario.options.count)
+    }
+
+    @Test("سياق الموقف يطابق حالة الأكلة الحالية")
+    func scenarioContextMatchesCurrentTrickState() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
+        let trick = scenario.state.currentTrick
+
+        #expect(scenario.context.trickNumber == scenario.state.completedTricks.count + 1)
+        #expect(scenario.context.isLeading == (trick?.playedCards.isEmpty ?? true))
+        #expect(scenario.context.requiredSuit == trick?.requiredSuit)
+        #expect(scenario.context.playedCardCount == (trick?.playedCards.count ?? 0))
+        #expect(scenario.context.legalOptionCount == scenario.options.count)
+        #expect(scenario.context.mode == scenario.state.mode)
+        #expect(scenario.context.trumpSuit == scenario.state.trumpSuit)
+    }
+
+    @Test("سياق الموقف يكتشف وجود الحكم على الطاولة في حكم فقط")
+    func scenarioContextDetectsTrumpOnTableOnlyInHokum() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
+        let hasTrump: Bool
+        if scenario.state.mode == .hokum, let trumpSuit = scenario.state.trumpSuit {
+            hasTrump = scenario.state.currentTrick?.playedCards.contains { $0.card.suit == trumpSuit } ?? false
+        } else {
+            hasTrump = false
+        }
+
+        #expect(scenario.context.hasTrumpInCurrentTrick == hasTrump)
     }
 }
