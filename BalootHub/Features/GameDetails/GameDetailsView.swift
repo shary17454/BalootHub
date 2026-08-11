@@ -311,7 +311,14 @@ struct WhatToPlayTrainerView: View {
             generateScenario()
         }
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                if let scenario {
+                    ShareLink(item: WhatToPlayShareCard.text(for: scenario)) {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                    .accessibilityLabel("مشاركة الموقف".localized)
+                }
+
                 Button {
                     nextScenario()
                 } label: {

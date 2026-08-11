@@ -16343,6 +16343,116 @@
           }
         }
       }
+    },
+    "الأكلة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trick"
+          }
+        }
+      }
+    },
+    "الأوراق القانونية" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Legal cards"
+          }
+        }
+      }
+    },
+    "الأوراق على الطاولة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cards on the table"
+          }
+        }
+      }
+    },
+    "أنت تفتتح الأكلة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You are leading the trick."
+          }
+        }
+      }
+    },
+    "الدور" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turn"
+          }
+        }
+      }
+    },
+    "غير محدد" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not set"
+          }
+        }
+      }
+    },
+    "لاعب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Player"
+          }
+        }
+      }
+    },
+    "ما أفضل ورقة؟" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What is the best card?"
+          }
+        }
+      }
+    },
+    "مشاركة الموقف" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share scenario"
+          }
+        }
+      }
+    },
+    "من" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "of"
+          }
+        }
+      }
+    },
+    "وش تلعب؟" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What would you play?"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
