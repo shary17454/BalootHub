@@ -19,6 +19,18 @@ struct WhatToPlayOptionComparisonRow: Identifiable, Equatable {
     var id: PlayingCard { card }
 }
 
+struct WhatToPlayOptionComparisonSummary: Equatable {
+    let bestCard: PlayingCard?
+    let bestExpectedImpact: Int?
+    let secondBestCard: PlayingCard?
+    let secondBestExpectedImpact: Int?
+    let bestToSecondGap: Int?
+
+    var hasSecondBest: Bool {
+        secondBestCard != nil
+    }
+}
+
 enum WhatToPlayOptionTacticalTag: Equatable {
     case expertPick
     case closeAlternative
@@ -63,14 +75,26 @@ enum WhatToPlayOptionTacticalTag: Equatable {
 }
 
 enum WhatToPlayOptionComparison {
+    static func summary(for scenario: WhatToPlayScenario) -> WhatToPlayOptionComparisonSummary {
+        let sorted = sortedOptions(scenario.options)
+        let best = sorted.first
+        let second = sorted.dropFirst().first
+        let gap = best.flatMap { bestOption in
+            second.map { max(0, bestOption.expectedImpact - $0.expectedImpact) }
+        }
+
+        return WhatToPlayOptionComparisonSummary(
+            bestCard: best?.card,
+            bestExpectedImpact: best?.expectedImpact,
+            secondBestCard: second?.card,
+            secondBestExpectedImpact: second?.expectedImpact,
+            bestToSecondGap: gap
+        )
+    }
+
     static func rows(for scenario: WhatToPlayScenario, selectedCard: PlayingCard) -> [WhatToPlayOptionComparisonRow] {
         let bestImpact = scenario.bestOption?.expectedImpact ?? scenario.options.map(\.expectedImpact).max() ?? 0
-        return scenario.options
-            .sorted { lhs, rhs in
-                if lhs.rank != rhs.rank { return lhs.rank < rhs.rank }
-                if lhs.card.suit.ordinal != rhs.card.suit.ordinal { return lhs.card.suit.ordinal < rhs.card.suit.ordinal }
-                return lhs.card.rank.ordinal < rhs.card.rank.ordinal
-            }
+        return sortedOptions(scenario.options)
             .map { option in
                 WhatToPlayOptionComparisonRow(
                     card: option.card,
@@ -88,6 +112,14 @@ enum WhatToPlayOptionComparison {
                     isExpertChoice: option.isExpertChoice
                 )
             }
+    }
+
+    private static func sortedOptions(_ options: [WhatToPlayOption]) -> [WhatToPlayOption] {
+        options.sorted { lhs, rhs in
+            if lhs.rank != rhs.rank { return lhs.rank < rhs.rank }
+            if lhs.card.suit.ordinal != rhs.card.suit.ordinal { return lhs.card.suit.ordinal < rhs.card.suit.ordinal }
+            return lhs.card.rank.ordinal < rhs.card.rank.ordinal
+        }
     }
 
     private static func tacticalTag(for option: WhatToPlayOption, bestImpact: Int) -> WhatToPlayOptionTacticalTag {

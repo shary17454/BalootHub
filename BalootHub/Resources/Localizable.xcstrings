@@ -17986,6 +17986,34 @@
         }
       }
     },
+    "الفارق بين الأفضل والثاني" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Abstand zwischen bestem und zweitem" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Gap between best and second" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Diferencia entre la mejor y la segunda" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Écart entre la meilleure et la deuxième" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सर्वश्रेष्ठ और दूसरे के बीच अंतर" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Selisih antara terbaik dan kedua" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Разница между лучшим и вторым" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "En iyi ile ikinci arasındaki fark" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "بہترین اور دوسرے کے درمیان فرق" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "最佳与第二名差距" } }
+      }
+    },
+    "لا يوجد بديل" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Keine Alternative" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No alternative" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Sin alternativa" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Aucune alternative" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कोई विकल्प नहीं" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tidak ada alternatif" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Нет альтернативы" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Alternatif yok" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "کوئی متبادل نہیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "没有替代项" } }
+      }
+    },
     "نتيجة القرار" : {
       "localizations" : {
         "en" : {

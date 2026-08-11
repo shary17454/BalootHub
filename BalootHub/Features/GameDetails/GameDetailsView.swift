@@ -2424,10 +2424,13 @@ struct WhatToPlayTrainerView: View {
 
     private func optionComparisonCard(selectedOption: WhatToPlayOption, scenario: WhatToPlayScenario) -> some View {
         let rows = WhatToPlayOptionComparison.rows(for: scenario, selectedCard: selectedOption.card)
+        let summary = WhatToPlayOptionComparison.summary(for: scenario)
         return VStack(alignment: .leading, spacing: AppSpacing.md) {
             Label("أثر كل قرار".localized, systemImage: "list.bullet.rectangle.fill")
                 .font(AppTypography.headline)
                 .foregroundStyle(AppColor.primary)
+
+            optionComparisonSummary(summary)
 
             VStack(spacing: AppSpacing.sm) {
                 ForEach(rows) { row in
@@ -2437,6 +2440,43 @@ struct WhatToPlayTrainerView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func optionComparisonSummary(_ summary: WhatToPlayOptionComparisonSummary) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: AppSpacing.xs) {
+                    optionSummaryMetrics(summary)
+                }
+                VStack(spacing: AppSpacing.xs) {
+                    optionSummaryMetrics(summary)
+                }
+            }
+            if let gap = summary.bestToSecondGap {
+                Label("\("الفارق بين الأفضل والثاني".localized): \(impactText(gap))", systemImage: "arrow.left.and.right")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(gap <= 2 ? AppColor.accent : AppColor.warning)
+            }
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    @ViewBuilder
+    private func optionSummaryMetrics(_ summary: WhatToPlayOptionComparisonSummary) -> some View {
+        miniPlanMetric(
+            title: "أفضل ورقة".localized,
+            value: optionSummaryCardText(
+                card: summary.bestCard,
+                impact: summary.bestExpectedImpact
+            )
+        )
+        miniPlanMetric(
+            title: "ثاني أفضل".localized,
+            value: optionSummaryCardText(
+                card: summary.secondBestCard,
+                impact: summary.secondBestExpectedImpact
+            )
+        )
     }
 
     private func optionComparisonRow(_ row: WhatToPlayOptionComparisonRow) -> some View {
@@ -2504,6 +2544,11 @@ struct WhatToPlayTrainerView: View {
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
         .accessibilityElement(children: .combine)
+    }
+
+    private func optionSummaryCardText(card: PlayingCard?, impact: Int?) -> String {
+        guard let card, let impact else { return "لا يوجد بديل".localized }
+        return "\(card.accessibilityName) · \(impactText(impact))"
     }
 
     private func optionOutcomeText(_ outcome: WhatToPlayOptionOutcome) -> String {
