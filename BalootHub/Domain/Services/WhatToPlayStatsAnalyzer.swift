@@ -436,6 +436,7 @@ enum WhatToPlayDecisionPatternKind: Equatable {
     case noData
     case clean
     case usefulAlternatives
+    case farRankChoices
     case pointLeaks
     case opponentTrickClosure
     case unprotectedPointDump
@@ -2335,6 +2336,18 @@ enum WhatToPlayStatsAnalyzer {
             return impactPattern
         }
 
+        let farRankChoices = mistakes.filter { ($0.selectedRank ?? 1) > 2 }
+        if farRankChoices.count >= 2 && farRankChoices.count >= mistakes.count - farRankChoices.count {
+            return WhatToPlayDecisionPattern(
+                kind: .farRankChoices,
+                inspectedAttempts: recent.count,
+                affectedAttempts: farRankChoices.count,
+                title: "تبتعد عن أفضل خيارين".localized,
+                detail: "الأخطاء الأخيرة ليست حول ثاني أفضل ورقة فقط؛ أكثر من اختيار جاء خارج أول خيارين. قبل اللعب، احذف الخيارات الضعيفة أولًا ثم قارن الأفضل والثاني.".localized,
+                iconName: "list.bullet.clipboard.fill"
+            )
+        }
+
         let pointLeaks = mistakes.filter { $0.expectedImpact < 0 }
         let usefulAlternatives = mistakes.count - pointLeaks.count
         if pointLeaks.count >= usefulAlternatives {
@@ -2420,7 +2433,7 @@ enum WhatToPlayStatsAnalyzer {
                 detail: "بعض أخطائك جاءت من بداية الأكلة بورقة تخفض الأثر المتوقع. عند الافتتاح، اختر ورقة تكشف أقل قدر من قوتك أو تسحب الحكم لغرض واضح.".localized,
                 iconName: "arrow.up.forward.circle.fill"
             )
-        case .noData, .clean, .usefulAlternatives, .pointLeaks:
+        case .noData, .clean, .usefulAlternatives, .farRankChoices, .pointLeaks:
             return nil
         }
     }
@@ -2433,7 +2446,7 @@ enum WhatToPlayStatsAnalyzer {
             return 2
         case .costlyOpeningLead:
             return 1
-        case .noData, .clean, .usefulAlternatives, .pointLeaks:
+        case .noData, .clean, .usefulAlternatives, .farRankChoices, .pointLeaks:
             return 0
         }
     }

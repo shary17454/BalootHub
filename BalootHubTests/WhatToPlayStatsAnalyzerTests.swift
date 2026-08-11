@@ -1687,6 +1687,22 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(pattern.title, "أخطاء مكلفة".localized)
     }
 
+    func testDecisionPatternRecognizesFarRankChoices() {
+        let attempts = [
+            attempt(daysAgo: 4, correct: false, impact: 1, selectedRank: 4),
+            attempt(daysAgo: 3, correct: false, impact: 0, selectedRank: 3),
+            attempt(daysAgo: 2, correct: false, impact: 2, selectedRank: 2),
+            attempt(daysAgo: 1, correct: true, impact: 3, selectedRank: 1)
+        ]
+
+        let pattern = WhatToPlayStatsAnalyzer.decisionPattern(for: attempts)
+
+        XCTAssertEqual(pattern.kind, .farRankChoices)
+        XCTAssertEqual(pattern.inspectedAttempts, 4)
+        XCTAssertEqual(pattern.affectedAttempts, 2)
+        XCTAssertEqual(pattern.title, "تبتعد عن أفضل خيارين".localized)
+    }
+
     func testDecisionPatternRecognizesOpponentTrickClosureFromImpactBreakdown() {
         let attempts = [
             attempt(daysAgo: 4, correct: false, impact: -8, impactBreakdown: .opponentTrickClosure(points: 18)),

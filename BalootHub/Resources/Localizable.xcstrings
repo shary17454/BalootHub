@@ -21286,6 +21286,34 @@
         }
       }
     },
+    "تبتعد عن أفضل خيارين" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Du entfernst dich von den zwei besten Optionen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You drift from the top two options" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Te alejas de las dos mejores opciones" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu t'éloignes des deux meilleurs choix" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आप शीर्ष दो विकल्पों से दूर जा रहे हैं" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kamu menjauh dari dua pilihan teratas" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Вы уходите от двух лучших вариантов" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "İlk iki seçenekten uzaklaşıyorsun" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ بہترین دو انتخاب سے دور جا رہے ہیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你偏离了前两个最佳选择" } }
+      }
+    },
+    "الأخطاء الأخيرة ليست حول ثاني أفضل ورقة فقط؛ أكثر من اختيار جاء خارج أول خيارين. قبل اللعب، احذف الخيارات الضعيفة أولًا ثم قارن الأفضل والثاني." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die letzten Fehler lagen nicht nur nahe an der zweitbesten Karte; mehrere Entscheidungen lagen außerhalb der ersten zwei Optionen. Streiche zuerst schwache Optionen und vergleiche dann die beste mit der zweiten." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Recent mistakes were not just around the second-best card; several choices fell outside the top two. Before playing, eliminate weak options first, then compare best and second best." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Los errores recientes no estuvieron solo cerca de la segunda mejor carta; varias elecciones quedaron fuera de las dos primeras. Antes de jugar, elimina primero las opciones débiles y luego compara la mejor y la segunda." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Les erreurs récentes ne tournaient pas seulement autour de la deuxième meilleure carte ; plusieurs choix étaient hors des deux premiers. Avant de jouer, écarte d'abord les options faibles, puis compare la meilleure et la deuxième." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "हाल की गलतियाँ सिर्फ दूसरे सर्वश्रेष्ठ कार्ड के आसपास नहीं थीं; कई चुनाव शीर्ष दो से बाहर थे। खेलने से पहले कमजोर विकल्प हटाएँ, फिर सर्वश्रेष्ठ और दूसरे सर्वश्रेष्ठ की तुलना करें।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kesalahan terbaru bukan hanya di sekitar kartu terbaik kedua; beberapa pilihan berada di luar dua teratas. Sebelum bermain, singkirkan opsi lemah dulu, lalu bandingkan yang terbaik dan kedua." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Последние ошибки были не только около второй лучшей карты; несколько выборов оказались вне двух лучших. Перед ходом сначала уберите слабые варианты, затем сравните лучший и второй." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Son hatalar yalnızca ikinci en iyi kart çevresinde değildi; birkaç seçim ilk ikinin dışına düştü. Oynamadan önce zayıf seçenekleri ele, sonra en iyi ve ikinci en iyiyi karşılaştır." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "حالیہ غلطیاں صرف دوسرے بہترین کارڈ کے قریب نہیں تھیں؛ کئی انتخاب پہلے دو سے باہر تھے۔ کھیلنے سے پہلے کمزور اختیارات نکالیں، پھر بہترین اور دوسرے بہترین کا موازنہ کریں۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "最近的错误不只是围绕第二佳牌；多个选择落在前两名之外。出牌前先排除弱选项，再比较最佳和第二佳。" } }
+      }
+    },
     "اختيارات قريبة من الأفضل" : {
       "localizations" : {
         "en" : {
