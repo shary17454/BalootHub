@@ -49,6 +49,24 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(saved.expectedImpact, -6)
     }
 
+    func testRecentAttemptsReturnsNewestFirstWithLimit() {
+        let attempts = [
+            attempt(daysAgo: 5, correct: true, impact: 0),
+            attempt(daysAgo: 4, correct: true, impact: 1),
+            attempt(daysAgo: 3, correct: false, impact: 2),
+            attempt(daysAgo: 2, correct: true, impact: 3),
+            attempt(daysAgo: 1, correct: false, impact: 4)
+        ]
+
+        let recent = WhatToPlayStatsAnalyzer.recentAttempts(attempts, limit: 3)
+
+        XCTAssertEqual(recent.map(\.expectedImpact), [4, 3, 2])
+    }
+
+    func testRecentAttemptsRejectsZeroLimit() {
+        XCTAssertTrue(WhatToPlayStatsAnalyzer.recentAttempts([attempt(daysAgo: 1, correct: true, impact: 0)], limit: 0).isEmpty)
+    }
+
     private func attempt(daysAgo: TimeInterval, correct: Bool, impact: Int) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
             createdAt: Date(timeIntervalSince1970: 2_000_000 - daysAgo * 86_400),

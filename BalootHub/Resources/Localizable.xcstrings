@@ -16394,6 +16394,16 @@
         }
       }
     },
+    "آخر المحاولات" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recent attempts"
+          }
+        }
+      }
+    },
     "أفضل سلسلة" : {
       "localizations" : {
         "en" : {
@@ -16404,12 +16414,32 @@
         }
       }
     },
+    "أفضل ورقة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Best card"
+          }
+        }
+      }
+    },
     "اختر ورقة في أول موقف ليبدأ التطبيق بتتبع دقتك وسلسلة إجاباتك." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Choose a card in your first scenario to start tracking your accuracy and answer streak."
+          }
+        }
+      }
+    },
+    "اختيارك" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your choice"
           }
         }
       }
@@ -16520,6 +16550,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "What would you play?"
+          }
+        }
+      }
+    },
+    "ورقة غير معروفة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown card"
           }
         }
       }

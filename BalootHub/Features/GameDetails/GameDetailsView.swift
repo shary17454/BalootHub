@@ -306,12 +306,17 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.summarize(attempts: attempts)
     }
 
+    private var recentAttempts: [WhatToPlayAttempt] {
+        WhatToPlayStatsAnalyzer.recentAttempts(attempts)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
                 header
                 controls
                 statsCard
+                recentAttemptsCard
 
                 if let scenario {
                     scenarioSummary(scenario)
@@ -416,6 +421,62 @@ struct WhatToPlayTrainerView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    @ViewBuilder
+    private var recentAttemptsCard: some View {
+        if !recentAttempts.isEmpty {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                Label("آخر المحاولات", systemImage: "clock.arrow.circlepath")
+                    .font(AppTypography.headline)
+                    .foregroundStyle(AppColor.primary)
+
+                VStack(spacing: AppSpacing.sm) {
+                    ForEach(recentAttempts) { attempt in
+                        recentAttemptRow(attempt)
+                    }
+                }
+            }
+            .padding(AppSpacing.md)
+            .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+        }
+    }
+
+    private func recentAttemptRow(_ attempt: WhatToPlayAttempt) -> some View {
+        HStack(spacing: AppSpacing.sm) {
+            Image(systemName: attempt.isCorrect ? "checkmark.seal.fill" : "xmark.seal.fill")
+                .foregroundStyle(attempt.isCorrect ? AppColor.success : AppColor.danger)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("\("اختيارك".localized): \(cardName(attempt.selectedCard))")
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                Text("\("أفضل ورقة".localized): \(cardName(attempt.bestCard))")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+            }
+
+            Spacer()
+
+            VStack(alignment: .trailing, spacing: 2) {
+                Text(attempt.difficulty.displayTitle)
+                    .font(AppTypography.caption.weight(.semibold))
+                    .foregroundStyle(AppColor.textSecondary)
+                Text(impactText(attempt.expectedImpact))
+                    .font(.caption2)
+                    .foregroundStyle(attempt.expectedImpact >= 0 ? AppColor.success : AppColor.danger)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+            }
+        }
+        .padding(AppSpacing.sm)
+        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
     }
 
     private func scenarioSummary(_ scenario: WhatToPlayScenario) -> some View {
@@ -561,6 +622,10 @@ struct WhatToPlayTrainerView: View {
         if impact > 0 { return "+\(impact) نقطة متوقعة" }
         if impact < 0 { return "\(impact) نقطة متوقعة" }
         return "أثر محايد"
+    }
+
+    private func cardName(_ card: PlayingCard?) -> String {
+        card?.accessibilityName ?? "ورقة غير معروفة".localized
     }
 }
 

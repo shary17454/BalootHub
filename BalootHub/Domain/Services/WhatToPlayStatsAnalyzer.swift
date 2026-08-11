@@ -54,4 +54,9 @@ enum WhatToPlayStatsAnalyzer {
             averageExpectedImpact: averageImpact
         )
     }
+
+    static func recentAttempts(_ attempts: [WhatToPlayAttempt], limit: Int = 5) -> [WhatToPlayAttempt] {
+        guard limit > 0 else { return [] }
+        return Array(attempts.sorted { $0.createdAt > $1.createdAt }.prefix(limit))
+    }
 }
