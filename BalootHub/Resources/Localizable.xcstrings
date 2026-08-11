@@ -20510,6 +20510,20 @@
         }
       }
     },
+    "سبب تكتيكي" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Taktischer Grund" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Tactical Reason" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Razón táctica" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Raison tactique" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "रणनीतिक कारण" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Alasan Taktis" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Тактическая причина" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Taktik neden" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "حکمتِ عملی کی وجہ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "战术原因" } }
+      }
+    },
     "لا توجد محاولة في هذه الجلسة حتى الآن." : {
       "localizations" : {
         "en" : {

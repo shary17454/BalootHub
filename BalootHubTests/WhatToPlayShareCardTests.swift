@@ -105,6 +105,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         let selected = try XCTUnwrap(scenario.bestOption)
 
         XCTAssertFalse(WhatToPlayShareCard.content(for: scenario).includesAnswerReview)
+        XCTAssertNil(WhatToPlayShareCard.content(for: scenario).tacticalReasonTitle)
 
         let reviewed = WhatToPlayShareCard.content(for: scenario, selectedOption: selected)
 
@@ -118,7 +119,48 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(reviewed.prompt, "راجع القرار وتدرّب على قراءة الموقف.".localized)
     }
 
+    func testShareCardIncludesTacticalReasonAfterCostlySelection() throws {
+        let (scenario, selected) = try costlyShareSelection()
+
+        let content = WhatToPlayShareCard.content(for: scenario, selectedOption: selected)
+        let text = WhatToPlayShareCard.text(for: scenario, selectedOption: selected)
+
+        XCTAssertNotNil(content.tacticalReasonTitle)
+        XCTAssertNotNil(content.tacticalReasonDetail)
+        XCTAssertNotNil(content.tacticalReasonIconName)
+        XCTAssertTrue(text.contains("سبب تكتيكي".localized))
+        XCTAssertTrue(text.contains(try XCTUnwrap(content.tacticalReasonTitle)))
+        XCTAssertTrue(text.contains(try XCTUnwrap(content.tacticalReasonDetail)))
+    }
+
     private func contentMode(for scenario: WhatToPlayScenario) -> String {
         WhatToPlayShareCard.content(for: scenario).mode
+    }
+
+    private func costlyShareSelection() throws -> (WhatToPlayScenario, WhatToPlayOption) {
+        for seed in 1..<500 {
+            let scenario = try WhatToPlayTrainer.generateScenario(seed: UInt64(seed), difficulty: .hard)
+            if let option = scenario.options.first(where: { option in
+                option.expectedImpact < 0
+                    && (
+                        option.impactBreakdown.preservesLead
+                        || (
+                            option.impactBreakdown.completesTrick
+                                && option.impactBreakdown.winsForPlayerTeam == false
+                                && option.impactBreakdown.trickPointsSwing < 0
+                        )
+                        || (
+                            !option.impactBreakdown.completesTrick
+                                && !option.impactBreakdown.preservesLead
+                                && option.impactBreakdown.playedCardPoints > 0
+                                && option.impactBreakdown.immediateImpact < 0
+                        )
+                    )
+            }) {
+                return (scenario, option)
+            }
+        }
+        XCTFail("لم يتم العثور على موقف مشاركة بخطأ تكتيكي ضمن نطاق البذور المحدد")
+        throw NSError(domain: "WhatToPlayShareCardTests", code: 1)
     }
 }

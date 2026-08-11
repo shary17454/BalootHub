@@ -23,6 +23,9 @@ struct WhatToPlayShareCardContent: Equatable {
     let selectedRank: Int?
     let selectedImpact: Int?
     let selectedImpactDetail: String?
+    let tacticalReasonTitle: String?
+    let tacticalReasonDetail: String?
+    let tacticalReasonIconName: String?
     let prompt: String
 
     var isOpeningTrick: Bool {
@@ -46,6 +49,7 @@ enum WhatToPlayShareCard {
         let lost = selectedOption.flatMap { selected in
             best.map { max(0, $0.expectedImpact - selected.expectedImpact) }
         }
+        let tacticalReason = selectedOption.flatMap(tacticalReason(for:))
         return WhatToPlayShareCardContent(
             title: "وش تلعب؟".localized,
             subtitle: selectedOption == nil
@@ -70,6 +74,9 @@ enum WhatToPlayShareCard {
             selectedRank: selectedOption?.rank,
             selectedImpact: selectedOption?.expectedImpact,
             selectedImpactDetail: selectedOption.map { WhatToPlayImpactFormatter.detail(for: $0.impactBreakdown) },
+            tacticalReasonTitle: tacticalReason?.title,
+            tacticalReasonDetail: tacticalReason?.detail,
+            tacticalReasonIconName: tacticalReason?.iconName,
             prompt: selectedOption == nil ? "ما أفضل ورقة؟".localized : "راجع القرار وتدرّب على قراءة الموقف.".localized
         )
     }
@@ -124,6 +131,12 @@ enum WhatToPlayShareCard {
             if let selectedImpactDetail = content.selectedImpactDetail {
                 lines.append("\("تفصيل الأثر".localized): \(selectedImpactDetail)")
             }
+            if let tacticalReasonTitle = content.tacticalReasonTitle {
+                lines.append("\("سبب تكتيكي".localized): \(tacticalReasonTitle)")
+            }
+            if let tacticalReasonDetail = content.tacticalReasonDetail {
+                lines.append(tacticalReasonDetail)
+            }
         }
 
         lines.append(content.prompt)
@@ -138,6 +151,42 @@ enum WhatToPlayShareCard {
             }
             return lhs.card.rank.ordinal < rhs.card.rank.ordinal
         }
+    }
+
+    private static func tacticalReason(for option: WhatToPlayOption) -> WhatToPlayShareTacticalReason? {
+        guard option.expectedImpact < 0 else { return nil }
+        let breakdown = option.impactBreakdown
+
+        if breakdown.completesTrick,
+           breakdown.winsForPlayerTeam == false,
+           breakdown.trickPointsSwing < 0 {
+            return WhatToPlayShareTacticalReason(
+                title: "تغلق الأكلة للخصم".localized,
+                detail: "اختيارك أضاف نقاطًا لأكلة انتهت للفريق الخصم. راجع هل كان يمكن تقليل الخسارة بدل تغذية الأكلة.".localized,
+                iconName: "flag.slash.fill"
+            )
+        }
+
+        if !breakdown.completesTrick,
+           !breakdown.preservesLead,
+           breakdown.playedCardPoints > 0,
+           breakdown.immediateImpact < 0 {
+            return WhatToPlayShareTacticalReason(
+                title: "ترمي نقاطًا بلا حماية".localized,
+                detail: "الورقة تحمل نقاطًا والأكلة لم تُحسم بعد. اسأل هل شريكك يحميها أو هل الأفضل التخلص من ورقة أرخص.".localized,
+                iconName: "drop.triangle.fill"
+            )
+        }
+
+        if breakdown.preservesLead, breakdown.immediateImpact < 0 {
+            return WhatToPlayShareTacticalReason(
+                title: "افتتاح مكلف".localized,
+                detail: "بدأت الأكلة بورقة تخفض الأثر المتوقع. جرّب افتتاحًا يحفظ القوة أو يسحب الحكم بسبب واضح.".localized,
+                iconName: "arrow.up.forward.circle.fill"
+            )
+        }
+
+        return nil
     }
 
     private static func modeText(_ state: GameState) -> String {
@@ -176,4 +225,10 @@ enum WhatToPlayShareCard {
         value >= 0 ? "+\(value)" : "\(value)"
     }
 
+}
+
+private struct WhatToPlayShareTacticalReason: Equatable {
+    let title: String
+    let detail: String
+    let iconName: String
 }

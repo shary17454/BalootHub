@@ -1919,6 +1919,9 @@ struct WhatToPlayTrainerView: View {
                         if let lostExpectedPoints = content.lostExpectedPoints {
                             shareChip("\("نقاط متوقعة ضائعة".localized): \(lostExpectedPoints)")
                         }
+                        if let tacticalReasonTitle = content.tacticalReasonTitle {
+                            shareChip("\("سبب تكتيكي".localized): \(tacticalReasonTitle)")
+                        }
                     }
                 }
 
