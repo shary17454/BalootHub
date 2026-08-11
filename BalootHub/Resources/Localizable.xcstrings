@@ -18214,6 +18214,76 @@
         }
       }
     },
+    "راجع اختيارًا مكلفًا" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review a costly choice"
+          }
+        }
+      }
+    },
+    "قارن الاختيار القريب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compare the close choice"
+          }
+        }
+      }
+    },
+    "هذا القرار خسر أثرًا متوقعًا في مستوى" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This decision lost expected impact at"
+          }
+        }
+      }
+    },
+    "ابدأ بمقارنة اختيارك مع أفضل ورقة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start by comparing your choice with the best card."
+          }
+        }
+      }
+    },
+    "الاختيار لم يكن الأفضل لكنه ليس نزيفًا واضحًا؛ ركز على سبب ترجيح ورقة الخبير." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The choice was not best, but it was not a clear leak; focus on why the expert card was preferred."
+          }
+        }
+      }
+    },
+    "مراجعة الأخطاء المهمة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review important mistakes"
+          }
+        }
+      }
+    },
+    "ابدأ بهذه المحاولات لأنها الأكثر فائدة للمراجعة حسب الأثر المتوقع." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start with these attempts because they are the most useful to review by expected impact."
+          }
+        }
+      }
+    },
     "نمط قراراتك غير معروف" : {
       "localizations" : {
         "en" : {

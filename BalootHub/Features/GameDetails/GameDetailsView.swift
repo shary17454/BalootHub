@@ -312,6 +312,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.recentAttempts(attempts)
     }
 
+    private var reviewQueue: [WhatToPlayReviewItem] {
+        WhatToPlayStatsAnalyzer.reviewQueue(for: attempts)
+    }
+
     private var difficultySummaries: [(difficulty: WhatToPlayDifficulty, summary: WhatToPlayStatsSummary)] {
         WhatToPlayStatsAnalyzer.summariesByDifficulty(attempts)
     }
@@ -382,6 +386,7 @@ struct WhatToPlayTrainerView: View {
                 statsCard
                 difficultyStatsCard
                 recentAttemptsCard
+                reviewQueueCard
 
             if let scenario {
                 scenarioSummary(scenario)
@@ -1067,6 +1072,62 @@ struct WhatToPlayTrainerView: View {
                     .minimumScaleFactor(0.75)
             }
         }
+        .padding(AppSpacing.sm)
+        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
+    }
+
+    @ViewBuilder
+    private var reviewQueueCard: some View {
+        if !reviewQueue.isEmpty {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                Label("مراجعة الأخطاء المهمة".localized, systemImage: "text.magnifyingglass")
+                    .font(AppTypography.headline)
+                    .foregroundStyle(AppColor.primary)
+
+                Text("ابدأ بهذه المحاولات لأنها الأكثر فائدة للمراجعة حسب الأثر المتوقع.".localized)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                VStack(spacing: AppSpacing.sm) {
+                    ForEach(reviewQueue) { item in
+                        reviewQueueRow(item)
+                    }
+                }
+            }
+            .padding(AppSpacing.md)
+            .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+        }
+    }
+
+    private func reviewQueueRow(_ item: WhatToPlayReviewItem) -> some View {
+        HStack(alignment: .top, spacing: AppSpacing.sm) {
+            Image(systemName: item.iconName)
+                .foregroundStyle(item.expectedImpact < 0 ? AppColor.danger : AppColor.accent)
+                .frame(width: 24)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                Text(item.title)
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(item.detail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                HStack(spacing: AppSpacing.xs) {
+                    StatusBadge(item.difficulty.displayTitle, systemImage: "slider.horizontal.3", tint: AppColor.primary)
+                    StatusBadge(impactText(item.expectedImpact), systemImage: "chart.line.downtrend.xyaxis", tint: item.expectedImpact < 0 ? AppColor.danger : AppColor.accent)
+                }
+                Text("\("اختيارك".localized): \(cardName(item.selectedCard)) · \("أفضل ورقة".localized): \(cardName(item.bestCard))")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(AppColor.textSecondary)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.85)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
         .accessibilityElement(children: .combine)

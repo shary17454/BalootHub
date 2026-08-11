@@ -67,6 +67,43 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertTrue(WhatToPlayStatsAnalyzer.recentAttempts([attempt(daysAgo: 1, correct: true, impact: 0)], limit: 0).isEmpty)
     }
 
+    func testReviewQueueReturnsWorstIncorrectAttemptsFirst() {
+        let attempts = [
+            attempt(daysAgo: 5, difficulty: .easy, correct: false, impact: -2),
+            attempt(daysAgo: 4, difficulty: .medium, correct: true, impact: -20),
+            attempt(daysAgo: 3, difficulty: .hard, correct: false, impact: -8),
+            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: 1),
+            attempt(daysAgo: 1, difficulty: .easy, correct: false, impact: -5)
+        ]
+
+        let queue = WhatToPlayStatsAnalyzer.reviewQueue(for: attempts, limit: 3)
+
+        XCTAssertEqual(queue.map(\.expectedImpact), [-8, -5, -2])
+        XCTAssertEqual(queue.first?.difficulty, .hard)
+        XCTAssertEqual(queue.first?.title, "راجع اختيارًا مكلفًا".localized)
+    }
+
+    func testReviewQueueUsesRecentTieBreakerForEqualImpact() {
+        let attempts = [
+            attempt(daysAgo: 3, correct: false, impact: -4),
+            attempt(daysAgo: 1, correct: false, impact: -4)
+        ]
+
+        let queue = WhatToPlayStatsAnalyzer.reviewQueue(for: attempts)
+
+        XCTAssertEqual(queue.first?.createdAt, attempts[1].createdAt)
+    }
+
+    func testReviewQueueReturnsEmptyForCorrectAttemptsOrZeroLimit() {
+        let attempts = [
+            attempt(daysAgo: 2, correct: true, impact: -10),
+            attempt(daysAgo: 1, correct: true, impact: 4)
+        ]
+
+        XCTAssertTrue(WhatToPlayStatsAnalyzer.reviewQueue(for: attempts).isEmpty)
+        XCTAssertTrue(WhatToPlayStatsAnalyzer.reviewQueue(for: [attempt(daysAgo: 1, correct: false, impact: -4)], limit: 0).isEmpty)
+    }
+
     func testSummariesByDifficultySkipEmptyLevelsAndPreserveDifficultyOrder() {
         let attempts = [
             attempt(daysAgo: 3, difficulty: .hard, correct: true, impact: 4),

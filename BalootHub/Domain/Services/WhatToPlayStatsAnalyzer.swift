@@ -39,6 +39,18 @@ struct WhatToPlayDifficultyImpactInsight: Equatable {
     let iconName: String
 }
 
+struct WhatToPlayReviewItem: Equatable, Identifiable {
+    let id: UUID
+    let difficulty: WhatToPlayDifficulty
+    let selectedCard: PlayingCard?
+    let bestCard: PlayingCard?
+    let expectedImpact: Int
+    let createdAt: Date
+    let title: String
+    let detail: String
+    let iconName: String
+}
+
 enum WhatToPlayTrendDirection: Equatable {
     case improving
     case stable
@@ -296,6 +308,37 @@ enum WhatToPlayStatsAnalyzer {
             detail: "متوسط الأثر المتوقع غير سلبي في المستويات التي تملك عينات كافية؛ يمكنك رفع الصعوبة تدريجيًا.".localized,
             iconName: "checkmark.seal.fill"
         )
+    }
+
+    static func reviewQueue(for attempts: [WhatToPlayAttempt], limit: Int = 3) -> [WhatToPlayReviewItem] {
+        guard limit > 0 else { return [] }
+        return Array(
+            attempts
+                .filter { !$0.isCorrect }
+                .sorted { lhs, rhs in
+                    if lhs.expectedImpact != rhs.expectedImpact {
+                        return lhs.expectedImpact < rhs.expectedImpact
+                    }
+                    return lhs.createdAt > rhs.createdAt
+                }
+                .prefix(limit)
+        )
+        .map { attempt in
+            let isCostly = attempt.expectedImpact < 0
+            return WhatToPlayReviewItem(
+                id: attempt.id,
+                difficulty: attempt.difficulty,
+                selectedCard: attempt.selectedCard,
+                bestCard: attempt.bestCard,
+                expectedImpact: attempt.expectedImpact,
+                createdAt: attempt.createdAt,
+                title: isCostly ? "راجع اختيارًا مكلفًا".localized : "قارن الاختيار القريب".localized,
+                detail: isCostly
+                    ? "\("هذا القرار خسر أثرًا متوقعًا في مستوى".localized) \(difficultyTitle(attempt.difficulty)). \("ابدأ بمقارنة اختيارك مع أفضل ورقة.".localized)"
+                    : "\("الاختيار لم يكن الأفضل لكنه ليس نزيفًا واضحًا؛ ركز على سبب ترجيح ورقة الخبير.".localized)",
+                iconName: isCostly ? "exclamationmark.triangle.fill" : "2.circle.fill"
+            )
+        }
     }
 
     static func performanceTrend(
