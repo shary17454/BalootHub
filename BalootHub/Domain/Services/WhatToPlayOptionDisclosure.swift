@@ -6,10 +6,24 @@ enum WhatToPlayOptionDisclosure {
         return rank == 1 ? "الأفضل".localized : "#\(rank)"
     }
 
-    static func accessibilityLabel(cardName: String, rank: Int, isRevealed: Bool) -> String {
+    static func accessibilityLabel(
+        cardName: String,
+        rank: Int,
+        isRevealed: Bool,
+        isSelected: Bool = false,
+        isExpertChoice: Bool = false
+    ) -> String {
         guard isRevealed else {
             return "\("ورقة".localized) \(cardName)"
         }
-        return "\(cardName)، \("الترتيب".localized) \(rank)"
+
+        var parts = [cardName, "\("الترتيب".localized) \(rank)"]
+        if isSelected {
+            parts.append("اختيارك".localized)
+        }
+        if isExpertChoice {
+            parts.append("الأفضل".localized)
+        }
+        return parts.joined(separator: "، ")
     }
 }

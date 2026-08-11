@@ -1469,7 +1469,9 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayOptionDisclosure.accessibilityLabel(
             cardName: option.card.accessibilityName,
             rank: option.rank,
-            isRevealed: selectedOption != nil
+            isRevealed: selectedOption != nil,
+            isSelected: selectedOption?.card == option.card,
+            isExpertChoice: option.isExpertChoice
         )
     }
 
