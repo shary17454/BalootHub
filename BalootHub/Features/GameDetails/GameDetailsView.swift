@@ -549,8 +549,9 @@ struct WhatToPlayTrainerView: View {
                 .foregroundStyle(AppColor.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
 
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 3), spacing: AppSpacing.xs) {
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 2), spacing: AppSpacing.xs) {
                 miniPlanMetric(title: "المستوى".localized, value: plan.difficulty.displayTitle)
+                miniPlanMetric(title: "تركيز التدريب".localized, value: plan.focusKind.map(focusTitle) ?? "تلقائي".localized)
                 miniPlanMetric(title: "المواقف".localized, value: "\(plan.scenarioCount)")
                 miniPlanMetric(title: "هدف الدقة".localized, value: "\(plan.targetAccuracyPercent)%")
             }
@@ -1665,10 +1666,13 @@ struct WhatToPlayTrainerView: View {
     }
 
     private func startRecommendedPractice() {
-        if difficulty == trainingSessionPlan.difficulty {
+        let targetFocusRaw = trainingSessionPlan.focusKind?.rawValue ?? "auto"
+        if difficulty == trainingSessionPlan.difficulty, preferredFocusRaw == targetFocusRaw {
             nextScenario()
         } else {
             difficulty = trainingSessionPlan.difficulty
+            preferredFocusRaw = targetFocusRaw
+            generateScenario()
         }
     }
 

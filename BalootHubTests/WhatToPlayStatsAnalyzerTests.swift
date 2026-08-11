@@ -179,6 +179,38 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summaries.last?.summary.lostExpectedPoints, 6)
     }
 
+    func testFocusScenarioKindPicksWeakestTrainingFocus() {
+        let attempts = [
+            attempt(daysAgo: 6, difficulty: .easy, correct: true, impact: 3, bestImpact: 3, focusKind: .openingLead),
+            attempt(daysAgo: 5, difficulty: .easy, correct: false, impact: -1, bestImpact: 2, focusKind: .openingLead),
+            attempt(daysAgo: 4, difficulty: .medium, correct: false, impact: -8, bestImpact: 4, focusKind: .trumpPressure),
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 2, bestImpact: 2, focusKind: .trumpPressure),
+            attempt(daysAgo: 2, difficulty: .hard, correct: false, impact: -3, bestImpact: 2, focusKind: .followSuit),
+            attempt(daysAgo: 1, difficulty: .hard, correct: false, impact: -2, bestImpact: 1, focusKind: .followSuit)
+        ]
+
+        let focus = WhatToPlayStatsAnalyzer.focusScenarioKind(attempts)
+
+        XCTAssertEqual(focus?.focusKind, .followSuit)
+        XCTAssertEqual(focus?.summary.accuracyPercent, 0)
+        XCTAssertEqual(focus?.summary.lostExpectedPoints, 8)
+    }
+
+    func testFocusScenarioKindUsesLostPointsAsTieBreaker() {
+        let attempts = [
+            attempt(daysAgo: 4, difficulty: .easy, correct: false, impact: -4, bestImpact: 1, focusKind: .openingLead),
+            attempt(daysAgo: 3, difficulty: .easy, correct: true, impact: 1, bestImpact: 1, focusKind: .openingLead),
+            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: -9, bestImpact: 3, focusKind: .trumpPressure),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 3, bestImpact: 3, focusKind: .trumpPressure)
+        ]
+
+        let focus = WhatToPlayStatsAnalyzer.focusScenarioKind(attempts)
+
+        XCTAssertEqual(focus?.focusKind, .trumpPressure)
+        XCTAssertEqual(focus?.summary.accuracyPercent, 50)
+        XCTAssertEqual(focus?.summary.lostExpectedPoints, 12)
+    }
+
     func testFocusDifficultyRequiresMinimumAttemptsAndPicksLowestAccuracy() {
         let attempts = [
             attempt(daysAgo: 5, difficulty: .easy, correct: false, impact: -20),
@@ -856,15 +888,16 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
     func testTrainingSessionPlanPrioritizesReviewWhenRecentAttemptsNeedIt() {
         let attempts = [
-            attempt(daysAgo: 4, correct: true, impact: 5),
-            attempt(daysAgo: 3, correct: false, impact: -6),
-            attempt(daysAgo: 2, correct: false, impact: -4),
-            attempt(daysAgo: 1, correct: true, impact: -5)
+            attempt(daysAgo: 4, difficulty: .medium, correct: true, impact: 5, bestImpact: 5, focusKind: .openingLead),
+            attempt(daysAgo: 3, difficulty: .medium, correct: false, impact: -6, bestImpact: 4, focusKind: .trumpPressure),
+            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: -4, bestImpact: 2, focusKind: .trumpPressure),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: -5, bestImpact: -5, focusKind: .openingLead)
         ]
 
         let plan = WhatToPlayStatsAnalyzer.trainingSessionPlan(for: attempts)
 
         XCTAssertEqual(plan.title, "جلسة مراجعة مركزة".localized)
+        XCTAssertEqual(plan.focusKind, WhatToPlayScenarioFocusKind.trumpPressure)
         XCTAssertEqual(plan.scenarioCount, 3)
         XCTAssertEqual(plan.successMetric, "هدف الجلسة: لا تكرر نفس سبب الخطأ مرتين.".localized)
     }
@@ -951,6 +984,25 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.remainingAttempts, 1)
     }
 
+    func testTrainingSessionProgressCountsMatchingDifficultyAndFocusOnly() {
+        let plan = sessionPlan(difficulty: .medium, focusKind: .trumpPressure, count: 3, target: 67)
+        let attempts = [
+            attempt(daysAgo: 5, difficulty: .medium, correct: false, impact: -6, focusKind: .openingLead),
+            attempt(daysAgo: 4, difficulty: .hard, correct: true, impact: 4, focusKind: .trumpPressure),
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 4, focusKind: .trumpPressure),
+            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: -2),
+            attempt(daysAgo: 1, difficulty: .medium, correct: false, impact: -3, focusKind: .trumpPressure)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.state, .inProgress)
+        XCTAssertEqual(progress.completedAttempts, 2)
+        XCTAssertEqual(progress.correctAttempts, 1)
+        XCTAssertEqual(progress.accuracyPercent, 50)
+        XCTAssertEqual(progress.remainingAttempts, 1)
+    }
+
     func testTrainingSessionProgressAchievesTargetWhenPlannedBatchPasses() {
         let plan = sessionPlan(difficulty: .easy, count: 3, target: 67)
         let attempts = [
@@ -1033,11 +1085,13 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
     private func sessionPlan(
         difficulty: WhatToPlayDifficulty,
+        focusKind: WhatToPlayScenarioFocusKind? = nil,
         count: Int,
         target: Int
     ) -> WhatToPlayTrainingSessionPlan {
         WhatToPlayTrainingSessionPlan(
             difficulty: difficulty,
+            focusKind: focusKind,
             scenarioCount: count,
             targetAccuracyPercent: target,
             title: "خطة اختبار",

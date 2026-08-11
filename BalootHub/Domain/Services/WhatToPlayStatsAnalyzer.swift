@@ -84,12 +84,33 @@ struct WhatToPlayPracticeRecommendation: Equatable {
 
 struct WhatToPlayTrainingSessionPlan: Equatable {
     let difficulty: WhatToPlayDifficulty
+    let focusKind: WhatToPlayScenarioFocusKind?
     let scenarioCount: Int
     let targetAccuracyPercent: Int
     let title: String
     let detail: String
     let successMetric: String
     let iconName: String
+
+    init(
+        difficulty: WhatToPlayDifficulty,
+        focusKind: WhatToPlayScenarioFocusKind? = nil,
+        scenarioCount: Int,
+        targetAccuracyPercent: Int,
+        title: String,
+        detail: String,
+        successMetric: String,
+        iconName: String
+    ) {
+        self.difficulty = difficulty
+        self.focusKind = focusKind
+        self.scenarioCount = scenarioCount
+        self.targetAccuracyPercent = targetAccuracyPercent
+        self.title = title
+        self.detail = detail
+        self.successMetric = successMetric
+        self.iconName = iconName
+    }
 }
 
 enum WhatToPlayTrainingSessionProgressState: Equatable {
@@ -285,6 +306,27 @@ enum WhatToPlayStatsAnalyzer {
         }
     }
 
+    static func focusScenarioKind(_ attempts: [WhatToPlayAttempt], minimumAttempts: Int = 2) -> WhatToPlayScenarioFocusSummary? {
+        summariesByScenarioFocus(attempts)
+            .filter { $0.summary.attempts >= minimumAttempts }
+            .sorted { lhs, rhs in
+                if lhs.summary.accuracyPercent != rhs.summary.accuracyPercent {
+                    return lhs.summary.accuracyPercent < rhs.summary.accuracyPercent
+                }
+
+                if lhs.summary.lostExpectedPoints != rhs.summary.lostExpectedPoints {
+                    return lhs.summary.lostExpectedPoints > rhs.summary.lostExpectedPoints
+                }
+
+                if lhs.summary.averageExpectedImpact != rhs.summary.averageExpectedImpact {
+                    return lhs.summary.averageExpectedImpact < rhs.summary.averageExpectedImpact
+                }
+
+                return scenarioFocusOrder(lhs.focusKind) < scenarioFocusOrder(rhs.focusKind)
+            }
+            .first
+    }
+
     static func focusDifficulty(_ attempts: [WhatToPlayAttempt], minimumAttempts: Int = 2) -> WhatToPlayDifficultyFocus? {
         summariesByDifficulty(attempts)
             .filter { $0.summary.attempts >= minimumAttempts }
@@ -474,6 +516,7 @@ enum WhatToPlayStatsAnalyzer {
         let summary = summarize(attempts: attempts)
         let style = playStyle(for: attempts)
         let pulse = sessionPulse(for: attempts)
+        let focusKind = focusScenarioKind(attempts)?.focusKind
 
         if style.kind == .measuring {
             return WhatToPlayTrainingSessionPlan(
@@ -490,6 +533,7 @@ enum WhatToPlayStatsAnalyzer {
         if pulse.state == .reviewNeeded {
             return WhatToPlayTrainingSessionPlan(
                 difficulty: recommendation.difficulty,
+                focusKind: focusKind,
                 scenarioCount: 3,
                 targetAccuracyPercent: 67,
                 title: "جلسة مراجعة مركزة".localized,
@@ -502,6 +546,7 @@ enum WhatToPlayStatsAnalyzer {
         if style.kind == .expertAligned || summary.currentStreak >= 3 {
             return WhatToPlayTrainingSessionPlan(
                 difficulty: nextDifficulty(after: recommendation.difficulty),
+                focusKind: focusKind,
                 scenarioCount: 5,
                 targetAccuracyPercent: 80,
                 title: "جلسة رفع المستوى".localized,
@@ -514,6 +559,7 @@ enum WhatToPlayStatsAnalyzer {
         if style.kind == .cautious || summary.averageExpectedImpact < 0 {
             return WhatToPlayTrainingSessionPlan(
                 difficulty: recommendation.difficulty,
+                focusKind: focusKind,
                 scenarioCount: 5,
                 targetAccuracyPercent: 70,
                 title: "جلسة تقليل النزيف".localized,
@@ -525,6 +571,7 @@ enum WhatToPlayStatsAnalyzer {
 
         return WhatToPlayTrainingSessionPlan(
             difficulty: recommendation.difficulty,
+            focusKind: focusKind,
             scenarioCount: 4,
             targetAccuracyPercent: 70,
             title: "جلسة تثبيت القراءة".localized,
@@ -542,6 +589,7 @@ enum WhatToPlayStatsAnalyzer {
         let sessionAttempts = Array(
             attempts
                 .filter { $0.difficulty == plan.difficulty }
+                .filter { plan.focusKind == nil || $0.focusKind == plan.focusKind }
                 .sorted { $0.createdAt > $1.createdAt }
                 .prefix(target)
         )
@@ -1092,6 +1140,10 @@ enum WhatToPlayStatsAnalyzer {
 
     private static func difficultyOrder(_ difficulty: WhatToPlayDifficulty) -> Int {
         WhatToPlayDifficulty.allCases.firstIndex(of: difficulty) ?? Int.max
+    }
+
+    private static func scenarioFocusOrder(_ focusKind: WhatToPlayScenarioFocusKind) -> Int {
+        WhatToPlayScenarioFocusKind.allCases.firstIndex(of: focusKind) ?? Int.max
     }
 
     private static func highestAttemptedDifficulty(in attempts: [WhatToPlayAttempt]) -> WhatToPlayDifficulty? {
