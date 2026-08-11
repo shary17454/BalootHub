@@ -21,6 +21,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.currentStreak, 1)
         XCTAssertEqual(summary.averageExpectedImpact, 2)
         XCTAssertEqual(summary.lostExpectedPoints, 0)
+        XCTAssertEqual(summary.averageLostExpectedPoints, 0)
         XCTAssertEqual(summary.lostAgainstSecondBestPoints, 0)
         XCTAssertEqual(summary.secondBestComparisonAttempts, 0)
         XCTAssertEqual(summary.averageSecondBestGap, 0)
@@ -38,6 +39,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         let summary = WhatToPlayStatsAnalyzer.summarize(attempts: attempts)
 
         XCTAssertEqual(summary.lostExpectedPoints, 12)
+        XCTAssertEqual(summary.averageLostExpectedPoints, 4)
         XCTAssertEqual(summary.valueCaptureAttempts, 3)
         XCTAssertEqual(summary.valueCapturePercent, 40)
     }

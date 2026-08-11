@@ -1042,6 +1042,11 @@ struct WhatToPlayTrainerView: View {
                         title: "نقاط متوقعة ضائعة".localized,
                         value: "\(statsSummary.lostExpectedPoints)"
                     )
+                    InfoRow(
+                        icon: "chart.bar.doc.horizontal.fill",
+                        title: "متوسط النقاط الضائعة".localized,
+                        value: impactText(statsSummary.averageLostExpectedPoints)
+                    )
                 }
                 if statsSummary.secondBestComparisonAttempts > 0 {
                     InfoRow(

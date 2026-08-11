@@ -18042,6 +18042,20 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "平均差距" } }
       }
     },
+    "متوسط النقاط الضائعة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Durchschnittlich verlorene Punkte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Average lost points" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Puntos perdidos promedio" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Points perdus moyens" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "औसत खोए अंक" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Rata-rata poin hilang" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Средние потерянные очки" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Ortalama kayıp puan" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اوسط ضائع پوائنٹس" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "平均损失分" } }
+      }
+    },
     "الفارق بين الأفضل والثاني" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Abstand zwischen bestem und zweitem" } },

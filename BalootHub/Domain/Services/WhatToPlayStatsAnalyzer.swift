@@ -9,6 +9,7 @@ struct WhatToPlayStatsSummary: Equatable {
     let bestStreak: Int
     let averageExpectedImpact: Int
     let lostExpectedPoints: Int
+    let averageLostExpectedPoints: Int
     let lostAgainstSecondBestPoints: Int
     let secondBestComparisonAttempts: Int
     let averageSecondBestGap: Int
@@ -23,6 +24,7 @@ struct WhatToPlayStatsSummary: Equatable {
         bestStreak: 0,
         averageExpectedImpact: 0,
         lostExpectedPoints: 0,
+        averageLostExpectedPoints: 0,
         lostAgainstSecondBestPoints: 0,
         secondBestComparisonAttempts: 0,
         averageSecondBestGap: 0,
@@ -462,6 +464,7 @@ enum WhatToPlayStatsAnalyzer {
         let impact = chronological.reduce(0) { $0 + $1.expectedImpact }
         let averageImpact = Int((Double(impact) / Double(chronological.count)).rounded())
         let lostExpectedPoints = chronological.reduce(0) { $0 + $1.lostExpectedPoints }
+        let averageLostExpectedPoints = Int((Double(lostExpectedPoints) / Double(chronological.count)).rounded())
         let secondBestComparisons = chronological.filter { $0.secondBestExpectedImpact != nil }
         let lostAgainstSecondBestPoints = secondBestComparisons.reduce(0) { $0 + $1.lostAgainstSecondBestPoints }
         let averageSecondBestGap = secondBestComparisons.isEmpty
@@ -502,6 +505,7 @@ enum WhatToPlayStatsAnalyzer {
             bestStreak: bestStreak,
             averageExpectedImpact: averageImpact,
             lostExpectedPoints: lostExpectedPoints,
+            averageLostExpectedPoints: averageLostExpectedPoints,
             lostAgainstSecondBestPoints: lostAgainstSecondBestPoints,
             secondBestComparisonAttempts: secondBestComparisons.count,
             averageSecondBestGap: averageSecondBestGap,
