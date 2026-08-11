@@ -18014,6 +18014,20 @@
         }
       }
     },
+    "متوسط الفارق" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Durchschnittlicher Abstand" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Average gap" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Diferencia media" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Écart moyen" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "औसत अंतर" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Selisih rata-rata" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Средняя разница" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Ortalama fark" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اوسط فرق" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "平均差距" } }
+      }
+    },
     "الفارق بين الأفضل والثاني" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Abstand zwischen bestem und zweitem" } },

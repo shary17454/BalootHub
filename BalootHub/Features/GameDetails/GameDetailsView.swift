@@ -1049,6 +1049,11 @@ struct WhatToPlayTrainerView: View {
                         title: "فارق عن ثاني أفضل".localized,
                         value: "\(statsSummary.lostAgainstSecondBestPoints)"
                     )
+                    InfoRow(
+                        icon: "chart.bar.fill",
+                        title: "متوسط الفارق".localized,
+                        value: impactText(statsSummary.averageSecondBestGap)
+                    )
                     Text("\("محاولات المقارنة".localized): \(statsSummary.secondBestComparisonAttempts)")
                         .font(AppTypography.caption)
                         .foregroundStyle(AppColor.textSecondary)

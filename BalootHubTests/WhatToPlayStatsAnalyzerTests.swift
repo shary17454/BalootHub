@@ -23,6 +23,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.lostExpectedPoints, 0)
         XCTAssertEqual(summary.lostAgainstSecondBestPoints, 0)
         XCTAssertEqual(summary.secondBestComparisonAttempts, 0)
+        XCTAssertEqual(summary.averageSecondBestGap, 0)
         XCTAssertEqual(summary.valueCapturePercent, 0)
         XCTAssertEqual(summary.valueCaptureAttempts, 0)
     }
@@ -52,6 +53,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(summary.secondBestComparisonAttempts, 2)
         XCTAssertEqual(summary.lostAgainstSecondBestPoints, 4)
+        XCTAssertEqual(summary.averageSecondBestGap, 2)
         XCTAssertEqual(summary.lostExpectedPoints, 14)
     }
 
