@@ -16,6 +16,7 @@ final class CatalogFilterTests: XCTestCase {
         let result = CatalogSearch.apply(filter: .balootGame, query: "", to: items)
         XCTAssertFalse(result.isEmpty)
         XCTAssertTrue(result.allSatisfy { $0.category == .balootGame })
+        XCTAssertEqual(result.map(\.slug), ["baloot-classic"])
     }
 
     func testOtherCardGameFilterExcludesBaloot() {
@@ -70,6 +71,25 @@ final class CatalogFilterTests: XCTestCase {
         XCTAssertTrue(slugs.contains("daily-baloot-challenges"))
         XCTAssertTrue(slugs.contains("baloot-achievements"))
         XCTAssertTrue(slugs.contains("offline-tournaments"))
+    }
+
+    func testBalootModesAreReferencesInsideSingleBalootGame() {
+        let items = makeItems()
+        let modeSlugs = [
+            "baloot-sun",
+            "baloot-hokum",
+            "baloot-projects",
+            "baloot-double",
+            "baloot-ashkal",
+            "baloot-gahwa-lock",
+            "baloot-kaboot"
+        ]
+
+        let modes = items.filter { modeSlugs.contains($0.slug) }
+
+        XCTAssertEqual(modes.count, modeSlugs.count)
+        XCTAssertTrue(modes.allSatisfy { $0.category == .balootTool })
+        XCTAssertTrue(modes.allSatisfy { !$0.isPlayable })
     }
 
     func testNewLearningReferencesAreRulesOnly() {

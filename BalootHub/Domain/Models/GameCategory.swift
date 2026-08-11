@@ -15,7 +15,7 @@ enum GameCategory: String, Codable, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .balootGame: "ألعاب البلوت".localized
+        case .balootGame: "لعبة البلوت".localized
         case .balootTool: "أدوات البلوت".localized
         case .otherCardGame: "ألعاب ورق أخرى".localized
         }
@@ -23,7 +23,7 @@ enum GameCategory: String, Codable, CaseIterable, Identifiable {
 
     var shortBadgeTitle: String {
         switch self {
-        case .balootGame: "بلوت".localized
+        case .balootGame: "لعبة".localized
         case .balootTool: "أداة".localized
         case .otherCardGame: "ورق".localized
         }

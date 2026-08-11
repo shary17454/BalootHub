@@ -103,6 +103,8 @@ final class CatalogIntegrityTests: XCTestCase {
         let hokum = try XCTUnwrap(try allItems().first { $0.slug == "baloot-hokum" })
         XCTAssertFalse(sun.isPlayable)
         XCTAssertFalse(hokum.isPlayable)
+        XCTAssertEqual(sun.category, .balootTool)
+        XCTAssertEqual(hokum.category, .balootTool)
     }
 
     /// حتى لو فُتح رابط قديم لصن أو حكم، يجب أن يدخل المستخدم لعبة البلوت الواحدة

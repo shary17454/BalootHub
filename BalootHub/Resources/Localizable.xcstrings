@@ -1114,6 +1114,16 @@
         }
       }
     },
+    "لعبة البلوت" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Baloot Game"
+          }
+        }
+      }
+    },
     "ألعاب ورق" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -12860,6 +12870,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你喜爱的所有巴鲁特游戏、工具和纸牌游戏，尽在一处"
+          }
+        }
+      }
+    },
+    "لعبة البلوت بصنها وحكمها وأدواتها في مكان واحد" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Baloot game with Sun, Hokum, and its tools in one place"
           }
         }
       }

@@ -72,7 +72,7 @@ struct HomeView: View {
                 Text("أهلًا بك في البلوت")
                     .font(AppTypography.largeTitle)
                     .foregroundStyle(.white)
-                Text("كل ألعاب البلوت وأدواتها وألعاب الورق المفضّلة في مكان واحد")
+                Text("لعبة البلوت بصنها وحكمها وأدواتها في مكان واحد")
                     .font(AppTypography.subheadline)
                     .foregroundStyle(.white.opacity(0.88))
             }
