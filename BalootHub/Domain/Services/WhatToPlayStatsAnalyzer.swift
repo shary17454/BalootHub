@@ -148,6 +148,8 @@ struct WhatToPlayReviewItem: Equatable, Identifiable {
     let secondBestCard: PlayingCard?
     let expectedImpact: Int
     let lostExpectedPoints: Int
+    let valueLossSeverity: WhatToPlayValueLossSeverity
+    let valueLossTitle: String
     let secondBestExpectedImpact: Int?
     let createdAt: Date
     let title: String
@@ -836,6 +838,7 @@ enum WhatToPlayStatsAnalyzer {
         .map { attempt in
             let isCostly = attempt.expectedImpact < 0
             let isMissedOpportunity = !isCostly && attempt.lostExpectedPoints >= missedOpportunityThreshold
+            let severity = valueLossSeverity(for: attempt.lostExpectedPoints)
             let tacticalReason = tacticalReviewReason(for: attempt)
             return WhatToPlayReviewItem(
                 id: attempt.id,
@@ -847,6 +850,8 @@ enum WhatToPlayStatsAnalyzer {
                 secondBestCard: attempt.secondBestCard,
                 expectedImpact: attempt.expectedImpact,
                 lostExpectedPoints: attempt.lostExpectedPoints,
+                valueLossSeverity: severity,
+                valueLossTitle: valueLossTitle(for: severity),
                 secondBestExpectedImpact: attempt.secondBestExpectedImpact,
                 createdAt: attempt.createdAt,
                 title: reviewTitle(isCostly: isCostly, isMissedOpportunity: isMissedOpportunity),

@@ -505,6 +505,20 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         let queue = WhatToPlayStatsAnalyzer.reviewQueue(for: attempts)
 
         XCTAssertEqual(queue.first?.lostExpectedPoints, 7)
+        XCTAssertEqual(queue.first?.valueLossSeverity, .high)
+        XCTAssertEqual(queue.first?.valueLossTitle, "خسارة قيمة عالية".localized)
+    }
+
+    func testReviewQueueClassifiesMediumValueLoss() throws {
+        let item = try XCTUnwrap(
+            WhatToPlayStatsAnalyzer.reviewQueue(
+                for: [attempt(daysAgo: 1, correct: false, impact: 2, bestImpact: 6)]
+            ).first
+        )
+
+        XCTAssertEqual(item.lostExpectedPoints, 4)
+        XCTAssertEqual(item.valueLossSeverity, .medium)
+        XCTAssertEqual(item.valueLossTitle, "خسارة قيمة متوسطة".localized)
     }
 
     func testReviewQueueCarriesSecondBestForReplayReview() {

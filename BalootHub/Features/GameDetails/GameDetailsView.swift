@@ -1807,6 +1807,7 @@ struct WhatToPlayTrainerView: View {
                     StatusBadge(impactText(item.expectedImpact), systemImage: "chart.line.downtrend.xyaxis", tint: item.expectedImpact < 0 ? AppColor.danger : AppColor.accent)
                     if item.lostExpectedPoints > 0 {
                         StatusBadge("\(item.lostExpectedPoints)", systemImage: "drop.fill", tint: AppColor.danger)
+                        StatusBadge(item.valueLossTitle, systemImage: "gauge.with.dots.needle.67percent", tint: valueLossSeverityTint(item.valueLossSeverity))
                     }
                 }
                 Text("\("اختيارك".localized): \(cardName(item.selectedCard)) · \("أفضل ورقة".localized): \(cardName(item.bestCard))")
