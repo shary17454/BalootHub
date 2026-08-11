@@ -83,6 +83,8 @@ struct RootTabView: View {
             DailyChallengesView()
         case .achievements:
             AchievementsView()
+        case .offlineTournaments:
+            OfflineTournamentsView()
         case .trainingIntro:
             RulesView(slug: "baloot-training")
         }

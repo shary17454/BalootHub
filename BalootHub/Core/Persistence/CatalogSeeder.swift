@@ -442,6 +442,32 @@ private extension CatalogSeeder {
             ]
         ),
         GameDefinition(
+            slug: "offline-tournaments",
+            arabicTitle: "بطولات Offline",
+            englishTitle: "Offline Tournaments",
+            shortDescription: "إنشاء بطولات بلوت محلية من 4 أو 8 فرق مع جدول مباريات وسجل محفوظ عبر SwiftData.",
+            category: .balootTool,
+            playerCountText: "4 أو 8 فرق",
+            difficulty: .intermediate,
+            estimatedDuration: "حسب نظام البطولة",
+            iconName: "trophy.fill",
+            accentToken: "accent",
+            isPlayable: false,
+            sortOrder: 14,
+            sections: [
+                .objective: "تنظيم بطولة بلوت تعمل دون إنترنت، مع حفظ الجدول والتاريخ والبطل محليًا.",
+                .playerCount: "تدعم البطولة 4 أو 8 فرق، ويمكن استخدامها لجلسات المجلس أو التدريب ضد خصوم محليين.",
+                .setup: "اختر اسم البطولة، النظام، وعدد الفرق، ثم ينشئ التطبيق جدول المباريات ويحفظه في SwiftData.",
+                .dealing: "لا تغير البطولة توزيع أوراق البلوت؛ هي طبقة تنظيم وجدولة فوق اللعب أو التسجيل.",
+                .cardRanking: "كل مباراة داخل البطولة يجب أن تستخدم قواعد البلوت المختارة نفسها من المحرك أو قواعد مجلسي.",
+                .howToPlay: "أنشئ الجدول، العب المباريات على الطاولة أو داخل التطبيق، ثم اعتمد البطل عند نهاية البطولة.",
+                .scoring: "تعرض البطولة عدد المباريات والانتصارات والبطل، ويمكن لاحقًا ربط كل مباراة بجلسة Scorekeeper أو GameState.",
+                .projects: "لا تضيف البطولة قواعد مشاريع جديدة؛ تعتمد على إعدادات البلوت المعتمدة لكل مباراة.",
+                .roundEnd: "عند اعتماد البطل تصبح البطولة منتهية وتبقى في السجل المحلي للرجوع إليها.",
+                .commonMistakes: "خلط نظام الدوري والخروج المغلوب أثناء نفس البطولة، أو حذف البطولة قبل اعتماد البطل النهائي."
+            ]
+        ),
+        GameDefinition(
             slug: "baloot-scorekeeper",
             arabicTitle: "تسجيل البلوت",
             englishTitle: "Baloot Scorekeeper",
@@ -453,7 +479,7 @@ private extension CatalogSeeder {
             iconName: "list.clipboard.fill",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 14,
+            sortOrder: 15,
             sections: [
                 .objective: "تتبّع نقاط جلسة بلوت حقيقية بدقة، وإعلان الفريق الفائز فور بلوغ الهدف المتفق عليه.",
                 .playerCount: "يُسجَّل باسم فريقين، كل فريق من لاعبين على الطاولة.",
@@ -479,7 +505,7 @@ private extension CatalogSeeder {
             iconName: "quote.bubble.fill",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 15,
+            sortOrder: 16,
             sections: [
                 .objective: "توضيح قرارات المزايدة قبل اللعب حتى يعرف اللاعب متى يمر، ومتى يطلب صن أو حكم، ومتى تكون المضاعفة منطقية.",
                 .playerCount: "المزايدة تُفهم حول طاولة من أربعة لاعبين، لكن الدليل مخصص للتعلم الفردي.",
@@ -505,7 +531,7 @@ private extension CatalogSeeder {
             iconName: "rectangle.stack.badge.plus",
             accentToken: "accent",
             isPlayable: false,
-            sortOrder: 16,
+            sortOrder: 17,
             sections: [
                 .objective: "جمع أسماء المشاريع المشهورة وشروطها في مكان واحد ليسهل الرجوع إليها أثناء التعلم أو قبل الجلسة.",
                 .playerCount: "المشاريع تخص يد لاعب ضمن فريقين من أربعة لاعبين، لكن المرجع فردي.",
@@ -531,7 +557,7 @@ private extension CatalogSeeder {
             iconName: "mic.and.signal.meter.fill",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 17,
+            sortOrder: 18,
             sections: [
                 .objective: "توضيح الفروق بين اللعب ضد الذكاء الاصطناعي، اللعب المحلي بين الأشخاص، واللعب الشبكي بالصوت حتى يعرف اللاعب ما المتاح الآن وما يحتاج اتصالًا آمنًا.",
                 .playerCount: "اللعب ضد الذكاء يدعم لاعبًا واحدًا مع ثلاثة آليين. اللعب المحلي يدعم أربعة أشخاص على نفس الجهاز بتمريره حسب الدور. اللعب الصوتي عن بعد يحتاج غرفة Online لأربعة لاعبين.",
@@ -560,7 +586,7 @@ private extension CatalogSeeder {
             iconName: "6.circle.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 18,
+            sortOrder: 19,
             sections: [
                 .objective: "تحقيق أفضل نتيجة عبر تجنّب أوراق أو أكلات معيّنة تخسر نقاطًا، بحسب الصيغة المعتمدة من اللاعبين.",
                 .playerCount: "تُلعب غالبًا بأربعة لاعبين، وتختلف التفاصيل بين المجالس.",
@@ -586,7 +612,7 @@ private extension CatalogSeeder {
             iconName: "suit.club.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 19,
+            sortOrder: 20,
             sections: [
                 .objective: "تحقيق عدد الأكلات الذي التزم به اللاعب أو الفريق أثناء المزايدة، أو أكثر.",
                 .playerCount: "أربعة لاعبين، إما كل لاعب لنفسه أو في فريقين متقابلين حسب الصيغة المعتمدة.",
@@ -612,7 +638,7 @@ private extension CatalogSeeder {
             iconName: "suit.diamond.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 20,
+            sortOrder: 21,
             sections: [
                 .objective: "تحقيق أقل عدد نقاط سلبية (أو أعلى نقاط إيجابية حسب الجولة) عبر دورة من عدة أنماط لعب مختلفة.",
                 .playerCount: "أربعة لاعبين، كل لاعب يلعب لحسابه الخاص دون فرق ثابتة.",
@@ -638,7 +664,7 @@ private extension CatalogSeeder {
             iconName: "hand.raised.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 21,
+            sortOrder: 22,
             sections: [
                 .objective: "التخلص من كل الأوراق في يد اللاعب قبل بقية اللاعبين، أو تحقيق أقل عدد نقاط متبقية بحسب الصيغة.",
                 .playerCount: "من لاعبين حتى أربعة لاعبين، أفرادًا أو في فرق صغيرة.",

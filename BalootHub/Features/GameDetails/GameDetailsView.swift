@@ -193,6 +193,18 @@ struct GameDetailsView: View {
                 .controlSize(.large)
             }
 
+            if item.slug == "offline-tournaments" {
+                Button {
+                    appEnvironment.navigate(to: .offlineTournaments, tab: appEnvironment.selectedTab)
+                } label: {
+                    Label("فتح البطولات", systemImage: "trophy.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(AppColor.primary)
+                .controlSize(.large)
+            }
+
             if item.isPlayable {
                 Button {
                     appEnvironment.navigate(to: .balootGamePlay(slug: item.slug), tab: appEnvironment.selectedTab)

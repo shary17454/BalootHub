@@ -11,7 +11,7 @@ final class CatalogSeederTests: XCTestCase {
 
         let context = ModelContext(container)
         let count = try context.fetchCount(FetchDescriptor<GameCatalogItem>())
-        XCTAssertEqual(count, 22)
+        XCTAssertEqual(count, 23)
     }
 
     func testSeedIfNeededDoesNotDuplicateOnSecondCall() throws {
@@ -23,7 +23,7 @@ final class CatalogSeederTests: XCTestCase {
 
         let context = ModelContext(container)
         let count = try context.fetchCount(FetchDescriptor<GameCatalogItem>())
-        XCTAssertEqual(count, 22)
+        XCTAssertEqual(count, 23)
     }
 
     func testSettingsRepositoryCreatesSingletonOnce() throws {
