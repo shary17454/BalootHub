@@ -523,6 +523,64 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(queue.first?.focusKind, .followSuit)
     }
 
+    func testReviewQueueCarriesOpponentClosureTacticalReason() throws {
+        let item = try XCTUnwrap(
+            WhatToPlayStatsAnalyzer.reviewQueue(
+                for: [
+                    attempt(
+                        daysAgo: 1,
+                        correct: false,
+                        impact: -7,
+                        bestImpact: 2,
+                        impactBreakdown: .opponentTrickClosure(points: 16)
+                    )
+                ]
+            ).first
+        )
+
+        XCTAssertEqual(item.tacticalReasonTitle, "تغلق الأكلة للخصم".localized)
+        XCTAssertEqual(item.tacticalReasonIconName, "flag.slash.fill")
+        XCTAssertNotNil(item.tacticalReasonDetail)
+    }
+
+    func testReviewQueueCarriesPointDumpTacticalReason() throws {
+        let item = try XCTUnwrap(
+            WhatToPlayStatsAnalyzer.reviewQueue(
+                for: [
+                    attempt(
+                        daysAgo: 1,
+                        correct: false,
+                        impact: -4,
+                        bestImpact: 2,
+                        impactBreakdown: .unprotectedPointDump(points: 10)
+                    )
+                ]
+            ).first
+        )
+
+        XCTAssertEqual(item.tacticalReasonTitle, "ترمي نقاطًا بلا حماية".localized)
+        XCTAssertEqual(item.tacticalReasonIconName, "drop.triangle.fill")
+    }
+
+    func testReviewQueueCarriesCostlyOpeningTacticalReason() throws {
+        let item = try XCTUnwrap(
+            WhatToPlayStatsAnalyzer.reviewQueue(
+                for: [
+                    attempt(
+                        daysAgo: 1,
+                        correct: false,
+                        impact: -3,
+                        bestImpact: 2,
+                        impactBreakdown: .costlyOpeningLead(points: 4)
+                    )
+                ]
+            ).first
+        )
+
+        XCTAssertEqual(item.tacticalReasonTitle, "افتتاح مكلف".localized)
+        XCTAssertEqual(item.tacticalReasonIconName, "arrow.up.forward.circle.fill")
+    }
+
     func testReviewPriorityMarksNegativeImpactAsHighPriority() throws {
         let item = try XCTUnwrap(
             WhatToPlayStatsAnalyzer.reviewQueue(

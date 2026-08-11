@@ -140,6 +140,9 @@ struct WhatToPlayReviewItem: Equatable, Identifiable {
     let title: String
     let detail: String
     let iconName: String
+    let tacticalReasonTitle: String?
+    let tacticalReasonDetail: String?
+    let tacticalReasonIconName: String?
 }
 
 struct WhatToPlayReviewPriority: Equatable {
@@ -788,6 +791,7 @@ enum WhatToPlayStatsAnalyzer {
         .map { attempt in
             let isCostly = attempt.expectedImpact < 0
             let isMissedOpportunity = !isCostly && attempt.lostExpectedPoints >= missedOpportunityThreshold
+            let tacticalReason = tacticalReviewReason(for: attempt)
             return WhatToPlayReviewItem(
                 id: attempt.id,
                 seed: UInt64(clamping: attempt.seedValue),
@@ -806,9 +810,47 @@ enum WhatToPlayStatsAnalyzer {
                     isCostly: isCostly,
                     isMissedOpportunity: isMissedOpportunity
                 ),
-                iconName: reviewIconName(isCostly: isCostly, isMissedOpportunity: isMissedOpportunity)
+                iconName: reviewIconName(isCostly: isCostly, isMissedOpportunity: isMissedOpportunity),
+                tacticalReasonTitle: tacticalReason?.title,
+                tacticalReasonDetail: tacticalReason?.detail,
+                tacticalReasonIconName: tacticalReason?.iconName
             )
         }
+    }
+
+    private static func tacticalReviewReason(for attempt: WhatToPlayAttempt) -> WhatToPlayReviewPriority? {
+        guard attempt.expectedImpact < 0, let breakdown = attempt.impactBreakdown else { return nil }
+
+        if breakdown.completesTrick,
+           breakdown.winsForPlayerTeam == false,
+           breakdown.trickPointsSwing < 0 {
+            return WhatToPlayReviewPriority(
+                title: "تغلق الأكلة للخصم".localized,
+                detail: "اختيارك أضاف نقاطًا لأكلة انتهت للفريق الخصم. راجع هل كان يمكن تقليل الخسارة بدل تغذية الأكلة.".localized,
+                iconName: "flag.slash.fill"
+            )
+        }
+
+        if !breakdown.completesTrick,
+           !breakdown.preservesLead,
+           breakdown.playedCardPoints > 0,
+           breakdown.immediateImpact < 0 {
+            return WhatToPlayReviewPriority(
+                title: "ترمي نقاطًا بلا حماية".localized,
+                detail: "الورقة تحمل نقاطًا والأكلة لم تُحسم بعد. اسأل هل شريكك يحميها أو هل الأفضل التخلص من ورقة أرخص.".localized,
+                iconName: "drop.triangle.fill"
+            )
+        }
+
+        if breakdown.preservesLead, breakdown.immediateImpact < 0 {
+            return WhatToPlayReviewPriority(
+                title: "افتتاح مكلف".localized,
+                detail: "بدأت الأكلة بورقة تخفض الأثر المتوقع. جرّب افتتاحًا يحفظ القوة أو يسحب الحكم بسبب واضح.".localized,
+                iconName: "arrow.up.forward.circle.fill"
+            )
+        }
+
+        return nil
     }
 
     private static func reviewTitle(isCostly: Bool, isMissedOpportunity: Bool) -> String {

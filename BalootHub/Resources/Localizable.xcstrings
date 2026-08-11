@@ -43,6 +43,20 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你的首攻代价较高" } }
       }
     },
+    "افتتاح مكلف" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Teure Eröffnung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Costly opening lead" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Salida costosa" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Entame coûteuse" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "महंगी शुरुआती चाल" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Pembukaan mahal" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Дорогой первый ход" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Maliyetli açılış" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "مہنگی ابتدائی چال" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "代价较高的首攻" } }
+      }
+    },
     "بعض أخطائك جاءت من بداية الأكلة بورقة تخفض الأثر المتوقع. عند الافتتاح، اختر ورقة تكشف أقل قدر من قوتك أو تسحب الحكم لغرض واضح." : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Einige Fehler entstehen, weil du den Stich mit einer Karte beginnst, die den erwarteten Effekt senkt. Wähle beim Eröffnen eine Karte, die wenig Stärke verrät oder Trumpf aus einem klaren Grund zieht." } },
@@ -55,6 +69,20 @@
         "tr" : { "stringUnit" : { "state" : "translated", "value" : "Bazı hataların, beklenen etkiyi düşüren bir kartla eli açmaktan geldi. Açılışta gücünü az gösteren ya da net bir amaçla kozu çeken kartı seç." } },
         "ur" : { "stringUnit" : { "state" : "translated", "value" : "کچھ غلطیاں ایسی چال شروع کرنے سے ہوئیں جس سے متوقع اثر کم ہوا۔ آغاز پر ایسا پتا چنیں جو آپ کی طاقت کم ظاہر کرے یا واضح مقصد سے حکم نکالے۔" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "部分失误来自用会降低预期影响的牌开墩。首攻时选择较少暴露实力的牌，或在有明确目的时引出将牌。" } }
+      }
+    },
+    "بدأت الأكلة بورقة تخفض الأثر المتوقع. جرّب افتتاحًا يحفظ القوة أو يسحب الحكم بسبب واضح." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Du hast den Stich mit einer Karte begonnen, die den erwarteten Effekt senkt. Versuche eine Eröffnung, die Stärke bewahrt oder Trumpf aus einem klaren Grund zieht." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You led the trick with a card that lowers expected impact. Try an opening that preserves strength or pulls trump for a clear reason." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Iniciaste la baza con una carta que reduce el impacto esperado. Prueba una salida que conserve fuerza o saque triunfo con un motivo claro." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu as entamé le pli avec une carte qui réduit l'impact attendu. Essaie une entame qui conserve la force ou tire l'atout pour une raison claire." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आपने ऐसी पत्ती से बाज़ी शुरू की जो अपेक्षित प्रभाव घटाती है। ऐसी शुरुआत आज़माएँ जो ताकत बचाए या साफ कारण से हुकुम निकाले।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kamu membuka trik dengan kartu yang menurunkan dampak yang diharapkan. Coba pembukaan yang menjaga kekuatan atau menarik trump dengan alasan jelas." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Вы начали взятку картой, снижающей ожидаемый эффект. Попробуйте заход, который сохраняет силу или тянет козырь с понятной целью." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Eli, beklenen etkiyi düşüren bir kartla açtın. Gücü koruyan ya da net bir nedenle kozu çeken bir açılış dene." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ نے چال ایسے پتے سے شروع کی جس سے متوقع اثر کم ہوا۔ ایسی شروعات آزمائیں جو طاقت بچائے یا واضح وجہ سے حکم نکالے۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你用会降低预期影响的牌开墩。尝试保留实力的首攻，或在有明确原因时引出将牌。" } }
       }
     },
     "تغلق الأكلة للخصم" : {
@@ -71,6 +99,20 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你把这一墩送给了对手" } }
       }
     },
+    "اختيارك أضاف نقاطًا لأكلة انتهت للفريق الخصم. راجع هل كان يمكن تقليل الخسارة بدل تغذية الأكلة." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Deine Wahl fügte Punkte zu einem Stich hinzu, der beim Gegner landete. Prüfe, ob du den Verlust hättest verringern können, statt den Stich zu füttern." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your choice added points to a trick that went to the opponents. Review whether you could have reduced the loss instead of feeding the trick." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tu elección añadió puntos a una baza que ganó el rival. Revisa si podías reducir la pérdida en lugar de alimentar la baza." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ton choix a ajouté des points à un pli gagné par l'adversaire. Vérifie si tu pouvais réduire la perte au lieu d'alimenter le pli." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आपके चुनाव ने ऐसी बाज़ी में अंक जोड़े जो विरोधियों ने जीती। देखें कि क्या बाज़ी को बढ़ाने के बजाय नुकसान कम किया जा सकता था।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Pilihanmu menambah poin pada trik yang dimenangkan lawan. Tinjau apakah kamu bisa mengurangi kerugian alih-alih memberi poin pada trik itu." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Ваш выбор добавил очки во взятку, которую забрали соперники. Проверьте, можно ли было уменьшить потерю вместо усиления взятки." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Seçimin, rakibin aldığı ele puan ekledi. Eli beslemek yerine kaybı azaltıp azaltamayacağını gözden geçir." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ کے انتخاب نے ایسی چال میں پوائنٹس ڈالے جو مخالف کو گئی۔ دیکھیں کیا چال کو بھرنے کے بجائے نقصان کم کیا جا سکتا تھا۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你的选择给对手赢下的一墩增加了分值。回顾是否本可以减少损失，而不是给这一墩加分。" } }
+      }
+    },
     "ترمي نقاطًا بلا حماية" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Du wirfst Punkte ungeschützt ab" } },
@@ -83,6 +125,20 @@
         "tr" : { "stringUnit" : { "state" : "translated", "value" : "Korumasız puan atıyorsun" } },
         "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ بغیر حفاظت کے پوائنٹس پھینک رہے ہیں" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你在无保护地丢分牌" } }
+      }
+    },
+    "الورقة تحمل نقاطًا والأكلة لم تُحسم بعد. اسأل هل شريكك يحميها أو هل الأفضل التخلص من ورقة أرخص." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die Karte trägt Punkte und der Stich ist noch nicht entschieden. Frage dich, ob dein Partner sie schützt oder ob eine billigere Karte besser wäre." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The card carries points and the trick is not decided yet. Ask whether your partner protects it or whether discarding a cheaper card is better." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "La carta tiene puntos y la baza aún no está decidida. Pregunta si tu compañero la protege o si conviene soltar una carta más barata." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "La carte vaut des points et le pli n'est pas encore décidé. Demande-toi si ton partenaire la protège ou s'il vaut mieux défausser une carte moins chère." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "पत्ती में अंक हैं और बाज़ी अभी तय नहीं हुई। सोचें कि साथी इसे बचाएगा या सस्ती पत्ती छोड़ना बेहतर है।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kartu itu bernilai poin dan trik belum diputuskan. Tanyakan apakah pasanganmu melindunginya atau lebih baik membuang kartu yang lebih murah." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Карта несет очки, а взятка еще не решена. Спросите себя, защитит ли ее партнер или лучше сбросить более дешевую карту." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Kart puan taşıyor ve el henüz belli değil. Ortağın koruyor mu yoksa daha ucuz bir kart atmak mı daha iyi, sor." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "پتے میں پوائنٹس ہیں اور چال ابھی طے نہیں ہوئی۔ سوچیں ساتھی اسے بچائے گا یا سستا پتا پھینکنا بہتر ہے۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "这张牌有分值，而这一墩尚未确定。想想队友是否能保护它，或是否应丢一张更便宜的牌。" } }
       }
     },
     "تكرر رمي أوراق عليها نقاط قبل أن تُحسم الأكلة. لا تضف العشرة أو الآس إلا إذا كنت تكسب الأكلة أو شريكك غالبًا سيحميها." : {

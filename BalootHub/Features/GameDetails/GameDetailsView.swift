@@ -1743,6 +1743,27 @@ struct WhatToPlayTrainerView: View {
                         .minimumScaleFactor(0.85)
                 }
 
+                if let title = item.tacticalReasonTitle,
+                   let detail = item.tacticalReasonDetail,
+                   let iconName = item.tacticalReasonIconName {
+                    Label {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(title)
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(AppColor.textPrimary)
+                            Text(detail)
+                                .font(.caption2)
+                                .foregroundStyle(AppColor.textSecondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    } icon: {
+                        Image(systemName: iconName)
+                            .foregroundStyle(AppColor.danger)
+                    }
+                    .padding(AppSpacing.xs)
+                    .background(AppColor.danger.opacity(0.1), in: RoundedRectangle(cornerRadius: AppRadius.small))
+                }
+
                 Label {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(priority.title)
