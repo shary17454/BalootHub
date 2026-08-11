@@ -10,6 +10,7 @@ enum PersistenceController {
             ScoreSession.self,
             ScoreRound.self,
             OfflineTournament.self,
+            WhatToPlayAttempt.self,
             AppSettings.self
         ])
     }

@@ -250,7 +250,7 @@ private struct InfoRow: View {
 
     var body: some View {
         HStack {
-            Label(title, systemImage: icon)
+            Label(title.localized, systemImage: icon)
                 .font(AppTypography.subheadline)
                 .foregroundStyle(AppColor.textSecondary)
             Spacer()
@@ -259,6 +259,28 @@ private struct InfoRow: View {
                 .foregroundStyle(AppColor.textPrimary)
         }
         .accessibilityElement(children: .combine)
+    }
+}
+
+private struct StatTile: View {
+    let title: String
+    let value: String
+    let icon: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Label(title.localized, systemImage: icon)
+                .font(AppTypography.caption)
+                .foregroundStyle(AppColor.textSecondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+            Text(value)
+                .font(AppTypography.headline)
+                .foregroundStyle(AppColor.textPrimary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.sm)
+        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
     }
 }
 
@@ -271,17 +293,25 @@ private struct InfoRow: View {
 }
 
 struct WhatToPlayTrainerView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query(sort: \WhatToPlayAttempt.createdAt, order: .reverse) private var attempts: [WhatToPlayAttempt]
+
     @State private var difficulty: WhatToPlayDifficulty = .medium
     @State private var seed: UInt64 = 2026
     @State private var scenario: WhatToPlayScenario?
     @State private var selectedOption: WhatToPlayOption?
     @State private var errorMessage: String?
 
+    private var statsSummary: WhatToPlayStatsSummary {
+        WhatToPlayStatsAnalyzer.summarize(attempts: attempts)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
                 header
                 controls
+                statsCard
 
                 if let scenario {
                     scenarioSummary(scenario)
@@ -360,6 +390,34 @@ struct WhatToPlayTrainerView: View {
         }
     }
 
+    private var statsCard: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            Label("أداؤك في المدرب", systemImage: "chart.bar.xaxis")
+                .font(AppTypography.headline)
+                .foregroundStyle(AppColor.primary)
+
+            if statsSummary.attempts == 0 {
+                Text("اختر ورقة في أول موقف ليبدأ التطبيق بتتبع دقتك وسلسلة إجاباتك.")
+                    .font(AppTypography.subheadline)
+                    .foregroundStyle(AppColor.textSecondary)
+            } else {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 2), spacing: AppSpacing.xs) {
+                    StatTile(title: "المحاولات", value: "\(statsSummary.attempts)", icon: "number")
+                    StatTile(title: "الدقة", value: "\(statsSummary.accuracyPercent)%", icon: "target")
+                    StatTile(title: "السلسلة الحالية", value: "\(statsSummary.currentStreak)", icon: "flame.fill")
+                    StatTile(title: "أفضل سلسلة", value: "\(statsSummary.bestStreak)", icon: "star.fill")
+                }
+                InfoRow(
+                    icon: "chart.line.uptrend.xyaxis",
+                    title: "متوسط الأثر المتوقع",
+                    value: impactText(statsSummary.averageExpectedImpact)
+                )
+            }
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
     private func scenarioSummary(_ scenario: WhatToPlayScenario) -> some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
             Label("الموقف", systemImage: "tablecells.fill")
@@ -415,7 +473,7 @@ struct WhatToPlayTrainerView: View {
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 4), spacing: AppSpacing.xs) {
                 ForEach(scenario.options) { option in
                     Button {
-                        selectedOption = WhatToPlayTrainer.evaluateChoice(card: option.card, in: scenario)
+                        choose(option, in: scenario)
                     } label: {
                         VStack(spacing: 6) {
                             MiniAnalysisCard(card: option.card, isSelected: selectedOption?.card == option.card)
@@ -429,6 +487,23 @@ struct WhatToPlayTrainerView: View {
                 }
             }
         }
+    }
+
+    private func choose(_ option: WhatToPlayOption, in scenario: WhatToPlayScenario) {
+        guard let evaluated = WhatToPlayTrainer.evaluateChoice(card: option.card, in: scenario) else { return }
+        if selectedOption == nil, let bestCard = scenario.bestOption?.card {
+            let attempt = WhatToPlayAttempt(
+                difficulty: scenario.difficulty,
+                seed: scenario.seed,
+                selectedCard: evaluated.card,
+                bestCard: bestCard,
+                isCorrect: evaluated.isExpertChoice,
+                expectedImpact: evaluated.expectedImpact
+            )
+            modelContext.insert(attempt)
+            try? modelContext.save()
+        }
+        selectedOption = evaluated
     }
 
     private func resultCard(_ option: WhatToPlayOption, scenario: WhatToPlayScenario) -> some View {

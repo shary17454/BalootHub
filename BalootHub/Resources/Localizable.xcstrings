@@ -16374,6 +16374,16 @@
         }
       }
     },
+    "أداؤك في المدرب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your trainer performance"
+          }
+        }
+      }
+    },
     "أنت تفتتح الأكلة." : {
       "localizations" : {
         "en" : {
@@ -16384,12 +16394,52 @@
         }
       }
     },
+    "أفضل سلسلة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Best streak"
+          }
+        }
+      }
+    },
+    "اختر ورقة في أول موقف ليبدأ التطبيق بتتبع دقتك وسلسلة إجاباتك." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a card in your first scenario to start tracking your accuracy and answer streak."
+          }
+        }
+      }
+    },
     "الدور" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Turn"
+          }
+        }
+      }
+    },
+    "الدقة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accuracy"
+          }
+        }
+      }
+    },
+    "السلسلة الحالية" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Current streak"
           }
         }
       }
@@ -16424,12 +16474,32 @@
         }
       }
     },
+    "المحاولات" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attempts"
+          }
+        }
+      }
+    },
     "مشاركة الموقف" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Share scenario"
+          }
+        }
+      }
+    },
+    "متوسط الأثر المتوقع" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Average expected impact"
           }
         }
       }
