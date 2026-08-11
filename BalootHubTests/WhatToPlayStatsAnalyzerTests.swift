@@ -1391,8 +1391,10 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.state, .notStarted)
         XCTAssertEqual(progress.completedAttempts, 0)
         XCTAssertEqual(progress.targetAttempts, 3)
+        XCTAssertFalse(progress.accuracyTargetMet)
         XCTAssertEqual(progress.totalExpectedImpact, 0)
         XCTAssertEqual(progress.averageExpectedImpact, 0)
+        XCTAssertFalse(progress.impactTargetMet)
         XCTAssertEqual(progress.impactTitle, "الأثر غير محسوب بعد".localized)
         XCTAssertEqual(progress.impactIconName, "chart.line.uptrend.xyaxis")
         XCTAssertNil(progress.reviewItem)
@@ -1416,8 +1418,10 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.completedAttempts, 3)
         XCTAssertEqual(progress.correctAttempts, 2)
         XCTAssertEqual(progress.accuracyPercent, 67)
+        XCTAssertFalse(progress.accuracyTargetMet)
         XCTAssertEqual(progress.totalExpectedImpact, 5)
         XCTAssertEqual(progress.averageExpectedImpact, 2)
+        XCTAssertTrue(progress.impactTargetMet)
         XCTAssertEqual(progress.impactTitle, "أثر الجلسة رابح".localized)
         XCTAssertEqual(progress.impactIconName, "checkmark.seal.fill")
         XCTAssertEqual(progress.reviewItem?.seed, 2)
@@ -1440,8 +1444,10 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.completedAttempts, 2)
         XCTAssertEqual(progress.correctAttempts, 1)
         XCTAssertEqual(progress.accuracyPercent, 50)
+        XCTAssertFalse(progress.accuracyTargetMet)
         XCTAssertEqual(progress.totalExpectedImpact, 1)
         XCTAssertEqual(progress.averageExpectedImpact, 1)
+        XCTAssertTrue(progress.impactTargetMet)
         XCTAssertEqual(progress.reviewItem?.seed, 1)
         XCTAssertEqual(progress.remainingAttempts, 1)
     }
@@ -1461,10 +1467,29 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.completedAttempts, 3)
         XCTAssertEqual(progress.correctAttempts, 2)
         XCTAssertEqual(progress.accuracyPercent, 67)
+        XCTAssertTrue(progress.accuracyTargetMet)
         XCTAssertEqual(progress.totalExpectedImpact, 5)
         XCTAssertEqual(progress.averageExpectedImpact, 2)
+        XCTAssertTrue(progress.impactTargetMet)
         XCTAssertEqual(progress.reviewItem?.seed, 1)
         XCTAssertEqual(progress.title, "هدف الجلسة تحقق".localized)
+    }
+
+    func testTrainingSessionProgressRequiresImpactTargetForSuccess() {
+        let plan = sessionPlan(difficulty: .easy, count: 3, target: 67, impactTarget: 2)
+        let attempts = [
+            attempt(daysAgo: 3, difficulty: .easy, correct: true, impact: 1),
+            attempt(daysAgo: 2, difficulty: .easy, correct: true, impact: 1),
+            attempt(daysAgo: 1, difficulty: .easy, correct: false, impact: 0)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.state, .needsRepeat)
+        XCTAssertTrue(progress.accuracyTargetMet)
+        XCTAssertFalse(progress.impactTargetMet)
+        XCTAssertEqual(progress.averageExpectedImpact, 1)
+        XCTAssertEqual(progress.detail, "أكملتها بدقة كافية، لكن متوسط الأثر أقل من هدف الخطة؛ راجع الاختيارات القريبة قبل تكرارها.".localized)
     }
 
     func testTrainingSessionProgressRequestsRepeatWhenAccuracyMissesTarget() {
@@ -1482,8 +1507,10 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.completedAttempts, 4)
         XCTAssertEqual(progress.correctAttempts, 2)
         XCTAssertEqual(progress.accuracyPercent, 50)
+        XCTAssertFalse(progress.accuracyTargetMet)
         XCTAssertEqual(progress.totalExpectedImpact, -3)
         XCTAssertEqual(progress.averageExpectedImpact, -1)
+        XCTAssertFalse(progress.impactTargetMet)
         XCTAssertEqual(progress.impactTitle, "أثر الجلسة سلبي".localized)
         XCTAssertEqual(progress.impactIconName, "exclamationmark.triangle.fill")
         XCTAssertEqual(progress.reviewItem?.seed, 1)
@@ -1557,14 +1584,15 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         difficulty: WhatToPlayDifficulty,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
         count: Int,
-        target: Int
+        target: Int,
+        impactTarget: Int = 0
     ) -> WhatToPlayTrainingSessionPlan {
         WhatToPlayTrainingSessionPlan(
             difficulty: difficulty,
             focusKind: focusKind,
             scenarioCount: count,
             targetAccuracyPercent: target,
-            targetAverageExpectedImpact: 0,
+            targetAverageExpectedImpact: impactTarget,
             title: "خطة اختبار",
             detail: "تفاصيل اختبار",
             successMetric: "هدف اختبار",

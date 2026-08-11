@@ -19028,6 +19028,26 @@
         }
       }
     },
+    "أكملتها، لكن الدقة والأثر أقل من هدف الخطة؛ أعد نفس المستوى." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You completed it, but accuracy and impact are below the plan targets; repeat the same level."
+          }
+        }
+      }
+    },
+    "أكملتها بدقة كافية، لكن متوسط الأثر أقل من هدف الخطة؛ راجع الاختيارات القريبة قبل تكرارها." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You completed it with enough accuracy, but average impact is below the plan target; review close choices before repeating it."
+          }
+        }
+      }
+    },
     "المكتمل" : {
       "localizations" : {
         "en" : {

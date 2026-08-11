@@ -215,8 +215,10 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let targetAttempts: Int
     let correctAttempts: Int
     let accuracyPercent: Int
+    let accuracyTargetMet: Bool
     let totalExpectedImpact: Int
     let averageExpectedImpact: Int
+    let impactTargetMet: Bool
     let impactTitle: String
     let impactDetail: String
     let impactIconName: String
@@ -912,6 +914,8 @@ enum WhatToPlayStatsAnalyzer {
         let averageImpact = completed > 0
             ? Int((Double(totalImpact) / Double(completed)).rounded())
             : 0
+        let accuracyTargetMet = completed > 0 && accuracy >= plan.targetAccuracyPercent
+        let impactTargetMet = completed > 0 && averageImpact >= plan.targetAverageExpectedImpact
         let impactReading = trainingSessionImpactReading(
             completedAttempts: completed,
             averageExpectedImpact: averageImpact
@@ -926,8 +930,10 @@ enum WhatToPlayStatsAnalyzer {
                 targetAttempts: target,
                 correctAttempts: 0,
                 accuracyPercent: 0,
+                accuracyTargetMet: false,
                 totalExpectedImpact: 0,
                 averageExpectedImpact: 0,
+                impactTargetMet: false,
                 impactTitle: impactReading.title,
                 impactDetail: impactReading.detail,
                 impactIconName: impactReading.iconName,
@@ -946,8 +952,10 @@ enum WhatToPlayStatsAnalyzer {
                 targetAttempts: target,
                 correctAttempts: correct,
                 accuracyPercent: accuracy,
+                accuracyTargetMet: accuracyTargetMet,
                 totalExpectedImpact: totalImpact,
                 averageExpectedImpact: averageImpact,
+                impactTargetMet: impactTargetMet,
                 impactTitle: impactReading.title,
                 impactDetail: impactReading.detail,
                 impactIconName: impactReading.iconName,
@@ -959,15 +967,17 @@ enum WhatToPlayStatsAnalyzer {
             )
         }
 
-        if accuracy >= plan.targetAccuracyPercent {
+        if accuracyTargetMet && impactTargetMet {
             return WhatToPlayTrainingSessionProgress(
                 state: .achieved,
                 completedAttempts: completed,
                 targetAttempts: target,
                 correctAttempts: correct,
                 accuracyPercent: accuracy,
+                accuracyTargetMet: true,
                 totalExpectedImpact: totalImpact,
                 averageExpectedImpact: averageImpact,
+                impactTargetMet: true,
                 impactTitle: impactReading.title,
                 impactDetail: impactReading.detail,
                 impactIconName: impactReading.iconName,
@@ -985,17 +995,35 @@ enum WhatToPlayStatsAnalyzer {
             targetAttempts: target,
             correctAttempts: correct,
             accuracyPercent: accuracy,
+            accuracyTargetMet: accuracyTargetMet,
             totalExpectedImpact: totalImpact,
             averageExpectedImpact: averageImpact,
+            impactTargetMet: impactTargetMet,
             impactTitle: impactReading.title,
             impactDetail: impactReading.detail,
             impactIconName: impactReading.iconName,
             reviewItem: reviewItem,
             remainingAttempts: 0,
             title: "أعد الجلسة".localized,
-            detail: "أكملتها، لكن الدقة أقل من هدف الخطة؛ أعد نفس المستوى.".localized,
+            detail: trainingSessionRepeatDetail(
+                accuracyTargetMet: accuracyTargetMet,
+                impactTargetMet: impactTargetMet
+            ),
             iconName: "arrow.counterclockwise.circle.fill"
         )
+    }
+
+    private static func trainingSessionRepeatDetail(
+        accuracyTargetMet: Bool,
+        impactTargetMet: Bool
+    ) -> String {
+        if !accuracyTargetMet && !impactTargetMet {
+            return "أكملتها، لكن الدقة والأثر أقل من هدف الخطة؛ أعد نفس المستوى.".localized
+        }
+        if !accuracyTargetMet {
+            return "أكملتها، لكن الدقة أقل من هدف الخطة؛ أعد نفس المستوى.".localized
+        }
+        return "أكملتها بدقة كافية، لكن متوسط الأثر أقل من هدف الخطة؛ راجع الاختيارات القريبة قبل تكرارها.".localized
     }
 
     private static func trainingSessionImpactReading(
