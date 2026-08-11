@@ -421,6 +421,12 @@ struct BalootGamePlayView: View {
                         }
                     }
                 }
+
+                if let report = viewModel.roundAnalysisReport {
+                    roundAnalysisCard(report)
+                } else if viewModel.tableMode == .versusAI {
+                    LoadingStateView(message: "جارٍ تحليل قراراتك…")
+                }
             } else if viewModel.biddingStage == .voided {
                 Text("مرّ الجميع في الجولتين — دورة ميتة بلا نقاط")
                     .font(AppTypography.subheadline)
@@ -435,6 +441,71 @@ struct BalootGamePlayView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func roundAnalysisCard(_ report: RoundAnalysisReport) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            HStack {
+                Label("تحليل أدائك", systemImage: "chart.bar.xaxis")
+                    .font(AppTypography.headline)
+                    .foregroundStyle(AppColor.primary)
+                Spacer()
+                Text("\(report.scoreOutOf100) / 100")
+                    .font(AppTypography.headline)
+                    .foregroundStyle(scoreTint(report.scoreOutOf100))
+            }
+
+            VStack(spacing: AppSpacing.xs) {
+                if let best = report.bestDecision {
+                    analysisRow(
+                        icon: "checkmark.seal.fill",
+                        title: "أفضل قرار",
+                        value: "\(best.playedCard.displayLabel) في الأكلة \(best.trickNumber)"
+                    )
+                }
+                if let worst = report.worstDecision {
+                    analysisRow(
+                        icon: "exclamationmark.triangle.fill",
+                        title: "أسوأ قرار",
+                        value: "\(worst.playedCard.displayLabel) بدل \(worst.bestCard.displayLabel)"
+                    )
+                }
+                analysisRow(
+                    icon: "minus.circle.fill",
+                    title: "نقاط ضائعة تقديريًا",
+                    value: "\(report.totalEstimatedLostPoints)"
+                )
+            }
+
+            ForEach(report.tips.prefix(2), id: \.self) { tip in
+                Text(tip)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+    }
+
+    private func analysisRow(icon: String, title: String, value: String) -> some View {
+        HStack(alignment: .firstTextBaseline) {
+            Label(title, systemImage: icon)
+                .font(AppTypography.caption)
+                .foregroundStyle(AppColor.textSecondary)
+            Spacer()
+            Text(value)
+                .font(AppTypography.caption.weight(.semibold))
+                .foregroundStyle(AppColor.textPrimary)
+                .multilineTextAlignment(.trailing)
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    private func scoreTint(_ score: Int) -> Color {
+        if score >= 85 { return AppColor.success }
+        if score >= 60 { return AppColor.accent }
+        return AppColor.danger
     }
 
     private var trickArea: some View {

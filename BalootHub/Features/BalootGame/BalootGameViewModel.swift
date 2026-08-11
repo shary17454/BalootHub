@@ -77,6 +77,7 @@ final class BalootGameViewModel {
     private(set) var state: GameState
     private(set) var errorMessage: String?
     private(set) var tableMode: BalootTableMode
+    private(set) var roundAnalysisReport: RoundAnalysisReport?
 
     let variant: BalootGameVariant
     /// مستوى الخصوم الآليين المختار.
@@ -87,6 +88,7 @@ final class BalootGameViewModel {
     /// مهمة أدوار اللاعبين الآليين الجارية، تُلغى قبل بدء غيرها حتى لا تتداخل
     /// جولتان (مثلًا عند الضغط على "جولة جديدة" أثناء لعب الآليين).
     private let aiTask = GameTaskBox()
+    private let analysisTask = GameTaskBox()
 
     /// أسماء اللاعبين والفريقين مترجمة حسب لغة الجهاز، بدل الأسماء العربية
     /// المثبّتة داخل المحرك.
@@ -160,6 +162,7 @@ final class BalootGameViewModel {
         // بدون هذا تبقى مهمة اللاعبين الآليين تدور بعد إغلاق الشاشة إلى أن تكتشف
         // أن `self` تحرّر، فتُهدر حسابات محاكاة كاملة بلا فائدة.
         aiTask.cancel()
+        analysisTask.cancel()
     }
 
     var activeHumanID: Player.ID? {
@@ -234,8 +237,11 @@ final class BalootGameViewModel {
     }
 
     func startNewMatch() {
+        aiTask.cancel()
+        analysisTask.cancel()
         state = Self.makeInitialState(tableMode: tableMode, rules: rules)
         errorMessage = nil
+        roundAnalysisReport = nil
         deal()
     }
 
@@ -423,9 +429,33 @@ final class BalootGameViewModel {
         do {
             state = try GameEngine.apply(action, to: state)
             errorMessage = nil
+            scheduleRoundAnalysisIfNeeded()
         } catch {
             errorMessage = Self.moveErrorMessage
         }
+    }
+
+    private func scheduleRoundAnalysisIfNeeded() {
+        guard state.phase == .finished,
+              roundAnalysisReport == nil,
+              let playerID = state.players.first(where: { $0.kind == .human })?.id,
+              state.actionHistory.contains(where: {
+                  if case .playCard(let actorID, _) = $0 { return actorID == playerID }
+                  return false
+              })
+        else { return }
+
+        let snapshot = state
+        analysisTask.replace(with: Task { [weak self] in
+            let report = await Task.detached(priority: .utility) {
+                try? RoundAnalyzer.analyze(finalState: snapshot, playerID: playerID, difficulty: .medium)
+            }.value
+
+            guard !Task.isCancelled else { return }
+            await MainActor.run {
+                self?.roundAnalysisReport = report
+            }
+        })
     }
 
     // رسائل الخطأ تُمرَّر إلى `Text(String)` الذي لا يترجم تلقائيًا (بخلاف السلاسل
