@@ -22,6 +22,9 @@ struct HandAnalysisTests {
         #expect(analysis.bestTrumpSuit == .spades)
         #expect(analysis.projects.contains { $0.kind == .belot })
         #expect(analysis.confidence != .low)
+        #expect(analysis.strengths.contains { $0.contains("سباتي") })
+        #expect(analysis.strengths.contains { $0.contains("الولد") })
+        #expect(analysis.tacticalAdvice.contains("حكم سباتي"))
     }
 
     @Test("اليد الضعيفة تقترح بس")
@@ -41,6 +44,8 @@ struct HandAnalysisTests {
 
         #expect(analysis.recommendedBid == .pass)
         #expect(analysis.projects.isEmpty)
+        #expect(analysis.weaknesses.contains { $0.contains("تقييم الصن") })
+        #expect(analysis.tacticalAdvice.contains("تمرير"))
     }
 
     @Test("التحليل حتمي ولا يتأثر بترتيب إدخال الأوراق")
@@ -62,5 +67,8 @@ struct HandAnalysisTests {
         #expect(first == second)
         #expect(first.recommendedBid == .sun)
         #expect(first.projects.contains { $0.kind == .fourHundred })
+        #expect(first.strengths == second.strengths)
+        #expect(first.weaknesses == second.weaknesses)
+        #expect(first.tacticalAdvice == second.tacticalAdvice)
     }
 }

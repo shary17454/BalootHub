@@ -2756,14 +2756,44 @@ struct HandAnalyzerView: View {
                 InfoRow(icon: "star.fill", title: "المشاريع", value: projectsText(analysis.projects))
             }
 
-            Text(adviceText(analysis))
-                .font(AppTypography.subheadline)
-                .foregroundStyle(AppColor.textPrimary)
-                .padding(AppSpacing.md)
-                .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+            rationaleGroup(title: "نقاط القوة".localized, systemImage: "plus.circle.fill", items: analysis.strengths, tint: AppColor.success)
+            rationaleGroup(title: "نقاط الضعف".localized, systemImage: "exclamationmark.triangle.fill", items: analysis.weaknesses, tint: AppColor.warning)
+
+            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                Label("النصيحة التكتيكية".localized, systemImage: "lightbulb.fill")
+                    .font(AppTypography.headline)
+                    .foregroundStyle(AppColor.primary)
+                Text(analysis.tacticalAdvice)
+                    .font(AppTypography.subheadline)
+                    .foregroundStyle(AppColor.textPrimary)
+            }
+            .padding(AppSpacing.md)
+            .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func rationaleGroup(title: String, systemImage: String, items: [String], tint: Color) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Label(title, systemImage: systemImage)
+                .font(AppTypography.headline)
+                .foregroundStyle(tint)
+            ForEach(Array(items.enumerated()), id: \.offset) { _, item in
+                HStack(alignment: .top, spacing: AppSpacing.xs) {
+                    Circle()
+                        .fill(tint)
+                        .frame(width: 6, height: 6)
+                        .padding(.top, 7)
+                    Text(item)
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColor.textPrimary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
     }
 
     private func recommendationText(_ bid: Bid) -> String {
@@ -2792,17 +2822,6 @@ struct HandAnalyzerView: View {
             .joined(separator: " · ")
     }
 
-    private func adviceText(_ analysis: HandAnalysis) -> String {
-        switch analysis.recommendedBid {
-        case .pass:
-            return "اليد لا تتجاوز عتبة شراء آمنة حاليًا. الأفضل التمرير وانتظار فرصة أوضح بدل شراء ضعيف يعرّض الفريق للطياح."
-        case .sun:
-            return "قوة اليد في الصن أعلى من الحكم. اعتمد على الآسات والعشرات، وحاول حماية أوراق الشريك بدل تحويل الجولة إلى حكم بلا سيطرة واضحة."
-        case .hokum(let suit):
-            let projectHint = analysis.totalProjectPoints > 0 ? " ومعك مشاريع تضيف \(analysis.totalProjectPoints) نقطة" : ""
-            return "أفضلية اليد في \(suit.spokenName) واضحة\(projectHint). الشراء مناسب إذا لم تظهر مزايدة أقوى من الخصم."
-        }
-    }
 }
 
 private struct MiniAnalysisCard: View {

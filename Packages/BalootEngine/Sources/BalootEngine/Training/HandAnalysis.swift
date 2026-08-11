@@ -14,6 +14,12 @@ public struct HandAnalysis: Sendable, Equatable {
     public let confidence: Confidence
     public let projects: [Project]
     public let totalProjectPoints: Int
+    /// أسباب إيجابية تدعم التوصية، محسوبة داخل المحرك لا داخل الواجهة.
+    public let strengths: [String]
+    /// مخاطر أو نواقص يجب الانتباه لها قبل الشراء.
+    public let weaknesses: [String]
+    /// نصيحة عملية قصيرة مبنية على نفس قرار الشراء.
+    public let tacticalAdvice: String
 
     public var bestTrumpSuit: Suit? {
         if case .hokum(let suit) = recommendedBid { return suit }
@@ -52,6 +58,14 @@ public enum HandAnalyzer {
         let projects = detectableProjects(for: normalized, recommendedBid: recommended, rules: rules)
         let projectPoints = projects.reduce(0) { $0 + $1.points }
         let confidence = confidence(for: recommended, evaluation: evaluation, policy: policy, projectPoints: projectPoints)
+        let rationale = rationale(
+            for: normalized,
+            recommendedBid: recommended,
+            evaluation: evaluation,
+            projects: projects,
+            totalProjectPoints: projectPoints,
+            policy: policy
+        )
 
         return HandAnalysis(
             hand: normalized,
@@ -59,7 +73,10 @@ public enum HandAnalyzer {
             recommendedBid: recommended,
             confidence: confidence,
             projects: projects,
-            totalProjectPoints: projectPoints
+            totalProjectPoints: projectPoints,
+            strengths: rationale.strengths,
+            weaknesses: rationale.weaknesses,
+            tacticalAdvice: rationale.advice
         )
     }
 
@@ -136,5 +153,78 @@ public enum HandAnalyzer {
         if margin >= 12 { return .high }
         if margin >= 4 { return .medium }
         return .low
+    }
+
+    private static func rationale(
+        for hand: [PlayingCard],
+        recommendedBid: Bid,
+        evaluation: HandEvaluation,
+        projects: [Project],
+        totalProjectPoints: Int,
+        policy: BiddingPolicy
+    ) -> (strengths: [String], weaknesses: [String], advice: String) {
+        var strengths: [String] = []
+        var weaknesses: [String] = []
+
+        let aces = hand.filter { $0.rank == .ace }
+        let tens = hand.filter { $0.rank == .ten }
+        if !aces.isEmpty {
+            strengths.append("لديك \(aces.count) آس؛ الآسات تمنحك أكلات قوية خصوصًا في الصن.")
+        }
+        if tens.count >= 2 {
+            strengths.append("وجود \(tens.count) عشرات يرفع قيمة اليد إذا استطعت حماية الأكلات.")
+        }
+
+        if let bestHokum = evaluation.bestHokum, bestHokum.score != Int.min {
+            let trumpCards = hand.filter { $0.suit == bestHokum.suit }
+            let hasJack = trumpCards.contains { $0.rank == .jack }
+            let hasNine = trumpCards.contains { $0.rank == .nine }
+            strengths.append("أفضل حكم ظاهر هو \(bestHokum.suit.arabicName) وفيه \(trumpCards.count) أوراق.")
+            if hasJack || hasNine {
+                let highTrump = [hasJack ? "الولد" : nil, hasNine ? "التسعة" : nil].compactMap { $0 }.joined(separator: " و")
+                strengths.append("تمتلك \(highTrump) في الحكم المحتمل، وهذا يعطي سيطرة مباشرة على الأكلات.")
+            }
+        }
+
+        if totalProjectPoints > 0 {
+            let names = projects.map(\.kind.arabicName).joined(separator: "، ")
+            strengths.append("المشاريع المكتشفة: \(names) بقيمة \(totalProjectPoints) نقطة.")
+        }
+
+        let shortSuits = Suit.allCases.filter { suit in hand.filter { $0.suit == suit }.count <= 1 }
+        if !shortSuits.isEmpty {
+            let names = shortSuits.map(\.arabicName).joined(separator: "، ")
+            strengths.append("الألوان القصيرة عندك (\(names)) قد تفتح فرصة قطع مبكر إذا أصبحت الجولة حكم.")
+        }
+
+        if evaluation.sunScore < policy.sunThreshold {
+            weaknesses.append("تقييم الصن \(evaluation.sunScore) أقل من عتبة الشراء الآمنة \(policy.sunThreshold).")
+        }
+        if (evaluation.bestHokum?.score ?? Int.min) < policy.hokumThreshold {
+            weaknesses.append("لا يوجد حكم يتجاوز عتبة شراء الحكم الآمنة \(policy.hokumThreshold).")
+        }
+        if evaluation.sureWinners <= 1 {
+            weaknesses.append("عدد الأكلات شبه المضمونة قليل، لذلك شراء اليد يحمل مخاطرة طياح.")
+        }
+
+        let advice: String
+        switch recommendedBid {
+        case .pass:
+            advice = "الأفضل تمرير الدور: اليد لا تملك سيطرة كافية في الصن ولا حكمًا واضحًا. انتظر دعم الشريك أو فرصة شراء أقوى."
+        case .sun:
+            advice = "اشترِ صن إذا بقي الخيار متاحًا: قوة اليد موزعة على الآسات والعشرات، ولا تحتاج لون حكم محدد كي تنتج نقاطًا."
+        case .hokum(let suit):
+            let projectHint = totalProjectPoints > 0 ? " واستفد من المشاريع بدل الاعتماد عليها وحدها" : ""
+            advice = "اشترِ حكم \(suit.arabicName): ركّز على سحب الحكم في الوقت المناسب\(projectHint)، واحذر صرف الحكم العالي في أكلة قليلة النقاط."
+        }
+
+        if strengths.isEmpty {
+            strengths.append("لا توجد قوة بارزة تكفي وحدها لتبرير شراء مرتفع.")
+        }
+        if weaknesses.isEmpty {
+            weaknesses.append("لا تظهر مخاطرة كبيرة في التقييم الأولي، لكن قرار الشريك والمزايدة قد يغيّران الأفضل.")
+        }
+
+        return (strengths, weaknesses, advice)
     }
 }
