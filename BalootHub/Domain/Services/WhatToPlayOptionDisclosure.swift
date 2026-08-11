@@ -3,7 +3,9 @@ import Foundation
 enum WhatToPlayOptionDisclosure {
     static func badgeText(rank: Int, isRevealed: Bool) -> String {
         guard isRevealed else { return "اختر".localized }
-        return rank == 1 ? "الأفضل".localized : "#\(rank)"
+        if rank == 1 { return "الأفضل".localized }
+        if rank == 2 { return "ثاني أفضل".localized }
+        return "#\(rank)"
     }
 
     static func accessibilityLabel(
@@ -23,6 +25,8 @@ enum WhatToPlayOptionDisclosure {
         }
         if isExpertChoice {
             parts.append("الأفضل".localized)
+        } else if rank == 2 {
+            parts.append("ثاني أفضل".localized)
         }
         return parts.joined(separator: "، ")
     }

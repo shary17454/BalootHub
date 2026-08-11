@@ -9,6 +9,7 @@ final class WhatToPlayOptionDisclosureTests: XCTestCase {
 
     func testBadgeRevealsRankAfterChoice() {
         XCTAssertEqual(WhatToPlayOptionDisclosure.badgeText(rank: 1, isRevealed: true), "الأفضل".localized)
+        XCTAssertEqual(WhatToPlayOptionDisclosure.badgeText(rank: 2, isRevealed: true), "ثاني أفضل".localized)
         XCTAssertEqual(WhatToPlayOptionDisclosure.badgeText(rank: 3, isRevealed: true), "#3")
     }
 
@@ -26,6 +27,12 @@ final class WhatToPlayOptionDisclosureTests: XCTestCase {
         XCTAssertTrue(label.contains("إكة سباتي"))
         XCTAssertTrue(label.contains("2"))
         XCTAssertTrue(label.contains("الترتيب".localized))
+    }
+
+    func testAccessibilityIdentifiesSecondBestAfterChoice() {
+        let label = WhatToPlayOptionDisclosure.accessibilityLabel(cardName: "إكة سباتي", rank: 2, isRevealed: true)
+
+        XCTAssertTrue(label.contains("ثاني أفضل".localized))
     }
 
     func testAccessibilityIdentifiesSelectedAndExpertCardsAfterChoice() {
