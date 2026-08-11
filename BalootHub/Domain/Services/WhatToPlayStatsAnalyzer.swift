@@ -163,6 +163,17 @@ struct WhatToPlayPerformanceTrend: Equatable {
     let previousAccuracyPercent: Int
 }
 
+struct WhatToPlayValueProgress: Equatable {
+    let direction: WhatToPlayTrendDirection
+    let title: String
+    let detail: String
+    let iconName: String
+    let earlyCapturePercent: Int
+    let recentCapturePercent: Int
+    let deltaPercent: Int
+    let inspectedAttempts: Int
+}
+
 struct WhatToPlayPracticeRecommendation: Equatable {
     let difficulty: WhatToPlayDifficulty
     let title: String
@@ -686,6 +697,70 @@ enum WhatToPlayStatsAnalyzer {
             detail: "متوسط الأثر المتوقع غير سلبي في المستويات التي تملك عينات كافية؛ يمكنك رفع الصعوبة تدريجيًا.".localized,
             iconName: "checkmark.seal.fill"
         )
+    }
+
+    static func valueProgress(
+        attempts: [WhatToPlayAttempt],
+        window: Int = 4
+    ) -> WhatToPlayValueProgress? {
+        guard window > 0 else { return nil }
+        let valueAttempts = attempts
+            .sorted { $0.createdAt < $1.createdAt }
+            .compactMap { attempt -> (selected: Int, best: Int)? in
+                guard let best = attempt.bestExpectedImpact, best > 0 else { return nil }
+                return (selected: max(0, min(attempt.expectedImpact, best)), best: best)
+            }
+        guard valueAttempts.count >= window * 2 else { return nil }
+
+        let early = Array(valueAttempts.prefix(window))
+        let recent = Array(valueAttempts.suffix(window))
+        let earlyPercent = valueCapturePercent(for: early)
+        let recentPercent = valueCapturePercent(for: recent)
+        let delta = recentPercent - earlyPercent
+
+        if delta >= 10 {
+            return WhatToPlayValueProgress(
+                direction: .improving,
+                title: "التقاط القيمة يتحسن".localized,
+                detail: "\("آخر قراراتك تلتقط قيمة أعلى من بداية التدريب بفارق".localized) \(delta)%.",
+                iconName: "arrow.up.right.circle.fill",
+                earlyCapturePercent: earlyPercent,
+                recentCapturePercent: recentPercent,
+                deltaPercent: delta,
+                inspectedAttempts: valueAttempts.count
+            )
+        }
+
+        if delta <= -10 {
+            return WhatToPlayValueProgress(
+                direction: .declining,
+                title: "التقاط القيمة يتراجع".localized,
+                detail: "\("آخر قراراتك تلتقط قيمة أقل من بداية التدريب بفارق".localized) \(abs(delta))%. \("راجع المواقف التي ضيّعت فيها نقاطًا متوقعة.".localized)",
+                iconName: "arrow.down.right.circle.fill",
+                earlyCapturePercent: earlyPercent,
+                recentCapturePercent: recentPercent,
+                deltaPercent: delta,
+                inspectedAttempts: valueAttempts.count
+            )
+        }
+
+        return WhatToPlayValueProgress(
+            direction: .stable,
+            title: "التقاط القيمة مستقر".localized,
+            detail: "التغيّر بين بداية التدريب وآخر محاولاتك محدود؛ ركز على رفع الجودة لا زيادة العدد فقط.".localized,
+            iconName: "equal.circle.fill",
+            earlyCapturePercent: earlyPercent,
+            recentCapturePercent: recentPercent,
+            deltaPercent: delta,
+            inspectedAttempts: valueAttempts.count
+        )
+    }
+
+    private static func valueCapturePercent(for attempts: [(selected: Int, best: Int)]) -> Int {
+        let totalBest = attempts.reduce(0) { $0 + $1.best }
+        guard totalBest > 0 else { return 0 }
+        let selected = attempts.reduce(0) { $0 + $1.selected }
+        return Int((Double(selected) / Double(totalBest) * 100).rounded())
     }
 
     static func reviewQueue(for attempts: [WhatToPlayAttempt], limit: Int = 3) -> [WhatToPlayReviewItem] {

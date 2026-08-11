@@ -682,6 +682,106 @@
         }
       }
     },
+    "البداية" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start"
+          }
+        }
+      }
+    },
+    "الآن" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Now"
+          }
+        }
+      }
+    },
+    "الفارق" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Difference"
+          }
+        }
+      }
+    },
+    "التقاط القيمة يتحسن" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Value capture is improving"
+          }
+        }
+      }
+    },
+    "آخر قراراتك تلتقط قيمة أعلى من بداية التدريب بفارق" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your latest decisions capture more value than the start of training by"
+          }
+        }
+      }
+    },
+    "التقاط القيمة يتراجع" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Value capture is declining"
+          }
+        }
+      }
+    },
+    "آخر قراراتك تلتقط قيمة أقل من بداية التدريب بفارق" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your latest decisions capture less value than the start of training by"
+          }
+        }
+      }
+    },
+    "راجع المواقف التي ضيّعت فيها نقاطًا متوقعة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review the scenarios where you lost expected points."
+          }
+        }
+      }
+    },
+    "التقاط القيمة مستقر" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Value capture is stable"
+          }
+        }
+      }
+    },
+    "التغيّر بين بداية التدريب وآخر محاولاتك محدود؛ ركز على رفع الجودة لا زيادة العدد فقط." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The change between the start of training and your latest attempts is limited; focus on improving quality, not only volume."
+          }
+        }
+      }
+    },
     "آلي غرب" : {
       "extractionState" : "stale",
       "localizations" : {

@@ -52,6 +52,57 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.valueCapturePercent, 60)
     }
 
+    func testValueProgressDetectsImprovement() {
+        let attempts = [
+            attempt(daysAgo: 8, correct: false, impact: 1, bestImpact: 10),
+            attempt(daysAgo: 7, correct: false, impact: 2, bestImpact: 10),
+            attempt(daysAgo: 6, correct: false, impact: 2, bestImpact: 10),
+            attempt(daysAgo: 5, correct: false, impact: 3, bestImpact: 10),
+            attempt(daysAgo: 4, correct: true, impact: 8, bestImpact: 10),
+            attempt(daysAgo: 3, correct: true, impact: 9, bestImpact: 10),
+            attempt(daysAgo: 2, correct: true, impact: 10, bestImpact: 10),
+            attempt(daysAgo: 1, correct: true, impact: 9, bestImpact: 10)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.valueProgress(attempts: attempts, window: 4)
+
+        XCTAssertEqual(progress?.direction, .improving)
+        XCTAssertEqual(progress?.earlyCapturePercent, 20)
+        XCTAssertEqual(progress?.recentCapturePercent, 90)
+        XCTAssertEqual(progress?.deltaPercent, 70)
+        XCTAssertEqual(progress?.inspectedAttempts, 8)
+    }
+
+    func testValueProgressDetectsDecline() {
+        let attempts = [
+            attempt(daysAgo: 8, correct: true, impact: 10, bestImpact: 10),
+            attempt(daysAgo: 7, correct: true, impact: 9, bestImpact: 10),
+            attempt(daysAgo: 6, correct: true, impact: 8, bestImpact: 10),
+            attempt(daysAgo: 5, correct: true, impact: 9, bestImpact: 10),
+            attempt(daysAgo: 4, correct: false, impact: 3, bestImpact: 10),
+            attempt(daysAgo: 3, correct: false, impact: 2, bestImpact: 10),
+            attempt(daysAgo: 2, correct: false, impact: 1, bestImpact: 10),
+            attempt(daysAgo: 1, correct: false, impact: -3, bestImpact: 10)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.valueProgress(attempts: attempts, window: 4)
+
+        XCTAssertEqual(progress?.direction, .declining)
+        XCTAssertEqual(progress?.earlyCapturePercent, 90)
+        XCTAssertEqual(progress?.recentCapturePercent, 15)
+        XCTAssertEqual(progress?.deltaPercent, -75)
+    }
+
+    func testValueProgressRequiresEnoughValueAttempts() {
+        let attempts = [
+            attempt(daysAgo: 3, correct: true, impact: 4, bestImpact: 4),
+            attempt(daysAgo: 2, correct: true, impact: 3, bestImpact: 3),
+            attempt(daysAgo: 1, correct: false, impact: -2, bestImpact: nil)
+        ]
+
+        XCTAssertNil(WhatToPlayStatsAnalyzer.valueProgress(attempts: attempts, window: 2))
+    }
+
     func testOutcomeSummaryCountsTrackedDecisionOutcomes() {
         let attempts = [
             attempt(daysAgo: 5, correct: true, impact: 5, outcome: .winsTrick),

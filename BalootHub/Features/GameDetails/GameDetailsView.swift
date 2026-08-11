@@ -377,6 +377,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.performanceTrend(attempts: attempts)
     }
 
+    private var valueProgress: WhatToPlayValueProgress? {
+        WhatToPlayStatsAnalyzer.valueProgress(attempts: attempts)
+    }
+
     private var practiceRecommendation: WhatToPlayPracticeRecommendation {
         WhatToPlayStatsAnalyzer.practiceRecommendation(for: attempts)
     }
@@ -984,6 +988,9 @@ struct WhatToPlayTrainerView: View {
                 if let performanceTrend {
                     performanceTrendView(performanceTrend)
                 }
+                if let valueProgress {
+                    valueProgressView(valueProgress)
+                }
             }
         }
         .padding(AppSpacing.md)
@@ -1283,6 +1290,48 @@ struct WhatToPlayTrainerView: View {
         .padding(AppSpacing.sm)
         .background(sessionPulseTint(pulse.state).opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
         .accessibilityElement(children: .combine)
+    }
+
+    private func valueProgressView(_ progress: WhatToPlayValueProgress) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(progress.title)
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(progress.detail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("\("البداية".localized): \(progress.earlyCapturePercent)% · \("الآن".localized): \(progress.recentCapturePercent)% · \("الفارق".localized): \(signedPercent(progress.deltaPercent))")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(valueProgressTint(progress.direction))
+                Text("\("محاولات مفحوصة".localized): \(progress.inspectedAttempts)")
+                    .font(.caption2)
+                    .foregroundStyle(AppColor.textSecondary)
+            }
+        } icon: {
+            Image(systemName: progress.iconName)
+                .foregroundStyle(valueProgressTint(progress.direction))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.sm)
+        .background(valueProgressTint(progress.direction).opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func valueProgressTint(_ direction: WhatToPlayTrendDirection) -> Color {
+        switch direction {
+        case .improving:
+            AppColor.success
+        case .stable:
+            AppColor.accent
+        case .declining:
+            AppColor.danger
+        }
+    }
+
+    private func signedPercent(_ value: Int) -> String {
+        value > 0 ? "+\(value)%" : "\(value)%"
     }
 
     private func sessionPulseTint(_ state: WhatToPlaySessionState) -> Color {
