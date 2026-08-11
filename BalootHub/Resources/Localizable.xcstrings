@@ -18056,6 +18056,34 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "平均损失分" } }
       }
     },
+    "نقاط ضائعة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Verlorene Punkte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Lost points" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Puntos perdidos" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Points perdus" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "खोए अंक" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Poin hilang" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Потерянные очки" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Kayıp puan" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "ضائع پوائنٹس" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "损失分" } }
+      }
+    },
+    "متوسط الضياع" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Durchschnittlicher Verlust" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Average loss" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Pérdida media" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Perte moyenne" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "औसत नुकसान" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Rata-rata kehilangan" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Средняя потеря" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Ortalama kayıp" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اوسط نقصان" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "平均损失" } }
+      }
+    },
     "راجع القيمة قبل الصعوبة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Prüfe den Wert vor der Schwierigkeit" } },

@@ -271,6 +271,8 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let expectedImpactNeededForTarget: Int
     let expectedImpactNeededPerRemainingAttempt: Int
     let impactRecoveryHighPressure: Bool
+    let lostExpectedPoints: Int
+    let averageLostExpectedPoints: Int
     let valueCapturePercent: Int
     let valueCaptureAttempts: Int
     let impactTitle: String
@@ -1294,6 +1296,8 @@ enum WhatToPlayStatsAnalyzer {
                 expectedImpactNeededForTarget: max(0, targetTotalImpact),
                 expectedImpactNeededPerRemainingAttempt: max(0, plan.targetAverageExpectedImpact),
                 impactRecoveryHighPressure: false,
+                lostExpectedPoints: 0,
+                averageLostExpectedPoints: 0,
                 valueCapturePercent: 0,
                 valueCaptureAttempts: 0,
                 impactTitle: impactReading.title,
@@ -1342,6 +1346,8 @@ enum WhatToPlayStatsAnalyzer {
                 expectedImpactNeededForTarget: impactNeeded,
                 expectedImpactNeededPerRemainingAttempt: impactNeededPerRemaining,
                 impactRecoveryHighPressure: impactRecoveryHighPressure,
+                lostExpectedPoints: sessionSummary.lostExpectedPoints,
+                averageLostExpectedPoints: sessionSummary.averageLostExpectedPoints,
                 valueCapturePercent: sessionSummary.valueCapturePercent,
                 valueCaptureAttempts: sessionSummary.valueCaptureAttempts,
                 impactTitle: impactReading.title,
@@ -1390,6 +1396,8 @@ enum WhatToPlayStatsAnalyzer {
                 expectedImpactNeededForTarget: 0,
                 expectedImpactNeededPerRemainingAttempt: 0,
                 impactRecoveryHighPressure: false,
+                lostExpectedPoints: sessionSummary.lostExpectedPoints,
+                averageLostExpectedPoints: sessionSummary.averageLostExpectedPoints,
                 valueCapturePercent: sessionSummary.valueCapturePercent,
                 valueCaptureAttempts: sessionSummary.valueCaptureAttempts,
                 impactTitle: impactReading.title,
@@ -1437,6 +1445,8 @@ enum WhatToPlayStatsAnalyzer {
             expectedImpactNeededForTarget: impactNeeded,
             expectedImpactNeededPerRemainingAttempt: 0,
             impactRecoveryHighPressure: false,
+            lostExpectedPoints: sessionSummary.lostExpectedPoints,
+            averageLostExpectedPoints: sessionSummary.averageLostExpectedPoints,
             valueCapturePercent: sessionSummary.valueCapturePercent,
             valueCaptureAttempts: sessionSummary.valueCaptureAttempts,
             impactTitle: impactReading.title,

@@ -738,6 +738,16 @@ struct WhatToPlayTrainerView: View {
                         value: "\(progress.valueCapturePercent)%"
                     )
                 }
+                if progress.lostExpectedPoints > 0 {
+                    miniPlanMetric(
+                        title: "نقاط ضائعة".localized,
+                        value: "\(progress.lostExpectedPoints)"
+                    )
+                    miniPlanMetric(
+                        title: "متوسط الضياع".localized,
+                        value: impactText(progress.averageLostExpectedPoints)
+                    )
+                }
             }
 
             HStack(spacing: AppSpacing.xs) {
