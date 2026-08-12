@@ -126,6 +126,7 @@ final class ScoringQuizTests: XCTestCase {
         XCTAssertEqual(attempt.mode, question.mode)
         XCTAssertEqual(attempt.targetTeam, question.targetTeam)
         XCTAssertEqual(attempt.multiplier, question.multiplier)
+        XCTAssertEqual(attempt.category, question.category)
         XCTAssertEqual(attempt.submittedAnswer, question.answer)
         XCTAssertEqual(attempt.expectedAnswer, question.answer)
         XCTAssertTrue(attempt.isCorrect)
@@ -164,6 +165,23 @@ final class ScoringQuizTests: XCTestCase {
         XCTAssertEqual(summaries.first { $0.difficulty == .medium }?.attempts, 0)
         XCTAssertEqual(summaries.first { $0.difficulty == .hard }?.correctAnswers, 1)
         XCTAssertEqual(summaries.first { $0.difficulty == .hard }?.accuracyPercent, 50)
+    }
+
+    func testCategorySummariesGroupAttemptsByQuestionType() throws {
+        let attempts = [
+            makeAttempt(seed: 7, difficulty: .easy, isCorrect: true),
+            try makeAttempt(category: .projects, isCorrect: false),
+            try makeAttempt(category: .multipliers, isCorrect: true),
+            try makeAttempt(category: .coffee, isCorrect: true)
+        ]
+
+        let summaries = ScoringQuizStatsAnalyzer.summariesByCategory(attempts)
+
+        XCTAssertEqual(summaries.first { $0.category == .basics }?.accuracyPercent, 100)
+        XCTAssertEqual(summaries.first { $0.category == .projects }?.attempts, 1)
+        XCTAssertEqual(summaries.first { $0.category == .projects }?.accuracyPercent, 0)
+        XCTAssertEqual(summaries.first { $0.category == .multipliers }?.correctAnswers, 1)
+        XCTAssertEqual(summaries.first { $0.category == .coffee }?.accuracyPercent, 100)
     }
 
     func testCoachingInsightStartsAtEasyWithoutAttempts() {
@@ -216,6 +234,25 @@ final class ScoringQuizTests: XCTestCase {
             evaluation: evaluation,
             remainingSeconds: remainingSeconds
         )
+    }
+
+    private func makeAttempt(
+        category: ScoringQuizQuestionCategory,
+        isCorrect: Bool
+    ) throws -> ScoringQuizAttempt {
+        for seed in 1...500 {
+            let question = ScoringQuizGenerator.generate(seed: UInt64(seed), difficulty: .hard)
+            guard question.category == category else { continue }
+            let answer = isCorrect ? question.answer : question.answer + 1
+            let evaluation = ScoringQuizEvaluator.evaluate(answerText: "\(answer)", question: question)
+            return ScoringQuizAttempt(
+                question: question,
+                evaluation: evaluation,
+                remainingSeconds: 10
+            )
+        }
+        XCTFail("لم يتم العثور على سؤال من النوع \(category.rawValue)")
+        throw NSError(domain: "ScoringQuizTests", code: 1)
     }
 
     private func expectedCategory(for question: ScoringQuizQuestion) -> ScoringQuizQuestionCategory {

@@ -121,6 +121,27 @@ struct ScoringQuizView: View {
                 .padding(AppSpacing.sm)
                 .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
 
+                VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                    Label("نوع السؤال".localized, systemImage: "tag.fill")
+                        .font(AppTypography.subheadline.weight(.semibold))
+                        .foregroundStyle(AppColor.textPrimary)
+
+                    ForEach(ScoringQuizStatsAnalyzer.summariesByCategory(attempts)) { summary in
+                        HStack {
+                            Text(summary.category.title)
+                                .font(AppTypography.caption.weight(.semibold))
+                                .foregroundStyle(AppColor.textPrimary)
+                            Spacer()
+                            Text("\(summary.correctAnswers)/\(summary.attempts) · \(summary.accuracyPercent)%")
+                                .font(AppTypography.caption)
+                                .foregroundStyle(AppColor.textSecondary)
+                        }
+                        .accessibilityElement(children: .combine)
+                    }
+                }
+                .padding(AppSpacing.sm)
+                .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+
                 let recent = ScoringQuizStatsAnalyzer.recentAttempts(attempts)
                 if !recent.isEmpty {
                     VStack(alignment: .leading, spacing: AppSpacing.xs) {

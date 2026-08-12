@@ -62,4 +62,17 @@ final class ScoringQuizAttempt {
     var multiplier: ScoreMultiplier {
         ScoreMultiplier(rawValue: multiplierRaw) ?? .none
     }
+
+    var category: ScoringQuizQuestionCategory {
+        if multiplier == .coffee {
+            return .coffee
+        }
+        if multiplier != .none {
+            return .multipliers
+        }
+        if teamOneProjects + teamTwoProjects > 0 {
+            return .projects
+        }
+        return .basics
+    }
 }

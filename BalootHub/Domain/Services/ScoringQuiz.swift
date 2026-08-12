@@ -24,11 +24,13 @@ enum ScoringQuizDifficulty: String, CaseIterable, Identifiable {
     }
 }
 
-enum ScoringQuizQuestionCategory: String, Equatable {
+enum ScoringQuizQuestionCategory: String, Equatable, CaseIterable, Identifiable {
     case basics
     case projects
     case multipliers
     case coffee
+
+    var id: String { rawValue }
 
     var title: String {
         switch self {
@@ -92,6 +94,15 @@ struct ScoringQuizDifficultySummary: Identifiable, Equatable {
     var id: ScoringQuizDifficulty { difficulty }
 }
 
+struct ScoringQuizCategorySummary: Identifiable, Equatable {
+    let category: ScoringQuizQuestionCategory
+    let attempts: Int
+    let correctAnswers: Int
+    let accuracyPercent: Int
+
+    var id: ScoringQuizQuestionCategory { category }
+}
+
 struct ScoringQuizCoachingInsight: Equatable {
     let title: String
     let detail: String
@@ -137,6 +148,19 @@ enum ScoringQuizStatsAnalyzer {
             let correct = matching.filter(\.isCorrect).count
             return ScoringQuizDifficultySummary(
                 difficulty: difficulty,
+                attempts: matching.count,
+                correctAnswers: correct,
+                accuracyPercent: percent(correct, of: matching.count)
+            )
+        }
+    }
+
+    static func summariesByCategory(_ attempts: [ScoringQuizAttempt]) -> [ScoringQuizCategorySummary] {
+        ScoringQuizQuestionCategory.allCases.map { category in
+            let matching = attempts.filter { $0.category == category }
+            let correct = matching.filter(\.isCorrect).count
+            return ScoringQuizCategorySummary(
+                category: category,
                 attempts: matching.count,
                 correctAnswers: correct,
                 accuracyPercent: percent(correct, of: matching.count)
