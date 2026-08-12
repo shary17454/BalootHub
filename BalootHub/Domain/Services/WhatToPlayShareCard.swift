@@ -7,6 +7,11 @@ struct WhatToPlayShareCardContent: Equatable {
         let cardName: String
     }
 
+    struct BlockedCardLine: Equatable {
+        let cardName: String
+        let reason: String
+    }
+
     let title: String
     let subtitle: String
     let contextLine: String
@@ -17,6 +22,7 @@ struct WhatToPlayShareCardContent: Equatable {
     let turnPlayerName: String
     let tableCards: [PlayedCardLine]
     let legalCardNames: [String]
+    let blockedCards: [BlockedCardLine]
     let checklistTitle: String
     let checklistItems: [String]
     let selectedCardName: String?
@@ -108,6 +114,15 @@ enum WhatToPlayShareCard {
                 )
             },
             legalCardNames: sortedOptions(scenario.options).map { $0.card.accessibilityName },
+            blockedCards: scenario.blockedCards.map { blocked in
+                WhatToPlayShareCardContent.BlockedCardLine(
+                    cardName: blocked.card.accessibilityName,
+                    reason: RuleExplanationFormatter.illegalMoveExplanation(
+                        for: blocked.reason,
+                        trumpSuit: state.trumpSuit
+                    )
+                )
+            },
             checklistTitle: checklist.title,
             checklistItems: checklist.items,
             selectedCardName: selectedOption?.card.accessibilityName,
@@ -164,6 +179,13 @@ enum WhatToPlayShareCard {
         lines.append("\("الأوراق القانونية".localized):")
         for cardName in content.legalCardNames {
             lines.append("- \(cardName)")
+        }
+
+        if !content.blockedCards.isEmpty {
+            lines.append("\("الأوراق الممنوعة".localized):")
+            for blockedCard in content.blockedCards {
+                lines.append("- \(blockedCard.cardName): \(blockedCard.reason)")
+            }
         }
 
         lines.append(content.checklistTitle)

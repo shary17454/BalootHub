@@ -62,6 +62,24 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertFalse(text.contains("\("أفضل ورقة".localized): \(best.card.accessibilityName)"))
     }
 
+    func testShareTextIncludesBlockedCardsWithValidatorReasons() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(
+            seed: 2026,
+            difficulty: .easy,
+            preferredFocus: .followSuit
+        )
+        let blocked = try XCTUnwrap(scenario.blockedCards.first)
+        let text = WhatToPlayShareCard.text(for: scenario)
+        let reason = RuleExplanationFormatter.illegalMoveExplanation(
+            for: blocked.reason,
+            trumpSuit: scenario.state.trumpSuit
+        )
+
+        XCTAssertTrue(text.contains("\("الأوراق الممنوعة".localized):"))
+        XCTAssertTrue(text.contains("- \(blocked.card.accessibilityName): \(reason)"))
+        XCTAssertFalse(text.contains("\("أفضل ورقة".localized):"))
+    }
+
     func testShareTextIncludesFocusedScenarioMetadata() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(
             seed: 2026,
@@ -161,6 +179,10 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).selectedSimulationTrickPoints)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).selectedProjectedTeamPoints)
         XCTAssertFalse(WhatToPlayShareCard.content(for: scenario).checklistItems.isEmpty)
+        XCTAssertEqual(
+            WhatToPlayShareCard.content(for: scenario).blockedCards.count,
+            scenario.blockedCards.count
+        )
 
         let reviewed = WhatToPlayShareCard.content(for: scenario, selectedOption: selected)
         let secondBest = try XCTUnwrap(scenario.secondBestOption)

@@ -7191,6 +7191,16 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "非法牌" } }
       }
     },
+    "الأوراق الممنوعة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Illegal cards"
+          }
+        }
+      }
+    },
     "يد المقعد المختار" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Hand des gewählten Sitzes" } },
