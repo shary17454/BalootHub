@@ -61,6 +61,29 @@ final class RoundReplayNavigatorTests: XCTestCase {
         )
     }
 
+    func testReplayShareSummaryIsDeterministic() throws {
+        let replay = try makeCompletedReplay(seed: 2_026)
+
+        XCTAssertEqual(
+            RoundReplayShareSummary.text(initialState: replay.initial, actions: replay.actions),
+            RoundReplayShareSummary.text(initialState: replay.initial, actions: replay.actions)
+        )
+    }
+
+    func testReplayShareSummaryIncludesRoundEventsAndScore() throws {
+        let replay = try makeCompletedReplay(seed: 1_445)
+        let summary = RoundReplayShareSummary.text(initialState: replay.initial, actions: replay.actions)
+
+        XCTAssertTrue(summary.contains("Replay"))
+        XCTAssertTrue(summary.contains("الجولة") || summary.contains("Round"))
+        XCTAssertTrue(summary.contains("المزايدة") || summary.contains("Bidding"))
+        XCTAssertTrue(summary.contains("النتيجة") || summary.contains("Score"))
+        XCTAssertTrue(summary.contains("1."))
+        XCTAssertTrue(summary.contains("فريقنا"))
+        XCTAssertTrue(summary.contains("الخصم"))
+        XCTAssertTrue(summary.contains("لعب") || summary.contains("played"))
+    }
+
     private func makeCompletedReplay(seed: UInt64) throws -> (initial: GameState, actions: [GameAction]) {
         let initial = makeAIMatch()
         var state = try GameEngine.apply(.dealCards(seed: seed), to: initial)

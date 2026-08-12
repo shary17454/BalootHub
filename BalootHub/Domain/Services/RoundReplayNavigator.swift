@@ -38,3 +38,131 @@ enum RoundReplayNavigator {
         (try? GameEngine.replay(initialState: initialState, actions: actions, upTo: step)) ?? initialState
     }
 }
+
+enum RoundReplayShareSummary {
+    static func text(initialState: GameState, actions: [GameAction]) -> String {
+        let finalState = (try? GameEngine.replay(initialState: initialState, actions: actions)) ?? initialState
+        var lines = [
+            "ملخص Replay البلوت".localized,
+            "\("الجولة".localized): \(finalState.roundNumber)",
+            "\("الحالة".localized): \(phaseTitle(finalState.phase))",
+            "\("النمط".localized): \(modeTitle(finalState.mode, trumpSuit: finalState.trumpSuit))"
+        ]
+
+        if let declarerID = finalState.bidding.declarerID {
+            lines.append("\("المشتري".localized): \(playerName(declarerID, in: finalState))")
+        }
+        if finalState.bidding.multiplier != .none {
+            lines.append("\("المضاعفة".localized): \(finalState.bidding.multiplier.arabicName)")
+        }
+
+        if !finalState.bidding.bids.isEmpty {
+            lines.append("المزايدة".localized)
+            for record in finalState.bidding.bids {
+                lines.append("- \(playerName(record.playerID, in: finalState)): \(bidTitle(record.bid))")
+            }
+        }
+
+        if !finalState.awardedProjects.isEmpty {
+            lines.append("المشاريع المحتسَبة".localized)
+            for project in finalState.awardedProjects.sorted(by: projectSort) {
+                lines.append("- \(playerName(project.playerID, in: finalState)): \(project.kind.arabicName) +\(project.points)")
+            }
+        }
+
+        if let result = finalState.lastRoundResult {
+            lines.append("النتيجة".localized)
+            for team in finalState.teams.sorted(by: { $0.name < $1.name }) {
+                lines.append("- \(team.name): \(result.teamPoints[team.id] ?? 0)")
+            }
+            if let winnerID = result.winningTeamID,
+               let winner = finalState.teams.first(where: { $0.id == winnerID }) {
+                lines.append("\("الفائز".localized): \(winner.name)")
+            }
+            if result.didDeclarerFail {
+                lines.append("طاح المشتري".localized)
+            }
+            if let kabootTeamID = result.kabootTeamID,
+               let team = finalState.teams.first(where: { $0.id == kabootTeamID }) {
+                lines.append("\("كبوت".localized): \(team.name)")
+            }
+        }
+
+        lines.append("سجل الأحداث".localized)
+        for (index, action) in actions.enumerated() {
+            lines.append("\(index + 1). \(actionTitle(action, in: finalState))")
+        }
+
+        return lines.joined(separator: "\n")
+    }
+
+    private static func actionTitle(_ action: GameAction, in state: GameState) -> String {
+        switch action {
+        case .dealCards:
+            return "تم توزيع الأوراق".localized
+        case .chooseMode(let playerID, let mode, let trumpSuit):
+            return "\(playerName(playerID, in: state)) \("اختار".localized) \(modeTitle(mode, trumpSuit: trumpSuit))"
+        case .placeBid(let playerID, let bid):
+            return "\(playerName(playerID, in: state)): \(bidTitle(bid))"
+        case .raiseMultiplier(let playerID, let level):
+            return "\(playerName(playerID, in: state)) \("طلب".localized) \(level.arabicName)"
+        case .passMultiplier(let playerID):
+            return "\(playerName(playerID, in: state)) \("قال بس في المضاعفة".localized)"
+        case .lockMultiplier(let playerID):
+            return "\(playerName(playerID, in: state)) \("قفل المضاعفة".localized)"
+        case .declareProjects(let playerID, let projects):
+            if projects.isEmpty {
+                return "\(playerName(playerID, in: state)) \("لم يعلن مشروعًا".localized)"
+            }
+            let projectNames = projects.map { $0.kind.arabicName }.joined(separator: "، ")
+            return "\(playerName(playerID, in: state)) \("أعلن".localized) \(projectNames)"
+        case .playCard(let playerID, let card):
+            return "\(playerName(playerID, in: state)) \("لعب".localized) \(card.accessibilityName)"
+        case .finishRound:
+            return "تم احتساب نتيجة الجولة".localized
+        }
+    }
+
+    private static func phaseTitle(_ phase: GamePhase) -> String {
+        switch phase {
+        case .setup: return "تجهيز".localized
+        case .dealing: return "توزيع".localized
+        case .bidding: return "مزايدة".localized
+        case .declaring: return "إعلان مشاريع".localized
+        case .playing: return "لعب".localized
+        case .scoring: return "احتساب".localized
+        case .finished: return "منتهية".localized
+        }
+    }
+
+    private static func modeTitle(_ mode: GameMode?, trumpSuit: Suit?) -> String {
+        guard let mode else { return "غير محدد".localized }
+        switch mode {
+        case .sun:
+            return "صن".localized
+        case .hokum:
+            return trumpSuit.map { "\("حكم".localized) \($0.spokenName)" } ?? "حكم".localized
+        }
+    }
+
+    private static func bidTitle(_ bid: Bid) -> String {
+        switch bid {
+        case .pass:
+            return "بس".localized
+        case .sun:
+            return "صن".localized
+        case .hokum(let suit):
+            return "\("حكم".localized) \(suit.spokenName)"
+        }
+    }
+
+    private static func playerName(_ id: Player.ID, in state: GameState) -> String {
+        state.player(id: id)?.name ?? "لاعب".localized
+    }
+
+    private static func projectSort(_ lhs: Project, _ rhs: Project) -> Bool {
+        if lhs.points != rhs.points { return lhs.points > rhs.points }
+        if lhs.kind.rawValue != rhs.kind.rawValue { return lhs.kind.rawValue < rhs.kind.rawValue }
+        return lhs.id < rhs.id
+    }
+}

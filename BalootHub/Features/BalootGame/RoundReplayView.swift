@@ -64,6 +64,12 @@ struct RoundReplayView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
+                ShareLink(item: RoundReplayShareSummary.text(initialState: initialState, actions: actions)) {
+                    Image(systemName: "square.and.arrow.up")
+                }
+                .accessibilityLabel("مشاركة ملخص الإعادة".localized)
+            }
+            ToolbarItem(placement: .topBarTrailing) {
                 Button("تم") { dismiss() }
             }
         }
