@@ -218,6 +218,17 @@ struct WhatToPlayReviewPriority: Equatable {
     let iconName: String
 }
 
+struct WhatToPlayDecisionHighlight: Equatable {
+    let selectedCard: PlayingCard?
+    let expectedImpact: Int
+    let lostExpectedPoints: Int
+    let lostProjectedTeamPoints: Int
+
+    var totalLoss: Int {
+        max(lostExpectedPoints, lostProjectedTeamPoints)
+    }
+}
+
 enum WhatToPlayTrendDirection: Equatable {
     case improving
     case stable
@@ -1018,6 +1029,45 @@ enum WhatToPlayStatsAnalyzer {
                 simulationTrickPoints: simulationDisplay?.trickPoints
             )
         }
+    }
+
+    static func bestDecisionHighlight(for attempts: [WhatToPlayAttempt]) -> WhatToPlayDecisionHighlight? {
+        attempts
+            .max { lhs, rhs in
+                if lhs.expectedImpact != rhs.expectedImpact {
+                    return lhs.expectedImpact < rhs.expectedImpact
+                }
+                if lhs.isCorrect != rhs.isCorrect {
+                    return !lhs.isCorrect && rhs.isCorrect
+                }
+                return lhs.createdAt < rhs.createdAt
+            }
+            .map(decisionHighlight)
+    }
+
+    static func worstDecisionHighlight(for attempts: [WhatToPlayAttempt]) -> WhatToPlayDecisionHighlight? {
+        attempts
+            .max { lhs, rhs in
+                let lhsLoss = max(lhs.lostExpectedPoints, lhs.lostProjectedTeamPoints)
+                let rhsLoss = max(rhs.lostExpectedPoints, rhs.lostProjectedTeamPoints)
+                if lhsLoss != rhsLoss {
+                    return lhsLoss < rhsLoss
+                }
+                if lhs.expectedImpact != rhs.expectedImpact {
+                    return lhs.expectedImpact > rhs.expectedImpact
+                }
+                return lhs.createdAt < rhs.createdAt
+            }
+            .map(decisionHighlight)
+    }
+
+    private static func decisionHighlight(for attempt: WhatToPlayAttempt) -> WhatToPlayDecisionHighlight {
+        WhatToPlayDecisionHighlight(
+            selectedCard: attempt.selectedCard,
+            expectedImpact: attempt.expectedImpact,
+            lostExpectedPoints: attempt.lostExpectedPoints,
+            lostProjectedTeamPoints: attempt.lostProjectedTeamPoints
+        )
     }
 
     private static func tacticalReviewReason(for attempt: WhatToPlayAttempt) -> WhatToPlayReviewPriority? {

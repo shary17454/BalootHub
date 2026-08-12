@@ -6923,6 +6923,62 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "下一个局面" } }
       }
     },
+    "أفضل قرار" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Beste Entscheidung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Best decision" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Mejor decisión" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Meilleure décision" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सबसे अच्छा निर्णय" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Keputusan terbaik" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Лучшее решение" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "En iyi karar" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "بہترین فیصلہ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "最佳决策" } }
+      }
+    },
+    "أسوأ قرار" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Schlechteste Entscheidung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Worst decision" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Peor decisión" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Pire décision" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सबसे कमजोर निर्णय" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Keputusan terburuk" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Худшее решение" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "En kötü karar" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "بدترین فیصلہ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "最差决策" } }
+      }
+    },
+    "فاقد القرار" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Entscheidungsverlust" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Decision loss" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Pérdida de la decisión" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Perte de décision" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "निर्णय की हानि" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kerugian keputusan" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Потеря решения" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Karar kaybı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "فیصلے کا نقصان" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "决策损失" } }
+      }
+    },
+    "أثر القرار" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Entscheidungsauswirkung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Decision impact" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Impacto de la decisión" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Impact de la décision" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "निर्णय का प्रभाव" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Dampak keputusan" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Влияние решения" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Karar etkisi" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "فیصلے کا اثر" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "决策影响" } }
+      }
+    },
     "المشاريع أو المضاعفات" : {
       "extractionState" : "stale",
       "localizations" : {

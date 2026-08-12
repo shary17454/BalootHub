@@ -448,6 +448,14 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.sessionPulse(for: attempts)
     }
 
+    private var bestDecisionHighlight: WhatToPlayDecisionHighlight? {
+        WhatToPlayStatsAnalyzer.bestDecisionHighlight(for: attempts)
+    }
+
+    private var worstDecisionHighlight: WhatToPlayDecisionHighlight? {
+        WhatToPlayStatsAnalyzer.worstDecisionHighlight(for: attempts)
+    }
+
     private var microDrill: WhatToPlayMicroDrill {
         WhatToPlayStatsAnalyzer.microDrill(for: attempts)
     }
@@ -1127,6 +1135,22 @@ struct WhatToPlayTrainerView: View {
                     title: "متوسط الأثر المتوقع",
                     value: impactText(statsSummary.averageExpectedImpact)
                 )
+                if let bestDecisionHighlight {
+                    decisionHighlightView(
+                        title: "أفضل قرار".localized,
+                        icon: "checkmark.seal.fill",
+                        highlight: bestDecisionHighlight,
+                        tint: AppColor.success
+                    )
+                }
+                if let worstDecisionHighlight, worstDecisionHighlight.totalLoss > 0 {
+                    decisionHighlightView(
+                        title: "أسوأ قرار".localized,
+                        icon: "exclamationmark.triangle.fill",
+                        highlight: worstDecisionHighlight,
+                        tint: AppColor.danger
+                    )
+                }
                 if statsSummary.valueCaptureAttempts > 0 {
                     InfoRow(
                         icon: "speedometer",
@@ -1210,6 +1234,21 @@ struct WhatToPlayTrainerView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func decisionHighlightView(
+        title: String,
+        icon: String,
+        highlight: WhatToPlayDecisionHighlight,
+        tint: Color
+    ) -> some View {
+        let cardName = highlight.selectedCard?.accessibilityName ?? "غير محدد".localized
+        let loss = highlight.totalLoss
+        let detail = loss > 0
+            ? "\("فاقد القرار".localized): \(loss)"
+            : "\("أثر القرار".localized): \(impactText(highlight.expectedImpact))"
+        return InfoRow(icon: icon, title: title, value: "\(cardName) · \(detail)")
+            .foregroundStyle(tint)
     }
 
     private func outcomeSummaryView(_ summary: WhatToPlayOutcomeSummary, insight: WhatToPlayOutcomeInsight?) -> some View {

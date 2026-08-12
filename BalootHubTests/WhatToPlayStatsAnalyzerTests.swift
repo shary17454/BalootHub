@@ -91,6 +91,26 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.averageLostProjectedTeamPoints, 6)
     }
 
+    func testDecisionHighlightsReturnBestImpactAndWorstLoss() {
+        let bestCard = PlayingCard(suit: .hearts, rank: .ace)
+        let worstCard = PlayingCard(suit: .spades, rank: .seven)
+        let attempts = [
+            attempt(daysAgo: 3, correct: true, impact: 4, bestImpact: 4, selectedCard: PlayingCard(suit: .clubs, rank: .ten)),
+            attempt(daysAgo: 2, correct: true, impact: 9, bestImpact: 9, selectedCard: bestCard),
+            attempt(daysAgo: 1, correct: false, impact: 3, bestImpact: 5, selectedCard: worstCard, projectedTeamPoints: 54, bestProjectedTeamPoints: 76)
+        ]
+
+        let best = WhatToPlayStatsAnalyzer.bestDecisionHighlight(for: attempts)
+        let worst = WhatToPlayStatsAnalyzer.worstDecisionHighlight(for: attempts)
+
+        XCTAssertEqual(best?.selectedCard, bestCard)
+        XCTAssertEqual(best?.expectedImpact, 9)
+        XCTAssertEqual(worst?.selectedCard, worstCard)
+        XCTAssertEqual(worst?.lostExpectedPoints, 2)
+        XCTAssertEqual(worst?.lostProjectedTeamPoints, 22)
+        XCTAssertEqual(worst?.totalLoss, 22)
+    }
+
     func testValueProgressDetectsImprovement() {
         let attempts = [
             attempt(daysAgo: 8, correct: false, impact: 1, bestImpact: 10),
