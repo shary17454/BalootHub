@@ -331,6 +331,54 @@ final class DailyChallengeCenterTests: XCTestCase {
         XCTAssertEqual(progress.completedCount, min(2, challenge.targetCount))
     }
 
+    func testAcademyProgressReturnsNextIncompleteLessonRecommendation() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = try XCTUnwrap(DailyChallengeCenter.weeklyChallenges(for: date, calendar: calendar).first { $0.category == .training })
+        let weekStart = try XCTUnwrap(calendar.dateInterval(of: .weekOfYear, for: date)?.start)
+        let first = try XCTUnwrap(BalootAcademyCatalog.lesson(id: "beginner-cards"))
+        let second = try XCTUnwrap(BalootAcademyCatalog.lesson(id: "beginner-deal"))
+        let completed = [
+            academyProgress(at: weekStart.addingTimeInterval(60), lesson: first),
+            academyProgress(at: weekStart.addingTimeInterval(-60), lesson: second)
+        ]
+
+        let progress = try XCTUnwrap(DailyChallengeCenter.academyProgress(
+            for: challenge,
+            academyProgress: completed,
+            now: date,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(progress.base.completedCount, 1)
+        XCTAssertEqual(progress.base.targetCount, challenge.targetCount)
+        XCTAssertEqual(progress.nextLesson?.id, "beginner-ordering")
+    }
+
+    func testAcademyProgressReturnsNilForNonTrainingChallenge() throws {
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = try XCTUnwrap(DailyChallengeCenter.dailyChallenges(for: date).first { $0.category == .match })
+
+        XCTAssertNil(DailyChallengeCenter.academyProgress(for: challenge, academyProgress: [], now: date))
+    }
+
+    func testAcademyProgressHasNoNextLessonWhenCatalogIsComplete() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = try XCTUnwrap(DailyChallengeCenter.weeklyChallenges(for: date, calendar: calendar).first { $0.category == .training })
+        let completedIDs = Set(BalootAcademyCatalog.lessons.map(\.id))
+
+        let progress = try XCTUnwrap(DailyChallengeCenter.academyProgress(
+            for: challenge,
+            academyProgress: [],
+            legacyCompletedAcademyLessonIDs: completedIDs,
+            now: date,
+            calendar: calendar
+        ))
+
+        XCTAssertNil(progress.nextLesson)
+    }
+
     func testDailyMatchChallengeCountsWinningHokumRoundInsideDay() throws {
         let calendar = Calendar(identifier: .gregorian)
         let date = Date(timeIntervalSince1970: 1_785_888_000)

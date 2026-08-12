@@ -69,6 +69,15 @@ struct WhatToPlayChallengeProgress: Equatable {
     }
 }
 
+struct AcademyChallengeProgress: Equatable {
+    let base: BalootChallengeProgress
+    let nextLesson: AcademyLesson?
+
+    var isComplete: Bool {
+        base.isComplete
+    }
+}
+
 enum DailyChallengeCenter {
     static func challenges(
         for date: Date = Date(),
@@ -264,14 +273,11 @@ enum DailyChallengeCenter {
         }
 
         if challenge.category == .training {
-            let completedLessonIDs = Set(academyProgress.compactMap { progress -> String? in
-                guard progress.completedAt >= interval.start,
-                      progress.completedAt < interval.end
-                else { return nil }
-                return progress.lessonID
-            })
-            .union(legacyCompletedAcademyLessonIDs)
-            .intersection(Set(BalootAcademyCatalog.lessons.map(\.id)))
+            let completedLessonIDs = completedAcademyLessonIDs(
+                academyProgress: academyProgress,
+                legacyCompletedAcademyLessonIDs: legacyCompletedAcademyLessonIDs,
+                interval: interval
+            )
 
             return BalootChallengeProgress(
                 completedCount: min(completedLessonIDs.count, challenge.targetCount),
@@ -344,6 +350,36 @@ enum DailyChallengeCenter {
         )
     }
 
+    static func academyProgress(
+        for challenge: BalootChallenge,
+        academyProgress: [AcademyLessonProgress],
+        legacyCompletedAcademyLessonIDs: Set<String> = [],
+        now: Date = Date(),
+        calendar: Calendar = Calendar(identifier: .gregorian)
+    ) -> AcademyChallengeProgress? {
+        guard challenge.category == .training,
+              let interval = dateInterval(for: challenge.cadence, containing: now, calendar: calendar)
+        else { return nil }
+
+        let completedThisPeriod = completedAcademyLessonIDs(
+            academyProgress: academyProgress,
+            legacyCompletedAcademyLessonIDs: legacyCompletedAcademyLessonIDs,
+            interval: interval
+        )
+        let base = BalootChallengeProgress(
+            completedCount: min(completedThisPeriod.count, challenge.targetCount),
+            targetCount: challenge.targetCount
+        )
+        let allCompleted = Set(academyProgress.map(\.lessonID))
+            .union(legacyCompletedAcademyLessonIDs)
+        let nextLesson = BalootAcademyCatalog.nextLessonRecommendation(
+            currentLessonID: nil,
+            completedLessonIDs: allCompleted
+        )?.lesson
+
+        return AcademyChallengeProgress(base: base, nextLesson: nextLesson)
+    }
+
     static func completedChallengeIDs(
         for challenges: [BalootChallenge],
         attempts: [WhatToPlayAttempt],
@@ -389,6 +425,21 @@ enum DailyChallengeCenter {
 
             return attempt.replaySeed
         })
+    }
+
+    private static func completedAcademyLessonIDs(
+        academyProgress: [AcademyLessonProgress],
+        legacyCompletedAcademyLessonIDs: Set<String>,
+        interval: DateInterval
+    ) -> Set<String> {
+        Set(academyProgress.compactMap { progress -> String? in
+            guard progress.completedAt >= interval.start,
+                  progress.completedAt < interval.end
+            else { return nil }
+            return progress.lessonID
+        })
+        .union(legacyCompletedAcademyLessonIDs)
+        .intersection(Set(BalootAcademyCatalog.lessons.map(\.id)))
     }
 
     private static func matchChallengeCompletedCount(

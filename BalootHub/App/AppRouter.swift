@@ -39,7 +39,7 @@ enum AppRoute: Hashable {
     case scorekeeperSession(id: UUID)
     case scorekeeperNewSession
     case balootGamePlay(slug: String)
-    case balootAcademy
+    case balootAcademy(lessonID: String? = nil)
     case handAnalyzer
     case whatToPlayTrainer(seed: UInt64? = nil, difficulty: WhatToPlayDifficulty? = nil, focusKind: WhatToPlayScenarioFocusKind? = nil)
     case scoringQuiz

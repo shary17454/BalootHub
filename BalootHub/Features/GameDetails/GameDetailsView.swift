@@ -136,7 +136,7 @@ struct GameDetailsView: View {
 
             if item.slug == "baloot-training" {
                 Button {
-                    appEnvironment.navigate(to: .balootAcademy, tab: appEnvironment.selectedTab)
+                    appEnvironment.navigate(to: .balootAcademy(), tab: appEnvironment.selectedTab)
                 } label: {
                     Label("فتح الأكاديمية", systemImage: "graduationcap.fill")
                         .frame(maxWidth: .infinity)

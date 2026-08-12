@@ -10,6 +10,14 @@ struct BalootAcademyView: View {
     @State private var selectedOptionID: String?
     @AppStorage("balootAcademyCompletedLessons") private var completedLessonIDs = ""
 
+    init(initialLessonID: String? = nil) {
+        if let lessonID = initialLessonID,
+           let lesson = BalootAcademyCatalog.lesson(id: lessonID) {
+            _level = State(initialValue: lesson.level)
+            _selectedLessonID = State(initialValue: lesson.id)
+        }
+    }
+
     private var lessons: [AcademyLesson] {
         BalootAcademyCatalog.lessons(for: level)
     }

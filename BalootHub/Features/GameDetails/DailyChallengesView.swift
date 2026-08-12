@@ -89,6 +89,11 @@ struct DailyChallengesView: View {
             legacyCompletedAcademyLessonIDs: completedAcademySet
         )
         let whatToPlayProgress = DailyChallengeCenter.whatToPlayProgress(for: challenge, attempts: attempts)
+        let academyChallengeProgress = DailyChallengeCenter.academyProgress(
+            for: challenge,
+            academyProgress: academyProgress,
+            legacyCompletedAcademyLessonIDs: completedAcademySet
+        )
         let isAutomaticallyCompleted = progress?.isComplete == true
         let isCompleted = completedSet.contains(challenge.id) || isAutomaticallyCompleted
 
@@ -161,9 +166,12 @@ struct DailyChallengesView: View {
 
             if challenge.category == .training {
                 Button {
-                    appEnvironment.navigate(to: .balootAcademy, tab: appEnvironment.selectedTab)
+                    appEnvironment.navigate(
+                        to: .balootAcademy(lessonID: academyChallengeProgress?.nextLesson?.id),
+                        tab: appEnvironment.selectedTab
+                    )
                 } label: {
-                    Label("فتح أكاديمية البلوت".localized, systemImage: "graduationcap.fill")
+                    Label(academyButtonTitle(for: academyChallengeProgress), systemImage: "graduationcap.fill")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
@@ -201,6 +209,13 @@ struct DailyChallengesView: View {
         case .match, .training:
             "مكتمل".localized
         }
+    }
+
+    private func academyButtonTitle(for progress: AcademyChallengeProgress?) -> String {
+        guard let lesson = progress?.nextLesson else {
+            return "فتح أكاديمية البلوت".localized
+        }
+        return "\("متابعة درس".localized): \(lesson.title)"
     }
 
     private func difficultyTitle(_ difficulty: WhatToPlayDifficulty) -> String {
