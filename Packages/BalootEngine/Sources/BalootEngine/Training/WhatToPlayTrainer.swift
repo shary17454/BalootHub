@@ -180,6 +180,7 @@ public struct WhatToPlayScenario: Sendable {
     public let seed: UInt64
     public let difficulty: WhatToPlayDifficulty
     public let playerID: Player.ID
+    public let initialState: GameState
     public let state: GameState
     public let context: WhatToPlayScenarioContext
     public let options: [WhatToPlayOption]
@@ -231,7 +232,8 @@ public enum WhatToPlayTrainer {
 
         let searchLimit = preferredFocus == nil ? 40 : 800
         for offset in 0..<searchLimit {
-            var state = GameState.newLocalMatch(rules: rules)
+            let initialState = GameState.newLocalMatch(rules: rules)
+            var state = initialState
             state = try GameEngine.apply(.dealCards(seed: seed &+ UInt64(offset)), to: state)
 
             guard let humanID = state.players.first(where: { $0.kind == .human })?.id else {
@@ -251,6 +253,7 @@ public enum WhatToPlayTrainer {
                             seed: seed &+ UInt64(offset),
                             difficulty: difficulty,
                             playerID: humanID,
+                            initialState: initialState,
                             state: state,
                             context: context,
                             options: options,
@@ -411,15 +414,8 @@ public enum WhatToPlayTrainer {
     ) -> WhatToPlayDecisionReplay? {
         guard evaluateChoice(card: card, in: scenario) != nil else { return nil }
 
-        var initialState = GameState.newLocalMatch(
-            rules: scenario.state.rules,
-            dealerSeat: scenario.state.dealerSeat
-        )
-        initialState.players = scenario.state.players
-        initialState.teams = scenario.state.teams
-
         return WhatToPlayDecisionReplay(
-            initialState: initialState,
+            initialState: scenario.initialState,
             actions: scenario.state.actionHistory + [.playCard(playerID: scenario.playerID, card: card)],
             playerID: scenario.playerID,
             selectedCard: card

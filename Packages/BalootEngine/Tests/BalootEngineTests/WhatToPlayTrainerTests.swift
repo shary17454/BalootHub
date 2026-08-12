@@ -36,9 +36,7 @@ struct WhatToPlayTrainerTests {
     @Test("كل مزايدة في موقف التدريب قانونية لصاحب الدور عند إعادة التشغيل")
     func generatedScenarioBidsAreLegalForActingPlayer() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
-        var replay = GameState.newLocalMatch(rules: scenario.state.rules)
-        replay.players = scenario.state.players
-        replay.teams = scenario.state.teams
+        var replay = scenario.initialState
 
         for action in scenario.state.actionHistory {
             if case .placeBid(let playerID, let bid) = action {
@@ -47,6 +45,28 @@ struct WhatToPlayTrainerTests {
             }
             replay = try GameEngine.apply(action, to: replay)
         }
+    }
+
+    @Test("سيناريو التدريب يحمل لقطة البداية الأصلية لإعادة التشغيل")
+    func generatedScenarioCarriesOriginalInitialStateForReplay() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
+
+        #expect(scenario.initialState.phase == .setup)
+        #expect(scenario.initialState.actionHistory.isEmpty)
+        #expect(scenario.initialState.players == scenario.state.players)
+        #expect(scenario.initialState.teams == scenario.state.teams)
+        #expect(scenario.initialState.rules == scenario.state.rules)
+
+        let replayed = try GameEngine.replay(
+            initialState: scenario.initialState,
+            actions: scenario.state.actionHistory
+        )
+
+        #expect(replayed.phase == scenario.state.phase)
+        #expect(replayed.currentTurnPlayerID == scenario.state.currentTurnPlayerID)
+        #expect(replayed.hands == scenario.state.hands)
+        #expect(trickSnapshot(replayed.currentTrick) == trickSnapshot(scenario.state.currentTrick))
+        #expect(trickSnapshots(replayed.completedTricks) == trickSnapshots(scenario.state.completedTricks))
     }
 
     @Test("نفس البذرة والصعوبة تعطيان نفس الموقف والترتيب")
@@ -103,6 +123,12 @@ struct WhatToPlayTrainerTests {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
         let selected = try #require(scenario.options.last?.card)
         let replay = try #require(WhatToPlayTrainer.decisionReplay(for: selected, in: scenario))
+
+        #expect(replay.initialState.actionHistory.isEmpty)
+        #expect(replay.initialState.players == scenario.initialState.players)
+        #expect(replay.initialState.teams == scenario.initialState.teams)
+        #expect(replay.initialState.dealerSeat == scenario.initialState.dealerSeat)
+        #expect(replay.initialState.roundNumber == scenario.initialState.roundNumber)
 
         let replayedScenario = try GameEngine.replay(
             initialState: replay.initialState,
