@@ -138,6 +138,29 @@ struct LegalMoveValidatorTests {
         #expect(Set(legal) == Set(hand))
     }
 
+    @Test("legalMoves يعيد أفعال لعب مطابقة للأوراق القانونية")
+    func legalMovesMirrorLegalCardsAsPlayableActions() throws {
+        var state = GameState.newLocalMatch(rules: .standard)
+        let playerID = try #require(state.player(at: .south)?.id)
+        let requiredCard = PlayingCard(suit: .hearts, rank: .seven)
+        let legalCard = PlayingCard(suit: .hearts, rank: .king)
+        let blockedCard = PlayingCard(suit: .clubs, rank: .ace)
+        state.phase = .playing
+        state.mode = .sun
+        state.currentTurnPlayerID = playerID
+        state.currentTrick = Trick(
+            playedCards: [PlayedCard(playerID: UUID(), card: requiredCard)],
+            leaderSeat: .west
+        )
+        state.hands[playerID] = [legalCard, blockedCard]
+
+        let legalCards = GameEngine.legalCards(for: playerID, state: state)
+        let legalMoves = GameEngine.legalMoves(for: playerID, state: state)
+
+        #expect(legalCards == [legalCard])
+        #expect(legalMoves == [.playCard(playerID: playerID, card: legalCard)])
+    }
+
     @Test("محاولة لعب ورقة لا يملكها اللاعب تُرفض")
     func rejectsCardNotInHand() {
         let hand = [PlayingCard(suit: .diamonds, rank: .ace)]

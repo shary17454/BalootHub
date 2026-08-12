@@ -111,6 +111,14 @@ public enum GameEngine {
         )
     }
 
+    /// أفعال لعب الورق القانونية للاعب معيّن في وضعه الحالي.
+    ///
+    /// تستخدمها الواجهة، التدريب، وReplay عندما تحتاج "حركة" قابلة للتطبيق بدل
+    /// قائمة أوراق فقط. تبقى مشتقة من ``legalCards`` حتى لا يتكرر منطق القواعد.
+    public static func legalMoves(for playerID: Player.ID, state: GameState) -> [GameAction] {
+        legalCards(for: playerID, state: state).map { .playCard(playerID: playerID, card: $0) }
+    }
+
     /// نتيجة التحقق من لعب ورقة معيّنة، بلا تطبيق أي تغيير.
     public static func validationResult(playerID: Player.ID, card: PlayingCard, state: GameState) -> Result<Void, IllegalMoveReason> {
         guard state.phase == .playing, let mode = state.mode else { return .failure(.wrongPhase) }
