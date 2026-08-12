@@ -45,6 +45,7 @@ enum RoundReplayShareSummary {
         var lines = [
             "ملخص Replay البلوت".localized,
             "\("الجولة".localized): \(finalState.roundNumber)",
+            "\("الموزّع".localized): \(dealerName(in: finalState))",
             "\("الحالة".localized): \(phaseTitle(finalState.phase))",
             "\("النمط".localized): \(modeTitle(finalState.mode, trumpSuit: finalState.trumpSuit))"
         ]
@@ -238,6 +239,10 @@ enum RoundReplayShareSummary {
 
     private static func playerName(_ id: Player.ID, in state: GameState) -> String {
         state.player(id: id)?.name ?? "لاعب".localized
+    }
+
+    private static func dealerName(in state: GameState) -> String {
+        state.player(at: state.dealerSeat)?.name ?? "غير محدد".localized
     }
 
     private static func projectSort(_ lhs: Project, _ rhs: Project) -> Bool {

@@ -76,6 +76,8 @@ final class RoundReplayNavigatorTests: XCTestCase {
 
         XCTAssertTrue(summary.contains("Replay"))
         XCTAssertTrue(summary.contains("الجولة") || summary.contains("Round"))
+        XCTAssertTrue(summary.contains("الموزّع".localized))
+        XCTAssertTrue(summary.contains(replay.initial.player(at: replay.initial.dealerSeat)?.name ?? ""))
         XCTAssertTrue(summary.contains("المزايدة") || summary.contains("Bidding"))
         XCTAssertTrue(summary.contains("الأكلات") || summary.contains("Tricks"))
         XCTAssertTrue(summary.contains("نقاط الأكلة") || summary.contains("Trick points"))
