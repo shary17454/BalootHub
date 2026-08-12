@@ -2184,6 +2184,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(plan.scenarioCount, 3)
         XCTAssertEqual(plan.targetAccuracyPercent, 60)
         XCTAssertEqual(plan.targetAverageExpectedImpact, 0)
+        XCTAssertNil(plan.maxCostlyDecisions)
         XCTAssertEqual(plan.title, "جلسة تأسيس قصيرة".localized)
     }
 
@@ -2279,6 +2280,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(plan.title, "جلسة تقليل القرارات المكلفة".localized)
         XCTAssertEqual(plan.scenarioCount, 3)
         XCTAssertEqual(plan.targetAverageExpectedImpact, 1)
+        XCTAssertEqual(plan.maxCostlyDecisions, 1)
         XCTAssertEqual(plan.iconName, "exclamationmark.triangle.fill")
         XCTAssertEqual(recommendation.iconName, "exclamationmark.triangle.fill")
         XCTAssertTrue(recommendation.detail.contains("متوسط".localized))
@@ -2633,6 +2635,29 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.gradeReasonTitle, "الأثر يخفض التقييم".localized)
     }
 
+    func testTrainingSessionProgressRequiresCostlyDecisionTargetForSuccess() {
+        let plan = sessionPlan(
+            difficulty: .medium,
+            count: 3,
+            target: 67,
+            maxCostlyDecisions: 0
+        )
+        let attempts = [
+            attempt(daysAgo: 3, difficulty: .medium, correct: false, impact: 1, bestImpact: 12),
+            attempt(daysAgo: 2, difficulty: .medium, correct: true, impact: 3, bestImpact: 3),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 3, bestImpact: 3)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.state, .needsRepeat)
+        XCTAssertEqual(progress.costlyDecisions, 1)
+        XCTAssertEqual(progress.maxCostlyDecisions, 0)
+        XCTAssertFalse(progress.costlyDecisionTargetMet)
+        XCTAssertTrue(progress.accuracyTargetMet)
+        XCTAssertTrue(progress.impactTargetMet)
+    }
+
     func testTrainingSessionProgressRequestsRepeatWhenAccuracyMissesTarget() {
         let plan = sessionPlan(difficulty: .hard, count: 4, target: 75)
         let attempts = [
@@ -2782,7 +2807,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         focusKind: WhatToPlayScenarioFocusKind? = nil,
         count: Int,
         target: Int,
-        impactTarget: Int = 0
+        impactTarget: Int = 0,
+        maxCostlyDecisions: Int? = nil
     ) -> WhatToPlayTrainingSessionPlan {
         WhatToPlayTrainingSessionPlan(
             difficulty: difficulty,
@@ -2790,6 +2816,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             scenarioCount: count,
             targetAccuracyPercent: target,
             targetAverageExpectedImpact: impactTarget,
+            maxCostlyDecisions: maxCostlyDecisions,
             title: "خطة اختبار",
             detail: "تفاصيل اختبار",
             successMetric: "هدف اختبار",

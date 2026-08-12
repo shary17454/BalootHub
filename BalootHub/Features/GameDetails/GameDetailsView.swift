@@ -769,6 +769,12 @@ struct WhatToPlayTrainerView: View {
                         value: impactText(progress.averageLostExpectedPoints)
                     )
                 }
+                if let maxCostlyDecisions = progress.maxCostlyDecisions {
+                    miniPlanMetric(
+                        title: "قرارات مكلفة".localized,
+                        value: "\(progress.costlyDecisions)/\(maxCostlyDecisions)"
+                    )
+                }
             }
 
             HStack(spacing: AppSpacing.xs) {
@@ -788,6 +794,12 @@ struct WhatToPlayTrainerView: View {
                     sessionTargetBadge(
                         title: progress.impactRecoveryHighPressure ? "ضغط الأثر مرتفع".localized : "ضغط الأثر طبيعي".localized,
                         isMet: !progress.impactRecoveryHighPressure
+                    )
+                }
+                if progress.maxCostlyDecisions != nil {
+                    sessionTargetBadge(
+                        title: progress.costlyDecisionTargetMet ? "تحقق هدف القرارات المكلفة".localized : "لم يتحقق هدف القرارات المكلفة".localized,
+                        isMet: progress.costlyDecisionTargetMet
                     )
                 }
             }

@@ -247,6 +247,7 @@ struct WhatToPlayTrainingSessionPlan: Equatable {
     let scenarioCount: Int
     let targetAccuracyPercent: Int
     let targetAverageExpectedImpact: Int
+    let maxCostlyDecisions: Int?
     let title: String
     let detail: String
     let successMetric: String
@@ -258,6 +259,7 @@ struct WhatToPlayTrainingSessionPlan: Equatable {
         scenarioCount: Int,
         targetAccuracyPercent: Int,
         targetAverageExpectedImpact: Int,
+        maxCostlyDecisions: Int? = nil,
         title: String,
         detail: String,
         successMetric: String,
@@ -268,6 +270,7 @@ struct WhatToPlayTrainingSessionPlan: Equatable {
         self.scenarioCount = scenarioCount
         self.targetAccuracyPercent = targetAccuracyPercent
         self.targetAverageExpectedImpact = targetAverageExpectedImpact
+        self.maxCostlyDecisions = maxCostlyDecisions
         self.title = title
         self.detail = detail
         self.successMetric = successMetric
@@ -309,6 +312,9 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let worstExpectedImpactCard: PlayingCard?
     let worstExpectedImpactSeed: UInt64?
     let impactTargetMet: Bool
+    let maxCostlyDecisions: Int?
+    let costlyDecisions: Int
+    let costlyDecisionTargetMet: Bool
     let averageExpectedImpactGap: Int
     let expectedImpactNeededForTarget: Int
     let expectedImpactNeededPerRemainingAttempt: Int
@@ -1222,6 +1228,7 @@ enum WhatToPlayStatsAnalyzer {
                 scenarioCount: 3,
                 targetAccuracyPercent: 67,
                 targetAverageExpectedImpact: 1,
+                maxCostlyDecisions: 1,
                 title: "جلسة تقليل القرارات المكلفة".localized,
                 detail: "راجع Replay اختيارك وأفضل قرار بعد كل موقف، وابق على مستوى قريب حتى تنخفض القرارات المكلفة.".localized,
                 successMetric: "هدف الجلسة: لا يوجد أكثر من قرار مكلف واحد.".localized,
@@ -1368,6 +1375,9 @@ enum WhatToPlayStatsAnalyzer {
         let targetTotalImpact = target * plan.targetAverageExpectedImpact
         let impactNeeded = max(0, targetTotalImpact - totalImpact)
         let impactTargetMet = completed > 0 && impactNeeded == 0
+        let qualitySummary = decisionQualitySummary(for: sessionAttempts)
+        let costlyDecisions = qualitySummary.costlyDecisions
+        let costlyDecisionTargetMet = plan.maxCostlyDecisions.map { costlyDecisions <= $0 } ?? true
         let impactNeededPerRemaining = remaining > 0
             ? Int((Double(impactNeeded) / Double(remaining)).rounded(.up))
             : 0
@@ -1385,7 +1395,7 @@ enum WhatToPlayStatsAnalyzer {
         )
         let reviewItem = reviewQueue(for: sessionAttempts, limit: 1).first
         let nextStep = trainingSessionNextStep(
-            state: completed == 0 ? .notStarted : (completed < target ? .inProgress : (accuracyTargetMet && impactTargetMet ? .achieved : .needsRepeat)),
+            state: completed == 0 ? .notStarted : (completed < target ? .inProgress : (accuracyTargetMet && impactTargetMet && costlyDecisionTargetMet ? .achieved : .needsRepeat)),
             remainingAttempts: remaining,
             correctAttemptsNeededForTarget: correctNeeded,
             accuracyTargetMet: accuracyTargetMet,
@@ -1419,6 +1429,9 @@ enum WhatToPlayStatsAnalyzer {
                 worstExpectedImpactCard: nil,
                 worstExpectedImpactSeed: nil,
                 impactTargetMet: false,
+                maxCostlyDecisions: plan.maxCostlyDecisions,
+                costlyDecisions: 0,
+                costlyDecisionTargetMet: plan.maxCostlyDecisions == nil,
                 averageExpectedImpactGap: plan.targetAverageExpectedImpact,
                 expectedImpactNeededForTarget: max(0, targetTotalImpact),
                 expectedImpactNeededPerRemainingAttempt: max(0, plan.targetAverageExpectedImpact),
@@ -1469,6 +1482,9 @@ enum WhatToPlayStatsAnalyzer {
                 worstExpectedImpactCard: worstImpactAttempt?.selectedCard,
                 worstExpectedImpactSeed: worstImpactAttempt.map(\.replaySeed),
                 impactTargetMet: impactTargetMet,
+                maxCostlyDecisions: plan.maxCostlyDecisions,
+                costlyDecisions: costlyDecisions,
+                costlyDecisionTargetMet: costlyDecisionTargetMet,
                 averageExpectedImpactGap: impactGap,
                 expectedImpactNeededForTarget: impactNeeded,
                 expectedImpactNeededPerRemainingAttempt: impactNeededPerRemaining,
@@ -1499,7 +1515,7 @@ enum WhatToPlayStatsAnalyzer {
             )
         }
 
-        if accuracyTargetMet && impactTargetMet {
+        if accuracyTargetMet && impactTargetMet && costlyDecisionTargetMet {
             return WhatToPlayTrainingSessionProgress(
                 state: .achieved,
                 completedAttempts: completed,
@@ -1519,6 +1535,9 @@ enum WhatToPlayStatsAnalyzer {
                 worstExpectedImpactCard: worstImpactAttempt?.selectedCard,
                 worstExpectedImpactSeed: worstImpactAttempt.map(\.replaySeed),
                 impactTargetMet: true,
+                maxCostlyDecisions: plan.maxCostlyDecisions,
+                costlyDecisions: costlyDecisions,
+                costlyDecisionTargetMet: true,
                 averageExpectedImpactGap: 0,
                 expectedImpactNeededForTarget: 0,
                 expectedImpactNeededPerRemainingAttempt: 0,
@@ -1568,6 +1587,9 @@ enum WhatToPlayStatsAnalyzer {
             worstExpectedImpactCard: worstImpactAttempt?.selectedCard,
             worstExpectedImpactSeed: worstImpactAttempt.map(\.replaySeed),
             impactTargetMet: impactTargetMet,
+            maxCostlyDecisions: plan.maxCostlyDecisions,
+            costlyDecisions: costlyDecisions,
+            costlyDecisionTargetMet: costlyDecisionTargetMet,
             averageExpectedImpactGap: impactGap,
             expectedImpactNeededForTarget: impactNeeded,
             expectedImpactNeededPerRemainingAttempt: 0,

@@ -379,6 +379,16 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "代价高的决策" } }
       }
     },
+    "قرارات مكلفة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Costly decisions"
+          }
+        }
+      }
+    },
     "قريب من الأفضل" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Nah am Optimum" } },
@@ -21092,12 +21102,32 @@
         }
       }
     },
+    "تحقق هدف القرارات المكلفة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Costly-decision target met"
+          }
+        }
+      }
+    },
     "لم يتحقق هدف الأثر" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Impact target not met"
+          }
+        }
+      }
+    },
+    "لم يتحقق هدف القرارات المكلفة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Costly-decision target not met"
           }
         }
       }
