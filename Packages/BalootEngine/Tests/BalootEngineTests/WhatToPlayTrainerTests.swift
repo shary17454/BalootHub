@@ -306,6 +306,20 @@ struct WhatToPlayTrainerTests {
         }
     }
 
+    @Test("شرح الخيار يذكر ترتيب الخبير والفارق الرقمي عن الأفضل")
+    func optionExplanationIncludesRankAndBestGap() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let best = try #require(scenario.bestOption)
+        let alternative = try #require(scenario.options.first { !$0.isExpertChoice })
+        let expectedProjectionGap = max(0, best.projectedTeamPoints - alternative.projectedTeamPoints)
+
+        #expect(best.explanation.contains("رقم 1"))
+        #expect(best.explanation.contains("أعلى تقييم"))
+        #expect(alternative.explanation.contains("فارق"))
+        #expect(alternative.explanation.contains("\(expectedProjectionGap)"))
+        #expect(alternative.explanation.contains("المحاكاة"))
+    }
+
     @Test("سياق الموقف يطابق حالة الأكلة الحالية")
     func scenarioContextMatchesCurrentTrickState() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)

@@ -362,6 +362,8 @@ public enum WhatToPlayTrainer {
             return lhs.card.rank.ordinal < rhs.card.rank.ordinal
         }
 
+        let best = evaluated.first
+
         return evaluated.enumerated().map { index, entry in
             WhatToPlayOption(
                 card: entry.card,
@@ -374,7 +376,14 @@ public enum WhatToPlayTrainer {
                 simulation: simulation(of: entry.card, by: player, in: state),
                 outcome: entry.outcome,
                 outcomeReason: outcomeReason(for: entry.outcome),
-                explanation: explanation(for: entry.card, impact: entry.breakdown.signedImpact, isExpertChoice: entry.card == expertChoice, state: state)
+                explanation: explanation(
+                    rank: index + 1,
+                    impact: entry.breakdown.signedImpact,
+                    projectedTeamPoints: entry.projectedTeamPoints,
+                    best: best,
+                    isExpertChoice: entry.card == expertChoice,
+                    state: state
+                )
             )
         }
     }
@@ -653,23 +662,47 @@ public enum WhatToPlayTrainer {
     }
 
     private static func explanation(
-        for card: PlayingCard,
+        rank: Int,
         impact: Int,
+        projectedTeamPoints: Int,
+        best: (
+            card: PlayingCard,
+            score: Int,
+            projectedTeamPoints: Int,
+            breakdown: WhatToPlayOptionImpactBreakdown,
+            outcome: WhatToPlayOptionOutcome
+        )?,
         isExpertChoice: Bool,
         state: GameState
     ) -> String {
+        let selectedComparableScore = heuristicComparableScore(projectedTeamPoints: projectedTeamPoints, impact: impact)
+        let bestGap = best.map {
+            max(
+                0,
+                heuristicComparableScore(
+                    projectedTeamPoints: $0.projectedTeamPoints,
+                    impact: $0.breakdown.signedImpact
+                ) - selectedComparableScore
+            )
+        } ?? 0
+        let projectedGap = best.map { max(0, $0.projectedTeamPoints - projectedTeamPoints) } ?? 0
+
         if isExpertChoice {
-            return "اختيار الخبير لأنه يوازن بين حفظ القوة والفوز بالأكلة أو تقليل خسارتها."
+            return "اختيار الخبير رقم \(rank) لأنه أعلى تقييم في هذا الموقف ويوازن بين حفظ القوة ونتيجة الجولة المتوقعة."
         }
         if impact > 0 {
-            return "خيار جيد لأنه يتوقع ربح نقاط هذه الأكلة، لكنه ليس أعلى قرار حسب تحليل الخبير."
+            return "خيار جيد لأنه يتوقع ربح نقاط هذه الأكلة، لكنه أقل من اختيار الخبير بفارق تقييم \(bestGap) وفارق نقاط المحاكاة \(projectedGap)."
         }
         if impact < 0 {
-            return "خيار مخاطِر لأنه يتوقع خسارة نقاط في هذه الأكلة أو رمي ورقة ثمينة بلا مقابل."
+            return "خيار مخاطِر لأنه يتوقع خسارة نقاط في هذه الأكلة أو رمي ورقة ثمينة؛ الفارق عن الخبير \(bestGap) في التقييم و\(projectedGap) في نقاط المحاكاة."
         }
         if state.currentTrick?.playedCards.isEmpty == true {
-            return "افتتاح محايد؛ قد يكون صحيحًا إذا أردت اختبار أوراق الخصوم، لكنه ليس اختيار الخبير."
+            return "افتتاح محايد؛ قد يختبر أوراق الخصوم، لكنه أدنى من اختيار الخبير بفارق تقييم \(bestGap) وفارق نقاط المحاكاة \(projectedGap)."
         }
-        return "تأثيره محدود في الأكلة الحالية مقارنة بالخيار الأفضل."
+        return "تأثيره محدود في الأكلة الحالية مقارنة بالخيار الأفضل؛ فارق التقييم \(bestGap) وفارق نقاط المحاكاة \(projectedGap)."
+    }
+
+    private static func heuristicComparableScore(projectedTeamPoints: Int, impact: Int) -> Int {
+        projectedTeamPoints == Int.min ? impact : projectedTeamPoints
     }
 }
