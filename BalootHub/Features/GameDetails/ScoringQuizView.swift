@@ -176,15 +176,14 @@ struct ScoringQuizView: View {
 
     private func submitAnswer() {
         guard feedback == nil else { return }
-        let cleaned = answerText.trimmingCharacters(in: .whitespacesAndNewlines)
-        let isCorrect = Int(cleaned) == question.answer
-        if isCorrect {
+        let evaluation = ScoringQuizEvaluator.evaluate(answerText: answerText, question: question)
+        if evaluation.isCorrect {
             streak += 1
             bestStreak = max(bestStreak, streak)
         } else {
             streak = 0
         }
-        feedback = QuizFeedback(isCorrect: isCorrect)
+        feedback = QuizFeedback(evaluation: evaluation)
     }
 
     private func loadQuestion(seed: UInt64, difficulty: ScoringQuizDifficulty) {
@@ -203,11 +202,19 @@ struct ScoringQuizView: View {
         }
         if remainingSeconds == 0, feedback == nil {
             streak = 0
-            feedback = QuizFeedback(isCorrect: false)
+            feedback = QuizFeedback(evaluation: ScoringQuizEvaluation(
+                submittedAnswer: nil,
+                expectedAnswer: question.answer,
+                isCorrect: false
+            ))
         }
     }
 }
 
 private struct QuizFeedback: Equatable {
-    let isCorrect: Bool
+    let evaluation: ScoringQuizEvaluation
+
+    var isCorrect: Bool {
+        evaluation.isCorrect
+    }
 }

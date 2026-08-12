@@ -33,4 +33,34 @@ final class ScoringQuizTests: XCTestCase {
         XCTAssertGreaterThan(ScoringQuizDifficulty.easy.timeLimitSeconds, ScoringQuizDifficulty.medium.timeLimitSeconds)
         XCTAssertGreaterThan(ScoringQuizDifficulty.medium.timeLimitSeconds, ScoringQuizDifficulty.hard.timeLimitSeconds)
     }
+
+    func testEvaluatorAcceptsTrimmedCorrectAnswer() {
+        let question = ScoringQuizGenerator.generate(seed: 99, difficulty: .medium)
+
+        let evaluation = ScoringQuizEvaluator.evaluate(answerText: "  \(question.answer)\n", question: question)
+
+        XCTAssertEqual(evaluation.submittedAnswer, question.answer)
+        XCTAssertEqual(evaluation.expectedAnswer, question.answer)
+        XCTAssertTrue(evaluation.isCorrect)
+    }
+
+    func testEvaluatorRejectsWrongAnswer() {
+        let question = ScoringQuizGenerator.generate(seed: 99, difficulty: .medium)
+
+        let evaluation = ScoringQuizEvaluator.evaluate(answerText: "\(question.answer + 1)", question: question)
+
+        XCTAssertEqual(evaluation.submittedAnswer, question.answer + 1)
+        XCTAssertEqual(evaluation.expectedAnswer, question.answer)
+        XCTAssertFalse(evaluation.isCorrect)
+    }
+
+    func testEvaluatorRejectsNonNumericAnswer() {
+        let question = ScoringQuizGenerator.generate(seed: 99, difficulty: .medium)
+
+        let evaluation = ScoringQuizEvaluator.evaluate(answerText: "abc", question: question)
+
+        XCTAssertNil(evaluation.submittedAnswer)
+        XCTAssertEqual(evaluation.expectedAnswer, question.answer)
+        XCTAssertFalse(evaluation.isCorrect)
+    }
 }

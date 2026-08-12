@@ -50,6 +50,24 @@ struct ScoringQuizQuestion: Identifiable, Equatable {
     }
 }
 
+struct ScoringQuizEvaluation: Equatable {
+    let submittedAnswer: Int?
+    let expectedAnswer: Int
+    let isCorrect: Bool
+}
+
+enum ScoringQuizEvaluator {
+    static func evaluate(answerText: String, question: ScoringQuizQuestion) -> ScoringQuizEvaluation {
+        let cleaned = answerText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let submittedAnswer = Int(cleaned)
+        return ScoringQuizEvaluation(
+            submittedAnswer: submittedAnswer,
+            expectedAnswer: question.answer,
+            isCorrect: submittedAnswer == question.answer
+        )
+    }
+}
+
 enum ScoringQuizGenerator {
     static func generate(
         seed: UInt64,
