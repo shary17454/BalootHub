@@ -529,6 +529,20 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "第二佳影响" } }
       }
     },
+    "نقاط فريقك بعد المحاكاة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Teampunkte nach Simulation" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your team points after simulation" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Puntos de tu equipo tras la simulación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Points de votre équipe après simulation" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सिमुलेशन के बाद आपकी टीम के अंक" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Poin tim Anda setelah simulasi" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Очки вашей команды после симуляции" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Simülasyon sonrası takım puanın" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "سیمولیشن کے بعد آپ کی ٹیم کے پوائنٹس" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "模拟后你的队伍分数" } }
+      }
+    },
     "البذرة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Seed" } },

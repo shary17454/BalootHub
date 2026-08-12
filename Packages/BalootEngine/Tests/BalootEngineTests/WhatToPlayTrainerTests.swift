@@ -213,6 +213,30 @@ struct WhatToPlayTrainerTests {
         }
     }
 
+    @Test("توقع نقاط الفريق لكل خيار حتمي مع نفس البذرة")
+    func optionProjectedTeamPointsAreDeterministic() throws {
+        let first = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let second = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+
+        #expect(first.options.map(\.projectedTeamPoints) == second.options.map(\.projectedTeamPoints))
+    }
+
+    @Test("توقع نقاط الفريق يطابق استكمال الجولة من المحرك بعد فرض الورقة")
+    func optionProjectedTeamPointsMatchesEnginePlayout() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let player = try #require(scenario.state.player(id: scenario.playerID))
+
+        for option in scenario.options {
+            #expect(
+                option.projectedTeamPoints == projectedTeamPoints(
+                    afterPlaying: option.card,
+                    by: player,
+                    in: scenario.state
+                )
+            )
+        }
+    }
+
     @Test("تفكيك الأكلة المكتملة يحدد لمن تذهب نقاط الطاولة")
     func completedTrickBreakdownTracksTeamSwing() throws {
         var state = GameState.newLocalHumanMatch(rules: .simpleBidding)
@@ -361,5 +385,37 @@ struct WhatToPlayTrainerTests {
         guard let trick else { return [] }
         return trick.playedCards.map { "\($0.playerID.uuidString):\($0.card.suit.rawValue):\($0.card.rank.rawValue)" }
             + ["leader:\(trick.leaderSeat.rawValue)", "winner:\(trick.winnerPlayerID?.uuidString ?? "nil")"]
+    }
+
+    private func projectedTeamPoints(afterPlaying card: PlayingCard, by player: Player, in state: GameState) -> Int {
+        guard var current = try? GameEngine.apply(.playCard(playerID: player.id, card: card), to: state) else {
+            return Int.min
+        }
+
+        let policy = SmartBalootAgent()
+        var steps = 0
+        while current.phase == .playing, steps < 40 {
+            steps += 1
+            guard let playerID = current.currentTurnPlayerID,
+                  let hand = current.hands[playerID], !hand.isEmpty
+            else { break }
+
+            let legal = GameEngine.legalCards(for: playerID, state: current)
+            guard !legal.isEmpty else { break }
+
+            let selected = policy.chooseCard(hand: hand, legalCards: legal, state: current)
+            guard let next = try? GameEngine.apply(.playCard(playerID: playerID, card: selected), to: current) else {
+                break
+            }
+            current = next
+        }
+
+        if current.phase == .scoring, let finished = try? GameEngine.apply(.finishRound, to: current) {
+            current = finished
+        }
+
+        return current.lastRoundResult?.teamPoints[player.teamID]
+            ?? current.teamTrickPoints[player.teamID]
+            ?? 0
     }
 }

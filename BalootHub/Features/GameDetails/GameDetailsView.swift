@@ -2474,6 +2474,7 @@ struct WhatToPlayTrainerView: View {
                     InfoRow(icon: "2.circle.fill", title: "ثاني أفضل", value: second.card.accessibilityName)
                 }
                 InfoRow(icon: "chart.line.uptrend.xyaxis", title: "الأثر المتوقع", value: impactText(option.expectedImpact))
+                InfoRow(icon: "chart.bar.xaxis", title: "نقاط فريقك بعد المحاكاة".localized, value: "\(option.projectedTeamPoints)")
                 InfoRow(icon: optionOutcomeIcon(option.outcome), title: "نتيجة القرار".localized, value: optionOutcomeText(option.outcome))
             }
 
@@ -2498,7 +2499,7 @@ struct WhatToPlayTrainerView: View {
                 retryPromptView(retryPrompt)
             }
 
-            optionSimulationView(option.simulation, scenario: scenario)
+            optionSimulationView(option, scenario: scenario)
 
             decisionReplayButtons(for: option, in: scenario)
 
@@ -2549,8 +2550,9 @@ struct WhatToPlayTrainerView: View {
         }
     }
 
-    private func optionSimulationView(_ simulation: WhatToPlayOptionSimulation, scenario: WhatToPlayScenario) -> some View {
-        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+    private func optionSimulationView(_ option: WhatToPlayOption, scenario: WhatToPlayScenario) -> some View {
+        let simulation = option.simulation
+        return VStack(alignment: .leading, spacing: AppSpacing.sm) {
             Label("ماذا يحدث لو لعبتها؟".localized, systemImage: "sparkles.rectangle.stack.fill")
                 .font(AppTypography.subheadline.weight(.semibold))
                 .foregroundStyle(AppColor.primary)
@@ -2573,6 +2575,7 @@ struct WhatToPlayTrainerView: View {
                     }
                     InfoRow(icon: "sum", title: "نقاط الأكلة".localized, value: "\(simulation.completedTrickPoints)")
                 }
+                InfoRow(icon: "chart.bar.xaxis", title: "نقاط فريقك بعد المحاكاة".localized, value: "\(option.projectedTeamPoints)")
             }
         }
         .padding(AppSpacing.sm)

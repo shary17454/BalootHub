@@ -22,6 +22,11 @@ public struct WhatToPlayOption: Identifiable, Sendable, Equatable {
     public let score: Int
     public let isExpertChoice: Bool
     public let expectedImpact: Int
+    /// نقاط فريق اللاعب المتوقعة بعد فرض هذه الورقة واستكمال الجولة بسياسة ذكية حتمية.
+    ///
+    /// هذا يختلف عن ``expectedImpact``: الأثر المتوقع يشرح الأكلة الحالية مباشرة،
+    /// أما هذه القيمة فتدعم تدريب "ماذا سيحدث لو؟" عبر تشغيل بقية الجولة من المحرك.
+    public let projectedTeamPoints: Int
     public let impactBreakdown: WhatToPlayOptionImpactBreakdown
     public let simulation: WhatToPlayOptionSimulation
     public let outcome: WhatToPlayOptionOutcome
@@ -324,11 +329,30 @@ public enum WhatToPlayTrainer {
 
         let expert = ExpertBalootAgent(samples: difficulty.expertSamples)
         let expertChoice = expert.chooseCard(hand: hand, legalCards: legal, state: state)
-        let evaluated: [(card: PlayingCard, score: Int, breakdown: WhatToPlayOptionImpactBreakdown, outcome: WhatToPlayOptionOutcome)] = legal.map { card in
+        let evaluated: [(
+            card: PlayingCard,
+            score: Int,
+            projectedTeamPoints: Int,
+            breakdown: WhatToPlayOptionImpactBreakdown,
+            outcome: WhatToPlayOptionOutcome
+        )] = legal.map { card in
             let breakdown = impactBreakdown(of: card, by: player, in: state)
-            let score = heuristicScore(card: card, impact: breakdown.signedImpact, expertChoice: expertChoice, state: state)
+            let projectedTeamPoints = projectedTeamPoints(afterPlaying: card, by: player, in: state)
+            let score = heuristicScore(
+                card: card,
+                impact: breakdown.signedImpact,
+                projectedTeamPoints: projectedTeamPoints,
+                expertChoice: expertChoice,
+                state: state
+            )
             let outcome = optionOutcome(of: card, by: player, in: state)
-            return (card: card, score: score, breakdown: breakdown, outcome: outcome)
+            return (
+                card: card,
+                score: score,
+                projectedTeamPoints: projectedTeamPoints,
+                breakdown: breakdown,
+                outcome: outcome
+            )
         }
         .sorted { lhs, rhs in
             if lhs.card == expertChoice { return true }
@@ -345,6 +369,7 @@ public enum WhatToPlayTrainer {
                 score: entry.score,
                 isExpertChoice: entry.card == expertChoice,
                 expectedImpact: entry.breakdown.signedImpact,
+                projectedTeamPoints: entry.projectedTeamPoints,
                 impactBreakdown: entry.breakdown,
                 simulation: simulation(of: entry.card, by: player, in: state),
                 outcome: entry.outcome,
@@ -572,10 +597,11 @@ public enum WhatToPlayTrainer {
     private static func heuristicScore(
         card: PlayingCard,
         impact: Int,
+        projectedTeamPoints: Int,
         expertChoice: PlayingCard,
         state: GameState
     ) -> Int {
-        var score = impact
+        var score = projectedTeamPoints == Int.min ? impact : projectedTeamPoints
         if card == expertChoice { score += 10_000 }
         if state.currentTrick?.playedCards.isEmpty == true {
             score += card.points(mode: state.mode ?? .sun, trumpSuit: state.trumpSuit) / 2
@@ -588,6 +614,42 @@ public enum WhatToPlayTrainer {
             return points - 8
         }
         return points
+    }
+
+    private static func projectedTeamPoints(
+        afterPlaying card: PlayingCard,
+        by player: Player,
+        in state: GameState
+    ) -> Int {
+        guard var current = try? GameEngine.apply(.playCard(playerID: player.id, card: card), to: state) else {
+            return Int.min
+        }
+
+        let policy = SmartBalootAgent()
+        var steps = 0
+        while current.phase == .playing, steps < 40 {
+            steps += 1
+            guard let playerID = current.currentTurnPlayerID,
+                  let hand = current.hands[playerID], !hand.isEmpty
+            else { break }
+
+            let legal = GameEngine.legalCards(for: playerID, state: current)
+            guard !legal.isEmpty else { break }
+
+            let selected = policy.chooseCard(hand: hand, legalCards: legal, state: current)
+            guard let next = try? GameEngine.apply(.playCard(playerID: playerID, card: selected), to: current) else {
+                break
+            }
+            current = next
+        }
+
+        if current.phase == .scoring, let finished = try? GameEngine.apply(.finishRound, to: current) {
+            current = finished
+        }
+
+        return current.lastRoundResult?.teamPoints[player.teamID]
+            ?? current.teamTrickPoints[player.teamID]
+            ?? 0
     }
 
     private static func explanation(
