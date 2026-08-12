@@ -3435,6 +3435,7 @@ struct HandAnalyzerView: View {
 
             rationaleGroup(title: "نقاط القوة".localized, systemImage: "plus.circle.fill", items: analysis.strengths, tint: AppColor.success)
             rationaleGroup(title: "نقاط الضعف".localized, systemImage: "exclamationmark.triangle.fill", items: analysis.weaknesses, tint: AppColor.warning)
+            bidOptionsView(analysis.bidOptions)
 
             VStack(alignment: .leading, spacing: AppSpacing.xs) {
                 Label("الخطوة التالية".localized, systemImage: "arrow.triangle.branch")
@@ -3461,6 +3462,40 @@ struct HandAnalyzerView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func bidOptionsView(_ options: [HandAnalysis.BidOption]) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Label("ترتيب خيارات المزايدة".localized, systemImage: "list.number")
+                .font(AppTypography.headline)
+                .foregroundStyle(AppColor.primary)
+
+            ForEach(options) { option in
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack {
+                        Text(option.title)
+                            .font(AppTypography.caption.weight(.semibold))
+                            .foregroundStyle(AppColor.textPrimary)
+                        Spacer()
+                        Text("\(option.confidencePercent)%")
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(option.isRecommended ? AppColor.success : AppColor.textSecondary)
+                    }
+                    Text(option.detail)
+                        .font(.caption2)
+                        .foregroundStyle(AppColor.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(AppSpacing.xs)
+                .background(
+                    (option.isRecommended ? AppColor.success : AppColor.surfaceElevated).opacity(option.isRecommended ? 0.12 : 1),
+                    in: RoundedRectangle(cornerRadius: AppRadius.small)
+                )
+                .accessibilityElement(children: .combine)
+            }
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
     }
 
     private func rationaleGroup(title: String, systemImage: String, items: [String], tint: Color) -> some View {

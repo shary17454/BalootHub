@@ -15,9 +15,23 @@ public struct HandAnalysis: Sendable, Equatable {
         case clearPass
     }
 
+    public struct BidOption: Sendable, Equatable, Identifiable {
+        public let id: String
+        public let bid: Bid
+        public let score: Int
+        public let threshold: Int
+        public let margin: Int
+        public let confidencePercent: Int
+        public let isRecommended: Bool
+        public let title: String
+        public let detail: String
+    }
+
     public let hand: [PlayingCard]
     public let evaluation: HandEvaluation
     public let recommendedBid: Bid
+    /// ترتيب بدائل المزايدة القانونية حسب قوة القرار والهامش عن عتبة الشراء.
+    public let bidOptions: [BidOption]
     public let confidence: Confidence
     public let projects: [Project]
     public let totalProjectPoints: Int
@@ -76,11 +90,19 @@ public enum HandAnalyzer {
     ) -> HandAnalysis {
         let normalized = normalizedHand(hand)
         let evaluation = HandEvaluator.evaluate(hand: normalized)
+        let options = normalizedBidOptions(legalBids)
         let recommended = recommendation(
             for: normalized,
             evaluation: evaluation,
             policy: policy,
-            legalBids: legalBids
+            legalBids: options
+        )
+        let bidOptions = rankedBidOptions(
+            for: normalized,
+            evaluation: evaluation,
+            policy: policy,
+            legalBids: options,
+            recommendedBid: recommended
         )
         let projects = detectableProjects(for: normalized, recommendedBid: recommended, rules: rules)
         let projectPoints = projects.reduce(0) { $0 + $1.points }
@@ -115,6 +137,7 @@ public enum HandAnalyzer {
             hand: normalized,
             evaluation: evaluation,
             recommendedBid: recommended,
+            bidOptions: bidOptions,
             confidence: confidence,
             projects: projects,
             totalProjectPoints: projectPoints,
@@ -158,6 +181,130 @@ public enum HandAnalyzer {
         }
 
         return best?.bid ?? .pass
+    }
+
+    private static func rankedBidOptions(
+        for hand: [PlayingCard],
+        evaluation: HandEvaluation,
+        policy: BiddingPolicy,
+        legalBids: [Bid],
+        recommendedBid: Bid
+    ) -> [HandAnalysis.BidOption] {
+        legalBids.compactMap { bid -> HandAnalysis.BidOption? in
+            let threshold = threshold(for: bid, policy: policy)
+            let optionScoreValue: Int
+            let margin: Int
+            let confidence: Int
+            switch bid {
+            case .pass:
+                let bestBuyScore = bestAvailableBuyScore(
+                    hand: hand,
+                    evaluation: evaluation,
+                    policy: policy,
+                    legalBids: legalBids
+                )
+                let passThreshold = min(policy.sunThreshold, policy.hokumThreshold) - policy.riskTolerance
+                optionScoreValue = bestBuyScore == Int.min ? 100 : max(0, passThreshold - bestBuyScore)
+                margin = recommendedBid == .pass ? optionScoreValue : -max(1, bestBuyScore - passThreshold)
+                confidence = recommendedBid == .pass
+                    ? clampPercent(55 + optionScoreValue * 4)
+                    : clampPercent(45 - max(0, bestBuyScore - passThreshold) * 4)
+            case .sun, .hokum:
+                guard let optionScore = score(for: bid, hand: hand, evaluation: evaluation, policy: policy) else {
+                    return nil
+                }
+                optionScoreValue = optionScore
+                margin = optionScore - threshold
+                confidence = confidencePercent(score: optionScore, threshold: threshold)
+            }
+
+            return HandAnalysis.BidOption(
+                id: bidStableID(bid),
+                bid: bid,
+                score: optionScoreValue,
+                threshold: threshold == Int.max ? 0 : threshold,
+                margin: margin,
+                confidencePercent: confidence,
+                isRecommended: bid == recommendedBid,
+                title: bidTitle(bid),
+                detail: bidOptionDetail(
+                    bid: bid,
+                    score: optionScoreValue,
+                    threshold: threshold == Int.max ? 0 : threshold,
+                    margin: margin,
+                    confidencePercent: confidence,
+                    recommendedBid: recommendedBid
+                )
+            )
+        }
+        .sorted(by: bidOptionSort)
+    }
+
+    private static func bestAvailableBuyScore(
+        hand: [PlayingCard],
+        evaluation: HandEvaluation,
+        policy: BiddingPolicy,
+        legalBids: [Bid]
+    ) -> Int {
+        legalBids
+            .filter(\.isBuy)
+            .compactMap { score(for: $0, hand: hand, evaluation: evaluation, policy: policy) }
+            .max() ?? Int.min
+    }
+
+    private static func bidOptionSort(_ lhs: HandAnalysis.BidOption, _ rhs: HandAnalysis.BidOption) -> Bool {
+        if lhs.isRecommended != rhs.isRecommended { return lhs.isRecommended }
+        if lhs.margin != rhs.margin { return lhs.margin > rhs.margin }
+        if lhs.confidencePercent != rhs.confidencePercent { return lhs.confidencePercent > rhs.confidencePercent }
+        return bidOrder(lhs.bid) < bidOrder(rhs.bid)
+    }
+
+    private static func bidStableID(_ bid: Bid) -> String {
+        switch bid {
+        case .pass:
+            return "pass"
+        case .sun:
+            return "sun"
+        case .hokum(let suit):
+            return "hokum-\(suit.ordinal)"
+        }
+    }
+
+    private static func bidOrder(_ bid: Bid) -> Int {
+        switch bid {
+        case .pass:
+            return 0
+        case .sun:
+            return 1
+        case .hokum(let suit):
+            return 10 + suit.ordinal
+        }
+    }
+
+    private static func bidTitle(_ bid: Bid) -> String {
+        switch bid {
+        case .pass:
+            return "بس"
+        case .sun:
+            return "صن"
+        case .hokum(let suit):
+            return "حكم \(suit.arabicName)"
+        }
+    }
+
+    private static func bidOptionDetail(
+        bid: Bid,
+        score: Int,
+        threshold: Int,
+        margin: Int,
+        confidencePercent: Int,
+        recommendedBid: Bid
+    ) -> String {
+        let status = bid == recommendedBid ? "الخيار الموصى به" : (margin >= 0 ? "خيار قابل للشراء" : "أقل من عتبة الشراء")
+        if bid == .pass {
+            return "\(status): ثقة \(confidencePercent)%، هامش أمان \(margin)."
+        }
+        return "\(status): تقييم \(score)، العتبة \(threshold)، الهامش \(margin)، الثقة \(confidencePercent)%."
     }
 
     private static func normalizedBidOptions(_ legalBids: [Bid]?) -> [Bid] {

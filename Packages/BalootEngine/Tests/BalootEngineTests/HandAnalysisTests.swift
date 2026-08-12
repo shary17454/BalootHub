@@ -27,6 +27,9 @@ struct HandAnalysisTests {
         #expect(analysis.hokumConfidencePercent >= 70)
         #expect(analysis.buyConfidencePercent == max(analysis.sunConfidencePercent, analysis.hokumConfidencePercent))
         #expect(analysis.decisionGrade == .strongBuy)
+        #expect(analysis.bidOptions.first?.bid == .hokum(suit: .spades))
+        #expect(analysis.bidOptions.first?.isRecommended == true)
+        #expect(analysis.bidOptions.first?.margin ?? -1 >= 0)
         #expect(analysis.nextActionTitle.contains("شراء"))
         #expect(analysis.nextActionDetail.contains("حكم سباتي"))
         #expect(analysis.strengths.contains { $0.contains("سباتي") })
@@ -55,6 +58,8 @@ struct HandAnalysisTests {
 
         #expect(freeAnalysis.recommendedBid == .hokum(suit: .spades))
         #expect(firstRoundAnalysis.recommendedBid == .pass)
+        #expect(firstRoundAnalysis.bidOptions.contains { $0.bid == .pass && $0.isRecommended })
+        #expect(!firstRoundAnalysis.bidOptions.contains { $0.bid == .hokum(suit: .spades) })
         #expect(firstRoundAnalysis.tacticalAdvice.contains("تمرير"))
     }
 
@@ -113,6 +118,31 @@ struct HandAnalysisTests {
         #expect(first.decisionGrade == second.decisionGrade)
         #expect(first.nextActionTitle == second.nextActionTitle)
         #expect(first.nextActionDetail == second.nextActionDetail)
+        #expect(first.bidOptions == second.bidOptions)
+        #expect(first.bidOptions.map(\.id) == second.bidOptions.map(\.id))
+    }
+
+    @Test("ترتيب بدائل المزايدة يثبت الخيار الموصى به أولًا ويعرض الصن والحكم والبس")
+    func bidOptionsRankLegalChoicesDeterministically() {
+        let hand = [
+            PlayingCard(suit: .spades, rank: .ace),
+            PlayingCard(suit: .spades, rank: .king),
+            PlayingCard(suit: .spades, rank: .queen),
+            PlayingCard(suit: .diamonds, rank: .ace),
+            PlayingCard(suit: .hearts, rank: .ten),
+            PlayingCard(suit: .hearts, rank: .ace),
+            PlayingCard(suit: .diamonds, rank: .ten),
+            PlayingCard(suit: .clubs, rank: .ace)
+        ]
+
+        let analysis = HandAnalyzer.analyze(hand: hand)
+
+        #expect(analysis.recommendedBid == .sun)
+        #expect(analysis.bidOptions.first?.bid == .sun)
+        #expect(analysis.bidOptions.first?.isRecommended == true)
+        #expect(analysis.bidOptions.contains { $0.bid == .pass })
+        #expect(analysis.bidOptions.contains { $0.bid == .hokum(suit: .spades) })
+        #expect(analysis.bidOptions == HandAnalyzer.analyze(hand: hand.reversed()).bidOptions)
     }
 
     @Test("احتمالات تحليل اليد تبقى ضمن النطاق المئوي")
