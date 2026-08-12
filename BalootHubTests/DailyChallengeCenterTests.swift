@@ -116,6 +116,7 @@ final class DailyChallengeCenterTests: XCTestCase {
         let attempts = [
             attempt(at: dayStart.addingTimeInterval(60), difficulty: difficulty, focusKind: focusKind),
             attempt(at: dayStart.addingTimeInterval(120), difficulty: difficulty, focusKind: focusKind),
+            attempt(at: dayStart.addingTimeInterval(150), difficulty: difficulty, focusKind: focusKind, isCorrect: false),
             attempt(at: dayStart.addingTimeInterval(-60), difficulty: difficulty, focusKind: focusKind),
             attempt(at: dayStart.addingTimeInterval(180), difficulty: otherDifficulty, focusKind: focusKind),
             attempt(at: dayStart.addingTimeInterval(240), difficulty: difficulty, focusKind: otherFocus)
@@ -164,7 +165,8 @@ final class DailyChallengeCenterTests: XCTestCase {
     private func attempt(
         at date: Date,
         difficulty: WhatToPlayDifficulty,
-        focusKind: WhatToPlayScenarioFocusKind
+        focusKind: WhatToPlayScenarioFocusKind,
+        isCorrect: Bool = true
     ) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
             createdAt: date,
@@ -172,12 +174,12 @@ final class DailyChallengeCenterTests: XCTestCase {
             seed: 1,
             selectedCard: PlayingCard(suit: .clubs, rank: .seven),
             bestCard: PlayingCard(suit: .clubs, rank: .seven),
-            isCorrect: true,
-            selectedRank: 1,
-            expectedImpact: 1,
+            isCorrect: isCorrect,
+            selectedRank: isCorrect ? 1 : 2,
+            expectedImpact: isCorrect ? 1 : -1,
             bestExpectedImpact: 1,
             focusKind: focusKind,
-            outcome: .winsTrick
+            outcome: isCorrect ? .winsTrick : .losesTrick
         )
     }
 }

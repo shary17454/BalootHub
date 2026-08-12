@@ -198,6 +198,7 @@ enum DailyChallengeCenter {
                 && attempt.createdAt < interval.end
                 && attempt.difficulty == difficulty
                 && attempt.focusKind == focusKind
+                && attempt.isCorrect
         }.count
 
         return BalootChallengeProgress(
