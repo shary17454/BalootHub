@@ -117,6 +117,36 @@ public struct RoundAnalysisReport: Sendable, Equatable {
     public var needsBiddingReview: Bool {
         biddingMistakeCount > 0 && biddingLostPoints >= 4
     }
+
+    /// عدد فرص المشاريع التي لم تُلتقط بالكامل في توقيتها القانوني.
+    public var projectMistakeCount: Int {
+        projectOpportunities.filter { !$0.capturedAllProjects }.count
+    }
+
+    /// النقاط التقديرية الضائعة من فرص المشاريع فقط.
+    public var projectLostPoints: Int {
+        projectOpportunities.reduce(0) { $0 + $1.estimatedLostPoints }
+    }
+
+    /// هل تحتاج الجولة إلى مراجعة قرارات المشاريع؟
+    public var needsProjectReview: Bool {
+        projectMistakeCount > 0 && projectLostPoints > 0
+    }
+
+    /// عدد قرارات المضاعفة التي خالفت توصية تقييم اليد.
+    public var multiplierMistakeCount: Int {
+        multiplierDecisions.filter { !$0.matchedRecommendation }.count
+    }
+
+    /// النقاط التقديرية الضائعة من قرارات المضاعفة فقط.
+    public var multiplierLostPoints: Int {
+        multiplierDecisions.reduce(0) { $0 + $1.estimatedLostPoints }
+    }
+
+    /// هل تحتاج الجولة إلى مراجعة قرارات المضاعفة؟
+    public var needsMultiplierReview: Bool {
+        multiplierMistakeCount > 0 && multiplierLostPoints > 0
+    }
 }
 
 /// يعيد تشغيل الجولة من سجل الأفعال ويقارن قرارات لاعب محدد بقرار الخبير.

@@ -526,11 +526,25 @@ struct BalootGamePlayView: View {
                         value: "\(missedProject.estimatedLostPoints) \("نقطة".localized)"
                     )
                 }
+                if report.needsProjectReview {
+                    analysisRow(
+                        icon: "sparkles.rectangle.stack.fill",
+                        title: "مراجعة المشاريع".localized,
+                        value: "\(report.projectMistakeCount) · \(report.projectLostPoints) \("نقطة".localized)"
+                    )
+                }
                 if let multiplier = report.multiplierDecisions.first(where: { !$0.matchedRecommendation }) {
                     analysisRow(
                         icon: "flame.fill",
                         title: "قرار المضاعفة".localized,
                         value: multiplierAnalysisValue(multiplier)
+                    )
+                }
+                if report.needsMultiplierReview {
+                    analysisRow(
+                        icon: "flame.circle.fill",
+                        title: "مراجعة المضاعفة".localized,
+                        value: "\(report.multiplierMistakeCount) · \(report.multiplierLostPoints) \("نقطة".localized)"
                     )
                 }
                 if let best = report.bestDecision {
