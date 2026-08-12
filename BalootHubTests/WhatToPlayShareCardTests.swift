@@ -44,6 +44,22 @@ final class WhatToPlayShareCardTests: XCTestCase {
             }
             return $0.card.rank.ordinal < $1.card.rank.ordinal
         }.map { $0.card.accessibilityName })
+        let checklist = WhatToPlayStatsAnalyzer.preDecisionChecklist(for: scenario)
+        XCTAssertEqual(content.checklistTitle, checklist.title)
+        XCTAssertEqual(content.checklistItems, checklist.items)
+    }
+
+    func testShareTextIncludesPreDecisionChecklistWithoutRevealingAnswer() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
+        let checklist = WhatToPlayStatsAnalyzer.preDecisionChecklist(for: scenario)
+        let best = try XCTUnwrap(scenario.bestOption)
+        let text = WhatToPlayShareCard.text(for: scenario)
+
+        XCTAssertTrue(text.contains(checklist.title))
+        for item in checklist.items {
+            XCTAssertTrue(text.contains(item))
+        }
+        XCTAssertFalse(text.contains("\("أفضل ورقة".localized): \(best.card.accessibilityName)"))
     }
 
     func testShareTextIncludesFocusedScenarioMetadata() throws {
@@ -144,6 +160,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).selectedSimulationTeamResult)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).selectedSimulationTrickPoints)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).selectedProjectedTeamPoints)
+        XCTAssertFalse(WhatToPlayShareCard.content(for: scenario).checklistItems.isEmpty)
 
         let reviewed = WhatToPlayShareCard.content(for: scenario, selectedOption: selected)
         let secondBest = try XCTUnwrap(scenario.secondBestOption)

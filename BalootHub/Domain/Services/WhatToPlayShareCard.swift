@@ -17,6 +17,8 @@ struct WhatToPlayShareCardContent: Equatable {
     let turnPlayerName: String
     let tableCards: [PlayedCardLine]
     let legalCardNames: [String]
+    let checklistTitle: String
+    let checklistItems: [String]
     let selectedCardName: String?
     let bestCardName: String?
     let bestExpectedImpact: Int?
@@ -85,6 +87,7 @@ enum WhatToPlayShareCard {
         let comparisonSummary = selectedOption.map {
             WhatToPlayOptionComparison.summary(for: scenario, selectedCard: $0.card)
         }
+        let checklist = WhatToPlayStatsAnalyzer.preDecisionChecklist(for: scenario)
         let tacticalReason = selectedOption.flatMap(tacticalReason(for:))
         let selectedSimulationDisplay = selectedOption.map { WhatToPlaySimulationFormatter.display(for: $0.simulation) }
         return WhatToPlayShareCardContent(
@@ -105,6 +108,8 @@ enum WhatToPlayShareCard {
                 )
             },
             legalCardNames: sortedOptions(scenario.options).map { $0.card.accessibilityName },
+            checklistTitle: checklist.title,
+            checklistItems: checklist.items,
             selectedCardName: selectedOption?.card.accessibilityName,
             bestCardName: best?.card.accessibilityName,
             bestExpectedImpact: best?.expectedImpact,
@@ -159,6 +164,11 @@ enum WhatToPlayShareCard {
         lines.append("\("الأوراق القانونية".localized):")
         for cardName in content.legalCardNames {
             lines.append("- \(cardName)")
+        }
+
+        lines.append(content.checklistTitle)
+        for item in content.checklistItems {
+            lines.append("- \(item)")
         }
 
         if content.includesAnswerReview {
