@@ -343,6 +343,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.choiceRankSummary(for: attempts)
     }
 
+    private var decisionQualitySummary: WhatToPlayDecisionQualitySummary {
+        WhatToPlayStatsAnalyzer.decisionQualitySummary(for: attempts)
+    }
+
     private var choiceRankInsight: WhatToPlayChoiceRankInsight? {
         WhatToPlayStatsAnalyzer.choiceRankInsight(for: choiceRankSummary)
     }
@@ -1093,6 +1097,9 @@ struct WhatToPlayTrainerView: View {
                 if choiceRankSummary.trackedAttempts > 0 {
                     choiceRankSummaryView(choiceRankSummary, insight: choiceRankInsight)
                 }
+                if decisionQualitySummary.trackedAttempts > 0 {
+                    decisionQualitySummaryView(decisionQualitySummary)
+                }
                 masteryView(mastery, milestone: masteryMilestone)
                 playStyleView(playStyle)
                 decisionPatternView(decisionPattern)
@@ -1187,6 +1194,29 @@ struct WhatToPlayTrainerView: View {
                 }
                 .padding(.top, AppSpacing.xs)
             }
+        }
+        .padding(AppSpacing.sm)
+        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func decisionQualitySummaryView(_ summary: WhatToPlayDecisionQualitySummary) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Label("جودة قراراتك".localized, systemImage: "gauge.with.dots.needle.67percent")
+                .font(AppTypography.subheadline.weight(.semibold))
+                .foregroundStyle(AppColor.textPrimary)
+
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 2), spacing: AppSpacing.xs) {
+                miniMetric("مطابق أو قريب".localized, "\(summary.expertMatches + summary.closeDecisions)", AppColor.success)
+                miniMetric("قرار مقبول".localized, "\(summary.acceptableDecisions)", AppColor.warning)
+                miniMetric("قرار مكلف".localized, "\(summary.costlyDecisions)", AppColor.danger)
+                miniMetric("قوة القرار".localized, "\(summary.strongPercent)%", AppColor.accent)
+            }
+
+            Text("\("محاولات مفحوصة".localized): \(summary.trackedAttempts) · \("نسبة القرارات المكلفة".localized): \(summary.costlyPercent)%")
+                .font(.caption2)
+                .foregroundStyle(AppColor.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))

@@ -452,6 +452,36 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(WhatToPlayStatsAnalyzer.choiceRankSummary(for: attempts), .empty)
     }
 
+    func testDecisionQualitySummaryCountsLossBands() {
+        let attempts = [
+            attempt(daysAgo: 6, correct: true, impact: 10, bestImpact: 10),
+            attempt(daysAgo: 5, correct: false, impact: 8, bestImpact: 10),
+            attempt(daysAgo: 4, correct: false, impact: 4, bestImpact: 10),
+            attempt(daysAgo: 3, correct: false, impact: -2, bestImpact: 10),
+            attempt(daysAgo: 2, correct: false, impact: 5),
+            attempt(daysAgo: 1, correct: true, impact: 12, bestImpact: 10)
+        ]
+
+        let summary = WhatToPlayStatsAnalyzer.decisionQualitySummary(for: attempts)
+
+        XCTAssertEqual(summary.trackedAttempts, 5)
+        XCTAssertEqual(summary.expertMatches, 2)
+        XCTAssertEqual(summary.closeDecisions, 1)
+        XCTAssertEqual(summary.acceptableDecisions, 1)
+        XCTAssertEqual(summary.costlyDecisions, 1)
+        XCTAssertEqual(summary.strongPercent, 60)
+        XCTAssertEqual(summary.costlyPercent, 20)
+    }
+
+    func testDecisionQualitySummaryIgnoresLegacyAttemptsWithoutBestImpact() {
+        let attempts = [
+            attempt(daysAgo: 2, correct: true, impact: 5),
+            attempt(daysAgo: 1, correct: false, impact: -6)
+        ]
+
+        XCTAssertEqual(WhatToPlayStatsAnalyzer.decisionQualitySummary(for: attempts), .empty)
+    }
+
     func testChoiceRankInsightWaitsForEnoughTrackedAttempts() {
         let summary = WhatToPlayChoiceRankSummary(
             trackedAttempts: 2,

@@ -57,6 +57,62 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "即将显示" } }
       }
     },
+    "جودة قراراتك" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Qualität deiner Entscheidungen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Decision quality" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Calidad de tus decisiones" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Qualité de vos décisions" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "निर्णय गुणवत्ता" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kualitas keputusan" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Качество решений" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Karar kalitesi" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "فیصلوں کا معیار" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "决策质量" } }
+      }
+    },
+    "قوة القرار" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Entscheidungsstärke" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Decision strength" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Fuerza de decisión" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Force de décision" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "निर्णय मजबूती" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kekuatan keputusan" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Сила решения" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Karar gücü" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "فیصلے کی مضبوطی" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "决策强度" } }
+      }
+    },
+    "مطابق أو قريب" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Treffer oder nah dran" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Match or close" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Exacta o cercana" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Exact ou proche" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "मेल या करीब" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Sesuai atau dekat" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Совпадает или близко" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Eşleşen veya yakın" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "مطابق یا قریب" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "匹配或接近" } }
+      }
+    },
+    "نسبة القرارات المكلفة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Anteil kostspieliger Entscheidungen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Costly decision rate" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tasa de decisiones costosas" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Taux de décisions coûteuses" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "महंगे निर्णयों की दर" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tingkat keputusan mahal" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Доля дорогих решений" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Maliyetli karar oranı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "مہنگے فیصلوں کی شرح" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "高代价决策率" } }
+      }
+    },
     "الفاقد" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Verlust" } },

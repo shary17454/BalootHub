@@ -86,6 +86,32 @@ struct WhatToPlayChoiceRankSummary: Equatable {
     }
 }
 
+struct WhatToPlayDecisionQualitySummary: Equatable {
+    let trackedAttempts: Int
+    let expertMatches: Int
+    let closeDecisions: Int
+    let acceptableDecisions: Int
+    let costlyDecisions: Int
+
+    static let empty = WhatToPlayDecisionQualitySummary(
+        trackedAttempts: 0,
+        expertMatches: 0,
+        closeDecisions: 0,
+        acceptableDecisions: 0,
+        costlyDecisions: 0
+    )
+
+    var costlyPercent: Int {
+        guard trackedAttempts > 0 else { return 0 }
+        return Int((Double(costlyDecisions) / Double(trackedAttempts) * 100).rounded())
+    }
+
+    var strongPercent: Int {
+        guard trackedAttempts > 0 else { return 0 }
+        return Int((Double(expertMatches + closeDecisions) / Double(trackedAttempts) * 100).rounded())
+    }
+}
+
 enum WhatToPlayChoiceRankInsightKind: Equatable {
     case expertAligned
     case nearMisses
@@ -559,6 +585,22 @@ enum WhatToPlayStatsAnalyzer {
             expertPicks: expertPicks,
             secondBestPicks: secondBestPicks,
             farPicks: farPicks
+        )
+    }
+
+    static func decisionQualitySummary(for attempts: [WhatToPlayAttempt]) -> WhatToPlayDecisionQualitySummary {
+        let losses = attempts.compactMap { attempt -> Int? in
+            guard let best = attempt.bestExpectedImpact else { return nil }
+            return max(0, best - attempt.expectedImpact)
+        }
+        guard !losses.isEmpty else { return .empty }
+
+        return WhatToPlayDecisionQualitySummary(
+            trackedAttempts: losses.count,
+            expertMatches: losses.filter { $0 == 0 }.count,
+            closeDecisions: losses.filter { (1...2).contains($0) }.count,
+            acceptableDecisions: losses.filter { (3...8).contains($0) }.count,
+            costlyDecisions: losses.filter { $0 > 8 }.count
         )
     }
 
