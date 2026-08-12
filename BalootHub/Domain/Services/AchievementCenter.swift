@@ -62,6 +62,14 @@ enum AchievementCenter {
             rarity: .silver
         ),
         LocalAchievement(
+            id: "scoring-sheikh",
+            title: "شيخ الحساب".localized,
+            detail: "أتقن حساب النقاط في الأسئلة الصعبة التي تشمل المشاريع والمضاعفات.".localized,
+            requirement: "يفتح عند حل 5 أسئلة صعبة صحيحة في تحدي حساب النقاط.".localized,
+            iconName: "function",
+            rarity: .gold
+        ),
+        LocalAchievement(
             id: "expert-eye",
             title: "عين الخبير".localized,
             detail: "اقرأ مواقف وش تلعب واختر نفس قرار الخبير.".localized,
@@ -154,6 +162,12 @@ enum AchievementCenter {
         let correctScoringAnswers = scoringQuizAttempts.filter(\.isCorrect).count
         if correctScoringAnswers >= 25 {
             earned.insert("scorekeeper")
+        }
+        let correctHardScoringAnswers = scoringQuizAttempts.filter {
+            $0.isCorrect && $0.difficulty == .hard
+        }.count
+        if correctHardScoringAnswers >= 5 {
+            earned.insert("scoring-sheikh")
         }
         if BalootAcademyCatalog.progressSummary(
             progress: academyProgress,

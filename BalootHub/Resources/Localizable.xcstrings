@@ -9439,6 +9439,36 @@
         }
       }
     },
+    "شيخ الحساب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scoring Sheikh"
+          }
+        }
+      }
+    },
+    "أتقن حساب النقاط في الأسئلة الصعبة التي تشمل المشاريع والمضاعفات." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Master scoring in hard questions that include projects and multipliers."
+          }
+        }
+      }
+    },
+    "يفتح عند حل 5 أسئلة صعبة صحيحة في تحدي حساب النقاط." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unlocks after 5 correct hard scoring challenge answers."
+          }
+        }
+      }
+    },
     "تحقيق أفضل نتيجة عبر تجنّب أوراق أو أكلات معيّنة تخسر نقاطًا، بحسب الصيغة المعتمدة من اللاعبين." : {
       "extractionState" : "stale",
       "localizations" : {

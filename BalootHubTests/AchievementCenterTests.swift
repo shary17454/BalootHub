@@ -93,6 +93,49 @@ final class AchievementCenterTests: XCTestCase {
         )
     }
 
+    func testScoringSheikhAchievementExists() throws {
+        let achievement = try XCTUnwrap(AchievementCenter.all.first { $0.id == "scoring-sheikh" })
+
+        XCTAssertEqual(achievement.rarity, .gold)
+        XCTAssertEqual(achievement.iconName, "function")
+        XCTAssertFalse(achievement.title.isEmpty)
+        XCTAssertFalse(achievement.detail.isEmpty)
+        XCTAssertFalse(achievement.requirement.isEmpty)
+    }
+
+    func testScoringSheikhUnlocksAfterFiveCorrectHardScoringQuizAnswers() {
+        let scoringAttempts = (0..<5).map { index in
+            makeScoringQuizAttempt(seed: UInt64(index), difficulty: .hard, isCorrect: true)
+        }
+
+        XCTAssertTrue(
+            AchievementCenter.earnedAchievementIDs(
+                whatToPlayAttempts: [],
+                scoringQuizAttempts: scoringAttempts
+            )
+            .contains("scoring-sheikh")
+        )
+    }
+
+    func testScoringSheikhIgnoresMediumAndWrongHardAnswers() {
+        let scoringAttempts = [
+            makeScoringQuizAttempt(seed: 1, difficulty: .hard, isCorrect: true),
+            makeScoringQuizAttempt(seed: 2, difficulty: .hard, isCorrect: true),
+            makeScoringQuizAttempt(seed: 3, difficulty: .hard, isCorrect: true),
+            makeScoringQuizAttempt(seed: 4, difficulty: .hard, isCorrect: true),
+            makeScoringQuizAttempt(seed: 5, difficulty: .hard, isCorrect: false),
+            makeScoringQuizAttempt(seed: 6, difficulty: .medium, isCorrect: true)
+        ]
+
+        XCTAssertFalse(
+            AchievementCenter.earnedAchievementIDs(
+                whatToPlayAttempts: [],
+                scoringQuizAttempts: scoringAttempts
+            )
+            .contains("scoring-sheikh")
+        )
+    }
+
     func testAcademyMasterUnlocksAfterAllLessonsCompleted() {
         let progress = BalootAcademyCatalog.lessons.map {
             AcademyLessonProgress(lesson: $0, selectedOptionID: $0.correctOptionID)
@@ -360,8 +403,12 @@ final class AchievementCenterTests: XCTestCase {
         )
     }
 
-    private func makeScoringQuizAttempt(seed: UInt64, isCorrect: Bool) -> ScoringQuizAttempt {
-        let question = ScoringQuizGenerator.generate(seed: seed, difficulty: .medium)
+    private func makeScoringQuizAttempt(
+        seed: UInt64,
+        difficulty: ScoringQuizDifficulty = .medium,
+        isCorrect: Bool
+    ) -> ScoringQuizAttempt {
+        let question = ScoringQuizGenerator.generate(seed: seed, difficulty: difficulty)
         let submitted = isCorrect ? question.answer : question.answer + 1
         return ScoringQuizAttempt(
             question: question,
