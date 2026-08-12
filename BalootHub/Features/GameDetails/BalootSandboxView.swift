@@ -23,12 +23,21 @@ struct BalootSandboxView: View {
         return used
     }
 
+    private var allUsedCards: Set<PlayingCard> {
+        var used = Set(configuration.currentTrickCards.map(\.card))
+        for hand in configuration.handsBySeat.values {
+            used.formUnion(hand)
+        }
+        return used
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
                 header
                 sandboxControls
                 tableState
+                trickEditor
                 handEditor
                 handPicker
                 if let preview {
@@ -117,6 +126,91 @@ struct BalootSandboxView: View {
             }
             .padding(AppSpacing.md)
             .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private var trickEditor: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            HStack {
+                Label("تحرير الأكلة".localized, systemImage: "arrow.triangle.2.circlepath")
+                    .font(AppTypography.headline)
+                    .foregroundStyle(AppColor.primary)
+                Spacer()
+                Text("\(configuration.currentTrickCards.count) / 3")
+                    .font(AppTypography.caption.weight(.semibold))
+                    .foregroundStyle(configuration.currentTrickCards.count == 3 ? AppColor.success : AppColor.textSecondary)
+            }
+
+            Text("\("المقعد التالي".localized): \(seatTitle(nextTrickSeat))")
+                .font(AppTypography.caption)
+                .foregroundStyle(AppColor.textSecondary)
+
+            if configuration.currentTrickCards.isEmpty {
+                Text("ابدأ الأكلة باختيار ورقة للمقعد التالي، ثم سيُكمل المختبر ترتيب المقاعد تلقائيًا.".localized)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+            } else {
+                VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                    ForEach(configuration.currentTrickCards, id: \.card) { played in
+                        InfoRow(
+                            icon: "rectangle.portrait.fill",
+                            title: seatTitle(played.seat),
+                            value: played.card.accessibilityName
+                        )
+                    }
+                }
+            }
+
+            HStack {
+                Button {
+                    removeLastTrickCard()
+                } label: {
+                    Label("حذف آخر ورقة".localized, systemImage: "delete.left.fill")
+                }
+                .buttonStyle(.bordered)
+                .disabled(configuration.currentTrickCards.isEmpty)
+
+                Button {
+                    clearTrick()
+                } label: {
+                    Label("مسح الأكلة".localized, systemImage: "xmark.circle.fill")
+                }
+                .buttonStyle(.bordered)
+                .disabled(configuration.currentTrickCards.isEmpty)
+            }
+
+            if configuration.currentTrickCards.count < 3 {
+                VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                    Text("أضف ورقة للأكلة".localized)
+                        .font(AppTypography.caption.weight(.semibold))
+                        .foregroundStyle(AppColor.textSecondary)
+
+                    ForEach(Suit.allCases) { suit in
+                        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                            Text(suit.spokenName)
+                                .font(AppTypography.caption)
+                                .foregroundStyle(AppColor.textSecondary)
+                            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 4), spacing: AppSpacing.xs) {
+                                ForEach(Rank.allCases) { rank in
+                                    let card = PlayingCard(suit: suit, rank: rank)
+                                    let unavailable = allUsedCards.contains(card)
+                                    Button {
+                                        addTrickCard(card)
+                                    } label: {
+                                        SandboxMiniCard(card: card, isSelected: false)
+                                    }
+                                    .buttonStyle(.plain)
+                                    .disabled(unavailable)
+                                    .opacity(unavailable ? 0.35 : 1)
+                                    .accessibilityLabel(cardAccessibilityLabel(card, selected: false, unavailable: unavailable))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
@@ -326,6 +420,41 @@ struct BalootSandboxView: View {
             hand.append(card)
         }
         configuration.handsBySeat[configuration.currentTurnSeat] = sorted(hand)
+    }
+
+    private var nextTrickSeat: SeatPosition {
+        guard let first = configuration.currentTrickCards.first?.seat else {
+            return configuration.currentTurnSeat
+        }
+
+        var seat = first
+        for _ in configuration.currentTrickCards {
+            seat = seat.next
+        }
+        return seat
+    }
+
+    private func addTrickCard(_ card: PlayingCard) {
+        guard configuration.currentTrickCards.count < 3, !allUsedCards.contains(card) else { return }
+        resetPreview()
+        let seat = nextTrickSeat
+        configuration.currentTrickCards.append(BalootSandboxPlayedCard(seat: seat, card: card))
+        configuration.currentTurnSeat = seat.next
+    }
+
+    private func removeLastTrickCard() {
+        guard !configuration.currentTrickCards.isEmpty else { return }
+        resetPreview()
+        configuration.currentTrickCards.removeLast()
+        configuration.currentTurnSeat = nextTrickSeat
+    }
+
+    private func clearTrick() {
+        guard !configuration.currentTrickCards.isEmpty else { return }
+        resetPreview()
+        let leader = configuration.currentTrickCards.first?.seat ?? configuration.currentTurnSeat
+        configuration.currentTrickCards.removeAll()
+        configuration.currentTurnSeat = leader
     }
 
     private func cardAccessibilityLabel(_ card: PlayingCard, selected: Bool, unavailable: Bool) -> String {
