@@ -6895,6 +6895,34 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "要编辑手牌的座位" } }
       }
     },
+    "تدريب مقترح بعد القرار" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Empfohlenes Training nach der Entscheidung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Suggested training after this decision" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Entrenamiento sugerido tras la decisión" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Entraînement suggéré après la décision" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "इस निर्णय के बाद सुझाया गया अभ्यास" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Latihan yang disarankan setelah keputusan ini" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Рекомендуемая тренировка после решения" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Bu karardan sonra önerilen antrenman" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اس فیصلے کے بعد تجویز کردہ تربیت" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "此决策后的建议训练" } }
+      }
+    },
+    "الموقف التالي" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nächstes Szenario" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Next scenario" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Siguiente situación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Situation suivante" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "अगला परिदृश्य" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Skenario berikutnya" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Следующая ситуация" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Sonraki senaryo" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اگلا موقف" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "下一个局面" } }
+      }
+    },
     "المشاريع أو المضاعفات" : {
       "extractionState" : "stale",
       "localizations" : {

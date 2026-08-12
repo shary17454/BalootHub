@@ -2448,6 +2448,8 @@ struct WhatToPlayTrainerView: View {
 
             decisionReplayButtons(for: option, in: scenario)
 
+            nextScenarioAfterDecisionView(nextScenarioRecommendation)
+
             Text(option.explanation)
                 .font(AppTypography.subheadline)
                 .foregroundStyle(AppColor.textPrimary)
@@ -2456,6 +2458,30 @@ struct WhatToPlayTrainerView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func nextScenarioAfterDecisionView(_ recommendation: WhatToPlayNextScenarioRecommendation) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Label("تدريب مقترح بعد القرار".localized, systemImage: recommendation.iconName)
+                .font(AppTypography.caption.weight(.semibold))
+                .foregroundStyle(AppColor.textSecondary)
+
+            Text("\(recommendation.difficulty.displayTitle) · \(recommendation.focusKind.map(focusTitle) ?? "تلقائي".localized)")
+                .font(AppTypography.caption)
+                .foregroundStyle(AppColor.textPrimary)
+
+            Button {
+                startNextScenarioRecommendation()
+            } label: {
+                Label("الموقف التالي".localized, systemImage: "arrow.forward.circle.fill")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(AppColor.primary)
+            .disabled(isGeneratingScenario)
+        }
+        .padding(AppSpacing.sm)
+        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
     }
 
     private func decisionReplayButtons(for option: WhatToPlayOption, in scenario: WhatToPlayScenario) -> some View {
