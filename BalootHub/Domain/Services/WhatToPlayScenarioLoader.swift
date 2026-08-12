@@ -6,11 +6,13 @@ enum WhatToPlayScenarioLoader {
         startingAt seed: UInt64,
         difficulty: WhatToPlayDifficulty,
         preferredFocus: WhatToPlayScenarioFocusKind?,
+        preferredMode: GameMode? = nil,
         attempts: [WhatToPlayAttempt]
     ) -> UInt64 {
         let attemptedSeeds = attemptedScenarioSeeds(
             difficulty: difficulty,
             preferredFocus: preferredFocus,
+            preferredMode: preferredMode,
             attempts: attempts
         )
 
@@ -25,12 +27,14 @@ enum WhatToPlayScenarioLoader {
         after seed: UInt64,
         difficulty: WhatToPlayDifficulty,
         preferredFocus: WhatToPlayScenarioFocusKind?,
+        preferredMode: GameMode? = nil,
         attempts: [WhatToPlayAttempt]
     ) -> UInt64 {
         unattemptedSeed(
             startingAt: seed &+ 1,
             difficulty: difficulty,
             preferredFocus: preferredFocus,
+            preferredMode: preferredMode,
             attempts: attempts
         )
     }
@@ -38,6 +42,7 @@ enum WhatToPlayScenarioLoader {
     private static func attemptedScenarioSeeds(
         difficulty: WhatToPlayDifficulty,
         preferredFocus: WhatToPlayScenarioFocusKind?,
+        preferredMode: GameMode?,
         attempts: [WhatToPlayAttempt]
     ) -> Set<UInt64> {
         let attemptedSeeds = Set(
@@ -47,6 +52,10 @@ enum WhatToPlayScenarioLoader {
                     guard let preferredFocus else { return true }
                     return attempt.focusKind == preferredFocus
                 }
+                .filter { attempt in
+                    guard let preferredMode else { return true }
+                    return attempt.gameMode == preferredMode
+                }
                 .map(\.replaySeed)
         )
         return attemptedSeeds
@@ -55,13 +64,15 @@ enum WhatToPlayScenarioLoader {
     static func generate(
         seed: UInt64,
         difficulty: WhatToPlayDifficulty,
-        preferredFocus: WhatToPlayScenarioFocusKind? = nil
+        preferredFocus: WhatToPlayScenarioFocusKind? = nil,
+        preferredMode: GameMode? = nil
     ) async throws -> WhatToPlayScenario {
         try await Task.detached(priority: .userInitiated) {
             try WhatToPlayTrainer.generateScenario(
                 seed: seed,
                 difficulty: difficulty,
-                preferredFocus: preferredFocus
+                preferredFocus: preferredFocus,
+                preferredMode: preferredMode
             )
         }.value
     }

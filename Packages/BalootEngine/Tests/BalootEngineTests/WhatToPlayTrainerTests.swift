@@ -107,6 +107,31 @@ struct WhatToPlayTrainerTests {
         }
     }
 
+    @Test("طلب نمط محدد يولد موقف صن أو حكم من نفس دورة البلوت")
+    func generationHonorsPreferredModeDeterministically() throws {
+        for mode in GameMode.allCases {
+            let first = try WhatToPlayTrainer.generateScenario(
+                seed: 2_026,
+                difficulty: .easy,
+                preferredMode: mode
+            )
+            let second = try WhatToPlayTrainer.generateScenario(
+                seed: 2_026,
+                difficulty: .easy,
+                preferredMode: mode
+            )
+
+            #expect(first.state.mode == mode)
+            #expect(second.state.mode == mode)
+            #expect(first.seed == second.seed)
+            #expect(first.options.map(\.card) == second.options.map(\.card))
+            #expect(first.state.actionHistory.contains {
+                if case .placeBid = $0 { return true }
+                return false
+            })
+        }
+    }
+
     @Test("تقييم اختيار المستخدم يعيد خيارًا معروفًا من نفس الموقف")
     func evaluatesUserChoiceAgainstScenarioOptions() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)

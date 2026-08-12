@@ -10,12 +10,13 @@ final class WhatToPlayTrainerPreferencesTests: XCTestCase {
         WhatToPlayTrainerPreferences.save(
             difficulty: .hard,
             preferredFocus: .trumpPressure,
+            preferredMode: .hokum,
             to: defaults
         )
 
         XCTAssertEqual(
             WhatToPlayTrainerPreferences.load(from: defaults),
-            WhatToPlayTrainerPreferences(difficulty: .hard, preferredFocus: .trumpPressure)
+            WhatToPlayTrainerPreferences(difficulty: .hard, preferredFocus: .trumpPressure, preferredMode: .hokum)
         )
 
         WhatToPlayTrainerPreferences.clear(from: defaults)
@@ -25,12 +26,12 @@ final class WhatToPlayTrainerPreferencesTests: XCTestCase {
         let defaults = UserDefaults(suiteName: "WhatToPlayTrainerPreferencesTests.autoFocus")!
         WhatToPlayTrainerPreferences.clear(from: defaults)
 
-        WhatToPlayTrainerPreferences.save(difficulty: .easy, preferredFocus: .followSuit, to: defaults)
-        WhatToPlayTrainerPreferences.save(difficulty: .medium, preferredFocus: nil, to: defaults)
+        WhatToPlayTrainerPreferences.save(difficulty: .easy, preferredFocus: .followSuit, preferredMode: .sun, to: defaults)
+        WhatToPlayTrainerPreferences.save(difficulty: .medium, preferredFocus: nil, preferredMode: nil, to: defaults)
 
         XCTAssertEqual(
             WhatToPlayTrainerPreferences.load(from: defaults),
-            WhatToPlayTrainerPreferences(difficulty: .medium, preferredFocus: nil)
+            WhatToPlayTrainerPreferences(difficulty: .medium, preferredFocus: nil, preferredMode: nil)
         )
 
         WhatToPlayTrainerPreferences.clear(from: defaults)
@@ -41,6 +42,7 @@ final class WhatToPlayTrainerPreferencesTests: XCTestCase {
         WhatToPlayTrainerPreferences.clear(from: defaults)
         defaults.set("legendary", forKey: "whatToPlayTrainerDifficulty")
         defaults.set("unknownFocus", forKey: "whatToPlayTrainerFocus")
+        defaults.set("unknownMode", forKey: "whatToPlayTrainerMode")
 
         XCTAssertEqual(WhatToPlayTrainerPreferences.load(from: defaults), .defaults)
 

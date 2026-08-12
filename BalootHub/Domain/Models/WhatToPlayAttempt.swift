@@ -24,6 +24,7 @@ final class WhatToPlayAttempt {
     var bestProjectedTeamPoints: Int?
     var secondBestProjectedTeamPoints: Int?
     var focusKindRaw: String?
+    var gameModeRaw: String?
     var outcomeRaw: String?
     var selectedCardPoints: Int?
     var selectedImmediateImpact: Int?
@@ -56,6 +57,7 @@ final class WhatToPlayAttempt {
         bestProjectedTeamPoints: Int? = nil,
         secondBestProjectedTeamPoints: Int? = nil,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
+        gameMode: GameMode? = nil,
         outcome: WhatToPlayOptionOutcome? = nil,
         impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil,
         simulation: WhatToPlayOptionSimulation? = nil
@@ -80,6 +82,7 @@ final class WhatToPlayAttempt {
         self.bestProjectedTeamPoints = bestProjectedTeamPoints
         self.secondBestProjectedTeamPoints = secondBestProjectedTeamPoints
         self.focusKindRaw = focusKind?.rawValue
+        self.gameModeRaw = gameMode?.rawValue
         self.outcomeRaw = outcome?.rawValue
         self.selectedCardPoints = impactBreakdown?.playedCardPoints
         self.selectedImmediateImpact = impactBreakdown?.immediateImpact
@@ -168,6 +171,11 @@ final class WhatToPlayAttempt {
     var focusKind: WhatToPlayScenarioFocusKind? {
         guard let focusKindRaw else { return nil }
         return WhatToPlayScenarioFocusKind(rawValue: focusKindRaw)
+    }
+
+    var gameMode: GameMode? {
+        guard let gameModeRaw else { return nil }
+        return GameMode(rawValue: gameModeRaw)
     }
 
     var outcome: WhatToPlayOptionOutcome? {

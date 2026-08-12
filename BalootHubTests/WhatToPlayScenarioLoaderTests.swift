@@ -83,6 +83,31 @@ final class WhatToPlayScenarioLoaderTests: XCTestCase {
         XCTAssertEqual(seed, 2027)
     }
 
+    func testUnattemptedSeedSeparatesAttemptsByPreferredMode() {
+        let attempts = [
+            attempt(seed: 2026, difficulty: .medium, focusKind: .openingLead, gameMode: .sun),
+            attempt(seed: 2027, difficulty: .medium, focusKind: .openingLead, gameMode: .hokum)
+        ]
+
+        let hokumSeed = WhatToPlayScenarioLoader.unattemptedSeed(
+            startingAt: 2026,
+            difficulty: .medium,
+            preferredFocus: .openingLead,
+            preferredMode: .hokum,
+            attempts: attempts
+        )
+        let sunSeed = WhatToPlayScenarioLoader.unattemptedSeed(
+            startingAt: 2026,
+            difficulty: .medium,
+            preferredFocus: .openingLead,
+            preferredMode: .sun,
+            attempts: attempts
+        )
+
+        XCTAssertEqual(hokumSeed, 2026)
+        XCTAssertEqual(sunSeed, 2027)
+    }
+
     func testLoaderGeneratesScenarioWithRequestedSeedAndDifficulty() async throws {
         let scenario = try await WhatToPlayScenarioLoader.generate(seed: 2026, difficulty: .medium)
         let repeated = try await WhatToPlayScenarioLoader.generate(seed: 2026, difficulty: .medium)
@@ -106,10 +131,21 @@ final class WhatToPlayScenarioLoaderTests: XCTestCase {
         XCTAssertFalse(scenario.options.isEmpty)
     }
 
+    func testLoaderGeneratesScenarioWithRequestedMode() async throws {
+        let sun = try await WhatToPlayScenarioLoader.generate(seed: 2026, difficulty: .easy, preferredMode: .sun)
+        let hokum = try await WhatToPlayScenarioLoader.generate(seed: 2026, difficulty: .easy, preferredMode: .hokum)
+
+        XCTAssertEqual(sun.state.mode, .sun)
+        XCTAssertEqual(hokum.state.mode, .hokum)
+        XCTAssertFalse(sun.options.isEmpty)
+        XCTAssertFalse(hokum.options.isEmpty)
+    }
+
     private func attempt(
         seed: UInt64,
         difficulty: WhatToPlayDifficulty,
-        focusKind: WhatToPlayScenarioFocusKind
+        focusKind: WhatToPlayScenarioFocusKind,
+        gameMode: GameMode? = nil
     ) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
             difficulty: difficulty,
@@ -121,6 +157,7 @@ final class WhatToPlayScenarioLoaderTests: XCTestCase {
             expectedImpact: 1,
             bestExpectedImpact: 1,
             focusKind: focusKind,
+            gameMode: gameMode,
             outcome: .winsTrick
         )
     }

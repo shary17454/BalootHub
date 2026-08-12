@@ -251,11 +251,12 @@ public enum WhatToPlayTrainer {
         seed: UInt64,
         difficulty: WhatToPlayDifficulty = .medium,
         preferredFocus: WhatToPlayScenarioFocusKind? = nil,
+        preferredMode: GameMode? = nil,
         rules: BalootRulesConfiguration = .standard
     ) throws -> WhatToPlayScenario {
         let agent = ExpertBalootAgent(samples: difficulty.expertSamples)
 
-        let searchLimit = preferredFocus == nil ? 40 : 800
+        let searchLimit = preferredFocus == nil && preferredMode == nil ? 40 : 1_200
         for offset in 0..<searchLimit {
             let initialState = GameState.newLocalMatch(rules: rules)
             var state = initialState
@@ -273,7 +274,9 @@ public enum WhatToPlayTrainer {
                     let options = try analyzeOptions(state: state, playerID: humanID, difficulty: difficulty)
                     guard options.count > 1 else { break }
                     let context = scenarioContext(state: state, options: options, playerID: humanID)
-                    if preferredFocus == nil || context.focusKind == preferredFocus {
+                    let matchesFocus = preferredFocus == nil || context.focusKind == preferredFocus
+                    let matchesMode = preferredMode == nil || state.mode == preferredMode
+                    if matchesFocus && matchesMode {
                         return WhatToPlayScenario(
                             seed: seed &+ UInt64(offset),
                             difficulty: difficulty,

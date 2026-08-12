@@ -336,6 +336,7 @@ struct WhatToPlayTrainerView: View {
 
     @State private var difficulty: WhatToPlayDifficulty = .medium
     @State private var preferredFocusRaw = "auto"
+    @State private var preferredModeRaw = "auto"
     @State private var seed: UInt64 = 2026
     @State private var scenario: WhatToPlayScenario?
     @State private var selectedOption: WhatToPlayOption?
@@ -357,6 +358,7 @@ struct WhatToPlayTrainerView: View {
         let storedPreferences = WhatToPlayTrainerPreferences.load()
         _difficulty = State(initialValue: difficulty ?? storedPreferences.difficulty)
         _preferredFocusRaw = State(initialValue: (preferredFocus ?? storedPreferences.preferredFocus)?.rawValue ?? "auto")
+        _preferredModeRaw = State(initialValue: storedPreferences.preferredMode?.rawValue ?? "auto")
         _seed = State(initialValue: seed ?? 2026)
     }
 
@@ -496,10 +498,15 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayScenarioFocusKind(rawValue: preferredFocusRaw)
     }
 
+    private var preferredMode: GameMode? {
+        GameMode(rawValue: preferredModeRaw)
+    }
+
     private func saveTrainerPreferences() {
         WhatToPlayTrainerPreferences.save(
             difficulty: difficulty,
-            preferredFocus: preferredFocus
+            preferredFocus: preferredFocus,
+            preferredMode: preferredMode
         )
     }
 
@@ -555,6 +562,7 @@ struct WhatToPlayTrainerView: View {
                 startingAt: seed,
                 difficulty: difficulty,
                 preferredFocus: preferredFocus,
+                preferredMode: preferredMode,
                 attempts: attempts
             )
             generateScenario()
@@ -565,6 +573,18 @@ struct WhatToPlayTrainerView: View {
                 startingAt: seed,
                 difficulty: difficulty,
                 preferredFocus: preferredFocus,
+                preferredMode: preferredMode,
+                attempts: attempts
+            )
+            generateScenario()
+        }
+        .onChange(of: preferredModeRaw) { _, _ in
+            saveTrainerPreferences()
+            seed = WhatToPlayScenarioLoader.unattemptedSeed(
+                startingAt: seed,
+                difficulty: difficulty,
+                preferredFocus: preferredFocus,
+                preferredMode: preferredMode,
                 attempts: attempts
             )
             generateScenario()
@@ -652,6 +672,15 @@ struct WhatToPlayTrainerView: View {
             }
             .pickerStyle(.menu)
             .accessibilityLabel("نوع الموقف".localized)
+
+            Picker("النمط", selection: $preferredModeRaw) {
+                Text("تلقائي".localized).tag("auto")
+                ForEach(GameMode.allCases, id: \.self) { mode in
+                    Text(modeTitle(mode)).tag(mode.rawValue)
+                }
+            }
+            .pickerStyle(.segmented)
+            .accessibilityLabel("النمط".localized)
 
             Button {
                 nextScenario()
@@ -2474,6 +2503,7 @@ struct WhatToPlayTrainerView: View {
                 bestProjectedTeamPoints: scenario.bestOption?.projectedTeamPoints,
                 secondBestProjectedTeamPoints: scenario.secondBestOption?.projectedTeamPoints,
                 focusKind: scenario.context.focusKind,
+                gameMode: scenario.state.mode,
                 outcome: evaluated.outcome,
                 impactBreakdown: evaluated.impactBreakdown,
                 simulation: evaluated.simulation
@@ -3085,6 +3115,7 @@ struct WhatToPlayTrainerView: View {
         let requestSeed = seed
         let requestDifficulty = difficulty
         let requestFocus = preferredFocus
+        let requestMode = preferredMode
         let reviewSelection = pendingReviewSelection
         pendingReviewSelection = nil
         generationTask = Task {
@@ -3092,7 +3123,8 @@ struct WhatToPlayTrainerView: View {
                 let generated = try await WhatToPlayScenarioLoader.generate(
                     seed: requestSeed,
                     difficulty: requestDifficulty,
-                    preferredFocus: requestFocus
+                    preferredFocus: requestFocus,
+                    preferredMode: requestMode
                 )
                 guard !Task.isCancelled else { return }
                 scenario = generated
@@ -3115,6 +3147,7 @@ struct WhatToPlayTrainerView: View {
             after: seed,
             difficulty: difficulty,
             preferredFocus: preferredFocus,
+            preferredMode: preferredMode,
             attempts: attempts
         )
         isRetryingCurrentScenario = false
@@ -3223,6 +3256,10 @@ struct WhatToPlayTrainerView: View {
             return "\(mode.arabicName) \(suit.spokenName)"
         }
         return mode.arabicName
+    }
+
+    private func modeTitle(_ mode: GameMode) -> String {
+        mode.arabicName.localized
     }
 
     private func turnContextText(_ context: WhatToPlayScenarioContext) -> String {
