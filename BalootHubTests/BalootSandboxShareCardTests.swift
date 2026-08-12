@@ -17,6 +17,7 @@ final class BalootSandboxShareCardTests: XCTestCase {
 
         XCTAssertTrue(text.contains("مختبر البلوت".localized))
         XCTAssertTrue(text.contains("\("النمط".localized):"))
+        XCTAssertTrue(text.contains("\("الصعوبة".localized):"))
         XCTAssertTrue(text.contains("\("المضاعف".localized):"))
         XCTAssertTrue(text.contains("\("الدور".localized):"))
         XCTAssertTrue(text.contains("\("الأوراق على الطاولة".localized):"))

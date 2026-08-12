@@ -9,6 +9,7 @@ struct BalootSandboxView: View {
     @State private var selectedProjectSeat: SeatPosition = .south
     @State private var selectedProjectKind: Project.Kind = .sira
     @State private var editingHandSeat: SeatPosition = .south
+    @State private var analysisDifficulty: WhatToPlayDifficulty = .medium
 
     private var state: GameState? {
         try? BalootSandbox.makeState(configuration: configuration)
@@ -70,7 +71,11 @@ struct BalootSandboxView: View {
                     .font(AppTypography.title)
                     .foregroundStyle(AppColor.primary)
                 Spacer()
-                ShareLink(item: BalootSandboxShareCard.text(configuration: configuration, preview: preview)) {
+                ShareLink(item: BalootSandboxShareCard.text(
+                    configuration: configuration,
+                    difficulty: analysisDifficulty,
+                    preview: preview
+                )) {
                     Image(systemName: "square.and.arrow.up")
                         .font(AppTypography.headline)
                         .foregroundStyle(AppColor.primary)
@@ -110,6 +115,12 @@ struct BalootSandboxView: View {
             Picker("المضاعف".localized, selection: multiplierBinding) {
                 ForEach(Multiplier.allCases, id: \.self) { multiplier in
                     Text(multiplier.arabicName.localized).tag(multiplier)
+                }
+            }
+
+            Picker("الصعوبة".localized, selection: difficultyBinding) {
+                ForEach(WhatToPlayDifficulty.allCases, id: \.self) { difficulty in
+                    Text(difficultyTitle(difficulty)).tag(difficulty)
                 }
             }
 
@@ -509,7 +520,11 @@ struct BalootSandboxView: View {
         selectedCard = card
         errorMessage = nil
         do {
-            preview = try BalootSandbox.preview(playing: card, configuration: configuration)
+            preview = try BalootSandbox.preview(
+                playing: card,
+                configuration: configuration,
+                difficulty: analysisDifficulty
+            )
         } catch {
             preview = nil
             errorMessage = String(format: "تعذّر تشغيل الموقف: %@".localized, error.localizedDescription)
@@ -554,6 +569,16 @@ struct BalootSandboxView: View {
                 guard configuration.currentTrickCards.isEmpty else { return }
                 resetPreview()
                 configuration.currentTurnSeat = seat
+            }
+        )
+    }
+
+    private var difficultyBinding: Binding<WhatToPlayDifficulty> {
+        Binding(
+            get: { analysisDifficulty },
+            set: { difficulty in
+                resetPreview()
+                analysisDifficulty = difficulty
             }
         )
     }
@@ -714,6 +739,14 @@ struct BalootSandboxView: View {
 
     private func projectKindTitle(_ kind: Project.Kind) -> String {
         kind.arabicName.localized
+    }
+
+    private func difficultyTitle(_ difficulty: WhatToPlayDifficulty) -> String {
+        switch difficulty {
+        case .easy: "سهل".localized
+        case .medium: "متوسط".localized
+        case .hard: "صعب".localized
+        }
     }
 }
 

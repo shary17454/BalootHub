@@ -4,6 +4,7 @@ import BalootEngine
 enum BalootSandboxShareCard {
     static func text(
         configuration: BalootSandboxConfiguration,
+        difficulty: WhatToPlayDifficulty = .medium,
         preview: BalootSandboxPlayPreview? = nil
     ) -> String {
         var lines = [
@@ -11,6 +12,7 @@ enum BalootSandboxShareCard {
             "موقف من مختبر Baloot Hub".localized,
             "\("أنت تلعب".localized) \(modeText(configuration))",
             "\("النمط".localized): \(modeText(configuration))",
+            "\("الصعوبة".localized): \(difficultyText(difficulty))",
             "\("المضاعف".localized): \(configuration.multiplier.arabicName.localized)",
             "\("الدور".localized): \(seatTitle(configuration.currentTurnSeat))",
             "\("نقاط فريقك".localized): \(teamScore(for: .south, configuration: configuration))",
@@ -87,6 +89,14 @@ enum BalootSandboxShareCard {
             return "صن".localized
         case .hokum:
             return "\("حكم".localized) \(configuration.trumpSuit?.spokenName ?? "")"
+        }
+    }
+
+    private static func difficultyText(_ difficulty: WhatToPlayDifficulty) -> String {
+        switch difficulty {
+        case .easy: "سهل".localized
+        case .medium: "متوسط".localized
+        case .hard: "صعب".localized
         }
     }
 
