@@ -14,6 +14,14 @@ public struct HandAnalysis: Sendable, Equatable {
     public let confidence: Confidence
     public let projects: [Project]
     public let totalProjectPoints: Int
+    /// تقييم مئوي مبسط لقوة اليد يصلح للعرض والتدريب.
+    public let strengthPercent: Int
+    /// احتمال تقريبي أن تكون اليد صالحة للشراء حسب نفس سياسة المزايدة.
+    public let buyConfidencePercent: Int
+    /// احتمال تقريبي أن تكون اليد مناسبة للصن.
+    public let sunConfidencePercent: Int
+    /// احتمال تقريبي أن تكون اليد مناسبة لأفضل حكم متاح.
+    public let hokumConfidencePercent: Int
     /// أسباب إيجابية تدعم التوصية، محسوبة داخل المحرك لا داخل الواجهة.
     public let strengths: [String]
     /// مخاطر أو نواقص يجب الانتباه لها قبل الشراء.
@@ -63,6 +71,12 @@ public enum HandAnalyzer {
         )
         let projects = detectableProjects(for: normalized, recommendedBid: recommended, rules: rules)
         let projectPoints = projects.reduce(0) { $0 + $1.points }
+        let metrics = probabilityMetrics(
+            evaluation: evaluation,
+            recommendedBid: recommended,
+            policy: policy,
+            projectPoints: projectPoints
+        )
         let confidence = confidence(for: recommended, evaluation: evaluation, policy: policy, projectPoints: projectPoints)
         let rationale = rationale(
             for: normalized,
@@ -80,6 +94,10 @@ public enum HandAnalyzer {
             confidence: confidence,
             projects: projects,
             totalProjectPoints: projectPoints,
+            strengthPercent: metrics.strengthPercent,
+            buyConfidencePercent: metrics.buyConfidencePercent,
+            sunConfidencePercent: metrics.sunConfidencePercent,
+            hokumConfidencePercent: metrics.hokumConfidencePercent,
             strengths: rationale.strengths,
             weaknesses: rationale.weaknesses,
             tacticalAdvice: rationale.advice
@@ -203,6 +221,54 @@ public enum HandAnalyzer {
         if margin >= 12 { return .high }
         if margin >= 4 { return .medium }
         return .low
+    }
+
+    private static func probabilityMetrics(
+        evaluation: HandEvaluation,
+        recommendedBid: Bid,
+        policy: BiddingPolicy,
+        projectPoints: Int
+    ) -> (strengthPercent: Int, buyConfidencePercent: Int, sunConfidencePercent: Int, hokumConfidencePercent: Int) {
+        let bestHokumScore = evaluation.bestHokum?.score == Int.min ? 0 : (evaluation.bestHokum?.score ?? 0)
+        let sunPercent = confidencePercent(
+            score: evaluation.sunScore + projectPoints / 4,
+            threshold: policy.sunThreshold
+        )
+        let hokumPercent = confidencePercent(
+            score: bestHokumScore + projectPoints / 4,
+            threshold: policy.hokumThreshold
+        )
+        let buyPercent = max(sunPercent, hokumPercent)
+        let recommendedBonus: Int
+        switch recommendedBid {
+        case .pass:
+            recommendedBonus = 0
+        case .sun:
+            recommendedBonus = 6
+        case .hokum:
+            recommendedBonus = 8
+        }
+        let strengthPercent = clampPercent(
+            max(evaluation.sunScore, bestHokumScore)
+                + projectPoints / 3
+                + evaluation.sureWinners * 4
+                + recommendedBonus
+        )
+
+        return (
+            strengthPercent,
+            buyPercent,
+            sunPercent,
+            hokumPercent
+        )
+    }
+
+    private static func confidencePercent(score: Int, threshold: Int) -> Int {
+        clampPercent(50 + ((score - threshold) * 5))
+    }
+
+    private static func clampPercent(_ value: Int) -> Int {
+        min(100, max(0, value))
     }
 
     private static func rationale(

@@ -22,6 +22,10 @@ struct HandAnalysisTests {
         #expect(analysis.bestTrumpSuit == .spades)
         #expect(analysis.projects.contains { $0.kind == .belot })
         #expect(analysis.confidence != .low)
+        #expect(analysis.strengthPercent >= 70)
+        #expect(analysis.buyConfidencePercent >= 70)
+        #expect(analysis.hokumConfidencePercent >= 70)
+        #expect(analysis.buyConfidencePercent == max(analysis.sunConfidencePercent, analysis.hokumConfidencePercent))
         #expect(analysis.strengths.contains { $0.contains("سباتي") })
         #expect(analysis.strengths.contains { $0.contains("الولد") })
         #expect(analysis.tacticalAdvice.contains("حكم سباتي"))
@@ -68,6 +72,8 @@ struct HandAnalysisTests {
 
         #expect(analysis.recommendedBid == .pass)
         #expect(analysis.projects.isEmpty)
+        #expect(analysis.strengthPercent < 50)
+        #expect(analysis.buyConfidencePercent < 50)
         #expect(analysis.weaknesses.contains { $0.contains("تقييم الصن") })
         #expect(analysis.tacticalAdvice.contains("تمرير"))
     }
@@ -94,5 +100,43 @@ struct HandAnalysisTests {
         #expect(first.strengths == second.strengths)
         #expect(first.weaknesses == second.weaknesses)
         #expect(first.tacticalAdvice == second.tacticalAdvice)
+        #expect(first.strengthPercent == second.strengthPercent)
+        #expect(first.buyConfidencePercent == second.buyConfidencePercent)
+        #expect(first.sunConfidencePercent == second.sunConfidencePercent)
+        #expect(first.hokumConfidencePercent == second.hokumConfidencePercent)
+    }
+
+    @Test("احتمالات تحليل اليد تبقى ضمن النطاق المئوي")
+    func probabilityMetricsStayWithinPercentRange() {
+        let hands = [
+            [
+                PlayingCard(suit: .spades, rank: .jack),
+                PlayingCard(suit: .spades, rank: .nine),
+                PlayingCard(suit: .spades, rank: .ace),
+                PlayingCard(suit: .spades, rank: .king),
+                PlayingCard(suit: .hearts, rank: .ace),
+                PlayingCard(suit: .diamonds, rank: .ten),
+                PlayingCard(suit: .clubs, rank: .seven),
+                PlayingCard(suit: .clubs, rank: .eight)
+            ],
+            [
+                PlayingCard(suit: .spades, rank: .seven),
+                PlayingCard(suit: .spades, rank: .eight),
+                PlayingCard(suit: .hearts, rank: .seven),
+                PlayingCard(suit: .hearts, rank: .eight),
+                PlayingCard(suit: .diamonds, rank: .seven),
+                PlayingCard(suit: .diamonds, rank: .eight),
+                PlayingCard(suit: .clubs, rank: .seven),
+                PlayingCard(suit: .clubs, rank: .eight)
+            ]
+        ]
+
+        for hand in hands {
+            let analysis = HandAnalyzer.analyze(hand: hand)
+            #expect((0...100).contains(analysis.strengthPercent))
+            #expect((0...100).contains(analysis.buyConfidencePercent))
+            #expect((0...100).contains(analysis.sunConfidencePercent))
+            #expect((0...100).contains(analysis.hokumConfidencePercent))
+        }
     }
 }

@@ -3311,11 +3311,12 @@ struct HandAnalyzerView: View {
 
             VStack(spacing: AppSpacing.xs) {
                 InfoRow(icon: "hand.thumbsup.fill", title: "التوصية", value: recommendationText(analysis.recommendedBid))
-                InfoRow(icon: "gauge.with.dots.needle.67percent", title: "قوة اليد", value: "\(analysis.strengthScore)")
+                InfoRow(icon: "gauge.with.dots.needle.67percent", title: "قوة اليد", value: "\(analysis.strengthPercent)%")
+                InfoRow(icon: "chart.line.uptrend.xyaxis", title: "احتمال الشراء", value: "\(analysis.buyConfidencePercent)%")
                 InfoRow(icon: "checkmark.seal.fill", title: "الثقة", value: confidenceText(analysis.confidence))
-                InfoRow(icon: "sun.max.fill", title: "تقييم الصن", value: "\(analysis.evaluation.sunScore)")
+                InfoRow(icon: "sun.max.fill", title: "احتمال الصن", value: "\(analysis.sunConfidencePercent)% · \(analysis.evaluation.sunScore)")
                 if let best = analysis.evaluation.bestHokum {
-                    InfoRow(icon: "crown.fill", title: "أفضل حكم", value: "\(best.suit.spokenName) · \(best.score)")
+                    InfoRow(icon: "crown.fill", title: "أفضل حكم", value: "\(best.suit.spokenName) · \(analysis.hokumConfidencePercent)% · \(best.score)")
                 }
                 InfoRow(icon: "star.fill", title: "المشاريع", value: projectsText(analysis.projects))
             }
