@@ -71,6 +71,38 @@ struct BalootSandboxTests {
         #expect(preview.afterState?.teamTrickPoints[BalootSandbox.teamID(for: .west)] == 20)
     }
 
+    @Test("المشاريع اليدوية تدخل GameState وتحافظ على بيانات صاحبها")
+    func manualProjectsAreCarriedIntoState() throws {
+        var configuration = sandboxConfiguration()
+        configuration.handsBySeat[.south] = [
+            PlayingCard(suit: .hearts, rank: .jack),
+            PlayingCard(suit: .clubs, rank: .ace),
+            PlayingCard(suit: .clubs, rank: .ten),
+            PlayingCard(suit: .clubs, rank: .jack),
+            PlayingCard(suit: .clubs, rank: .queen)
+        ]
+        let declaration = try #require(BalootSandbox.suggestedProjectDeclaration(
+            seat: .south,
+            kind: .sira,
+            configuration: configuration
+        ))
+        configuration.declaredProjects = [declaration]
+
+        let state = try BalootSandbox.makeState(configuration: configuration)
+        let project = try #require(state.declaredProjects.first)
+
+        #expect(state.declaredProjects.count == 1)
+        #expect(project.kind == .sira)
+        #expect(project.points == configuration.rules.siraPoints)
+        #expect(project.playerID == BalootSandbox.playerID(for: .south))
+        #expect(project.teamID == BalootSandbox.teamID(for: .south))
+        #expect(project.cards == [
+            PlayingCard(suit: .clubs, rank: .ten),
+            PlayingCard(suit: .clubs, rank: .jack),
+            PlayingCard(suit: .clubs, rank: .queen)
+        ])
+    }
+
     @Test("تجربة ورقة ممنوعة تعيد سبب الرفض من GameEngine")
     func previewReportsInvalidMoveReason() throws {
         let configuration = sandboxConfiguration()

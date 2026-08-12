@@ -6699,6 +6699,132 @@
         }
       }
     },
+    "المشاريع المعلنة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Deklarierte Projekte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Declared projects" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Proyectos declarados" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Projets annoncés" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "घोषित प्रोजेक्ट" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Proyek diumumkan" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Объявленные проекты" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Açıklanan projeler" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اعلان شدہ پروجیکٹس" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已声明项目" } }
+      }
+    },
+    "أضف مشروعًا صالحًا من يد اللاعب المختار ليظهر في الموقف ويدخل مع حالة المحرك والتحليل." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Füge ein gültiges Projekt aus der Hand des gewählten Spielers hinzu, damit es in der Situation erscheint und in Motorzustand und Analyse eingeht." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Add a valid project from the selected player's hand so it appears in the scenario and is included in engine state and analysis." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Agrega un proyecto válido de la mano del jugador elegido para que aparezca en la situación y entre en el estado del motor y el análisis." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ajoute un projet valide depuis la main du joueur choisi afin qu'il apparaisse dans la situation et soit inclus dans l'état du moteur et l'analyse." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "चुने गए खिलाड़ी के हाथ से एक मान्य प्रोजेक्ट जोड़ें ताकि वह स्थिति में दिखे और इंजन स्थिति व विश्लेषण में शामिल हो." } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tambahkan proyek valid dari kartu pemain yang dipilih agar muncul di skenario dan masuk ke status mesin serta analisis." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Добавьте допустимый проект из руки выбранного игрока, чтобы он появился в ситуации и вошёл в состояние движка и анализ." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Seçilen oyuncunun elinden geçerli bir proje ekle; böylece senaryoda görünür ve motor durumuna ile analize dahil edilir." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "منتخب کھلاڑی کے ہاتھ سے درست پروجیکٹ شامل کریں تاکہ وہ صورتحال میں نظر آئے اور انجن اسٹیٹ اور تجزیے میں شامل ہو۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "从所选玩家手牌添加有效项目，使其显示在局面中并进入引擎状态和分析。" } }
+      }
+    },
+    "صاحب المشروع" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Projektbesitzer" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Project owner" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Dueño del proyecto" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Propriétaire du projet" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "प्रोजेक्ट का मालिक" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Pemilik proyek" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Владелец проекта" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Proje sahibi" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "پروجیکٹ کا مالک" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "项目归属" } }
+      }
+    },
+    "نوع المشروع" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Projektart" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Project type" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tipo de proyecto" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Type de projet" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "प्रोजेक्ट का प्रकार" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Jenis proyek" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Тип проекта" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Proje türü" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "پروجیکٹ کی قسم" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "项目类型" } }
+      }
+    },
+    "مشروع صالح" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Gültiges Projekt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Valid project" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Proyecto válido" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Projet valide" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "मान्य प्रोजेक्ट" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Proyek valid" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Допустимый проект" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Geçerli proje" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "درست پروجیکٹ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "有效项目" } }
+      }
+    },
+    "لا توجد أوراق تكوّن هذا المشروع في يد اللاعب المختار حسب القواعد الحالية." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die Hand des gewählten Spielers enthält nach den aktuellen Regeln keine Karten für dieses Projekt." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The selected player's hand has no cards that form this project under the current rules." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "La mano del jugador elegido no tiene cartas que formen este proyecto según las reglas actuales." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "La main du joueur choisi ne contient pas de cartes formant ce projet avec les règles actuelles." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "मौजूदा नियमों के अनुसार चुने गए खिलाड़ी के हाथ में इस प्रोजेक्ट को बनाने वाली कार्ड नहीं हैं." } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kartu pemain yang dipilih tidak membentuk proyek ini menurut aturan saat ini." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "В руке выбранного игрока нет карт, образующих этот проект по текущим правилам." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Seçilen oyuncunun elinde geçerli kurallara göre bu projeyi oluşturan kart yok." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "موجودہ قواعد کے مطابق منتخب کھلاڑی کے ہاتھ میں اس پروجیکٹ کی کارڈز موجود نہیں۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "按当前规则，所选玩家手牌中没有可组成该项目的牌。" } }
+      }
+    },
+    "إضافة مشروع" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Projekt hinzufügen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Add project" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Agregar proyecto" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ajouter un projet" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "प्रोजेक्ट जोड़ें" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tambah proyek" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Добавить проект" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Proje ekle" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "پروجیکٹ شامل کریں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "添加项目" } }
+      }
+    },
+    "مسح المشاريع" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Projekte löschen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Clear projects" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Borrar proyectos" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Effacer les projets" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "प्रोजेक्ट मिटाएँ" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Hapus proyek" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Очистить проекты" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Projeleri temizle" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "پروجیکٹس صاف کریں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "清除项目" } }
+      }
+    },
+    "حذف المشروع" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Projekt löschen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Delete project" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Eliminar proyecto" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Supprimer le projet" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "प्रोजेक्ट हटाएँ" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Hapus proyek" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Удалить проект" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Projeyi sil" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "پروجیکٹ حذف کریں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "删除项目" } }
+      }
+    },
     "المشاريع أو المضاعفات" : {
       "extractionState" : "stale",
       "localizations" : {

@@ -6,6 +6,8 @@ struct BalootSandboxView: View {
     @State private var selectedCard: PlayingCard?
     @State private var preview: BalootSandboxPlayPreview?
     @State private var errorMessage: String?
+    @State private var selectedProjectSeat: SeatPosition = .south
+    @State private var selectedProjectKind: Project.Kind = .sira
 
     private var state: GameState? {
         try? BalootSandbox.makeState(configuration: configuration)
@@ -38,6 +40,7 @@ struct BalootSandboxView: View {
                 sandboxControls
                 tableState
                 scoreEditor
+                projectEditor
                 trickEditor
                 handEditor
                 handPicker
@@ -126,6 +129,7 @@ struct BalootSandboxView: View {
                 metric("الدور".localized, seatTitle(configuration.currentTurnSeat), icon: "person.crop.circle.badge.checkmark")
                 metric("نقاط فريقك".localized, "\(teamScore(for: .south))", icon: "sum")
                 metric("نقاط الخصم".localized, "\(teamScore(for: .west))", icon: "sum")
+                metric("المشاريع".localized, "\(configuration.declaredProjects.count)", icon: "star.fill")
                 metric("الأوراق القانونية".localized, legalCardsText(), icon: "checkmark.seal.fill")
             }
 
@@ -143,6 +147,92 @@ struct BalootSandboxView: View {
             }
             .padding(AppSpacing.md)
             .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private var projectEditor: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            HStack {
+                Label("المشاريع المعلنة".localized, systemImage: "star.fill")
+                    .font(AppTypography.headline)
+                    .foregroundStyle(AppColor.primary)
+                Spacer()
+                Text("\(configuration.declaredProjects.count)")
+                    .font(AppTypography.caption.weight(.semibold))
+                    .foregroundStyle(AppColor.textSecondary)
+            }
+
+            if configuration.declaredProjects.isEmpty {
+                Text("أضف مشروعًا صالحًا من يد اللاعب المختار ليظهر في الموقف ويدخل مع حالة المحرك والتحليل.".localized)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                    ForEach(Array(configuration.declaredProjects.enumerated()), id: \.offset) { index, declaration in
+                        HStack(spacing: AppSpacing.sm) {
+                            InfoRow(
+                                icon: "star.circle.fill",
+                                title: "\(seatTitle(declaration.seat)) · \(projectKindTitle(declaration.kind))",
+                                value: "+\(declaration.points) · \(declaration.cards.map(\.accessibilityName).joined(separator: "، "))"
+                            )
+                            Button {
+                                removeProject(at: index)
+                            } label: {
+                                Image(systemName: "trash.fill")
+                                    .foregroundStyle(AppColor.danger)
+                            }
+                            .buttonStyle(.borderless)
+                            .accessibilityLabel("حذف المشروع".localized)
+                        }
+                    }
+                }
+            }
+
+            Picker("صاحب المشروع".localized, selection: $selectedProjectSeat) {
+                ForEach(SeatPosition.allCases, id: \.self) { seat in
+                    Text(seatTitle(seat)).tag(seat)
+                }
+            }
+
+            Picker("نوع المشروع".localized, selection: $selectedProjectKind) {
+                ForEach(Project.Kind.allCases, id: \.self) { kind in
+                    Text(projectKindTitle(kind)).tag(kind)
+                }
+            }
+
+            if let declaration = selectedProjectDeclaration {
+                InfoRow(
+                    icon: "checkmark.seal.fill",
+                    title: "مشروع صالح".localized,
+                    value: "+\(declaration.points) · \(declaration.cards.map(\.accessibilityName).joined(separator: "، "))"
+                )
+            } else {
+                Text("لا توجد أوراق تكوّن هذا المشروع في يد اللاعب المختار حسب القواعد الحالية.".localized)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            HStack {
+                Button {
+                    addSelectedProject()
+                } label: {
+                    Label("إضافة مشروع".localized, systemImage: "plus.circle.fill")
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(selectedProjectDeclaration == nil)
+
+                Button {
+                    clearProjects()
+                } label: {
+                    Label("مسح المشاريع".localized, systemImage: "xmark.circle.fill")
+                }
+                .buttonStyle(.bordered)
+                .disabled(configuration.declaredProjects.isEmpty)
+            }
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
@@ -541,6 +631,34 @@ struct BalootSandboxView: View {
         configuration.currentTurnSeat = leader
     }
 
+    private var selectedProjectDeclaration: BalootSandboxProjectDeclaration? {
+        BalootSandbox.suggestedProjectDeclaration(
+            seat: selectedProjectSeat,
+            kind: selectedProjectKind,
+            configuration: configuration
+        )
+    }
+
+    private func addSelectedProject() {
+        guard let declaration = selectedProjectDeclaration else { return }
+        resetPreview()
+        if !configuration.declaredProjects.contains(declaration) {
+            configuration.declaredProjects.append(declaration)
+        }
+    }
+
+    private func removeProject(at index: Int) {
+        guard configuration.declaredProjects.indices.contains(index) else { return }
+        resetPreview()
+        configuration.declaredProjects.remove(at: index)
+    }
+
+    private func clearProjects() {
+        guard !configuration.declaredProjects.isEmpty else { return }
+        resetPreview()
+        configuration.declaredProjects.removeAll()
+    }
+
     private func cardAccessibilityLabel(_ card: PlayingCard, selected: Bool, unavailable: Bool) -> String {
         if unavailable {
             return "\(card.accessibilityName)، \("مستخدمة في الموقف".localized)"
@@ -572,6 +690,10 @@ struct BalootSandboxView: View {
         case .north: "شمال".localized
         case .east: "شرق".localized
         }
+    }
+
+    private func projectKindTitle(_ kind: Project.Kind) -> String {
+        kind.arabicName.localized
     }
 }
 

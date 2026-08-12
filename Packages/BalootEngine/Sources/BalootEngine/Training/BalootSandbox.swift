@@ -207,6 +207,40 @@ public enum BalootSandbox {
         return GameEngine.legalCards(for: playerID(for: configuration.currentTurnSeat), state: state)
     }
 
+    public static func suggestedProjectDeclaration(
+        seat: SeatPosition,
+        kind: Project.Kind,
+        configuration: BalootSandboxConfiguration
+    ) -> BalootSandboxProjectDeclaration? {
+        guard let hand = configuration.handsBySeat[seat] else { return nil }
+        let player = Player(
+            id: playerID(for: seat),
+            name: playerName(for: seat),
+            kind: .human,
+            seat: seat,
+            teamID: teamID(for: seat)
+        )
+        let projects = ProjectDetector.detect(
+            hand: hand,
+            player: player,
+            mode: configuration.mode,
+            trumpSuit: configuration.mode == .hokum ? configuration.trumpSuit : nil,
+            rules: configuration.rules
+        )
+        guard let project = projects
+            .filter({ $0.kind == kind })
+            .max(by: { $1.isStronger(than: $0) })
+        else {
+            return nil
+        }
+        return BalootSandboxProjectDeclaration(
+            seat: seat,
+            kind: kind,
+            cards: project.cards,
+            points: project.points
+        )
+    }
+
     public static func preview(
         playing card: PlayingCard,
         configuration: BalootSandboxConfiguration,
