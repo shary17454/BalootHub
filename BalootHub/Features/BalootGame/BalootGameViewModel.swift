@@ -303,9 +303,15 @@ final class BalootGameViewModel {
         return winner.name
     }
 
+    var moveValidationsForHuman: [MoveValidation] {
+        guard canCurrentHumanAct, let activeHumanID else { return [] }
+        return GameEngine.moveValidations(for: activeHumanID, state: state)
+    }
+
     var legalCardsForHuman: [PlayingCard] {
-        guard canCurrentHumanAct, let mode = state.mode else { return [] }
-        return LegalMoveValidator.legalCards(hand: humanHand, trick: state.currentTrick, mode: mode, trumpSuit: state.trumpSuit, rules: state.rules)
+        moveValidationsForHuman
+            .filter(\.isLegal)
+            .map(\.card)
     }
 
     /// مجموعة الأوراق القانونية للبحث السريع من الواجهة.
@@ -520,8 +526,7 @@ final class BalootGameViewModel {
     /// التفسير مشتق من ``LegalMoveValidator`` عبر المحرك، فهو نفس السبب الذي يرفض به
     /// المحرك الحركة حرفيًا — لا شرحًا موازيًا قد يتناقض معه عند تغيير القواعد.
     func explanation(forPlaying card: PlayingCard) -> String? {
-        guard let activeHumanID,
-              let reason = GameEngine.invalidMoveReason(playerID: activeHumanID, card: card, state: state)
+        guard let reason = moveValidationsForHuman.first(where: { $0.card == card })?.invalidReason
         else { return nil }
         return RuleExplanationFormatter.illegalMoveExplanation(for: reason, trumpSuit: state.trumpSuit)
     }

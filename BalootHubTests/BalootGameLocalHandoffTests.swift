@@ -16,6 +16,7 @@ final class BalootGameLocalHandoffTests: XCTestCase {
         XCTAssertFalse(viewModel.canCurrentHumanAct)
         XCTAssertTrue(viewModel.visibleHumanHand.isEmpty)
         XCTAssertTrue(viewModel.legalBidsForHuman.isEmpty)
+        XCTAssertTrue(viewModel.moveValidationsForHuman.isEmpty)
 
         viewModel.revealLocalHumanHand()
 
@@ -42,5 +43,6 @@ final class BalootGameLocalHandoffTests: XCTestCase {
         XCTAssertFalse(viewModel.canCurrentHumanAct)
         XCTAssertTrue(viewModel.visibleHumanHand.isEmpty)
         XCTAssertTrue(viewModel.legalBidsForHuman.isEmpty)
+        XCTAssertTrue(viewModel.moveValidationsForHuman.isEmpty)
     }
 }
