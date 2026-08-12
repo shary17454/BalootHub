@@ -2397,14 +2397,7 @@ struct WhatToPlayTrainerView: View {
 
             optionSimulationView(option.simulation, scenario: scenario)
 
-            Button {
-                showDecisionReplay(for: option, in: scenario)
-            } label: {
-                Label("مشاهدة القرار في الإعادة".localized, systemImage: "play.rectangle.fill")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.bordered)
-            .tint(AppColor.primary)
+            decisionReplayButtons(for: option, in: scenario)
 
             Text(option.explanation)
                 .font(AppTypography.subheadline)
@@ -2414,6 +2407,43 @@ struct WhatToPlayTrainerView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func decisionReplayButtons(for option: WhatToPlayOption, in scenario: WhatToPlayScenario) -> some View {
+        VStack(spacing: AppSpacing.xs) {
+            Button {
+                showDecisionReplay(for: option, in: scenario)
+            } label: {
+                Label("إعادة اختيارك".localized, systemImage: "play.rectangle.fill")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .tint(AppColor.primary)
+
+            if let best = scenario.bestOption, best.card != option.card {
+                Button {
+                    showDecisionReplay(for: best, in: scenario)
+                } label: {
+                    Label("إعادة أفضل قرار".localized, systemImage: "star.rectangle.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(AppColor.primary)
+            }
+
+            if let second = scenario.secondBestOption,
+               second.card != option.card,
+               second.card != scenario.bestOption?.card {
+                Button {
+                    showDecisionReplay(for: second, in: scenario)
+                } label: {
+                    Label("إعادة ثاني أفضل قرار".localized, systemImage: "2.square.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .tint(AppColor.accent)
+            }
+        }
     }
 
     private func optionSimulationView(_ simulation: WhatToPlayOptionSimulation, scenario: WhatToPlayScenario) -> some View {

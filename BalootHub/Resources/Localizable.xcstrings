@@ -57,6 +57,48 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "即将显示" } }
       }
     },
+    "إعادة اختيارك" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Deine Wahl wiedergeben" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Replay your choice" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Reproducir tu elección" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Rejouer votre choix" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "अपनी पसंद का रीप्ले करें" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Putar ulang pilihan Anda" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Повторить ваш выбор" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Seçimini tekrar oynat" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اپنا انتخاب دوبارہ چلائیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "回放你的选择" } }
+      }
+    },
+    "إعادة أفضل قرار" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Beste Entscheidung wiedergeben" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Replay best decision" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Reproducir la mejor decisión" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Rejouer la meilleure décision" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सर्वश्रेष्ठ निर्णय का रीप्ले करें" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Putar ulang keputusan terbaik" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Повторить лучшее решение" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "En iyi kararı tekrar oynat" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "بہترین فیصلہ دوبارہ چلائیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "回放最佳决策" } }
+      }
+    },
+    "إعادة ثاني أفضل قرار" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zweitbeste Entscheidung wiedergeben" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Replay second-best decision" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Reproducir la segunda mejor decisión" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Rejouer la deuxième meilleure décision" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "दूसरे सर्वश्रेष्ठ निर्णय का रीप्ले करें" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Putar ulang keputusan terbaik kedua" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Повторить второе лучшее решение" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "İkinci en iyi kararı tekrar oynat" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "دوسرا بہترین فیصلہ دوبارہ چلائیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "回放第二佳决策" } }
+      }
+    },
     "مشاهدة القرار في الإعادة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Entscheidung im Replay ansehen" } },
