@@ -2020,6 +2020,37 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(coverage.title, "تغطية مواقف متوازنة".localized)
     }
 
+    func testGameModeCoverageReportsMissingModes() {
+        let attempts = [
+            attempt(daysAgo: 2, correct: true, impact: 2, gameMode: .sun),
+            attempt(daysAgo: 1, correct: false, impact: -2, gameMode: .sun)
+        ]
+
+        let coverage = WhatToPlayStatsAnalyzer.gameModeCoverage(for: attempts)
+
+        XCTAssertFalse(coverage.isBalanced)
+        XCTAssertEqual(coverage.sampledModes, 1)
+        XCTAssertEqual(coverage.totalModes, 2)
+        XCTAssertEqual(coverage.missingModes, [.hokum])
+        XCTAssertEqual(coverage.title, "وازن تدريب الصن والحكم".localized)
+    }
+
+    func testGameModeCoverageReportsBalancedModes() {
+        let attempts = [
+            attempt(daysAgo: 4, correct: true, impact: 2, gameMode: .sun),
+            attempt(daysAgo: 3, correct: false, impact: -2, gameMode: .sun),
+            attempt(daysAgo: 2, correct: true, impact: 2, gameMode: .hokum),
+            attempt(daysAgo: 1, correct: false, impact: -2, gameMode: .hokum)
+        ]
+
+        let coverage = WhatToPlayStatsAnalyzer.gameModeCoverage(for: attempts)
+
+        XCTAssertTrue(coverage.isBalanced)
+        XCTAssertEqual(coverage.sampledModes, 2)
+        XCTAssertTrue(coverage.missingModes.isEmpty)
+        XCTAssertEqual(coverage.title, "تغطية الصن والحكم متوازنة".localized)
+    }
+
     func testFocusTrainingPriorityUsesLargestLostPointsByFocus() {
         let attempts = [
             attempt(daysAgo: 6, correct: false, impact: -1, bestImpact: 1, focusKind: .openingLead),
@@ -2261,16 +2292,38 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(drill.focusKind, .followSuit)
     }
 
+    func testMicroDrillTargetsMissingGameModeAfterDifficultyAndFocusCoverage() {
+        let attempts = [
+            attempt(daysAgo: 8, difficulty: .easy, correct: true, impact: 1, focusKind: .openingLead, gameMode: .sun),
+            attempt(daysAgo: 7, difficulty: .easy, correct: true, impact: 1, focusKind: .followSuit, gameMode: .sun),
+            attempt(daysAgo: 6, difficulty: .medium, correct: true, impact: 1, focusKind: .trumpPressure, gameMode: .sun),
+            attempt(daysAgo: 5, difficulty: .medium, correct: true, impact: 1, focusKind: .narrowChoice, gameMode: .sun),
+            attempt(daysAgo: 4, difficulty: .hard, correct: true, impact: 1, focusKind: .openingLead, gameMode: .sun),
+            attempt(daysAgo: 3, difficulty: .hard, correct: true, impact: 1, focusKind: .followSuit, gameMode: .sun),
+            attempt(daysAgo: 2, difficulty: .easy, correct: true, impact: 1, focusKind: .trumpPressure, gameMode: .sun),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 1, focusKind: .narrowChoice, gameMode: .sun)
+        ]
+
+        let drill = WhatToPlayStatsAnalyzer.microDrill(for: attempts)
+
+        XCTAssertEqual(drill.title, "خطة الصن والحكم".localized)
+        XCTAssertEqual(drill.steps.first, "\("استهدف نمطًا ناقصًا".localized): \("حكم".localized)")
+        XCTAssertEqual(drill.gameMode, .hokum)
+        XCTAssertEqual(drill.seed, 10_010_008)
+        XCTAssertNotNil(drill.difficulty)
+        XCTAssertNil(drill.focusKind)
+    }
+
     func testMicroDrillRaisesChallengeForSharpBalancedPlayer() {
         let attempts = [
-            attempt(daysAgo: 8, difficulty: .easy, correct: true, impact: 10, focusKind: .openingLead),
-            attempt(daysAgo: 7, difficulty: .easy, correct: true, impact: 10, focusKind: .followSuit),
-            attempt(daysAgo: 6, difficulty: .medium, correct: true, impact: 10, focusKind: .trumpPressure),
-            attempt(daysAgo: 5, difficulty: .medium, correct: true, impact: 10, focusKind: .narrowChoice),
-            attempt(daysAgo: 4, difficulty: .hard, correct: true, impact: 10, focusKind: .openingLead),
-            attempt(daysAgo: 3, difficulty: .hard, correct: true, impact: 10, focusKind: .followSuit),
-            attempt(daysAgo: 2, difficulty: .easy, correct: true, impact: 10, focusKind: .trumpPressure),
-            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 10, focusKind: .narrowChoice)
+            attempt(daysAgo: 8, difficulty: .easy, correct: true, impact: 10, focusKind: .openingLead, gameMode: .hokum),
+            attempt(daysAgo: 7, difficulty: .easy, correct: true, impact: 10, focusKind: .followSuit, gameMode: .sun),
+            attempt(daysAgo: 6, difficulty: .medium, correct: true, impact: 10, focusKind: .trumpPressure, gameMode: .sun),
+            attempt(daysAgo: 5, difficulty: .medium, correct: true, impact: 10, focusKind: .narrowChoice, gameMode: .sun),
+            attempt(daysAgo: 4, difficulty: .hard, correct: true, impact: 10, focusKind: .openingLead, gameMode: .sun),
+            attempt(daysAgo: 3, difficulty: .hard, correct: true, impact: 10, focusKind: .followSuit, gameMode: .hokum),
+            attempt(daysAgo: 2, difficulty: .easy, correct: true, impact: 10, focusKind: .trumpPressure, gameMode: .sun),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 10, focusKind: .narrowChoice, gameMode: .sun)
         ]
 
         let drill = WhatToPlayStatsAnalyzer.microDrill(for: attempts)
@@ -2284,14 +2337,14 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
     func testMicroDrillFallsBackToContinuationPlan() {
         let attempts = [
-            attempt(daysAgo: 8, difficulty: .easy, correct: true, impact: 0, focusKind: .openingLead),
-            attempt(daysAgo: 7, difficulty: .easy, correct: false, impact: 0, focusKind: .followSuit),
-            attempt(daysAgo: 6, difficulty: .medium, correct: true, impact: 0, focusKind: .trumpPressure),
-            attempt(daysAgo: 5, difficulty: .medium, correct: false, impact: 0, focusKind: .narrowChoice),
-            attempt(daysAgo: 4, difficulty: .hard, correct: true, impact: 0, focusKind: .openingLead),
-            attempt(daysAgo: 3, difficulty: .hard, correct: false, impact: 0, focusKind: .followSuit),
-            attempt(daysAgo: 2, difficulty: .easy, correct: true, impact: 0, focusKind: .trumpPressure),
-            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 0, focusKind: .narrowChoice)
+            attempt(daysAgo: 8, difficulty: .easy, correct: true, impact: 0, focusKind: .openingLead, gameMode: .hokum),
+            attempt(daysAgo: 7, difficulty: .easy, correct: false, impact: 0, focusKind: .followSuit, gameMode: .sun),
+            attempt(daysAgo: 6, difficulty: .medium, correct: true, impact: 0, focusKind: .trumpPressure, gameMode: .sun),
+            attempt(daysAgo: 5, difficulty: .medium, correct: false, impact: 0, focusKind: .narrowChoice, gameMode: .sun),
+            attempt(daysAgo: 4, difficulty: .hard, correct: true, impact: 0, focusKind: .openingLead, gameMode: .sun),
+            attempt(daysAgo: 3, difficulty: .hard, correct: false, impact: 0, focusKind: .followSuit, gameMode: .hokum),
+            attempt(daysAgo: 2, difficulty: .easy, correct: true, impact: 0, focusKind: .trumpPressure, gameMode: .sun),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 0, focusKind: .narrowChoice, gameMode: .sun)
         ]
 
         let drill = WhatToPlayStatsAnalyzer.microDrill(for: attempts)

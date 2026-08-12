@@ -512,6 +512,19 @@ struct WhatToPlayScenarioFocusCoverage: Equatable {
     }
 }
 
+struct WhatToPlayGameModeCoverage: Equatable {
+    let sampledModes: Int
+    let totalModes: Int
+    let missingModes: [GameMode]
+    let title: String
+    let detail: String
+    let iconName: String
+
+    var isBalanced: Bool {
+        missingModes.isEmpty
+    }
+}
+
 enum WhatToPlaySessionState: Equatable {
     case noData
     case warmingUp
@@ -2780,6 +2793,37 @@ enum WhatToPlayStatsAnalyzer {
         )
     }
 
+    static func gameModeCoverage(
+        for attempts: [WhatToPlayAttempt],
+        minimumAttemptsPerMode: Int = 2
+    ) -> WhatToPlayGameModeCoverage {
+        let missing = GameMode.allCases.filter { mode in
+            attempts.filter { $0.gameMode == mode }.count < minimumAttemptsPerMode
+        }
+        let sampled = GameMode.allCases.count - missing.count
+
+        if missing.isEmpty {
+            return WhatToPlayGameModeCoverage(
+                sampledModes: sampled,
+                totalModes: GameMode.allCases.count,
+                missingModes: [],
+                title: "تغطية الصن والحكم متوازنة".localized,
+                detail: "لديك عينات كافية من الصن والحكم، لذلك تصبح توصيات نمط اللعب أدق.".localized,
+                iconName: "checkmark.seal.fill"
+            )
+        }
+
+        let names = missing.map(gameModeTitle).joined(separator: "، ")
+        return WhatToPlayGameModeCoverage(
+            sampledModes: sampled,
+            totalModes: GameMode.allCases.count,
+            missingModes: missing,
+            title: "وازن تدريب الصن والحكم".localized,
+            detail: "\("درّب هذه الأنماط أكثر".localized): \(names).",
+            iconName: "flag.checkered"
+        )
+    }
+
     static func sessionPulse(for attempts: [WhatToPlayAttempt], window: Int = 3) -> WhatToPlaySessionPulse {
         guard attempts.count >= window, window > 0 else {
             return WhatToPlaySessionPulse(
@@ -2970,6 +3014,27 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: targetDifficulty,
                 focusKind: targetFocus,
                 gameMode: nil
+            )
+        }
+
+        let modeCoverage = gameModeCoverage(for: attempts)
+        if !modeCoverage.isBalanced {
+            let targetMode = modeCoverage.missingModes.first ?? .sun
+            let targetDifficulty = nextScenarioRecommendation(for: attempts).difficulty
+            return WhatToPlayMicroDrill(
+                title: "خطة الصن والحكم".localized,
+                detail: "توازن تدريب الصن والحكم يكشف هل قراءتك قوية في النمطين أو تميل لنمط واحد فقط.".localized,
+                iconName: "flag.checkered",
+                steps: [
+                    "\("استهدف نمطًا ناقصًا".localized): \(gameModeTitle(targetMode))",
+                    "حل موقفين من نفس النمط".localized,
+                    "قارن هل قرارك تغيّر بسبب وجود الحكم أو غيابه".localized
+                ],
+                reviewItem: nil,
+                seed: microDrillSeed(attempts: attempts, difficulty: targetDifficulty, focusKind: nil, gameMode: targetMode),
+                difficulty: targetDifficulty,
+                focusKind: nil,
+                gameMode: targetMode
             )
         }
 
@@ -3311,6 +3376,10 @@ enum WhatToPlayStatsAnalyzer {
         case .narrowChoice:
             return "خيارات محدودة".localized
         }
+    }
+
+    private static func gameModeTitle(_ mode: GameMode) -> String {
+        mode.arabicName.localized
     }
 
     private static func focusTrainingDetail(

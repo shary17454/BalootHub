@@ -410,6 +410,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.summariesByGameMode(attempts)
     }
 
+    private var gameModeCoverage: WhatToPlayGameModeCoverage {
+        WhatToPlayStatsAnalyzer.gameModeCoverage(for: attempts)
+    }
+
     private var scenarioFocusCoverage: WhatToPlayScenarioFocusCoverage {
         WhatToPlayStatsAnalyzer.scenarioFocusCoverage(for: attempts)
     }
@@ -1837,7 +1841,7 @@ struct WhatToPlayTrainerView: View {
                     difficultyImpactInsightView(difficultyImpactInsight)
                 }
 
-                gameModeStatsView(gameModeSummaries)
+                gameModeStatsView(gameModeSummaries, coverage: gameModeCoverage)
                 practiceCoverageView(practiceCoverage)
             }
             .padding(AppSpacing.md)
@@ -1846,12 +1850,14 @@ struct WhatToPlayTrainerView: View {
     }
 
     @ViewBuilder
-    private func gameModeStatsView(_ summaries: [WhatToPlayGameModeSummary]) -> some View {
+    private func gameModeStatsView(_ summaries: [WhatToPlayGameModeSummary], coverage: WhatToPlayGameModeCoverage) -> some View {
         if !summaries.isEmpty {
             VStack(alignment: .leading, spacing: AppSpacing.sm) {
                 Label("الأداء حسب النمط".localized, systemImage: "flag.checkered")
                     .font(AppTypography.subheadline.weight(.semibold))
                     .foregroundStyle(AppColor.textPrimary)
+
+                modeCoverageView(coverage)
 
                 LazyVGrid(columns: [
                     GridItem(.flexible(), spacing: AppSpacing.xs),
@@ -1879,6 +1885,30 @@ struct WhatToPlayTrainerView: View {
             .padding(AppSpacing.sm)
             .background(AppColor.accent.opacity(0.08), in: RoundedRectangle(cornerRadius: AppRadius.medium))
         }
+    }
+
+    private func modeCoverageView(_ coverage: WhatToPlayGameModeCoverage) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(coverage.title)
+                    .font(AppTypography.caption.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(coverage.detail)
+                    .font(.caption2)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("\("التغطية".localized): \(coverage.sampledModes)/\(coverage.totalModes)")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(coverage.isBalanced ? AppColor.success : AppColor.accent)
+            }
+        } icon: {
+            Image(systemName: coverage.iconName)
+                .foregroundStyle(coverage.isBalanced ? AppColor.success : AppColor.accent)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.sm)
+        .background((coverage.isBalanced ? AppColor.success : AppColor.accent).opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
     }
 
     private func focusDifficultyView(_ focus: WhatToPlayDifficultyFocus) -> some View {

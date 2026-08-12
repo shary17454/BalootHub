@@ -21376,6 +21376,96 @@
         }
       }
     },
+    "تغطية الصن والحكم متوازنة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sun and Hokum coverage is balanced"
+          }
+        }
+      }
+    },
+    "لديك عينات كافية من الصن والحكم، لذلك تصبح توصيات نمط اللعب أدق." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You have enough Sun and Hokum samples, so game-mode recommendations become more accurate."
+          }
+        }
+      }
+    },
+    "وازن تدريب الصن والحكم" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Balance Sun and Hokum training"
+          }
+        }
+      }
+    },
+    "درّب هذه الأنماط أكثر" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Train these modes more"
+          }
+        }
+      }
+    },
+    "خطة الصن والحكم" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sun and Hokum plan"
+          }
+        }
+      }
+    },
+    "توازن تدريب الصن والحكم يكشف هل قراءتك قوية في النمطين أو تميل لنمط واحد فقط." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Balanced Sun and Hokum practice shows whether your reading is strong in both modes or leaning toward one."
+          }
+        }
+      }
+    },
+    "استهدف نمطًا ناقصًا" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Target a missing mode"
+          }
+        }
+      }
+    },
+    "حل موقفين من نفس النمط" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solve two scenarios from the same mode"
+          }
+        }
+      }
+    },
+    "قارن هل قرارك تغيّر بسبب وجود الحكم أو غيابه" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compare whether your decision changes when Hokum is present or absent"
+          }
+        }
+      }
+    },
     "لا توجد جلسة بعد" : {
       "localizations" : {
         "en" : {
