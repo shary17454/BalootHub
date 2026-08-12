@@ -20,6 +20,9 @@ final class WhatToPlayAttempt {
     var expectedImpact: Int
     var bestExpectedImpact: Int?
     var secondBestExpectedImpact: Int?
+    var projectedTeamPoints: Int?
+    var bestProjectedTeamPoints: Int?
+    var secondBestProjectedTeamPoints: Int?
     var focusKindRaw: String?
     var outcomeRaw: String?
     var selectedCardPoints: Int?
@@ -49,6 +52,9 @@ final class WhatToPlayAttempt {
         expectedImpact: Int,
         bestExpectedImpact: Int? = nil,
         secondBestExpectedImpact: Int? = nil,
+        projectedTeamPoints: Int? = nil,
+        bestProjectedTeamPoints: Int? = nil,
+        secondBestProjectedTeamPoints: Int? = nil,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
         outcome: WhatToPlayOptionOutcome? = nil,
         impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil,
@@ -70,6 +76,9 @@ final class WhatToPlayAttempt {
         self.expectedImpact = expectedImpact
         self.bestExpectedImpact = bestExpectedImpact
         self.secondBestExpectedImpact = secondBestExpectedImpact
+        self.projectedTeamPoints = projectedTeamPoints
+        self.bestProjectedTeamPoints = bestProjectedTeamPoints
+        self.secondBestProjectedTeamPoints = secondBestProjectedTeamPoints
         self.focusKindRaw = focusKind?.rawValue
         self.outcomeRaw = outcome?.rawValue
         self.selectedCardPoints = impactBreakdown?.playedCardPoints
@@ -135,6 +144,16 @@ final class WhatToPlayAttempt {
     var lostAgainstSecondBestPoints: Int {
         guard let secondBestExpectedImpact else { return 0 }
         return max(0, secondBestExpectedImpact - expectedImpact)
+    }
+
+    var lostProjectedTeamPoints: Int {
+        guard let bestProjectedTeamPoints, let projectedTeamPoints else { return 0 }
+        return max(0, bestProjectedTeamPoints - projectedTeamPoints)
+    }
+
+    var lostProjectedAgainstSecondBestPoints: Int {
+        guard let secondBestProjectedTeamPoints, let projectedTeamPoints else { return 0 }
+        return max(0, secondBestProjectedTeamPoints - projectedTeamPoints)
     }
 
     var decisionQuality: WhatToPlayDecisionQuality? {

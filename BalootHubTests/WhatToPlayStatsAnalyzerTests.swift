@@ -27,6 +27,10 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.averageSecondBestGap, 0)
         XCTAssertEqual(summary.valueCapturePercent, 0)
         XCTAssertEqual(summary.valueCaptureAttempts, 0)
+        XCTAssertEqual(summary.projectedTeamPointAttempts, 0)
+        XCTAssertEqual(summary.averageProjectedTeamPoints, 0)
+        XCTAssertEqual(summary.lostProjectedTeamPoints, 0)
+        XCTAssertEqual(summary.averageLostProjectedTeamPoints, 0)
     }
 
     func testSummaryAccumulatesLostExpectedPointsWhenBestImpactIsKnown() {
@@ -70,6 +74,21 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(summary.valueCaptureAttempts, 2)
         XCTAssertEqual(summary.valueCapturePercent, 60)
+    }
+
+    func testSummaryTracksProjectedTeamPointLossWhenKnown() {
+        let attempts = [
+            attempt(daysAgo: 3, correct: true, impact: 4, projectedTeamPoints: 82, bestProjectedTeamPoints: 82),
+            attempt(daysAgo: 2, correct: false, impact: -3, projectedTeamPoints: 64, bestProjectedTeamPoints: 76),
+            attempt(daysAgo: 1, correct: false, impact: 2, projectedTeamPoints: 70)
+        ]
+
+        let summary = WhatToPlayStatsAnalyzer.summarize(attempts: attempts)
+
+        XCTAssertEqual(summary.projectedTeamPointAttempts, 3)
+        XCTAssertEqual(summary.averageProjectedTeamPoints, 72)
+        XCTAssertEqual(summary.lostProjectedTeamPoints, 12)
+        XCTAssertEqual(summary.averageLostProjectedTeamPoints, 6)
     }
 
     func testValueProgressDetectsImprovement() {
@@ -256,6 +275,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             expectedImpact: -6,
             bestExpectedImpact: 4,
             secondBestExpectedImpact: 2,
+            projectedTeamPoints: 58,
+            bestProjectedTeamPoints: 74,
+            secondBestProjectedTeamPoints: 68,
             focusKind: .trumpPressure,
             outcome: .losesTrick,
             impactBreakdown: breakdown,
@@ -279,6 +301,11 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(saved.bestExpectedImpact, 4)
         XCTAssertEqual(saved.secondBestExpectedImpact, 2)
         XCTAssertEqual(saved.lostExpectedPoints, 10)
+        XCTAssertEqual(saved.projectedTeamPoints, 58)
+        XCTAssertEqual(saved.bestProjectedTeamPoints, 74)
+        XCTAssertEqual(saved.secondBestProjectedTeamPoints, 68)
+        XCTAssertEqual(saved.lostProjectedTeamPoints, 16)
+        XCTAssertEqual(saved.lostProjectedAgainstSecondBestPoints, 10)
         XCTAssertEqual(saved.focusKind, .trumpPressure)
         XCTAssertEqual(saved.outcome, .losesTrick)
         XCTAssertEqual(saved.impactBreakdown, breakdown)
@@ -339,6 +366,11 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertNil(attempt.bestExpectedImpact)
         XCTAssertEqual(attempt.lostExpectedPoints, 0)
+        XCTAssertNil(attempt.projectedTeamPoints)
+        XCTAssertNil(attempt.bestProjectedTeamPoints)
+        XCTAssertNil(attempt.secondBestProjectedTeamPoints)
+        XCTAssertEqual(attempt.lostProjectedTeamPoints, 0)
+        XCTAssertEqual(attempt.lostProjectedAgainstSecondBestPoints, 0)
     }
 
     func testAttemptWithoutOutcomeKeepsBackwardCompatibleNilOutcome() {
@@ -2839,6 +2871,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil,
         selectedCard: PlayingCard = PlayingCard(suit: .clubs, rank: .seven),
         simulation: WhatToPlayOptionSimulation? = nil,
+        projectedTeamPoints: Int? = nil,
+        bestProjectedTeamPoints: Int? = nil,
+        secondBestProjectedTeamPoints: Int? = nil,
         seed: UInt64? = nil
     ) -> WhatToPlayAttempt {
         attempt(
@@ -2854,6 +2889,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             impactBreakdown: impactBreakdown,
             selectedCard: selectedCard,
             simulation: simulation,
+            projectedTeamPoints: projectedTeamPoints,
+            bestProjectedTeamPoints: bestProjectedTeamPoints,
+            secondBestProjectedTeamPoints: secondBestProjectedTeamPoints,
             seed: seed
         )
     }
@@ -2872,6 +2910,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil,
         selectedCard: PlayingCard = PlayingCard(suit: .clubs, rank: .seven),
         simulation: WhatToPlayOptionSimulation? = nil,
+        projectedTeamPoints: Int? = nil,
+        bestProjectedTeamPoints: Int? = nil,
+        secondBestProjectedTeamPoints: Int? = nil,
         seed: UInt64? = nil
     ) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
@@ -2886,6 +2927,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             expectedImpact: impact,
             bestExpectedImpact: bestImpact,
             secondBestExpectedImpact: secondBestImpact,
+            projectedTeamPoints: projectedTeamPoints,
+            bestProjectedTeamPoints: bestProjectedTeamPoints,
+            secondBestProjectedTeamPoints: secondBestProjectedTeamPoints,
             focusKind: focusKind,
             outcome: outcome,
             impactBreakdown: impactBreakdown,

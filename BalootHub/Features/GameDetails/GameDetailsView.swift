@@ -1090,6 +1090,28 @@ struct WhatToPlayTrainerView: View {
                         .font(AppTypography.caption)
                         .foregroundStyle(AppColor.textSecondary)
                 }
+                if statsSummary.projectedTeamPointAttempts > 0 {
+                    InfoRow(
+                        icon: "chart.bar.xaxis",
+                        title: "متوسط نقاط المحاكاة".localized,
+                        value: "\(statsSummary.averageProjectedTeamPoints)"
+                    )
+                    if statsSummary.lostProjectedTeamPoints > 0 {
+                        InfoRow(
+                            icon: "arrow.down.forward.circle.fill",
+                            title: "نقاط محاكاة ضائعة".localized,
+                            value: "\(statsSummary.lostProjectedTeamPoints)"
+                        )
+                        InfoRow(
+                            icon: "chart.bar.doc.horizontal.fill",
+                            title: "متوسط ضياع المحاكاة".localized,
+                            value: "\(statsSummary.averageLostProjectedTeamPoints)"
+                        )
+                    }
+                    Text("\("محاولات المحاكاة".localized): \(statsSummary.projectedTeamPointAttempts)")
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColor.textSecondary)
+                }
                 if statsSummary.lostExpectedPoints > 0 {
                     InfoRow(
                         icon: "drop.fill",
@@ -2433,6 +2455,9 @@ struct WhatToPlayTrainerView: View {
                 expectedImpact: evaluated.expectedImpact,
                 bestExpectedImpact: scenario.bestOption?.expectedImpact,
                 secondBestExpectedImpact: scenario.secondBestOption?.expectedImpact,
+                projectedTeamPoints: evaluated.projectedTeamPoints,
+                bestProjectedTeamPoints: scenario.bestOption?.projectedTeamPoints,
+                secondBestProjectedTeamPoints: scenario.secondBestOption?.projectedTeamPoints,
                 focusKind: scenario.context.focusKind,
                 outcome: evaluated.outcome,
                 impactBreakdown: evaluated.impactBreakdown,

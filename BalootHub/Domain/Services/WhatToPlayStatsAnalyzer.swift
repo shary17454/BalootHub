@@ -15,6 +15,10 @@ struct WhatToPlayStatsSummary: Equatable {
     let averageSecondBestGap: Int
     let valueCapturePercent: Int
     let valueCaptureAttempts: Int
+    let projectedTeamPointAttempts: Int
+    let averageProjectedTeamPoints: Int
+    let lostProjectedTeamPoints: Int
+    let averageLostProjectedTeamPoints: Int
 
     static let empty = WhatToPlayStatsSummary(
         attempts: 0,
@@ -29,7 +33,11 @@ struct WhatToPlayStatsSummary: Equatable {
         secondBestComparisonAttempts: 0,
         averageSecondBestGap: 0,
         valueCapturePercent: 0,
-        valueCaptureAttempts: 0
+        valueCaptureAttempts: 0,
+        projectedTeamPointAttempts: 0,
+        averageProjectedTeamPoints: 0,
+        lostProjectedTeamPoints: 0,
+        averageLostProjectedTeamPoints: 0
     )
 }
 
@@ -540,6 +548,15 @@ enum WhatToPlayStatsAnalyzer {
         let valueCapturePercent = totalBestValue > 0
             ? Int((Double(capturedValue) / Double(totalBestValue) * 100).rounded())
             : 0
+        let projectedAttempts = chronological.compactMap(\.projectedTeamPoints)
+        let averageProjectedTeamPoints = projectedAttempts.isEmpty
+            ? 0
+            : Int((Double(projectedAttempts.reduce(0, +)) / Double(projectedAttempts.count)).rounded())
+        let projectedComparisons = chronological.filter { $0.projectedTeamPoints != nil && $0.bestProjectedTeamPoints != nil }
+        let lostProjectedTeamPoints = projectedComparisons.reduce(0) { $0 + $1.lostProjectedTeamPoints }
+        let averageLostProjectedTeamPoints = projectedComparisons.isEmpty
+            ? 0
+            : Int((Double(lostProjectedTeamPoints) / Double(projectedComparisons.count)).rounded())
 
         var bestStreak = 0
         var running = 0
@@ -571,7 +588,11 @@ enum WhatToPlayStatsAnalyzer {
             secondBestComparisonAttempts: secondBestComparisons.count,
             averageSecondBestGap: averageSecondBestGap,
             valueCapturePercent: valueCapturePercent,
-            valueCaptureAttempts: valueAttempts.count
+            valueCaptureAttempts: valueAttempts.count,
+            projectedTeamPointAttempts: projectedAttempts.count,
+            averageProjectedTeamPoints: averageProjectedTeamPoints,
+            lostProjectedTeamPoints: lostProjectedTeamPoints,
+            averageLostProjectedTeamPoints: averageLostProjectedTeamPoints
         )
     }
 

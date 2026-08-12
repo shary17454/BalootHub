@@ -543,6 +543,62 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "模拟后你的队伍分数" } }
       }
     },
+    "متوسط نقاط المحاكاة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Durchschnittliche Simulationspunkte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Average simulation points" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Puntos medios de simulación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Points moyens en simulation" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "औसत सिमुलेशन अंक" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Rata-rata poin simulasi" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Средние очки симуляции" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Ortalama simülasyon puanı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اوسط سیمولیشن پوائنٹس" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "平均模拟分数" } }
+      }
+    },
+    "نقاط محاكاة ضائعة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Verlorene Simulationspunkte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Lost simulation points" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Puntos de simulación perdidos" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Points de simulation perdus" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "खोए हुए सिमुलेशन अंक" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Poin simulasi yang hilang" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Потерянные очки симуляции" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Kaybedilen simülasyon puanları" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "ضائع شدہ سیمولیشن پوائنٹس" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "损失的模拟分数" } }
+      }
+    },
+    "متوسط ضياع المحاكاة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Durchschnittlicher Simulationsverlust" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Average simulation loss" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Pérdida media de simulación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Perte moyenne en simulation" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "औसत सिमुलेशन हानि" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Rata-rata kehilangan simulasi" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Средняя потеря в симуляции" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Ortalama simülasyon kaybı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اوسط سیمولیشن نقصان" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "平均模拟损失" } }
+      }
+    },
+    "محاولات المحاكاة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Simulationsversuche" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Simulation attempts" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Intentos de simulación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Essais de simulation" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सिमुलेशन प्रयास" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Percobaan simulasi" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Попытки симуляции" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Simülasyon denemeleri" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "سیمولیشن کوششیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "模拟尝试" } }
+      }
+    },
     "محاكاة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Simulation" } },
