@@ -3490,6 +3490,9 @@ struct WhatToPlayShareCardPreview: View {
             if let selectedImpact = content.selectedImpact {
                 shareChip("\("الأثر المتوقع".localized): \(impactText(selectedImpact))")
             }
+            if let selectedImpactDetail = content.selectedImpactDetail {
+                shareNote("\("تفصيل الأثر".localized): \(selectedImpactDetail)")
+            }
             if let lostExpectedPoints = content.lostExpectedPoints {
                 shareChip("\("نقاط متوقعة ضائعة".localized): \(lostExpectedPoints)")
             }
@@ -3504,6 +3507,9 @@ struct WhatToPlayShareCardPreview: View {
             }
             if let nextActionTitle = content.nextActionTitle {
                 shareChip("\("الإجراء التالي".localized): \(nextActionTitle)")
+            }
+            if let nextActionDetail = content.nextActionDetail {
+                shareNote(nextActionDetail)
             }
             if let lostAgainstSecondBestPoints = content.lostAgainstSecondBestPoints {
                 shareChip("\("فارق عن ثاني أفضل".localized): \(lostAgainstSecondBestPoints)")
@@ -3522,6 +3528,9 @@ struct WhatToPlayShareCardPreview: View {
             }
             if let tacticalReasonTitle = content.tacticalReasonTitle {
                 shareChip("\("سبب تكتيكي".localized): \(tacticalReasonTitle)")
+            }
+            if let tacticalReasonDetail = content.tacticalReasonDetail {
+                shareNote(tacticalReasonDetail)
             }
         }
     }
@@ -3552,6 +3561,19 @@ struct WhatToPlayShareCardPreview: View {
             .padding(.horizontal, AppSpacing.sm)
             .padding(.vertical, AppSpacing.xs)
             .background(.white.opacity(0.14), in: RoundedRectangle(cornerRadius: AppRadius.small))
+    }
+
+    private func shareNote(_ text: String) -> some View {
+        Text(text)
+            .font(.caption2.weight(.medium))
+            .foregroundStyle(.white.opacity(0.86))
+            .lineLimit(3)
+            .minimumScaleFactor(0.8)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, AppSpacing.sm)
+            .padding(.vertical, AppSpacing.xs)
+            .background(.white.opacity(0.10), in: RoundedRectangle(cornerRadius: AppRadius.small))
     }
 
     private func impactText(_ impact: Int) -> String {
