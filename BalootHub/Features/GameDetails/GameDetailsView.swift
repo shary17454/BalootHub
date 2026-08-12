@@ -2933,6 +2933,13 @@ struct WhatToPlayTrainerView: View {
                     .foregroundStyle(AppColor.primary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.75)
+                if row.lostProjectedTeamPoints > 0 {
+                    Text("\("نقاط محاكاة ضائعة".localized): \(row.lostProjectedTeamPoints)")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(AppColor.warning)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                }
                 Text(optionOutcomeText(row.outcome))
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(optionOutcomeTint(row.outcome))

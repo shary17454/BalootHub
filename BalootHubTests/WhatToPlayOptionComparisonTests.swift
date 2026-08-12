@@ -117,6 +117,20 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         }
     }
 
+    func testRowsCalculateProjectedPointLossForEveryOption() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let selected = try XCTUnwrap(scenario.bestOption)
+        let bestProjected = try XCTUnwrap(scenario.bestOption?.projectedTeamPoints)
+
+        let rows = WhatToPlayOptionComparison.rows(for: scenario, selectedCard: selected.card)
+
+        XCTAssertEqual(rows.count, scenario.options.count)
+        for row in rows {
+            let option = try XCTUnwrap(scenario.options.first { $0.card == row.card })
+            XCTAssertEqual(row.lostProjectedTeamPoints, max(0, bestProjected - option.projectedTeamPoints))
+        }
+    }
+
     func testRowsPreserveImpactBreakdownForEveryOption() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
         let selected = try XCTUnwrap(scenario.bestOption)

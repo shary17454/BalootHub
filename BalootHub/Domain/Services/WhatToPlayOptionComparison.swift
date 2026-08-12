@@ -9,6 +9,7 @@ struct WhatToPlayOptionComparisonRow: Identifiable, Equatable {
     let impactBreakdown: WhatToPlayOptionImpactBreakdown
     let impactDetail: String
     let lostExpectedPoints: Int
+    let lostProjectedTeamPoints: Int
     let outcome: WhatToPlayOptionOutcome
     let outcomeReason: String
     let simulationSummary: String
@@ -172,6 +173,7 @@ enum WhatToPlayOptionComparison {
 
     static func rows(for scenario: WhatToPlayScenario, selectedCard: PlayingCard) -> [WhatToPlayOptionComparisonRow] {
         let bestImpact = scenario.bestOption?.expectedImpact ?? scenario.options.map(\.expectedImpact).max() ?? 0
+        let bestProjectedTeamPoints = scenario.bestOption?.projectedTeamPoints ?? scenario.options.map(\.projectedTeamPoints).max() ?? 0
         return sortedOptions(scenario.options)
             .map { option in
                 let simulationDisplay = WhatToPlaySimulationFormatter.display(for: option.simulation)
@@ -183,6 +185,7 @@ enum WhatToPlayOptionComparison {
                     impactBreakdown: option.impactBreakdown,
                     impactDetail: WhatToPlayImpactFormatter.detail(for: option.impactBreakdown),
                     lostExpectedPoints: max(0, bestImpact - option.expectedImpact),
+                    lostProjectedTeamPoints: max(0, bestProjectedTeamPoints - option.projectedTeamPoints),
                     outcome: option.outcome,
                     outcomeReason: option.outcomeReason,
                     simulationSummary: simulationDisplay.summary,
