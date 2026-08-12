@@ -131,8 +131,9 @@ struct BiddingCycleTests {
 
     @Test("تمرير الأربعة في الجولتين يُنتج دورة ميتة بلا نقاط لأي فريق")
     func allPassesProduceVoidRound() throws {
-        var state = GameState.newLocalMatch(rules: .standard)
-        state = try GameEngine.apply(.dealCards(seed: 9), to: state)
+        let initial = GameState.newLocalMatch(rules: .standard)
+        var state = try GameEngine.apply(.dealCards(seed: 9), to: initial)
+        let originalDealer = state.dealerSeat
 
         for _ in 0..<8 {
             let playerID = try #require(state.currentTurnPlayerID)
@@ -146,6 +147,12 @@ struct BiddingCycleTests {
             #expect(state.lastRoundResult?.teamPoints[team.id] == 0)
         }
         #expect(state.lastRoundResult?.winningTeamID == nil)
+        #expect(state.dealerSeat == originalDealer.next)
+
+        let replayed = try GameEngine.replay(initialState: initial, actions: state.actionHistory)
+        #expect(replayed.bidding.stage == .voided)
+        #expect(replayed.dealerSeat == state.dealerSeat)
+        #expect(replayed.lastRoundResult == state.lastRoundResult)
     }
 
     @Test("الصن يعلو الحكم في نفس الجولة ولا يعلوه شيء")

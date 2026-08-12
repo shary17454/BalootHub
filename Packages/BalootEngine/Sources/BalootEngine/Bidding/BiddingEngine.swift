@@ -180,6 +180,7 @@ enum BiddingEngine {
 
     /// دورة ميتة: مرّ الأربعة في الجولتين. لا نقاط لأي فريق، وينتقل الموزّع.
     private static func voidRound(state: inout GameState) {
+        state.dealerSeat = state.dealerSeat.next
         state.bidding.stage = .voided
         state.mode = nil
         state.trumpSuit = nil
