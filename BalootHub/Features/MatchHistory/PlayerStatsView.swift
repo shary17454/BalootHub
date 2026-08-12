@@ -4,6 +4,7 @@ import SwiftData
 struct PlayerStatsView: View {
     @Query(sort: \ScoreSession.updatedAt, order: .reverse) private var sessions: [ScoreSession]
     @Query(sort: \WhatToPlayAttempt.createdAt, order: .reverse) private var whatToPlayAttempts: [WhatToPlayAttempt]
+    @Query(sort: \ScoringQuizAttempt.createdAt, order: .reverse) private var scoringQuizAttempts: [ScoringQuizAttempt]
     @Query private var settingsList: [AppSettings]
 
     private var rules: ScoreRules {
@@ -11,7 +12,12 @@ struct PlayerStatsView: View {
     }
 
     private var summary: PlayerStatsSummary {
-        PlayerStatsAnalyzer.summarize(sessions: sessions, whatToPlayAttempts: whatToPlayAttempts, rules: rules)
+        PlayerStatsAnalyzer.summarize(
+            sessions: sessions,
+            whatToPlayAttempts: whatToPlayAttempts,
+            scoringQuizAttempts: scoringQuizAttempts,
+            rules: rules
+        )
     }
 
     var body: some View {
@@ -30,6 +36,7 @@ struct PlayerStatsView: View {
                     styleCard
                     modeBreakdown
                     trainingBreakdown
+                    scoringQuizBreakdown
                     trainingStyleBreakdown
                 }
             }
@@ -103,6 +110,20 @@ struct PlayerStatsView: View {
             metric("قرارات مكلفة".localized, "\(summary.costlyTrainingDecisions)", "exclamationmark.triangle.fill")
             metric("متوسط الفاقد".localized, "\(summary.averageTrainingLostPoints)", "minus.circle.fill")
             metric("التقاط القيمة".localized, "\(summary.trainingValueCapturePercent)%", "gauge.with.dots.needle.67percent")
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private var scoringQuizBreakdown: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            Text("حساب النقاط".localized)
+                .font(AppTypography.headline)
+            metric("محاولات الحساب".localized, "\(summary.scoringQuizAttempts)", "function")
+            metric("إجابات صحيحة".localized, "\(summary.scoringQuizCorrectAnswers)", "checkmark.seal.fill")
+            metric("دقة الحساب".localized, "\(summary.scoringQuizAccuracyPercent)%", "percent")
+            metric("أقوى نوع".localized, summary.scoringStrongestCategoryTitle, "arrow.up.circle.fill")
+            metric("يحتاج تدريب".localized, summary.scoringWeakestCategoryTitle, "target")
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))

@@ -99,6 +99,27 @@ final class PlayerStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.decisionPatternInspectedAttempts, 5)
     }
 
+    func testIncludesScoringQuizCategoryStrengthAndWeakness() throws {
+        let scoringAttempts = [
+            try makeScoringQuizAttempt(category: .coffee, seedOffset: 0, isCorrect: true),
+            try makeScoringQuizAttempt(category: .coffee, seedOffset: 1, isCorrect: true),
+            try makeScoringQuizAttempt(category: .multipliers, seedOffset: 0, isCorrect: false),
+            try makeScoringQuizAttempt(category: .multipliers, seedOffset: 1, isCorrect: false)
+        ]
+
+        let summary = PlayerStatsAnalyzer.summarize(
+            sessions: [],
+            scoringQuizAttempts: scoringAttempts,
+            rules: .standard
+        )
+
+        XCTAssertEqual(summary.scoringQuizAttempts, 4)
+        XCTAssertEqual(summary.scoringQuizCorrectAnswers, 2)
+        XCTAssertEqual(summary.scoringQuizAccuracyPercent, 50)
+        XCTAssertEqual(summary.scoringStrongestCategoryTitle, ScoringQuizQuestionCategory.coffee.title)
+        XCTAssertEqual(summary.scoringWeakestCategoryTitle, ScoringQuizQuestionCategory.multipliers.title)
+    }
+
     private func makeTrainingAttempt(seed: UInt64, isCorrect: Bool) -> WhatToPlayAttempt {
         let selected = isCorrect
             ? PlayingCard(suit: .spades, rank: .ace)
@@ -114,5 +135,29 @@ final class PlayerStatsAnalyzerTests: XCTestCase {
             expectedImpact: isCorrect ? 10 : 0,
             bestExpectedImpact: isCorrect ? 10 : 12
         )
+    }
+
+    private func makeScoringQuizAttempt(
+        category: ScoringQuizQuestionCategory,
+        seedOffset: UInt64,
+        isCorrect: Bool
+    ) throws -> ScoringQuizAttempt {
+        var matchedOffset: UInt64 = 0
+        for seed in 1...1_200 {
+            let question = ScoringQuizGenerator.generate(seed: UInt64(seed), difficulty: .hard)
+            guard question.category == category else { continue }
+            if matchedOffset < seedOffset {
+                matchedOffset += 1
+                continue
+            }
+            let submitted = isCorrect ? question.answer : question.answer + 1
+            return ScoringQuizAttempt(
+                question: question,
+                evaluation: ScoringQuizEvaluator.evaluate(answerText: "\(submitted)", question: question),
+                remainingSeconds: isCorrect ? 10 : 0
+            )
+        }
+        XCTFail("لم يتم العثور على سؤال من نوع \(category.rawValue)")
+        throw NSError(domain: "PlayerStatsAnalyzerTests", code: 1)
     }
 }

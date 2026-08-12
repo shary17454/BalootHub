@@ -30,6 +30,11 @@ struct PlayerStatsSummary: Equatable {
     let decisionPatternDetail: String
     let decisionPatternAffectedAttempts: Int
     let decisionPatternInspectedAttempts: Int
+    let scoringQuizAttempts: Int
+    let scoringQuizCorrectAnswers: Int
+    let scoringQuizAccuracyPercent: Int
+    let scoringStrongestCategoryTitle: String
+    let scoringWeakestCategoryTitle: String
     let styleTitle: String
     let advice: String
 }
@@ -38,6 +43,7 @@ enum PlayerStatsAnalyzer {
     static func summarize(
         sessions: [ScoreSession],
         whatToPlayAttempts: [WhatToPlayAttempt] = [],
+        scoringQuizAttempts: [ScoringQuizAttempt] = [],
         rules: ScoreRules
     ) -> PlayerStatsSummary {
         let finished = sessions
@@ -47,6 +53,8 @@ enum PlayerStatsAnalyzer {
         let qualitySummary = WhatToPlayStatsAnalyzer.decisionQualitySummary(for: whatToPlayAttempts)
         let trainingStyle = WhatToPlayStatsAnalyzer.playStyle(for: whatToPlayAttempts)
         let decisionPattern = WhatToPlayStatsAnalyzer.decisionPattern(for: whatToPlayAttempts)
+        let scoringSummary = ScoringQuizStatsAnalyzer.summarize(attempts: scoringQuizAttempts)
+        let scoringCategoryFocus = scoringCategoryFocus(for: scoringQuizAttempts)
 
         var wins = 0
         var losses = 0
@@ -140,8 +148,39 @@ enum PlayerStatsAnalyzer {
             decisionPatternDetail: decisionPattern.detail,
             decisionPatternAffectedAttempts: decisionPattern.affectedAttempts,
             decisionPatternInspectedAttempts: decisionPattern.inspectedAttempts,
+            scoringQuizAttempts: scoringSummary.attempts,
+            scoringQuizCorrectAnswers: scoringSummary.correctAnswers,
+            scoringQuizAccuracyPercent: scoringSummary.accuracyPercent,
+            scoringStrongestCategoryTitle: scoringCategoryFocus.strongest,
+            scoringWeakestCategoryTitle: scoringCategoryFocus.weakest,
             styleTitle: style.title,
             advice: style.advice
+        )
+    }
+
+    private static func scoringCategoryFocus(for attempts: [ScoringQuizAttempt]) -> (strongest: String, weakest: String) {
+        let summaries = ScoringQuizStatsAnalyzer.summariesByCategory(attempts)
+            .filter { $0.attempts > 0 }
+        guard !summaries.isEmpty else {
+            return ("لا توجد بيانات".localized, "لا توجد بيانات".localized)
+        }
+
+        let strongest = summaries.max {
+            if $0.accuracyPercent != $1.accuracyPercent {
+                return $0.accuracyPercent < $1.accuracyPercent
+            }
+            return $0.correctAnswers < $1.correctAnswers
+        }
+        let weakest = summaries.min {
+            if $0.accuracyPercent != $1.accuracyPercent {
+                return $0.accuracyPercent < $1.accuracyPercent
+            }
+            return $0.attempts > $1.attempts
+        }
+
+        return (
+            strongest?.category.title ?? "لا توجد بيانات".localized,
+            weakest?.category.title ?? "لا توجد بيانات".localized
         )
     }
 
