@@ -238,13 +238,30 @@ enum DailyChallengeCenter {
     static func progress(
         for challenge: BalootChallenge,
         attempts: [WhatToPlayAttempt],
+        scoringQuizAttempts: [ScoringQuizAttempt] = [],
         now: Date = Date(),
         calendar: Calendar = Calendar(identifier: .gregorian)
     ) -> BalootChallengeProgress? {
+        guard let interval = dateInterval(for: challenge.cadence, containing: now, calendar: calendar) else {
+            return nil
+        }
+
+        if challenge.category == .scoring {
+            let completed = scoringQuizAttempts.filter { attempt in
+                attempt.createdAt >= interval.start
+                    && attempt.createdAt < interval.end
+                    && attempt.isCorrect
+            }.count
+
+            return BalootChallengeProgress(
+                completedCount: min(completed, challenge.targetCount),
+                targetCount: challenge.targetCount
+            )
+        }
+
         guard challenge.category == .tactics,
               let difficulty = challenge.whatToPlayDifficulty,
-              let focusKind = challenge.whatToPlayFocusKind,
-              let interval = dateInterval(for: challenge.cadence, containing: now, calendar: calendar)
+              let focusKind = challenge.whatToPlayFocusKind
         else { return nil }
 
         let completedSeeds = completedWhatToPlaySeeds(

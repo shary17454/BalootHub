@@ -194,6 +194,55 @@ final class DailyChallengeCenterTests: XCTestCase {
         XCTAssertEqual(progress.targetCount, challenge.targetCount)
     }
 
+    func testScoringChallengeProgressCountsCorrectQuizAnswersInsideDay() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = try XCTUnwrap(DailyChallengeCenter.dailyChallenges(for: date, calendar: calendar).first { $0.category == .scoring })
+        let dayStart = calendar.startOfDay(for: date)
+        let scoringAttempts = [
+            scoringAttempt(at: dayStart.addingTimeInterval(60), seed: 1, isCorrect: true),
+            scoringAttempt(at: dayStart.addingTimeInterval(120), seed: 2, isCorrect: true),
+            scoringAttempt(at: dayStart.addingTimeInterval(180), seed: 3, isCorrect: false),
+            scoringAttempt(at: dayStart.addingTimeInterval(-60), seed: 4, isCorrect: true)
+        ]
+
+        let progress = try XCTUnwrap(DailyChallengeCenter.progress(
+            for: challenge,
+            attempts: [],
+            scoringQuizAttempts: scoringAttempts,
+            now: date,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(progress.completedCount, min(2, challenge.targetCount))
+        XCTAssertEqual(progress.targetCount, challenge.targetCount)
+    }
+
+    func testScoringChallengeProgressCapsAtTarget() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = try XCTUnwrap(DailyChallengeCenter.dailyChallenges(for: date, calendar: calendar).first { $0.category == .scoring })
+        let dayStart = calendar.startOfDay(for: date)
+        let scoringAttempts = (0..<(challenge.targetCount + 4)).map { index in
+            scoringAttempt(
+                at: dayStart.addingTimeInterval(TimeInterval(index + 1)),
+                seed: UInt64(index),
+                isCorrect: true
+            )
+        }
+
+        let progress = try XCTUnwrap(DailyChallengeCenter.progress(
+            for: challenge,
+            attempts: [],
+            scoringQuizAttempts: scoringAttempts,
+            now: date,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(progress.completedCount, challenge.targetCount)
+        XCTAssertTrue(progress.isComplete)
+    }
+
     func testWhatToPlayProgressCapsAtChallengeTarget() throws {
         let calendar = Calendar(identifier: .gregorian)
         let date = Date(timeIntervalSince1970: 1_785_888_000)
@@ -340,6 +389,21 @@ final class DailyChallengeCenterTests: XCTestCase {
             whatToPlaySeed: 9_000_000,
             whatToPlayDifficulty: .medium,
             whatToPlayFocusKind: .openingLead
+        )
+    }
+
+    private func scoringAttempt(
+        at date: Date,
+        seed: UInt64,
+        isCorrect: Bool
+    ) -> ScoringQuizAttempt {
+        let question = ScoringQuizGenerator.generate(seed: seed, difficulty: .medium)
+        let submitted = isCorrect ? question.answer : question.answer + 1
+        return ScoringQuizAttempt(
+            createdAt: date,
+            question: question,
+            evaluation: ScoringQuizEvaluator.evaluate(answerText: "\(submitted)", question: question),
+            remainingSeconds: isCorrect ? 10 : 0
         )
     }
 }

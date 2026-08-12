@@ -5,6 +5,7 @@ import BalootEngine
 struct DailyChallengesView: View {
     @Environment(AppEnvironment.self) private var appEnvironment
     @Query(sort: \WhatToPlayAttempt.createdAt, order: .reverse) private var attempts: [WhatToPlayAttempt]
+    @Query(sort: \ScoringQuizAttempt.createdAt, order: .reverse) private var scoringQuizAttempts: [ScoringQuizAttempt]
     @State private var cadence: ChallengeCadence = .daily
     @AppStorage("completedBalootChallengeIDs") private var completedChallengeIDs = ""
 
@@ -22,7 +23,13 @@ struct DailyChallengesView: View {
 
     private var effectiveCompletedSet: Set<String> {
         let automatic = allChallenges
-            .filter { DailyChallengeCenter.progress(for: $0, attempts: attempts)?.isComplete == true }
+            .filter {
+                DailyChallengeCenter.progress(
+                    for: $0,
+                    attempts: attempts,
+                    scoringQuizAttempts: scoringQuizAttempts
+                )?.isComplete == true
+            }
             .map(\.id)
         return completedSet.union(automatic)
     }
@@ -67,7 +74,11 @@ struct DailyChallengesView: View {
     }
 
     private func challengeCard(_ challenge: BalootChallenge) -> some View {
-        let progress = DailyChallengeCenter.progress(for: challenge, attempts: attempts)
+        let progress = DailyChallengeCenter.progress(
+            for: challenge,
+            attempts: attempts,
+            scoringQuizAttempts: scoringQuizAttempts
+        )
         let whatToPlayProgress = DailyChallengeCenter.whatToPlayProgress(for: challenge, attempts: attempts)
         let isAutomaticallyCompleted = progress?.isComplete == true
         let isCompleted = completedSet.contains(challenge.id) || isAutomaticallyCompleted
@@ -128,8 +139,19 @@ struct DailyChallengesView: View {
                 .tint(AppColor.primary)
             }
 
+            if challenge.category == .scoring {
+                Button {
+                    appEnvironment.navigate(to: .scoringQuiz, tab: appEnvironment.selectedTab)
+                } label: {
+                    Label("فتح تحدي حساب النقاط".localized, systemImage: "function")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .tint(AppColor.primary)
+            }
+
             if isAutomaticallyCompleted {
-                Label("مكتمل من التدريب".localized, systemImage: "checkmark.seal.fill")
+                Label(automaticCompletionTitle(for: challenge), systemImage: "checkmark.seal.fill")
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, AppSpacing.sm)
                     .foregroundStyle(AppColor.success)
@@ -148,6 +170,17 @@ struct DailyChallengesView: View {
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
         .accessibilityElement(children: .combine)
+    }
+
+    private func automaticCompletionTitle(for challenge: BalootChallenge) -> String {
+        switch challenge.category {
+        case .scoring:
+            "مكتمل من تحدي النقاط".localized
+        case .tactics:
+            "مكتمل من التدريب".localized
+        case .match, .training:
+            "مكتمل".localized
+        }
     }
 
     private func difficultyTitle(_ difficulty: WhatToPlayDifficulty) -> String {
