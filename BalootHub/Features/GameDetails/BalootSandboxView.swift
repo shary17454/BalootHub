@@ -12,7 +12,15 @@ struct BalootSandboxView: View {
     }
 
     private var currentHand: [PlayingCard] {
-        configuration.handsBySeat[configuration.currentTurnSeat] ?? []
+        sorted(configuration.handsBySeat[configuration.currentTurnSeat] ?? [])
+    }
+
+    private var cardsUnavailableOutsideCurrentHand: Set<PlayingCard> {
+        var used = Set(configuration.currentTrickCards.map(\.card))
+        for seat in SeatPosition.allCases where seat != configuration.currentTurnSeat {
+            used.formUnion(configuration.handsBySeat[seat] ?? [])
+        }
+        return used
     }
 
     var body: some View {
@@ -21,6 +29,7 @@ struct BalootSandboxView: View {
                 header
                 sandboxControls
                 tableState
+                handEditor
                 handPicker
                 if let preview {
                     resultCard(preview)
@@ -108,6 +117,68 @@ struct BalootSandboxView: View {
             }
             .padding(AppSpacing.md)
             .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private var handEditor: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            HStack {
+                Label("يد اللاعب الحالي".localized, systemImage: "rectangle.stack.fill")
+                    .font(AppTypography.headline)
+                    .foregroundStyle(AppColor.primary)
+                Spacer()
+                Text("\(currentHand.count) / 8")
+                    .font(AppTypography.caption.weight(.semibold))
+                    .foregroundStyle(currentHand.isEmpty ? AppColor.danger : AppColor.textSecondary)
+            }
+
+            if currentHand.isEmpty {
+                Text("اختر ورقة واحدة على الأقل حتى يستطيع المحرك تجربة الحركة.".localized)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: AppSpacing.xs) {
+                        ForEach(currentHand) { card in
+                            SandboxMiniCard(card: card, isSelected: true)
+                                .onTapGesture { toggleHandCard(card) }
+                        }
+                    }
+                }
+            }
+
+            VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                Text("تعديل اليد".localized)
+                    .font(AppTypography.caption.weight(.semibold))
+                    .foregroundStyle(AppColor.textSecondary)
+
+                ForEach(Suit.allCases) { suit in
+                    VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                        Text(suit.spokenName)
+                            .font(AppTypography.caption)
+                            .foregroundStyle(AppColor.textSecondary)
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 4), spacing: AppSpacing.xs) {
+                            ForEach(Rank.allCases) { rank in
+                                let card = PlayingCard(suit: suit, rank: rank)
+                                let selected = currentHand.contains(card)
+                                let unavailable = cardsUnavailableOutsideCurrentHand.contains(card)
+                                let full = !selected && currentHand.count >= 8
+                                Button {
+                                    toggleHandCard(card)
+                                } label: {
+                                    SandboxMiniCard(card: card, isSelected: selected)
+                                }
+                                .buttonStyle(.plain)
+                                .disabled(unavailable || full)
+                                .opacity(unavailable || full ? 0.35 : 1)
+                                .accessibilityLabel(cardAccessibilityLabel(card, selected: selected, unavailable: unavailable))
+                            }
+                        }
+                    }
+                }
+            }
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
@@ -246,11 +317,39 @@ struct BalootSandboxView: View {
         errorMessage = nil
     }
 
+    private func toggleHandCard(_ card: PlayingCard) {
+        resetPreview()
+        var hand = configuration.handsBySeat[configuration.currentTurnSeat] ?? []
+        if hand.contains(card) {
+            hand.removeAll { $0 == card }
+        } else if hand.count < 8 && !cardsUnavailableOutsideCurrentHand.contains(card) {
+            hand.append(card)
+        }
+        configuration.handsBySeat[configuration.currentTurnSeat] = sorted(hand)
+    }
+
+    private func cardAccessibilityLabel(_ card: PlayingCard, selected: Bool, unavailable: Bool) -> String {
+        if unavailable {
+            return "\(card.accessibilityName)، \("مستخدمة في الموقف".localized)"
+        }
+        if selected {
+            return "\(card.accessibilityName)، \("مختارة".localized)"
+        }
+        return card.accessibilityName
+    }
+
     private func legalCardsText() -> String {
         guard let cards = try? BalootSandbox.legalCards(configuration: configuration), !cards.isEmpty else {
             return "لا يوجد".localized
         }
         return cards.map(\.accessibilityName).joined(separator: "، ")
+    }
+
+    private func sorted(_ cards: [PlayingCard]) -> [PlayingCard] {
+        cards.sorted {
+            if $0.suit.ordinal != $1.suit.ordinal { return $0.suit.ordinal < $1.suit.ordinal }
+            return $0.rank.sequenceOrder < $1.rank.sequenceOrder
+        }
     }
 
     private func seatTitle(_ seat: SeatPosition) -> String {
@@ -259,6 +358,40 @@ struct BalootSandboxView: View {
         case .west: "غرب".localized
         case .north: "شمال".localized
         case .east: "شرق".localized
+        }
+    }
+}
+
+private struct SandboxMiniCard: View {
+    let card: PlayingCard
+    let isSelected: Bool
+
+    private var isRed: Bool { card.suit.isRed }
+
+    var body: some View {
+        VStack(spacing: 2) {
+            Text(card.rank.shortLabel)
+                .font(.system(.caption, design: .rounded).weight(.bold))
+            Image(systemName: symbolName)
+                .font(.caption2)
+        }
+        .foregroundStyle(isRed ? AppColor.danger : AppColor.textPrimary)
+        .minimumScaleFactor(0.7)
+        .frame(minWidth: 44, minHeight: 54)
+        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.small))
+        .overlay {
+            RoundedRectangle(cornerRadius: AppRadius.small)
+                .stroke(isSelected ? AppColor.primary : AppColor.border, lineWidth: isSelected ? 2 : 1)
+        }
+        .accessibilityLabel(card.accessibilityName)
+    }
+
+    private var symbolName: String {
+        switch card.suit {
+        case .hearts: "suit.heart.fill"
+        case .diamonds: "suit.diamond.fill"
+        case .clubs: "suit.club.fill"
+        case .spades: "suit.spade.fill"
         }
     }
 }
