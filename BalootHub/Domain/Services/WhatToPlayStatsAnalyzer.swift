@@ -1452,9 +1452,7 @@ enum WhatToPlayStatsAnalyzer {
         for attempts: [WhatToPlayAttempt],
         plan: WhatToPlayTrainingSessionPlan
     ) -> UInt64 {
-        let matchingAttempts = attempts.filter {
-            $0.difficulty == plan.difficulty && (plan.focusKind == nil || $0.focusKind == plan.focusKind)
-        }
+        let matchingAttempts = uniqueMatchingTrainingAttempts(for: attempts, plan: plan)
         let difficultyComponent = UInt64(difficultyOrder(plan.difficulty)) * 1_000_000
         let focusComponent = UInt64(plan.focusKind.map(scenarioFocusOrder) ?? 0) * 100_000
         let countComponent = UInt64(max(1, plan.scenarioCount)) * 1_000
@@ -1480,13 +1478,7 @@ enum WhatToPlayStatsAnalyzer {
         plan: WhatToPlayTrainingSessionPlan
     ) -> WhatToPlayTrainingSessionProgress {
         let target = max(1, plan.scenarioCount)
-        let sessionAttempts = Array(
-            attempts
-                .filter { $0.difficulty == plan.difficulty }
-                .filter { plan.focusKind == nil || $0.focusKind == plan.focusKind }
-                .sorted { $0.createdAt > $1.createdAt }
-                .prefix(target)
-        )
+        let sessionAttempts = Array(uniqueMatchingTrainingAttempts(for: attempts, plan: plan).prefix(target))
         let completed = sessionAttempts.count
         let sessionSummary = summarize(attempts: sessionAttempts)
         let correct = sessionAttempts.filter(\.isCorrect).count
@@ -1775,6 +1767,20 @@ enum WhatToPlayStatsAnalyzer {
             gradeReasonTitle: grade.reasonTitle,
             gradeReasonDetail: grade.reasonDetail
         )
+    }
+
+    private static func uniqueMatchingTrainingAttempts(
+        for attempts: [WhatToPlayAttempt],
+        plan: WhatToPlayTrainingSessionPlan
+    ) -> [WhatToPlayAttempt] {
+        var seenSeeds = Set<UInt64>()
+        return attempts
+            .filter { $0.difficulty == plan.difficulty }
+            .filter { plan.focusKind == nil || $0.focusKind == plan.focusKind }
+            .sorted { $0.createdAt > $1.createdAt }
+            .filter { attempt in
+                seenSeeds.insert(attempt.replaySeed).inserted
+            }
     }
 
     private static func sessionImpactExtreme(

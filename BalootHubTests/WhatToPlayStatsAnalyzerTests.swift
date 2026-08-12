@@ -2758,6 +2758,27 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.gradeReasonTitle, "التقييم متوازن".localized)
     }
 
+    func testTrainingSessionProgressCountsUniqueScenarioSeedsOnly() {
+        let plan = sessionPlan(difficulty: .medium, count: 3, target: 67)
+        let duplicateSeed: UInt64 = 77
+        let latestDuplicateCard = PlayingCard(suit: .hearts, rank: .seven)
+        let attempts = [
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 4, bestImpact: 4, seed: 11),
+            attempt(daysAgo: 2, difficulty: .medium, correct: true, impact: 8, bestImpact: 8, selectedCard: PlayingCard(suit: .spades, rank: .ace), seed: duplicateSeed),
+            attempt(daysAgo: 1, difficulty: .medium, correct: false, impact: -6, bestImpact: 4, selectedCard: latestDuplicateCard, seed: duplicateSeed)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.state, .inProgress)
+        XCTAssertEqual(progress.completedAttempts, 2)
+        XCTAssertEqual(progress.correctAttempts, 1)
+        XCTAssertEqual(progress.bestExpectedImpact, 4)
+        XCTAssertEqual(progress.worstExpectedImpact, -6)
+        XCTAssertEqual(progress.worstExpectedImpactCard, latestDuplicateCard)
+        XCTAssertEqual(progress.remainingAttempts, 1)
+    }
+
     func testTrainingSessionProgressTracksProjectedLossForSessionAttemptsOnly() {
         let plan = sessionPlan(difficulty: .medium, count: 3, target: 67)
         let attempts = [
