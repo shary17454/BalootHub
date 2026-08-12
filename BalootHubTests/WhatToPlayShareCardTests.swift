@@ -200,6 +200,19 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains(try XCTUnwrap(content.nextActionDetail)))
     }
 
+    func testShareDecisionQualityUsesProjectedLossWhenLarger() throws {
+        let (scenario, selected) = try simulationLossShareSelection()
+        let best = try XCTUnwrap(scenario.bestOption)
+
+        let content = WhatToPlayShareCard.content(for: scenario, selectedOption: selected)
+        let text = WhatToPlayShareCard.text(for: scenario, selectedOption: selected)
+
+        XCTAssertLessThanOrEqual(max(0, best.expectedImpact - selected.expectedImpact), 2)
+        XCTAssertGreaterThanOrEqual(max(0, best.projectedTeamPoints - selected.projectedTeamPoints), 9)
+        XCTAssertEqual(content.decisionQualityTitle, "قرار مكلف".localized)
+        XCTAssertTrue(text.contains("\("تقييم القرار".localized): \("قرار مكلف".localized)"))
+    }
+
     private func contentMode(for scenario: WhatToPlayScenario) -> String {
         WhatToPlayShareCard.content(for: scenario).mode
     }
@@ -229,5 +242,21 @@ final class WhatToPlayShareCardTests: XCTestCase {
         }
         XCTFail("لم يتم العثور على موقف مشاركة بخطأ تكتيكي ضمن نطاق البذور المحدد")
         throw NSError(domain: "WhatToPlayShareCardTests", code: 1)
+    }
+
+    private func simulationLossShareSelection() throws -> (WhatToPlayScenario, WhatToPlayOption) {
+        for seed in 1...300 {
+            let scenario = try WhatToPlayTrainer.generateScenario(seed: UInt64(seed), difficulty: .hard)
+            guard let best = scenario.bestOption else { continue }
+            if let option = scenario.options.first(where: {
+                $0.card != best.card
+                    && max(0, best.expectedImpact - $0.expectedImpact) <= 2
+                    && max(0, best.projectedTeamPoints - $0.projectedTeamPoints) >= 9
+            }) {
+                return (scenario, option)
+            }
+        }
+        XCTFail("لم يتم العثور على موقف مشاركة بخسارة محاكاة عالية ضمن نطاق البذور المحدد")
+        throw NSError(domain: "WhatToPlayShareCardTests", code: 2)
     }
 }

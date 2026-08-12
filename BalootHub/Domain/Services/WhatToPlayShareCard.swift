@@ -74,7 +74,8 @@ enum WhatToPlayShareCard {
             lost.map {
                 WhatToPlayDecisionQuality.classify(
                     isExpertChoice: selected.isExpertChoice,
-                    lostExpectedPoints: $0
+                    lostExpectedPoints: $0,
+                    lostProjectedTeamPoints: projectedLost ?? 0
                 ).title
             }
         }
