@@ -271,6 +271,7 @@ struct WhatToPlayPracticeRecommendation: Equatable {
 struct WhatToPlayTrainingSessionPlan: Equatable {
     let difficulty: WhatToPlayDifficulty
     let focusKind: WhatToPlayScenarioFocusKind?
+    let gameMode: GameMode?
     let scenarioCount: Int
     let targetAccuracyPercent: Int
     let targetAverageExpectedImpact: Int
@@ -283,6 +284,7 @@ struct WhatToPlayTrainingSessionPlan: Equatable {
     init(
         difficulty: WhatToPlayDifficulty,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
+        gameMode: GameMode? = nil,
         scenarioCount: Int,
         targetAccuracyPercent: Int,
         targetAverageExpectedImpact: Int,
@@ -294,6 +296,7 @@ struct WhatToPlayTrainingSessionPlan: Equatable {
     ) {
         self.difficulty = difficulty
         self.focusKind = focusKind
+        self.gameMode = gameMode
         self.scenarioCount = scenarioCount
         self.targetAccuracyPercent = targetAccuracyPercent
         self.targetAverageExpectedImpact = targetAverageExpectedImpact
@@ -308,6 +311,7 @@ struct WhatToPlayTrainingSessionPlan: Equatable {
 struct WhatToPlayNextScenarioRecommendation: Equatable {
     let difficulty: WhatToPlayDifficulty
     let focusKind: WhatToPlayScenarioFocusKind?
+    let gameMode: GameMode?
     let title: String
     let detail: String
     let iconName: String
@@ -391,6 +395,7 @@ struct WhatToPlayTrainingSessionReview: Equatable {
     let nextSeed: UInt64?
     let difficulty: WhatToPlayDifficulty?
     let focusKind: WhatToPlayScenarioFocusKind?
+    let gameMode: GameMode?
 }
 
 enum WhatToPlayDecisionInsightKind: Equatable {
@@ -531,6 +536,7 @@ struct WhatToPlayMicroDrill: Equatable {
     let seed: UInt64?
     let difficulty: WhatToPlayDifficulty?
     let focusKind: WhatToPlayScenarioFocusKind?
+    let gameMode: GameMode?
 }
 
 enum WhatToPlayStyleKind: Equatable {
@@ -833,6 +839,27 @@ enum WhatToPlayStatsAnalyzer {
                 }
 
                 return scenarioFocusOrder(lhs.focusKind) < scenarioFocusOrder(rhs.focusKind)
+            }
+            .first
+    }
+
+    static func focusGameMode(_ attempts: [WhatToPlayAttempt], minimumAttempts: Int = 2) -> WhatToPlayGameModeSummary? {
+        summariesByGameMode(attempts)
+            .filter { $0.summary.attempts >= minimumAttempts }
+            .sorted { lhs, rhs in
+                if lhs.summary.accuracyPercent != rhs.summary.accuracyPercent {
+                    return lhs.summary.accuracyPercent < rhs.summary.accuracyPercent
+                }
+
+                if lhs.summary.lostExpectedPoints != rhs.summary.lostExpectedPoints {
+                    return lhs.summary.lostExpectedPoints > rhs.summary.lostExpectedPoints
+                }
+
+                if lhs.summary.averageExpectedImpact != rhs.summary.averageExpectedImpact {
+                    return lhs.summary.averageExpectedImpact < rhs.summary.averageExpectedImpact
+                }
+
+                return gameModeOrder(lhs.mode) < gameModeOrder(rhs.mode)
             }
             .first
     }
@@ -1346,10 +1373,12 @@ enum WhatToPlayStatsAnalyzer {
         let style = playStyle(for: attempts)
         let pulse = sessionPulse(for: attempts)
         let focusKind = focusTrainingPriority(for: attempts)?.focusKind ?? focusScenarioKind(attempts)?.focusKind
+        let gameMode = focusGameMode(attempts)?.mode
 
         if style.kind == .measuring {
             return WhatToPlayTrainingSessionPlan(
                 difficulty: .easy,
+                gameMode: gameMode,
                 scenarioCount: 3,
                 targetAccuracyPercent: 60,
                 targetAverageExpectedImpact: 0,
@@ -1364,6 +1393,7 @@ enum WhatToPlayStatsAnalyzer {
             return WhatToPlayTrainingSessionPlan(
                 difficulty: recommendation.difficulty,
                 focusKind: focusKind,
+                gameMode: gameMode,
                 scenarioCount: 3,
                 targetAccuracyPercent: 67,
                 targetAverageExpectedImpact: 0,
@@ -1379,6 +1409,7 @@ enum WhatToPlayStatsAnalyzer {
             return WhatToPlayTrainingSessionPlan(
                 difficulty: recommendation.difficulty,
                 focusKind: focusKind,
+                gameMode: gameMode,
                 scenarioCount: 3,
                 targetAccuracyPercent: 67,
                 targetAverageExpectedImpact: 1,
@@ -1394,6 +1425,7 @@ enum WhatToPlayStatsAnalyzer {
             return WhatToPlayTrainingSessionPlan(
                 difficulty: recommendation.difficulty,
                 focusKind: focusKind,
+                gameMode: gameMode,
                 scenarioCount: 4,
                 targetAccuracyPercent: 75,
                 targetAverageExpectedImpact: 1,
@@ -1408,6 +1440,7 @@ enum WhatToPlayStatsAnalyzer {
             return WhatToPlayTrainingSessionPlan(
                 difficulty: recommendation.difficulty,
                 focusKind: focusKind,
+                gameMode: gameMode,
                 scenarioCount: 4,
                 targetAccuracyPercent: 75,
                 targetAverageExpectedImpact: 1,
@@ -1422,6 +1455,7 @@ enum WhatToPlayStatsAnalyzer {
             return WhatToPlayTrainingSessionPlan(
                 difficulty: nextDifficulty(after: recommendation.difficulty),
                 focusKind: focusKind,
+                gameMode: gameMode,
                 scenarioCount: 5,
                 targetAccuracyPercent: 80,
                 targetAverageExpectedImpact: 2,
@@ -1436,6 +1470,7 @@ enum WhatToPlayStatsAnalyzer {
             return WhatToPlayTrainingSessionPlan(
                 difficulty: recommendation.difficulty,
                 focusKind: focusKind,
+                gameMode: gameMode,
                 scenarioCount: 5,
                 targetAccuracyPercent: 70,
                 targetAverageExpectedImpact: 0,
@@ -1449,6 +1484,7 @@ enum WhatToPlayStatsAnalyzer {
         return WhatToPlayTrainingSessionPlan(
             difficulty: recommendation.difficulty,
             focusKind: focusKind,
+            gameMode: gameMode,
             scenarioCount: 4,
             targetAccuracyPercent: 70,
             targetAverageExpectedImpact: 1,
@@ -1465,6 +1501,7 @@ enum WhatToPlayStatsAnalyzer {
             return WhatToPlayNextScenarioRecommendation(
                 difficulty: plan.difficulty,
                 focusKind: focusPriority.focusKind,
+                gameMode: plan.gameMode,
                 title: "الموقف القادم".localized,
                 detail: "\("ابدأ بموقف".localized) \(scenarioFocusTitle(focusPriority.focusKind)) \("على مستوى".localized) \(difficultyTitle(plan.difficulty)). \(focusPriority.detail)",
                 iconName: focusPriority.iconName
@@ -1474,6 +1511,7 @@ enum WhatToPlayStatsAnalyzer {
         return WhatToPlayNextScenarioRecommendation(
             difficulty: plan.difficulty,
             focusKind: plan.focusKind,
+            gameMode: plan.gameMode,
             title: "الموقف القادم".localized,
             detail: plan.focusKind.map {
                 "\("ابدأ بموقف".localized) \(scenarioFocusTitle($0)) \("على مستوى".localized) \(difficultyTitle(plan.difficulty))."
@@ -1489,6 +1527,7 @@ enum WhatToPlayStatsAnalyzer {
         let matchingAttempts = uniqueMatchingTrainingAttempts(for: attempts, plan: plan)
         let difficultyComponent = UInt64(difficultyOrder(plan.difficulty)) * 1_000_000
         let focusComponent = UInt64(plan.focusKind.map(scenarioFocusOrder) ?? 0) * 100_000
+        let modeComponent = UInt64(plan.gameMode.map(gameModeOrder) ?? 0) * 10_000
         let countComponent = UInt64(max(1, plan.scenarioCount)) * 1_000
         let accuracyComponent = UInt64(max(0, plan.targetAccuracyPercent)) * 10
         let impactComponent = UInt64(max(0, plan.targetAverageExpectedImpact))
@@ -1496,6 +1535,7 @@ enum WhatToPlayStatsAnalyzer {
         var candidate = 9_000_000
             + difficultyComponent
             + focusComponent
+            + modeComponent
             + countComponent
             + accuracyComponent
             + impactComponent
@@ -1826,7 +1866,8 @@ enum WhatToPlayStatsAnalyzer {
                 replaySeed: nil,
                 nextSeed: nextTrainingSessionSeed(for: attempts, plan: plan),
                 difficulty: plan.difficulty,
-                focusKind: plan.focusKind
+                focusKind: plan.focusKind,
+                gameMode: plan.gameMode
             )
         case .inProgress:
             return WhatToPlayTrainingSessionReview(
@@ -1837,7 +1878,8 @@ enum WhatToPlayStatsAnalyzer {
                 replaySeed: nil,
                 nextSeed: nextTrainingSessionSeed(for: attempts, plan: plan),
                 difficulty: plan.difficulty,
-                focusKind: plan.focusKind
+                focusKind: plan.focusKind,
+                gameMode: plan.gameMode
             )
         case .achieved:
             let recommendation = nextScenarioRecommendation(for: attempts)
@@ -1850,10 +1892,12 @@ enum WhatToPlayStatsAnalyzer {
                 nextSeed: microDrillSeed(
                     attempts: attempts,
                     difficulty: recommendation.difficulty,
-                    focusKind: recommendation.focusKind
+                    focusKind: recommendation.focusKind,
+                    gameMode: recommendation.gameMode
                 ),
                 difficulty: recommendation.difficulty,
-                focusKind: recommendation.focusKind
+                focusKind: recommendation.focusKind,
+                gameMode: recommendation.gameMode
             )
         case .needsRepeat:
             if let reviewItem = progress.reviewItem {
@@ -1865,7 +1909,8 @@ enum WhatToPlayStatsAnalyzer {
                     replaySeed: reviewItem.seed,
                     nextSeed: reviewItem.seed,
                     difficulty: reviewItem.difficulty,
-                    focusKind: reviewItem.focusKind
+                    focusKind: reviewItem.focusKind,
+                    gameMode: reviewItem.gameMode
                 )
             }
             return WhatToPlayTrainingSessionReview(
@@ -1876,7 +1921,8 @@ enum WhatToPlayStatsAnalyzer {
                 replaySeed: nil,
                 nextSeed: nextTrainingSessionSeed(for: attempts, plan: plan),
                 difficulty: plan.difficulty,
-                focusKind: plan.focusKind
+                focusKind: plan.focusKind,
+                gameMode: plan.gameMode
             )
         }
     }
@@ -1889,6 +1935,7 @@ enum WhatToPlayStatsAnalyzer {
         return attempts
             .filter { $0.difficulty == plan.difficulty }
             .filter { plan.focusKind == nil || $0.focusKind == plan.focusKind }
+            .filter { plan.gameMode == nil || $0.gameMode == plan.gameMode }
             .sorted { $0.createdAt > $1.createdAt }
             .filter { attempt in
                 seenSeeds.insert(attempt.replaySeed).inserted
@@ -2794,7 +2841,8 @@ enum WhatToPlayStatsAnalyzer {
                 reviewItem: nil,
                 seed: microDrillSeed(attempts: attempts, difficulty: .easy, focusKind: nil),
                 difficulty: .easy,
-                focusKind: nil
+                focusKind: nil,
+                gameMode: nil
             )
         }
 
@@ -2816,7 +2864,8 @@ enum WhatToPlayStatsAnalyzer {
                 reviewItem: reviewItem,
                 seed: reviewItem?.seed,
                 difficulty: reviewItem?.difficulty,
-                focusKind: reviewItem?.focusKind
+                focusKind: reviewItem?.focusKind,
+                gameMode: reviewItem?.gameMode
             )
         }
 
@@ -2834,7 +2883,8 @@ enum WhatToPlayStatsAnalyzer {
                 reviewItem: simulatedReview,
                 seed: simulatedReview.seed,
                 difficulty: simulatedReview.difficulty,
-                focusKind: simulatedReview.focusKind
+                focusKind: simulatedReview.focusKind,
+                gameMode: simulatedReview.gameMode
             )
         }
 
@@ -2852,7 +2902,8 @@ enum WhatToPlayStatsAnalyzer {
                 reviewItem: highValueReview,
                 seed: highValueReview.seed,
                 difficulty: highValueReview.difficulty,
-                focusKind: highValueReview.focusKind
+                focusKind: highValueReview.focusKind,
+                gameMode: highValueReview.gameMode
             )
         }
 
@@ -2869,9 +2920,15 @@ enum WhatToPlayStatsAnalyzer {
                     "لا ترفع الصعوبة حتى تنخفض القرارات المكلفة".localized
                 ],
                 reviewItem: nil,
-                seed: microDrillSeed(attempts: attempts, difficulty: recommendation.difficulty, focusKind: recommendation.focusKind),
+                seed: microDrillSeed(
+                    attempts: attempts,
+                    difficulty: recommendation.difficulty,
+                    focusKind: recommendation.focusKind,
+                    gameMode: recommendation.gameMode
+                ),
                 difficulty: recommendation.difficulty,
-                focusKind: recommendation.focusKind
+                focusKind: recommendation.focusKind,
+                gameMode: recommendation.gameMode
             )
         }
 
@@ -2890,7 +2947,8 @@ enum WhatToPlayStatsAnalyzer {
                 reviewItem: nil,
                 seed: microDrillSeed(attempts: attempts, difficulty: targetDifficulty, focusKind: nil),
                 difficulty: targetDifficulty,
-                focusKind: nil
+                focusKind: nil,
+                gameMode: nil
             )
         }
 
@@ -2910,7 +2968,8 @@ enum WhatToPlayStatsAnalyzer {
                 reviewItem: nil,
                 seed: microDrillSeed(attempts: attempts, difficulty: targetDifficulty, focusKind: targetFocus),
                 difficulty: targetDifficulty,
-                focusKind: targetFocus
+                focusKind: targetFocus,
+                gameMode: nil
             )
         }
 
@@ -2927,7 +2986,8 @@ enum WhatToPlayStatsAnalyzer {
                 reviewItem: nil,
                 seed: microDrillSeed(attempts: attempts, difficulty: .hard, focusKind: .trumpPressure),
                 difficulty: .hard,
-                focusKind: .trumpPressure
+                focusKind: .trumpPressure,
+                gameMode: nil
             )
         }
 
@@ -2942,9 +3002,15 @@ enum WhatToPlayStatsAnalyzer {
                 "راجع النقاط الضائعة".localized
             ],
             reviewItem: nil,
-            seed: microDrillSeed(attempts: attempts, difficulty: recommendation.difficulty, focusKind: recommendation.focusKind),
+            seed: microDrillSeed(
+                attempts: attempts,
+                difficulty: recommendation.difficulty,
+                focusKind: recommendation.focusKind,
+                gameMode: recommendation.gameMode
+            ),
             difficulty: recommendation.difficulty,
-            focusKind: recommendation.focusKind
+            focusKind: recommendation.focusKind,
+            gameMode: recommendation.gameMode
         )
     }
 
@@ -2958,11 +3024,13 @@ enum WhatToPlayStatsAnalyzer {
     private static func microDrillSeed(
         attempts: [WhatToPlayAttempt],
         difficulty: WhatToPlayDifficulty,
-        focusKind: WhatToPlayScenarioFocusKind?
+        focusKind: WhatToPlayScenarioFocusKind?,
+        gameMode: GameMode? = nil
     ) -> UInt64 {
         let difficultyComponent = UInt64(difficultyOrder(difficulty)) * 1_000_000
         let focusComponent = UInt64(focusKind.map(scenarioFocusOrder) ?? 0) * 100_000
-        return 8_000_000 + difficultyComponent + focusComponent + UInt64(attempts.count)
+        let modeComponent = UInt64(gameMode.map(gameModeOrder) ?? 0) * 10_000
+        return 8_000_000 + difficultyComponent + focusComponent + modeComponent + UInt64(attempts.count)
     }
 
     static func playStyle(for attempts: [WhatToPlayAttempt]) -> WhatToPlayPlayStyle {
@@ -3226,6 +3294,10 @@ enum WhatToPlayStatsAnalyzer {
 
     private static func scenarioFocusOrder(_ focusKind: WhatToPlayScenarioFocusKind) -> Int {
         WhatToPlayScenarioFocusKind.allCases.firstIndex(of: focusKind) ?? Int.max
+    }
+
+    private static func gameModeOrder(_ mode: GameMode) -> Int {
+        GameMode.allCases.firstIndex(of: mode) ?? Int.max
     }
 
     private static func scenarioFocusTitle(_ focusKind: WhatToPlayScenarioFocusKind) -> String {

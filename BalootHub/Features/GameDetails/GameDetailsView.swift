@@ -744,7 +744,7 @@ struct WhatToPlayTrainerView: View {
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
-                Text("\("المستوى".localized): \(recommendation.difficulty.displayTitle) · \("تركيز التدريب".localized): \(recommendation.focusKind.map(focusTitle) ?? "تلقائي".localized)")
+                Text("\("المستوى".localized): \(recommendation.difficulty.displayTitle) · \("تركيز التدريب".localized): \(recommendation.focusKind.map(focusTitle) ?? "تلقائي".localized) · \("النمط".localized): \(recommendation.gameMode.map(modeTitle) ?? "تلقائي".localized)")
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(AppColor.accent)
             }
@@ -775,6 +775,7 @@ struct WhatToPlayTrainerView: View {
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 2), spacing: AppSpacing.xs) {
                 miniPlanMetric(title: "المستوى".localized, value: plan.difficulty.displayTitle)
                 miniPlanMetric(title: "تركيز التدريب".localized, value: plan.focusKind.map(focusTitle) ?? "تلقائي".localized)
+                miniPlanMetric(title: "النمط".localized, value: plan.gameMode.map(modeTitle) ?? "تلقائي".localized)
                 miniPlanMetric(title: "المواقف".localized, value: "\(plan.scenarioCount)")
                 miniPlanMetric(title: "هدف الدقة".localized, value: "\(plan.targetAccuracyPercent)%")
                 miniPlanMetric(title: "هدف الأثر".localized, value: "≥ \(impactText(plan.targetAverageExpectedImpact))")
@@ -1190,7 +1191,12 @@ struct WhatToPlayTrainerView: View {
             } else if let seed = microDrill.seed,
                       let difficulty = microDrill.difficulty {
                 Button {
-                    startMicroDrill(scenarioSeed: seed, difficulty: difficulty, focusKind: microDrill.focusKind)
+                    startMicroDrill(
+                        scenarioSeed: seed,
+                        difficulty: difficulty,
+                        focusKind: microDrill.focusKind,
+                        gameMode: microDrill.gameMode
+                    )
                 } label: {
                     Label("بدء الخطة المصغرة".localized, systemImage: "play.circle.fill")
                         .frame(maxWidth: .infinity)
@@ -3214,12 +3220,16 @@ struct WhatToPlayTrainerView: View {
 
     private func startNextScenarioRecommendation() {
         let targetFocusRaw = nextScenarioRecommendation.focusKind?.rawValue ?? "auto"
+        let targetModeRaw = nextScenarioRecommendation.gameMode?.rawValue ?? "auto"
         isRetryingCurrentScenario = false
-        if difficulty == nextScenarioRecommendation.difficulty, preferredFocusRaw == targetFocusRaw {
+        if difficulty == nextScenarioRecommendation.difficulty,
+           preferredFocusRaw == targetFocusRaw,
+           preferredModeRaw == targetModeRaw {
             nextScenario()
         } else {
             difficulty = nextScenarioRecommendation.difficulty
             preferredFocusRaw = targetFocusRaw
+            preferredModeRaw = targetModeRaw
             generateScenario()
         }
     }
@@ -3227,16 +3237,21 @@ struct WhatToPlayTrainerView: View {
     private func startMicroDrill(
         scenarioSeed: UInt64,
         difficulty targetDifficulty: WhatToPlayDifficulty,
-        focusKind: WhatToPlayScenarioFocusKind?
+        focusKind: WhatToPlayScenarioFocusKind?,
+        gameMode: GameMode? = nil
     ) {
         let targetFocusRaw = focusKind?.rawValue ?? "auto"
+        let targetModeRaw = gameMode?.rawValue ?? "auto"
         seed = scenarioSeed
         isRetryingCurrentScenario = false
-        if difficulty == targetDifficulty, preferredFocusRaw == targetFocusRaw {
+        if difficulty == targetDifficulty,
+           preferredFocusRaw == targetFocusRaw,
+           preferredModeRaw == targetModeRaw {
             generateScenario()
         } else {
             difficulty = targetDifficulty
             preferredFocusRaw = targetFocusRaw
+            preferredModeRaw = targetModeRaw
             generateScenario()
         }
     }
@@ -3285,12 +3300,16 @@ struct WhatToPlayTrainerView: View {
 
     private func startTrainingSessionPlan() {
         let targetFocusRaw = trainingSessionPlan.focusKind?.rawValue ?? "auto"
+        let targetModeRaw = trainingSessionPlan.gameMode?.rawValue ?? "auto"
         seed = WhatToPlayStatsAnalyzer.nextTrainingSessionSeed(for: attempts, plan: trainingSessionPlan)
-        if difficulty == trainingSessionPlan.difficulty, preferredFocusRaw == targetFocusRaw {
+        if difficulty == trainingSessionPlan.difficulty,
+           preferredFocusRaw == targetFocusRaw,
+           preferredModeRaw == targetModeRaw {
             generateScenario()
         } else {
             difficulty = trainingSessionPlan.difficulty
             preferredFocusRaw = targetFocusRaw
+            preferredModeRaw = targetModeRaw
             generateScenario()
         }
     }

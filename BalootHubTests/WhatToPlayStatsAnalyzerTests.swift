@@ -1146,6 +1146,22 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summaries.last?.summary.lostExpectedPoints, 6)
     }
 
+    func testFocusGameModePicksWeakestModeWithEnoughAttempts() {
+        let attempts = [
+            attempt(daysAgo: 5, correct: true, impact: 4, bestImpact: 4, gameMode: .sun),
+            attempt(daysAgo: 4, correct: true, impact: 3, bestImpact: 3, gameMode: .sun),
+            attempt(daysAgo: 3, correct: false, impact: -4, bestImpact: 3, gameMode: .hokum),
+            attempt(daysAgo: 2, correct: true, impact: 2, bestImpact: 2, gameMode: .hokum),
+            attempt(daysAgo: 1, correct: false, impact: -2, bestImpact: 1)
+        ]
+
+        let focus = WhatToPlayStatsAnalyzer.focusGameMode(attempts)
+
+        XCTAssertEqual(focus?.mode, .hokum)
+        XCTAssertEqual(focus?.summary.accuracyPercent, 50)
+        XCTAssertEqual(focus?.summary.lostExpectedPoints, 7)
+    }
+
     func testFocusScenarioKindPicksWeakestTrainingFocus() {
         let attempts = [
             attempt(daysAgo: 6, difficulty: .easy, correct: true, impact: 3, bestImpact: 3, focusKind: .openingLead),
@@ -2538,6 +2554,18 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(seed, collidingSeed + 1)
     }
 
+    func testNextTrainingSessionSeedIncludesTargetGameMode() {
+        let sunPlan = sessionPlan(difficulty: .medium, focusKind: .trumpPressure, gameMode: .sun, count: 4, target: 70, impactTarget: 1)
+        let hokumPlan = sessionPlan(difficulty: .medium, focusKind: .trumpPressure, gameMode: .hokum, count: 4, target: 70, impactTarget: 1)
+
+        let sunSeed = WhatToPlayStatsAnalyzer.nextTrainingSessionSeed(for: [], plan: sunPlan)
+        let hokumSeed = WhatToPlayStatsAnalyzer.nextTrainingSessionSeed(for: [], plan: hokumPlan)
+
+        XCTAssertNotEqual(sunSeed, hokumSeed)
+        XCTAssertEqual(sunSeed, 10_204_701)
+        XCTAssertEqual(hokumSeed, 10_214_701)
+    }
+
     func testTrainingSessionPlanPrioritizesReviewWhenRecentAttemptsNeedIt() {
         let attempts = [
             attempt(daysAgo: 4, difficulty: .medium, correct: true, impact: 5, bestImpact: 5, focusKind: .openingLead),
@@ -2553,6 +2581,22 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(plan.scenarioCount, 3)
         XCTAssertEqual(plan.targetAverageExpectedImpact, 0)
         XCTAssertEqual(plan.successMetric, "هدف الجلسة: لا تكرر نفس سبب الخطأ مرتين.".localized)
+    }
+
+    func testTrainingSessionPlanTargetsWeakestGameMode() {
+        let attempts = [
+            attempt(daysAgo: 5, correct: true, impact: 4, bestImpact: 4, gameMode: .sun),
+            attempt(daysAgo: 4, correct: true, impact: 3, bestImpact: 3, gameMode: .sun),
+            attempt(daysAgo: 3, correct: false, impact: -4, bestImpact: 3, gameMode: .hokum),
+            attempt(daysAgo: 2, correct: true, impact: 2, bestImpact: 2, gameMode: .hokum),
+            attempt(daysAgo: 1, correct: false, impact: -1, bestImpact: 1)
+        ]
+
+        let plan = WhatToPlayStatsAnalyzer.trainingSessionPlan(for: attempts)
+        let recommendation = WhatToPlayStatsAnalyzer.nextScenarioRecommendation(for: attempts)
+
+        XCTAssertEqual(plan.gameMode, .hokum)
+        XCTAssertEqual(recommendation.gameMode, .hokum)
     }
 
     func testTrainingSessionPlanRaisesLevelForExpertAlignedStyle() {
@@ -2793,6 +2837,23 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.gradeImpactComponent, 70)
         XCTAssertEqual(progress.gradeTitle, "جلسة تحتاج تثبيت".localized)
         XCTAssertEqual(progress.gradeReasonTitle, "التقييم متوازن".localized)
+    }
+
+    func testTrainingSessionProgressFiltersByTargetGameMode() {
+        let plan = sessionPlan(difficulty: .medium, gameMode: .hokum, count: 4, target: 75)
+        let attempts = [
+            attempt(daysAgo: 4, difficulty: .medium, correct: true, impact: 5, bestImpact: 5, gameMode: .sun),
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 4, bestImpact: 4, gameMode: .hokum),
+            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: -3, bestImpact: 3, gameMode: .sun),
+            attempt(daysAgo: 1, difficulty: .medium, correct: false, impact: -2, bestImpact: 5, gameMode: .hokum)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.completedAttempts, 2)
+        XCTAssertEqual(progress.correctAttempts, 1)
+        XCTAssertEqual(progress.totalExpectedImpact, 2)
+        XCTAssertEqual(progress.reviewItem?.gameMode, .hokum)
     }
 
     func testTrainingSessionProgressCountsUniqueScenarioSeedsOnly() {
@@ -3156,7 +3217,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
     }
 
     func testTrainingSessionReviewStartsWithDeterministicPlanSeed() {
-        let plan = sessionPlan(difficulty: .easy, focusKind: .openingLead, count: 3, target: 67)
+        let plan = sessionPlan(difficulty: .easy, focusKind: .openingLead, gameMode: .sun, count: 3, target: 67)
 
         let review = WhatToPlayStatsAnalyzer.trainingSessionReview(for: [], plan: plan)
 
@@ -3165,15 +3226,16 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(review.nextSeed, WhatToPlayStatsAnalyzer.nextTrainingSessionSeed(for: [], plan: plan))
         XCTAssertEqual(review.difficulty, .easy)
         XCTAssertEqual(review.focusKind, .openingLead)
+        XCTAssertEqual(review.gameMode, .sun)
         XCTAssertNil(review.replaySeed)
     }
 
     func testTrainingSessionReviewReplaysWorstMistakeBeforeRepeating() {
-        let plan = sessionPlan(difficulty: .medium, focusKind: .followSuit, count: 3, target: 67)
+        let plan = sessionPlan(difficulty: .medium, focusKind: .followSuit, gameMode: .hokum, count: 3, target: 67)
         let attempts = [
-            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 2, bestImpact: 2, focusKind: .followSuit, seed: 101),
-            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: -4, bestImpact: 5, focusKind: .followSuit, seed: 202),
-            attempt(daysAgo: 1, difficulty: .medium, correct: false, impact: 1, bestImpact: 4, focusKind: .followSuit, seed: 303)
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 2, bestImpact: 2, focusKind: .followSuit, gameMode: .hokum, seed: 101),
+            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: -4, bestImpact: 5, focusKind: .followSuit, gameMode: .hokum, seed: 202),
+            attempt(daysAgo: 1, difficulty: .medium, correct: false, impact: 1, bestImpact: 4, focusKind: .followSuit, gameMode: .hokum, seed: 303)
         ]
 
         let review = WhatToPlayStatsAnalyzer.trainingSessionReview(for: attempts, plan: plan)
@@ -3184,6 +3246,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(review.nextSeed, 202)
         XCTAssertEqual(review.difficulty, .medium)
         XCTAssertEqual(review.focusKind, .followSuit)
+        XCTAssertEqual(review.gameMode, .hokum)
     }
 
     func testTrainingSessionReviewMovesToNextChallengeAfterAchievement() {
@@ -3263,6 +3326,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
     private func sessionPlan(
         difficulty: WhatToPlayDifficulty,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
+        gameMode: GameMode? = nil,
         count: Int,
         target: Int,
         impactTarget: Int = 0,
@@ -3271,6 +3335,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         WhatToPlayTrainingSessionPlan(
             difficulty: difficulty,
             focusKind: focusKind,
+            gameMode: gameMode,
             scenarioCount: count,
             targetAccuracyPercent: target,
             targetAverageExpectedImpact: impactTarget,
