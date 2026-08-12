@@ -157,7 +157,7 @@ struct BalootGamePlayView: View {
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
                 if viewModel.tableMode == .versusAI {
-                    Text("\(viewModel.selectedAIProfile.displayName.localized) · \(viewModel.selectedAIProfile.personalityTitle.localized)")
+                    Text(viewModel.selectedAIProfileTitle)
                         .font(AppTypography.caption)
                         .foregroundStyle(AppColor.textSecondary)
                         .lineLimit(1)
@@ -180,6 +180,10 @@ struct BalootGamePlayView: View {
 
     private var fullBiddingPanel: some View {
         VStack(spacing: AppSpacing.md) {
+            if viewModel.tableMode == .versusAI {
+                aiProfileSummaryCard
+            }
+
             if let upCard = viewModel.upCard {
                 VStack(spacing: AppSpacing.xxs) {
                     Text("الورقة المكشوفة")
@@ -211,6 +215,47 @@ struct BalootGamePlayView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private var aiProfileSummaryCard: some View {
+        HStack(alignment: .top, spacing: AppSpacing.sm) {
+            Image(systemName: viewModel.selectedAIProfile.avatarSystemName)
+                .font(.title3)
+                .foregroundStyle(AppColor.primary)
+                .frame(width: 32, height: 32)
+                .background(AppColor.primary.opacity(0.12), in: Circle())
+
+            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                Text(viewModel.selectedAIProfileTitle)
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+                Text(viewModel.selectedAIProfileDetail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.75)
+                HStack(spacing: AppSpacing.xs) {
+                    profilePill(viewModel.selectedAIProfileRiskText)
+                    profilePill(viewModel.selectedAIProfileModePreferenceText)
+                    profilePill(viewModel.selectedAIProfileMultiplierText)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
+    }
+
+    private func profilePill(_ text: String) -> some View {
+        Text(text)
+            .font(.caption2)
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
+            .padding(.horizontal, AppSpacing.xs)
+            .padding(.vertical, 3)
+            .background(AppColor.surfaceElevated, in: Capsule())
+            .foregroundStyle(AppColor.textSecondary)
     }
 
     private var biddingStageTitle: String {

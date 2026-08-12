@@ -130,6 +130,33 @@ final class BalootGameViewModel {
             ?? AIProfile(id: "ai.default", level: level, personality: .balanced, avatarSystemName: "person.fill")
     }
 
+    var selectedAIProfileTitle: String {
+        "\(selectedAIProfile.displayName.localized) · \(selectedAIProfile.personalityTitle.localized)"
+    }
+
+    var selectedAIProfileDetail: String {
+        "\(selectedAIProfile.levelTitle.localized) · \(selectedAIProfile.styleSummary.localized)"
+    }
+
+    var selectedAIProfileRiskText: String {
+        "\("المخاطرة".localized): \(selectedAIProfile.riskScore)%"
+    }
+
+    var selectedAIProfileMultiplierText: String {
+        "\("المضاعفة".localized): \(selectedAIProfile.multiplierAggression)%"
+    }
+
+    var selectedAIProfileModePreferenceText: String {
+        switch selectedAIProfile.preferredMode {
+        case .sun?:
+            "\("الميل".localized): \("صن".localized)"
+        case .hokum?:
+            "\("الميل".localized): \("حكم".localized)"
+        case nil:
+            "\("الميل".localized): \("متوازن".localized)"
+        }
+    }
+
     /// يغيّر مستوى الخصوم ويبدأ مباراة جديدة به.
     func setAILevel(_ level: AIProfile.Level) {
         guard aiLevel != level else { return }

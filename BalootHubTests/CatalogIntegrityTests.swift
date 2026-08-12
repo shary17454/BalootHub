@@ -165,6 +165,20 @@ final class CatalogIntegrityTests: XCTestCase {
         XCTAssertEqual(viewModel.state.phase, .bidding)
     }
 
+    @MainActor
+    func testGameplayAIProfileSummaryUsesSelectedProfileMetadata() throws {
+        let viewModel = BalootGameViewModel(rules: .standard)
+        let hokum = try XCTUnwrap(AIProfile.profile(id: "ai.hokum"))
+
+        viewModel.setAIProfile(hokum)
+
+        XCTAssertTrue(viewModel.selectedAIProfileTitle.contains(hokum.displayName.localized))
+        XCTAssertTrue(viewModel.selectedAIProfileDetail.contains(hokum.levelTitle.localized))
+        XCTAssertTrue(viewModel.selectedAIProfileRiskText.contains("\(hokum.riskScore)"))
+        XCTAssertTrue(viewModel.selectedAIProfileMultiplierText.contains("\(hokum.multiplierAggression)"))
+        XCTAssertEqual(viewModel.selectedAIProfileModePreferenceText, "\("الميل".localized): \("حكم".localized)")
+    }
+
     /// الرتب والأيقونات يجب أن تكون فريدة/مرتبة حتى لا تتكرر البطاقات أو تختل الترتيب.
     func testSlugsAreUniqueAndSortOrdersAreDistinct() throws {
         let items = try allItems()
