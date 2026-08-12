@@ -30,6 +30,7 @@ struct PlayerStatsView: View {
                     styleCard
                     modeBreakdown
                     trainingBreakdown
+                    trainingStyleBreakdown
                 }
             }
             .padding(AppSpacing.md)
@@ -105,6 +106,68 @@ struct PlayerStatsView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private var trainingStyleBreakdown: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            Label("بصمة قراراتك".localized, systemImage: "person.crop.rectangle.badge.magnifyingglass")
+                .font(AppTypography.headline)
+                .foregroundStyle(AppColor.primary)
+
+            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                Text(summary.trainingStyleTitle)
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(summary.trainingStyleDetail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            insightRow("نقطة قوة".localized, summary.trainingStrength, "checkmark.circle.fill")
+            insightRow("نقطة ضعف".localized, summary.trainingWeakness, "exclamationmark.circle.fill")
+            insightRow("نصيحة التدريب".localized, summary.trainingAdvice, "lightbulb.fill")
+
+            Divider()
+
+            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                Text(summary.decisionPatternTitle)
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(summary.decisionPatternDetail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                if summary.decisionPatternInspectedAttempts > 0 {
+                    Text("\("تأثرت".localized) \(summary.decisionPatternAffectedAttempts) \("من".localized) \(summary.decisionPatternInspectedAttempts) \("محاولات حديثة".localized)")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(AppColor.accent)
+                }
+            }
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func insightRow(_ title: String, _ detail: String, _ icon: String) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(AppTypography.caption.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(detail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        } icon: {
+            Image(systemName: icon)
+                .foregroundStyle(AppColor.accent)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.sm)
+        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
     }
 
     private func metric(_ title: String, _ value: String, _ icon: String) -> some View {

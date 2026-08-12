@@ -21,6 +21,15 @@ struct PlayerStatsSummary: Equatable {
     let costlyTrainingDecisions: Int
     let averageTrainingLostPoints: Int
     let trainingValueCapturePercent: Int
+    let trainingStyleTitle: String
+    let trainingStyleDetail: String
+    let trainingStrength: String
+    let trainingWeakness: String
+    let trainingAdvice: String
+    let decisionPatternTitle: String
+    let decisionPatternDetail: String
+    let decisionPatternAffectedAttempts: Int
+    let decisionPatternInspectedAttempts: Int
     let styleTitle: String
     let advice: String
 }
@@ -36,6 +45,8 @@ enum PlayerStatsAnalyzer {
             .sorted { $0.createdAt < $1.createdAt }
         let trainingSummary = WhatToPlayStatsAnalyzer.summarize(attempts: whatToPlayAttempts)
         let qualitySummary = WhatToPlayStatsAnalyzer.decisionQualitySummary(for: whatToPlayAttempts)
+        let trainingStyle = WhatToPlayStatsAnalyzer.playStyle(for: whatToPlayAttempts)
+        let decisionPattern = WhatToPlayStatsAnalyzer.decisionPattern(for: whatToPlayAttempts)
 
         var wins = 0
         var losses = 0
@@ -120,6 +131,15 @@ enum PlayerStatsAnalyzer {
             costlyTrainingDecisions: qualitySummary.costlyDecisions,
             averageTrainingLostPoints: trainingSummary.averageLostExpectedPoints,
             trainingValueCapturePercent: trainingSummary.valueCapturePercent,
+            trainingStyleTitle: trainingStyle.title,
+            trainingStyleDetail: trainingStyle.detail,
+            trainingStrength: trainingStyle.strength,
+            trainingWeakness: trainingStyle.weakness,
+            trainingAdvice: trainingStyle.advice,
+            decisionPatternTitle: decisionPattern.title,
+            decisionPatternDetail: decisionPattern.detail,
+            decisionPatternAffectedAttempts: decisionPattern.affectedAttempts,
+            decisionPatternInspectedAttempts: decisionPattern.inspectedAttempts,
             styleTitle: style.title,
             advice: style.advice
         )

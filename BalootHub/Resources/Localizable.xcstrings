@@ -34,8 +34,28 @@
     "قبل تكرار الجلسة؛ هذا يربط التدريب بسبب الخسارة لا بعدد المحاولات فقط." : {
 
     },
+    "بصمة قراراتك" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your decision profile"
+          }
+        }
+      }
+    },
     "ترتيب خيارات المزايدة" : {
 
+    },
+    "تأثرت" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Affected"
+          }
+        }
+      }
     },
     "تابع مسارك في" : {
 
@@ -48,6 +68,16 @@
     },
     "الهامش" : {
 
+    },
+    "محاولات حديثة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "recent attempts"
+          }
+        }
+      }
     },
     "موصى به" : {
 
@@ -22162,12 +22192,32 @@
         }
       }
     },
+    "نقطة ضعف" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weakness"
+          }
+        }
+      }
+    },
     "نقطة تحتاج تدريب" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Needs practice"
+          }
+        }
+      }
+    },
+    "نصيحة التدريب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Training tip"
           }
         }
       }

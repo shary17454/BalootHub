@@ -59,6 +59,10 @@ final class PlayerStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.costlyTrainingDecisions, 2)
         XCTAssertEqual(summary.averageTrainingLostPoints, 2)
         XCTAssertEqual(summary.trainingValueCapturePercent, 77)
+        XCTAssertEqual(summary.trainingStyleTitle, "قريب من الخبير")
+        XCTAssertEqual(summary.decisionPatternTitle, "تبتعد عن أفضل خيارين")
+        XCTAssertEqual(summary.decisionPatternAffectedAttempts, 2)
+        XCTAssertEqual(summary.decisionPatternInspectedAttempts, 8)
     }
 
     func testTrainingPerformanceCanShapePlayerStyleWithoutFinishedMatches() {
@@ -74,6 +78,25 @@ final class PlayerStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(summary.finishedMatches, 0)
         XCTAssertEqual(summary.styleTitle, "قارئ طاولة")
+        XCTAssertEqual(summary.trainingStyleTitle, "قريب من الخبير")
+        XCTAssertEqual(summary.decisionPatternTitle, "قراراتك الأخيرة نظيفة")
+    }
+
+    func testPlayerStatsReportsFoundationalTrainingStyleForWeakTrainingRecord() {
+        let attempts = (0..<5).map { index in
+            makeTrainingAttempt(seed: UInt64(index), isCorrect: false)
+        }
+
+        let summary = PlayerStatsAnalyzer.summarize(
+            sessions: [],
+            whatToPlayAttempts: attempts,
+            rules: .standard
+        )
+
+        XCTAssertEqual(summary.trainingStyleTitle, "تحتاج تأسيس")
+        XCTAssertEqual(summary.decisionPatternTitle, "تبتعد عن أفضل خيارين")
+        XCTAssertEqual(summary.decisionPatternAffectedAttempts, 5)
+        XCTAssertEqual(summary.decisionPatternInspectedAttempts, 5)
     }
 
     private func makeTrainingAttempt(seed: UInt64, isCorrect: Bool) -> WhatToPlayAttempt {
