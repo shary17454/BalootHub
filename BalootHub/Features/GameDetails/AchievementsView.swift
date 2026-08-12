@@ -3,6 +3,7 @@ import SwiftData
 
 struct AchievementsView: View {
     @AppStorage("unlockedBalootAchievementIDs") private var unlockedAchievementIDs = ""
+    @AppStorage("completedBalootChallengeIDs") private var completedChallengeIDs = ""
     @AppStorage("balootAcademyCompletedLessons") private var completedAcademyLessonIDs = ""
     @Query(sort: \WhatToPlayAttempt.createdAt, order: .reverse) private var whatToPlayAttempts: [WhatToPlayAttempt]
     @Query(sort: \ScoringQuizAttempt.createdAt, order: .reverse) private var scoringQuizAttempts: [ScoringQuizAttempt]
@@ -17,6 +18,7 @@ struct AchievementsView: View {
                 scoringQuizAttempts: scoringQuizAttempts,
                 scoreSessions: scoreSessions,
                 offlineTournaments: offlineTournaments,
+                completedChallengeIDs: completedChallengeSet,
                 academyProgress: academyProgress,
                 legacyCompletedAcademyLessonIDs: completedAcademySet
             ))
@@ -24,6 +26,10 @@ struct AchievementsView: View {
 
     private var completedAcademySet: Set<String> {
         Set(completedAcademyLessonIDs.split(separator: ",").map(String.init))
+    }
+
+    private var completedChallengeSet: Set<String> {
+        Set(completedChallengeIDs.split(separator: ",").map(String.init))
     }
 
     var body: some View {
@@ -118,6 +124,7 @@ struct AchievementsView: View {
 
 struct CareerModeView: View {
     @AppStorage("unlockedBalootAchievementIDs") private var unlockedAchievementIDs = ""
+    @AppStorage("completedBalootChallengeIDs") private var completedChallengeIDs = ""
     @AppStorage("balootAcademyCompletedLessons") private var completedAcademyLessonIDs = ""
     @Query(sort: \ScoreSession.createdAt, order: .reverse) private var scoreSessions: [ScoreSession]
     @Query(sort: \WhatToPlayAttempt.createdAt, order: .reverse) private var whatToPlayAttempts: [WhatToPlayAttempt]
@@ -132,6 +139,7 @@ struct CareerModeView: View {
             scoringQuizAttempts: scoringQuizAttempts,
             academyProgress: academyProgress,
             offlineTournaments: offlineTournaments,
+            completedChallengeIDs: completedChallengeSet,
             unlockedAchievementIDs: unlockedSet,
             legacyCompletedAcademyLessonIDs: completedAcademySet
         )
@@ -143,6 +151,10 @@ struct CareerModeView: View {
 
     private var completedAcademySet: Set<String> {
         Set(completedAcademyLessonIDs.split(separator: ",").map(String.init))
+    }
+
+    private var completedChallengeSet: Set<String> {
+        Set(completedChallengeIDs.split(separator: ",").map(String.init))
     }
 
     var body: some View {
@@ -197,6 +209,7 @@ struct CareerModeView: View {
             careerMetric("دروس مكتملة".localized, "\(summary.completedAcademyLessons)", "graduationcap.fill")
             careerMetric("بطولات مكتملة".localized, "\(summary.completedTournaments)", "trophy.fill")
             careerMetric("ألقاب بطولة".localized, "\(summary.tournamentTitles)", "crown.fill")
+            careerMetric("تحديات مكتملة".localized, "\(summary.completedChallenges)", "calendar.badge.checkmark")
             careerMetric("إنجازات".localized, "\(summary.unlockedAchievementCount)", "trophy.fill")
         }
     }

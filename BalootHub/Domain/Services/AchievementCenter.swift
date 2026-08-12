@@ -94,6 +94,14 @@ enum AchievementCenter {
             rarity: .legendary
         ),
         LocalAchievement(
+            id: "challenge-regular",
+            title: "ملتزم التحديات".localized,
+            detail: "أكمل عدة تحديات يومية أو أسبوعية محلية.".localized,
+            requirement: "يفتح عند إكمال 5 تحديات بلوت Offline.".localized,
+            iconName: "calendar.badge.checkmark",
+            rarity: .silver
+        ),
+        LocalAchievement(
             id: "ten-win-streak",
             title: "10 انتصارات متتالية",
             detail: "حافظ على سلسلة انتصارات طويلة.",
@@ -137,6 +145,7 @@ enum AchievementCenter {
         scoringQuizAttempts: [ScoringQuizAttempt],
         scoreSessions: [ScoreSession] = [],
         offlineTournaments: [OfflineTournament] = [],
+        completedChallengeIDs: Set<String> = [],
         rules: ScoreRules = .standard,
         academyProgress: [AcademyLessonProgress] = [],
         legacyCompletedAcademyLessonIDs: Set<String> = []
@@ -154,6 +163,9 @@ enum AchievementCenter {
         }
         earned.formUnion(earnedScoreSessionAchievementIDs(scoreSessions: scoreSessions, rules: rules))
         earned.formUnion(earnedOfflineTournamentAchievementIDs(tournaments: offlineTournaments))
+        if completedChallengeIDs.count >= 5 {
+            earned.insert("challenge-regular")
+        }
         return earned
     }
 
@@ -267,6 +279,7 @@ struct CareerProgressSummary: Equatable {
     let completedAcademyLessons: Int
     let completedTournaments: Int
     let tournamentTitles: Int
+    let completedChallenges: Int
     let unlockedAchievementCount: Int
     let unlocks: [CareerUnlock]
     let nextStepTitle: String
@@ -280,6 +293,7 @@ enum CareerProgressAnalyzer {
         scoringQuizAttempts: [ScoringQuizAttempt] = [],
         academyProgress: [AcademyLessonProgress] = [],
         offlineTournaments: [OfflineTournament] = [],
+        completedChallengeIDs: Set<String> = [],
         unlockedAchievementIDs: Set<String> = [],
         legacyCompletedAcademyLessonIDs: Set<String> = [],
         rules: ScoreRules = .standard
@@ -296,6 +310,7 @@ enum CareerProgressAnalyzer {
             scoringQuizAttempts: scoringQuizAttempts,
             scoreSessions: scoreSessions,
             offlineTournaments: offlineTournaments,
+            completedChallengeIDs: completedChallengeIDs,
             rules: rules,
             academyProgress: academyProgress,
             legacyCompletedAcademyLessonIDs: legacyCompletedAcademyLessonIDs
@@ -306,6 +321,7 @@ enum CareerProgressAnalyzer {
             + correctScoringAnswers * 10
             + completedAcademyLessonIDs.count * 35
             + tournamentStats.finishedTournaments * 120
+            + completedChallengeIDs.count * 30
             + allUnlockedAchievementIDs.count * 70
         let rank = CareerRank.allCases.last { xp >= $0.requiredXP } ?? .newcomer
         let nextRank = CareerRank.allCases.first { $0.requiredXP > xp }
@@ -317,6 +333,7 @@ enum CareerProgressAnalyzer {
             completedAcademyLessons: completedAcademyLessonIDs.count,
             completedTournaments: tournamentStats.finishedTournaments,
             tournamentTitles: tournamentStats.championshipTeams.values.reduce(0, +),
+            completedChallenges: completedChallengeIDs.count,
             unlockedAchievementCount: allUnlockedAchievementIDs.count
         )
         let nextStep = nextStep(
@@ -339,6 +356,7 @@ enum CareerProgressAnalyzer {
             completedAcademyLessons: completedAcademyLessonIDs.count,
             completedTournaments: tournamentStats.finishedTournaments,
             tournamentTitles: tournamentStats.championshipTeams.values.reduce(0, +),
+            completedChallenges: completedChallengeIDs.count,
             unlockedAchievementCount: allUnlockedAchievementIDs.count,
             unlocks: unlocks,
             nextStepTitle: nextStep.title,
@@ -360,6 +378,7 @@ enum CareerProgressAnalyzer {
         completedAcademyLessons: Int,
         completedTournaments: Int,
         tournamentTitles: Int,
+        completedChallenges: Int,
         unlockedAchievementCount: Int
     ) -> [CareerUnlock] {
         [
@@ -398,6 +417,12 @@ enum CareerProgressAnalyzer {
                 title: "لقب بطل المجلس".localized,
                 detail: "يفتح بعد اعتماد بطل في بطولة Offline.".localized,
                 isUnlocked: tournamentTitles >= 1
+            ),
+            CareerUnlock(
+                id: "challenge-board",
+                title: "لوحة التحديات".localized,
+                detail: "تفتح بعد 5 تحديات مكتملة.".localized,
+                isUnlocked: completedChallenges >= 5
             ),
             CareerUnlock(
                 id: "titles-room",

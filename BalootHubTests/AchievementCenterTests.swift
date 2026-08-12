@@ -262,6 +262,18 @@ final class AchievementCenterTests: XCTestCase {
         XCTAssertTrue(earned.contains("offline-dynasty"))
     }
 
+    func testChallengeRegularUnlocksAfterFiveCompletedChallenges() {
+        let completedChallengeIDs = Set((0..<5).map { "challenge-\($0)" })
+
+        let earned = AchievementCenter.earnedAchievementIDs(
+            whatToPlayAttempts: [],
+            scoringQuizAttempts: [],
+            completedChallengeIDs: completedChallengeIDs
+        )
+
+        XCTAssertTrue(earned.contains("challenge-regular"))
+    }
+
     func testCareerProgressStartsAsNewcomerWithFirstMatchNextStep() {
         let summary = CareerProgressAnalyzer.summarize()
 
@@ -324,6 +336,16 @@ final class AchievementCenterTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(summary.xp, 120)
         XCTAssertTrue(summary.unlocks.first { $0.id == "offline-cup-path" }?.isUnlocked == true)
         XCTAssertTrue(summary.unlocks.first { $0.id == "champion-title" }?.isUnlocked == true)
+    }
+
+    func testCareerProgressIncludesCompletedChallenges() {
+        let completedChallengeIDs = Set((0..<5).map { "challenge-\($0)" })
+
+        let summary = CareerProgressAnalyzer.summarize(completedChallengeIDs: completedChallengeIDs)
+
+        XCTAssertEqual(summary.completedChallenges, 5)
+        XCTAssertGreaterThanOrEqual(summary.xp, 150)
+        XCTAssertTrue(summary.unlocks.first { $0.id == "challenge-board" }?.isUnlocked == true)
     }
 
     private func makeWhatToPlayAttempt(seed: UInt64, isCorrect: Bool) -> WhatToPlayAttempt {
