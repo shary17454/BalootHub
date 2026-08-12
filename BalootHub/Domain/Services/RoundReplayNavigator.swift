@@ -70,6 +70,13 @@ enum RoundReplayShareSummary {
             }
         }
 
+        if !finalState.completedTricks.isEmpty {
+            lines.append("الأكلات".localized)
+            for (index, trick) in finalState.completedTricks.enumerated() {
+                lines.append(trickSummaryLine(index: index, trick: trick, state: finalState))
+            }
+        }
+
         if let result = finalState.lastRoundResult {
             lines.append("النتيجة".localized)
             for team in finalState.teams.sorted(by: { $0.name < $1.name }) {
@@ -94,6 +101,28 @@ enum RoundReplayShareSummary {
         }
 
         return lines.joined(separator: "\n")
+    }
+
+    private static func trickSummaryLine(index: Int, trick: Trick, state: GameState) -> String {
+        let winnerID = trick.winnerPlayerID
+        let winnerName = winnerID.map { playerName($0, in: state) } ?? "غير محدد".localized
+        let cards = trick.playedCards
+            .map { "\($0.card.accessibilityName) (\(playerName($0.playerID, in: state)))" }
+            .joined(separator: "، ")
+        let points = trickPoints(index: index, trick: trick, state: state)
+        return "- \("الأكلة".localized) \(index + 1): \("الفائز بالأكلة".localized) \(winnerName) · \("نقاط الأكلة".localized) \(points) · \(cards)"
+    }
+
+    private static func trickPoints(index: Int, trick: Trick, state: GameState) -> Int {
+        guard let mode = state.mode else { return 0 }
+        let cardPoints = trick.playedCards.reduce(0) {
+            $0 + $1.card.points(mode: mode, trumpSuit: state.trumpSuit)
+        }
+        let lastTrickBonus = index == state.completedTricks.count - 1
+            && state.completedTricks.count == ScoreCalculator.tricksPerRound
+            ? state.rules.lastTrickBonus
+            : 0
+        return cardPoints + lastTrickBonus
     }
 
     private static func actionTitle(_ action: GameAction, in state: GameState) -> String {
