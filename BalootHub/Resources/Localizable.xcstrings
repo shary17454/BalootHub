@@ -15770,6 +15770,20 @@
         }
       }
     },
+    "لا يمكنك لعب" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Du kannst nicht spielen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You can't play" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "No puedes jugar" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu ne peux pas jouer" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आप नहीं खेल सकते" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kamu tidak bisa memainkan" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Нельзя сыграть" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Oynayamazsın" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ نہیں کھیل سکتے" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你不能出" } }
+      }
+    },
     "لا يمكنك لعب هذه الورقة لأن لديك ورقة من اللون المطلوب ويجب عليك التلزيم." : {
       "extractionState" : "stale",
       "localizations" : {

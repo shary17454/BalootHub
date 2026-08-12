@@ -2408,7 +2408,8 @@ struct WhatToPlayTrainerView: View {
                     ForEach(scenario.blockedCards) { blocked in
                         Button {
                             illegalMoveExplanation = RuleExplanationFormatter.illegalMoveExplanation(
-                                for: blocked.reason,
+                                for: blocked.card,
+                                reason: blocked.reason,
                                 trumpSuit: scenario.state.trumpSuit
                             )
                         } label: {
@@ -2424,7 +2425,8 @@ struct WhatToPlayTrainerView: View {
                         .accessibilityLabel("\(blocked.card.accessibilityName)، \("ورقة غير قانونية".localized)")
                         .accessibilityHint(
                             RuleExplanationFormatter.illegalMoveExplanation(
-                                for: blocked.reason,
+                                for: blocked.card,
+                                reason: blocked.reason,
                                 trumpSuit: scenario.state.trumpSuit
                             )
                         )

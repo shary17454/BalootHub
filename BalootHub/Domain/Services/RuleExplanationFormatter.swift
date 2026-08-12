@@ -2,6 +2,10 @@ import Foundation
 import BalootEngine
 
 enum RuleExplanationFormatter {
+    static func illegalMoveExplanation(for card: PlayingCard, reason: IllegalMoveReason, trumpSuit: Suit?) -> String {
+        "\("لا يمكنك لعب".localized) \(card.accessibilityName): \(illegalMoveExplanation(for: reason, trumpSuit: trumpSuit))"
+    }
+
     static func illegalMoveExplanation(for reason: IllegalMoveReason, trumpSuit: Suit?) -> String {
         switch reason {
         case .mustFollowSuit:

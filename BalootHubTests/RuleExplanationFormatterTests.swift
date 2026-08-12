@@ -3,6 +3,24 @@ import BalootEngine
 @testable import BalootHub
 
 final class RuleExplanationFormatterTests: XCTestCase {
+    func testCardSpecificExplanationIncludesCardNameAndReason() {
+        let card = PlayingCard(suit: .spades, rank: .ace)
+
+        let explanation = RuleExplanationFormatter.illegalMoveExplanation(
+            for: card,
+            reason: .mustFollowSuit,
+            trumpSuit: .hearts
+        )
+
+        XCTAssertTrue(explanation.contains(card.accessibilityName))
+        XCTAssertTrue(explanation.contains("لا يمكنك لعب".localized))
+        XCTAssertTrue(
+            explanation.contains(
+                "لا يمكنك لعب هذه الورقة لأن لديك ورقة من اللون المطلوب ويجب عليك التلزيم.".localized
+            )
+        )
+    }
+
     func testFollowSuitExplanationMatchesRuleLanguage() {
         let explanation = RuleExplanationFormatter.illegalMoveExplanation(
             for: .mustFollowSuit,
