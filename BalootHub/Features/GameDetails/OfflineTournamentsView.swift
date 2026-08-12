@@ -98,7 +98,7 @@ private struct OfflineTournamentDetailView: View {
                             .foregroundStyle(AppColor.textSecondary)
                         Text(standing.team)
                         Spacer()
-                        Text("\(standing.wins) فوز")
+                        Text("\(standing.wins) فوز · \(standing.played) لعب")
                             .foregroundStyle(AppColor.primary)
                     }
                 }
@@ -106,12 +106,62 @@ private struct OfflineTournamentDetailView: View {
 
             Section("الجدول") {
                 ForEach(tournament.matches) { match in
-                    VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                    VStack(alignment: .leading, spacing: AppSpacing.sm) {
                         Text("الجولة \(match.roundNumber)")
                             .font(AppTypography.caption)
                             .foregroundStyle(AppColor.textSecondary)
-                        Text("\(match.homeTeam) × \(match.awayTeam)")
-                            .font(AppTypography.subheadline.weight(.semibold))
+                        HStack {
+                            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                                Text(match.homeTeam)
+                                    .font(AppTypography.subheadline.weight(.semibold))
+                                Text("\(match.homeWins) / \(tournament.format.requiredMatchWins)")
+                                    .font(AppTypography.caption)
+                                    .foregroundStyle(AppColor.textSecondary)
+                            }
+                            Spacer()
+                            Text("×")
+                                .foregroundStyle(AppColor.textSecondary)
+                            Spacer()
+                            VStack(alignment: .trailing, spacing: AppSpacing.xxs) {
+                                Text(match.awayTeam)
+                                    .font(AppTypography.subheadline.weight(.semibold))
+                                Text("\(match.awayWins) / \(tournament.format.requiredMatchWins)")
+                                    .font(AppTypography.caption)
+                                    .foregroundStyle(AppColor.textSecondary)
+                            }
+                        }
+
+                        if let winner = match.winner(format: tournament.format) {
+                            Label("\("الفائز".localized): \(winner)", systemImage: "checkmark.seal.fill")
+                                .font(AppTypography.caption.weight(.semibold))
+                                .foregroundStyle(AppColor.success)
+                        } else if tournament.status == .active {
+                            HStack {
+                                Button {
+                                    record(match: match, side: .home)
+                                } label: {
+                                    Label("فوز \(match.homeTeam)", systemImage: "plus.circle.fill")
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .buttonStyle(.bordered)
+
+                                Button {
+                                    record(match: match, side: .away)
+                                } label: {
+                                    Label("فوز \(match.awayTeam)", systemImage: "plus.circle.fill")
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .buttonStyle(.bordered)
+                            }
+                        }
+
+                        if tournament.status == .active, match.homeWins > 0 || match.awayWins > 0 {
+                            Button(role: .destructive) {
+                                reset(match: match)
+                            } label: {
+                                Label("إعادة ضبط المباراة".localized, systemImage: "arrow.counterclockwise")
+                            }
+                        }
                     }
                 }
             }
@@ -137,5 +187,15 @@ private struct OfflineTournamentDetailView: View {
         }
         .navigationTitle(tournament.title)
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func record(match: OfflineTournamentMatch, side: OfflineTournamentPlanner.ResultSide) {
+        OfflineTournamentPlanner.recordWin(for: match.id, side: side, in: tournament)
+        try? modelContext.save()
+    }
+
+    private func reset(match: OfflineTournamentMatch) {
+        OfflineTournamentPlanner.resetMatch(matchID: match.id, in: tournament)
+        try? modelContext.save()
     }
 }

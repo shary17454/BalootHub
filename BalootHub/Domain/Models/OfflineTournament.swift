@@ -45,6 +45,28 @@ struct OfflineTournamentMatch: Codable, Equatable, Identifiable {
         self.homeWins = homeWins
         self.awayWins = awayWins
     }
+
+    func isComplete(format: OfflineTournamentFormat) -> Bool {
+        winner(format: format) != nil
+    }
+
+    func winner(format: OfflineTournamentFormat) -> String? {
+        let targetWins = format.requiredMatchWins
+        if homeWins >= targetWins, homeWins > awayWins { return homeTeam }
+        if awayWins >= targetWins, awayWins > homeWins { return awayTeam }
+        return nil
+    }
+}
+
+extension OfflineTournamentFormat {
+    var requiredMatchWins: Int {
+        switch self {
+        case .knockout, .league:
+            1
+        case .bestOfThreeCup:
+            2
+        }
+    }
 }
 
 @Model

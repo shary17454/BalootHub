@@ -1,6 +1,11 @@
 import Foundation
 
 enum OfflineTournamentPlanner {
+    enum ResultSide {
+        case home
+        case away
+    }
+
     static func makeTournament(
         title: String,
         format: OfflineTournamentFormat,
@@ -30,15 +35,99 @@ enum OfflineTournamentPlanner {
     }
 
     static func standings(for tournament: OfflineTournament) -> [(team: String, wins: Int, played: Int)] {
-        tournament.teams
+        standingsSnapshot(teams: tournament.teams, matches: tournament.matches)
+    }
+
+    static func recordWin(
+        for matchID: UUID,
+        side: ResultSide,
+        in tournament: OfflineTournament
+    ) {
+        guard tournament.status == .active else { return }
+        var matches = tournament.matches
+        guard let index = matches.firstIndex(where: { $0.id == matchID }) else { return }
+
+        switch side {
+        case .home:
+            matches[index].homeWins += 1
+        case .away:
+            matches[index].awayWins += 1
+        }
+
+        advanceTournamentIfNeeded(matches: &matches, tournament: tournament)
+        tournament.matches = matches
+    }
+
+    static func resetMatch(
+        matchID: UUID,
+        in tournament: OfflineTournament
+    ) {
+        guard tournament.status == .active else { return }
+        var matches = tournament.matches
+        guard let index = matches.firstIndex(where: { $0.id == matchID }) else { return }
+        let match = matches[index]
+        matches[index] = OfflineTournamentMatch(
+            id: match.id,
+            roundNumber: match.roundNumber,
+            homeTeam: match.homeTeam,
+            awayTeam: match.awayTeam
+        )
+        let resetRound = match.roundNumber
+        matches.removeAll { $0.roundNumber > resetRound }
+        tournament.championName = nil
+        tournament.matches = matches
+    }
+
+    private static func advanceTournamentIfNeeded(
+        matches: inout [OfflineTournamentMatch],
+        tournament: OfflineTournament
+    ) {
+        switch tournament.format {
+        case .league:
+            let allComplete = !matches.isEmpty && matches.allSatisfy { $0.isComplete(format: tournament.format) }
+            if allComplete, let leader = standingsSnapshot(teams: tournament.teams, matches: matches).first {
+                tournament.finish(champion: leader.team)
+            }
+
+        case .knockout, .bestOfThreeCup:
+            guard let currentRound = matches.map(\.roundNumber).max() else { return }
+            let currentRoundMatches = matches.filter { $0.roundNumber == currentRound }
+            guard !currentRoundMatches.isEmpty,
+                  currentRoundMatches.allSatisfy({ $0.isComplete(format: tournament.format) })
+            else { return }
+
+            let winners = currentRoundMatches.compactMap { $0.winner(format: tournament.format) }
+            guard winners.count == currentRoundMatches.count else { return }
+
+            if winners.count == 1 {
+                tournament.finish(champion: winners[0])
+                return
+            }
+
+            let nextRound = currentRound + 1
+            guard !matches.contains(where: { $0.roundNumber == nextRound }) else { return }
+            matches.append(contentsOf: pairedMatches(
+                teams: winners,
+                roundNumber: nextRound,
+                existingMatchCount: matches.count
+            ))
+        }
+    }
+
+    private static func standingsSnapshot(
+        teams: [String],
+        matches: [OfflineTournamentMatch]
+    ) -> [(team: String, wins: Int, played: Int)] {
+        teams
             .map { team in
-                let matches = tournament.matches.filter { $0.homeTeam == team || $0.awayTeam == team }
-                let wins = matches.reduce(0) { total, match in
+                let teamMatches = matches.filter { $0.homeTeam == team || $0.awayTeam == team }
+                let wins = teamMatches.reduce(0) { total, match in
                     if match.homeTeam == team { return total + match.homeWins }
                     if match.awayTeam == team { return total + match.awayWins }
                     return total
                 }
-                return (team: team, wins: wins, played: matches.count)
+                let played = teamMatches.filter { $0.homeWins > 0 || $0.awayWins > 0 }.count
+                return (team: team, wins: wins, played: played)
             }
             .sorted { lhs, rhs in
                 if lhs.wins == rhs.wins { return lhs.team < rhs.team }
@@ -47,10 +136,7 @@ enum OfflineTournamentPlanner {
     }
 
     private static func knockoutSchedule(teams: [String], seed: UInt64) -> [OfflineTournamentMatch] {
-        stride(from: 0, to: teams.count, by: 2).compactMap { index in
-            guard index + 1 < teams.count else { return nil }
-            return makeMatch(seed: seed, index: index / 2, roundNumber: 1, homeTeam: teams[index], awayTeam: teams[index + 1])
-        }
+        pairedMatches(teams: teams, roundNumber: 1, existingMatchCount: 0, seed: seed)
     }
 
     private static func leagueSchedule(teams: [String], seed: UInt64) -> [OfflineTournamentMatch] {
@@ -72,6 +158,24 @@ enum OfflineTournamentPlanner {
             homeTeam: homeTeam,
             awayTeam: awayTeam
         )
+    }
+
+    private static func pairedMatches(
+        teams: [String],
+        roundNumber: Int,
+        existingMatchCount: Int,
+        seed: UInt64 = 0xB410_07A5_0000_0001
+    ) -> [OfflineTournamentMatch] {
+        stride(from: 0, to: teams.count, by: 2).compactMap { index in
+            guard index + 1 < teams.count else { return nil }
+            return makeMatch(
+                seed: seed &+ UInt64(roundNumber) &* 10_000,
+                index: existingMatchCount + index / 2,
+                roundNumber: roundNumber,
+                homeTeam: teams[index],
+                awayTeam: teams[index + 1]
+            )
+        }
     }
 
     private static func stableUUID(seed: UInt64, index: Int) -> UUID {

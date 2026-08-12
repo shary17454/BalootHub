@@ -19,6 +19,68 @@ final class OfflineTournamentTests: XCTestCase {
         XCTAssertTrue(matches.contains { $0.homeTeam == "A" && $0.awayTeam == "D" })
     }
 
+    func testRecordWinUpdatesMatchAndStandings() throws {
+        let tournament = OfflineTournamentPlanner.makeTournament(title: "دوري", format: .league, teamCount: 4, seed: 10)
+        let firstMatch = try XCTUnwrap(tournament.matches.first)
+
+        OfflineTournamentPlanner.recordWin(for: firstMatch.id, side: .home, in: tournament)
+
+        let updated = try XCTUnwrap(tournament.matches.first { $0.id == firstMatch.id })
+        XCTAssertEqual(updated.homeWins, 1)
+        XCTAssertEqual(updated.awayWins, 0)
+        XCTAssertEqual(updated.winner(format: .league), firstMatch.homeTeam)
+        XCTAssertEqual(OfflineTournamentPlanner.standings(for: tournament).first?.team, firstMatch.homeTeam)
+        XCTAssertEqual(OfflineTournamentPlanner.standings(for: tournament).first?.played, 1)
+    }
+
+    func testBestOfThreeRequiresTwoWins() throws {
+        let tournament = OfflineTournamentPlanner.makeTournament(title: "كأس", format: .bestOfThreeCup, teamCount: 4, seed: 10)
+        let firstMatch = try XCTUnwrap(tournament.matches.first)
+
+        OfflineTournamentPlanner.recordWin(for: firstMatch.id, side: .home, in: tournament)
+        XCTAssertNil(tournament.matches.first { $0.id == firstMatch.id }?.winner(format: .bestOfThreeCup))
+
+        OfflineTournamentPlanner.recordWin(for: firstMatch.id, side: .home, in: tournament)
+        XCTAssertEqual(tournament.matches.first { $0.id == firstMatch.id }?.winner(format: .bestOfThreeCup), firstMatch.homeTeam)
+    }
+
+    func testKnockoutAdvancesWinnersToNextRoundAndFinishesChampion() throws {
+        let tournament = OfflineTournamentPlanner.makeTournament(title: "كأس", format: .knockout, teamCount: 4, seed: 10)
+        let firstRound = tournament.matches
+        XCTAssertEqual(firstRound.count, 2)
+
+        OfflineTournamentPlanner.recordWin(for: firstRound[0].id, side: .home, in: tournament)
+        OfflineTournamentPlanner.recordWin(for: firstRound[1].id, side: .away, in: tournament)
+
+        let final = tournament.matches.filter { $0.roundNumber == 2 }
+        XCTAssertEqual(final.count, 1)
+        XCTAssertEqual(final.first?.homeTeam, firstRound[0].homeTeam)
+        XCTAssertEqual(final.first?.awayTeam, firstRound[1].awayTeam)
+        XCTAssertEqual(tournament.status, .active)
+
+        let finalMatch = try XCTUnwrap(final.first)
+        OfflineTournamentPlanner.recordWin(for: finalMatch.id, side: .away, in: tournament)
+
+        XCTAssertEqual(tournament.status, .finished)
+        XCTAssertEqual(tournament.championName, firstRound[1].awayTeam)
+    }
+
+    func testResetMatchRemovesLaterKnockoutRounds() throws {
+        let tournament = OfflineTournamentPlanner.makeTournament(title: "كأس", format: .knockout, teamCount: 4, seed: 10)
+        let firstRound = tournament.matches
+        OfflineTournamentPlanner.recordWin(for: firstRound[0].id, side: .home, in: tournament)
+        OfflineTournamentPlanner.recordWin(for: firstRound[1].id, side: .away, in: tournament)
+        XCTAssertTrue(tournament.matches.contains { $0.roundNumber == 2 })
+
+        OfflineTournamentPlanner.resetMatch(matchID: firstRound[0].id, in: tournament)
+
+        XCTAssertFalse(tournament.matches.contains { $0.roundNumber == 2 })
+        let reset = try XCTUnwrap(tournament.matches.first { $0.id == firstRound[0].id })
+        XCTAssertEqual(reset.homeWins, 0)
+        XCTAssertEqual(reset.awayWins, 0)
+        XCTAssertEqual(tournament.status, .active)
+    }
+
     func testTournamentPersistsInSwiftDataSchema() throws {
         let configuration = ModelConfiguration(schema: PersistenceController.appSchema, isStoredInMemoryOnly: true)
         let container = try ModelContainer(for: PersistenceController.appSchema, configurations: [configuration])
