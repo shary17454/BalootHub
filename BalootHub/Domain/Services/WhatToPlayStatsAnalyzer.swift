@@ -1491,7 +1491,8 @@ enum WhatToPlayStatsAnalyzer {
             completedAttempts: completed,
             accuracyPercent: accuracy,
             averageExpectedImpact: averageImpact,
-            targetAverageExpectedImpact: plan.targetAverageExpectedImpact
+            targetAverageExpectedImpact: plan.targetAverageExpectedImpact,
+            averageLostProjectedTeamPoints: sessionSummary.averageLostProjectedTeamPoints
         )
 
         if completed == 0 {
@@ -1741,7 +1742,8 @@ enum WhatToPlayStatsAnalyzer {
         completedAttempts: Int,
         accuracyPercent: Int,
         averageExpectedImpact: Int,
-        targetAverageExpectedImpact: Int
+        targetAverageExpectedImpact: Int,
+        averageLostProjectedTeamPoints: Int
     ) -> (percent: Int, accuracyComponent: Int, impactComponent: Int, title: String, detail: String, iconName: String, reasonTitle: String, reasonDetail: String) {
         guard completedAttempts > 0 else {
             return (
@@ -1756,11 +1758,14 @@ enum WhatToPlayStatsAnalyzer {
             )
         }
 
-        let normalizedImpact = min(100, max(0, 50 + ((averageExpectedImpact - targetAverageExpectedImpact) * 10)))
+        let baseImpact = min(100, max(0, 50 + ((averageExpectedImpact - targetAverageExpectedImpact) * 10)))
+        let projectedLossPenalty = min(40, max(0, averageLostProjectedTeamPoints * 4))
+        let normalizedImpact = max(0, baseImpact - projectedLossPenalty)
         let percent = min(100, max(0, Int((Double(accuracyPercent + normalizedImpact) / 2.0).rounded())))
         let reason = trainingSessionGradeReason(
             accuracyComponent: accuracyPercent,
-            impactComponent: normalizedImpact
+            impactComponent: normalizedImpact,
+            averageLostProjectedTeamPoints: averageLostProjectedTeamPoints
         )
 
         if percent >= 85 {
@@ -1816,8 +1821,16 @@ enum WhatToPlayStatsAnalyzer {
 
     private static func trainingSessionGradeReason(
         accuracyComponent: Int,
-        impactComponent: Int
+        impactComponent: Int,
+        averageLostProjectedTeamPoints: Int
     ) -> (title: String, detail: String) {
+        if averageLostProjectedTeamPoints >= 6 {
+            return (
+                "المحاكاة تخفض التقييم".localized,
+                "\("متوسط فاقد المحاكاة".localized): \(averageLostProjectedTeamPoints). \("راجع Replay للقرارات التي تبدو قريبة لكنها تخسر بعد اكتمال الجولة.".localized)"
+            )
+        }
+
         let gap = accuracyComponent - impactComponent
         if gap >= 15 {
             return (

@@ -71,6 +71,34 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "先查看 replay，再判断它是否是接近的替代选择。" } }
       }
     },
+    "المحاكاة تخفض التقييم" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die Simulation senkt die Bewertung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Simulation lowers the score" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "La simulación baja la puntuación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "La simulation baisse le score" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सिमुलेशन स्कोर घटाता है" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Simulasi menurunkan skor" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Симуляция снижает оценку" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Simülasyon puanı düşürür" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "سیمولیشن اسکور کم کرتی ہے" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "模拟降低评分" } }
+      }
+    },
+    "راجع Replay للقرارات التي تبدو قريبة لكنها تخسر بعد اكتمال الجولة." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prüfe das Replay für Entscheidungen, die nah wirken, aber nach Abschluss der Runde verlieren." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Review the replay for decisions that look close but lose after the round is completed." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Revisa el replay de decisiones que parecen cercanas pero pierden al completar la ronda." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Revois le replay des décisions qui semblent proches mais perdent après la fin de la manche." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "उन फैसलों का replay देखें जो करीब लगते हैं लेकिन राउंड पूरा होने के बाद हारते हैं।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tinjau replay untuk keputusan yang terlihat dekat tetapi kalah setelah ronde selesai." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Просмотрите replay решений, которые кажутся близкими, но проигрывают после завершения раунда." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Yakın görünen ama tur tamamlandıktan sonra kaybettiren kararların replay'ini incele." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "ان فیصلوں کا replay دیکھیں جو قریب لگتے ہیں مگر راؤنڈ مکمل ہونے کے بعد نقصان دیتے ہیں۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "查看那些看似接近、但回合结束后会损失的决策 replay。" } }
+      }
+    },
     "تم عرضه" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Bereits gezeigt" } },

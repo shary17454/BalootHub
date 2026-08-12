@@ -2739,6 +2739,24 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.averageLostProjectedTeamPoints, 9)
     }
 
+    func testTrainingSessionGradePenalizesProjectedRoundLoss() {
+        let plan = sessionPlan(difficulty: .medium, count: 3, target: 67)
+        let attempts = [
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 4, bestImpact: 4, projectedTeamPoints: 62, bestProjectedTeamPoints: 72),
+            attempt(daysAgo: 2, difficulty: .medium, correct: true, impact: 4, bestImpact: 4, projectedTeamPoints: 66, bestProjectedTeamPoints: 76),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 4, bestImpact: 4, projectedTeamPoints: 70, bestProjectedTeamPoints: 80)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.averageLostProjectedTeamPoints, 10)
+        XCTAssertEqual(progress.gradeAccuracyComponent, 100)
+        XCTAssertEqual(progress.gradeImpactComponent, 50)
+        XCTAssertEqual(progress.gradePercent, 75)
+        XCTAssertEqual(progress.gradeReasonTitle, "المحاكاة تخفض التقييم".localized)
+        XCTAssertTrue(progress.gradeReasonDetail.contains("متوسط فاقد المحاكاة".localized))
+    }
+
     func testTrainingSessionProgressReportsImpactNeededPerRemainingAttempt() {
         let plan = sessionPlan(difficulty: .medium, count: 4, target: 50, impactTarget: 2)
         let attempts = [
