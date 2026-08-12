@@ -23,4 +23,34 @@ final class BalootAcademyTests: XCTestCase {
 
         XCTAssertEqual(ids.count, Set(ids).count)
     }
+
+    func testAcademyCoversRequiredLearningPathTopics() {
+        let expectedIDs: Set<String> = [
+            "beginner-cards",
+            "beginner-deal",
+            "beginner-ordering",
+            "beginner-sun-hokum",
+            "beginner-follow-suit",
+            "beginner-cutting",
+            "beginner-scoring",
+            "intermediate-read-play",
+            "intermediate-memory",
+            "intermediate-cutting",
+            "intermediate-pull-trump",
+            "intermediate-partner",
+            "intermediate-opening-lead",
+            "intermediate-opponent-read",
+            "advanced-card-counting",
+            "advanced-deduction",
+            "advanced-bidding-read",
+            "advanced-probability",
+            "advanced-pressure",
+            "advanced-hand-management",
+            "advanced-sacrifice",
+            "advanced-mode-strategy"
+        ]
+        let actualIDs = Set(BalootAcademyCatalog.lessons.map(\.id))
+
+        XCTAssertTrue(expectedIDs.isSubset(of: actualIDs), "Missing academy topics: \(expectedIDs.subtracting(actualIDs).sorted())")
+    }
 }
