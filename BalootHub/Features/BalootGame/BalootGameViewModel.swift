@@ -309,9 +309,11 @@ final class BalootGameViewModel {
     }
 
     var legalCardsForHuman: [PlayingCard] {
-        moveValidationsForHuman
-            .filter(\.isLegal)
-            .map(\.card)
+        guard canCurrentHumanAct, let activeHumanID else { return [] }
+        return GameEngine.legalMoves(for: activeHumanID, state: state).compactMap { action in
+            guard case .playCard(_, let card) = action else { return nil }
+            return card
+        }
     }
 
     /// مجموعة الأوراق القانونية للبحث السريع من الواجهة.
