@@ -31,6 +31,7 @@ public struct RoundBiddingDecisionAnalysis: Identifiable, Sendable, Equatable {
     public let recommendedBid: Bid
     public let legalBids: [Bid]
     public let handStrengthScore: Int
+    public let estimatedLostPoints: Int
     public let explanation: String
 
     public var id: String {
@@ -126,7 +127,9 @@ public enum RoundAnalyzer {
 
         guard !decisions.isEmpty || !biddingDecisions.isEmpty else { throw AnalysisError.noPlayableDecisions }
 
-        let totalLost = decisions.reduce(0) { $0 + $1.estimatedLostPoints }
+        let playLost = decisions.reduce(0) { $0 + $1.estimatedLostPoints }
+        let biddingLost = biddingDecisions.reduce(0) { $0 + $1.estimatedLostPoints }
+        let totalLost = playLost + biddingLost
         let nonExpertPenalty = decisions.filter { !$0.matchedExpert }.count * 4
         let biddingPenalty = biddingDecisions.filter { !$0.matchedRecommendation }.count * 8
         let score = max(0, min(100, 100 - (totalLost * 2) - nonExpertPenalty - biddingPenalty))
@@ -215,6 +218,7 @@ public enum RoundAnalyzer {
             recommendedBid: analysis.recommendedBid,
             legalBids: legal,
             handStrengthScore: analysis.strengthScore,
+            estimatedLostPoints: biddingLostPoints(bid: bid, recommendedBid: analysis.recommendedBid, analysis: analysis),
             explanation: biddingExplanation(bid: bid, recommendedBid: analysis.recommendedBid, handStrengthScore: analysis.strengthScore)
         )
     }
@@ -237,6 +241,7 @@ public enum RoundAnalyzer {
             recommendedBid: analysis.recommendedBid,
             legalBids: legal,
             handStrengthScore: analysis.strengthScore,
+            estimatedLostPoints: biddingLostPoints(bid: bid, recommendedBid: analysis.recommendedBid, analysis: analysis),
             explanation: biddingExplanation(bid: bid, recommendedBid: analysis.recommendedBid, handStrengthScore: analysis.strengthScore)
         )
     }
@@ -337,6 +342,25 @@ public enum RoundAnalyzer {
             return "قرار المزايدة يطابق تقييم اليد الحالي بدرجة قوة \(handStrengthScore)."
         }
         return "تقييم اليد بدرجة \(handStrengthScore) يرجّح \(bidLabel(recommendedBid)) بدل \(bidLabel(bid))."
+    }
+
+    private static func biddingLostPoints(bid: Bid, recommendedBid: Bid, analysis: HandAnalysis) -> Int {
+        guard bid != recommendedBid else { return 0 }
+        let recommendedScore = score(for: recommendedBid, analysis: analysis)
+        let selectedScore = score(for: bid, analysis: analysis)
+        return max(1, recommendedScore - selectedScore)
+    }
+
+    private static func score(for bid: Bid, analysis: HandAnalysis) -> Int {
+        switch bid {
+        case .pass:
+            return 0
+        case .sun:
+            return analysis.evaluation.sunScore
+        case .hokum(let suit):
+            let score = analysis.evaluation.hokumScores[suit] ?? 0
+            return score == Int.min ? 0 : score
+        }
     }
 
     private static func bidLabel(_ bid: Bid) -> String {

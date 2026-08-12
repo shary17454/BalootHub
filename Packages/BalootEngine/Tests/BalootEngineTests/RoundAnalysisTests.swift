@@ -85,6 +85,8 @@ struct RoundAnalysisTests {
         #expect(report.biddingDecisions.first?.bid == forced)
         #expect(report.biddingDecisions.first?.recommendedBid == recommended)
         #expect(report.biddingDecisions.first?.matchedRecommendation == false)
+        #expect((report.biddingDecisions.first?.estimatedLostPoints ?? 0) > 0)
+        #expect(report.totalEstimatedLostPoints == report.biddingDecisions.first?.estimatedLostPoints)
         #expect(report.tacticalMistakes.contains { $0.contains("في المزايدة") })
         #expect(report.tips.contains { $0.contains("راجع قرار المزايدة") })
         #expect(report.scoreOutOf100 < 100)
