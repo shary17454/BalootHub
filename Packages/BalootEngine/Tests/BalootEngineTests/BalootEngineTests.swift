@@ -318,6 +318,37 @@ struct ScoringTests {
 
 @Suite("محرك اللعبة")
 struct GameEngineTests {
+    @Test("تقييم كل أوراق اليد يعيد القانونية وسبب المنع من المحرك")
+    func moveValidationsDescribeEachCardInHand() throws {
+        var state = GameState.newLocalMatch(rules: .tournament)
+        let player = try #require(state.player(at: .south))
+        let leader = try #require(state.player(at: .west))
+        let offSuitCard = PlayingCard(suit: .diamonds, rank: .ace)
+        let trumpCard = PlayingCard(suit: .clubs, rank: .jack)
+
+        state.phase = .playing
+        state.mode = .hokum
+        state.trumpSuit = .clubs
+        state.currentTurnPlayerID = player.id
+        state.hands[player.id] = [offSuitCard, trumpCard]
+        state.currentTrick = Trick(
+            playedCards: [
+                PlayedCard(playerID: leader.id, card: PlayingCard(suit: .hearts, rank: .seven))
+            ],
+            leaderSeat: .west
+        )
+
+        let validations = GameEngine.moveValidations(for: player.id, state: state)
+        let offSuitValidation = try #require(validations.first { $0.card == offSuitCard })
+        let trumpValidation = try #require(validations.first { $0.card == trumpCard })
+
+        #expect(validations.count == 2)
+        #expect(offSuitValidation.isLegal == false)
+        #expect(offSuitValidation.invalidReason == .mustPlayTrumpWhenVoidOfSuit)
+        #expect(trumpValidation.isLegal == true)
+        #expect(trumpValidation.invalidReason == nil)
+    }
+
     @Test("لا يمكن لعب ورقة خارج الدور")
     func cannotPlayOutOfTurn() throws {
         var state = GameState.newLocalMatch(rules: .simpleBidding)

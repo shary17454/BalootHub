@@ -423,15 +423,14 @@ public enum WhatToPlayTrainer {
         playerID: Player.ID,
         legalOptions: [WhatToPlayOption]
     ) -> [WhatToPlayBlockedCard] {
-        guard let hand = state.hands[playerID] else { return [] }
         let legalCards = Set(legalOptions.map(\.card))
-        return hand
-            .filter { !legalCards.contains($0) }
-            .compactMap { card in
-                guard let reason = GameEngine.invalidMoveReason(playerID: playerID, card: card, state: state) else {
+        return GameEngine.moveValidations(for: playerID, state: state)
+            .filter { !legalCards.contains($0.card) }
+            .compactMap { validation in
+                guard let reason = validation.invalidReason else {
                     return nil
                 }
-                return WhatToPlayBlockedCard(card: card, reason: reason)
+                return WhatToPlayBlockedCard(card: validation.card, reason: reason)
             }
             .sorted { lhs, rhs in
                 if lhs.card.suit.ordinal != rhs.card.suit.ordinal {

@@ -10,6 +10,19 @@ public enum IllegalMoveReason: String, Error, Sendable {
     case wrongPhase
 }
 
+/// نتيجة تقييم ورقة واحدة من يد اللاعب دون تطبيقها على حالة اللعبة.
+public struct MoveValidation: Equatable, Sendable {
+    public let card: PlayingCard
+    public let isLegal: Bool
+    public let invalidReason: IllegalMoveReason?
+
+    public init(card: PlayingCard, isLegal: Bool, invalidReason: IllegalMoveReason?) {
+        self.card = card
+        self.isLegal = isLegal
+        self.invalidReason = invalidReason
+    }
+}
+
 /// يتحقق من قانونية لعب ورقة معيّنة استنادًا إلى قواعد "التلزيم" و"القطع" في البلوت.
 public enum LegalMoveValidator {
     /// يُعيد قائمة الأوراق القانونية التي يمكن للاعب لعبها من يده الحالية.

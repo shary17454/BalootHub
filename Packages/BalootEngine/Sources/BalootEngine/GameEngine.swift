@@ -122,6 +122,22 @@ public enum GameEngine {
         )
     }
 
+    /// يقيّم كل أوراق يد اللاعب الحالية دفعة واحدة دون تغيير حالة اللعبة.
+    ///
+    /// الواجهة، التدريب، وReplay تستخدم هذا المخرج الموحد حتى تبقى أسباب المنع
+    /// مطابقة تمامًا لمنطق ``LegalMoveValidator``.
+    public static func moveValidations(for playerID: Player.ID, state: GameState) -> [MoveValidation] {
+        guard let hand = state.hands[playerID] else { return [] }
+        return hand.map { card in
+            switch validationResult(playerID: playerID, card: card, state: state) {
+            case .success:
+                MoveValidation(card: card, isLegal: true, invalidReason: nil)
+            case .failure(let reason):
+                MoveValidation(card: card, isLegal: false, invalidReason: reason)
+            }
+        }
+    }
+
     /// سبب رفض ورقة معيّنة، أو `nil` إن كانت قانونية.
     ///
     /// وجود هذا الاستعلام هو ما يسمح للواجهة أن **تشرح** المنع بدل أن تتجاهل الضغطة
