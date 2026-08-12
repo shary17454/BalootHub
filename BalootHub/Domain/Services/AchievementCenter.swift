@@ -108,7 +108,11 @@ enum AchievementCenter {
     }
 
     static func earnedAchievementIDs(whatToPlayAttempts: [WhatToPlayAttempt]) -> Set<String> {
-        let expertMatches = whatToPlayAttempts.filter(\.isCorrect).count
-        return expertMatches >= 5 ? ["expert-eye"] : []
+        let uniqueExpertMatchSeeds = Set(
+            whatToPlayAttempts
+                .filter(\.isCorrect)
+                .map(\.replaySeed)
+        )
+        return uniqueExpertMatchSeeds.count >= 5 ? ["expert-eye"] : []
     }
 }

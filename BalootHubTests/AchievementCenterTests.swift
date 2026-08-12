@@ -45,6 +45,14 @@ final class AchievementCenterTests: XCTestCase {
         )
     }
 
+    func testWhatToPlayExpertEyeCountsUniqueCorrectScenarios() {
+        let attempts = (0..<5).map { _ in
+            makeWhatToPlayAttempt(seed: 2026, isCorrect: true)
+        }
+
+        XCTAssertTrue(AchievementCenter.earnedAchievementIDs(whatToPlayAttempts: attempts).isEmpty)
+    }
+
     func testWhatToPlayExpertEyeStaysLockedBeforeRequirement() {
         let attempts = [
             makeWhatToPlayAttempt(seed: 1, isCorrect: true),
