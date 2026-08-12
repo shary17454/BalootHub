@@ -104,6 +104,17 @@ final class DailyChallengeCenterTests: XCTestCase {
         XCTAssertTrue(challenges.allSatisfy { $0.targetCount > 0 })
     }
 
+    func testScoringChallengesCarryQuestionCategory() throws {
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let daily = try XCTUnwrap(DailyChallengeCenter.dailyChallenges(for: date).first { $0.category == .scoring })
+        let weekly = try XCTUnwrap(DailyChallengeCenter.weeklyChallenges(for: date).first { $0.category == .scoring })
+
+        XCTAssertNotNil(daily.scoringQuizCategory)
+        XCTAssertNotNil(weekly.scoringQuizCategory)
+        XCTAssertTrue(daily.detail.contains(try XCTUnwrap(daily.scoringQuizCategory).title))
+        XCTAssertTrue(weekly.detail.contains(try XCTUnwrap(weekly.scoringQuizCategory).title))
+    }
+
     func testDailyWhatToPlayChallengeCarriesDeterministicScenarioRequest() throws {
         let date = Date(timeIntervalSince1970: 1_785_888_000)
         let challenge = DailyChallengeCenter.dailyChallenges(for: date).first { $0.category == .tactics }
@@ -198,12 +209,13 @@ final class DailyChallengeCenterTests: XCTestCase {
         let calendar = Calendar(identifier: .gregorian)
         let date = Date(timeIntervalSince1970: 1_785_888_000)
         let challenge = try XCTUnwrap(DailyChallengeCenter.dailyChallenges(for: date, calendar: calendar).first { $0.category == .scoring })
+        let category = try XCTUnwrap(challenge.scoringQuizCategory)
         let dayStart = calendar.startOfDay(for: date)
         let scoringAttempts = [
-            scoringAttempt(at: dayStart.addingTimeInterval(60), seed: 1, isCorrect: true),
-            scoringAttempt(at: dayStart.addingTimeInterval(120), seed: 2, isCorrect: true),
-            scoringAttempt(at: dayStart.addingTimeInterval(180), seed: 3, isCorrect: false),
-            scoringAttempt(at: dayStart.addingTimeInterval(-60), seed: 4, isCorrect: true)
+            try scoringAttempt(at: dayStart.addingTimeInterval(60), category: category, isCorrect: true),
+            try scoringAttempt(at: dayStart.addingTimeInterval(120), category: category, isCorrect: true),
+            try scoringAttempt(at: dayStart.addingTimeInterval(180), category: category, isCorrect: false),
+            try scoringAttempt(at: dayStart.addingTimeInterval(-60), category: category, isCorrect: true)
         ]
 
         let progress = try XCTUnwrap(DailyChallengeCenter.progress(
@@ -218,15 +230,40 @@ final class DailyChallengeCenterTests: XCTestCase {
         XCTAssertEqual(progress.targetCount, challenge.targetCount)
     }
 
+    func testScoringChallengeProgressCountsOnlyRequestedQuestionCategory() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = try XCTUnwrap(DailyChallengeCenter.dailyChallenges(for: date, calendar: calendar).first { $0.category == .scoring })
+        let category = try XCTUnwrap(challenge.scoringQuizCategory)
+        let otherCategory = try XCTUnwrap(ScoringQuizQuestionCategory.allCases.first { $0 != category })
+        let dayStart = calendar.startOfDay(for: date)
+        let scoringAttempts = [
+            try scoringAttempt(at: dayStart.addingTimeInterval(60), category: category, isCorrect: true),
+            try scoringAttempt(at: dayStart.addingTimeInterval(120), category: otherCategory, isCorrect: true),
+            try scoringAttempt(at: dayStart.addingTimeInterval(180), category: category, isCorrect: false)
+        ]
+
+        let progress = try XCTUnwrap(DailyChallengeCenter.progress(
+            for: challenge,
+            attempts: [],
+            scoringQuizAttempts: scoringAttempts,
+            now: date,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(progress.completedCount, 1)
+    }
+
     func testScoringChallengeProgressCapsAtTarget() throws {
         let calendar = Calendar(identifier: .gregorian)
         let date = Date(timeIntervalSince1970: 1_785_888_000)
         let challenge = try XCTUnwrap(DailyChallengeCenter.dailyChallenges(for: date, calendar: calendar).first { $0.category == .scoring })
+        let category = try XCTUnwrap(challenge.scoringQuizCategory)
         let dayStart = calendar.startOfDay(for: date)
-        let scoringAttempts = (0..<(challenge.targetCount + 4)).map { index in
-            scoringAttempt(
+        let scoringAttempts = try (0..<(challenge.targetCount + 4)).map { index in
+            try scoringAttempt(
                 at: dayStart.addingTimeInterval(TimeInterval(index + 1)),
-                seed: UInt64(index),
+                category: category,
                 isCorrect: true
             )
         }
@@ -717,6 +754,26 @@ final class DailyChallengeCenterTests: XCTestCase {
             evaluation: ScoringQuizEvaluator.evaluate(answerText: "\(submitted)", question: question),
             remainingSeconds: isCorrect ? 10 : 0
         )
+    }
+
+    private func scoringAttempt(
+        at date: Date,
+        category: ScoringQuizQuestionCategory,
+        isCorrect: Bool
+    ) throws -> ScoringQuizAttempt {
+        for seed in 1...800 {
+            let question = ScoringQuizGenerator.generate(seed: UInt64(seed), difficulty: .hard)
+            guard question.category == category else { continue }
+            let submitted = isCorrect ? question.answer : question.answer + 1
+            return ScoringQuizAttempt(
+                createdAt: date,
+                question: question,
+                evaluation: ScoringQuizEvaluator.evaluate(answerText: "\(submitted)", question: question),
+                remainingSeconds: isCorrect ? 10 : 0
+            )
+        }
+        XCTFail("لم يتم العثور على سؤال من نوع \(category.rawValue)")
+        throw NSError(domain: "DailyChallengeCenterTests", code: 1)
     }
 
     private func academyProgress(

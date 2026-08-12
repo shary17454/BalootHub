@@ -41,9 +41,36 @@ struct BalootChallenge: Identifiable, Equatable {
     let detail: String
     let targetCount: Int
     let rewardTitle: String
+    let scoringQuizCategory: ScoringQuizQuestionCategory?
     let whatToPlaySeed: UInt64?
     let whatToPlayDifficulty: WhatToPlayDifficulty?
     let whatToPlayFocusKind: WhatToPlayScenarioFocusKind?
+
+    init(
+        id: String,
+        cadence: ChallengeCadence,
+        category: ChallengeCategory,
+        title: String,
+        detail: String,
+        targetCount: Int,
+        rewardTitle: String,
+        scoringQuizCategory: ScoringQuizQuestionCategory? = nil,
+        whatToPlaySeed: UInt64? = nil,
+        whatToPlayDifficulty: WhatToPlayDifficulty? = nil,
+        whatToPlayFocusKind: WhatToPlayScenarioFocusKind? = nil
+    ) {
+        self.id = id
+        self.cadence = cadence
+        self.category = category
+        self.title = title
+        self.detail = detail
+        self.targetCount = targetCount
+        self.rewardTitle = rewardTitle
+        self.scoringQuizCategory = scoringQuizCategory
+        self.whatToPlaySeed = whatToPlaySeed
+        self.whatToPlayDifficulty = whatToPlayDifficulty
+        self.whatToPlayFocusKind = whatToPlayFocusKind
+    }
 }
 
 struct BalootChallengeProgress: Equatable {
@@ -94,6 +121,7 @@ enum DailyChallengeCenter {
         var generator = ChallengeSeededGenerator(seed: dayKey)
         let hokumMargin = generator.nextInt(in: 20...60)
         let scoringTarget = generator.nextInt(in: 3...6)
+        let scoringCategory = ScoringQuizQuestionCategory.allCases[generator.nextInt(in: 0...(ScoringQuizQuestionCategory.allCases.count - 1))]
         let tacticsTarget = generator.nextInt(in: 2...4)
         let tacticsDifficulty = WhatToPlayDifficulty.allCases[generator.nextInt(in: 0...(WhatToPlayDifficulty.allCases.count - 1))]
         let tacticsFocus = WhatToPlayScenarioFocusKind.allCases[generator.nextInt(in: 0...(WhatToPlayScenarioFocusKind.allCases.count - 1))]
@@ -118,9 +146,10 @@ enum DailyChallengeCenter {
                 cadence: .daily,
                 category: .scoring,
                 title: "حاسب البلوت",
-                detail: "أجب إجابة صحيحة على \(scoringTarget) أسئلة من تحدي حساب النقاط.",
+                detail: "أجب إجابة صحيحة على \(scoringTarget) أسئلة من تحدي حساب النقاط ضمن \(scoringCategory.title).",
                 targetCount: scoringTarget,
-                rewardTitle: "شارة الحاسب"
+                rewardTitle: "شارة الحاسب",
+                scoringQuizCategory: scoringCategory
             ),
             makeChallenge(
                 id: "daily-\(dayKey)-what-play-\(generator.nextInt(in: 2...5))",
@@ -145,6 +174,8 @@ enum DailyChallengeCenter {
         var generator = ChallengeSeededGenerator(seed: weekKey)
         let streakTarget = generator.nextInt(in: 3...5)
         let academyTarget = generator.nextInt(in: 4...8)
+        let scoringTarget = generator.nextInt(in: 4...8)
+        let scoringCategory = ScoringQuizQuestionCategory.allCases[generator.nextInt(in: 0...(ScoringQuizQuestionCategory.allCases.count - 1))]
         let tacticsTarget = generator.nextInt(in: 5...9)
         let tacticsDifficulty = WhatToPlayDifficulty.allCases[generator.nextInt(in: 0...(WhatToPlayDifficulty.allCases.count - 1))]
         let tacticsFocus = WhatToPlayScenarioFocusKind.allCases[generator.nextInt(in: 0...(WhatToPlayScenarioFocusKind.allCases.count - 1))]
@@ -163,6 +194,16 @@ enum DailyChallengeCenter {
                 detail: "حقق \(streakTarget) انتصارات خلال الأسبوع ضد أي مستوى AI.",
                 targetCount: streakTarget,
                 rewardTitle: "وسام الاستمرارية"
+            ),
+            makeChallenge(
+                id: "weekly-\(weekKey)-score-\(generator.nextInt(in: 4...9))",
+                cadence: .weekly,
+                category: .scoring,
+                title: "اختبار الحاسب",
+                detail: "أكمل \(scoringTarget) إجابات صحيحة من نوع \(scoringCategory.title) في تحدي حساب النقاط.",
+                targetCount: scoringTarget,
+                rewardTitle: "وسام الحساب",
+                scoringQuizCategory: scoringCategory
             ),
             makeChallenge(
                 id: "weekly-\(weekKey)-academy-\(generator.nextInt(in: 4...9))",
@@ -196,6 +237,7 @@ enum DailyChallengeCenter {
         detail: String,
         targetCount: Int,
         rewardTitle: String,
+        scoringQuizCategory: ScoringQuizQuestionCategory? = nil,
         whatToPlaySeed: UInt64? = nil,
         whatToPlayDifficulty: WhatToPlayDifficulty? = nil,
         whatToPlayFocusKind: WhatToPlayScenarioFocusKind? = nil
@@ -208,6 +250,7 @@ enum DailyChallengeCenter {
             detail: detail,
             targetCount: max(1, targetCount),
             rewardTitle: rewardTitle,
+            scoringQuizCategory: scoringQuizCategory,
             whatToPlaySeed: whatToPlaySeed,
             whatToPlayDifficulty: whatToPlayDifficulty,
             whatToPlayFocusKind: whatToPlayFocusKind
@@ -264,6 +307,7 @@ enum DailyChallengeCenter {
                 attempt.createdAt >= interval.start
                     && attempt.createdAt < interval.end
                     && attempt.isCorrect
+                    && (challenge.scoringQuizCategory == nil || attempt.category == challenge.scoringQuizCategory)
             }.count
 
             return BalootChallengeProgress(
