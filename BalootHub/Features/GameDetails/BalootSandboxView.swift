@@ -94,6 +94,20 @@ struct BalootSandboxView: View {
                     Text(multiplier.arabicName.localized).tag(multiplier)
                 }
             }
+
+            if configuration.currentTrickCards.isEmpty {
+                Picker("بداية الأكلة".localized, selection: currentTurnSeatBinding) {
+                    ForEach(SeatPosition.allCases, id: \.self) { seat in
+                        Text(seatTitle(seat)).tag(seat)
+                    }
+                }
+            } else {
+                InfoRow(
+                    icon: "lock.fill",
+                    title: "بداية الأكلة".localized,
+                    value: "\("مقفلة حتى مسح الأكلة".localized) · \("الدور".localized): \(seatTitle(configuration.currentTurnSeat))"
+                )
+            }
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
@@ -392,6 +406,17 @@ struct BalootSandboxView: View {
             set: { multiplier in
                 resetPreview()
                 configuration.multiplier = multiplier
+            }
+        )
+    }
+
+    private var currentTurnSeatBinding: Binding<SeatPosition> {
+        Binding(
+            get: { configuration.currentTurnSeat },
+            set: { seat in
+                guard configuration.currentTrickCards.isEmpty else { return }
+                resetPreview()
+                configuration.currentTurnSeat = seat
             }
         )
     }

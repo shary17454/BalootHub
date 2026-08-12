@@ -39,6 +39,19 @@ struct BalootSandboxTests {
         ])
     }
 
+    @Test("الموقف اليدوي يمكن أن يبدأ أكلة فارغة من أي مقعد")
+    func emptyTrickCanStartFromAnySeat() throws {
+        var configuration = sandboxConfiguration()
+        configuration.currentTrickCards = []
+        configuration.currentTurnSeat = .north
+
+        let state = try BalootSandbox.makeState(configuration: configuration)
+
+        #expect(state.currentTrick?.playedCards.isEmpty == true)
+        #expect(state.currentTrick?.leaderSeat == .north)
+        #expect(state.currentTurnPlayerID == BalootSandbox.playerID(for: .north))
+    }
+
     @Test("تجربة ورقة ممنوعة تعيد سبب الرفض من GameEngine")
     func previewReportsInvalidMoveReason() throws {
         let configuration = sandboxConfiguration()
