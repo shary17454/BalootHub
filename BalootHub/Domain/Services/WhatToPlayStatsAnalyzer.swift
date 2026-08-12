@@ -195,6 +195,8 @@ struct WhatToPlayReviewItem: Equatable, Identifiable {
     let secondBestCard: PlayingCard?
     let expectedImpact: Int
     let lostExpectedPoints: Int
+    let projectedTeamPoints: Int?
+    let lostProjectedTeamPoints: Int
     let valueLossSeverity: WhatToPlayValueLossSeverity
     let valueLossTitle: String
     let secondBestExpectedImpact: Int?
@@ -943,6 +945,10 @@ enum WhatToPlayStatsAnalyzer {
                         return lhs.lostExpectedPoints > rhs.lostExpectedPoints
                     }
 
+                    if lhs.lostProjectedTeamPoints != rhs.lostProjectedTeamPoints {
+                        return lhs.lostProjectedTeamPoints > rhs.lostProjectedTeamPoints
+                    }
+
                     if lhs.expectedImpact != rhs.expectedImpact {
                         return lhs.expectedImpact < rhs.expectedImpact
                     }
@@ -967,6 +973,8 @@ enum WhatToPlayStatsAnalyzer {
                 secondBestCard: attempt.secondBestCard,
                 expectedImpact: attempt.expectedImpact,
                 lostExpectedPoints: attempt.lostExpectedPoints,
+                projectedTeamPoints: attempt.projectedTeamPoints,
+                lostProjectedTeamPoints: attempt.lostProjectedTeamPoints,
                 valueLossSeverity: severity,
                 valueLossTitle: valueLossTitle(for: severity),
                 secondBestExpectedImpact: attempt.secondBestExpectedImpact,
@@ -1075,6 +1083,14 @@ enum WhatToPlayStatsAnalyzer {
                 title: "فرصة قيمة ضاعت".localized,
                 detail: "\("الفارق عن اختيار الخبير".localized): \(item.lostExpectedPoints). \("راجع سبب ارتفاع قيمة أفضل ورقة.".localized)",
                 iconName: "arrow.up.right.circle.fill"
+            )
+        }
+
+        if item.lostProjectedTeamPoints >= 6 {
+            return WhatToPlayReviewPriority(
+                title: "المحاكاة ترجّح المراجعة".localized,
+                detail: "\("خسرت بعد استكمال الجولة".localized): \(item.lostProjectedTeamPoints). \("راجع كيف تغيّر القرار نتيجة الجولة لا الأكلة فقط.".localized)",
+                iconName: "chart.bar.xaxis"
             )
         }
 

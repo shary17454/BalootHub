@@ -599,6 +599,48 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "模拟尝试" } }
       }
     },
+    "المحاكاة ترجّح المراجعة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Simulation empfiehlt eine Prüfung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Simulation favors review" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "La simulación recomienda revisar" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "La simulation recommande une revue" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सिमुलेशन समीक्षा सुझाता है" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Simulasi menyarankan peninjauan" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Симуляция рекомендует разбор" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Simülasyon incelemeyi öneriyor" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "سیمولیشن جائزے کو ترجیح دیتی ہے" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "模拟建议复盘" } }
+      }
+    },
+    "خسرت بعد استكمال الجولة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Verlust nach ausgespielter Runde" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Lost after completing the round" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Pérdida tras completar la ronda" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Perte après la fin de la manche" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "राउंड पूरा होने पर नुकसान" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kalah setelah ronde selesai" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Потеря после доигрывания раунда" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Tur tamamlanınca kayıp" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "راؤنڈ مکمل ہونے کے بعد نقصان" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "打完整局后的损失" } }
+      }
+    },
+    "راجع كيف تغيّر القرار نتيجة الجولة لا الأكلة فقط." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prüfe, wie sich die Entscheidung auf die ganze Runde auswirkte, nicht nur auf den Stich." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Review how the decision changed the round result, not only the trick." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Revisa cómo cambió el resultado de la ronda, no solo la baza." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Revoyez comment la décision a changé la manche, pas seulement le pli." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "देखें कि फैसले ने पूरी राउंड को कैसे बदला, सिर्फ बाज़ी को नहीं।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tinjau bagaimana keputusan mengubah hasil ronde, bukan hanya trik." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Разберите, как решение изменило раунд, а не только взятку." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Kararın yalnızca eli değil, tur sonucunu nasıl değiştirdiğini incele." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "دیکھیں فیصلے نے صرف چال نہیں بلکہ راؤنڈ کا نتیجہ کیسے بدلا۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "复盘这个决定如何改变整局结果，而不只是这一墩。" } }
+      }
+    },
     "محاكاة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Simulation" } },

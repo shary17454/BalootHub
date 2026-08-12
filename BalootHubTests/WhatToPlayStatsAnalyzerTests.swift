@@ -717,6 +717,36 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(queue.first?.valueLossTitle, "خسارة قيمة عالية".localized)
     }
 
+    func testReviewQueueCarriesProjectedPointLoss() {
+        let attempts = [
+            attempt(
+                daysAgo: 1,
+                correct: false,
+                impact: 2,
+                bestImpact: 4,
+                projectedTeamPoints: 61,
+                bestProjectedTeamPoints: 74
+            )
+        ]
+
+        let item = WhatToPlayStatsAnalyzer.reviewQueue(for: attempts).first
+
+        XCTAssertEqual(item?.projectedTeamPoints, 61)
+        XCTAssertEqual(item?.lostProjectedTeamPoints, 13)
+    }
+
+    func testReviewQueueUsesProjectedLossAsTieBreaker() {
+        let attempts = [
+            attempt(daysAgo: 2, correct: false, impact: 1, bestImpact: 5, projectedTeamPoints: 70, bestProjectedTeamPoints: 72),
+            attempt(daysAgo: 1, correct: false, impact: 1, bestImpact: 5, projectedTeamPoints: 55, bestProjectedTeamPoints: 70)
+        ]
+
+        let queue = WhatToPlayStatsAnalyzer.reviewQueue(for: attempts, limit: 2)
+
+        XCTAssertEqual(queue.map(\.lostExpectedPoints), [4, 4])
+        XCTAssertEqual(queue.map(\.lostProjectedTeamPoints), [15, 2])
+    }
+
     func testReviewQueueUsesExactReplaySeed() throws {
         let attempt = attempt(daysAgo: 1, correct: false, impact: -4, bestImpact: 3, seed: UInt64.max)
 
@@ -735,6 +765,29 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(item.lostExpectedPoints, 4)
         XCTAssertEqual(item.valueLossSeverity, .medium)
         XCTAssertEqual(item.valueLossTitle, "خسارة قيمة متوسطة".localized)
+    }
+
+    func testReviewPriorityUsesProjectedLossWhenExpectedGapIsSmall() throws {
+        let item = try XCTUnwrap(
+            WhatToPlayStatsAnalyzer.reviewQueue(
+                for: [
+                    attempt(
+                        daysAgo: 1,
+                        correct: false,
+                        impact: 2,
+                        bestImpact: 4,
+                        projectedTeamPoints: 60,
+                        bestProjectedTeamPoints: 70
+                    )
+                ]
+            ).first
+        )
+
+        let priority = WhatToPlayStatsAnalyzer.reviewPriority(for: item)
+
+        XCTAssertEqual(priority.title, "المحاكاة ترجّح المراجعة".localized)
+        XCTAssertTrue(priority.detail.contains("\("خسرت بعد استكمال الجولة".localized): 10"))
+        XCTAssertEqual(priority.iconName, "chart.bar.xaxis")
     }
 
     func testReviewQueueCarriesSecondBestForReplayReview() {

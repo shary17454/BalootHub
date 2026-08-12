@@ -1962,6 +1962,16 @@ struct WhatToPlayTrainerView: View {
                         StatusBadge("\(item.lostExpectedPoints)", systemImage: "drop.fill", tint: AppColor.danger)
                         StatusBadge(item.valueLossTitle, systemImage: "gauge.with.dots.needle.67percent", tint: valueLossSeverityTint(item.valueLossSeverity))
                     }
+                    if item.lostProjectedTeamPoints > 0 {
+                        StatusBadge("\(item.lostProjectedTeamPoints)", systemImage: "chart.bar.xaxis", tint: AppColor.warning)
+                    }
+                }
+                if let projectedTeamPoints = item.projectedTeamPoints {
+                    Text("\("نقاط فريقك بعد المحاكاة".localized): \(projectedTeamPoints)\(projectedLossSuffix(item.lostProjectedTeamPoints))")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(item.lostProjectedTeamPoints > 0 ? AppColor.warning : AppColor.primary)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.85)
                 }
                 Text("\("اختيارك".localized): \(cardName(item.selectedCard)) · \("أفضل ورقة".localized): \(cardName(item.bestCard))")
                     .font(.caption2.weight(.semibold))
@@ -2065,6 +2075,12 @@ struct WhatToPlayTrainerView: View {
     private func simulationPointsSuffix(_ points: Int?) -> String {
         guard let points else { return "" }
         return " · \("نقاط الأكلة".localized): \(points)"
+    }
+
+    private func projectedLossSuffix(_ lostProjectedTeamPoints: Int) -> String {
+        lostProjectedTeamPoints > 0
+            ? " · \("نقاط محاكاة ضائعة".localized): \(lostProjectedTeamPoints)"
+            : ""
     }
 
     private func scenarioSummary(_ scenario: WhatToPlayScenario) -> some View {
