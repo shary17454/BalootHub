@@ -1400,6 +1400,7 @@ enum WhatToPlayStatsAnalyzer {
             correctAttemptsNeededForTarget: correctNeeded,
             accuracyTargetMet: accuracyTargetMet,
             impactTargetMet: impactTargetMet,
+            costlyDecisionTargetMet: costlyDecisionTargetMet,
             averageLostExpectedPoints: sessionSummary.averageLostExpectedPoints
         )
         let grade = trainingSessionGrade(
@@ -1606,7 +1607,8 @@ enum WhatToPlayStatsAnalyzer {
             title: "أعد الجلسة".localized,
             detail: trainingSessionRepeatDetail(
                 accuracyTargetMet: accuracyTargetMet,
-                impactTargetMet: impactTargetMet
+                impactTargetMet: impactTargetMet,
+                costlyDecisionTargetMet: costlyDecisionTargetMet
             ),
             iconName: "arrow.counterclockwise.circle.fill",
             nextStepTitle: nextStep.title,
@@ -1747,6 +1749,7 @@ enum WhatToPlayStatsAnalyzer {
         correctAttemptsNeededForTarget: Int,
         accuracyTargetMet: Bool,
         impactTargetMet: Bool,
+        costlyDecisionTargetMet: Bool,
         averageLostExpectedPoints: Int
     ) -> (title: String, detail: String, iconName: String) {
         switch state {
@@ -1784,6 +1787,13 @@ enum WhatToPlayStatsAnalyzer {
                 "arrow.up.circle.fill"
             )
         case .needsRepeat:
+            if !costlyDecisionTargetMet {
+                return (
+                    "قلل القرارات المكلفة".localized,
+                    "الدقة والأثر قد يبدوان مقبولين، لكن عدد القرارات المكلفة تجاوز هدف الجلسة؛ أعدها وراجع Replay أفضل قرار بعد كل موقف.".localized,
+                    "exclamationmark.triangle.fill"
+                )
+            }
             if averageLostExpectedPoints >= 4 {
                 return (
                     "راجع القيمة الضائعة".localized,
@@ -1829,8 +1839,12 @@ enum WhatToPlayStatsAnalyzer {
 
     private static func trainingSessionRepeatDetail(
         accuracyTargetMet: Bool,
-        impactTargetMet: Bool
+        impactTargetMet: Bool,
+        costlyDecisionTargetMet: Bool
     ) -> String {
+        if !costlyDecisionTargetMet {
+            return "أكملتها، لكن عدد القرارات المكلفة أعلى من هدف الخطة؛ أعدها وراجع Replay أفضل قرار.".localized
+        }
         if !accuracyTargetMet && !impactTargetMet {
             return "أكملتها، لكن الدقة والأثر أقل من هدف الخطة؛ أعد نفس المستوى.".localized
         }

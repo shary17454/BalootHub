@@ -2656,6 +2656,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertFalse(progress.costlyDecisionTargetMet)
         XCTAssertTrue(progress.accuracyTargetMet)
         XCTAssertTrue(progress.impactTargetMet)
+        XCTAssertEqual(progress.detail, "أكملتها، لكن عدد القرارات المكلفة أعلى من هدف الخطة؛ أعدها وراجع Replay أفضل قرار.".localized)
+        XCTAssertEqual(progress.nextStepTitle, "قلل القرارات المكلفة".localized)
+        XCTAssertEqual(progress.nextStepIconName, "exclamationmark.triangle.fill")
     }
 
     func testTrainingSessionProgressRequestsRepeatWhenAccuracyMissesTarget() {

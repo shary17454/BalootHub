@@ -21422,6 +21422,26 @@
         }
       }
     },
+    "قلل القرارات المكلفة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reduce costly decisions"
+          }
+        }
+      }
+    },
+    "الدقة والأثر قد يبدوان مقبولين، لكن عدد القرارات المكلفة تجاوز هدف الجلسة؛ أعدها وراجع Replay أفضل قرار بعد كل موقف." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accuracy and impact may look acceptable, but costly decisions exceeded the session target; repeat it and review the best-decision replay after each scenario."
+          }
+        }
+      }
+    },
     "الدقة كافية لكن الأثر ضعيف؛ قارن اختيارك بثاني أفضل ورقة قبل بدء جلسة جديدة." : {
       "localizations" : {
         "en" : {
@@ -21900,6 +21920,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Accuracy or decision impact is low; repeat the same plan and do not increase difficulty yet."
+          }
+        }
+      }
+    },
+    "أكملتها، لكن عدد القرارات المكلفة أعلى من هدف الخطة؛ أعدها وراجع Replay أفضل قرار." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You completed it, but costly decisions were above the plan target; repeat it and review the best-decision replay."
           }
         }
       }
