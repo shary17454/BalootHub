@@ -107,19 +107,20 @@ struct DailyChallengesView: View {
             if let seed = challenge.whatToPlaySeed,
                let difficulty = challenge.whatToPlayDifficulty,
                let focusKind = challenge.whatToPlayFocusKind {
+                let nextSeed = nextWhatToPlaySeed(for: challenge, progress: progress) ?? seed
                 HStack {
-                    scoreBox(title: "موقف اليوم".localized, value: "\(seed)")
+                    scoreBox(title: "موقف اليوم".localized, value: "\(nextSeed)")
                     scoreBox(title: "المستوى", value: difficultyTitle(difficulty))
                     scoreBox(title: "التركيز", value: focusTitle(focusKind))
                 }
 
                 Button {
                     appEnvironment.navigate(
-                        to: .whatToPlayTrainer(seed: seed, difficulty: difficulty, focusKind: focusKind),
+                        to: .whatToPlayTrainer(seed: nextSeed, difficulty: difficulty, focusKind: focusKind),
                         tab: appEnvironment.selectedTab
                     )
                 } label: {
-                    Label("فتح موقف اليوم".localized, systemImage: "brain.head.profile")
+                    Label((progress?.completedCount ?? 0) > 0 ? "متابعة مواقف اليوم".localized : "فتح موقف اليوم".localized, systemImage: "brain.head.profile")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
@@ -179,6 +180,13 @@ struct DailyChallengesView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+    }
+
+    private func nextWhatToPlaySeed(for challenge: BalootChallenge, progress: BalootChallengeProgress?) -> UInt64? {
+        let series = DailyChallengeCenter.whatToPlaySeedSeries(for: challenge)
+        guard !series.isEmpty else { return challenge.whatToPlaySeed }
+        let nextIndex = min(progress?.completedCount ?? 0, series.count - 1)
+        return series[nextIndex]
     }
 
     private func toggleCompletion(_ challengeID: String) {

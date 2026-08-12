@@ -181,6 +181,14 @@ enum DailyChallengeCenter {
         return 7_000_000 + dailySeed(for: date, calendar: calendar) + difficultyComponent + focusComponent
     }
 
+    static func whatToPlaySeedSeries(for challenge: BalootChallenge) -> [UInt64] {
+        guard challenge.category == .tactics,
+              let baseSeed = challenge.whatToPlaySeed
+        else { return [] }
+
+        return (0..<challenge.targetCount).map { baseSeed &+ UInt64($0) }
+    }
+
     static func progress(
         for challenge: BalootChallenge,
         attempts: [WhatToPlayAttempt],
@@ -193,11 +201,13 @@ enum DailyChallengeCenter {
               let interval = dateInterval(for: challenge.cadence, containing: now, calendar: calendar)
         else { return nil }
 
+        let challengeSeeds = Set(whatToPlaySeedSeries(for: challenge))
         let completed = attempts.filter { attempt in
             attempt.createdAt >= interval.start
                 && attempt.createdAt < interval.end
                 && attempt.difficulty == difficulty
                 && attempt.focusKind == focusKind
+                && challengeSeeds.contains(attempt.replaySeed)
                 && attempt.isCorrect
         }.count
 

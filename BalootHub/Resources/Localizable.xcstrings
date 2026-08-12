@@ -22806,6 +22806,16 @@
         }
       }
     },
+    "متابعة مواقف اليوم" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue today's scenarios"
+          }
+        }
+      }
+    },
     "موقف اليوم" : {
       "localizations" : {
         "en" : {

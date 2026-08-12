@@ -104,22 +104,36 @@ final class DailyChallengeCenterTests: XCTestCase {
         XCTAssertTrue(WhatToPlayScenarioFocusKind.allCases.contains(focusKind))
     }
 
+    func testWhatToPlayChallengeSeedSeriesMatchesTargetCount() throws {
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = try XCTUnwrap(DailyChallengeCenter.dailyChallenges(for: date).first { $0.category == .tactics })
+        let seed = try XCTUnwrap(challenge.whatToPlaySeed)
+
+        let series = DailyChallengeCenter.whatToPlaySeedSeries(for: challenge)
+
+        XCTAssertEqual(series.count, challenge.targetCount)
+        XCTAssertEqual(series.first, seed)
+        XCTAssertEqual(series.last, seed &+ UInt64(challenge.targetCount - 1))
+    }
+
     func testWhatToPlayProgressCountsMatchingAttemptsInsideChallengeDay() throws {
         let calendar = Calendar(identifier: .gregorian)
         let date = Date(timeIntervalSince1970: 1_785_888_000)
         let challenge = try XCTUnwrap(DailyChallengeCenter.dailyChallenges(for: date, calendar: calendar).first { $0.category == .tactics })
         let difficulty = try XCTUnwrap(challenge.whatToPlayDifficulty)
         let focusKind = try XCTUnwrap(challenge.whatToPlayFocusKind)
+        let seed = try XCTUnwrap(challenge.whatToPlaySeed)
         let otherDifficulty = WhatToPlayDifficulty.allCases.first { $0 != difficulty } ?? .easy
         let otherFocus = WhatToPlayScenarioFocusKind.allCases.first { $0 != focusKind } ?? .openingLead
         let dayStart = calendar.startOfDay(for: date)
         let attempts = [
-            attempt(at: dayStart.addingTimeInterval(60), difficulty: difficulty, focusKind: focusKind),
-            attempt(at: dayStart.addingTimeInterval(120), difficulty: difficulty, focusKind: focusKind),
-            attempt(at: dayStart.addingTimeInterval(150), difficulty: difficulty, focusKind: focusKind, isCorrect: false),
-            attempt(at: dayStart.addingTimeInterval(-60), difficulty: difficulty, focusKind: focusKind),
-            attempt(at: dayStart.addingTimeInterval(180), difficulty: otherDifficulty, focusKind: focusKind),
-            attempt(at: dayStart.addingTimeInterval(240), difficulty: difficulty, focusKind: otherFocus)
+            attempt(at: dayStart.addingTimeInterval(60), difficulty: difficulty, focusKind: focusKind, seed: seed),
+            attempt(at: dayStart.addingTimeInterval(120), difficulty: difficulty, focusKind: focusKind, seed: seed &+ 1),
+            attempt(at: dayStart.addingTimeInterval(150), difficulty: difficulty, focusKind: focusKind, seed: seed &+ 2, isCorrect: false),
+            attempt(at: dayStart.addingTimeInterval(-60), difficulty: difficulty, focusKind: focusKind, seed: seed),
+            attempt(at: dayStart.addingTimeInterval(180), difficulty: otherDifficulty, focusKind: focusKind, seed: seed &+ 2),
+            attempt(at: dayStart.addingTimeInterval(240), difficulty: difficulty, focusKind: otherFocus, seed: seed &+ 2),
+            attempt(at: dayStart.addingTimeInterval(300), difficulty: difficulty, focusKind: focusKind, seed: seed &+ UInt64(challenge.targetCount + 5))
         ]
 
         let progress = try XCTUnwrap(DailyChallengeCenter.progress(
@@ -139,9 +153,15 @@ final class DailyChallengeCenterTests: XCTestCase {
         let challenge = try XCTUnwrap(DailyChallengeCenter.dailyChallenges(for: date, calendar: calendar).first { $0.category == .tactics })
         let difficulty = try XCTUnwrap(challenge.whatToPlayDifficulty)
         let focusKind = try XCTUnwrap(challenge.whatToPlayFocusKind)
+        let seed = try XCTUnwrap(challenge.whatToPlaySeed)
         let dayStart = calendar.startOfDay(for: date)
         let attempts = (0..<(challenge.targetCount + 3)).map {
-            attempt(at: dayStart.addingTimeInterval(TimeInterval($0 + 1)), difficulty: difficulty, focusKind: focusKind)
+            attempt(
+                at: dayStart.addingTimeInterval(TimeInterval($0 + 1)),
+                difficulty: difficulty,
+                focusKind: focusKind,
+                seed: seed &+ UInt64($0)
+            )
         }
 
         let progress = try XCTUnwrap(DailyChallengeCenter.progress(
@@ -155,6 +175,30 @@ final class DailyChallengeCenterTests: XCTestCase {
         XCTAssertTrue(progress.isComplete)
     }
 
+    func testWhatToPlayProgressIgnoresMatchingTrainingOutsideChallengeSeedSeries() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = try XCTUnwrap(DailyChallengeCenter.dailyChallenges(for: date, calendar: calendar).first { $0.category == .tactics })
+        let difficulty = try XCTUnwrap(challenge.whatToPlayDifficulty)
+        let focusKind = try XCTUnwrap(challenge.whatToPlayFocusKind)
+        let seed = try XCTUnwrap(challenge.whatToPlaySeed)
+        let dayStart = calendar.startOfDay(for: date)
+        let attempts = [
+            attempt(at: dayStart.addingTimeInterval(60), difficulty: difficulty, focusKind: focusKind, seed: seed &+ UInt64(challenge.targetCount + 10)),
+            attempt(at: dayStart.addingTimeInterval(120), difficulty: difficulty, focusKind: focusKind, seed: seed &- 1)
+        ]
+
+        let progress = try XCTUnwrap(DailyChallengeCenter.progress(
+            for: challenge,
+            attempts: attempts,
+            now: date,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(progress.completedCount, 0)
+        XCTAssertFalse(progress.isComplete)
+    }
+
     func testNonTacticsChallengesDoNotReturnWhatToPlayProgress() throws {
         let date = Date(timeIntervalSince1970: 1_785_888_000)
         let challenge = try XCTUnwrap(DailyChallengeCenter.dailyChallenges(for: date).first { $0.category == .match })
@@ -166,12 +210,13 @@ final class DailyChallengeCenterTests: XCTestCase {
         at date: Date,
         difficulty: WhatToPlayDifficulty,
         focusKind: WhatToPlayScenarioFocusKind,
+        seed: UInt64 = 1,
         isCorrect: Bool = true
     ) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
             createdAt: date,
             difficulty: difficulty,
-            seed: 1,
+            seed: seed,
             selectedCard: PlayingCard(suit: .clubs, rank: .seven),
             bestCard: PlayingCard(suit: .clubs, rank: .seven),
             isCorrect: isCorrect,
