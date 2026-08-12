@@ -99,6 +99,37 @@ public enum BalootSandbox {
         .east: UUID(uuidString: "00000000-0000-0000-0000-00000000B304")!
     ]
 
+    /// موقف تدريبي جاهز يصلح كنقطة بداية للواجهة والاختبارات.
+    public static let defaultConfiguration = BalootSandboxConfiguration(
+        mode: .hokum,
+        trumpSuit: .hearts,
+        multiplier: .double,
+        currentTurnSeat: .south,
+        handsBySeat: [
+            .south: [
+                PlayingCard(suit: .hearts, rank: .jack),
+                PlayingCard(suit: .clubs, rank: .ace)
+            ],
+            .west: [
+                PlayingCard(suit: .clubs, rank: .seven),
+                PlayingCard(suit: .diamonds, rank: .seven)
+            ],
+            .north: [
+                PlayingCard(suit: .clubs, rank: .eight),
+                PlayingCard(suit: .diamonds, rank: .eight)
+            ],
+            .east: [
+                PlayingCard(suit: .clubs, rank: .nine),
+                PlayingCard(suit: .diamonds, rank: .nine)
+            ]
+        ],
+        currentTrickCards: [
+            BalootSandboxPlayedCard(seat: .west, card: PlayingCard(suit: .spades, rank: .ace)),
+            BalootSandboxPlayedCard(seat: .north, card: PlayingCard(suit: .spades, rank: .king)),
+            BalootSandboxPlayedCard(seat: .east, card: PlayingCard(suit: .diamonds, rank: .ten))
+        ]
+    )
+
     public static func makeState(configuration: BalootSandboxConfiguration) throws -> GameState {
         try validateTrump(mode: configuration.mode, trumpSuit: configuration.trumpSuit)
         try validateCardOwnership(configuration)

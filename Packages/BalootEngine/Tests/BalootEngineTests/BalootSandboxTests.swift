@@ -20,6 +20,25 @@ struct BalootSandboxTests {
         ])
     }
 
+    @Test("الموقف الافتراضي صالح ويمكن تحويله إلى صن دون حكم")
+    func defaultConfigurationCanSwitchToSun() throws {
+        var configuration = BalootSandbox.defaultConfiguration
+        configuration.mode = .sun
+        configuration.trumpSuit = nil
+        configuration.multiplier = .none
+
+        let state = try BalootSandbox.makeState(configuration: configuration)
+        let legalCards = try BalootSandbox.legalCards(configuration: configuration)
+
+        #expect(state.mode == .sun)
+        #expect(state.trumpSuit == nil)
+        #expect(state.bidding.multiplier == .none)
+        #expect(legalCards == [
+            PlayingCard(suit: .hearts, rank: .jack),
+            PlayingCard(suit: .clubs, rank: .ace)
+        ])
+    }
+
     @Test("تجربة ورقة ممنوعة تعيد سبب الرفض من GameEngine")
     func previewReportsInvalidMoveReason() throws {
         let configuration = sandboxConfiguration()

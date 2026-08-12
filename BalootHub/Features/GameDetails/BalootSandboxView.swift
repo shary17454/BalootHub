@@ -2,11 +2,10 @@ import SwiftUI
 import BalootEngine
 
 struct BalootSandboxView: View {
+    @State private var configuration = BalootSandbox.defaultConfiguration
     @State private var selectedCard: PlayingCard?
     @State private var preview: BalootSandboxPlayPreview?
     @State private var errorMessage: String?
-
-    private let configuration = BalootSandboxView.defaultConfiguration
 
     private var state: GameState? {
         try? BalootSandbox.makeState(configuration: configuration)
@@ -20,6 +19,7 @@ struct BalootSandboxView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
                 header
+                sandboxControls
                 tableState
                 handPicker
                 if let preview {
@@ -50,6 +50,37 @@ struct BalootSandboxView: View {
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
     }
 
+    private var sandboxControls: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            Label("إعدادات المختبر".localized, systemImage: "slider.horizontal.3")
+                .font(AppTypography.headline)
+                .foregroundStyle(AppColor.primary)
+
+            Picker("النمط".localized, selection: modeBinding) {
+                ForEach(GameMode.allCases, id: \.self) { mode in
+                    Text(mode.arabicName.localized).tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+
+            if configuration.mode == .hokum {
+                Picker("لون الحكم".localized, selection: trumpSuitBinding) {
+                    ForEach(Suit.allCases) { suit in
+                        Text("\(suit.symbol) \(suit.spokenName)").tag(suit)
+                    }
+                }
+            }
+
+            Picker("المضاعف".localized, selection: multiplierBinding) {
+                ForEach(Multiplier.allCases, id: \.self) { multiplier in
+                    Text(multiplier.arabicName.localized).tag(multiplier)
+                }
+            }
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
     private var tableState: some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
             Label("الموقف".localized, systemImage: "tablecells.fill")
@@ -57,7 +88,7 @@ struct BalootSandboxView: View {
                 .foregroundStyle(AppColor.primary)
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppSpacing.sm) {
-                metric("النمط".localized, "\("حكم".localized) \(configuration.trumpSuit?.spokenName ?? "")", icon: "crown.fill")
+                metric("النمط".localized, modeText, icon: "crown.fill")
                 metric("المضاعف".localized, configuration.multiplier.arabicName.localized, icon: "multiply.circle.fill")
                 metric("الدور".localized, seatTitle(configuration.currentTurnSeat), icon: "person.crop.circle.badge.checkmark")
                 metric("الأوراق القانونية".localized, legalCardsText(), icon: "checkmark.seal.fill")
@@ -169,6 +200,52 @@ struct BalootSandboxView: View {
         }
     }
 
+    private var modeBinding: Binding<GameMode> {
+        Binding(
+            get: { configuration.mode },
+            set: { mode in
+                resetPreview()
+                configuration.mode = mode
+                configuration.trumpSuit = mode == .hokum ? (configuration.trumpSuit ?? .hearts) : nil
+            }
+        )
+    }
+
+    private var trumpSuitBinding: Binding<Suit> {
+        Binding(
+            get: { configuration.trumpSuit ?? .hearts },
+            set: { suit in
+                resetPreview()
+                configuration.trumpSuit = suit
+            }
+        )
+    }
+
+    private var multiplierBinding: Binding<Multiplier> {
+        Binding(
+            get: { configuration.multiplier },
+            set: { multiplier in
+                resetPreview()
+                configuration.multiplier = multiplier
+            }
+        )
+    }
+
+    private var modeText: String {
+        switch configuration.mode {
+        case .sun:
+            return "صن".localized
+        case .hokum:
+            return "\("حكم".localized) \(configuration.trumpSuit?.spokenName ?? "")"
+        }
+    }
+
+    private func resetPreview() {
+        selectedCard = nil
+        preview = nil
+        errorMessage = nil
+    }
+
     private func legalCardsText() -> String {
         guard let cards = try? BalootSandbox.legalCards(configuration: configuration), !cards.isEmpty else {
             return "لا يوجد".localized
@@ -184,36 +261,6 @@ struct BalootSandboxView: View {
         case .east: "شرق".localized
         }
     }
-
-    private static let defaultConfiguration = BalootSandboxConfiguration(
-        mode: .hokum,
-        trumpSuit: .hearts,
-        multiplier: .double,
-        currentTurnSeat: .south,
-        handsBySeat: [
-            .south: [
-                PlayingCard(suit: .hearts, rank: .jack),
-                PlayingCard(suit: .clubs, rank: .ace)
-            ],
-            .west: [
-                PlayingCard(suit: .clubs, rank: .seven),
-                PlayingCard(suit: .diamonds, rank: .seven)
-            ],
-            .north: [
-                PlayingCard(suit: .clubs, rank: .eight),
-                PlayingCard(suit: .diamonds, rank: .eight)
-            ],
-            .east: [
-                PlayingCard(suit: .clubs, rank: .nine),
-                PlayingCard(suit: .diamonds, rank: .nine)
-            ]
-        ],
-        currentTrickCards: [
-            BalootSandboxPlayedCard(seat: .west, card: PlayingCard(suit: .spades, rank: .ace)),
-            BalootSandboxPlayedCard(seat: .north, card: PlayingCard(suit: .spades, rank: .king)),
-            BalootSandboxPlayedCard(seat: .east, card: PlayingCard(suit: .diamonds, rank: .ten))
-        ]
-    )
 }
 
 #Preview {
