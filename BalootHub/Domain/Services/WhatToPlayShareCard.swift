@@ -23,6 +23,7 @@ struct WhatToPlayShareCardContent: Equatable {
     let secondBestCardName: String?
     let secondBestExpectedImpact: Int?
     let lostExpectedPoints: Int?
+    let lostProjectedTeamPoints: Int?
     let lostAgainstSecondBestPoints: Int?
     let valueLossTitle: String?
     let decisionQualityTitle: String?
@@ -61,6 +62,9 @@ enum WhatToPlayShareCard {
         let secondBest = selectedOption == nil ? nil : scenario.secondBestOption
         let lost = selectedOption.flatMap { selected in
             best.map { max(0, $0.expectedImpact - selected.expectedImpact) }
+        }
+        let projectedLost = selectedOption.flatMap { selected in
+            best.map { max(0, $0.projectedTeamPoints - selected.projectedTeamPoints) }
         }
         let lostAgainstSecondBest = selectedOption.flatMap { selected in
             secondBest.map { max(0, $0.expectedImpact - selected.expectedImpact) }
@@ -103,6 +107,7 @@ enum WhatToPlayShareCard {
             secondBestCardName: secondBest?.card.accessibilityName,
             secondBestExpectedImpact: secondBest?.expectedImpact,
             lostExpectedPoints: lost,
+            lostProjectedTeamPoints: projectedLost,
             lostAgainstSecondBestPoints: lostAgainstSecondBest,
             valueLossTitle: valueLossTitle,
             decisionQualityTitle: decisionQualityTitle,
@@ -174,6 +179,9 @@ enum WhatToPlayShareCard {
             }
             if let lostExpectedPoints = content.lostExpectedPoints {
                 lines.append("\("نقاط متوقعة ضائعة".localized): \(lostExpectedPoints)")
+            }
+            if let lostProjectedTeamPoints = content.lostProjectedTeamPoints {
+                lines.append("\("نقاط محاكاة ضائعة".localized): \(lostProjectedTeamPoints)")
             }
             if let valueLossTitle = content.valueLossTitle {
                 lines.append("\("شدة خسارة القيمة".localized): \(valueLossTitle)")
