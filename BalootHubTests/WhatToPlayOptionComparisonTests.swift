@@ -27,6 +27,8 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertNil(summary.selectedProjectedTeamPoints)
         XCTAssertNil(summary.selectedLostExpectedPoints)
         XCTAssertNil(summary.decisionQuality)
+        XCTAssertNil(summary.nextActionTitle)
+        XCTAssertNil(summary.nextActionDetail)
         XCTAssertTrue(summary.hasSecondBest)
     }
 
@@ -52,6 +54,8 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertEqual(bestSummary.decisionQuality, .expertMatch)
         XCTAssertEqual(bestSummary.decisionQuality?.title, "مطابق للخبير".localized)
         XCTAssertFalse(bestSummary.decisionQuality?.systemImage.isEmpty ?? true)
+        XCTAssertEqual(bestSummary.nextActionTitle, "ثبّت القراءة".localized)
+        XCTAssertTrue(bestSummary.nextActionDetail?.contains(best.card.accessibilityName) ?? false)
 
         let expectedLost = max(0, best.expectedImpact - costly.expectedImpact)
         XCTAssertEqual(costlySummary.selectedCard, costly.card)
@@ -65,6 +69,8 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         } else {
             XCTAssertEqual(costlySummary.decisionQuality, .costly)
         }
+        XCTAssertNotNil(costlySummary.nextActionTitle)
+        XCTAssertFalse(costlySummary.nextActionDetail?.isEmpty ?? true)
     }
 
     func testRowsAreSortedByExpertRankAndMarkSelectedCard() throws {

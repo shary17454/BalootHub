@@ -2824,6 +2824,24 @@ struct WhatToPlayTrainerView: View {
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(decisionQualityTint(quality))
             }
+            if let nextActionTitle = summary.nextActionTitle,
+               let nextActionDetail = summary.nextActionDetail {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(nextActionTitle)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(AppColor.textPrimary)
+                        Text(nextActionDetail)
+                            .font(.caption2)
+                            .foregroundStyle(AppColor.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                } icon: {
+                    Image(systemName: "arrow.triangle.branch")
+                        .foregroundStyle(AppColor.accent)
+                }
+                .padding(.top, AppSpacing.xs)
+            }
         }
         .accessibilityElement(children: .combine)
     }

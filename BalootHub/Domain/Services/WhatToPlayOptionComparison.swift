@@ -36,6 +36,8 @@ struct WhatToPlayOptionComparisonSummary: Equatable {
     let selectedProjectedTeamPoints: Int?
     let selectedLostExpectedPoints: Int?
     let decisionQuality: WhatToPlayDecisionQuality?
+    let nextActionTitle: String?
+    let nextActionDetail: String?
 
     var hasSecondBest: Bool {
         secondBestCard != nil
@@ -143,6 +145,7 @@ enum WhatToPlayOptionComparison {
         let lost = selected.flatMap { selectedOption in
             best.map { max(0, $0.expectedImpact - selectedOption.expectedImpact) }
         }
+        let action = nextAction(selected: selected, best: best, second: second, lostExpectedPoints: lost)
 
         return WhatToPlayOptionComparisonSummary(
             bestCard: best?.card,
@@ -156,7 +159,9 @@ enum WhatToPlayOptionComparison {
             selectedExpectedImpact: selected?.expectedImpact,
             selectedProjectedTeamPoints: selected?.projectedTeamPoints,
             selectedLostExpectedPoints: lost,
-            decisionQuality: decisionQuality(selected: selected, lostExpectedPoints: lost)
+            decisionQuality: decisionQuality(selected: selected, lostExpectedPoints: lost),
+            nextActionTitle: action.title,
+            nextActionDetail: action.detail
         )
     }
 
@@ -203,6 +208,38 @@ enum WhatToPlayOptionComparison {
         return WhatToPlayDecisionQuality.classify(
             isExpertChoice: selected.isExpertChoice,
             lostExpectedPoints: lostExpectedPoints
+        )
+    }
+
+    private static func nextAction(
+        selected: WhatToPlayOption?,
+        best: WhatToPlayOption?,
+        second: WhatToPlayOption?,
+        lostExpectedPoints: Int?
+    ) -> (title: String?, detail: String?) {
+        guard let selected, let best, let lostExpectedPoints else { return (nil, nil) }
+        if selected.isExpertChoice || lostExpectedPoints == 0 {
+            return (
+                "ثبّت القراءة".localized,
+                "اختيارك مطابق لتحليل الخبير. قبل الموقف التالي، سمِّ سبب قوة \(selected.card.accessibilityName) حتى تتكرر القراءة."
+            )
+        }
+        if lostExpectedPoints <= 2 {
+            let secondText = second.map { " وثاني أفضل كان \($0.card.accessibilityName)" } ?? ""
+            return (
+                "راجع الفرق الصغير".localized,
+                "قرارك قريب جدًا؛ الفارق عن الأفضل \(lostExpectedPoints)\(secondText). ركز على سبب تقدّم \(best.card.accessibilityName)."
+            )
+        }
+        if lostExpectedPoints <= 8 {
+            return (
+                "قارن قبل اللعب".localized,
+                "القرار مقبول لكنه يخسر \(lostExpectedPoints) نقاط أثر متوقعة. في المرة القادمة احذف خيارين ضعيفين ثم قارن \(best.card.accessibilityName) باختيارك."
+            )
+        }
+        return (
+            "أعد الموقف".localized,
+            "هذا اختيار مكلف بفارق \(lostExpectedPoints). أعد نفس الموقف وشاهد إعادة أفضل قرار قبل الانتقال لموقف جديد."
         )
     }
 

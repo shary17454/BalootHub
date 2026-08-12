@@ -23189,7 +23189,10 @@
     "شراء قوي" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Strong buy" } } } },
     "شراء حذر" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Cautious buy" } } } },
     "تمرير قريب" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Close pass" } } } },
-    "تمرير واضح" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Clear pass" } } } }
+    "تمرير واضح" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Clear pass" } } } },
+    "راجع الفرق الصغير" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Review the small gap" } } } },
+    "قارن قبل اللعب" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Compare before playing" } } } },
+    "أعد الموقف" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Replay the scenario" } } } }
   },
   "version" : "1.0"
 }
