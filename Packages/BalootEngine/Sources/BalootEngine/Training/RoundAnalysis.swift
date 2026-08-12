@@ -81,6 +81,15 @@ public struct RoundMultiplierDecisionAnalysis: Identifiable, Sendable, Equatable
     }
 }
 
+/// المجال الأهم الذي يجب أن يبدأ منه اللاعب عند مراجعة الجولة.
+public enum RoundReviewPriority: String, Sendable, Codable, Equatable {
+    case bidding
+    case projects
+    case multipliers
+    case play
+    case none
+}
+
 /// تقرير تحليل الجولة بعد انتهائها.
 public struct RoundAnalysisReport: Sendable, Equatable {
     public let playerID: Player.ID
@@ -111,6 +120,16 @@ public struct RoundAnalysisReport: Sendable, Equatable {
     /// النقاط التقديرية الضائعة من قرارات المزايدة فقط.
     public var biddingLostPoints: Int {
         biddingDecisions.reduce(0) { $0 + $1.estimatedLostPoints }
+    }
+
+    /// النقاط التقديرية الضائعة من قرارات اللعب فقط.
+    public var playLostPoints: Int {
+        decisions.reduce(0) { $0 + $1.estimatedLostPoints }
+    }
+
+    /// هل تحتاج الجولة إلى مراجعة قرارات اللعب داخل الأكلات؟
+    public var needsPlayReview: Bool {
+        decisions.contains { !$0.matchedExpert } && playLostPoints > 0
     }
 
     /// هل تحتاج الجولة إلى مراجعة مزايدة قبل مراجعة الأكلات؟
@@ -146,6 +165,25 @@ public struct RoundAnalysisReport: Sendable, Equatable {
     /// هل تحتاج الجولة إلى مراجعة قرارات المضاعفة؟
     public var needsMultiplierReview: Bool {
         multiplierMistakeCount > 0 && multiplierLostPoints > 0
+    }
+
+    /// يختار أول مجال مراجعة حسب أكبر فاقد تقديري، مع ترتيب ثابت عند التعادل.
+    public var primaryReviewPriority: RoundReviewPriority {
+        let candidates: [(priority: RoundReviewPriority, lost: Int, order: Int)] = [
+            (.bidding, needsBiddingReview ? biddingLostPoints : 0, 0),
+            (.projects, needsProjectReview ? projectLostPoints : 0, 1),
+            (.multipliers, needsMultiplierReview ? multiplierLostPoints : 0, 2),
+            (.play, needsPlayReview ? playLostPoints : 0, 3)
+        ]
+
+        return candidates
+            .filter { $0.lost > 0 }
+            .sorted {
+                if $0.lost != $1.lost { return $0.lost > $1.lost }
+                return $0.order < $1.order
+            }
+            .first?
+            .priority ?? .none
     }
 }
 

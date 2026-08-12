@@ -75,6 +75,121 @@ struct RoundAnalysisTests {
         #expect(report.needsBiddingReview)
     }
 
+    @Test("أولوية مراجعة الجولة تبدأ بأكبر فاقد مؤثر")
+    func primaryReviewPriorityUsesLargestMeaningfulLoss() {
+        let team = Team(name: "أ")
+        let player = Player(name: "لاعب", kind: .human, seat: .south, teamID: team.id)
+        let playDecision = RoundDecisionAnalysis(
+            stepIndex: 4,
+            trickNumber: 2,
+            playerID: player.id,
+            playedCard: PlayingCard(suit: .clubs, rank: .seven),
+            bestCard: PlayingCard(suit: .clubs, rank: .ace),
+            secondBestCard: nil,
+            selectedRank: 3,
+            expectedImpact: -2,
+            bestExpectedImpact: 8,
+            estimatedLostPoints: 10,
+            explanation: "اختبار"
+        )
+        let biddingDecision = RoundBiddingDecisionAnalysis(
+            stepIndex: 1,
+            playerID: player.id,
+            bid: .pass,
+            recommendedBid: .sun,
+            legalBids: [.pass, .sun],
+            handStrengthScore: 42,
+            estimatedLostPoints: 6,
+            explanation: "اختبار"
+        )
+        let report = RoundAnalysisReport(
+            playerID: player.id,
+            scoreOutOf100: 70,
+            decisions: [playDecision],
+            biddingDecisions: [biddingDecision],
+            projectOpportunities: [],
+            multiplierDecisions: [],
+            bestDecision: nil,
+            worstDecision: playDecision,
+            totalEstimatedLostPoints: 16,
+            tacticalMistakes: [],
+            strengths: [],
+            weaknesses: [],
+            tips: []
+        )
+
+        #expect(report.playLostPoints == 10)
+        #expect(report.needsPlayReview)
+        #expect(report.primaryReviewPriority == .play)
+    }
+
+    @Test("أولوية مراجعة الجولة تستخدم ترتيبًا ثابتًا عند التعادل")
+    func primaryReviewPriorityUsesStableTieOrder() {
+        let team = Team(name: "أ")
+        let player = Player(name: "لاعب", kind: .human, seat: .south, teamID: team.id)
+        let biddingDecision = RoundBiddingDecisionAnalysis(
+            stepIndex: 1,
+            playerID: player.id,
+            bid: .pass,
+            recommendedBid: .sun,
+            legalBids: [.pass, .sun],
+            handStrengthScore: 42,
+            estimatedLostPoints: 8,
+            explanation: "اختبار"
+        )
+        let projectOpportunity = RoundProjectOpportunityAnalysis(
+            stepIndex: 2,
+            playerID: player.id,
+            availableProjects: [Project(kind: .fifty, teamID: player.teamID, playerID: player.id, cards: [], points: 8)],
+            declaredProjects: [],
+            missedProjects: [Project(kind: .fifty, teamID: player.teamID, playerID: player.id, cards: [], points: 8)],
+            estimatedLostPoints: 8,
+            explanation: "اختبار"
+        )
+        let report = RoundAnalysisReport(
+            playerID: player.id,
+            scoreOutOf100: 70,
+            decisions: [],
+            biddingDecisions: [biddingDecision],
+            projectOpportunities: [projectOpportunity],
+            multiplierDecisions: [],
+            bestDecision: nil,
+            worstDecision: nil,
+            totalEstimatedLostPoints: 16,
+            tacticalMistakes: [],
+            strengths: [],
+            weaknesses: [],
+            tips: []
+        )
+
+        #expect(report.primaryReviewPriority == RoundReviewPriority.bidding)
+    }
+
+    @Test("أولوية مراجعة الجولة تكون none عند عدم وجود فاقد")
+    func primaryReviewPriorityIsNoneWithoutLoss() {
+        let team = Team(name: "أ")
+        let player = Player(name: "لاعب", kind: .human, seat: .south, teamID: team.id)
+        let report = RoundAnalysisReport(
+            playerID: player.id,
+            scoreOutOf100: 100,
+            decisions: [],
+            biddingDecisions: [],
+            projectOpportunities: [],
+            multiplierDecisions: [],
+            bestDecision: nil,
+            worstDecision: nil,
+            totalEstimatedLostPoints: 0,
+            tacticalMistakes: [],
+            strengths: [],
+            weaknesses: [],
+            tips: []
+        )
+
+        #expect(report.playLostPoints == 0)
+        #expect(report.needsPlayReview == false)
+        #expect(report.primaryReviewPriority == .none)
+    }
+
     @Test("اختيار غير الأفضل يظهر في أسوأ قرار")
     func nonExpertChoiceCanBeReportedAsWorstDecision() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
