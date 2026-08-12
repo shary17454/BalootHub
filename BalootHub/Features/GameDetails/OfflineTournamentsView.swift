@@ -19,6 +19,8 @@ struct OfflineTournamentsView: View {
                 Section("إحصائيات البطولات") {
                     tournamentMetric("البطولات", "\(stats.tournaments)", "trophy.fill")
                     tournamentMetric("المكتملة", "\(stats.finishedTournaments)", "checkmark.seal.fill")
+                    tournamentMetric("بطولات 4 فرق", "\(stats.fourTeamTournaments)", "square.grid.2x2.fill")
+                    tournamentMetric("بطولات 8 فرق", "\(stats.eightTeamTournaments)", "square.grid.3x3.fill")
                     tournamentMetric("المباريات المنتهية", "\(stats.completedMatches)/\(stats.scheduledMatches)", "list.number")
                     tournamentMetric("نسبة الإنجاز", "\(stats.completionPercent)%", "gauge.with.dots.needle.67percent")
                     if let team = stats.mostDecoratedTeam {

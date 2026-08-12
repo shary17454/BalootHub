@@ -47,12 +47,24 @@ final class OfflineTournamentTests: XCTestCase {
         XCTAssertEqual(summary.tournaments, 2)
         XCTAssertEqual(summary.activeTournaments, 1)
         XCTAssertEqual(summary.finishedTournaments, 1)
+        XCTAssertEqual(summary.fourTeamTournaments, 2)
+        XCTAssertEqual(summary.eightTeamTournaments, 0)
         XCTAssertEqual(summary.completedMatches, 3)
         XCTAssertEqual(summary.scheduledMatches, active.matches.count + finished.matches.count)
         XCTAssertEqual(summary.championshipTeams[final.homeTeam], 1)
         XCTAssertEqual(summary.mostDecoratedTeam, final.homeTeam)
         XCTAssertEqual(summary.mostDecoratedTeamTitles, 1)
         XCTAssertGreaterThan(summary.completionPercent, 0)
+    }
+
+    func testTournamentStatsTrackFourAndEightTeamTournaments() {
+        let fourTeams = OfflineTournamentPlanner.makeTournament(title: "رباعي", format: .league, teamCount: 4, seed: 9)
+        let eightTeams = OfflineTournamentPlanner.makeTournament(title: "ثماني", format: .knockout, teamCount: 8, seed: 10)
+
+        let summary = OfflineTournamentPlanner.stats(for: [fourTeams, eightTeams])
+
+        XCTAssertEqual(summary.fourTeamTournaments, 1)
+        XCTAssertEqual(summary.eightTeamTournaments, 1)
     }
 
     func testBestOfThreeRequiresTwoWins() throws {
