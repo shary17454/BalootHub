@@ -589,8 +589,14 @@ struct EngineRegressionTests {
         #expect(state.phase == .finished)
         #expect(!state.completedTricks.isEmpty)
         #expect(state.lastRoundResult != nil)
+        let finishedRound = state.roundNumber
+        let finishedDealer = state.dealerSeat
+        #expect(!state.actionHistory.isEmpty)
 
         state = try GameEngine.apply(.dealCards(seed: 12), to: state)
+        #expect(state.roundNumber == finishedRound + 1)
+        #expect(state.dealerSeat == finishedDealer.next)
+        #expect(state.actionHistory == [.dealCards(seed: 12)])
         #expect(state.completedTricks.isEmpty)
         #expect(state.currentTrick == nil)
         #expect(state.teamTrickPoints.isEmpty)
@@ -601,6 +607,29 @@ struct EngineRegressionTests {
         for hand in state.hands.values {
             #expect(hand.count == 8)
         }
+    }
+
+    @Test("إعادة التوزيع بعد دورة ميتة لا تدوّر الموزّع مرتين")
+    func redealAfterVoidRoundKeepsSingleDealerRotation() throws {
+        var state = GameState.newLocalMatch(rules: .standard)
+        state = try GameEngine.apply(.dealCards(seed: 9), to: state)
+        let originalDealer = state.dealerSeat
+
+        for _ in 0..<8 {
+            let playerID = try #require(state.currentTurnPlayerID)
+            state = try GameEngine.apply(.placeBid(playerID: playerID, bid: .pass), to: state)
+        }
+
+        #expect(state.phase == .finished)
+        #expect(state.bidding.stage == .voided)
+        #expect(state.dealerSeat == originalDealer.next)
+
+        state = try GameEngine.apply(.dealCards(seed: 10), to: state)
+
+        #expect(state.roundNumber == 2)
+        #expect(state.dealerSeat == originalDealer.next)
+        #expect(state.currentTurnPlayerID == state.player(at: state.dealerSeat.next)?.id)
+        #expect(state.actionHistory == [.dealCards(seed: 10)])
     }
 
     @Test("الجولة المحلية البشرية تنشئ أربعة لاعبين بلا آليين")

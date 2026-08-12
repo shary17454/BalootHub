@@ -271,6 +271,14 @@ public enum GameEngine {
         guard state.players.count == 4 else {
             throw GameEngineError.unknownPlayer
         }
+        if state.phase == .finished {
+            let dealerAlreadyRotated = state.bidding.stage == .voided
+            state.actionHistory = []
+            state.roundNumber += 1
+            if !dealerAlreadyRotated {
+                state.dealerSeat = state.dealerSeat.next
+            }
+        }
         try BiddingEngine.deal(seed: seed, state: &state)
     }
 
