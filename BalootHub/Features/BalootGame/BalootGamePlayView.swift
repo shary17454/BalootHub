@@ -505,6 +505,13 @@ struct BalootGamePlayView: View {
             }
 
             VStack(spacing: AppSpacing.xs) {
+                if report.primaryReviewPriority != .none {
+                    analysisRow(
+                        icon: reviewPriorityIcon(report.primaryReviewPriority),
+                        title: "أولوية المراجعة".localized,
+                        value: reviewPriorityValue(report.primaryReviewPriority)
+                    )
+                }
                 if let bidding = report.biddingDecisions.first {
                     analysisRow(
                         icon: bidding.matchedRecommendation ? "hand.thumbsup.fill" : "exclamationmark.bubble.fill",
@@ -577,6 +584,36 @@ struct BalootGamePlayView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+    }
+
+    private func reviewPriorityIcon(_ priority: RoundReviewPriority) -> String {
+        switch priority {
+        case .bidding:
+            return "hand.raised.fill"
+        case .projects:
+            return "sparkles.rectangle.stack.fill"
+        case .multipliers:
+            return "flame.circle.fill"
+        case .play:
+            return "suit.club.fill"
+        case .none:
+            return "checkmark.seal.fill"
+        }
+    }
+
+    private func reviewPriorityValue(_ priority: RoundReviewPriority) -> String {
+        switch priority {
+        case .bidding:
+            return "ابدأ بالمزايدة".localized
+        case .projects:
+            return "ابدأ بالمشاريع".localized
+        case .multipliers:
+            return "ابدأ بالمضاعفات".localized
+        case .play:
+            return "ابدأ باللعب".localized
+        case .none:
+            return "لا توجد أولوية".localized
+        }
     }
 
     private func biddingAnalysisValue(_ decision: RoundBiddingDecisionAnalysis) -> String {
