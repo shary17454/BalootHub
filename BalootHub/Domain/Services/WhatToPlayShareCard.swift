@@ -69,7 +69,10 @@ enum WhatToPlayShareCard {
         let lostAgainstSecondBest = selectedOption.flatMap { selected in
             secondBest.map { max(0, $0.expectedImpact - selected.expectedImpact) }
         }
-        let valueLossTitle = lost.map { WhatToPlayStatsAnalyzer.valueLossTitle(for: WhatToPlayStatsAnalyzer.valueLossSeverity(for: $0)) }
+        let valueLossTitle = lost.map { lostExpectedPoints in
+            let decisiveLoss = max(lostExpectedPoints, projectedLost ?? 0)
+            return WhatToPlayStatsAnalyzer.valueLossTitle(for: WhatToPlayStatsAnalyzer.valueLossSeverity(for: decisiveLoss))
+        }
         let decisionQualityTitle = selectedOption.flatMap { selected in
             lost.map {
                 WhatToPlayDecisionQuality.classify(

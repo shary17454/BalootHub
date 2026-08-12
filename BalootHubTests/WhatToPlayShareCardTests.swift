@@ -107,7 +107,12 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("ترتيب اختياري".localized): \(selected.rank)"))
         XCTAssertTrue(text.contains("\("نقاط متوقعة ضائعة".localized): \(max(0, best.expectedImpact - selected.expectedImpact))"))
         XCTAssertTrue(text.contains("\("نقاط محاكاة ضائعة".localized): \(max(0, best.projectedTeamPoints - selected.projectedTeamPoints))"))
-        let severity = WhatToPlayStatsAnalyzer.valueLossSeverity(for: max(0, best.expectedImpact - selected.expectedImpact))
+        let severity = WhatToPlayStatsAnalyzer.valueLossSeverity(
+            for: max(
+                max(0, best.expectedImpact - selected.expectedImpact),
+                max(0, best.projectedTeamPoints - selected.projectedTeamPoints)
+            )
+        )
         XCTAssertTrue(text.contains("\("شدة خسارة القيمة".localized): \(WhatToPlayStatsAnalyzer.valueLossTitle(for: severity))"))
         XCTAssertTrue(text.contains("\("فارق عن ثاني أفضل".localized): \(max(0, secondBest.expectedImpact - selected.expectedImpact))"))
         XCTAssertTrue(text.contains("\("الأثر المتوقع".localized): \(selected.expectedImpact >= 0 ? "+\(selected.expectedImpact)" : "\(selected.expectedImpact)")"))
@@ -210,7 +215,9 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertLessThanOrEqual(max(0, best.expectedImpact - selected.expectedImpact), 2)
         XCTAssertGreaterThanOrEqual(max(0, best.projectedTeamPoints - selected.projectedTeamPoints), 9)
         XCTAssertEqual(content.decisionQualityTitle, "قرار مكلف".localized)
+        XCTAssertEqual(content.valueLossTitle, "خسارة عالية".localized)
         XCTAssertTrue(text.contains("\("تقييم القرار".localized): \("قرار مكلف".localized)"))
+        XCTAssertTrue(text.contains("\("شدة خسارة القيمة".localized): \("خسارة عالية".localized)"))
     }
 
     private func contentMode(for scenario: WhatToPlayScenario) -> String {
