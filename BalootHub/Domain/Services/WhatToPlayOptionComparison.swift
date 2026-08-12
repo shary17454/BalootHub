@@ -44,6 +44,13 @@ enum WhatToPlayDecisionQuality: Equatable {
     case acceptable
     case costly
 
+    static func classify(isExpertChoice: Bool, lostExpectedPoints: Int) -> WhatToPlayDecisionQuality {
+        if isExpertChoice || lostExpectedPoints == 0 { return .expertMatch }
+        if lostExpectedPoints <= 2 { return .close }
+        if lostExpectedPoints <= 8 { return .acceptable }
+        return .costly
+    }
+
     var title: String {
         switch self {
         case .expertMatch:
@@ -185,10 +192,10 @@ enum WhatToPlayOptionComparison {
         lostExpectedPoints: Int?
     ) -> WhatToPlayDecisionQuality? {
         guard let selected, let lostExpectedPoints else { return nil }
-        if selected.isExpertChoice || lostExpectedPoints == 0 { return .expertMatch }
-        if lostExpectedPoints <= 2 { return .close }
-        if lostExpectedPoints <= 8 { return .acceptable }
-        return .costly
+        return WhatToPlayDecisionQuality.classify(
+            isExpertChoice: selected.isExpertChoice,
+            lostExpectedPoints: lostExpectedPoints
+        )
     }
 
     private static func tacticalTag(for option: WhatToPlayOption, bestImpact: Int) -> WhatToPlayOptionTacticalTag {

@@ -473,6 +473,20 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.costlyPercent, 20)
     }
 
+    func testAttemptDecisionQualityUsesSavedExpectedImpacts() {
+        let expert = attempt(daysAgo: 4, correct: true, impact: 6, bestImpact: 10)
+        let close = attempt(daysAgo: 3, correct: false, impact: 8, bestImpact: 10)
+        let acceptable = attempt(daysAgo: 2, correct: false, impact: 4, bestImpact: 10)
+        let costly = attempt(daysAgo: 1, correct: false, impact: 1, bestImpact: 10)
+        let legacy = attempt(daysAgo: 0, correct: false, impact: 1)
+
+        XCTAssertEqual(expert.decisionQuality, .expertMatch)
+        XCTAssertEqual(close.decisionQuality, .close)
+        XCTAssertEqual(acceptable.decisionQuality, .acceptable)
+        XCTAssertEqual(costly.decisionQuality, .costly)
+        XCTAssertNil(legacy.decisionQuality)
+    }
+
     func testDecisionQualitySummaryIgnoresLegacyAttemptsWithoutBestImpact() {
         let attempts = [
             attempt(daysAgo: 2, correct: true, impact: 5),

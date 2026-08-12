@@ -137,6 +137,14 @@ final class WhatToPlayAttempt {
         return max(0, secondBestExpectedImpact - expectedImpact)
     }
 
+    var decisionQuality: WhatToPlayDecisionQuality? {
+        guard bestExpectedImpact != nil else { return nil }
+        return WhatToPlayDecisionQuality.classify(
+            isExpertChoice: isCorrect,
+            lostExpectedPoints: lostExpectedPoints
+        )
+    }
+
     var focusKind: WhatToPlayScenarioFocusKind? {
         guard let focusKindRaw else { return nil }
         return WhatToPlayScenarioFocusKind(rawValue: focusKindRaw)

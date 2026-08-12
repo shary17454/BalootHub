@@ -602,18 +602,15 @@ enum WhatToPlayStatsAnalyzer {
     }
 
     static func decisionQualitySummary(for attempts: [WhatToPlayAttempt]) -> WhatToPlayDecisionQualitySummary {
-        let losses = attempts.compactMap { attempt -> Int? in
-            guard let best = attempt.bestExpectedImpact else { return nil }
-            return max(0, best - attempt.expectedImpact)
-        }
-        guard !losses.isEmpty else { return .empty }
+        let qualities = attempts.compactMap(\.decisionQuality)
+        guard !qualities.isEmpty else { return .empty }
 
         return WhatToPlayDecisionQualitySummary(
-            trackedAttempts: losses.count,
-            expertMatches: losses.filter { $0 == 0 }.count,
-            closeDecisions: losses.filter { (1...2).contains($0) }.count,
-            acceptableDecisions: losses.filter { (3...8).contains($0) }.count,
-            costlyDecisions: losses.filter { $0 > 8 }.count
+            trackedAttempts: qualities.count,
+            expertMatches: qualities.filter { $0 == .expertMatch }.count,
+            closeDecisions: qualities.filter { $0 == .close }.count,
+            acceptableDecisions: qualities.filter { $0 == .acceptable }.count,
+            costlyDecisions: qualities.filter { $0 == .costly }.count
         )
     }
 
