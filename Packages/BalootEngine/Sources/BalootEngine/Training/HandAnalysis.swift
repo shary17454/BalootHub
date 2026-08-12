@@ -31,6 +31,10 @@ public struct HandAnalysis: Sendable, Equatable {
     public let hokumConfidencePercent: Int
     /// ملخص تدريبي سريع يختصر قوة القرار قبل قراءة التفاصيل.
     public let decisionGrade: DecisionGrade
+    /// عنوان قصير للخطوة التالية بعد قراءة التحليل.
+    public let nextActionTitle: String
+    /// شرح عملي للخطوة التالية، محسوب داخل المحرك.
+    public let nextActionDetail: String
     /// أسباب إيجابية تدعم التوصية، محسوبة داخل المحرك لا داخل الواجهة.
     public let strengths: [String]
     /// مخاطر أو نواقص يجب الانتباه لها قبل الشراء.
@@ -87,6 +91,17 @@ public enum HandAnalyzer {
             projectPoints: projectPoints
         )
         let confidence = confidence(for: recommended, evaluation: evaluation, policy: policy, projectPoints: projectPoints)
+        let grade = decisionGrade(
+            recommendedBid: recommended,
+            confidence: confidence,
+            buyConfidencePercent: metrics.buyConfidencePercent
+        )
+        let nextAction = nextAction(
+            for: recommended,
+            grade: grade,
+            metrics: metrics,
+            projects: projects
+        )
         let rationale = rationale(
             for: normalized,
             recommendedBid: recommended,
@@ -107,11 +122,9 @@ public enum HandAnalyzer {
             buyConfidencePercent: metrics.buyConfidencePercent,
             sunConfidencePercent: metrics.sunConfidencePercent,
             hokumConfidencePercent: metrics.hokumConfidencePercent,
-            decisionGrade: decisionGrade(
-                recommendedBid: recommended,
-                confidence: confidence,
-                buyConfidencePercent: metrics.buyConfidencePercent
-            ),
+            decisionGrade: grade,
+            nextActionTitle: nextAction.title,
+            nextActionDetail: nextAction.detail,
             strengths: rationale.strengths,
             weaknesses: rationale.weaknesses,
             tacticalAdvice: rationale.advice
@@ -295,6 +308,47 @@ public enum HandAnalyzer {
             return buyConfidencePercent >= 40 ? .closePass : .clearPass
         case .sun, .hokum:
             return confidence == .high || buyConfidencePercent >= 75 ? .strongBuy : .cautiousBuy
+        }
+    }
+
+    private static func nextAction(
+        for recommendedBid: Bid,
+        grade: HandAnalysis.DecisionGrade,
+        metrics: (strengthPercent: Int, buyConfidencePercent: Int, sunConfidencePercent: Int, hokumConfidencePercent: Int),
+        projects: [Project]
+    ) -> (title: String, detail: String) {
+        let projectHint = projects.isEmpty ? "" : " وأعلن مشاريعك في توقيتها قبل أول أكلة."
+        switch grade {
+        case .strongBuy:
+            switch recommendedBid {
+            case .hokum(let suit):
+                return (
+                    "ادخل شراء بثقة",
+                    "أفضل مسار ظاهر هو حكم \(suit.arabicName) بنسبة \(metrics.hokumConfidencePercent)%. ركّز على سحب الحكم العالي مبكرًا\(projectHint)"
+                )
+            case .sun:
+                return (
+                    "ادخل صن بثقة",
+                    "قوة الصن \(metrics.sunConfidencePercent)%؛ حافظ على الآسات والعشرات ولا تفتح لونًا يسهّل قطع الخصم\(projectHint)"
+                )
+            case .pass:
+                return ("راقب المزايدة", "اليد قوية نسبيًا لكن خيار الشراء غير متاح في هذا السياق؛ انتظر قرار الشريك.")
+            }
+        case .cautiousBuy:
+            return (
+                "اشترِ بحذر",
+                "الشراء ممكن لكنه ليس مضمونًا؛ لا ترفع المخاطرة إلا إذا كان الشريك يدعمك أو كانت المزايدة تسمح بسعر منخفض\(projectHint)"
+            )
+        case .closePass:
+            return (
+                "مرّر وراقب الشريك",
+                "اليد قريبة من الشراء لكنها لا تكفي وحدها. إذا اشترى الشريك فخطتك حماية أكلاته لا قيادة الجولة."
+            )
+        case .clearPass:
+            return (
+                "مرّر بوضوح",
+                "اليد ضعيفة للشراء الآن؛ هدفك تقليل خسارة النقاط واصطياد فرصة قطع أو تلزيم لاحقًا."
+            )
         }
     }
 

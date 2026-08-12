@@ -3311,6 +3311,7 @@ struct HandAnalyzerView: View {
 
             VStack(spacing: AppSpacing.xs) {
                 InfoRow(icon: "scope", title: "خلاصة القرار", value: decisionGradeText(analysis.decisionGrade))
+                InfoRow(icon: "arrow.triangle.branch", title: "الخطوة التالية", value: analysis.nextActionTitle)
                 InfoRow(icon: "hand.thumbsup.fill", title: "التوصية", value: recommendationText(analysis.recommendedBid))
                 InfoRow(icon: "gauge.with.dots.needle.67percent", title: "قوة اليد", value: "\(analysis.strengthPercent)%")
                 InfoRow(icon: "chart.line.uptrend.xyaxis", title: "احتمال الشراء", value: "\(analysis.buyConfidencePercent)%")
@@ -3324,6 +3325,18 @@ struct HandAnalyzerView: View {
 
             rationaleGroup(title: "نقاط القوة".localized, systemImage: "plus.circle.fill", items: analysis.strengths, tint: AppColor.success)
             rationaleGroup(title: "نقاط الضعف".localized, systemImage: "exclamationmark.triangle.fill", items: analysis.weaknesses, tint: AppColor.warning)
+
+            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                Label("الخطوة التالية".localized, systemImage: "arrow.triangle.branch")
+                    .font(AppTypography.headline)
+                    .foregroundStyle(AppColor.accent)
+                Text(analysis.nextActionDetail)
+                    .font(AppTypography.subheadline)
+                    .foregroundStyle(AppColor.textPrimary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(AppSpacing.md)
+            .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
 
             VStack(alignment: .leading, spacing: AppSpacing.xs) {
                 Label("النصيحة التكتيكية".localized, systemImage: "lightbulb.fill")
