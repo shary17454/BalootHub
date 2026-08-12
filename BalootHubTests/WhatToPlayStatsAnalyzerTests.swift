@@ -1368,6 +1368,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(insight.kind, .expertMatch)
         XCTAssertEqual(insight.lostExpectedPoints, 0)
+        XCTAssertEqual(insight.lostProjectedTeamPoints, 0)
         XCTAssertEqual(insight.secondBestGap, 0)
         XCTAssertEqual(insight.valueLossSeverity, .none)
         XCTAssertEqual(insight.valueLossTitle, "لا توجد خسارة قيمة".localized)
@@ -1384,8 +1385,27 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(insight.kind, .closeAlternative)
         XCTAssertEqual(insight.lostExpectedPoints, 2)
+        XCTAssertEqual(insight.lostProjectedTeamPoints, 0)
         XCTAssertEqual(insight.secondBestGap, 0)
         XCTAssertEqual(insight.valueLossSeverity, .low)
+    }
+
+    func testDecisionInsightPrioritizesProjectedLossWhenLarger() {
+        let insight = WhatToPlayStatsAnalyzer.decisionInsight(
+            selectedRank: 2,
+            selectedImpact: 7,
+            bestImpact: 8,
+            secondBestImpact: 7,
+            selectedProjectedTeamPoints: 52,
+            bestProjectedTeamPoints: 68
+        )
+
+        XCTAssertEqual(insight.kind, .pointLeak)
+        XCTAssertEqual(insight.title, "المحاكاة ترجّح المراجعة".localized)
+        XCTAssertEqual(insight.lostExpectedPoints, 1)
+        XCTAssertEqual(insight.lostProjectedTeamPoints, 16)
+        XCTAssertEqual(insight.valueLossSeverity, .high)
+        XCTAssertTrue(insight.detail.contains("نقاط محاكاة ضائعة".localized))
     }
 
     func testDecisionInsightRecognizesMissedWinningChance() {
@@ -1398,6 +1418,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(insight.kind, .missedWinningChance)
         XCTAssertEqual(insight.lostExpectedPoints, 10)
+        XCTAssertEqual(insight.lostProjectedTeamPoints, 0)
         XCTAssertEqual(insight.secondBestGap, 5)
         XCTAssertEqual(insight.valueLossSeverity, .high)
     }
@@ -1412,6 +1433,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(insight.kind, .pointLeak)
         XCTAssertEqual(insight.lostExpectedPoints, 5)
+        XCTAssertEqual(insight.lostProjectedTeamPoints, 0)
         XCTAssertEqual(insight.secondBestGap, 3)
         XCTAssertEqual(insight.valueLossSeverity, .medium)
     }

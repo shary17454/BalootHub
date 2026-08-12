@@ -377,6 +377,7 @@ struct WhatToPlayDecisionInsight: Equatable {
     let detail: String
     let iconName: String
     let lostExpectedPoints: Int
+    let lostProjectedTeamPoints: Int
     let secondBestGap: Int?
     let valueLossSeverity: WhatToPlayValueLossSeverity
     let valueLossTitle: String
@@ -1982,32 +1983,57 @@ enum WhatToPlayStatsAnalyzer {
         selectedRank: Int,
         selectedImpact: Int,
         bestImpact: Int,
-        secondBestImpact: Int?
+        secondBestImpact: Int?,
+        selectedProjectedTeamPoints: Int? = nil,
+        bestProjectedTeamPoints: Int? = nil
     ) -> WhatToPlayDecisionInsight {
         let lost = max(0, bestImpact - selectedImpact)
+        let projectedLost: Int
+        if let selectedProjectedTeamPoints, let bestProjectedTeamPoints {
+            projectedLost = max(0, bestProjectedTeamPoints - selectedProjectedTeamPoints)
+        } else {
+            projectedLost = 0
+        }
+        let decisiveLoss = max(lost, projectedLost)
         let secondBestGap = secondBestImpact.map { max(0, $0 - selectedImpact) }
-        let severity = valueLossSeverity(for: lost)
+        let severity = valueLossSeverity(for: decisiveLoss)
         let severityTitle = valueLossTitle(for: severity)
-        if selectedRank == 1 || lost == 0 {
+        if selectedRank == 1 || decisiveLoss == 0 {
             return WhatToPlayDecisionInsight(
                 kind: .expertMatch,
                 title: "اختيار خبير".localized,
                 detail: "قرارك يطابق أفضل خيار في هذا الموقف، لذلك ركز على تذكر سبب نجاحه للمواقف المشابهة.".localized,
                 iconName: "checkmark.seal.fill",
                 lostExpectedPoints: 0,
+                lostProjectedTeamPoints: 0,
                 secondBestGap: secondBestGap,
                 valueLossSeverity: .none,
                 valueLossTitle: valueLossTitle(for: .none)
             )
         }
 
-        if selectedRank == 2 || lost <= 2 || secondBestImpact == selectedImpact {
+        if projectedLost > lost {
+            return WhatToPlayDecisionInsight(
+                kind: .pointLeak,
+                title: "المحاكاة ترجّح المراجعة".localized,
+                detail: "\("قرارك يخسر بعد استكمال الجولة؛ راجع Replay كامل قبل لعب موقف جديد.".localized) \("نقاط محاكاة ضائعة".localized): \(projectedLost).",
+                iconName: "chart.bar.xaxis",
+                lostExpectedPoints: lost,
+                lostProjectedTeamPoints: projectedLost,
+                secondBestGap: secondBestGap,
+                valueLossSeverity: severity,
+                valueLossTitle: severityTitle
+            )
+        }
+
+        if selectedRank == 2 || decisiveLoss <= 2 || secondBestImpact == selectedImpact {
             return WhatToPlayDecisionInsight(
                 kind: .closeAlternative,
                 title: "اختيار قريب".localized,
                 detail: "قرارك قريب من الأفضل، لكن الفرق الصغير يتراكم مع الوقت؛ راجع لماذا رجّح الخبير الورقة الأولى.".localized,
                 iconName: "2.circle.fill",
                 lostExpectedPoints: lost,
+                lostProjectedTeamPoints: projectedLost,
                 secondBestGap: secondBestGap,
                 valueLossSeverity: severity,
                 valueLossTitle: severityTitle
@@ -2021,6 +2047,7 @@ enum WhatToPlayStatsAnalyzer {
                 detail: "الخيار الأفضل كان يتوقع كسبًا، بينما اختيارك يميل لخسارة الأكلة أو نقاطها. هذه المواقف تستحق إعادة قراءة الطاولة.".localized,
                 iconName: "exclamationmark.triangle.fill",
                 lostExpectedPoints: lost,
+                lostProjectedTeamPoints: projectedLost,
                 secondBestGap: secondBestGap,
                 valueLossSeverity: severity,
                 valueLossTitle: severityTitle
@@ -2033,6 +2060,7 @@ enum WhatToPlayStatsAnalyzer {
             detail: "اختيارك خسر قيمة متوقعة مقارنة بالأفضل. ابحث عن الورقة التي تقلل الخسارة حتى لو لم تربح الأكلة.".localized,
             iconName: "drop.fill",
             lostExpectedPoints: lost,
+            lostProjectedTeamPoints: projectedLost,
             secondBestGap: secondBestGap,
             valueLossSeverity: severity,
             valueLossTitle: severityTitle
@@ -2071,7 +2099,9 @@ enum WhatToPlayStatsAnalyzer {
             selectedRank: selected.rank,
             selectedImpact: selected.expectedImpact,
             bestImpact: best.expectedImpact,
-            secondBestImpact: scenario.secondBestOption?.expectedImpact
+            secondBestImpact: scenario.secondBestOption?.expectedImpact,
+            selectedProjectedTeamPoints: selected.projectedTeamPoints,
+            bestProjectedTeamPoints: best.projectedTeamPoints
         )
     }
 
