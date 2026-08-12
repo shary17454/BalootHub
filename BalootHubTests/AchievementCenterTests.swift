@@ -186,6 +186,46 @@ final class AchievementCenterTests: XCTestCase {
         )
     }
 
+    func testHundredMatchesUnlocksFromFinishedScoreSessions() {
+        let sessions = (0..<100).map { index in
+            makeScoreSession(
+                createdAt: Date(timeIntervalSince1970: TimeInterval(index)),
+                status: .finished,
+                rounds: [
+                    ScoreRound(roundNumber: 1, mode: .hokum, teamOneBaseScore: 100, teamTwoBaseScore: 62)
+                ]
+            )
+        }
+
+        XCTAssertTrue(
+            AchievementCenter.earnedAchievementIDs(
+                whatToPlayAttempts: [],
+                scoringQuizAttempts: [],
+                scoreSessions: sessions
+            )
+            .contains("hundred-matches")
+        )
+    }
+
+    func testHundredMatchesIgnoresActiveSessionsBelowTarget() {
+        let sessions = (0..<100).map { index in
+            makeScoreSession(
+                createdAt: Date(timeIntervalSince1970: TimeInterval(index)),
+                status: .active,
+                rounds: []
+            )
+        }
+
+        XCTAssertFalse(
+            AchievementCenter.earnedAchievementIDs(
+                whatToPlayAttempts: [],
+                scoringQuizAttempts: [],
+                scoreSessions: sessions
+            )
+            .contains("hundred-matches")
+        )
+    }
+
     private func makeWhatToPlayAttempt(seed: UInt64, isCorrect: Bool) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
             difficulty: .medium,
@@ -208,8 +248,18 @@ final class AchievementCenterTests: XCTestCase {
         )
     }
 
-    private func makeScoreSession(rounds: [ScoreRound]) -> ScoreSession {
-        let session = ScoreSession(teamOneName: "فريقنا", teamTwoName: "الخصم", targetScore: 152)
+    private func makeScoreSession(
+        createdAt: Date = Date(timeIntervalSince1970: 0),
+        status: SessionStatus = .active,
+        rounds: [ScoreRound]
+    ) -> ScoreSession {
+        let session = ScoreSession(
+            createdAt: createdAt,
+            teamOneName: "فريقنا",
+            teamTwoName: "الخصم",
+            targetScore: 152,
+            status: status
+        )
         for round in rounds {
             round.session = session
         }

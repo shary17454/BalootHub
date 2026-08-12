@@ -7,12 +7,14 @@ struct AchievementsView: View {
     @Query(sort: \WhatToPlayAttempt.createdAt, order: .reverse) private var whatToPlayAttempts: [WhatToPlayAttempt]
     @Query(sort: \ScoringQuizAttempt.createdAt, order: .reverse) private var scoringQuizAttempts: [ScoringQuizAttempt]
     @Query(sort: \AcademyLessonProgress.completedAt, order: .reverse) private var academyProgress: [AcademyLessonProgress]
+    @Query(sort: \ScoreSession.createdAt, order: .reverse) private var scoreSessions: [ScoreSession]
 
     private var unlockedSet: Set<String> {
         Set(unlockedAchievementIDs.split(separator: ",").map(String.init))
             .union(AchievementCenter.earnedAchievementIDs(
                 whatToPlayAttempts: whatToPlayAttempts,
                 scoringQuizAttempts: scoringQuizAttempts,
+                scoreSessions: scoreSessions,
                 academyProgress: academyProgress,
                 legacyCompletedAcademyLessonIDs: completedAcademySet
             ))
