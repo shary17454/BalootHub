@@ -323,6 +323,7 @@ struct WhatToPlayTrainerView: View {
     @State private var replayPresentation: WhatToPlayReplayPresentation?
     @State private var pendingReviewSelection: PlayingCard?
     @State private var shareImageURL: URL?
+    @State private var isRenderingShareImage = false
 
     init(
         seed: UInt64? = nil,
@@ -543,8 +544,12 @@ struct WhatToPlayTrainerView: View {
                             Button {
                                 renderShareImageForCurrentScenario()
                             } label: {
-                                Label("تجهيز صورة المشاركة".localized, systemImage: "photo")
+                                Label(
+                                    isRenderingShareImage ? "جاري تجهيز صورة المشاركة".localized : "تجهيز صورة المشاركة".localized,
+                                    systemImage: "photo"
+                                )
                             }
+                            .disabled(isRenderingShareImage)
                         }
 
                         ShareLink(item: WhatToPlayShareCard.text(for: scenario, selectedOption: selectedOption)) {
@@ -2936,6 +2941,7 @@ struct WhatToPlayTrainerView: View {
         errorMessage = nil
         illegalMoveExplanation = nil
         shareImageURL = nil
+        isRenderingShareImage = false
         isRetryingCurrentScenario = false
         scenario = nil
         isGeneratingScenario = true
@@ -3020,6 +3026,7 @@ struct WhatToPlayTrainerView: View {
         selectedOption = nil
         illegalMoveExplanation = nil
         shareImageURL = nil
+        isRenderingShareImage = false
         isRetryingCurrentScenario = true
     }
 
@@ -3027,11 +3034,15 @@ struct WhatToPlayTrainerView: View {
     private func renderShareImageForCurrentScenario() {
         guard let scenario else {
             shareImageURL = nil
+            isRenderingShareImage = false
             return
         }
 
         let content = WhatToPlayShareCard.content(for: scenario, selectedOption: selectedOption)
         let fileName = WhatToPlayShareCardImageRenderer.fileName(for: scenario, selectedOption: selectedOption)
+
+        isRenderingShareImage = true
+        defer { isRenderingShareImage = false }
 
         do {
             shareImageURL = try WhatToPlayShareCardImageRenderer.render(

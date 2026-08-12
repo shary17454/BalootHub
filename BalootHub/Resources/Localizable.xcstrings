@@ -19804,6 +19804,16 @@
         }
       }
     },
+    "جاري تجهيز صورة المشاركة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preparing share image"
+          }
+        }
+      }
+    },
     "دقتك هنا" : {
       "localizations" : {
         "en" : {
