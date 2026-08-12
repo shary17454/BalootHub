@@ -5,6 +5,7 @@ struct WhatToPlayOptionComparisonRow: Identifiable, Equatable {
     let card: PlayingCard
     let rank: Int
     let expectedImpact: Int
+    let projectedTeamPoints: Int
     let impactBreakdown: WhatToPlayOptionImpactBreakdown
     let impactDetail: String
     let lostExpectedPoints: Int
@@ -25,11 +26,14 @@ struct WhatToPlayOptionComparisonRow: Identifiable, Equatable {
 struct WhatToPlayOptionComparisonSummary: Equatable {
     let bestCard: PlayingCard?
     let bestExpectedImpact: Int?
+    let bestProjectedTeamPoints: Int?
     let secondBestCard: PlayingCard?
     let secondBestExpectedImpact: Int?
+    let secondBestProjectedTeamPoints: Int?
     let bestToSecondGap: Int?
     let selectedCard: PlayingCard?
     let selectedExpectedImpact: Int?
+    let selectedProjectedTeamPoints: Int?
     let selectedLostExpectedPoints: Int?
     let decisionQuality: WhatToPlayDecisionQuality?
 
@@ -143,11 +147,14 @@ enum WhatToPlayOptionComparison {
         return WhatToPlayOptionComparisonSummary(
             bestCard: best?.card,
             bestExpectedImpact: best?.expectedImpact,
+            bestProjectedTeamPoints: best?.projectedTeamPoints,
             secondBestCard: second?.card,
             secondBestExpectedImpact: second?.expectedImpact,
+            secondBestProjectedTeamPoints: second?.projectedTeamPoints,
             bestToSecondGap: gap,
             selectedCard: selected?.card,
             selectedExpectedImpact: selected?.expectedImpact,
+            selectedProjectedTeamPoints: selected?.projectedTeamPoints,
             selectedLostExpectedPoints: lost,
             decisionQuality: decisionQuality(selected: selected, lostExpectedPoints: lost)
         )
@@ -162,6 +169,7 @@ enum WhatToPlayOptionComparison {
                     card: option.card,
                     rank: option.rank,
                     expectedImpact: option.expectedImpact,
+                    projectedTeamPoints: option.projectedTeamPoints,
                     impactBreakdown: option.impactBreakdown,
                     impactDetail: WhatToPlayImpactFormatter.detail(for: option.impactBreakdown),
                     lostExpectedPoints: max(0, bestImpact - option.expectedImpact),

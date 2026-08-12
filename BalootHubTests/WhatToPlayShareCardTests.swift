@@ -88,6 +88,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertFalse(text.contains("اختيار الخبير".localized))
         XCTAssertFalse(text.contains("نتيجة المحاكاة".localized))
         XCTAssertFalse(text.contains("اتجاه الأكلة".localized))
+        XCTAssertFalse(text.contains("نقاط فريقك بعد المحاكاة".localized))
     }
 
     func testShareTextIncludesAnswerReviewAfterSelection() throws {
@@ -110,6 +111,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("فارق عن ثاني أفضل".localized): \(max(0, secondBest.expectedImpact - selected.expectedImpact))"))
         XCTAssertTrue(text.contains("\("الأثر المتوقع".localized): \(selected.expectedImpact >= 0 ? "+\(selected.expectedImpact)" : "\(selected.expectedImpact)")"))
         XCTAssertTrue(text.contains("\("تفصيل الأثر".localized): \(WhatToPlayImpactFormatter.detail(for: selected.impactBreakdown))"))
+        XCTAssertTrue(text.contains("\("نقاط فريقك بعد المحاكاة".localized): \(selected.projectedTeamPoints)"))
         XCTAssertTrue(text.contains("\("نتيجة المحاكاة".localized):"))
         if let wonByPlayerTeam = selected.simulation.completedTrickWonByPlayerTeam {
             XCTAssertTrue(text.contains("\("اتجاه الأكلة".localized): \(wonByPlayerTeam ? "لفريقك".localized : "للخصم".localized)"))
@@ -132,6 +134,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).selectedSimulationSummary)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).selectedSimulationTeamResult)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).selectedSimulationTrickPoints)
+        XCTAssertNil(WhatToPlayShareCard.content(for: scenario).selectedProjectedTeamPoints)
 
         let reviewed = WhatToPlayShareCard.content(for: scenario, selectedOption: selected)
         let secondBest = try XCTUnwrap(scenario.secondBestOption)
@@ -149,6 +152,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(reviewed.decisionQualityTitle, "مطابق للخبير".localized)
         XCTAssertEqual(reviewed.selectedImpact, selected.expectedImpact)
         XCTAssertEqual(reviewed.selectedImpactDetail, WhatToPlayImpactFormatter.detail(for: selected.impactBreakdown))
+        XCTAssertEqual(reviewed.selectedProjectedTeamPoints, selected.projectedTeamPoints)
         XCTAssertNotNil(reviewed.selectedSimulationSummary)
         XCTAssertEqual(
             reviewed.selectedSimulationTeamResult,

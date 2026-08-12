@@ -29,6 +29,7 @@ struct WhatToPlayShareCardContent: Equatable {
     let selectedRank: Int?
     let selectedImpact: Int?
     let selectedImpactDetail: String?
+    let selectedProjectedTeamPoints: Int?
     let selectedSimulationSummary: String?
     let selectedSimulationTeamResult: String?
     let selectedSimulationTrickPoints: Int?
@@ -103,6 +104,7 @@ enum WhatToPlayShareCard {
             selectedRank: selectedOption?.rank,
             selectedImpact: selectedOption?.expectedImpact,
             selectedImpactDetail: selectedOption.map { WhatToPlayImpactFormatter.detail(for: $0.impactBreakdown) },
+            selectedProjectedTeamPoints: selectedOption?.projectedTeamPoints,
             selectedSimulationSummary: selectedSimulationDisplay?.summary,
             selectedSimulationTeamResult: selectedSimulationDisplay?.teamResult,
             selectedSimulationTrickPoints: selectedSimulationDisplay?.trickPoints,
@@ -180,6 +182,9 @@ enum WhatToPlayShareCard {
             }
             if let selectedImpactDetail = content.selectedImpactDetail {
                 lines.append("\("تفصيل الأثر".localized): \(selectedImpactDetail)")
+            }
+            if let selectedProjectedTeamPoints = content.selectedProjectedTeamPoints {
+                lines.append("\("نقاط فريقك بعد المحاكاة".localized): \(selectedProjectedTeamPoints)")
             }
             if let selectedSimulationSummary = content.selectedSimulationSummary {
                 lines.append("\("نتيجة المحاكاة".localized): \(selectedSimulationSummary)")

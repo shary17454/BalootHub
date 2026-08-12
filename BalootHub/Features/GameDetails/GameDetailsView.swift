@@ -2806,14 +2806,16 @@ struct WhatToPlayTrainerView: View {
             title: "أفضل ورقة".localized,
             value: optionSummaryCardText(
                 card: summary.bestCard,
-                impact: summary.bestExpectedImpact
+                impact: summary.bestExpectedImpact,
+                projectedTeamPoints: summary.bestProjectedTeamPoints
             )
         )
         miniPlanMetric(
             title: "ثاني أفضل".localized,
             value: optionSummaryCardText(
                 card: summary.secondBestCard,
-                impact: summary.secondBestExpectedImpact
+                impact: summary.secondBestExpectedImpact,
+                projectedTeamPoints: summary.secondBestProjectedTeamPoints
             )
         )
     }
@@ -2844,6 +2846,11 @@ struct WhatToPlayTrainerView: View {
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(AppColor.danger)
                 }
+                Text("\("نقاط فريقك بعد المحاكاة".localized): \(row.projectedTeamPoints)")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(AppColor.primary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
                 Text(optionOutcomeText(row.outcome))
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(optionOutcomeTint(row.outcome))
@@ -2898,9 +2905,10 @@ struct WhatToPlayTrainerView: View {
         .accessibilityElement(children: .combine)
     }
 
-    private func optionSummaryCardText(card: PlayingCard?, impact: Int?) -> String {
+    private func optionSummaryCardText(card: PlayingCard?, impact: Int?, projectedTeamPoints: Int?) -> String {
         guard let card, let impact else { return "لا يوجد بديل".localized }
-        return "\(card.accessibilityName) · \(impactText(impact))"
+        let projection = projectedTeamPoints.map { " · \("محاكاة".localized): \($0)" } ?? ""
+        return "\(card.accessibilityName) · \(impactText(impact))\(projection)"
     }
 
     private func optionOutcomeText(_ outcome: WhatToPlayOptionOutcome) -> String {

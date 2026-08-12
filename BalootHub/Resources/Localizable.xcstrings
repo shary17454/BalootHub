@@ -543,6 +543,20 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "模拟后你的队伍分数" } }
       }
     },
+    "محاكاة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Simulation" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Simulation" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Simulación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Simulation" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सिमुलेशन" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Simulasi" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Симуляция" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Simülasyon" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "سیمولیشن" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "模拟" } }
+      }
+    },
     "البذرة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Seed" } },

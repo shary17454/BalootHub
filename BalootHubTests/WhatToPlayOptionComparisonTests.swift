@@ -17,11 +17,14 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
 
         XCTAssertEqual(summary.bestCard, best.card)
         XCTAssertEqual(summary.bestExpectedImpact, best.expectedImpact)
+        XCTAssertEqual(summary.bestProjectedTeamPoints, best.projectedTeamPoints)
         XCTAssertEqual(summary.secondBestCard, second.card)
         XCTAssertEqual(summary.secondBestExpectedImpact, second.expectedImpact)
+        XCTAssertEqual(summary.secondBestProjectedTeamPoints, second.projectedTeamPoints)
         XCTAssertEqual(summary.bestToSecondGap, max(0, best.expectedImpact - second.expectedImpact))
         XCTAssertNil(summary.selectedCard)
         XCTAssertNil(summary.selectedExpectedImpact)
+        XCTAssertNil(summary.selectedProjectedTeamPoints)
         XCTAssertNil(summary.selectedLostExpectedPoints)
         XCTAssertNil(summary.decisionQuality)
         XCTAssertTrue(summary.hasSecondBest)
@@ -44,6 +47,7 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
 
         XCTAssertEqual(bestSummary.selectedCard, best.card)
         XCTAssertEqual(bestSummary.selectedExpectedImpact, best.expectedImpact)
+        XCTAssertEqual(bestSummary.selectedProjectedTeamPoints, best.projectedTeamPoints)
         XCTAssertEqual(bestSummary.selectedLostExpectedPoints, 0)
         XCTAssertEqual(bestSummary.decisionQuality, .expertMatch)
         XCTAssertEqual(bestSummary.decisionQuality?.title, "مطابق للخبير".localized)
@@ -52,6 +56,7 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         let expectedLost = max(0, best.expectedImpact - costly.expectedImpact)
         XCTAssertEqual(costlySummary.selectedCard, costly.card)
         XCTAssertEqual(costlySummary.selectedExpectedImpact, costly.expectedImpact)
+        XCTAssertEqual(costlySummary.selectedProjectedTeamPoints, costly.projectedTeamPoints)
         XCTAssertEqual(costlySummary.selectedLostExpectedPoints, expectedLost)
         if expectedLost <= 2 {
             XCTAssertEqual(costlySummary.decisionQuality, .close)
@@ -84,6 +89,19 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         for row in rows {
             let option = try XCTUnwrap(scenario.options.first { $0.card == row.card })
             XCTAssertEqual(row.expectedImpact, option.expectedImpact)
+        }
+    }
+
+    func testRowsPreserveProjectedTeamPointsForEveryOption() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
+        let selected = try XCTUnwrap(scenario.bestOption)
+
+        let rows = WhatToPlayOptionComparison.rows(for: scenario, selectedCard: selected.card)
+
+        XCTAssertEqual(rows.count, scenario.options.count)
+        for row in rows {
+            let option = try XCTUnwrap(scenario.options.first { $0.card == row.card })
+            XCTAssertEqual(row.projectedTeamPoints, option.projectedTeamPoints)
         }
     }
 
