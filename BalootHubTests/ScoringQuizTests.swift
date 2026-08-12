@@ -29,6 +29,42 @@ final class ScoringQuizTests: XCTestCase {
         )
     }
 
+    func testAppSettingsScoreRulesDriveScoringQuizFormula() {
+        let settings = AppSettings(
+            enableCoffeeMultiplier: true,
+            selectedScoreRulePreset: .highStakes
+        )
+        let question = ScoringQuizGenerator.generate(
+            seed: 2_026,
+            difficulty: .hard,
+            rules: settings.scoreRules
+        )
+        let base = question.targetTeam == .teamOne ? question.teamOneBase : question.teamTwoBase
+        let projects = question.targetTeam == .teamOne ? question.teamOneProjects : question.teamTwoProjects
+
+        XCTAssertEqual(
+            question.answer,
+            settings.scoreRules.finalScore(
+                baseScore: base,
+                projects: projects,
+                multiplier: question.multiplier
+            )
+        )
+        XCTAssertEqual(settings.scoreRules.coffeeFactor, 8)
+    }
+
+    func testAppSettingsScoreRulesCanDisableCoffeeForScoringQuiz() {
+        let settings = AppSettings(
+            enableCoffeeMultiplier: false,
+            selectedScoreRulePreset: .highStakes
+        )
+
+        XCTAssertEqual(
+            settings.scoreRules.finalScore(baseScore: 50, projects: 0, multiplier: .coffee),
+            50
+        )
+    }
+
     func testDifficultyTimeLimitsTightenAsDifficultyIncreases() {
         XCTAssertGreaterThan(ScoringQuizDifficulty.easy.timeLimitSeconds, ScoringQuizDifficulty.medium.timeLimitSeconds)
         XCTAssertGreaterThan(ScoringQuizDifficulty.medium.timeLimitSeconds, ScoringQuizDifficulty.hard.timeLimitSeconds)

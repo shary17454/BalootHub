@@ -4,6 +4,7 @@ import SwiftData
 struct ScoringQuizView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \ScoringQuizAttempt.createdAt, order: .reverse) private var attempts: [ScoringQuizAttempt]
+    @Query private var settingsList: [AppSettings]
 
     @State private var difficulty: ScoringQuizDifficulty = .medium
     @State private var seed: UInt64 = UInt64(Date().timeIntervalSince1970)
@@ -12,10 +13,15 @@ struct ScoringQuizView: View {
     @State private var feedback: QuizFeedback?
     @State private var streak = 0
     @State private var remainingSeconds = ScoringQuizDifficulty.medium.timeLimitSeconds
+    @State private var didLoadInitialQuestion = false
     @AppStorage("scoringQuizBestStreak") private var bestStreak = 0
 
     private var statsSummary: ScoringQuizStatsSummary {
         ScoringQuizStatsAnalyzer.summarize(attempts: attempts)
+    }
+
+    private var scoreRules: ScoreRules {
+        settingsList.first?.scoreRules ?? .standard
     }
 
     private var coachingInsight: ScoringQuizCoachingInsight {
@@ -39,8 +45,16 @@ struct ScoringQuizView: View {
         .background(AppColor.background)
         .navigationTitle("تحدي حساب النقاط")
         .navigationBarTitleDisplayMode(.inline)
+        .task {
+            guard !didLoadInitialQuestion else { return }
+            didLoadInitialQuestion = true
+            loadQuestion(seed: seed, difficulty: difficulty)
+        }
         .task(id: question.id) {
             await runTimer(for: question)
+        }
+        .onChange(of: scoreRules) { _, _ in
+            loadQuestion(seed: seed, difficulty: difficulty)
         }
     }
 
@@ -304,7 +318,7 @@ struct ScoringQuizView: View {
     }
 
     private func loadQuestion(seed: UInt64, difficulty: ScoringQuizDifficulty) {
-        question = ScoringQuizGenerator.generate(seed: seed, difficulty: difficulty)
+        question = ScoringQuizGenerator.generate(seed: seed, difficulty: difficulty, rules: scoreRules)
         answerText = ""
         feedback = nil
         remainingSeconds = difficulty.timeLimitSeconds
