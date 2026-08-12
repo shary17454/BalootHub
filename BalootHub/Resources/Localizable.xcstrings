@@ -57,6 +57,90 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "即将显示" } }
       }
     },
+    "الفاقد" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Verlust" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Lost value" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Valor perdido" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Valeur perdue" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "खोया मूल्य" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Nilai hilang" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Потерянная ценность" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Kayıp değer" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "ضائع قدر" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "损失价值" } }
+      }
+    },
+    "تقييم اختيارك" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bewertung deiner Wahl" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your choice rating" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Evaluación de tu elección" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Évaluation de votre choix" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आपकी पसंद का आकलन" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Penilaian pilihan Anda" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Оценка вашего выбора" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Seçiminin değerlendirmesi" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ کے انتخاب کی درجہ بندی" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你的选择评分" } }
+      }
+    },
+    "قرار مقبول" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Akzeptable Entscheidung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Acceptable decision" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Decisión aceptable" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Décision acceptable" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "स्वीकार्य निर्णय" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Keputusan dapat diterima" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Приемлемое решение" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Kabul edilebilir karar" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "قابل قبول فیصلہ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "可接受决策" } }
+      }
+    },
+    "قرار مكلف" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Kostspielige Entscheidung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Costly decision" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Decisión costosa" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Décision coûteuse" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "महंगा निर्णय" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Keputusan mahal" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Дорогое решение" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Maliyetli karar" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "مہنگا فیصلہ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "代价高的决策" } }
+      }
+    },
+    "قريب من الأفضل" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nah am Optimum" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Close to best" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de la mejor" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Proche du meilleur" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सर्वश्रेष्ठ के करीब" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Dekat dengan terbaik" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Близко к лучшему" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "En iyiye yakın" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "بہترین کے قریب" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "接近最佳" } }
+      }
+    },
+    "مطابق للخبير" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Entspricht dem Experten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Matches expert" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Coincide con el experto" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Conforme à l’expert" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "विशेषज्ञ से मेल खाता है" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Sesuai pakar" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Совпадает с экспертом" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Uzmanla eşleşiyor" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "ماہر کے مطابق" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "符合专家选择" } }
+      }
+    },
     "الورقة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Karte" } },

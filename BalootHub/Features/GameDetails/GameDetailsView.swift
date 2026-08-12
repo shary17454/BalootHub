@@ -2647,7 +2647,7 @@ struct WhatToPlayTrainerView: View {
 
     private func optionComparisonCard(selectedOption: WhatToPlayOption, scenario: WhatToPlayScenario) -> some View {
         let rows = WhatToPlayOptionComparison.rows(for: scenario, selectedCard: selectedOption.card)
-        let summary = WhatToPlayOptionComparison.summary(for: scenario)
+        let summary = WhatToPlayOptionComparison.summary(for: scenario, selectedCard: selectedOption.card)
         return VStack(alignment: .leading, spacing: AppSpacing.md) {
             Label("أثر كل قرار".localized, systemImage: "list.bullet.rectangle.fill")
                 .font(AppTypography.headline)
@@ -2680,8 +2680,30 @@ struct WhatToPlayTrainerView: View {
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(gap <= 2 ? AppColor.accent : AppColor.warning)
             }
+            if let quality = summary.decisionQuality,
+               let lost = summary.selectedLostExpectedPoints {
+                Label(
+                    "\("تقييم اختيارك".localized): \(quality.title) · \("الفاقد".localized): \(impactText(lost))",
+                    systemImage: quality.systemImage
+                )
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(decisionQualityTint(quality))
+            }
         }
         .accessibilityElement(children: .combine)
+    }
+
+    private func decisionQualityTint(_ quality: WhatToPlayDecisionQuality) -> Color {
+        switch quality {
+        case .expertMatch:
+            AppColor.success
+        case .close:
+            AppColor.accent
+        case .acceptable:
+            AppColor.warning
+        case .costly:
+            AppColor.danger
+        }
     }
 
     @ViewBuilder

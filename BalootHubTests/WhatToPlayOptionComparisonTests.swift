@@ -20,7 +20,46 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertEqual(summary.secondBestCard, second.card)
         XCTAssertEqual(summary.secondBestExpectedImpact, second.expectedImpact)
         XCTAssertEqual(summary.bestToSecondGap, max(0, best.expectedImpact - second.expectedImpact))
+        XCTAssertNil(summary.selectedCard)
+        XCTAssertNil(summary.selectedExpectedImpact)
+        XCTAssertNil(summary.selectedLostExpectedPoints)
+        XCTAssertNil(summary.decisionQuality)
         XCTAssertTrue(summary.hasSecondBest)
+    }
+
+    func testSummaryClassifiesSelectedDecisionQuality() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let best = try XCTUnwrap(scenario.bestOption)
+        let costly = try XCTUnwrap(
+            scenario.options
+                .filter { $0.card != best.card }
+                .max { lhs, rhs in
+                    let bestImpact = best.expectedImpact
+                    return max(0, bestImpact - lhs.expectedImpact) < max(0, bestImpact - rhs.expectedImpact)
+                }
+        )
+
+        let bestSummary = WhatToPlayOptionComparison.summary(for: scenario, selectedCard: best.card)
+        let costlySummary = WhatToPlayOptionComparison.summary(for: scenario, selectedCard: costly.card)
+
+        XCTAssertEqual(bestSummary.selectedCard, best.card)
+        XCTAssertEqual(bestSummary.selectedExpectedImpact, best.expectedImpact)
+        XCTAssertEqual(bestSummary.selectedLostExpectedPoints, 0)
+        XCTAssertEqual(bestSummary.decisionQuality, .expertMatch)
+        XCTAssertEqual(bestSummary.decisionQuality?.title, "مطابق للخبير".localized)
+        XCTAssertFalse(bestSummary.decisionQuality?.systemImage.isEmpty ?? true)
+
+        let expectedLost = max(0, best.expectedImpact - costly.expectedImpact)
+        XCTAssertEqual(costlySummary.selectedCard, costly.card)
+        XCTAssertEqual(costlySummary.selectedExpectedImpact, costly.expectedImpact)
+        XCTAssertEqual(costlySummary.selectedLostExpectedPoints, expectedLost)
+        if expectedLost <= 2 {
+            XCTAssertEqual(costlySummary.decisionQuality, .close)
+        } else if expectedLost <= 8 {
+            XCTAssertEqual(costlySummary.decisionQuality, .acceptable)
+        } else {
+            XCTAssertEqual(costlySummary.decisionQuality, .costly)
+        }
     }
 
     func testRowsAreSortedByExpertRankAndMarkSelectedCard() throws {

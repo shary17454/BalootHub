@@ -28,9 +28,46 @@ struct WhatToPlayOptionComparisonSummary: Equatable {
     let secondBestCard: PlayingCard?
     let secondBestExpectedImpact: Int?
     let bestToSecondGap: Int?
+    let selectedCard: PlayingCard?
+    let selectedExpectedImpact: Int?
+    let selectedLostExpectedPoints: Int?
+    let decisionQuality: WhatToPlayDecisionQuality?
 
     var hasSecondBest: Bool {
         secondBestCard != nil
+    }
+}
+
+enum WhatToPlayDecisionQuality: Equatable {
+    case expertMatch
+    case close
+    case acceptable
+    case costly
+
+    var title: String {
+        switch self {
+        case .expertMatch:
+            "مطابق للخبير".localized
+        case .close:
+            "قريب من الأفضل".localized
+        case .acceptable:
+            "قرار مقبول".localized
+        case .costly:
+            "قرار مكلف".localized
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .expertMatch:
+            "checkmark.seal.fill"
+        case .close:
+            "equal.circle.fill"
+        case .acceptable:
+            "hand.thumbsup.fill"
+        case .costly:
+            "exclamationmark.triangle.fill"
+        }
     }
 }
 
@@ -79,11 +116,21 @@ enum WhatToPlayOptionTacticalTag: Equatable {
 
 enum WhatToPlayOptionComparison {
     static func summary(for scenario: WhatToPlayScenario) -> WhatToPlayOptionComparisonSummary {
+        summary(for: scenario, selectedCard: nil)
+    }
+
+    static func summary(for scenario: WhatToPlayScenario, selectedCard: PlayingCard?) -> WhatToPlayOptionComparisonSummary {
         let sorted = sortedOptions(scenario.options)
         let best = sorted.first
         let second = sorted.dropFirst().first
         let gap = best.flatMap { bestOption in
             second.map { max(0, bestOption.expectedImpact - $0.expectedImpact) }
+        }
+        let selected = selectedCard.flatMap { card in
+            sorted.first { $0.card == card }
+        }
+        let lost = selected.flatMap { selectedOption in
+            best.map { max(0, $0.expectedImpact - selectedOption.expectedImpact) }
         }
 
         return WhatToPlayOptionComparisonSummary(
@@ -91,7 +138,11 @@ enum WhatToPlayOptionComparison {
             bestExpectedImpact: best?.expectedImpact,
             secondBestCard: second?.card,
             secondBestExpectedImpact: second?.expectedImpact,
-            bestToSecondGap: gap
+            bestToSecondGap: gap,
+            selectedCard: selected?.card,
+            selectedExpectedImpact: selected?.expectedImpact,
+            selectedLostExpectedPoints: lost,
+            decisionQuality: decisionQuality(selected: selected, lostExpectedPoints: lost)
         )
     }
 
@@ -127,6 +178,17 @@ enum WhatToPlayOptionComparison {
             if lhs.card.suit.ordinal != rhs.card.suit.ordinal { return lhs.card.suit.ordinal < rhs.card.suit.ordinal }
             return lhs.card.rank.ordinal < rhs.card.rank.ordinal
         }
+    }
+
+    private static func decisionQuality(
+        selected: WhatToPlayOption?,
+        lostExpectedPoints: Int?
+    ) -> WhatToPlayDecisionQuality? {
+        guard let selected, let lostExpectedPoints else { return nil }
+        if selected.isExpertChoice || lostExpectedPoints == 0 { return .expertMatch }
+        if lostExpectedPoints <= 2 { return .close }
+        if lostExpectedPoints <= 8 { return .acceptable }
+        return .costly
     }
 
     private static func tacticalTag(for option: WhatToPlayOption, bestImpact: Int) -> WhatToPlayOptionTacticalTag {
