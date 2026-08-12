@@ -1,4 +1,5 @@
 import XCTest
+import BalootEngine
 @testable import BalootHub
 
 final class PlayerStatsAnalyzerTests: XCTestCase {
@@ -38,5 +39,57 @@ final class PlayerStatsAnalyzerTests: XCTestCase {
         let summary = PlayerStatsAnalyzer.summarize(sessions: [session], rules: .standard)
 
         XCTAssertEqual(summary.styleTitle, "صياد مشاريع")
+    }
+
+    func testIncludesWhatToPlayTrainingDecisionStats() {
+        let attempts = (0..<10).map { index in
+            makeTrainingAttempt(seed: UInt64(index), isCorrect: index < 8)
+        }
+
+        let summary = PlayerStatsAnalyzer.summarize(
+            sessions: [],
+            whatToPlayAttempts: attempts,
+            rules: .standard
+        )
+
+        XCTAssertEqual(summary.trainingAttempts, 10)
+        XCTAssertEqual(summary.trainingCorrectDecisions, 8)
+        XCTAssertEqual(summary.trainingWrongDecisions, 2)
+        XCTAssertEqual(summary.trainingAccuracyPercent, 80)
+        XCTAssertEqual(summary.costlyTrainingDecisions, 2)
+        XCTAssertEqual(summary.averageTrainingLostPoints, 2)
+        XCTAssertEqual(summary.trainingValueCapturePercent, 77)
+    }
+
+    func testTrainingPerformanceCanShapePlayerStyleWithoutFinishedMatches() {
+        let attempts = (0..<8).map { index in
+            makeTrainingAttempt(seed: UInt64(index), isCorrect: true)
+        }
+
+        let summary = PlayerStatsAnalyzer.summarize(
+            sessions: [],
+            whatToPlayAttempts: attempts,
+            rules: .standard
+        )
+
+        XCTAssertEqual(summary.finishedMatches, 0)
+        XCTAssertEqual(summary.styleTitle, "قارئ طاولة")
+    }
+
+    private func makeTrainingAttempt(seed: UInt64, isCorrect: Bool) -> WhatToPlayAttempt {
+        let selected = isCorrect
+            ? PlayingCard(suit: .spades, rank: .ace)
+            : PlayingCard(suit: .clubs, rank: .seven)
+        let best = PlayingCard(suit: .spades, rank: .ace)
+        return WhatToPlayAttempt(
+            difficulty: .medium,
+            seed: seed,
+            selectedCard: selected,
+            bestCard: best,
+            isCorrect: isCorrect,
+            selectedRank: isCorrect ? 1 : 4,
+            expectedImpact: isCorrect ? 10 : 0,
+            bestExpectedImpact: isCorrect ? 10 : 12
+        )
     }
 }

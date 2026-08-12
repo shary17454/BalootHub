@@ -14,15 +14,28 @@ struct PlayerStatsSummary: Equatable {
     let highestWinMargin: Int
     let biggestLossMargin: Int
     let longestWinStreak: Int
+    let trainingAttempts: Int
+    let trainingCorrectDecisions: Int
+    let trainingWrongDecisions: Int
+    let trainingAccuracyPercent: Int
+    let costlyTrainingDecisions: Int
+    let averageTrainingLostPoints: Int
+    let trainingValueCapturePercent: Int
     let styleTitle: String
     let advice: String
 }
 
 enum PlayerStatsAnalyzer {
-    static func summarize(sessions: [ScoreSession], rules: ScoreRules) -> PlayerStatsSummary {
+    static func summarize(
+        sessions: [ScoreSession],
+        whatToPlayAttempts: [WhatToPlayAttempt] = [],
+        rules: ScoreRules
+    ) -> PlayerStatsSummary {
         let finished = sessions
             .filter { $0.status == .finished || $0.winnerName(rules: rules) != nil }
             .sorted { $0.createdAt < $1.createdAt }
+        let trainingSummary = WhatToPlayStatsAnalyzer.summarize(attempts: whatToPlayAttempts)
+        let qualitySummary = WhatToPlayStatsAnalyzer.decisionQualitySummary(for: whatToPlayAttempts)
 
         var wins = 0
         var losses = 0
@@ -81,7 +94,9 @@ enum PlayerStatsAnalyzer {
             sunRounds: sunRounds,
             hokumRounds: hokumRounds,
             projectPoints: projectPoints,
-            kabootCount: kabootCount
+            kabootCount: kabootCount,
+            training: trainingSummary,
+            quality: qualitySummary
         )
 
         return PlayerStatsSummary(
@@ -98,6 +113,13 @@ enum PlayerStatsAnalyzer {
             highestWinMargin: highestWinMargin,
             biggestLossMargin: biggestLossMargin,
             longestWinStreak: longestWinStreak,
+            trainingAttempts: trainingSummary.attempts,
+            trainingCorrectDecisions: trainingSummary.correct,
+            trainingWrongDecisions: max(0, trainingSummary.attempts - trainingSummary.correct),
+            trainingAccuracyPercent: trainingSummary.accuracyPercent,
+            costlyTrainingDecisions: qualitySummary.costlyDecisions,
+            averageTrainingLostPoints: trainingSummary.averageLostExpectedPoints,
+            trainingValueCapturePercent: trainingSummary.valueCapturePercent,
             styleTitle: style.title,
             advice: style.advice
         )
@@ -108,8 +130,22 @@ enum PlayerStatsAnalyzer {
         sunRounds: Int,
         hokumRounds: Int,
         projectPoints: Int,
-        kabootCount: Int
+        kabootCount: Int,
+        training: WhatToPlayStatsSummary,
+        quality: WhatToPlayDecisionQualitySummary
     ) -> (title: String, advice: String) {
+        if training.attempts >= 8, quality.costlyPercent >= 30 {
+            return (
+                "يحتاج مراجعة قرارات".localized,
+                "تدريب وش تلعب؟ يكشف أن قراراتك المكلفة متكررة. راجع سبب أفضل ورقة قبل اللعب وركز على تقليل الفاقد المتوقع.".localized
+            )
+        }
+        if training.attempts >= 8, training.accuracyPercent >= 70 {
+            return (
+                "قارئ طاولة".localized,
+                "نتائج التدريب تشير إلى قراءة جيدة للمواقف. ارفع الصعوبة وراجع الفوارق الصغيرة بين أفضل وثاني أفضل ورقة.".localized
+            )
+        }
         if kabootCount > 0 {
             return ("لاعب ضاغط", "استثمر قدرتك على السيطرة، لكن لا تصرف أوراق الحكم القوية في أكلات قليلة النقاط.")
         }

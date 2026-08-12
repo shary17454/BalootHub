@@ -3,6 +3,7 @@ import SwiftData
 
 struct PlayerStatsView: View {
     @Query(sort: \ScoreSession.updatedAt, order: .reverse) private var sessions: [ScoreSession]
+    @Query(sort: \WhatToPlayAttempt.createdAt, order: .reverse) private var whatToPlayAttempts: [WhatToPlayAttempt]
     @Query private var settingsList: [AppSettings]
 
     private var rules: ScoreRules {
@@ -10,7 +11,7 @@ struct PlayerStatsView: View {
     }
 
     private var summary: PlayerStatsSummary {
-        PlayerStatsAnalyzer.summarize(sessions: sessions, rules: rules)
+        PlayerStatsAnalyzer.summarize(sessions: sessions, whatToPlayAttempts: whatToPlayAttempts, rules: rules)
     }
 
     var body: some View {
@@ -18,16 +19,17 @@ struct PlayerStatsView: View {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
                 header
 
-                if summary.finishedMatches == 0 {
+                if summary.finishedMatches == 0, summary.trainingAttempts == 0 {
                     EmptyStateView(
                         systemImage: "chart.xyaxis.line",
                         title: "لا توجد بيانات كافية",
-                        message: "أنهِ جلسات تسجيل بلوت حتى يستطيع التطبيق تحليل أسلوب لعبك."
+                        message: "أنهِ جلسات تسجيل بلوت أو حل مواقف وش تلعب حتى يستطيع التطبيق تحليل أسلوب لعبك."
                     )
                 } else {
                     statsGrid
                     styleCard
                     modeBreakdown
+                    trainingBreakdown
                 }
             }
             .padding(AppSpacing.md)
@@ -60,6 +62,8 @@ struct PlayerStatsView: View {
             metric("أطول سلسلة", "\(summary.longestWinStreak)", "flame.fill")
             metric("أعلى فوز", "\(summary.highestWinMargin)", "arrow.up.circle.fill")
             metric("أكبر خسارة", "\(summary.biggestLossMargin)", "arrow.down.circle.fill")
+            metric("دقة التدريب".localized, "\(summary.trainingAccuracyPercent)%", "brain.head.profile")
+            metric("قرارات خاطئة".localized, "\(summary.trainingWrongDecisions)", "xmark.octagon.fill")
         }
     }
 
@@ -84,6 +88,20 @@ struct PlayerStatsView: View {
             metric("جولات حكم", "\(summary.hokumRounds)", "suit.spade.fill")
             metric("نقاط المشاريع", "\(summary.projectPoints)", "rectangle.stack.badge.plus")
             metric("الكبوت", "\(summary.kabootCount)", "crown.fill")
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private var trainingBreakdown: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            Text("تفصيل التدريب".localized)
+                .font(AppTypography.headline)
+            metric("مواقف وش تلعب".localized, "\(summary.trainingAttempts)", "questionmark.diamond.fill")
+            metric("مطابقة الخبير".localized, "\(summary.trainingCorrectDecisions)", "checkmark.seal.fill")
+            metric("قرارات مكلفة".localized, "\(summary.costlyTrainingDecisions)", "exclamationmark.triangle.fill")
+            metric("متوسط الفاقد".localized, "\(summary.averageTrainingLostPoints)", "minus.circle.fill")
+            metric("التقاط القيمة".localized, "\(summary.trainingValueCapturePercent)%", "gauge.with.dots.needle.67percent")
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
