@@ -8,6 +8,7 @@ struct DailyChallengesView: View {
     @Query(sort: \ScoringQuizAttempt.createdAt, order: .reverse) private var scoringQuizAttempts: [ScoringQuizAttempt]
     @Query(sort: \AcademyLessonProgress.completedAt, order: .reverse) private var academyProgress: [AcademyLessonProgress]
     @Query(sort: \ScoreSession.createdAt, order: .reverse) private var scoreSessions: [ScoreSession]
+    @Query private var settingsList: [AppSettings]
     @State private var cadence: ChallengeCadence = .daily
     @AppStorage("completedBalootChallengeIDs") private var completedChallengeIDs = ""
     @AppStorage("balootAcademyCompletedLessons") private var completedAcademyLessonIDs = ""
@@ -18,6 +19,10 @@ struct DailyChallengesView: View {
 
     private var visibleChallenges: [BalootChallenge] {
         allChallenges.filter { $0.cadence == cadence }
+    }
+
+    private var scoreRules: ScoreRules {
+        settingsList.first?.scoreRules ?? .standard
     }
 
     private var completedSet: Set<String> {
@@ -31,6 +36,7 @@ struct DailyChallengesView: View {
             scoringQuizAttempts: scoringQuizAttempts,
             academyProgress: academyProgress,
             scoreSessions: scoreSessions,
+            rules: scoreRules,
             legacyCompletedAcademyLessonIDs: completedAcademySet
         )
         return completedSet.union(automatic)
@@ -86,6 +92,7 @@ struct DailyChallengesView: View {
             scoringQuizAttempts: scoringQuizAttempts,
             academyProgress: academyProgress,
             scoreSessions: scoreSessions,
+            rules: scoreRules,
             legacyCompletedAcademyLessonIDs: completedAcademySet
         )
         let whatToPlayProgress = DailyChallengeCenter.whatToPlayProgress(for: challenge, attempts: attempts)

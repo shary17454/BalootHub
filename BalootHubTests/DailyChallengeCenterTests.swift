@@ -434,6 +434,57 @@ final class DailyChallengeCenterTests: XCTestCase {
         XCTAssertFalse(progress.isComplete)
     }
 
+    func testWeeklyMatchChallengeUsesConfiguredCoffeeRuleForWinnerEligibility() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = BalootChallenge(
+            id: "weekly-coffee-rules",
+            cadence: .weekly,
+            category: .match,
+            title: "سلسلة",
+            detail: "اختبار",
+            targetCount: 1,
+            rewardTitle: "اختبار",
+            whatToPlaySeed: nil,
+            whatToPlayDifficulty: nil,
+            whatToPlayFocusKind: nil
+        )
+        let weekStart = try XCTUnwrap(calendar.dateInterval(of: .weekOfYear, for: date)?.start)
+        let session = scoreSession(
+            createdAt: weekStart.addingTimeInterval(60),
+            rounds: [
+                ScoreRound(
+                    roundNumber: 1,
+                    createdAt: weekStart.addingTimeInterval(90),
+                    mode: .hokum,
+                    teamOneBaseScore: 50,
+                    teamTwoBaseScore: 40,
+                    multiplier: .coffee
+                )
+            ]
+        )
+
+        let coffeeEnabled = try XCTUnwrap(DailyChallengeCenter.progress(
+            for: challenge,
+            attempts: [],
+            scoreSessions: [session],
+            rules: ScoreRules.from(preset: .standard, coffeeEnabled: true),
+            now: date,
+            calendar: calendar
+        ))
+        let coffeeDisabled = try XCTUnwrap(DailyChallengeCenter.progress(
+            for: challenge,
+            attempts: [],
+            scoreSessions: [session],
+            rules: ScoreRules.from(preset: .standard, coffeeEnabled: false),
+            now: date,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(coffeeEnabled.completedCount, 1)
+        XCTAssertEqual(coffeeDisabled.completedCount, 0)
+    }
+
     func testWeeklyMatchChallengeCountsConsecutiveFinishedMatchWins() throws {
         let calendar = Calendar(identifier: .gregorian)
         let date = Date(timeIntervalSince1970: 1_785_888_000)

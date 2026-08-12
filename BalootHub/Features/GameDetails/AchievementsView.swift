@@ -10,6 +10,11 @@ struct AchievementsView: View {
     @Query(sort: \AcademyLessonProgress.completedAt, order: .reverse) private var academyProgress: [AcademyLessonProgress]
     @Query(sort: \OfflineTournament.updatedAt, order: .reverse) private var offlineTournaments: [OfflineTournament]
     @Query(sort: \ScoreSession.createdAt, order: .reverse) private var scoreSessions: [ScoreSession]
+    @Query private var settingsList: [AppSettings]
+
+    private var scoreRules: ScoreRules {
+        settingsList.first?.scoreRules ?? .standard
+    }
 
     private var unlockedSet: Set<String> {
         Set(unlockedAchievementIDs.split(separator: ",").map(String.init))
@@ -19,6 +24,7 @@ struct AchievementsView: View {
                 scoreSessions: scoreSessions,
                 offlineTournaments: offlineTournaments,
                 completedChallengeIDs: completedChallengeSet,
+                rules: scoreRules,
                 academyProgress: academyProgress,
                 legacyCompletedAcademyLessonIDs: completedAcademySet
             ))
@@ -36,6 +42,7 @@ struct AchievementsView: View {
                 scoringQuizAttempts: scoringQuizAttempts,
                 academyProgress: academyProgress,
                 scoreSessions: scoreSessions,
+                rules: scoreRules,
                 legacyCompletedAcademyLessonIDs: completedAcademySet
             ))
     }
@@ -139,6 +146,11 @@ struct CareerModeView: View {
     @Query(sort: \ScoringQuizAttempt.createdAt, order: .reverse) private var scoringQuizAttempts: [ScoringQuizAttempt]
     @Query(sort: \AcademyLessonProgress.completedAt, order: .reverse) private var academyProgress: [AcademyLessonProgress]
     @Query(sort: \OfflineTournament.updatedAt, order: .reverse) private var offlineTournaments: [OfflineTournament]
+    @Query private var settingsList: [AppSettings]
+
+    private var scoreRules: ScoreRules {
+        settingsList.first?.scoreRules ?? .standard
+    }
 
     private var summary: CareerProgressSummary {
         CareerProgressAnalyzer.summarize(
@@ -149,7 +161,8 @@ struct CareerModeView: View {
             offlineTournaments: offlineTournaments,
             completedChallengeIDs: completedChallengeSet,
             unlockedAchievementIDs: unlockedSet,
-            legacyCompletedAcademyLessonIDs: completedAcademySet
+            legacyCompletedAcademyLessonIDs: completedAcademySet,
+            rules: scoreRules
         )
     }
 
@@ -169,6 +182,7 @@ struct CareerModeView: View {
                 scoringQuizAttempts: scoringQuizAttempts,
                 academyProgress: academyProgress,
                 scoreSessions: scoreSessions,
+                rules: scoreRules,
                 legacyCompletedAcademyLessonIDs: completedAcademySet
             ))
     }
