@@ -112,6 +112,19 @@ struct WhatToPlayDecisionQualitySummary: Equatable {
     }
 }
 
+enum WhatToPlayDecisionQualityInsightKind: Equatable {
+    case strong
+    case costly
+    case mixed
+}
+
+struct WhatToPlayDecisionQualityInsight: Equatable {
+    let kind: WhatToPlayDecisionQualityInsightKind
+    let title: String
+    let detail: String
+    let iconName: String
+}
+
 enum WhatToPlayChoiceRankInsightKind: Equatable {
     case expertAligned
     case nearMisses
@@ -601,6 +614,38 @@ enum WhatToPlayStatsAnalyzer {
             closeDecisions: losses.filter { (1...2).contains($0) }.count,
             acceptableDecisions: losses.filter { (3...8).contains($0) }.count,
             costlyDecisions: losses.filter { $0 > 8 }.count
+        )
+    }
+
+    static func decisionQualityInsight(
+        for summary: WhatToPlayDecisionQualitySummary,
+        minimumTrackedAttempts: Int = 3
+    ) -> WhatToPlayDecisionQualityInsight? {
+        guard summary.trackedAttempts >= minimumTrackedAttempts else { return nil }
+
+        if summary.costlyPercent >= 30 {
+            return WhatToPlayDecisionQualityInsight(
+                kind: .costly,
+                title: "قرارات مكلفة متكررة".localized,
+                detail: "نسبة القرارات التي تخسر أثرًا كبيرًا مرتفعة. قبل لعب الورقة، قارنها بأفضل قرار واسأل: هل سأخسر أكلة أو أرمي نقاطًا بلا مقابل؟".localized,
+                iconName: "exclamationmark.triangle.fill"
+            )
+        }
+
+        if summary.strongPercent >= 70 {
+            return WhatToPlayDecisionQualityInsight(
+                kind: .strong,
+                title: "قراراتك قوية".localized,
+                detail: "معظم اختياراتك مطابقة أو قريبة من تحليل الخبير. الخطوة التالية هي رفع الصعوبة أو مراجعة الفوارق الصغيرة بين أفضل وثاني أفضل قرار.".localized,
+                iconName: "checkmark.seal.fill"
+            )
+        }
+
+        return WhatToPlayDecisionQualityInsight(
+            kind: .mixed,
+            title: "قراراتك متوسطة الجودة".localized,
+            detail: "لديك قرارات جيدة وأخرى تخسر قيمة. ركّز في التدريب القادم على تقليل الفاقد المتوقع لا على مطابقة ورقة الخبير فقط.".localized,
+            iconName: "gauge.with.dots.needle.50percent"
         )
     }
 

@@ -482,6 +482,66 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(WhatToPlayStatsAnalyzer.decisionQualitySummary(for: attempts), .empty)
     }
 
+    func testDecisionQualityInsightWaitsForEnoughTrackedAttempts() {
+        let summary = WhatToPlayDecisionQualitySummary(
+            trackedAttempts: 2,
+            expertMatches: 1,
+            closeDecisions: 1,
+            acceptableDecisions: 0,
+            costlyDecisions: 0
+        )
+
+        XCTAssertNil(WhatToPlayStatsAnalyzer.decisionQualityInsight(for: summary))
+    }
+
+    func testDecisionQualityInsightWarnsAboutCostlyDecisions() {
+        let summary = WhatToPlayDecisionQualitySummary(
+            trackedAttempts: 10,
+            expertMatches: 2,
+            closeDecisions: 2,
+            acceptableDecisions: 2,
+            costlyDecisions: 4
+        )
+
+        let insight = WhatToPlayStatsAnalyzer.decisionQualityInsight(for: summary)
+
+        XCTAssertEqual(insight?.kind, .costly)
+        XCTAssertEqual(insight?.title, "قرارات مكلفة متكررة".localized)
+        XCTAssertEqual(insight?.iconName, "exclamationmark.triangle.fill")
+    }
+
+    func testDecisionQualityInsightRecognizesStrongChoices() {
+        let summary = WhatToPlayDecisionQualitySummary(
+            trackedAttempts: 10,
+            expertMatches: 5,
+            closeDecisions: 3,
+            acceptableDecisions: 2,
+            costlyDecisions: 0
+        )
+
+        let insight = WhatToPlayStatsAnalyzer.decisionQualityInsight(for: summary)
+
+        XCTAssertEqual(insight?.kind, .strong)
+        XCTAssertEqual(insight?.title, "قراراتك قوية".localized)
+        XCTAssertEqual(insight?.iconName, "checkmark.seal.fill")
+    }
+
+    func testDecisionQualityInsightFallsBackToMixedQuality() {
+        let summary = WhatToPlayDecisionQualitySummary(
+            trackedAttempts: 10,
+            expertMatches: 3,
+            closeDecisions: 2,
+            acceptableDecisions: 4,
+            costlyDecisions: 1
+        )
+
+        let insight = WhatToPlayStatsAnalyzer.decisionQualityInsight(for: summary)
+
+        XCTAssertEqual(insight?.kind, .mixed)
+        XCTAssertEqual(insight?.title, "قراراتك متوسطة الجودة".localized)
+        XCTAssertEqual(insight?.iconName, "gauge.with.dots.needle.50percent")
+    }
+
     func testChoiceRankInsightWaitsForEnoughTrackedAttempts() {
         let summary = WhatToPlayChoiceRankSummary(
             trackedAttempts: 2,

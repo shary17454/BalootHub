@@ -57,6 +57,90 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "即将显示" } }
       }
     },
+    "قرارات مكلفة متكررة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wiederholt kostspielige Entscheidungen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Frequent costly decisions" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Decisiones costosas frecuentes" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Décisions coûteuses fréquentes" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "बार-बार महंगे निर्णय" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Keputusan mahal berulang" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Частые дорогие решения" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Sık maliyetli kararlar" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "بار بار مہنگے فیصلے" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "频繁高代价决策" } }
+      }
+    },
+    "نسبة القرارات التي تخسر أثرًا كبيرًا مرتفعة. قبل لعب الورقة، قارنها بأفضل قرار واسأل: هل سأخسر أكلة أو أرمي نقاطًا بلا مقابل؟" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der Anteil der Entscheidungen mit hohem Wertverlust ist hoch. Vergleiche deine Karte vor dem Ausspielen mit der besten Entscheidung und frage dich: Verliere ich damit einen Stich oder werfe ich Punkte ohne Gegenwert weg?" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "A high share of your decisions loses major expected value. Before playing, compare the card with the best decision and ask: will I lose the trick or throw points away?" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Una proporción alta de tus decisiones pierde mucho valor esperado. Antes de jugar, compárala con la mejor decisión y pregunta: ¿pierdo la baza o regalo puntos?" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Une part élevée de vos décisions perd beaucoup de valeur attendue. Avant de jouer, comparez la carte au meilleur choix et demandez-vous : vais-je perdre le pli ou donner des points ?" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आपके कई निर्णय बड़ा अपेक्षित मूल्य गंवाते हैं। कार्ड खेलने से पहले उसे सर्वोत्तम निर्णय से तुलना करें और पूछें: क्या मैं बाजी हारूँगा या अंक बेकार दूँगा?" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Porsi keputusan yang kehilangan nilai besar cukup tinggi. Sebelum bermain, bandingkan kartu dengan keputusan terbaik dan tanyakan: apakah saya akan kalah trick atau membuang poin?" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Высокая доля решений теряет значимую ожидаемую ценность. Перед ходом сравните карту с лучшим решением и спросите: потеряю ли я взятку или отдам очки впустую?" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Kararlarının önemli beklenen değer kaybettiren oranı yüksek. Kartı oynamadan önce en iyi kararla karşılaştır ve sor: eli mi kaybedeceğim, yoksa puanları boşa mı atacağım?" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ کے فیصلوں میں بڑے متوقع اثر کے ضائع ہونے کی شرح زیادہ ہے۔ پتا پھینکنے سے پہلے اسے بہترین فیصلے سے ملائیں اور پوچھیں: کیا میں اکلة ہاروں گا یا پوائنٹ ضائع کروں گا؟" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你有较多决策损失了大量预期价值。出牌前先和最佳决策比较，并问自己：我会输掉这一墩，还是白白送分？" } }
+      }
+    },
+    "قراراتك قوية" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Deine Entscheidungen sind stark" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your decisions are strong" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tus decisiones son fuertes" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Vos décisions sont solides" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आपके निर्णय मजबूत हैं" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Keputusan Anda kuat" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Ваши решения сильные" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Kararların güçlü" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ کے فیصلے مضبوط ہیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你的决策很强" } }
+      }
+    },
+    "معظم اختياراتك مطابقة أو قريبة من تحليل الخبير. الخطوة التالية هي رفع الصعوبة أو مراجعة الفوارق الصغيرة بين أفضل وثاني أفضل قرار." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die meisten deiner Entscheidungen entsprechen der Expertenanalyse oder liegen nah daran. Der nächste Schritt ist eine höhere Schwierigkeit oder die Prüfung kleiner Unterschiede zwischen bester und zweitbester Entscheidung." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Most of your choices match or stay close to expert analysis. Next, raise the difficulty or review the small gaps between the best and second-best decisions." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "La mayoría de tus elecciones coinciden o están cerca del análisis experto. Ahora sube la dificultad o revisa las pequeñas diferencias entre la mejor y la segunda mejor decisión." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "La plupart de vos choix correspondent ou restent proches de l’analyse experte. Ensuite, augmentez la difficulté ou révisez les petits écarts entre le meilleur et le deuxième choix." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आपकी अधिकतर पसंद विशेषज्ञ विश्लेषण से मेल खाती हैं या उसके करीब हैं। अगला कदम कठिनाई बढ़ाना या सर्वश्रेष्ठ और दूसरे सर्वश्रेष्ठ निर्णय के छोटे अंतर की समीक्षा करना है।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Sebagian besar pilihan Anda sesuai atau dekat dengan analisis pakar. Langkah berikutnya adalah menaikkan kesulitan atau meninjau selisih kecil antara keputusan terbaik dan terbaik kedua." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Большинство ваших выборов совпадают с экспертным анализом или близки к нему. Следующий шаг — повысить сложность или разобрать малые разницы между лучшим и вторым лучшим решением." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Seçimlerinin çoğu uzman analizine uyuyor veya çok yakın. Sonraki adım zorluğu artırmak ya da en iyi ve ikinci en iyi karar arasındaki küçük farkları incelemek." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ کے اکثر انتخاب ماہر تجزیے کے مطابق یا قریب ہیں۔ اگلا قدم مشکل بڑھانا یا بہترین اور دوسرے بہترین فیصلے کے چھوٹے فرق کا جائزہ لینا ہے۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你的多数选择符合或接近专家分析。下一步可以提高难度，或复盘最佳与第二佳决策之间的小差距。" } }
+      }
+    },
+    "قراراتك متوسطة الجودة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Deine Entscheidungsqualität ist gemischt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your decision quality is mixed" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tu calidad de decisión es mixta" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "La qualité de vos décisions est mitigée" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आपकी निर्णय गुणवत्ता मिली-जुली है" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kualitas keputusan Anda campuran" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Качество ваших решений смешанное" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Karar kaliten karışık" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ کے فیصلوں کا معیار ملا جلا ہے" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你的决策质量有好有坏" } }
+      }
+    },
+    "لديك قرارات جيدة وأخرى تخسر قيمة. ركّز في التدريب القادم على تقليل الفاقد المتوقع لا على مطابقة ورقة الخبير فقط." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Du hast gute Entscheidungen und andere mit Wertverlust. Konzentriere dich im nächsten Training darauf, erwarteten Verlust zu senken, nicht nur die Expertenkarte zu treffen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You have some good decisions and some that lose value. In the next session, focus on reducing expected loss, not only matching the expert card." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tienes decisiones buenas y otras que pierden valor. En el próximo entrenamiento, céntrate en reducir la pérdida esperada, no solo en igualar la carta experta." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Vous avez de bonnes décisions et d’autres qui perdent de la valeur. Au prochain entraînement, cherchez à réduire la perte attendue, pas seulement à imiter la carte experte." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आपके कुछ निर्णय अच्छे हैं और कुछ मूल्य खोते हैं। अगले अभ्यास में अपेक्षित नुकसान घटाने पर ध्यान दें, केवल विशेषज्ञ कार्ड मिलाने पर नहीं।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Anda punya keputusan baik dan beberapa yang kehilangan nilai. Di sesi berikutnya, fokuslah mengurangi kehilangan nilai, bukan hanya mencocokkan kartu pakar." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "У вас есть хорошие решения и решения с потерей ценности. В следующей тренировке сосредоточьтесь на снижении ожидаемой потери, а не только на совпадении с картой эксперта." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Bazı kararların iyi, bazıları değer kaybettiriyor. Sonraki çalışmada yalnızca uzman kartını tutturmaya değil, beklenen kaybı azaltmaya odaklan." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ کے کچھ فیصلے اچھے ہیں اور کچھ قدر کھوتے ہیں۔ اگلی مشق میں صرف ماہر کے پتے سے ملانے کے بجائے متوقع نقصان کم کرنے پر توجہ دیں۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你有一些好决策，也有一些会损失价值。下一次训练重点应是减少预期损失，而不只是匹配专家出牌。" } }
+      }
+    },
     "جودة قراراتك" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Qualität deiner Entscheidungen" } },

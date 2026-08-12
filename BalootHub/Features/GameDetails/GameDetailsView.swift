@@ -347,6 +347,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.decisionQualitySummary(for: attempts)
     }
 
+    private var decisionQualityInsight: WhatToPlayDecisionQualityInsight? {
+        WhatToPlayStatsAnalyzer.decisionQualityInsight(for: decisionQualitySummary)
+    }
+
     private var choiceRankInsight: WhatToPlayChoiceRankInsight? {
         WhatToPlayStatsAnalyzer.choiceRankInsight(for: choiceRankSummary)
     }
@@ -1098,7 +1102,7 @@ struct WhatToPlayTrainerView: View {
                     choiceRankSummaryView(choiceRankSummary, insight: choiceRankInsight)
                 }
                 if decisionQualitySummary.trackedAttempts > 0 {
-                    decisionQualitySummaryView(decisionQualitySummary)
+                    decisionQualitySummaryView(decisionQualitySummary, insight: decisionQualityInsight)
                 }
                 masteryView(mastery, milestone: masteryMilestone)
                 playStyleView(playStyle)
@@ -1200,7 +1204,10 @@ struct WhatToPlayTrainerView: View {
         .accessibilityElement(children: .combine)
     }
 
-    private func decisionQualitySummaryView(_ summary: WhatToPlayDecisionQualitySummary) -> some View {
+    private func decisionQualitySummaryView(
+        _ summary: WhatToPlayDecisionQualitySummary,
+        insight: WhatToPlayDecisionQualityInsight?
+    ) -> some View {
         VStack(alignment: .leading, spacing: AppSpacing.xs) {
             Label("جودة قراراتك".localized, systemImage: "gauge.with.dots.needle.67percent")
                 .font(AppTypography.subheadline.weight(.semibold))
@@ -1217,10 +1224,39 @@ struct WhatToPlayTrainerView: View {
                 .font(.caption2)
                 .foregroundStyle(AppColor.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
+
+            if let insight {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(insight.title)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(AppColor.textPrimary)
+                        Text(insight.detail)
+                            .font(.caption2)
+                            .foregroundStyle(AppColor.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                } icon: {
+                    Image(systemName: insight.iconName)
+                        .foregroundStyle(decisionQualityInsightTint(insight.kind))
+                }
+                .padding(.top, AppSpacing.xs)
+            }
         }
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
         .accessibilityElement(children: .combine)
+    }
+
+    private func decisionQualityInsightTint(_ kind: WhatToPlayDecisionQualityInsightKind) -> Color {
+        switch kind {
+        case .strong:
+            AppColor.success
+        case .costly:
+            AppColor.danger
+        case .mixed:
+            AppColor.accent
+        }
     }
 
     private func choiceRankInsightTint(_ kind: WhatToPlayChoiceRankInsightKind) -> Color {
