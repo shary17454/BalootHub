@@ -3497,6 +3497,9 @@ struct WhatToPlayShareCardPreview: View {
             if let selectedRank = content.selectedRank {
                 shareChip("\("ترتيب اختياري".localized): \(selectedRank)")
             }
+            if let selectedImpact = content.selectedImpact {
+                shareChip("\("الأثر المتوقع".localized): \(impactText(selectedImpact))")
+            }
             if let lostExpectedPoints = content.lostExpectedPoints {
                 shareChip("\("نقاط متوقعة ضائعة".localized): \(lostExpectedPoints)")
             }
@@ -3523,6 +3526,9 @@ struct WhatToPlayShareCardPreview: View {
             }
             if let selectedSimulationTeamResult = content.selectedSimulationTeamResult {
                 shareChip("\("اتجاه الأكلة".localized): \(selectedSimulationTeamResult)")
+            }
+            if let selectedSimulationTrickPoints = content.selectedSimulationTrickPoints {
+                shareChip("\("نقاط الأكلة".localized): \(selectedSimulationTrickPoints)")
             }
             if let tacticalReasonTitle = content.tacticalReasonTitle {
                 shareChip("\("سبب تكتيكي".localized): \(tacticalReasonTitle)")
