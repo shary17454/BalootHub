@@ -48,6 +48,17 @@ struct AcademyLesson: Identifiable, Equatable {
     }
 }
 
+struct AcademyProgressSummary: Equatable {
+    let completedLessonIDs: Set<String>
+    let completedCount: Int
+    let totalLessons: Int
+    let completionPercent: Int
+
+    var isComplete: Bool {
+        completedCount >= totalLessons && totalLessons > 0
+    }
+}
+
 enum BalootAcademyCatalog {
     static let lessons: [AcademyLesson] = [
         beginner(
@@ -296,6 +307,31 @@ enum BalootAcademyCatalog {
 
     static func lessons(for level: AcademyLevel) -> [AcademyLesson] {
         lessons.filter { $0.level == level }
+    }
+
+    static func lesson(id: String) -> AcademyLesson? {
+        lessons.first { $0.id == id }
+    }
+
+    static func progressSummary(
+        progress: [AcademyLessonProgress],
+        legacyCompletedLessonIDs: Set<String> = []
+    ) -> AcademyProgressSummary {
+        let validLessonIDs = Set(lessons.map(\.id))
+        let completed = Set(progress.map(\.lessonID))
+            .union(legacyCompletedLessonIDs)
+            .intersection(validLessonIDs)
+        let total = lessons.count
+        let percent = total == 0
+            ? 0
+            : Int((Double(completed.count) / Double(total) * 100).rounded())
+
+        return AcademyProgressSummary(
+            completedLessonIDs: completed,
+            completedCount: completed.count,
+            totalLessons: total,
+            completionPercent: percent
+        )
     }
 
     private static func beginner(

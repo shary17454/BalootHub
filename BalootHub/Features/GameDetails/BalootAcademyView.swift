@@ -1,6 +1,10 @@
 import SwiftUI
+import SwiftData
 
 struct BalootAcademyView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query(sort: \AcademyLessonProgress.completedAt, order: .reverse) private var lessonProgress: [AcademyLessonProgress]
+
     @State private var level: AcademyLevel = .beginner
     @State private var selectedLessonID: String = BalootAcademyCatalog.lessons(for: .beginner).first?.id ?? ""
     @State private var selectedOptionID: String?
@@ -15,7 +19,18 @@ struct BalootAcademyView: View {
     }
 
     private var completedSet: Set<String> {
+        progressSummary.completedLessonIDs
+    }
+
+    private var legacyCompletedSet: Set<String> {
         Set(completedLessonIDs.split(separator: ",").map(String.init))
+    }
+
+    private var progressSummary: AcademyProgressSummary {
+        BalootAcademyCatalog.progressSummary(
+            progress: lessonProgress,
+            legacyCompletedLessonIDs: legacyCompletedSet
+        )
     }
 
     var body: some View {
@@ -50,7 +65,8 @@ struct BalootAcademyView: View {
                 .font(AppTypography.subheadline)
                 .foregroundStyle(AppColor.textSecondary)
             HStack {
-                StatusBadge("\(completedSet.count)/\(BalootAcademyCatalog.lessons.count)", systemImage: "checkmark.seal.fill", tint: AppColor.success)
+                StatusBadge("\(progressSummary.completedCount)/\(progressSummary.totalLessons)", systemImage: "checkmark.seal.fill", tint: AppColor.success)
+                StatusBadge("\(progressSummary.completionPercent)%", systemImage: "chart.pie.fill", tint: AppColor.primary)
                 StatusBadge(level.title, systemImage: level.iconName, tint: AppColor.accent)
             }
         }
@@ -133,7 +149,7 @@ struct BalootAcademyView: View {
         return Button {
             selectedOptionID = option.id
             if isCorrect {
-                markCompleted(lesson.id)
+                markCompleted(lesson: lesson, selectedOptionID: option.id)
             }
         } label: {
             HStack {
@@ -188,9 +204,16 @@ struct BalootAcademyView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private func markCompleted(_ lessonID: String) {
+    private func markCompleted(lesson: AcademyLesson, selectedOptionID: String) {
         var set = completedSet
-        set.insert(lessonID)
+        set.insert(lesson.id)
         completedLessonIDs = set.sorted().joined(separator: ",")
+
+        guard !lessonProgress.contains(where: { $0.lessonID == lesson.id }) else { return }
+        modelContext.insert(AcademyLessonProgress(
+            lesson: lesson,
+            selectedOptionID: selectedOptionID
+        ))
+        try? modelContext.save()
     }
 }

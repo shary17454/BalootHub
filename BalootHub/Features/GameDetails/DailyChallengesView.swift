@@ -6,8 +6,10 @@ struct DailyChallengesView: View {
     @Environment(AppEnvironment.self) private var appEnvironment
     @Query(sort: \WhatToPlayAttempt.createdAt, order: .reverse) private var attempts: [WhatToPlayAttempt]
     @Query(sort: \ScoringQuizAttempt.createdAt, order: .reverse) private var scoringQuizAttempts: [ScoringQuizAttempt]
+    @Query(sort: \AcademyLessonProgress.completedAt, order: .reverse) private var academyProgress: [AcademyLessonProgress]
     @State private var cadence: ChallengeCadence = .daily
     @AppStorage("completedBalootChallengeIDs") private var completedChallengeIDs = ""
+    @AppStorage("balootAcademyCompletedLessons") private var completedAcademyLessonIDs = ""
 
     private var allChallenges: [BalootChallenge] {
         DailyChallengeCenter.challenges()
@@ -27,11 +29,17 @@ struct DailyChallengesView: View {
                 DailyChallengeCenter.progress(
                     for: $0,
                     attempts: attempts,
-                    scoringQuizAttempts: scoringQuizAttempts
+                    scoringQuizAttempts: scoringQuizAttempts,
+                    academyProgress: academyProgress,
+                    legacyCompletedAcademyLessonIDs: completedAcademySet
                 )?.isComplete == true
             }
             .map(\.id)
         return completedSet.union(automatic)
+    }
+
+    private var completedAcademySet: Set<String> {
+        Set(completedAcademyLessonIDs.split(separator: ",").map(String.init))
     }
 
     var body: some View {
@@ -77,7 +85,9 @@ struct DailyChallengesView: View {
         let progress = DailyChallengeCenter.progress(
             for: challenge,
             attempts: attempts,
-            scoringQuizAttempts: scoringQuizAttempts
+            scoringQuizAttempts: scoringQuizAttempts,
+            academyProgress: academyProgress,
+            legacyCompletedAcademyLessonIDs: completedAcademySet
         )
         let whatToPlayProgress = DailyChallengeCenter.whatToPlayProgress(for: challenge, attempts: attempts)
         let isAutomaticallyCompleted = progress?.isComplete == true
@@ -144,6 +154,17 @@ struct DailyChallengesView: View {
                     appEnvironment.navigate(to: .scoringQuiz, tab: appEnvironment.selectedTab)
                 } label: {
                     Label("فتح تحدي حساب النقاط".localized, systemImage: "function")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .tint(AppColor.primary)
+            }
+
+            if challenge.category == .training {
+                Button {
+                    appEnvironment.navigate(to: .balootAcademy, tab: appEnvironment.selectedTab)
+                } label: {
+                    Label("فتح أكاديمية البلوت".localized, systemImage: "graduationcap.fill")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)

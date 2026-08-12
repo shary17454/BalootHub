@@ -93,6 +93,34 @@ final class AchievementCenterTests: XCTestCase {
         )
     }
 
+    func testAcademyMasterUnlocksAfterAllLessonsCompleted() {
+        let progress = BalootAcademyCatalog.lessons.map {
+            AcademyLessonProgress(lesson: $0, selectedOptionID: $0.correctOptionID)
+        }
+
+        XCTAssertTrue(
+            AchievementCenter.earnedAchievementIDs(
+                whatToPlayAttempts: [],
+                scoringQuizAttempts: [],
+                academyProgress: progress
+            )
+            .contains("academy-master")
+        )
+    }
+
+    func testAcademyMasterIncludesLegacyCompletedLessons() {
+        let completed = Set(BalootAcademyCatalog.lessons.map(\.id))
+
+        XCTAssertTrue(
+            AchievementCenter.earnedAchievementIDs(
+                whatToPlayAttempts: [],
+                scoringQuizAttempts: [],
+                legacyCompletedAcademyLessonIDs: completed
+            )
+            .contains("academy-master")
+        )
+    }
+
     private func makeWhatToPlayAttempt(seed: UInt64, isCorrect: Bool) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
             difficulty: .medium,

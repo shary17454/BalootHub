@@ -243,6 +243,50 @@ final class DailyChallengeCenterTests: XCTestCase {
         XCTAssertTrue(progress.isComplete)
     }
 
+    func testAcademyChallengeProgressCountsCompletedLessonsInsideWeek() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = try XCTUnwrap(DailyChallengeCenter.weeklyChallenges(for: date, calendar: calendar).first { $0.category == .training })
+        let weekStart = try XCTUnwrap(calendar.dateInterval(of: .weekOfYear, for: date)?.start)
+        let first = try XCTUnwrap(BalootAcademyCatalog.lesson(id: "beginner-cards"))
+        let second = try XCTUnwrap(BalootAcademyCatalog.lesson(id: "beginner-deal"))
+        let third = try XCTUnwrap(BalootAcademyCatalog.lesson(id: "beginner-ordering"))
+        let progressRows = [
+            academyProgress(at: weekStart.addingTimeInterval(60), lesson: first),
+            academyProgress(at: weekStart.addingTimeInterval(120), lesson: second),
+            academyProgress(at: weekStart.addingTimeInterval(180), lesson: second),
+            academyProgress(at: weekStart.addingTimeInterval(-60), lesson: third)
+        ]
+
+        let progress = try XCTUnwrap(DailyChallengeCenter.progress(
+            for: challenge,
+            attempts: [],
+            academyProgress: progressRows,
+            now: date,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(progress.completedCount, min(2, challenge.targetCount))
+        XCTAssertEqual(progress.targetCount, challenge.targetCount)
+    }
+
+    func testAcademyChallengeProgressIncludesLegacyCompletedLessons() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = try XCTUnwrap(DailyChallengeCenter.weeklyChallenges(for: date, calendar: calendar).first { $0.category == .training })
+
+        let progress = try XCTUnwrap(DailyChallengeCenter.progress(
+            for: challenge,
+            attempts: [],
+            academyProgress: [],
+            legacyCompletedAcademyLessonIDs: ["beginner-cards", "beginner-deal", "missing"],
+            now: date,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(progress.completedCount, min(2, challenge.targetCount))
+    }
+
     func testWhatToPlayProgressCapsAtChallengeTarget() throws {
         let calendar = Calendar(identifier: .gregorian)
         let date = Date(timeIntervalSince1970: 1_785_888_000)
@@ -404,6 +448,17 @@ final class DailyChallengeCenterTests: XCTestCase {
             question: question,
             evaluation: ScoringQuizEvaluator.evaluate(answerText: "\(submitted)", question: question),
             remainingSeconds: isCorrect ? 10 : 0
+        )
+    }
+
+    private func academyProgress(
+        at date: Date,
+        lesson: AcademyLesson
+    ) -> AcademyLessonProgress {
+        AcademyLessonProgress(
+            completedAt: date,
+            lesson: lesson,
+            selectedOptionID: lesson.correctOptionID
         )
     }
 }

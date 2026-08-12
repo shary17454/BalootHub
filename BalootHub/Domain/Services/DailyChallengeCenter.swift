@@ -239,6 +239,8 @@ enum DailyChallengeCenter {
         for challenge: BalootChallenge,
         attempts: [WhatToPlayAttempt],
         scoringQuizAttempts: [ScoringQuizAttempt] = [],
+        academyProgress: [AcademyLessonProgress] = [],
+        legacyCompletedAcademyLessonIDs: Set<String> = [],
         now: Date = Date(),
         calendar: Calendar = Calendar(identifier: .gregorian)
     ) -> BalootChallengeProgress? {
@@ -255,6 +257,22 @@ enum DailyChallengeCenter {
 
             return BalootChallengeProgress(
                 completedCount: min(completed, challenge.targetCount),
+                targetCount: challenge.targetCount
+            )
+        }
+
+        if challenge.category == .training {
+            let completedLessonIDs = Set(academyProgress.compactMap { progress -> String? in
+                guard progress.completedAt >= interval.start,
+                      progress.completedAt < interval.end
+                else { return nil }
+                return progress.lessonID
+            })
+            .union(legacyCompletedAcademyLessonIDs)
+            .intersection(Set(BalootAcademyCatalog.lessons.map(\.id)))
+
+            return BalootChallengeProgress(
+                completedCount: min(completedLessonIDs.count, challenge.targetCount),
                 targetCount: challenge.targetCount
             )
         }

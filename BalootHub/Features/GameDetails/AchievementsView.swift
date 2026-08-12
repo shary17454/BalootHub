@@ -3,15 +3,23 @@ import SwiftData
 
 struct AchievementsView: View {
     @AppStorage("unlockedBalootAchievementIDs") private var unlockedAchievementIDs = ""
+    @AppStorage("balootAcademyCompletedLessons") private var completedAcademyLessonIDs = ""
     @Query(sort: \WhatToPlayAttempt.createdAt, order: .reverse) private var whatToPlayAttempts: [WhatToPlayAttempt]
     @Query(sort: \ScoringQuizAttempt.createdAt, order: .reverse) private var scoringQuizAttempts: [ScoringQuizAttempt]
+    @Query(sort: \AcademyLessonProgress.completedAt, order: .reverse) private var academyProgress: [AcademyLessonProgress]
 
     private var unlockedSet: Set<String> {
         Set(unlockedAchievementIDs.split(separator: ",").map(String.init))
             .union(AchievementCenter.earnedAchievementIDs(
                 whatToPlayAttempts: whatToPlayAttempts,
-                scoringQuizAttempts: scoringQuizAttempts
+                scoringQuizAttempts: scoringQuizAttempts,
+                academyProgress: academyProgress,
+                legacyCompletedAcademyLessonIDs: completedAcademySet
             ))
+    }
+
+    private var completedAcademySet: Set<String> {
+        Set(completedAcademyLessonIDs.split(separator: ",").map(String.init))
     }
 
     var body: some View {

@@ -118,12 +118,20 @@ enum AchievementCenter {
 
     static func earnedAchievementIDs(
         whatToPlayAttempts: [WhatToPlayAttempt],
-        scoringQuizAttempts: [ScoringQuizAttempt]
+        scoringQuizAttempts: [ScoringQuizAttempt],
+        academyProgress: [AcademyLessonProgress] = [],
+        legacyCompletedAcademyLessonIDs: Set<String> = []
     ) -> Set<String> {
         var earned = earnedAchievementIDs(whatToPlayAttempts: whatToPlayAttempts)
         let correctScoringAnswers = scoringQuizAttempts.filter(\.isCorrect).count
         if correctScoringAnswers >= 25 {
             earned.insert("scorekeeper")
+        }
+        if BalootAcademyCatalog.progressSummary(
+            progress: academyProgress,
+            legacyCompletedLessonIDs: legacyCompletedAcademyLessonIDs
+        ).isComplete {
+            earned.insert("academy-master")
         }
         return earned
     }

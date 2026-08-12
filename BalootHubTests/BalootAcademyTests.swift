@@ -53,4 +53,35 @@ final class BalootAcademyTests: XCTestCase {
 
         XCTAssertTrue(expectedIDs.isSubset(of: actualIDs), "Missing academy topics: \(expectedIDs.subtracting(actualIDs).sorted())")
     }
+
+    func testAcademyProgressSummaryCombinesStoredAndLegacyLessons() throws {
+        let first = try XCTUnwrap(BalootAcademyCatalog.lesson(id: "beginner-cards"))
+        let second = try XCTUnwrap(BalootAcademyCatalog.lesson(id: "beginner-deal"))
+        let progress = [
+            AcademyLessonProgress(lesson: first, selectedOptionID: first.correctOptionID)
+        ]
+
+        let summary = BalootAcademyCatalog.progressSummary(
+            progress: progress,
+            legacyCompletedLessonIDs: [second.id, "missing-lesson"]
+        )
+
+        XCTAssertEqual(summary.completedLessonIDs, [first.id, second.id])
+        XCTAssertEqual(summary.completedCount, 2)
+        XCTAssertEqual(summary.totalLessons, BalootAcademyCatalog.lessons.count)
+        XCTAssertGreaterThan(summary.completionPercent, 0)
+        XCTAssertFalse(summary.isComplete)
+    }
+
+    func testAcademyProgressSummaryDetectsFullCompletion() {
+        let progress = BalootAcademyCatalog.lessons.map {
+            AcademyLessonProgress(lesson: $0, selectedOptionID: $0.correctOptionID)
+        }
+
+        let summary = BalootAcademyCatalog.progressSummary(progress: progress)
+
+        XCTAssertEqual(summary.completedCount, BalootAcademyCatalog.lessons.count)
+        XCTAssertEqual(summary.completionPercent, 100)
+        XCTAssertTrue(summary.isComplete)
+    }
 }
