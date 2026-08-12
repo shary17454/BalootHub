@@ -19,6 +19,7 @@ struct WhatToPlayShareCardContent: Equatable {
     let difficulty: String
     let focus: String
     let trickProgress: String
+    let scoreLine: String
     let turnPlayerName: String
     let tableCards: [PlayedCardLine]
     let legalCardNames: [String]
@@ -106,6 +107,7 @@ enum WhatToPlayShareCard {
             difficulty: difficultyText(scenario.difficulty),
             focus: focusText(scenario.context.focusKind),
             trickProgress: "\(state.completedTricks.count + 1) \("من".localized) 8",
+            scoreLine: scoreText(scenario.context),
             turnPlayerName: state.player(id: scenario.playerID)?.name ?? "أنت".localized,
             tableCards: played.map { playedCard in
                 WhatToPlayShareCardContent.PlayedCardLine(
@@ -164,6 +166,7 @@ enum WhatToPlayShareCard {
             "\("الصعوبة".localized): \(content.difficulty)",
             "\("تركيز التدريب".localized): \(content.focus)",
             "\("الأكلة".localized): \(content.trickProgress)",
+            "\("النقاط".localized): \(content.scoreLine)",
             "\("الدور".localized): \(content.turnPlayerName)"
         ]
 
@@ -344,6 +347,12 @@ enum WhatToPlayShareCard {
 
     private static func impactText(_ value: Int) -> String {
         value >= 0 ? "+\(value)" : "\(value)"
+    }
+
+    private static func scoreText(_ context: WhatToPlayScenarioContext) -> String {
+        let margin = context.playerTeamPointMargin
+        let marginPrefix = margin > 0 ? "+" : ""
+        return "\("فريقنا".localized) \(context.playerTeamTrickPoints) · \("الخصم".localized) \(context.opponentTeamTrickPoints) · \(marginPrefix)\(margin)"
     }
 
 }

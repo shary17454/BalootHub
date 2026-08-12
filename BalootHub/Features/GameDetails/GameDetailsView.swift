@@ -3602,6 +3602,7 @@ struct WhatToPlayShareCardPreview: View {
             }
 
             HStack(spacing: AppSpacing.xs) {
+                shareMetric("النقاط".localized, content.scoreLine)
                 shareMetric("الصعوبة".localized, content.difficulty)
                 shareMetric("تركيز التدريب".localized, content.focus)
             }

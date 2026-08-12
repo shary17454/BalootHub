@@ -22,6 +22,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("الصعوبة".localized):"))
         XCTAssertTrue(text.contains("\("تركيز التدريب".localized):"))
         XCTAssertTrue(text.contains("\("الأكلة".localized):"))
+        XCTAssertTrue(text.contains("\("النقاط".localized): \(shareScoreText(for: scenario))"))
         XCTAssertTrue(text.contains("\("الأوراق القانونية".localized):"))
         for option in scenario.options {
             XCTAssertTrue(text.contains(option.card.accessibilityName))
@@ -38,6 +39,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(content.difficulty.isEmpty, false)
         XCTAssertEqual(content.focus.isEmpty, false)
         XCTAssertEqual(content.trickProgress, "\(scenario.state.completedTricks.count + 1) \("من".localized) 8")
+        XCTAssertEqual(content.scoreLine, shareScoreText(for: scenario))
         XCTAssertEqual(content.legalCardNames, scenario.options.sorted {
             if $0.card.suit.ordinal != $1.card.suit.ordinal {
                 return $0.card.suit.ordinal < $1.card.suit.ordinal
@@ -354,6 +356,12 @@ final class WhatToPlayShareCardTests: XCTestCase {
 
     private func contentMode(for scenario: WhatToPlayScenario) -> String {
         WhatToPlayShareCard.content(for: scenario).mode
+    }
+
+    private func shareScoreText(for scenario: WhatToPlayScenario) -> String {
+        let margin = scenario.context.playerTeamPointMargin
+        let marginPrefix = margin > 0 ? "+" : ""
+        return "\("فريقنا".localized) \(scenario.context.playerTeamTrickPoints) · \("الخصم".localized) \(scenario.context.opponentTeamTrickPoints) · \(marginPrefix)\(margin)"
     }
 
     private func strongHokumHand() -> [PlayingCard] {
