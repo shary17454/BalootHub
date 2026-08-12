@@ -59,6 +59,7 @@ struct BalootGamePlayView: View {
             ToolbarItem(placement: .topBarTrailing) {
                 HStack {
                     tableModeMenu
+                    aiProfileMenu
                     Button {
                         isPresentingRules = true
                     } label: {
@@ -118,6 +119,29 @@ struct BalootGamePlayView: View {
         .accessibilityLabel("نمط اللاعبين")
     }
 
+    private var aiProfileMenu: some View {
+        Menu {
+            ForEach(AIProfile.roster) { profile in
+                Button {
+                    viewModel.setAIProfile(profile)
+                } label: {
+                    Label {
+                        VStack(alignment: .leading) {
+                            Text(profile.displayName.localized)
+                            Text("\(profile.levelTitle.localized) · \(profile.personalityTitle.localized)")
+                        }
+                    } icon: {
+                        Image(systemName: profile.avatarSystemName)
+                    }
+                }
+            }
+        } label: {
+            Image(systemName: viewModel.selectedAIProfile.avatarSystemName)
+        }
+        .disabled(viewModel.tableMode == .localHumans)
+        .accessibilityLabel("اختيار الخصم الآلي")
+    }
+
     private var table: some View {
         RoundedRectangle(cornerRadius: AppRadius.large)
             .fill(RadialGradient(colors: [AppColor.primary.opacity(0.35), AppColor.primary.opacity(0.12)], center: .center, startRadius: 10, endRadius: 400))
@@ -132,6 +156,13 @@ struct BalootGamePlayView: View {
                 Label(viewModel.tableMode.title, systemImage: viewModel.tableMode.systemImage)
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
+                if viewModel.tableMode == .versusAI {
+                    Text("\(viewModel.selectedAIProfile.displayName.localized) · \(viewModel.selectedAIProfile.personalityTitle.localized)")
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColor.textSecondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                }
                 Text("الأكلات")
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)

@@ -151,6 +151,20 @@ final class CatalogIntegrityTests: XCTestCase {
         XCTAssertEqual(viewModel.state.rules.biddingStyle, .full)
     }
 
+    /// اختيار الخصم في الواجهة يجب أن يغيّر الشخصية والسياسة الفعلية لا العنوان فقط.
+    @MainActor
+    func testGameplayCanSwitchAIProfile() throws {
+        let viewModel = BalootGameViewModel(rules: .standard)
+        let gambler = try XCTUnwrap(AIProfile.profile(id: "ai.gambler"))
+
+        viewModel.setAIProfile(gambler)
+
+        XCTAssertEqual(viewModel.selectedAIProfile, gambler)
+        XCTAssertEqual(viewModel.aiLevel, gambler.level)
+        XCTAssertEqual(viewModel.state.rules.biddingStyle, .full)
+        XCTAssertEqual(viewModel.state.phase, .bidding)
+    }
+
     /// الرتب والأيقونات يجب أن تكون فريدة/مرتبة حتى لا تتكرر البطاقات أو تختل الترتيب.
     func testSlugsAreUniqueAndSortOrdersAreDistinct() throws {
         let items = try allItems()

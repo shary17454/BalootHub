@@ -71,6 +71,8 @@ final class BalootGameViewModel {
     let variant: BalootGameVariant
     /// مستوى الخصوم الآليين المختار.
     private(set) var aiLevel: AIProfile.Level
+    /// شخصية الخصوم الآليين المختارة. تعرضها الواجهة وتستخدمها سياسة المزايدة واللعب.
+    private(set) var selectedAIProfile: AIProfile
     // الخصم مبني على ``AIProfile`` فيختلف تفكيره بالمستوى والشخصية، لا بأخطاء عشوائية.
     private var agent: BalootAgent
     private let rules: BalootRulesConfiguration
@@ -113,12 +115,14 @@ final class BalootGameViewModel {
         aiLevel: AIProfile.Level = .expert
     ) {
         let playRules = Self.playRules(from: rules)
+        let profile = Self.profile(for: aiLevel)
         self.state = Self.makeInitialState(tableMode: tableMode, rules: playRules)
         self.variant = variant
         self.tableMode = tableMode
         self.rules = playRules
-        self.aiLevel = aiLevel
-        self.agent = ProfiledBalootAgent(profile: Self.profile(for: aiLevel))
+        self.aiLevel = profile.level
+        self.selectedAIProfile = profile
+        self.agent = ProfiledBalootAgent(profile: profile)
     }
 
     private static func profile(for level: AIProfile.Level) -> AIProfile {
@@ -129,9 +133,16 @@ final class BalootGameViewModel {
     /// يغيّر مستوى الخصوم ويبدأ مباراة جديدة به.
     func setAILevel(_ level: AIProfile.Level) {
         guard aiLevel != level else { return }
+        setAIProfile(Self.profile(for: level))
+    }
+
+    /// يغيّر الخصم الآلي بشخصيته ومستواه، ثم يبدأ مباراة جديدة بنفس القواعد.
+    func setAIProfile(_ profile: AIProfile) {
+        guard selectedAIProfile != profile else { return }
         aiTask.cancel()
-        aiLevel = level
-        agent = ProfiledBalootAgent(profile: Self.profile(for: level))
+        selectedAIProfile = profile
+        aiLevel = profile.level
+        agent = ProfiledBalootAgent(profile: profile)
         startNewMatch()
     }
 
