@@ -119,6 +119,8 @@ enum AchievementCenter {
     static func earnedAchievementIDs(
         whatToPlayAttempts: [WhatToPlayAttempt],
         scoringQuizAttempts: [ScoringQuizAttempt],
+        scoreSessions: [ScoreSession] = [],
+        rules: ScoreRules = .standard,
         academyProgress: [AcademyLessonProgress] = [],
         legacyCompletedAcademyLessonIDs: Set<String> = []
     ) -> Set<String> {
@@ -133,6 +135,53 @@ enum AchievementCenter {
         ).isComplete {
             earned.insert("academy-master")
         }
+        earned.formUnion(earnedScoreSessionAchievementIDs(scoreSessions: scoreSessions, rules: rules))
+        return earned
+    }
+
+    private static func earnedScoreSessionAchievementIDs(scoreSessions: [ScoreSession], rules: ScoreRules) -> Set<String> {
+        var earned: Set<String> = []
+        var sunWinStreak = 0
+        var hokumWins = 0
+
+        let rounds = scoreSessions
+            .flatMap(\.rounds)
+            .sorted {
+                if $0.createdAt != $1.createdAt { return $0.createdAt < $1.createdAt }
+                return $0.roundNumber < $1.roundNumber
+            }
+
+        for round in rounds {
+            let ours = round.teamOneFinalScore(rules: rules)
+            let theirs = round.teamTwoFinalScore(rules: rules)
+            let wonRound = ours > theirs
+
+            if ours > 0, theirs == 0 {
+                earned.insert("first-kaboot")
+            }
+
+            if round.mode == .sun, wonRound {
+                sunWinStreak += 1
+            } else {
+                sunWinStreak = 0
+            }
+            if sunWinStreak >= 5 {
+                earned.insert("sun-king")
+            }
+
+            if round.mode == .hokum, wonRound {
+                hokumWins += 1
+            }
+            if hokumWins >= 10 {
+                earned.insert("hokum-sheikh")
+            }
+        }
+
+        let finishedMatches = scoreSessions.filter { $0.status == .finished || $0.winnerName(rules: rules) != nil }.count
+        if finishedMatches >= 100 {
+            earned.insert("hundred-matches")
+        }
+
         return earned
     }
 }

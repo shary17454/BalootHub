@@ -121,6 +121,71 @@ final class AchievementCenterTests: XCTestCase {
         )
     }
 
+    func testFirstKabootUnlocksFromScoreSessionRound() {
+        let session = makeScoreSession(rounds: [
+            ScoreRound(roundNumber: 1, mode: .hokum, teamOneBaseScore: 162, teamTwoBaseScore: 0)
+        ])
+
+        XCTAssertTrue(
+            AchievementCenter.earnedAchievementIDs(
+                whatToPlayAttempts: [],
+                scoringQuizAttempts: [],
+                scoreSessions: [session]
+            )
+            .contains("first-kaboot")
+        )
+    }
+
+    func testSunKingUnlocksAfterFiveConsecutiveSunRoundWins() {
+        let session = makeScoreSession(rounds: (1...5).map {
+            ScoreRound(roundNumber: $0, mode: .sun, teamOneBaseScore: 130, teamTwoBaseScore: 40)
+        })
+
+        XCTAssertTrue(
+            AchievementCenter.earnedAchievementIDs(
+                whatToPlayAttempts: [],
+                scoringQuizAttempts: [],
+                scoreSessions: [session]
+            )
+            .contains("sun-king")
+        )
+    }
+
+    func testSunKingRequiresConsecutiveSunWins() {
+        let session = makeScoreSession(rounds: [
+            ScoreRound(roundNumber: 1, mode: .sun, teamOneBaseScore: 130, teamTwoBaseScore: 40),
+            ScoreRound(roundNumber: 2, mode: .sun, teamOneBaseScore: 130, teamTwoBaseScore: 40),
+            ScoreRound(roundNumber: 3, mode: .hokum, teamOneBaseScore: 90, teamTwoBaseScore: 72),
+            ScoreRound(roundNumber: 4, mode: .sun, teamOneBaseScore: 130, teamTwoBaseScore: 40),
+            ScoreRound(roundNumber: 5, mode: .sun, teamOneBaseScore: 130, teamTwoBaseScore: 40),
+            ScoreRound(roundNumber: 6, mode: .sun, teamOneBaseScore: 130, teamTwoBaseScore: 40)
+        ])
+
+        XCTAssertFalse(
+            AchievementCenter.earnedAchievementIDs(
+                whatToPlayAttempts: [],
+                scoringQuizAttempts: [],
+                scoreSessions: [session]
+            )
+            .contains("sun-king")
+        )
+    }
+
+    func testHokumSheikhUnlocksAfterTenHokumRoundWins() {
+        let session = makeScoreSession(rounds: (1...10).map {
+            ScoreRound(roundNumber: $0, mode: .hokum, teamOneBaseScore: 100, teamTwoBaseScore: 62)
+        })
+
+        XCTAssertTrue(
+            AchievementCenter.earnedAchievementIDs(
+                whatToPlayAttempts: [],
+                scoringQuizAttempts: [],
+                scoreSessions: [session]
+            )
+            .contains("hokum-sheikh")
+        )
+    }
+
     private func makeWhatToPlayAttempt(seed: UInt64, isCorrect: Bool) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
             difficulty: .medium,
@@ -141,5 +206,14 @@ final class AchievementCenterTests: XCTestCase {
             evaluation: ScoringQuizEvaluator.evaluate(answerText: "\(submitted)", question: question),
             remainingSeconds: isCorrect ? 10 : 0
         )
+    }
+
+    private func makeScoreSession(rounds: [ScoreRound]) -> ScoreSession {
+        let session = ScoreSession(teamOneName: "فريقنا", teamTwoName: "الخصم", targetScore: 152)
+        for round in rounds {
+            round.session = session
+        }
+        session.rounds = rounds
+        return session
     }
 }
