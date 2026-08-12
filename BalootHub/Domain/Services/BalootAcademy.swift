@@ -59,6 +59,13 @@ struct AcademyProgressSummary: Equatable {
     }
 }
 
+struct AcademyNextLessonRecommendation: Equatable {
+    let lesson: AcademyLesson
+    let title: String
+    let detail: String
+    let iconName: String
+}
+
 enum BalootAcademyCatalog {
     static let lessons: [AcademyLesson] = [
         beginner(
@@ -331,6 +338,30 @@ enum BalootAcademyCatalog {
             completedCount: completed.count,
             totalLessons: total,
             completionPercent: percent
+        )
+    }
+
+    static func nextLessonRecommendation(
+        currentLessonID: String?,
+        completedLessonIDs: Set<String>
+    ) -> AcademyNextLessonRecommendation? {
+        let validCompleted = completedLessonIDs.intersection(Set(lessons.map(\.id)))
+        guard validCompleted.count < lessons.count else { return nil }
+
+        let startIndex = currentLessonID
+            .flatMap { id in lessons.firstIndex { $0.id == id } }
+            .map { lessons.index(after: $0) }
+            ?? lessons.startIndex
+        let orderedCandidates = Array(lessons[startIndex...]) + Array(lessons[..<startIndex])
+        guard let next = orderedCandidates.first(where: { !validCompleted.contains($0.id) }) else {
+            return nil
+        }
+
+        return AcademyNextLessonRecommendation(
+            lesson: next,
+            title: "الدرس التالي".localized,
+            detail: "\("تابع مسارك في".localized) \(next.level.title): \(next.title)",
+            iconName: next.level.iconName
         )
     }
 

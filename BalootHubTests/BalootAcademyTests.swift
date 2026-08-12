@@ -84,4 +84,40 @@ final class BalootAcademyTests: XCTestCase {
         XCTAssertEqual(summary.completionPercent, 100)
         XCTAssertTrue(summary.isComplete)
     }
+
+    func testNextLessonRecommendationMovesToNextIncompleteLesson() throws {
+        let current = try XCTUnwrap(BalootAcademyCatalog.lesson(id: "beginner-cards"))
+        let completed: Set<String> = [current.id]
+
+        let recommendation = try XCTUnwrap(BalootAcademyCatalog.nextLessonRecommendation(
+            currentLessonID: current.id,
+            completedLessonIDs: completed
+        ))
+
+        XCTAssertEqual(recommendation.lesson.id, "beginner-deal")
+        XCTAssertEqual(recommendation.title, "الدرس التالي".localized)
+        XCTAssertTrue(recommendation.detail.contains(recommendation.lesson.title))
+    }
+
+    func testNextLessonRecommendationSkipsCompletedLessonsAndWrapsLevels() throws {
+        let completed = Set(BalootAcademyCatalog.lessons.map(\.id))
+            .subtracting(["intermediate-memory"])
+
+        let recommendation = try XCTUnwrap(BalootAcademyCatalog.nextLessonRecommendation(
+            currentLessonID: "advanced-mode-strategy",
+            completedLessonIDs: completed
+        ))
+
+        XCTAssertEqual(recommendation.lesson.id, "intermediate-memory")
+        XCTAssertEqual(recommendation.lesson.level, .intermediate)
+    }
+
+    func testNextLessonRecommendationReturnsNilWhenAcademyIsComplete() {
+        let completed = Set(BalootAcademyCatalog.lessons.map(\.id))
+
+        XCTAssertNil(BalootAcademyCatalog.nextLessonRecommendation(
+            currentLessonID: "advanced-mode-strategy",
+            completedLessonIDs: completed
+        ))
+    }
 }

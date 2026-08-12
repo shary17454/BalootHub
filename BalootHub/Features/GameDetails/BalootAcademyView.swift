@@ -185,6 +185,22 @@ struct BalootAcademyView: View {
                 Text("أفضل قرار: \(correct.title)")
                     .font(AppTypography.subheadline.weight(.semibold))
                     .foregroundStyle(AppColor.primary)
+            } else if isCorrect,
+                      let next = BalootAcademyCatalog.nextLessonRecommendation(
+                          currentLessonID: lesson.id,
+                          completedLessonIDs: completedSet
+                      ) {
+                Button {
+                    level = next.lesson.level
+                    selectedLessonID = next.lesson.id
+                    selectedOptionID = nil
+                } label: {
+                    Label(next.detail, systemImage: next.iconName)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(AppColor.primary)
+                .accessibilityLabel(next.title)
             }
         }
         .padding(AppSpacing.md)
