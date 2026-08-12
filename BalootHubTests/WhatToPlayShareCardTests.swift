@@ -214,8 +214,10 @@ final class WhatToPlayShareCardTests: XCTestCase {
 
         XCTAssertLessThanOrEqual(max(0, best.expectedImpact - selected.expectedImpact), 2)
         XCTAssertGreaterThanOrEqual(max(0, best.projectedTeamPoints - selected.projectedTeamPoints), 9)
+        XCTAssertEqual(content.lostProjectedTeamPoints, max(0, best.projectedTeamPoints - selected.projectedTeamPoints))
         XCTAssertEqual(content.decisionQualityTitle, "قرار مكلف".localized)
         XCTAssertEqual(content.valueLossTitle, "خسارة عالية".localized)
+        XCTAssertTrue(text.contains("\("نقاط محاكاة ضائعة".localized): \(try XCTUnwrap(content.lostProjectedTeamPoints))"))
         XCTAssertTrue(text.contains("\("تقييم القرار".localized): \("قرار مكلف".localized)"))
         XCTAssertTrue(text.contains("\("شدة خسارة القيمة".localized): \("خسارة عالية".localized)"))
     }

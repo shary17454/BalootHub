@@ -2219,6 +2219,9 @@ struct WhatToPlayTrainerView: View {
                         if let lostExpectedPoints = content.lostExpectedPoints {
                             shareChip("\("نقاط متوقعة ضائعة".localized): \(lostExpectedPoints)")
                         }
+                        if let lostProjectedTeamPoints = content.lostProjectedTeamPoints {
+                            shareChip("\("نقاط محاكاة ضائعة".localized): \(lostProjectedTeamPoints)")
+                        }
                         if let valueLossTitle = content.valueLossTitle {
                             shareChip("\("شدة خسارة القيمة".localized): \(valueLossTitle)")
                         }
