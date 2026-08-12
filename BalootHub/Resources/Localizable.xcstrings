@@ -11159,6 +11159,20 @@
         }
       }
     },
+    "جولة الأشكال: اختر حكمًا بلون غير المكشوف أو صن أو بس" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ashkal-Runde: wähle eine andere Hokum-Farbe als die offene Karte, Sun oder Pass" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Ashkal round: choose a Hokum suit other than the up-card suit, Sun, or Pass" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Ronda de Ashkal: elige un palo de Hokum distinto al de la carta descubierta, Sun o Pass" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tour Ashkal : choisis un atout Hokum différent de la carte visible, Sun ou Pass" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "अशकल राउंड: खुली पत्ती के सूट से अलग Hokum सूट, Sun या Pass चुनें" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Ronde Ashkal: pilih suit Hokum selain suit kartu terbuka, Sun, atau Pass" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Раунд Ashkal: выбери масть Hokum, отличную от открытой карты, Sun или Pass" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Ashkal turu: açık kartın renginden farklı bir Hokum rengi, Sun veya Pass seç" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اشکال راؤنڈ: کھلے پتے کے سوٹ کے علاوہ Hokum سوٹ، Sun یا Pass منتخب کریں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Ashkal 回合：选择不同于明牌花色的 Hokum 花色、Sun 或 Pass" } }
+      }
+    },
     "جولة المضاعفة" : {
       "extractionState" : "stale",
       "localizations" : {

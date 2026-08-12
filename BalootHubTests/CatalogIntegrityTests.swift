@@ -124,6 +124,23 @@ final class CatalogIntegrityTests: XCTestCase {
         XCTAssertEqual(hokumViewModel.state.rules.biddingStyle, .full)
     }
 
+    /// بعد بدء الطاولة من أي رابط قديم، تكون الصن والحكم خيارات مزايدة داخل نفس
+    /// اللعبة، وليست حالة مفروضة قبل التوزيع.
+    @MainActor
+    func testLegacyModeLinksExposeSunAndHokumAsBidsAfterDeal() throws {
+        let viewModel = BalootGameViewModel(variant: BalootGameVariant(slug: "baloot-hokum"), tableMode: .localHumans, rules: .standard)
+
+        viewModel.deal()
+
+        let upSuit = try XCTUnwrap(viewModel.upCard?.suit)
+        XCTAssertEqual(viewModel.state.phase, .bidding)
+        XCTAssertNil(viewModel.state.mode)
+        XCTAssertNil(viewModel.state.trumpSuit)
+        XCTAssertTrue(viewModel.legalBidsForHuman.contains(.pass))
+        XCTAssertTrue(viewModel.legalBidsForHuman.contains(.sun))
+        XCTAssertTrue(viewModel.legalBidsForHuman.contains(.hokum(suit: upSuit)))
+    }
+
     /// إعدادات المجلس قد تُستخدم في المحرك لاختبارات أو دروس مبسطة، لكن شاشة اللعب
     /// النهائية لا تفصل الصن والحكم؛ تفرض مزايدة بلوت كاملة دائمًا.
     @MainActor

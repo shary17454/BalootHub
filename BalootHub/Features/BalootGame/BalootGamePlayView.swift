@@ -185,7 +185,7 @@ struct BalootGamePlayView: View {
     private var biddingStageTitle: String {
         switch viewModel.biddingStage {
         case .firstRound: "الجولة الأولى: حكم على الورقة المكشوفة أو صن أو بس".localized
-        case .secondRound: "جولة الأشكال: اختر أي لون للحكم أو صن أو بس".localized
+        case .secondRound: "جولة الأشكال: اختر حكمًا بلون غير المكشوف أو صن أو بس".localized
         case .doubling: "جولة المضاعفة".localized
         case .completed, .voided: "انتهت المزايدة".localized
         }
