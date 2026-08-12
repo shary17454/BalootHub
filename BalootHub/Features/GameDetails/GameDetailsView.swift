@@ -230,6 +230,30 @@ struct GameDetailsView: View {
                 .controlSize(.large)
             }
 
+            if item.slug == "baloot-encyclopedia" {
+                Button {
+                    appEnvironment.navigate(to: .balootEncyclopedia, tab: appEnvironment.selectedTab)
+                } label: {
+                    Label("فتح الموسوعة".localized, systemImage: "book.closed.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(AppColor.primary)
+                .controlSize(.large)
+            }
+
+            if item.slug == "baloot-rare-cases" {
+                Button {
+                    appEnvironment.navigate(to: .rareCaseLibrary, tab: appEnvironment.selectedTab)
+                } label: {
+                    Label("فتح الحالات النادرة".localized, systemImage: "questionmark.folder.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(AppColor.primary)
+                .controlSize(.large)
+            }
+
             if item.isPlayable {
                 Button {
                     appEnvironment.navigate(to: .balootGamePlay(slug: item.slug), tab: appEnvironment.selectedTab)

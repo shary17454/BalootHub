@@ -54,7 +54,7 @@ final class CatalogFilterTests: XCTestCase {
     }
 
     func testCatalogHasExactlyTwentyFiveSeedItems() {
-        XCTAssertEqual(makeItems().count, 25)
+        XCTAssertEqual(makeItems().count, 27)
     }
 
     func testCatalogIncludesAdvancedBalootReferences() {

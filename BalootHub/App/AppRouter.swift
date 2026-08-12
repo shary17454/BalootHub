@@ -49,4 +49,6 @@ enum AppRoute: Hashable {
     case offlineTournaments
     case balootSandbox
     case trainingIntro
+    case balootEncyclopedia
+    case rareCaseLibrary
 }

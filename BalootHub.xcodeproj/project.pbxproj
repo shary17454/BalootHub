@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		003F12B7AF1147CFA775C624 /* AppAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6A859FD332A4FD6AB73A004 /* AppAnimation.swift */; };
 		0283C1815C604A66995536D0 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B10AC6CA684350A7089C28 /* HomeView.swift */; };
+		0584568067057C766698AE61 /* BalootEncyclopediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31912B05693B8E9B0FEDBFE0 /* BalootEncyclopediaView.swift */; };
 		0BAEE16832A14DD0AC8A0111 /* MatchHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027593F2A63A4966AC066FDE /* MatchHistoryView.swift */; };
 		0F25653820F7429F931B4AF2 /* CatalogSeederTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DA4313DC03409888B1B43F /* CatalogSeederTests.swift */; };
 		10F7E300CEB243B0A5B5531F /* CatalogFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774F64E2FF1449F4BFBB8528 /* CatalogFilter.swift */; };
@@ -21,6 +22,8 @@
 		1C4D6563A41D4FDCA8234768 /* GameCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0F497C746E14D9B9D37C16E /* GameCategory.swift */; };
 		1F1CB02E49114969893329E4 /* OfflineTournament.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96B0E69259F48239E70C5E8 /* OfflineTournament.swift */; };
 		230B93AF93A34D21B23D548F /* AppRadius.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD327F6E506640BCBCF86B90 /* AppRadius.swift */; };
+		25191573A86D20A5ED89FAEB /* RareCaseLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38AA1DA59E011BBC4E1F7798 /* RareCaseLibraryView.swift */; };
+		280958DE94573315B4BAD7BA /* BalootEncyclopediaAndRareCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD926CE4B79280B21E0E0D42 /* BalootEncyclopediaAndRareCaseTests.swift */; };
 		2F5DAB8C1A664481B5A2F9E0 /* BalootAcademyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12F4C7E2B5849279DE053AA /* BalootAcademyView.swift */; };
 		31B5FD970C5946BFA8589248 /* BalootAcademyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821BF8DC70D1422390424FDB /* BalootAcademyTests.swift */; };
 		32ACBC56B3044B9EBB30C480 /* BalootGamePlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E31630790994E7BB9617012 /* BalootGamePlayView.swift */; };
@@ -84,6 +87,7 @@
 		C5A02FB8298A4DF0912E0443 /* GameCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86D021D851B4EE2B3C92D16 /* GameCardView.swift */; };
 		C768421D8F15445490E32AB4 /* DailyChallengesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB39145A21E4CA2A44D6B28 /* DailyChallengesView.swift */; };
 		C85D61B0D3A8447691B7E479 /* HouseRulesStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A12CB5F40B64B06A4684331 /* HouseRulesStoreTests.swift */; };
+		CD723B0FE80EBD0657E79D04 /* RareCaseLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC94AA125796FF259421701E /* RareCaseLibrary.swift */; };
 		CE8A47FB5A074082B288D0DD /* GameCatalogItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = D956A552802C44EE9E7616E5 /* GameCatalogItem.swift */; };
 		D3C4E5F60718293A4B5C6D70 /* WhatToPlayOptionDisclosure.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C4E5F60718293A4B5C6D6F /* WhatToPlayOptionDisclosure.swift */; };
 		D3C4E5F60718293A4B5C6D72 /* WhatToPlayOptionDisclosureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C4E5F60718293A4B5C6D71 /* WhatToPlayOptionDisclosureTests.swift */; };
@@ -109,6 +113,7 @@
 		F8CA1C8C0E77448C886FF98F /* ScorekeeperHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8656E5E144954110A70861C4 /* ScorekeeperHomeView.swift */; };
 		F9A00123456789ABCDEF0101 /* RoundReplayDecisionAdvisor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A00123456789ABCDEF0100 /* RoundReplayDecisionAdvisor.swift */; };
 		F9A00123456789ABCDEF0103 /* RoundReplayDecisionAdvisorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A00123456789ABCDEF0102 /* RoundReplayDecisionAdvisorTests.swift */; };
+		F9CAD0269B3EDCA7F3964A0B /* BalootEncyclopedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F2EDE5D840A99F4496E41F /* BalootEncyclopedia.swift */; };
 		FBC9940EE7054D6EB1677B9B /* OfflineTournamentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F84C8169544ED99369CD35 /* OfflineTournamentTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -135,10 +140,13 @@
 		0E3E7E8B07B34177B68AC206 /* PlayerStatsAnalyzerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStatsAnalyzerTests.swift; sourceTree = "<group>"; };
 		163CDD8053E844BDAF883655 /* StateViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateViews.swift; sourceTree = "<group>"; };
 		166DFA625C7D4E779784254C /* DailyChallengeCenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyChallengeCenterTests.swift; sourceTree = "<group>"; };
+		18F2EDE5D840A99F4496E41F /* BalootEncyclopedia.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BalootEncyclopedia.swift; sourceTree = "<group>"; };
 		20E0FBBD7CE549F2A3856DB6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		258E49D412F9485B97815F28 /* OfflineTournamentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineTournamentsView.swift; sourceTree = "<group>"; };
 		2EBD530C3E0F4E029B78C128 /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
+		31912B05693B8E9B0FEDBFE0 /* BalootEncyclopediaView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BalootEncyclopediaView.swift; sourceTree = "<group>"; };
 		31E143820BE3422EB209A656 /* OfflineTournamentPlanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineTournamentPlanner.swift; sourceTree = "<group>"; };
+		38AA1DA59E011BBC4E1F7798 /* RareCaseLibraryView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RareCaseLibraryView.swift; sourceTree = "<group>"; };
 		3B1E2CE87D3E46DF86EFA664 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
 		3E98C1D6A2A142ED953F3D57 /* ScoringQuizAttempt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoringQuizAttempt.swift; sourceTree = "<group>"; };
 		3F464876C9E1445D898B6EE2 /* PlayerStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStatsView.swift; sourceTree = "<group>"; };
@@ -196,6 +204,7 @@
 		C6A859FD332A4FD6AB73A004 /* AppAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAnimation.swift; sourceTree = "<group>"; };
 		C714AB19C41A4452A6408D3C /* RulesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RulesView.swift; sourceTree = "<group>"; };
 		C8F07391EC254A07B8FD6B6F /* HouseRulesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseRulesView.swift; sourceTree = "<group>"; };
+		CC94AA125796FF259421701E /* RareCaseLibrary.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RareCaseLibrary.swift; sourceTree = "<group>"; };
 		CD327F6E506640BCBCF86B90 /* AppRadius.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRadius.swift; sourceTree = "<group>"; };
 		D0B5439E97E842DC97907201 /* NewScorekeeperSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewScorekeeperSessionView.swift; sourceTree = "<group>"; };
 		D10E2C56EFED4109AA317BF3 /* BalootHubApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootHubApp.swift; sourceTree = "<group>"; };
@@ -208,6 +217,7 @@
 		D7E8F90123456789ABCDEF02 /* RuleExplanationFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleExplanationFormatterTests.swift; sourceTree = "<group>"; };
 		D956A552802C44EE9E7616E5 /* GameCatalogItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCatalogItem.swift; sourceTree = "<group>"; };
 		D96B0E69259F48239E70C5E8 /* OfflineTournament.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineTournament.swift; sourceTree = "<group>"; };
+		DD926CE4B79280B21E0E0D42 /* BalootEncyclopediaAndRareCaseTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BalootEncyclopediaAndRareCaseTests.swift; sourceTree = "<group>"; };
 		E0811162DCF843A7B33CF1E3 /* ScoreRound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreRound.swift; sourceTree = "<group>"; };
 		E26F1901589540B5AF735A37 /* StatusBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBadge.swift; sourceTree = "<group>"; };
 		E32D73CAC888412DAEE3DF83 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
@@ -312,6 +322,8 @@
 				C2B3D4E5F60718293A4B5C61 /* WhatToPlayStatsAnalyzer.swift */,
 				AB12CD34EF56789012345670 /* WhatToPlayTrainerPreferences.swift */,
 				FF5F943C9047CC6855496A0E /* ProjectStatsAnalyzer.swift */,
+				18F2EDE5D840A99F4496E41F /* BalootEncyclopedia.swift */,
+				CC94AA125796FF259421701E /* RareCaseLibrary.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -387,6 +399,7 @@
 				EE9E72237F624BCFAA8EE59D /* ScoreRulesTests.swift */,
 				09DAF1F1F27B4D3FB87ACC84 /* ScoreSessionTests.swift */,
 				A118D65D0C193EC4C802174D /* ProjectStatsAnalyzerTests.swift */,
+				DD926CE4B79280B21E0E0D42 /* BalootEncyclopediaAndRareCaseTests.swift */,
 			);
 			path = BalootHubTests;
 			sourceTree = "<group>";
@@ -465,6 +478,8 @@
 				0DB39145A21E4CA2A44D6B28 /* DailyChallengesView.swift */,
 				258E49D412F9485B97815F28 /* OfflineTournamentsView.swift */,
 				D4B917E8B5C44A0CB153A9C2 /* ScoringQuizView.swift */,
+				31912B05693B8E9B0FEDBFE0 /* BalootEncyclopediaView.swift */,
+				38AA1DA59E011BBC4E1F7798 /* RareCaseLibraryView.swift */,
 			);
 			path = GameDetails;
 			sourceTree = "<group>";
@@ -740,6 +755,10 @@
 				92078686623F498BBE8CF9D2 /* PaywallView.swift in Sources */,
 				B613485B54B27AD9B941AD0A /* ProjectDeclarationRecord.swift in Sources */,
 				821A2A823B60776A5228256C /* ProjectStatsAnalyzer.swift in Sources */,
+				F9CAD0269B3EDCA7F3964A0B /* BalootEncyclopedia.swift in Sources */,
+				CD723B0FE80EBD0657E79D04 /* RareCaseLibrary.swift in Sources */,
+				0584568067057C766698AE61 /* BalootEncyclopediaView.swift in Sources */,
+				25191573A86D20A5ED89FAEB /* RareCaseLibraryView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -773,6 +792,7 @@
 				1534A5689A6145759E26A22A /* ScoreRulesTests.swift in Sources */,
 				F5E7838995964BF181779782 /* ScoreSessionTests.swift in Sources */,
 				8562A90A1A02EAFDFCA320F2 /* ProjectStatsAnalyzerTests.swift in Sources */,
+				280958DE94573315B4BAD7BA /* BalootEncyclopediaAndRareCaseTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

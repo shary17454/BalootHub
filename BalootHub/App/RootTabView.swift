@@ -91,6 +91,10 @@ struct RootTabView: View {
             BalootSandboxView()
         case .trainingIntro:
             RulesView(slug: "baloot-training")
+        case .balootEncyclopedia:
+            BalootEncyclopediaView()
+        case .rareCaseLibrary:
+            RareCaseLibraryView()
         }
     }
 }
