@@ -43,6 +43,34 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "玩家手牌" } }
       }
     },
+    "هذا الخيار يخسر بعد استكمال الجولة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Diese Option verliert nach Abschluss der Runde" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "This option loses after the round is completed" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Esta opción pierde al completar la ronda" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Cette option perd après la fin de la manche" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "राउंड पूरा होने के बाद यह विकल्प अंक गंवाता है" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Opsi ini kalah setelah ronde selesai" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Этот вариант проигрывает после завершения раунда" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Bu seçenek tur tamamlandıktan sonra kaybettirir" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "یہ انتخاب راؤنڈ مکمل ہونے کے بعد نقصان دیتا ہے" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "此选项在回合完成后会损失" } }
+      }
+    },
+    "راجع Replay قبل اعتباره بديلًا قريبًا." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prüfe das Replay, bevor du es als nahe Alternative wertest." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Review the replay before treating it as a close alternative." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Revisa el replay antes de tratarla como una alternativa cercana." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Revois le replay avant de la considérer comme une alternative proche." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "इसे करीबी विकल्प मानने से पहले replay देखें।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tinjau replay sebelum menganggapnya sebagai alternatif yang dekat." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Просмотрите повтор, прежде чем считать это близкой альтернативой." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Bunu yakın alternatif saymadan önce replay'i incele." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اسے قریب متبادل سمجھنے سے پہلے replay دیکھیں۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "先查看 replay，再判断它是否是接近的替代选择。" } }
+      }
+    },
     "تم عرضه" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Bereits gezeigt" } },

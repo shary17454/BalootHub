@@ -288,4 +288,32 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
             XCTAssertFalse(selectedRow.tacticalSummary.isEmpty)
         }
     }
+
+    func testRowsTagProjectedRoundLossAsCostly() throws {
+        var matchingScenario: WhatToPlayScenario?
+        var selectedOption: WhatToPlayOption?
+
+        for seed in 1...300 {
+            let scenario = try WhatToPlayTrainer.generateScenario(seed: UInt64(seed), difficulty: .hard)
+            guard let best = scenario.bestOption else { continue }
+            if let option = scenario.options.first(where: {
+                $0.card != best.card
+                    && max(0, best.expectedImpact - $0.expectedImpact) <= 2
+                    && max(0, best.projectedTeamPoints - $0.projectedTeamPoints) >= 9
+            }) {
+                matchingScenario = scenario
+                selectedOption = option
+                break
+            }
+        }
+
+        let scenario = try XCTUnwrap(matchingScenario)
+        let selected = try XCTUnwrap(selectedOption)
+        let rows = WhatToPlayOptionComparison.rows(for: scenario, selectedCard: selected.card)
+        let selectedRow = try XCTUnwrap(rows.first { $0.card == selected.card })
+
+        XCTAssertEqual(selectedRow.tacticalTag, .costly)
+        XCTAssertTrue(selectedRow.tacticalSummary.contains("هذا الخيار يخسر بعد استكمال الجولة".localized))
+        XCTAssertTrue(selectedRow.tacticalSummary.contains("Replay"))
+    }
 }

@@ -206,8 +206,16 @@ enum WhatToPlayOptionComparison {
                     simulationSummary: simulationDisplay.summary,
                     simulationTeamResult: simulationDisplay.teamResult,
                     simulationTrickPoints: simulationDisplay.trickPoints,
-                    tacticalTag: tacticalTag(for: option, bestImpact: bestImpact),
-                    tacticalSummary: tacticalSummary(for: option, bestImpact: bestImpact),
+                    tacticalTag: tacticalTag(
+                        for: option,
+                        bestImpact: bestImpact,
+                        bestProjectedTeamPoints: bestProjectedTeamPoints
+                    ),
+                    tacticalSummary: tacticalSummary(
+                        for: option,
+                        bestImpact: bestImpact,
+                        bestProjectedTeamPoints: bestProjectedTeamPoints
+                    ),
                     rationale: option.explanation,
                     isSelected: option.card == selectedCard,
                     isExpertChoice: option.isExpertChoice
@@ -277,25 +285,40 @@ enum WhatToPlayOptionComparison {
         )
     }
 
-    private static func tacticalTag(for option: WhatToPlayOption, bestImpact: Int) -> WhatToPlayOptionTacticalTag {
+    private static func tacticalTag(
+        for option: WhatToPlayOption,
+        bestImpact: Int,
+        bestProjectedTeamPoints: Int
+    ) -> WhatToPlayOptionTacticalTag {
         let lost = max(0, bestImpact - option.expectedImpact)
+        let projectedLost = max(0, bestProjectedTeamPoints - option.projectedTeamPoints)
+        let decisiveLoss = max(lost, projectedLost)
         if option.isExpertChoice { return .expertPick }
-        if lost <= 2 { return .closeAlternative }
+        if decisiveLoss <= 2 { return .closeAlternative }
+        if decisiveLoss >= 9 || option.expectedImpact < 0 { return .costly }
         if option.outcome == .winsTrick && option.expectedImpact > 0 { return .winsNow }
-        if option.expectedImpact < 0 { return .costly }
         if option.outcome == .leadsTrick || option.outcome == .developsTrick { return .opensRisk }
         return .holdsPosition
     }
 
-    private static func tacticalSummary(for option: WhatToPlayOption, bestImpact: Int) -> String {
+    private static func tacticalSummary(
+        for option: WhatToPlayOption,
+        bestImpact: Int,
+        bestProjectedTeamPoints: Int
+    ) -> String {
         let lost = max(0, bestImpact - option.expectedImpact)
+        let projectedLost = max(0, bestProjectedTeamPoints - option.projectedTeamPoints)
+        let decisiveLoss = max(lost, projectedLost)
         if option.isExpertChoice {
             return "هذه أعلى ورقة حسب تحليل الخبير لهذا الموقف.".localized
         }
-        if lost == 0 {
+        if projectedLost > lost {
+            return "\("هذا الخيار يخسر بعد استكمال الجولة".localized): \(projectedLost). \("راجع Replay قبل اعتباره بديلًا قريبًا.".localized)"
+        }
+        if decisiveLoss == 0 {
             return "قريب جدًا من اختيار الخبير ولا يخسر أثرًا متوقعًا.".localized
         }
-        if lost <= 2 {
+        if decisiveLoss <= 2 {
             return "\("فرق بسيط عن الأفضل".localized): \(lost). \("مقبول إذا كان هدفك تقليل المخاطرة.".localized)"
         }
         if option.expectedImpact < 0 {
