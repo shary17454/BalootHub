@@ -33,6 +33,28 @@ final class OfflineTournamentTests: XCTestCase {
         XCTAssertEqual(OfflineTournamentPlanner.standings(for: tournament).first?.played, 1)
     }
 
+    func testTournamentStatsSummarizeHistoryAndChampionCounts() throws {
+        let active = OfflineTournamentPlanner.makeTournament(title: "نشطة", format: .league, teamCount: 4, seed: 9)
+        let finished = OfflineTournamentPlanner.makeTournament(title: "كأس", format: .knockout, teamCount: 4, seed: 10)
+        let firstRound = finished.matches
+        OfflineTournamentPlanner.recordWin(for: firstRound[0].id, side: .home, in: finished)
+        OfflineTournamentPlanner.recordWin(for: firstRound[1].id, side: .away, in: finished)
+        let final = try XCTUnwrap(finished.matches.first { $0.roundNumber == 2 })
+        OfflineTournamentPlanner.recordWin(for: final.id, side: .home, in: finished)
+
+        let summary = OfflineTournamentPlanner.stats(for: [active, finished])
+
+        XCTAssertEqual(summary.tournaments, 2)
+        XCTAssertEqual(summary.activeTournaments, 1)
+        XCTAssertEqual(summary.finishedTournaments, 1)
+        XCTAssertEqual(summary.completedMatches, 3)
+        XCTAssertEqual(summary.scheduledMatches, active.matches.count + finished.matches.count)
+        XCTAssertEqual(summary.championshipTeams[final.homeTeam], 1)
+        XCTAssertEqual(summary.mostDecoratedTeam, final.homeTeam)
+        XCTAssertEqual(summary.mostDecoratedTeamTitles, 1)
+        XCTAssertGreaterThan(summary.completionPercent, 0)
+    }
+
     func testBestOfThreeRequiresTwoWins() throws {
         let tournament = OfflineTournamentPlanner.makeTournament(title: "كأس", format: .bestOfThreeCup, teamCount: 4, seed: 10)
         let firstMatch = try XCTUnwrap(tournament.matches.first)

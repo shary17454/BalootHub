@@ -6,6 +6,30 @@ enum OfflineTournamentPlanner {
         case away
     }
 
+    struct StatsSummary: Equatable {
+        let tournaments: Int
+        let activeTournaments: Int
+        let finishedTournaments: Int
+        let scheduledMatches: Int
+        let completedMatches: Int
+        let championshipTeams: [String: Int]
+        let mostDecoratedTeam: String?
+        let mostDecoratedTeamTitles: Int
+        let completionPercent: Int
+
+        static let empty = StatsSummary(
+            tournaments: 0,
+            activeTournaments: 0,
+            finishedTournaments: 0,
+            scheduledMatches: 0,
+            completedMatches: 0,
+            championshipTeams: [:],
+            mostDecoratedTeam: nil,
+            mostDecoratedTeamTitles: 0,
+            completionPercent: 0
+        )
+    }
+
     static func makeTournament(
         title: String,
         format: OfflineTournamentFormat,
@@ -36,6 +60,38 @@ enum OfflineTournamentPlanner {
 
     static func standings(for tournament: OfflineTournament) -> [(team: String, wins: Int, played: Int)] {
         standingsSnapshot(teams: tournament.teams, matches: tournament.matches)
+    }
+
+    static func stats(for tournaments: [OfflineTournament]) -> StatsSummary {
+        guard !tournaments.isEmpty else { return .empty }
+
+        let active = tournaments.filter { $0.status == .active }.count
+        let finished = tournaments.filter { $0.status == .finished }.count
+        let scheduledMatches = tournaments.reduce(0) { $0 + $1.matches.count }
+        let completedMatches = tournaments.reduce(0) { total, tournament in
+            total + tournament.matches.filter { $0.isComplete(format: tournament.format) }.count
+        }
+        let champions = Dictionary(grouping: tournaments.compactMap(\.championName), by: { $0 })
+            .mapValues(\.count)
+        let decorated = champions.sorted { lhs, rhs in
+            if lhs.value != rhs.value { return lhs.value > rhs.value }
+            return lhs.key < rhs.key
+        }.first
+        let completionPercent = scheduledMatches == 0
+            ? 0
+            : Int((Double(completedMatches) / Double(scheduledMatches) * 100).rounded())
+
+        return StatsSummary(
+            tournaments: tournaments.count,
+            activeTournaments: active,
+            finishedTournaments: finished,
+            scheduledMatches: scheduledMatches,
+            completedMatches: completedMatches,
+            championshipTeams: champions,
+            mostDecoratedTeam: decorated?.key,
+            mostDecoratedTeamTitles: decorated?.value ?? 0,
+            completionPercent: completionPercent
+        )
     }
 
     static func recordWin(

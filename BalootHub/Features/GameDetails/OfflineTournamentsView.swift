@@ -9,8 +9,24 @@ struct OfflineTournamentsView: View {
     @State private var teamCount = 4
     @State private var title = "بطولة المجلس"
 
+    private var stats: OfflineTournamentPlanner.StatsSummary {
+        OfflineTournamentPlanner.stats(for: tournaments)
+    }
+
     var body: some View {
         List {
+            if stats.tournaments > 0 {
+                Section("إحصائيات البطولات") {
+                    tournamentMetric("البطولات", "\(stats.tournaments)", "trophy.fill")
+                    tournamentMetric("المكتملة", "\(stats.finishedTournaments)", "checkmark.seal.fill")
+                    tournamentMetric("المباريات المنتهية", "\(stats.completedMatches)/\(stats.scheduledMatches)", "list.number")
+                    tournamentMetric("نسبة الإنجاز", "\(stats.completionPercent)%", "gauge.with.dots.needle.67percent")
+                    if let team = stats.mostDecoratedTeam {
+                        tournamentMetric("الأكثر تتويجًا", "\(team) · \(stats.mostDecoratedTeamTitles)", "crown.fill")
+                    }
+                }
+            }
+
             Section("بطولة جديدة") {
                 TextField("اسم البطولة", text: $title)
                 Picker("النظام", selection: $format) {
@@ -74,6 +90,18 @@ struct OfflineTournamentsView: View {
             modelContext.delete(tournaments[index])
         }
         try? modelContext.save()
+    }
+
+    private func tournamentMetric(_ title: String, _ value: String, _ icon: String) -> some View {
+        HStack {
+            Label(title.localized, systemImage: icon)
+                .foregroundStyle(AppColor.textSecondary)
+            Spacer()
+            Text(value)
+                .font(AppTypography.headline)
+                .foregroundStyle(AppColor.primary)
+        }
+        .accessibilityElement(children: .combine)
     }
 }
 

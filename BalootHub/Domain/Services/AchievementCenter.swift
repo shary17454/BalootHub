@@ -233,6 +233,8 @@ struct CareerProgressSummary: Equatable {
     let correctTrainingAttempts: Int
     let correctScoringAnswers: Int
     let completedAcademyLessons: Int
+    let completedTournaments: Int
+    let tournamentTitles: Int
     let unlockedAchievementCount: Int
     let unlocks: [CareerUnlock]
     let nextStepTitle: String
@@ -245,6 +247,7 @@ enum CareerProgressAnalyzer {
         whatToPlayAttempts: [WhatToPlayAttempt] = [],
         scoringQuizAttempts: [ScoringQuizAttempt] = [],
         academyProgress: [AcademyLessonProgress] = [],
+        offlineTournaments: [OfflineTournament] = [],
         unlockedAchievementIDs: Set<String> = [],
         legacyCompletedAcademyLessonIDs: Set<String> = [],
         rules: ScoreRules = .standard
@@ -252,6 +255,7 @@ enum CareerProgressAnalyzer {
         let completedMatches = scoreSessions.filter { $0.status == .finished || $0.winnerName(rules: rules) != nil }.count
         let correctTrainingAttempts = whatToPlayAttempts.filter(\.isCorrect).count
         let correctScoringAnswers = scoringQuizAttempts.filter(\.isCorrect).count
+        let tournamentStats = OfflineTournamentPlanner.stats(for: offlineTournaments)
         let completedAcademyLessonIDs = Set(academyProgress.map(\.lessonID))
             .union(legacyCompletedAcademyLessonIDs)
             .intersection(Set(BalootAcademyCatalog.lessons.map(\.id)))
@@ -268,6 +272,7 @@ enum CareerProgressAnalyzer {
             + correctTrainingAttempts * 18
             + correctScoringAnswers * 10
             + completedAcademyLessonIDs.count * 35
+            + tournamentStats.finishedTournaments * 120
             + allUnlockedAchievementIDs.count * 70
         let rank = CareerRank.allCases.last { xp >= $0.requiredXP } ?? .newcomer
         let nextRank = CareerRank.allCases.first { $0.requiredXP > xp }
@@ -277,13 +282,16 @@ enum CareerProgressAnalyzer {
             correctTrainingAttempts: correctTrainingAttempts,
             correctScoringAnswers: correctScoringAnswers,
             completedAcademyLessons: completedAcademyLessonIDs.count,
+            completedTournaments: tournamentStats.finishedTournaments,
+            tournamentTitles: tournamentStats.championshipTeams.values.reduce(0, +),
             unlockedAchievementCount: allUnlockedAchievementIDs.count
         )
         let nextStep = nextStep(
             completedMatches: completedMatches,
             correctTrainingAttempts: correctTrainingAttempts,
             correctScoringAnswers: correctScoringAnswers,
-            completedAcademyLessons: completedAcademyLessonIDs.count
+            completedAcademyLessons: completedAcademyLessonIDs.count,
+            completedTournaments: tournamentStats.finishedTournaments
         )
 
         return CareerProgressSummary(
@@ -296,6 +304,8 @@ enum CareerProgressAnalyzer {
             correctTrainingAttempts: correctTrainingAttempts,
             correctScoringAnswers: correctScoringAnswers,
             completedAcademyLessons: completedAcademyLessonIDs.count,
+            completedTournaments: tournamentStats.finishedTournaments,
+            tournamentTitles: tournamentStats.championshipTeams.values.reduce(0, +),
             unlockedAchievementCount: allUnlockedAchievementIDs.count,
             unlocks: unlocks,
             nextStepTitle: nextStep.title,
@@ -315,6 +325,8 @@ enum CareerProgressAnalyzer {
         correctTrainingAttempts: Int,
         correctScoringAnswers: Int,
         completedAcademyLessons: Int,
+        completedTournaments: Int,
+        tournamentTitles: Int,
         unlockedAchievementCount: Int
     ) -> [CareerUnlock] {
         [
@@ -343,6 +355,18 @@ enum CareerProgressAnalyzer {
                 isUnlocked: completedAcademyLessons >= 8
             ),
             CareerUnlock(
+                id: "offline-cup-path",
+                title: "مسار البطولات".localized,
+                detail: "يفتح بعد إنهاء أول بطولة Offline.".localized,
+                isUnlocked: completedTournaments >= 1
+            ),
+            CareerUnlock(
+                id: "champion-title",
+                title: "لقب بطل المجلس".localized,
+                detail: "يفتح بعد اعتماد بطل في بطولة Offline.".localized,
+                isUnlocked: tournamentTitles >= 1
+            ),
+            CareerUnlock(
                 id: "titles-room",
                 title: "مجلس الألقاب".localized,
                 detail: "يفتح بعد 5 إنجازات.".localized,
@@ -355,7 +379,8 @@ enum CareerProgressAnalyzer {
         completedMatches: Int,
         correctTrainingAttempts: Int,
         correctScoringAnswers: Int,
-        completedAcademyLessons: Int
+        completedAcademyLessons: Int,
+        completedTournaments: Int
     ) -> (title: String, detail: String) {
         if completedMatches == 0 {
             return ("ابدأ أول مباراة".localized, "أكمل مباراة أو جلسة تسجيل حتى يبدأ سجل المسيرة من نتيجة حقيقية.".localized)
@@ -368,6 +393,9 @@ enum CareerProgressAnalyzer {
         }
         if correctScoringAnswers < 25 {
             return ("ثبّت الحساب".localized, "أجب على تحديات النقاط حتى تصل إلى 25 إجابة صحيحة.".localized)
+        }
+        if completedTournaments == 0 {
+            return ("ابدأ بطولة Offline".localized, "أنشئ بطولة مجلس من 4 أو 8 فرق واعتمد بطلها حتى تدخل نتائج البطولات في مسيرتك.".localized)
         }
         return ("ارفع مستوى الخصوم".localized, "المرحلة التالية هي اللعب ضد خصوم أقوى ومراجعة Replay بعد كل جولة.".localized)
     }

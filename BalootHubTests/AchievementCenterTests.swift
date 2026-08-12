@@ -273,6 +273,23 @@ final class AchievementCenterTests: XCTestCase {
         XCTAssertTrue(summary.unlocks.first { $0.id == "academy-certificate" }?.isUnlocked == true)
     }
 
+    func testCareerProgressIncludesFinishedOfflineTournaments() throws {
+        let tournament = OfflineTournamentPlanner.makeTournament(title: "كأس", format: .knockout, teamCount: 4, seed: 10)
+        let firstRound = tournament.matches
+        OfflineTournamentPlanner.recordWin(for: firstRound[0].id, side: .home, in: tournament)
+        OfflineTournamentPlanner.recordWin(for: firstRound[1].id, side: .away, in: tournament)
+        let final = try XCTUnwrap(tournament.matches.first { $0.roundNumber == 2 })
+        OfflineTournamentPlanner.recordWin(for: final.id, side: .home, in: tournament)
+
+        let summary = CareerProgressAnalyzer.summarize(offlineTournaments: [tournament])
+
+        XCTAssertEqual(summary.completedTournaments, 1)
+        XCTAssertEqual(summary.tournamentTitles, 1)
+        XCTAssertGreaterThanOrEqual(summary.xp, 120)
+        XCTAssertTrue(summary.unlocks.first { $0.id == "offline-cup-path" }?.isUnlocked == true)
+        XCTAssertTrue(summary.unlocks.first { $0.id == "champion-title" }?.isUnlocked == true)
+    }
+
     private func makeWhatToPlayAttempt(seed: UInt64, isCorrect: Bool) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
             difficulty: .medium,

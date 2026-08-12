@@ -7,6 +7,7 @@ struct AchievementsView: View {
     @Query(sort: \WhatToPlayAttempt.createdAt, order: .reverse) private var whatToPlayAttempts: [WhatToPlayAttempt]
     @Query(sort: \ScoringQuizAttempt.createdAt, order: .reverse) private var scoringQuizAttempts: [ScoringQuizAttempt]
     @Query(sort: \AcademyLessonProgress.completedAt, order: .reverse) private var academyProgress: [AcademyLessonProgress]
+    @Query(sort: \OfflineTournament.updatedAt, order: .reverse) private var offlineTournaments: [OfflineTournament]
     @Query(sort: \ScoreSession.createdAt, order: .reverse) private var scoreSessions: [ScoreSession]
 
     private var unlockedSet: Set<String> {
@@ -121,6 +122,7 @@ struct CareerModeView: View {
     @Query(sort: \WhatToPlayAttempt.createdAt, order: .reverse) private var whatToPlayAttempts: [WhatToPlayAttempt]
     @Query(sort: \ScoringQuizAttempt.createdAt, order: .reverse) private var scoringQuizAttempts: [ScoringQuizAttempt]
     @Query(sort: \AcademyLessonProgress.completedAt, order: .reverse) private var academyProgress: [AcademyLessonProgress]
+    @Query(sort: \OfflineTournament.updatedAt, order: .reverse) private var offlineTournaments: [OfflineTournament]
 
     private var summary: CareerProgressSummary {
         CareerProgressAnalyzer.summarize(
@@ -128,6 +130,7 @@ struct CareerModeView: View {
             whatToPlayAttempts: whatToPlayAttempts,
             scoringQuizAttempts: scoringQuizAttempts,
             academyProgress: academyProgress,
+            offlineTournaments: offlineTournaments,
             unlockedAchievementIDs: unlockedSet,
             legacyCompletedAcademyLessonIDs: completedAcademySet
         )
@@ -191,6 +194,8 @@ struct CareerModeView: View {
             careerMetric("قرارات صحيحة".localized, "\(summary.correctTrainingAttempts)/\(summary.trainingAttempts)", "brain.head.profile")
             careerMetric("إجابات الحساب".localized, "\(summary.correctScoringAnswers)", "function")
             careerMetric("دروس مكتملة".localized, "\(summary.completedAcademyLessons)", "graduationcap.fill")
+            careerMetric("بطولات مكتملة".localized, "\(summary.completedTournaments)", "trophy.fill")
+            careerMetric("ألقاب بطولة".localized, "\(summary.tournamentTitles)", "crown.fill")
             careerMetric("إنجازات".localized, "\(summary.unlockedAchievementCount)", "trophy.fill")
         }
     }
