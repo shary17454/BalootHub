@@ -1982,6 +1982,27 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(drill.seed, 5)
     }
 
+    func testMicroDrillUsesProjectedLossWhenRoundSimulationIsCostly() {
+        let attempts = [
+            attempt(daysAgo: 5, difficulty: .easy, correct: false, impact: 2, bestImpact: 4, focusKind: .followSuit, projectedTeamPoints: 55, bestProjectedTeamPoints: 70, seed: 44),
+            attempt(daysAgo: 4, difficulty: .easy, correct: true, impact: 3, projectedTeamPoints: 63, bestProjectedTeamPoints: 63),
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 3, projectedTeamPoints: 66, bestProjectedTeamPoints: 66),
+            attempt(daysAgo: 2, difficulty: .hard, correct: true, impact: 3, projectedTeamPoints: 68, bestProjectedTeamPoints: 68),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 3, projectedTeamPoints: 69, bestProjectedTeamPoints: 69)
+        ]
+
+        let drill = WhatToPlayStatsAnalyzer.microDrill(for: attempts)
+
+        XCTAssertEqual(drill.title, "خطة محاكاة القرار".localized)
+        XCTAssertEqual(drill.steps.first, "\("أعد موقف".localized) \("سهل".localized) · \("نقاط محاكاة ضائعة".localized): 15")
+        XCTAssertTrue(drill.steps.contains("قارن نتيجة الجولة لا الأكلة فقط".localized))
+        XCTAssertEqual(drill.reviewItem?.lostExpectedPoints, 2)
+        XCTAssertEqual(drill.reviewItem?.lostProjectedTeamPoints, 15)
+        XCTAssertEqual(drill.seed, 44)
+        XCTAssertEqual(drill.difficulty, .easy)
+        XCTAssertEqual(drill.focusKind, .followSuit)
+    }
+
     func testMicroDrillTargetsCostlyDecisionPatternBeforeCoverage() {
         let attempts = [
             attempt(daysAgo: 5, difficulty: .easy, correct: true, impact: 10, bestImpact: 10, focusKind: .openingLead),

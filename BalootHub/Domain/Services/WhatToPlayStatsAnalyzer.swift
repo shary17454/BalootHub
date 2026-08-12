@@ -2489,7 +2489,7 @@ enum WhatToPlayStatsAnalyzer {
         if pulse.state == .reviewNeeded {
             let reviewItem = reviewQueue(for: attempts, limit: 1).first
             let firstStep = reviewItem.map {
-                "\("أعد موقف".localized) \(difficultyTitle($0.difficulty)) · \("نقاط متوقعة ضائعة".localized): \($0.lostExpectedPoints)"
+                reviewStepTitle(for: $0)
             } ?? "أعد قراءة بطاقة تحليل اختيارك".localized
 
             return WhatToPlayMicroDrill(
@@ -2505,6 +2505,24 @@ enum WhatToPlayStatsAnalyzer {
                 seed: reviewItem?.seed,
                 difficulty: reviewItem?.difficulty,
                 focusKind: reviewItem?.focusKind
+            )
+        }
+
+        if let simulatedReview = reviewQueue(for: attempts, limit: 1).first,
+           simulatedReview.lostProjectedTeamPoints >= 6 {
+            return WhatToPlayMicroDrill(
+                title: "خطة محاكاة القرار".localized,
+                detail: "راجع قرارًا تغيّرت قيمته بعد استكمال الجولة، لا الأكلة الحالية فقط.".localized,
+                iconName: "chart.line.uptrend.xyaxis.circle.fill",
+                steps: [
+                    reviewStepTitle(for: simulatedReview),
+                    "قارن نتيجة الجولة لا الأكلة فقط".localized,
+                    "كرر نفس نوع الموقف".localized
+                ],
+                reviewItem: simulatedReview,
+                seed: simulatedReview.seed,
+                difficulty: simulatedReview.difficulty,
+                focusKind: simulatedReview.focusKind
             )
         }
 
@@ -2616,6 +2634,13 @@ enum WhatToPlayStatsAnalyzer {
             difficulty: recommendation.difficulty,
             focusKind: recommendation.focusKind
         )
+    }
+
+    private static func reviewStepTitle(for reviewItem: WhatToPlayReviewItem) -> String {
+        if reviewItem.lostProjectedTeamPoints > reviewItem.lostExpectedPoints {
+            return "\("أعد موقف".localized) \(difficultyTitle(reviewItem.difficulty)) · \("نقاط محاكاة ضائعة".localized): \(reviewItem.lostProjectedTeamPoints)"
+        }
+        return "\("أعد موقف".localized) \(difficultyTitle(reviewItem.difficulty)) · \("نقاط متوقعة ضائعة".localized): \(reviewItem.lostExpectedPoints)"
     }
 
     private static func microDrillSeed(

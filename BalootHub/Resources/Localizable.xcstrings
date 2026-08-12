@@ -571,6 +571,62 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "损失的模拟分数" } }
       }
     },
+    "خطة محاكاة القرار" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Entscheidungssimulationsplan" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Decision simulation plan" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Plan de simulación de decisiones" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Plan de simulation de décision" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "निर्णय सिमुलेशन योजना" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Rencana simulasi keputusan" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "План симуляции решения" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Karar simülasyonu planı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "فیصلے کی سیمولیشن منصوبہ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "决策模拟计划" } }
+      }
+    },
+    "راجع قرارًا تغيّرت قيمته بعد استكمال الجولة، لا الأكلة الحالية فقط." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Überprüfe eine Entscheidung, deren Wert sich nach Abschluss der Runde geändert hat, nicht nur im aktuellen Stich." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Review a decision whose value changed after finishing the round, not just the current trick." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Revisa una decisión cuyo valor cambió al completar la ronda, no solo la baza actual." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Révise une décision dont la valeur change après la manche complète, pas seulement le pli actuel." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "उस निर्णय की समीक्षा करें जिसका मूल्य पूरी राउंड के बाद बदला, सिर्फ मौजूदा ट्रिक में नहीं।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tinjau keputusan yang nilainya berubah setelah ronde selesai, bukan hanya trik saat ini." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Пересмотри решение, ценность которого изменилась после завершения раунда, а не только текущей взятки." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Sadece mevcut elde değil, tur tamamlanınca değeri değişen bir kararı incele." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "ایسے فیصلے کا جائزہ لیں جس کی قدر راؤنڈ مکمل ہونے کے بعد بدلی، صرف موجودہ ٹرک میں نہیں۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "复盘一个在整局完成后价值发生变化的决策，而不只是当前一墩。" } }
+      }
+    },
+    "قارن نتيجة الجولة لا الأكلة فقط" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Vergleiche das Rundenergebnis, nicht nur den Stich" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Compare the round result, not just the trick" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Compara el resultado de la ronda, no solo la baza" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Compare le résultat de la manche, pas seulement le pli" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सिर्फ ट्रिक नहीं, पूरी राउंड का परिणाम तुलना करें" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Bandingkan hasil ronde, bukan hanya trik" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Сравни результат раунда, а не только взятку" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Sadece eli değil, tur sonucunu karşılaştır" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "صرف ٹرک نہیں، راؤنڈ کا نتیجہ موازنہ کریں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "比较整局结果，而不只是这一墩" } }
+      }
+    },
+    "كرر نفس نوع الموقف" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wiederhole denselben Situationstyp" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Repeat the same situation type" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Repite el mismo tipo de situación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Répète le même type de situation" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "उसी प्रकार की स्थिति दोहराएँ" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Ulangi jenis situasi yang sama" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Повтори тот же тип ситуации" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Aynı durum türünü tekrarla" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اسی قسم کی صورتحال دہرائیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "重复同一类局面" } }
+      }
+    },
     "متوسط ضياع المحاكاة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Durchschnittlicher Simulationsverlust" } },
