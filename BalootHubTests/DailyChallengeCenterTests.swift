@@ -287,6 +287,131 @@ final class DailyChallengeCenterTests: XCTestCase {
         XCTAssertEqual(progress.completedCount, min(2, challenge.targetCount))
     }
 
+    func testDailyMatchChallengeCountsWinningHokumRoundInsideDay() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = try XCTUnwrap(DailyChallengeCenter.dailyChallenges(for: date, calendar: calendar).first { $0.category == .match })
+        let dayStart = calendar.startOfDay(for: date)
+        let session = scoreSession(
+            createdAt: dayStart.addingTimeInterval(60),
+            rounds: [
+                ScoreRound(
+                    roundNumber: 1,
+                    createdAt: dayStart.addingTimeInterval(120),
+                    mode: .hokum,
+                    teamOneBaseScore: 100,
+                    teamTwoBaseScore: 62
+                )
+            ]
+        )
+
+        let progress = try XCTUnwrap(DailyChallengeCenter.progress(
+            for: challenge,
+            attempts: [],
+            scoreSessions: [session],
+            now: date,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(progress.completedCount, 1)
+        XCTAssertTrue(progress.isComplete)
+    }
+
+    func testDailyMatchChallengeIgnoresSunOrLostRounds() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = try XCTUnwrap(DailyChallengeCenter.dailyChallenges(for: date, calendar: calendar).first { $0.category == .match })
+        let dayStart = calendar.startOfDay(for: date)
+        let session = scoreSession(
+            createdAt: dayStart.addingTimeInterval(60),
+            rounds: [
+                ScoreRound(roundNumber: 1, createdAt: dayStart.addingTimeInterval(90), mode: .sun, teamOneBaseScore: 130, teamTwoBaseScore: 20),
+                ScoreRound(roundNumber: 2, createdAt: dayStart.addingTimeInterval(120), mode: .hokum, teamOneBaseScore: 40, teamTwoBaseScore: 122)
+            ]
+        )
+
+        let progress = try XCTUnwrap(DailyChallengeCenter.progress(
+            for: challenge,
+            attempts: [],
+            scoreSessions: [session],
+            now: date,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(progress.completedCount, 0)
+        XCTAssertFalse(progress.isComplete)
+    }
+
+    func testWeeklyMatchChallengeCountsConsecutiveFinishedMatchWins() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = try XCTUnwrap(DailyChallengeCenter.weeklyChallenges(for: date, calendar: calendar).first { $0.category == .match })
+        let weekStart = try XCTUnwrap(calendar.dateInterval(of: .weekOfYear, for: date)?.start)
+        let sessions = (0..<challenge.targetCount).map { index in
+            scoreSession(
+                createdAt: weekStart.addingTimeInterval(TimeInterval(index + 1) * 60),
+                status: .finished,
+                rounds: [
+                    ScoreRound(roundNumber: 1, mode: .hokum, teamOneBaseScore: 100, teamTwoBaseScore: 62)
+                ]
+            )
+        }
+
+        let progress = try XCTUnwrap(DailyChallengeCenter.progress(
+            for: challenge,
+            attempts: [],
+            scoreSessions: sessions,
+            now: date,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(progress.completedCount, challenge.targetCount)
+        XCTAssertTrue(progress.isComplete)
+    }
+
+    func testWeeklyMatchChallengeResetsStreakAfterLoss() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = BalootChallenge(
+            id: "weekly-match-test",
+            cadence: .weekly,
+            category: .match,
+            title: "سلسلة",
+            detail: "اختبار",
+            targetCount: 3,
+            rewardTitle: "اختبار",
+            whatToPlaySeed: nil,
+            whatToPlayDifficulty: nil,
+            whatToPlayFocusKind: nil
+        )
+        let weekStart = try XCTUnwrap(calendar.dateInterval(of: .weekOfYear, for: date)?.start)
+        let sessions = [
+            scoreSession(createdAt: weekStart.addingTimeInterval(60), status: .finished, rounds: [
+                ScoreRound(roundNumber: 1, mode: .hokum, teamOneBaseScore: 100, teamTwoBaseScore: 62)
+            ]),
+            scoreSession(createdAt: weekStart.addingTimeInterval(120), status: .finished, rounds: [
+                ScoreRound(roundNumber: 1, mode: .hokum, teamOneBaseScore: 40, teamTwoBaseScore: 122)
+            ]),
+            scoreSession(createdAt: weekStart.addingTimeInterval(180), status: .finished, rounds: [
+                ScoreRound(roundNumber: 1, mode: .hokum, teamOneBaseScore: 100, teamTwoBaseScore: 62)
+            ]),
+            scoreSession(createdAt: weekStart.addingTimeInterval(240), status: .finished, rounds: [
+                ScoreRound(roundNumber: 1, mode: .sun, teamOneBaseScore: 130, teamTwoBaseScore: 20)
+            ])
+        ]
+
+        let progress = try XCTUnwrap(DailyChallengeCenter.progress(
+            for: challenge,
+            attempts: [],
+            scoreSessions: sessions,
+            now: date,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(progress.completedCount, 2)
+        XCTAssertFalse(progress.isComplete)
+    }
+
     func testWhatToPlayProgressCapsAtChallengeTarget() throws {
         let calendar = Calendar(identifier: .gregorian)
         let date = Date(timeIntervalSince1970: 1_785_888_000)
@@ -396,7 +521,7 @@ final class DailyChallengeCenterTests: XCTestCase {
         let date = Date(timeIntervalSince1970: 1_785_888_000)
         let challenge = try XCTUnwrap(DailyChallengeCenter.dailyChallenges(for: date).first { $0.category == .match })
 
-        XCTAssertNil(DailyChallengeCenter.progress(for: challenge, attempts: []))
+        XCTAssertNil(DailyChallengeCenter.whatToPlayProgress(for: challenge, attempts: []))
     }
 
     private func attempt(
@@ -460,5 +585,24 @@ final class DailyChallengeCenterTests: XCTestCase {
             lesson: lesson,
             selectedOptionID: lesson.correctOptionID
         )
+    }
+
+    private func scoreSession(
+        createdAt: Date,
+        status: SessionStatus = .active,
+        rounds: [ScoreRound]
+    ) -> ScoreSession {
+        let session = ScoreSession(
+            createdAt: createdAt,
+            teamOneName: "فريقنا",
+            teamTwoName: "الخصم",
+            targetScore: 152,
+            status: status
+        )
+        for round in rounds {
+            round.session = session
+        }
+        session.rounds = rounds
+        return session
     }
 }

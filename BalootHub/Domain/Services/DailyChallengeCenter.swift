@@ -240,6 +240,8 @@ enum DailyChallengeCenter {
         attempts: [WhatToPlayAttempt],
         scoringQuizAttempts: [ScoringQuizAttempt] = [],
         academyProgress: [AcademyLessonProgress] = [],
+        scoreSessions: [ScoreSession] = [],
+        rules: ScoreRules = .standard,
         legacyCompletedAcademyLessonIDs: Set<String> = [],
         now: Date = Date(),
         calendar: Calendar = Calendar(identifier: .gregorian)
@@ -273,6 +275,20 @@ enum DailyChallengeCenter {
 
             return BalootChallengeProgress(
                 completedCount: min(completedLessonIDs.count, challenge.targetCount),
+                targetCount: challenge.targetCount
+            )
+        }
+
+        if challenge.category == .match {
+            let completed = matchChallengeCompletedCount(
+                challenge: challenge,
+                scoreSessions: scoreSessions,
+                rules: rules,
+                interval: interval
+            )
+
+            return BalootChallengeProgress(
+                completedCount: min(completed, challenge.targetCount),
                 targetCount: challenge.targetCount
             )
         }
@@ -346,6 +362,45 @@ enum DailyChallengeCenter {
 
             return attempt.replaySeed
         })
+    }
+
+    private static func matchChallengeCompletedCount(
+        challenge: BalootChallenge,
+        scoreSessions: [ScoreSession],
+        rules: ScoreRules,
+        interval: DateInterval
+    ) -> Int {
+        let rounds = scoreSessions.flatMap(\.rounds).filter {
+            $0.createdAt >= interval.start && $0.createdAt < interval.end
+        }
+
+        if challenge.cadence == .daily {
+            return rounds.contains {
+                $0.mode == .hokum && $0.teamOneFinalScore(rules: rules) > $0.teamTwoFinalScore(rules: rules)
+            } ? 1 : 0
+        }
+
+        let finished = scoreSessions
+            .filter {
+                $0.createdAt >= interval.start
+                    && $0.createdAt < interval.end
+                    && ($0.status == .finished || $0.winnerName(rules: rules) != nil)
+            }
+            .sorted { $0.createdAt < $1.createdAt }
+
+        var currentStreak = 0
+        var bestStreak = 0
+        for session in finished {
+            let ours = session.teamOneTotal(rules: rules)
+            let theirs = session.teamTwoTotal(rules: rules)
+            if ours > theirs {
+                currentStreak += 1
+                bestStreak = max(bestStreak, currentStreak)
+            } else {
+                currentStreak = 0
+            }
+        }
+        return bestStreak
     }
 
     private static func dateInterval(
