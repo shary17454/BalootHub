@@ -2129,171 +2129,8 @@ struct WhatToPlayTrainerView: View {
                 .font(AppTypography.headline)
                 .foregroundStyle(AppColor.primary)
 
-            VStack(alignment: .leading, spacing: AppSpacing.md) {
-                HStack(alignment: .top) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(content.title)
-                            .font(AppTypography.title)
-                            .foregroundStyle(.white)
-                        Text(content.contextLine)
-                            .font(AppTypography.headline)
-                            .foregroundStyle(.white)
-                        Text(content.subtitle)
-                            .font(AppTypography.caption)
-                            .foregroundStyle(.white.opacity(0.78))
-                    }
-                    Spacer(minLength: AppSpacing.md)
-                    Text("Baloot Hub")
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(AppColor.primary)
-                        .padding(.horizontal, AppSpacing.sm)
-                        .padding(.vertical, AppSpacing.xxs)
-                        .background(.white, in: Capsule())
-                }
-
-                HStack(spacing: AppSpacing.xs) {
-                    shareMetric("النمط".localized, content.mode)
-                    shareMetric("الأكلة".localized, content.trickProgress)
-                    shareMetric("الدور".localized, content.turnPlayerName)
-                }
-
-                HStack(spacing: AppSpacing.xs) {
-                    shareMetric("الصعوبة".localized, content.difficulty)
-                    shareMetric("تركيز التدريب".localized, content.focus)
-                }
-
-                VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                    Text("الأوراق على الطاولة".localized)
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.86))
-
-                    if content.isOpeningTrick {
-                        Text("أنت تفتتح الأكلة.".localized)
-                            .font(AppTypography.caption)
-                            .foregroundStyle(.white.opacity(0.78))
-                    } else {
-                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppSpacing.xs) {
-                            ForEach(Array(content.tableCards.enumerated()), id: \.offset) { _, line in
-                                shareChip("\(line.playerName): \(line.cardName)")
-                            }
-                        }
-                    }
-                }
-
-                VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                    Text("الأوراق القانونية".localized)
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.86))
-
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppSpacing.xs) {
-                        ForEach(content.legalCardNames, id: \.self) { cardName in
-                            shareChip(cardName)
-                        }
-                    }
-                }
-
-                if content.includesAnswerReview {
-                    VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                        Text("مراجعة القرار".localized)
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.white.opacity(0.86))
-
-                        if let selectedCardName = content.selectedCardName {
-                            shareChip("\("اختياري".localized): \(selectedCardName)")
-                        }
-                        if let bestCardName = content.bestCardName {
-                            shareChip("\("أفضل ورقة".localized): \(bestCardName)")
-                        }
-                        if let bestExpectedImpact = content.bestExpectedImpact {
-                            shareChip("\("أثر الأفضل".localized): \(impactText(bestExpectedImpact))")
-                        }
-                        if let secondBestCardName = content.secondBestCardName {
-                            shareChip("\("ثاني أفضل".localized): \(secondBestCardName)")
-                        }
-                        if let secondBestExpectedImpact = content.secondBestExpectedImpact {
-                            shareChip("\("أثر ثاني أفضل".localized): \(impactText(secondBestExpectedImpact))")
-                        }
-                        if let selectedRank = content.selectedRank {
-                            shareChip("\("ترتيب اختياري".localized): \(selectedRank)")
-                        }
-                        if let lostExpectedPoints = content.lostExpectedPoints {
-                            shareChip("\("نقاط متوقعة ضائعة".localized): \(lostExpectedPoints)")
-                        }
-                        if let lostProjectedTeamPoints = content.lostProjectedTeamPoints {
-                            shareChip("\("نقاط محاكاة ضائعة".localized): \(lostProjectedTeamPoints)")
-                        }
-                        if let valueLossTitle = content.valueLossTitle {
-                            shareChip("\("شدة خسارة القيمة".localized): \(valueLossTitle)")
-                        }
-                        if let decisionQualityTitle = content.decisionQualityTitle {
-                            shareChip("\("تقييم القرار".localized): \(decisionQualityTitle)")
-                        }
-                        if let nextActionTitle = content.nextActionTitle {
-                            shareChip("\("الإجراء التالي".localized): \(nextActionTitle)")
-                        }
-                        if let lostAgainstSecondBestPoints = content.lostAgainstSecondBestPoints {
-                            shareChip("\("فارق عن ثاني أفضل".localized): \(lostAgainstSecondBestPoints)")
-                        }
-                        if let selectedProjectedTeamPoints = content.selectedProjectedTeamPoints {
-                            shareChip("\("نقاط فريقك بعد المحاكاة".localized): \(selectedProjectedTeamPoints)")
-                        }
-                        if let selectedSimulationSummary = content.selectedSimulationSummary {
-                            shareChip("\("نتيجة المحاكاة".localized): \(selectedSimulationSummary)")
-                        }
-                        if let selectedSimulationTeamResult = content.selectedSimulationTeamResult {
-                            shareChip("\("اتجاه الأكلة".localized): \(selectedSimulationTeamResult)")
-                        }
-                        if let tacticalReasonTitle = content.tacticalReasonTitle {
-                            shareChip("\("سبب تكتيكي".localized): \(tacticalReasonTitle)")
-                        }
-                    }
-                }
-
-                Text(content.prompt)
-                    .font(AppTypography.headline)
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.top, AppSpacing.xs)
-            }
-            .padding(AppSpacing.md)
-            .background(
-                LinearGradient(
-                    colors: [AppColor.primary, AppColor.primary.opacity(0.72), AppColor.accent.opacity(0.78)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                ),
-                in: RoundedRectangle(cornerRadius: AppRadius.large)
-            )
-            .accessibilityElement(children: .combine)
+            WhatToPlayShareCardPreview(content: content)
         }
-    }
-
-    private func shareMetric(_ title: String, _ value: String) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(title)
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(.white.opacity(0.68))
-            Text(value)
-                .font(.caption.weight(.bold))
-                .foregroundStyle(.white)
-                .lineLimit(1)
-                .minimumScaleFactor(0.75)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(AppSpacing.xs)
-        .background(.white.opacity(0.16), in: RoundedRectangle(cornerRadius: AppRadius.small))
-    }
-
-    private func shareChip(_ text: String) -> some View {
-        Text(text)
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(.white)
-            .lineLimit(1)
-            .minimumScaleFactor(0.72)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, AppSpacing.sm)
-            .padding(.vertical, AppSpacing.xs)
-            .background(.white.opacity(0.14), in: RoundedRectangle(cornerRadius: AppRadius.small))
     }
 
     private func currentTrick(_ scenario: WhatToPlayScenario) -> some View {
@@ -3484,6 +3321,194 @@ struct HandAnalyzerView: View {
             .joined(separator: " · ")
     }
 
+}
+
+private struct WhatToPlayShareCardPreview: View {
+    let content: WhatToPlayShareCardContent
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(content.title)
+                        .font(AppTypography.title)
+                        .foregroundStyle(.white)
+                    Text(content.contextLine)
+                        .font(AppTypography.headline)
+                        .foregroundStyle(.white)
+                    Text(content.subtitle)
+                        .font(AppTypography.caption)
+                        .foregroundStyle(.white.opacity(0.78))
+                }
+                Spacer(minLength: AppSpacing.md)
+                Text("Baloot Hub")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(AppColor.primary)
+                    .padding(.horizontal, AppSpacing.sm)
+                    .padding(.vertical, AppSpacing.xxs)
+                    .background(.white, in: Capsule())
+            }
+
+            HStack(spacing: AppSpacing.xs) {
+                shareMetric("النمط".localized, content.mode)
+                shareMetric("الأكلة".localized, content.trickProgress)
+                shareMetric("الدور".localized, content.turnPlayerName)
+            }
+
+            HStack(spacing: AppSpacing.xs) {
+                shareMetric("الصعوبة".localized, content.difficulty)
+                shareMetric("تركيز التدريب".localized, content.focus)
+            }
+
+            tableCardsSection
+            legalCardsSection
+
+            if content.includesAnswerReview {
+                answerReviewSection
+            }
+
+            Text(content.prompt)
+                .font(AppTypography.headline)
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.top, AppSpacing.xs)
+        }
+        .padding(AppSpacing.md)
+        .background(
+            LinearGradient(
+                colors: [AppColor.primary, AppColor.primary.opacity(0.72), AppColor.accent.opacity(0.78)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            ),
+            in: RoundedRectangle(cornerRadius: AppRadius.large)
+        )
+        .accessibilityElement(children: .combine)
+    }
+
+    private var tableCardsSection: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Text("الأوراق على الطاولة".localized)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.white.opacity(0.86))
+
+            if content.isOpeningTrick {
+                Text("أنت تفتتح الأكلة.".localized)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(.white.opacity(0.78))
+            } else {
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppSpacing.xs) {
+                    ForEach(Array(content.tableCards.enumerated()), id: \.offset) { _, line in
+                        shareChip("\(line.playerName): \(line.cardName)")
+                    }
+                }
+            }
+        }
+    }
+
+    private var legalCardsSection: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Text("الأوراق القانونية".localized)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.white.opacity(0.86))
+
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppSpacing.xs) {
+                ForEach(content.legalCardNames, id: \.self) { cardName in
+                    shareChip(cardName)
+                }
+            }
+        }
+    }
+
+    private var answerReviewSection: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Text("مراجعة القرار".localized)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.white.opacity(0.86))
+
+            if let selectedCardName = content.selectedCardName {
+                shareChip("\("اختياري".localized): \(selectedCardName)")
+            }
+            if let bestCardName = content.bestCardName {
+                shareChip("\("أفضل ورقة".localized): \(bestCardName)")
+            }
+            if let bestExpectedImpact = content.bestExpectedImpact {
+                shareChip("\("أثر الأفضل".localized): \(impactText(bestExpectedImpact))")
+            }
+            if let secondBestCardName = content.secondBestCardName {
+                shareChip("\("ثاني أفضل".localized): \(secondBestCardName)")
+            }
+            if let secondBestExpectedImpact = content.secondBestExpectedImpact {
+                shareChip("\("أثر ثاني أفضل".localized): \(impactText(secondBestExpectedImpact))")
+            }
+            if let selectedRank = content.selectedRank {
+                shareChip("\("ترتيب اختياري".localized): \(selectedRank)")
+            }
+            if let lostExpectedPoints = content.lostExpectedPoints {
+                shareChip("\("نقاط متوقعة ضائعة".localized): \(lostExpectedPoints)")
+            }
+            if let lostProjectedTeamPoints = content.lostProjectedTeamPoints {
+                shareChip("\("نقاط محاكاة ضائعة".localized): \(lostProjectedTeamPoints)")
+            }
+            if let valueLossTitle = content.valueLossTitle {
+                shareChip("\("شدة خسارة القيمة".localized): \(valueLossTitle)")
+            }
+            if let decisionQualityTitle = content.decisionQualityTitle {
+                shareChip("\("تقييم القرار".localized): \(decisionQualityTitle)")
+            }
+            if let nextActionTitle = content.nextActionTitle {
+                shareChip("\("الإجراء التالي".localized): \(nextActionTitle)")
+            }
+            if let lostAgainstSecondBestPoints = content.lostAgainstSecondBestPoints {
+                shareChip("\("فارق عن ثاني أفضل".localized): \(lostAgainstSecondBestPoints)")
+            }
+            if let selectedProjectedTeamPoints = content.selectedProjectedTeamPoints {
+                shareChip("\("نقاط فريقك بعد المحاكاة".localized): \(selectedProjectedTeamPoints)")
+            }
+            if let selectedSimulationSummary = content.selectedSimulationSummary {
+                shareChip("\("نتيجة المحاكاة".localized): \(selectedSimulationSummary)")
+            }
+            if let selectedSimulationTeamResult = content.selectedSimulationTeamResult {
+                shareChip("\("اتجاه الأكلة".localized): \(selectedSimulationTeamResult)")
+            }
+            if let tacticalReasonTitle = content.tacticalReasonTitle {
+                shareChip("\("سبب تكتيكي".localized): \(tacticalReasonTitle)")
+            }
+        }
+    }
+
+    private func shareMetric(_ title: String, _ value: String) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(title)
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.white.opacity(0.68))
+            Text(value)
+                .font(.caption.weight(.bold))
+                .foregroundStyle(.white)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.xs)
+        .background(.white.opacity(0.16), in: RoundedRectangle(cornerRadius: AppRadius.small))
+    }
+
+    private func shareChip(_ text: String) -> some View {
+        Text(text)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.white)
+            .lineLimit(1)
+            .minimumScaleFactor(0.72)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, AppSpacing.sm)
+            .padding(.vertical, AppSpacing.xs)
+            .background(.white.opacity(0.14), in: RoundedRectangle(cornerRadius: AppRadius.small))
+    }
+
+    private func impactText(_ impact: Int) -> String {
+        if impact > 0 { return "+\(impact) \("نقطة متوقعة".localized)" }
+        if impact < 0 { return "\(impact) \("نقطة متوقعة".localized)" }
+        return "أثر محايد".localized
+    }
 }
 
 private struct WhatToPlayReplayPresentation: Identifiable {
