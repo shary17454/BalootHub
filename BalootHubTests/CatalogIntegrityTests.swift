@@ -170,6 +170,36 @@ final class CatalogIntegrityTests: XCTestCase {
         XCTAssertEqual(replayed.lastRoundResult, viewModel.state.lastRoundResult)
     }
 
+    @MainActor
+    func testGameplayNextRoundReusesFinishedStateInsteadOfNewMatch() {
+        let viewModel = BalootGameViewModel(tableMode: .localHumans, rules: .standard)
+
+        viewModel.deal()
+        let firstRoundPlayerIDs = viewModel.state.players.map(\.id)
+        let originalDealer = viewModel.state.dealerSeat
+
+        for _ in 0..<8 {
+            viewModel.revealLocalHumanHand()
+            viewModel.placeBid(.pass)
+        }
+
+        XCTAssertEqual(viewModel.state.phase, .finished)
+        XCTAssertEqual(viewModel.state.dealerSeat, originalDealer.next)
+
+        viewModel.startNextRound()
+
+        XCTAssertEqual(viewModel.state.roundNumber, 2)
+        XCTAssertEqual(viewModel.state.players.map(\.id), firstRoundPlayerIDs)
+        XCTAssertEqual(viewModel.state.dealerSeat, originalDealer.next)
+        XCTAssertEqual(viewModel.state.phase, .bidding)
+        XCTAssertEqual(viewModel.state.actionHistory.count, 1)
+        if case .dealCards = viewModel.state.actionHistory.first {
+            XCTAssertTrue(true)
+        } else {
+            XCTFail("الجولة التالية يجب أن تبدأ بفعل توزيع واحد فقط")
+        }
+    }
+
     /// إعدادات المجلس قد تُستخدم في المحرك لاختبارات أو دروس مبسطة، لكن شاشة اللعب
     /// النهائية لا تفصل الصن والحكم؛ تفرض مزايدة بلوت كاملة دائمًا.
     @MainActor

@@ -354,6 +354,19 @@ final class BalootGameViewModel {
         deal()
     }
 
+    func startNextRound() {
+        guard state.phase == .finished else {
+            startNewMatch()
+            return
+        }
+        aiTask.cancel()
+        analysisTask.cancel()
+        revealedLocalHumanID = nil
+        errorMessage = nil
+        roundAnalysisReport = nil
+        deal()
+    }
+
     func setTableMode(_ newMode: BalootTableMode) {
         guard tableMode != newMode else { return }
         aiTask.cancel()

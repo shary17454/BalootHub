@@ -488,7 +488,7 @@ struct BalootGamePlayView: View {
                 .buttonStyle(.bordered)
             }
             Button("جولة جديدة") {
-                viewModel.startNewMatch()
+                viewModel.startNextRound()
             }
             .buttonStyle(.borderedProminent)
             .tint(AppColor.primary)
