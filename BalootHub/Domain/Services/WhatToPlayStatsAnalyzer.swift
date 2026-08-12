@@ -168,6 +168,11 @@ struct WhatToPlayScenarioFocusSummary: Equatable {
     let summary: WhatToPlayStatsSummary
 }
 
+struct WhatToPlayGameModeSummary: Equatable {
+    let mode: GameMode
+    let summary: WhatToPlayStatsSummary
+}
+
 struct WhatToPlayFocusTrainingPriority: Equatable {
     let focusKind: WhatToPlayScenarioFocusKind
     let summary: WhatToPlayStatsSummary
@@ -799,6 +804,14 @@ enum WhatToPlayStatsAnalyzer {
             let filtered = attempts.filter { $0.focusKind == focusKind }
             guard !filtered.isEmpty else { return nil }
             return WhatToPlayScenarioFocusSummary(focusKind: focusKind, summary: summarize(attempts: filtered))
+        }
+    }
+
+    static func summariesByGameMode(_ attempts: [WhatToPlayAttempt]) -> [WhatToPlayGameModeSummary] {
+        GameMode.allCases.compactMap { mode in
+            let filtered = attempts.filter { $0.gameMode == mode }
+            guard !filtered.isEmpty else { return nil }
+            return WhatToPlayGameModeSummary(mode: mode, summary: summarize(attempts: filtered))
         }
     }
 

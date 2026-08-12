@@ -299,6 +299,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             bestProjectedTeamPoints: 74,
             secondBestProjectedTeamPoints: 68,
             focusKind: .trumpPressure,
+            gameMode: .hokum,
             outcome: .losesTrick,
             impactBreakdown: breakdown,
             simulation: simulation
@@ -327,6 +328,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(saved.lostProjectedTeamPoints, 16)
         XCTAssertEqual(saved.lostProjectedAgainstSecondBestPoints, 10)
         XCTAssertEqual(saved.focusKind, .trumpPressure)
+        XCTAssertEqual(saved.gameMode, .hokum)
         XCTAssertEqual(saved.outcome, .losesTrick)
         XCTAssertEqual(saved.impactBreakdown, breakdown)
         XCTAssertEqual(saved.selectedCardPoints, 11)
@@ -1104,6 +1106,24 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(summaries.map(\.focusKind), [.openingLead, .trumpPressure])
         XCTAssertEqual(summaries.first?.summary.lostExpectedPoints, 5)
+        XCTAssertEqual(summaries.last?.summary.attempts, 2)
+        XCTAssertEqual(summaries.last?.summary.accuracyPercent, 50)
+        XCTAssertEqual(summaries.last?.summary.lostExpectedPoints, 6)
+    }
+
+    func testSummariesByGameModeSkipLegacyAttemptsAndPreserveModeOrder() {
+        let attempts = [
+            attempt(daysAgo: 4, difficulty: .easy, correct: true, impact: 4, bestImpact: 4, gameMode: .hokum),
+            attempt(daysAgo: 3, difficulty: .easy, correct: false, impact: -2, bestImpact: 3, gameMode: .sun),
+            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: -4, bestImpact: 2, gameMode: .hokum),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 1)
+        ]
+
+        let summaries = WhatToPlayStatsAnalyzer.summariesByGameMode(attempts)
+
+        XCTAssertEqual(summaries.map(\.mode), [.sun, .hokum])
+        XCTAssertEqual(summaries.first?.summary.attempts, 1)
+        XCTAssertEqual(summaries.first?.summary.accuracyPercent, 0)
         XCTAssertEqual(summaries.last?.summary.attempts, 2)
         XCTAssertEqual(summaries.last?.summary.accuracyPercent, 50)
         XCTAssertEqual(summaries.last?.summary.lostExpectedPoints, 6)
@@ -3253,6 +3273,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         selectedRank: Int? = nil,
         secondBestImpact: Int? = nil,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
+        gameMode: GameMode? = nil,
         outcome: WhatToPlayOptionOutcome? = nil,
         impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil,
         selectedCard: PlayingCard = PlayingCard(suit: .clubs, rank: .seven),
@@ -3271,6 +3292,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             selectedRank: selectedRank,
             secondBestImpact: secondBestImpact,
             focusKind: focusKind,
+            gameMode: gameMode,
             outcome: outcome,
             impactBreakdown: impactBreakdown,
             selectedCard: selectedCard,
@@ -3292,6 +3314,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         secondBestCard: PlayingCard? = nil,
         secondBestImpact: Int? = nil,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
+        gameMode: GameMode? = nil,
         outcome: WhatToPlayOptionOutcome? = nil,
         impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil,
         selectedCard: PlayingCard = PlayingCard(suit: .clubs, rank: .seven),
@@ -3317,6 +3340,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             bestProjectedTeamPoints: bestProjectedTeamPoints,
             secondBestProjectedTeamPoints: secondBestProjectedTeamPoints,
             focusKind: focusKind,
+            gameMode: gameMode,
             outcome: outcome,
             impactBreakdown: impactBreakdown,
             simulation: simulation

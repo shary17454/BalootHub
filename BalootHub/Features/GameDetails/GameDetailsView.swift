@@ -406,6 +406,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.summariesByScenarioFocus(attempts)
     }
 
+    private var gameModeSummaries: [WhatToPlayGameModeSummary] {
+        WhatToPlayStatsAnalyzer.summariesByGameMode(attempts)
+    }
+
     private var scenarioFocusCoverage: WhatToPlayScenarioFocusCoverage {
         WhatToPlayStatsAnalyzer.scenarioFocusCoverage(for: attempts)
     }
@@ -1827,10 +1831,47 @@ struct WhatToPlayTrainerView: View {
                     difficultyImpactInsightView(difficultyImpactInsight)
                 }
 
+                gameModeStatsView(gameModeSummaries)
                 practiceCoverageView(practiceCoverage)
             }
             .padding(AppSpacing.md)
             .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+        }
+    }
+
+    @ViewBuilder
+    private func gameModeStatsView(_ summaries: [WhatToPlayGameModeSummary]) -> some View {
+        if !summaries.isEmpty {
+            VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                Label("الأداء حسب النمط".localized, systemImage: "flag.checkered")
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+
+                LazyVGrid(columns: [
+                    GridItem(.flexible(), spacing: AppSpacing.xs),
+                    GridItem(.flexible(), spacing: AppSpacing.xs)
+                ], spacing: AppSpacing.xs) {
+                    ForEach(summaries, id: \.mode) { entry in
+                        VStack(alignment: .leading, spacing: 2) {
+                            Label(modeTitle(entry.mode), systemImage: entry.mode == .hokum ? "crown.fill" : "sun.max.fill")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(AppColor.textPrimary)
+                            Text("\(entry.summary.correct)/\(entry.summary.attempts) · \(entry.summary.accuracyPercent)%")
+                                .font(.caption2.weight(.semibold))
+                                .foregroundStyle(entry.summary.accuracyPercent >= 70 ? AppColor.success : AppColor.textSecondary)
+                            Text("\("متوسط الأثر".localized): \(impactText(entry.summary.averageExpectedImpact))")
+                                .font(.caption2)
+                                .foregroundStyle(AppColor.textSecondary)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(AppSpacing.sm)
+                        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+                        .accessibilityElement(children: .combine)
+                    }
+                }
+            }
+            .padding(AppSpacing.sm)
+            .background(AppColor.accent.opacity(0.08), in: RoundedRectangle(cornerRadius: AppRadius.medium))
         }
     }
 
