@@ -24,6 +24,10 @@ struct RoundReplayView: View {
         return actions[step - 1]
     }
 
+    private var decisionHint: RoundReplayDecisionHint? {
+        RoundReplayDecisionAdvisor.hint(initialState: initialState, actions: actions, currentStep: step)
+    }
+
     init(
         initialState: GameState,
         actions: [GameAction],
@@ -45,6 +49,9 @@ struct RoundReplayView: View {
         ScrollView {
             VStack(spacing: AppSpacing.md) {
                 progressCard
+                if let decisionHint {
+                    expertHintCard(decisionHint)
+                }
                 replayTable
                 replayDetails
                 replayTimeline
@@ -156,6 +163,49 @@ struct RoundReplayView: View {
                 .background(isCurrent ? AppColor.primary.opacity(0.08) : Color.clear, in: RoundedRectangle(cornerRadius: AppRadius.medium))
                 .accessibilityElement(children: .combine)
             }
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func expertHintCard(_ hint: RoundReplayDecisionHint) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            HStack(alignment: .top, spacing: AppSpacing.sm) {
+                Image(systemName: hint.matchedExpert ? "checkmark.seal.fill" : "lightbulb.max.fill")
+                    .foregroundStyle(hint.matchedExpert ? AppColor.success : AppColor.warning)
+                VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                    Text(hint.matchedExpert ? "قرار مطابق للخبير".localized : "تحليل قرار الخبير".localized)
+                        .font(AppTypography.headline)
+                        .foregroundStyle(AppColor.textPrimary)
+                    Text("\("الأكلة".localized) \(hint.trickNumber) · \(playerName(hint.playerID, in: snapshot))")
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColor.textSecondary)
+                }
+                Spacer()
+                Text("#\(hint.selectedRank)")
+                    .font(.caption.monospacedDigit().weight(.bold))
+                    .foregroundStyle(hint.matchedExpert ? AppColor.success : AppColor.warning)
+                    .padding(.horizontal, AppSpacing.sm)
+                    .padding(.vertical, AppSpacing.xxs)
+                    .background(
+                        (hint.matchedExpert ? AppColor.success : AppColor.warning).opacity(0.12),
+                        in: Capsule()
+                    )
+            }
+
+            detailRow("الورقة الملعوبة".localized, hint.playedCard.accessibilityName)
+            detailRow("أفضل ورقة".localized, hint.bestCard.accessibilityName)
+            if let secondBestCard = hint.secondBestCard {
+                detailRow("ثاني أفضل ورقة".localized, secondBestCard.accessibilityName)
+            }
+            if hint.estimatedLostPoints > 0 {
+                detailRow("فاقد متوقع".localized, "\(hint.estimatedLostPoints)")
+            }
+
+            Text(hint.explanation)
+                .font(AppTypography.caption)
+                .foregroundStyle(AppColor.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
