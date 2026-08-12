@@ -8,6 +8,7 @@ struct BalootSandboxView: View {
     @State private var errorMessage: String?
     @State private var selectedProjectSeat: SeatPosition = .south
     @State private var selectedProjectKind: Project.Kind = .sira
+    @State private var editingHandSeat: SeatPosition = .south
 
     private var state: GameState? {
         try? BalootSandbox.makeState(configuration: configuration)
@@ -17,9 +18,13 @@ struct BalootSandboxView: View {
         sorted(configuration.handsBySeat[configuration.currentTurnSeat] ?? [])
     }
 
-    private var cardsUnavailableOutsideCurrentHand: Set<PlayingCard> {
+    private var editingHand: [PlayingCard] {
+        sorted(configuration.handsBySeat[editingHandSeat] ?? [])
+    }
+
+    private var cardsUnavailableOutsideEditingHand: Set<PlayingCard> {
         var used = Set(configuration.currentTrickCards.map(\.card))
-        for seat in SeatPosition.allCases where seat != configuration.currentTurnSeat {
+        for seat in SeatPosition.allCases where seat != editingHandSeat {
             used.formUnion(configuration.handsBySeat[seat] ?? [])
         }
         return used
@@ -353,23 +358,29 @@ struct BalootSandboxView: View {
     private var handEditor: some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
             HStack {
-                Label("يد اللاعب الحالي".localized, systemImage: "rectangle.stack.fill")
+                Label("يد المقعد المختار".localized, systemImage: "rectangle.stack.fill")
                     .font(AppTypography.headline)
                     .foregroundStyle(AppColor.primary)
                 Spacer()
-                Text("\(currentHand.count) / 8")
+                Text("\(editingHand.count) / 8")
                     .font(AppTypography.caption.weight(.semibold))
-                    .foregroundStyle(currentHand.isEmpty ? AppColor.danger : AppColor.textSecondary)
+                    .foregroundStyle(editingHand.isEmpty ? AppColor.danger : AppColor.textSecondary)
             }
 
-            if currentHand.isEmpty {
+            Picker("المقعد الذي تعدل يده".localized, selection: $editingHandSeat) {
+                ForEach(SeatPosition.allCases, id: \.self) { seat in
+                    Text(seatTitle(seat)).tag(seat)
+                }
+            }
+
+            if editingHand.isEmpty {
                 Text("اختر ورقة واحدة على الأقل حتى يستطيع المحرك تجربة الحركة.".localized)
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: AppSpacing.xs) {
-                        ForEach(currentHand) { card in
+                        ForEach(editingHand) { card in
                             SandboxMiniCard(card: card, isSelected: true)
                                 .onTapGesture { toggleHandCard(card) }
                         }
@@ -390,9 +401,9 @@ struct BalootSandboxView: View {
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 4), spacing: AppSpacing.xs) {
                             ForEach(Rank.allCases) { rank in
                                 let card = PlayingCard(suit: suit, rank: rank)
-                                let selected = currentHand.contains(card)
-                                let unavailable = cardsUnavailableOutsideCurrentHand.contains(card)
-                                let full = !selected && currentHand.count >= 8
+                                let selected = editingHand.contains(card)
+                                let unavailable = cardsUnavailableOutsideEditingHand.contains(card)
+                                let full = !selected && editingHand.count >= 8
                                 Button {
                                     toggleHandCard(card)
                                 } label: {
@@ -596,13 +607,13 @@ struct BalootSandboxView: View {
 
     private func toggleHandCard(_ card: PlayingCard) {
         resetPreview()
-        var hand = configuration.handsBySeat[configuration.currentTurnSeat] ?? []
+        var hand = configuration.handsBySeat[editingHandSeat] ?? []
         if hand.contains(card) {
             hand.removeAll { $0 == card }
-        } else if hand.count < 8 && !cardsUnavailableOutsideCurrentHand.contains(card) {
+        } else if hand.count < 8 && !cardsUnavailableOutsideEditingHand.contains(card) {
             hand.append(card)
         }
-        configuration.handsBySeat[configuration.currentTurnSeat] = sorted(hand)
+        configuration.handsBySeat[editingHandSeat] = sorted(hand)
     }
 
     private var nextTrickSeat: SeatPosition {

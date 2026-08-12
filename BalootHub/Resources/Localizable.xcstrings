@@ -6867,6 +6867,34 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "非法牌" } }
       }
     },
+    "يد المقعد المختار" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Hand des gewählten Sitzes" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Selected seat hand" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Mano del asiento elegido" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Main du siège choisi" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "चुनी गई सीट का हाथ" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kartu kursi terpilih" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Рука выбранного места" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Seçilen koltuğun eli" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "منتخب نشست کا ہاتھ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "所选座位手牌" } }
+      }
+    },
+    "المقعد الذي تعدل يده" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zu bearbeitender Sitz" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Seat hand to edit" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Asiento cuya mano editas" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Siège à modifier" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "संपादित की जाने वाली सीट" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kursi yang kartunya diedit" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Место для редактирования руки" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Eli düzenlenecek koltuk" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "جس نشست کا ہاتھ بدلنا ہے" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "要编辑手牌的座位" } }
+      }
+    },
     "المشاريع أو المضاعفات" : {
       "extractionState" : "stale",
       "localizations" : {
