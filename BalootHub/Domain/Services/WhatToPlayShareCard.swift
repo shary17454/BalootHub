@@ -340,6 +340,13 @@ enum HandAnalysisShareSummary {
             lines.append("\("أفضل حكم".localized): \(best.suit.spokenName) · \(best.score)")
         }
 
+        if !analysis.bidOptions.isEmpty {
+            lines.append("\("ترتيب خيارات المزايدة".localized):")
+            for option in analysis.bidOptions.prefix(4) {
+                lines.append("- \(bidOptionText(option))")
+            }
+        }
+
         if analysis.projects.isEmpty {
             lines.append("\("المشاريع".localized): \("لا يوجد".localized)")
         } else {
@@ -372,6 +379,11 @@ enum HandAnalysisShareSummary {
                 lines.append("- \(item)")
             }
         }
+    }
+
+    private static func bidOptionText(_ option: HandAnalysis.BidOption) -> String {
+        let recommended = option.isRecommended ? " · \("موصى به".localized)" : ""
+        return "\(option.title): \(option.confidencePercent)% · \("الهامش".localized) \(option.margin)\(recommended)"
     }
 
     private static func recommendationText(_ bid: Bid) -> String {
