@@ -45,6 +45,7 @@ struct BalootChallenge: Identifiable, Equatable {
     let whatToPlaySeed: UInt64?
     let whatToPlayDifficulty: WhatToPlayDifficulty?
     let whatToPlayFocusKind: WhatToPlayScenarioFocusKind?
+    let whatToPlayGameMode: GameMode?
 
     init(
         id: String,
@@ -57,7 +58,8 @@ struct BalootChallenge: Identifiable, Equatable {
         scoringQuizCategory: ScoringQuizQuestionCategory? = nil,
         whatToPlaySeed: UInt64? = nil,
         whatToPlayDifficulty: WhatToPlayDifficulty? = nil,
-        whatToPlayFocusKind: WhatToPlayScenarioFocusKind? = nil
+        whatToPlayFocusKind: WhatToPlayScenarioFocusKind? = nil,
+        whatToPlayGameMode: GameMode? = nil
     ) {
         self.id = id
         self.cadence = cadence
@@ -70,6 +72,7 @@ struct BalootChallenge: Identifiable, Equatable {
         self.whatToPlaySeed = whatToPlaySeed
         self.whatToPlayDifficulty = whatToPlayDifficulty
         self.whatToPlayFocusKind = whatToPlayFocusKind
+        self.whatToPlayGameMode = whatToPlayGameMode
     }
 }
 
@@ -125,11 +128,13 @@ enum DailyChallengeCenter {
         let tacticsTarget = generator.nextInt(in: 2...4)
         let tacticsDifficulty = WhatToPlayDifficulty.allCases[generator.nextInt(in: 0...(WhatToPlayDifficulty.allCases.count - 1))]
         let tacticsFocus = WhatToPlayScenarioFocusKind.allCases[generator.nextInt(in: 0...(WhatToPlayScenarioFocusKind.allCases.count - 1))]
+        let tacticsMode = GameMode.allCases[generator.nextInt(in: 0...(GameMode.allCases.count - 1))]
         let tacticsSeed = dailyWhatToPlaySeed(
             for: date,
             calendar: calendar,
             difficulty: tacticsDifficulty,
-            focusKind: tacticsFocus
+            focusKind: tacticsFocus,
+            gameMode: tacticsMode
         )
         return [
             makeChallenge(
@@ -156,12 +161,13 @@ enum DailyChallengeCenter {
                 cadence: .daily,
                 category: .tactics,
                 title: "وش تلعب؟",
-                detail: "حل \(tacticsTarget) مواقف تدريبية وقارن قرارك بالخبير.",
+                detail: "حل \(tacticsTarget) مواقف تدريبية في \(tacticsMode.arabicName) وقارن قرارك بالخبير.",
                 targetCount: tacticsTarget,
                 rewardTitle: "نقطة تكتيك",
                 whatToPlaySeed: tacticsSeed,
                 whatToPlayDifficulty: tacticsDifficulty,
-                whatToPlayFocusKind: tacticsFocus
+                whatToPlayFocusKind: tacticsFocus,
+                whatToPlayGameMode: tacticsMode
             )
         ]
     }
@@ -179,11 +185,13 @@ enum DailyChallengeCenter {
         let tacticsTarget = generator.nextInt(in: 5...9)
         let tacticsDifficulty = WhatToPlayDifficulty.allCases[generator.nextInt(in: 0...(WhatToPlayDifficulty.allCases.count - 1))]
         let tacticsFocus = WhatToPlayScenarioFocusKind.allCases[generator.nextInt(in: 0...(WhatToPlayScenarioFocusKind.allCases.count - 1))]
+        let tacticsMode = GameMode.allCases[generator.nextInt(in: 0...(GameMode.allCases.count - 1))]
         let tacticsSeed = weeklyWhatToPlaySeed(
             for: date,
             calendar: calendar,
             difficulty: tacticsDifficulty,
-            focusKind: tacticsFocus
+            focusKind: tacticsFocus,
+            gameMode: tacticsMode
         )
         return [
             makeChallenge(
@@ -219,12 +227,13 @@ enum DailyChallengeCenter {
                 cadence: .weekly,
                 category: .tactics,
                 title: "شيخ القرار",
-                detail: "حل \(tacticsTarget) مواقف من مدرب وش تلعب خلال الأسبوع بنفس مسار التركيز.",
+                detail: "حل \(tacticsTarget) مواقف من مدرب وش تلعب خلال الأسبوع بنفس مسار التركيز ونمط اللعب.",
                 targetCount: tacticsTarget,
                 rewardTitle: "وسام التكتيك",
                 whatToPlaySeed: tacticsSeed,
                 whatToPlayDifficulty: tacticsDifficulty,
-                whatToPlayFocusKind: tacticsFocus
+                whatToPlayFocusKind: tacticsFocus,
+                whatToPlayGameMode: tacticsMode
             )
         ]
     }
@@ -240,7 +249,8 @@ enum DailyChallengeCenter {
         scoringQuizCategory: ScoringQuizQuestionCategory? = nil,
         whatToPlaySeed: UInt64? = nil,
         whatToPlayDifficulty: WhatToPlayDifficulty? = nil,
-        whatToPlayFocusKind: WhatToPlayScenarioFocusKind? = nil
+        whatToPlayFocusKind: WhatToPlayScenarioFocusKind? = nil,
+        whatToPlayGameMode: GameMode? = nil
     ) -> BalootChallenge {
         BalootChallenge(
             id: id,
@@ -253,7 +263,8 @@ enum DailyChallengeCenter {
             scoringQuizCategory: scoringQuizCategory,
             whatToPlaySeed: whatToPlaySeed,
             whatToPlayDifficulty: whatToPlayDifficulty,
-            whatToPlayFocusKind: whatToPlayFocusKind
+            whatToPlayFocusKind: whatToPlayFocusKind,
+            whatToPlayGameMode: whatToPlayGameMode
         )
     }
 
@@ -261,22 +272,26 @@ enum DailyChallengeCenter {
         for date: Date = Date(),
         calendar: Calendar = Calendar(identifier: .gregorian),
         difficulty: WhatToPlayDifficulty,
-        focusKind: WhatToPlayScenarioFocusKind
+        focusKind: WhatToPlayScenarioFocusKind,
+        gameMode: GameMode
     ) -> UInt64 {
         let difficultyComponent = UInt64(WhatToPlayDifficulty.allCases.firstIndex(of: difficulty) ?? 0) * 1_000_000
         let focusComponent = UInt64(WhatToPlayScenarioFocusKind.allCases.firstIndex(of: focusKind) ?? 0) * 100_000
-        return 7_000_000 + dailySeed(for: date, calendar: calendar) + difficultyComponent + focusComponent
+        let modeComponent = UInt64(GameMode.allCases.firstIndex(of: gameMode) ?? 0) * 10_000
+        return 7_000_000 + dailySeed(for: date, calendar: calendar) + difficultyComponent + focusComponent + modeComponent
     }
 
     static func weeklyWhatToPlaySeed(
         for date: Date = Date(),
         calendar: Calendar = Calendar(identifier: .gregorian),
         difficulty: WhatToPlayDifficulty,
-        focusKind: WhatToPlayScenarioFocusKind
+        focusKind: WhatToPlayScenarioFocusKind,
+        gameMode: GameMode
     ) -> UInt64 {
         let difficultyComponent = UInt64(WhatToPlayDifficulty.allCases.firstIndex(of: difficulty) ?? 0) * 1_000_000
         let focusComponent = UInt64(WhatToPlayScenarioFocusKind.allCases.firstIndex(of: focusKind) ?? 0) * 100_000
-        return 8_000_000 + weeklySeed(for: date, calendar: calendar) + difficultyComponent + focusComponent
+        let modeComponent = UInt64(GameMode.allCases.firstIndex(of: gameMode) ?? 0) * 10_000
+        return 8_000_000 + weeklySeed(for: date, calendar: calendar) + difficultyComponent + focusComponent + modeComponent
     }
 
     static func whatToPlaySeedSeries(for challenge: BalootChallenge) -> [UInt64] {
@@ -345,7 +360,8 @@ enum DailyChallengeCenter {
 
         guard challenge.category == .tactics,
               let difficulty = challenge.whatToPlayDifficulty,
-              let focusKind = challenge.whatToPlayFocusKind
+              let focusKind = challenge.whatToPlayFocusKind,
+              let gameMode = challenge.whatToPlayGameMode
         else { return nil }
 
         let completedSeeds = completedWhatToPlaySeeds(
@@ -353,6 +369,7 @@ enum DailyChallengeCenter {
             interval: interval,
             difficulty: difficulty,
             focusKind: focusKind,
+            gameMode: gameMode,
             challengeSeeds: Set(whatToPlaySeedSeries(for: challenge))
         )
 
@@ -371,6 +388,7 @@ enum DailyChallengeCenter {
         guard challenge.category == .tactics,
               let difficulty = challenge.whatToPlayDifficulty,
               let focusKind = challenge.whatToPlayFocusKind,
+              let gameMode = challenge.whatToPlayGameMode,
               let interval = dateInterval(for: challenge.cadence, containing: now, calendar: calendar)
         else { return nil }
 
@@ -380,6 +398,7 @@ enum DailyChallengeCenter {
             interval: interval,
             difficulty: difficulty,
             focusKind: focusKind,
+            gameMode: gameMode,
             challengeSeeds: Set(seedSeries)
         )
         let base = BalootChallengeProgress(
@@ -456,6 +475,7 @@ enum DailyChallengeCenter {
         interval: DateInterval,
         difficulty: WhatToPlayDifficulty,
         focusKind: WhatToPlayScenarioFocusKind,
+        gameMode: GameMode,
         challengeSeeds: Set<UInt64>
     ) -> Set<UInt64> {
         Set(attempts.compactMap { attempt -> UInt64? in
@@ -463,6 +483,7 @@ enum DailyChallengeCenter {
                   attempt.createdAt < interval.end,
                   attempt.difficulty == difficulty,
                   attempt.focusKind == focusKind,
+                  attempt.gameMode == gameMode,
                   attempt.isCorrect,
                   challengeSeeds.contains(attempt.replaySeed)
             else { return nil }
