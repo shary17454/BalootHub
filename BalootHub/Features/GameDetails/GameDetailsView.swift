@@ -3052,7 +3052,12 @@ struct WhatToPlayTrainerView: View {
     }
 
     private func nextScenario() {
-        seed &+= 1
+        seed = WhatToPlayScenarioLoader.nextUnattemptedSeed(
+            after: seed,
+            difficulty: difficulty,
+            preferredFocus: preferredFocus,
+            attempts: attempts
+        )
         isRetryingCurrentScenario = false
         generateScenario()
     }
