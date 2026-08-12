@@ -6825,6 +6825,48 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "删除项目" } }
       }
     },
+    "مختبر البلوت" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Baloot-Labor" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Baloot Sandbox" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Laboratorio de Baloot" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Bac à sable Baloot" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "बलूट सैंडबॉक्स" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Sandbox Baloot" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Песочница Baloot" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Baloot Sandbox" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "بلوٹ سینڈ باکس" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Baloot 沙盒" } }
+      }
+    },
+    "موقف من مختبر Baloot Hub" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Szenario aus dem Baloot Hub Labor" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Scenario from the Baloot Hub sandbox" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Situación del laboratorio de Baloot Hub" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Situation du bac à sable Baloot Hub" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "Baloot Hub सैंडबॉक्स का एक परिदृश्य" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Skenario dari sandbox Baloot Hub" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Сценарий из песочницы Baloot Hub" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Baloot Hub sandbox'ından senaryo" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "Baloot Hub سینڈ باکس کا موقف" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "来自 Baloot Hub 沙盒的局面" } }
+      }
+    },
+    "ورقة ممنوعة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ungültige Karte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Illegal card" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Carta no permitida" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Carte interdite" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "अवैध कार्ड" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kartu tidak valid" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Недопустимая карта" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Geçersiz kart" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "غیر قانونی کارڈ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "非法牌" } }
+      }
+    },
     "المشاريع أو المضاعفات" : {
       "extractionState" : "stale",
       "localizations" : {

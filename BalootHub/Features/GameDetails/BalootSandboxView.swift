@@ -60,9 +60,18 @@ struct BalootSandboxView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
-            Label("Baloot Sandbox".localized, systemImage: "slider.horizontal.3")
-                .font(AppTypography.title)
-                .foregroundStyle(AppColor.primary)
+            HStack(alignment: .firstTextBaseline) {
+                Label("Baloot Sandbox".localized, systemImage: "slider.horizontal.3")
+                    .font(AppTypography.title)
+                    .foregroundStyle(AppColor.primary)
+                Spacer()
+                ShareLink(item: BalootSandboxShareCard.text(configuration: configuration, preview: preview)) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(AppTypography.headline)
+                        .foregroundStyle(AppColor.primary)
+                }
+                .accessibilityLabel("مشاركة الموقف".localized)
+            }
             Text("موقف حكم جاهز للتجربة: الأكلة شبه مكتملة ودورك الآن. اختر ورقة وشاهد هل يقبلها المحرك وماذا يحدث بعدها.".localized)
                 .font(AppTypography.subheadline)
                 .foregroundStyle(AppColor.textSecondary)

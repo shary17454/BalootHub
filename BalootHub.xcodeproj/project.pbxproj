@@ -49,6 +49,7 @@
 		D3C4E5F60718293A4B5C6D70 /* WhatToPlayOptionDisclosure.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3C4E5F60718293A4B5C6D6F /* WhatToPlayOptionDisclosure.swift */; };
 		E4D5F60718293A4B5C6D7E80 /* WhatToPlayScenarioLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D5F60718293A4B5C6D7E7F /* WhatToPlayScenarioLoader.swift */; };
 		B1A2C3D4E5F60718293A4B5D /* WhatToPlayShareCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F60718293A4B5C /* WhatToPlayShareCard.swift */; };
+		BA50000123456789ABCDEF01 /* BalootSandboxShareCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA50000123456789ABCDEF00 /* BalootSandboxShareCard.swift */; };
 		A9B8C7D6E5F4012345678902 /* WhatToPlaySimulationFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9B8C7D6E5F4012345678901 /* WhatToPlaySimulationFormatter.swift */; };
 		C2B3D4E5F60718293A4B5C62 /* WhatToPlayStatsAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2B3D4E5F60718293A4B5C61 /* WhatToPlayStatsAnalyzer.swift */; };
 		AB12CD34EF56789012345671 /* WhatToPlayTrainerPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB12CD34EF56789012345670 /* WhatToPlayTrainerPreferences.swift */; };
@@ -79,6 +80,7 @@
 		D4F30124E5C77D41CF304152 /* GamePlaythroughTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E2F013D4B66C30BE2F3041 /* GamePlaythroughTests.swift */; };
 		B10976A06C974F59AF68D22E /* AchievementCenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A84C2F07DB64EC18473D128 /* AchievementCenterTests.swift */; };
 		31B5FD970C5946BFA8589248 /* BalootAcademyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821BF8DC70D1422390424FDB /* BalootAcademyTests.swift */; };
+		BA50000123456789ABCDEF03 /* BalootSandboxShareCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA50000123456789ABCDEF02 /* BalootSandboxShareCardTests.swift */; };
 		E8F90123456789ABCDEF0103 /* BalootGameLocalHandoffTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8F90123456789ABCDEF0102 /* BalootGameLocalHandoffTests.swift */; };
 		E2929817FB37462286040967 /* DailyChallengeCenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 166DFA625C7D4E779784254C /* DailyChallengeCenterTests.swift */; };
 		C85D61B0D3A8447691B7E479 /* HouseRulesStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A12CB5F40B64B06A4684331 /* HouseRulesStoreTests.swift */; };
@@ -158,6 +160,7 @@
 		D3C4E5F60718293A4B5C6D6F /* WhatToPlayOptionDisclosure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayOptionDisclosure.swift; sourceTree = "<group>"; };
 		E4D5F60718293A4B5C6D7E7F /* WhatToPlayScenarioLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayScenarioLoader.swift; sourceTree = "<group>"; };
 		B1A2C3D4E5F60718293A4B5C /* WhatToPlayShareCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayShareCard.swift; sourceTree = "<group>"; };
+		BA50000123456789ABCDEF00 /* BalootSandboxShareCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootSandboxShareCard.swift; sourceTree = "<group>"; };
 		A9B8C7D6E5F4012345678901 /* WhatToPlaySimulationFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlaySimulationFormatter.swift; sourceTree = "<group>"; };
 		C2B3D4E5F60718293A4B5C61 /* WhatToPlayStatsAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayStatsAnalyzer.swift; sourceTree = "<group>"; };
 		AB12CD34EF56789012345670 /* WhatToPlayTrainerPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayTrainerPreferences.swift; sourceTree = "<group>"; };
@@ -188,6 +191,7 @@
 		C3E2F013D4B66C30BE2F3041 /* GamePlaythroughTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamePlaythroughTests.swift; sourceTree = "<group>"; };
 		4A84C2F07DB64EC18473D128 /* AchievementCenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementCenterTests.swift; sourceTree = "<group>"; };
 		821BF8DC70D1422390424FDB /* BalootAcademyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootAcademyTests.swift; sourceTree = "<group>"; };
+		BA50000123456789ABCDEF02 /* BalootSandboxShareCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootSandboxShareCardTests.swift; sourceTree = "<group>"; };
 		E8F90123456789ABCDEF0102 /* BalootGameLocalHandoffTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootGameLocalHandoffTests.swift; sourceTree = "<group>"; };
 		166DFA625C7D4E779784254C /* DailyChallengeCenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyChallengeCenterTests.swift; sourceTree = "<group>"; };
 		4A12CB5F40B64B06A4684331 /* HouseRulesStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseRulesStoreTests.swift; sourceTree = "<group>"; };
@@ -342,6 +346,7 @@
 				D3C4E5F60718293A4B5C6D6F /* WhatToPlayOptionDisclosure.swift */,
 				E4D5F60718293A4B5C6D7E7F /* WhatToPlayScenarioLoader.swift */,
 				B1A2C3D4E5F60718293A4B5C /* WhatToPlayShareCard.swift */,
+				BA50000123456789ABCDEF00 /* BalootSandboxShareCard.swift */,
 				A9B8C7D6E5F4012345678901 /* WhatToPlaySimulationFormatter.swift */,
 				C2B3D4E5F60718293A4B5C61 /* WhatToPlayStatsAnalyzer.swift */,
 				AB12CD34EF56789012345670 /* WhatToPlayTrainerPreferences.swift */,
@@ -473,6 +478,7 @@
 				C3E2F013D4B66C30BE2F3041 /* GamePlaythroughTests.swift */,
 				4A84C2F07DB64EC18473D128 /* AchievementCenterTests.swift */,
 				821BF8DC70D1422390424FDB /* BalootAcademyTests.swift */,
+				BA50000123456789ABCDEF02 /* BalootSandboxShareCardTests.swift */,
 				E8F90123456789ABCDEF0102 /* BalootGameLocalHandoffTests.swift */,
 				166DFA625C7D4E779784254C /* DailyChallengeCenterTests.swift */,
 				4A12CB5F40B64B06A4684331 /* HouseRulesStoreTests.swift */,
@@ -687,6 +693,7 @@
 				D3C4E5F60718293A4B5C6D70 /* WhatToPlayOptionDisclosure.swift in Sources */,
 				E4D5F60718293A4B5C6D7E80 /* WhatToPlayScenarioLoader.swift in Sources */,
 				B1A2C3D4E5F60718293A4B5D /* WhatToPlayShareCard.swift in Sources */,
+				BA50000123456789ABCDEF01 /* BalootSandboxShareCard.swift in Sources */,
 				A9B8C7D6E5F4012345678902 /* WhatToPlaySimulationFormatter.swift in Sources */,
 				C2B3D4E5F60718293A4B5C62 /* WhatToPlayStatsAnalyzer.swift in Sources */,
 				AB12CD34EF56789012345671 /* WhatToPlayTrainerPreferences.swift in Sources */,
@@ -727,6 +734,7 @@
 				D4F30124E5C77D41CF304152 /* GamePlaythroughTests.swift in Sources */,
 				B10976A06C974F59AF68D22E /* AchievementCenterTests.swift in Sources */,
 				31B5FD970C5946BFA8589248 /* BalootAcademyTests.swift in Sources */,
+				BA50000123456789ABCDEF03 /* BalootSandboxShareCardTests.swift in Sources */,
 				E8F90123456789ABCDEF0103 /* BalootGameLocalHandoffTests.swift in Sources */,
 				E2929817FB37462286040967 /* DailyChallengeCenterTests.swift in Sources */,
 				C85D61B0D3A8447691B7E479 /* HouseRulesStoreTests.swift in Sources */,
