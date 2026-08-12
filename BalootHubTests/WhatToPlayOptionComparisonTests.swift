@@ -26,6 +26,7 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertNil(summary.selectedExpectedImpact)
         XCTAssertNil(summary.selectedProjectedTeamPoints)
         XCTAssertNil(summary.selectedLostExpectedPoints)
+        XCTAssertNil(summary.selectedLostProjectedTeamPoints)
         XCTAssertNil(summary.decisionQuality)
         XCTAssertNil(summary.nextActionTitle)
         XCTAssertNil(summary.nextActionDetail)
@@ -51,6 +52,7 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertEqual(bestSummary.selectedExpectedImpact, best.expectedImpact)
         XCTAssertEqual(bestSummary.selectedProjectedTeamPoints, best.projectedTeamPoints)
         XCTAssertEqual(bestSummary.selectedLostExpectedPoints, 0)
+        XCTAssertEqual(bestSummary.selectedLostProjectedTeamPoints, 0)
         XCTAssertEqual(bestSummary.decisionQuality, .expertMatch)
         XCTAssertEqual(bestSummary.decisionQuality?.title, "مطابق للخبير".localized)
         XCTAssertFalse(bestSummary.decisionQuality?.systemImage.isEmpty ?? true)
@@ -62,6 +64,10 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertEqual(costlySummary.selectedExpectedImpact, costly.expectedImpact)
         XCTAssertEqual(costlySummary.selectedProjectedTeamPoints, costly.projectedTeamPoints)
         XCTAssertEqual(costlySummary.selectedLostExpectedPoints, expectedLost)
+        XCTAssertEqual(
+            costlySummary.selectedLostProjectedTeamPoints,
+            max(0, best.projectedTeamPoints - costly.projectedTeamPoints)
+        )
         if expectedLost <= 2 {
             XCTAssertEqual(costlySummary.decisionQuality, .close)
         } else if expectedLost <= 8 {

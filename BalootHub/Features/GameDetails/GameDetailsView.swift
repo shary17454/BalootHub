@@ -2827,6 +2827,14 @@ struct WhatToPlayTrainerView: View {
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(decisionQualityTint(quality))
             }
+            if let projectedLoss = summary.selectedLostProjectedTeamPoints, projectedLoss > 0 {
+                Label(
+                    "\("نقاط محاكاة ضائعة".localized): \(projectedLoss)",
+                    systemImage: "chart.bar.doc.horizontal.fill"
+                )
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(AppColor.danger)
+            }
             if let nextActionTitle = summary.nextActionTitle,
                let nextActionDetail = summary.nextActionDetail {
                 Label {

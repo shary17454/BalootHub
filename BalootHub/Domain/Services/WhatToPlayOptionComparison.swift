@@ -35,6 +35,7 @@ struct WhatToPlayOptionComparisonSummary: Equatable {
     let selectedExpectedImpact: Int?
     let selectedProjectedTeamPoints: Int?
     let selectedLostExpectedPoints: Int?
+    let selectedLostProjectedTeamPoints: Int?
     let decisionQuality: WhatToPlayDecisionQuality?
     let nextActionTitle: String?
     let nextActionDetail: String?
@@ -145,6 +146,9 @@ enum WhatToPlayOptionComparison {
         let lost = selected.flatMap { selectedOption in
             best.map { max(0, $0.expectedImpact - selectedOption.expectedImpact) }
         }
+        let projectedLost = selected.flatMap { selectedOption in
+            best.map { max(0, $0.projectedTeamPoints - selectedOption.projectedTeamPoints) }
+        }
         let action = nextAction(selected: selected, best: best, second: second, lostExpectedPoints: lost)
 
         return WhatToPlayOptionComparisonSummary(
@@ -159,6 +163,7 @@ enum WhatToPlayOptionComparison {
             selectedExpectedImpact: selected?.expectedImpact,
             selectedProjectedTeamPoints: selected?.projectedTeamPoints,
             selectedLostExpectedPoints: lost,
+            selectedLostProjectedTeamPoints: projectedLost,
             decisionQuality: decisionQuality(selected: selected, lostExpectedPoints: lost),
             nextActionTitle: action.title,
             nextActionDetail: action.detail
