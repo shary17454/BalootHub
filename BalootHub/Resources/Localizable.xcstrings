@@ -57,6 +57,20 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "即将显示" } }
       }
     },
+    "الورقة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Karte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Card" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Carta" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Carte" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कार्ड" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kartu" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Карта" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Kart" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "کارڈ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "牌" } }
+      }
+    },
     "إعادة اختيارك" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Deine Wahl wiedergeben" } },

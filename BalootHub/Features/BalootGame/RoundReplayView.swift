@@ -4,6 +4,8 @@ import BalootEngine
 struct RoundReplayView: View {
     let initialState: GameState
     let actions: [GameAction]
+    let title: String
+    let contextText: String?
 
     @Environment(\.dismiss) private var dismiss
     @State private var step = 0
@@ -20,6 +22,18 @@ struct RoundReplayView: View {
         return actions[step - 1]
     }
 
+    init(
+        initialState: GameState,
+        actions: [GameAction],
+        title: String = "إعادة الجولة",
+        contextText: String? = nil
+    ) {
+        self.initialState = initialState
+        self.actions = actions
+        self.title = title
+        self.contextText = contextText
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: AppSpacing.md) {
@@ -32,7 +46,7 @@ struct RoundReplayView: View {
             .padding(AppSpacing.md)
         }
         .background(AppColor.background)
-        .navigationTitle("إعادة الجولة")
+        .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -80,6 +94,14 @@ struct RoundReplayView: View {
                 .font(AppTypography.subheadline)
                 .foregroundStyle(AppColor.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
+
+            if let contextText {
+                Text(contextText)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))

@@ -502,7 +502,9 @@ struct WhatToPlayTrainerView: View {
             NavigationStack {
                 RoundReplayView(
                     initialState: presentation.replay.initialState,
-                    actions: presentation.replay.actions
+                    actions: presentation.replay.actions,
+                    title: presentation.title,
+                    contextText: presentation.contextText
                 )
             }
         }
@@ -2351,9 +2353,17 @@ struct WhatToPlayTrainerView: View {
         isRetryingCurrentScenario = false
     }
 
-    private func showDecisionReplay(for option: WhatToPlayOption, in scenario: WhatToPlayScenario) {
+    private func showDecisionReplay(
+        for option: WhatToPlayOption,
+        in scenario: WhatToPlayScenario,
+        label: String
+    ) {
         guard let replay = WhatToPlayTrainer.decisionReplay(for: option.card, in: scenario) else { return }
-        replayPresentation = WhatToPlayReplayPresentation(replay: replay)
+        replayPresentation = WhatToPlayReplayPresentation(
+            replay: replay,
+            title: label,
+            contextText: "\("الورقة".localized): \(option.card.accessibilityName) · \("الأثر المتوقع".localized): \(impactText(option.expectedImpact))"
+        )
     }
 
     private func resultCard(_ option: WhatToPlayOption, scenario: WhatToPlayScenario) -> some View {
@@ -2412,7 +2422,7 @@ struct WhatToPlayTrainerView: View {
     private func decisionReplayButtons(for option: WhatToPlayOption, in scenario: WhatToPlayScenario) -> some View {
         VStack(spacing: AppSpacing.xs) {
             Button {
-                showDecisionReplay(for: option, in: scenario)
+                showDecisionReplay(for: option, in: scenario, label: "إعادة اختيارك".localized)
             } label: {
                 Label("إعادة اختيارك".localized, systemImage: "play.rectangle.fill")
                     .frame(maxWidth: .infinity)
@@ -2422,7 +2432,7 @@ struct WhatToPlayTrainerView: View {
 
             if let best = scenario.bestOption, best.card != option.card {
                 Button {
-                    showDecisionReplay(for: best, in: scenario)
+                    showDecisionReplay(for: best, in: scenario, label: "إعادة أفضل قرار".localized)
                 } label: {
                     Label("إعادة أفضل قرار".localized, systemImage: "star.rectangle.fill")
                         .frame(maxWidth: .infinity)
@@ -2435,7 +2445,7 @@ struct WhatToPlayTrainerView: View {
                second.card != option.card,
                second.card != scenario.bestOption?.card {
                 Button {
-                    showDecisionReplay(for: second, in: scenario)
+                    showDecisionReplay(for: second, in: scenario, label: "إعادة ثاني أفضل قرار".localized)
                 } label: {
                     Label("إعادة ثاني أفضل قرار".localized, systemImage: "2.square.fill")
                         .frame(maxWidth: .infinity)
@@ -3214,6 +3224,8 @@ struct HandAnalyzerView: View {
 private struct WhatToPlayReplayPresentation: Identifiable {
     let id = UUID()
     let replay: WhatToPlayDecisionReplay
+    let title: String
+    let contextText: String
 }
 
 private struct MiniAnalysisCard: View {
