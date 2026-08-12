@@ -26,6 +26,7 @@ struct RoundReplayView: View {
                 progressCard
                 replayTable
                 replayDetails
+                replayTimeline
                 controls
             }
             .padding(AppSpacing.md)
@@ -79,6 +80,53 @@ struct RoundReplayView: View {
                 .font(AppTypography.subheadline)
                 .foregroundStyle(AppColor.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private var replayTimeline: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            Label("سجل الإعادة".localized, systemImage: "list.bullet.rectangle.portrait")
+                .font(AppTypography.headline)
+                .foregroundStyle(AppColor.primary)
+
+            ForEach(Array(actions.enumerated()), id: \.offset) { index, action in
+                let isCurrent = index == step - 1
+                let isCompleted = index < step
+                HStack(alignment: .top, spacing: AppSpacing.sm) {
+                    Image(systemName: actionSystemImage(action))
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(isCurrent ? AppColor.primary : actionTint(action).opacity(isCompleted ? 1 : 0.45))
+                        .frame(width: 24, height: 24)
+                        .background(
+                            (isCurrent ? AppColor.primary : actionTint(action))
+                                .opacity(isCurrent ? 0.16 : 0.09),
+                            in: Circle()
+                        )
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(actionTitle(action, in: initialState))
+                            .font(AppTypography.caption.weight(isCurrent ? .semibold : .regular))
+                            .foregroundStyle(isCompleted ? AppColor.textPrimary : AppColor.textSecondary)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.8)
+
+                        Text(timelineStatusTitle(index: index))
+                            .font(.caption2)
+                            .foregroundStyle(isCurrent ? AppColor.primary : AppColor.textSecondary)
+                    }
+
+                    Spacer(minLength: AppSpacing.xs)
+
+                    Text("\(index + 1)")
+                        .font(.caption2.monospacedDigit())
+                        .foregroundStyle(AppColor.textSecondary)
+                }
+                .padding(AppSpacing.xs)
+                .background(isCurrent ? AppColor.primary.opacity(0.08) : Color.clear, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+                .accessibilityElement(children: .combine)
+            }
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
@@ -336,6 +384,46 @@ struct RoundReplayView: View {
             return "\(playerName(playerID, in: state)) لعب \(card.displayLabel)"
         case .finishRound:
             return "تم احتساب نتيجة الجولة"
+        }
+    }
+
+    private func timelineStatusTitle(index: Int) -> String {
+        if index == step - 1 { return "الحدث الحالي".localized }
+        if index < step { return "تم عرضه".localized }
+        return "قادم".localized
+    }
+
+    private func actionSystemImage(_ action: GameAction) -> String {
+        switch action {
+        case .dealCards:
+            return "rectangle.stack.fill"
+        case .chooseMode, .placeBid:
+            return "hand.raised.fill"
+        case .raiseMultiplier, .passMultiplier, .lockMultiplier:
+            return "multiply.circle.fill"
+        case .declareProjects:
+            return "sparkles"
+        case .playCard:
+            return "suit.spade.fill"
+        case .finishRound:
+            return "flag.checkered"
+        }
+    }
+
+    private func actionTint(_ action: GameAction) -> Color {
+        switch action {
+        case .dealCards:
+            return AppColor.textSecondary
+        case .chooseMode, .placeBid:
+            return AppColor.primary
+        case .raiseMultiplier, .passMultiplier, .lockMultiplier:
+            return AppColor.warning
+        case .declareProjects:
+            return AppColor.accent
+        case .playCard:
+            return AppColor.success
+        case .finishRound:
+            return AppColor.primary
         }
     }
 

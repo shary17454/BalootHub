@@ -1,6 +1,62 @@
 {
   "sourceLanguage" : "ar",
   "strings" : {
+    "الحدث الحالي" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Aktuelles Ereignis" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Current event" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Evento actual" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Événement actuel" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "वर्तमान घटना" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Peristiwa saat ini" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Текущее событие" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Geçerli olay" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "موجودہ واقعہ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "当前事件" } }
+      }
+    },
+    "تم عرضه" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bereits gezeigt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Shown" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Mostrado" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Affiché" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "दिखाया गया" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Ditampilkan" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Показано" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Gösterildi" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "دکھایا گیا" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已显示" } }
+      }
+    },
+    "سجل الإعادة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Replay-Protokoll" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Replay log" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Registro de repetición" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Journal du replay" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "रीप्ले लॉग" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Log replay" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Журнал повтора" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Tekrar günlüğü" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "ری پلے لاگ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "回放日志" } }
+      }
+    },
+    "قادم" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bevorstehend" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Upcoming" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Próximo" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "À venir" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आगामी" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Berikutnya" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Далее" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Sıradaki" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آنے والا" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "即将显示" } }
+      }
+    },
     "الأثر المتوقع" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Erwarteter Effekt" } },
