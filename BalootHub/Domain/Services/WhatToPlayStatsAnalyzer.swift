@@ -390,6 +390,12 @@ struct WhatToPlayDecisionReview: Equatable {
     let steps: [String]
 }
 
+struct WhatToPlayReplayContext: Equatable {
+    let text: String
+    let lostProjectedTeamPoints: Int
+    let isExpertChoice: Bool
+}
+
 struct WhatToPlayNextDecisionAction: Equatable {
     let title: String
     let detail: String
@@ -2129,6 +2135,28 @@ enum WhatToPlayStatsAnalyzer {
     static func retryPrompt(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayRetryPrompt? {
         guard let insight = decisionInsight(for: selected, in: scenario) else { return nil }
         return retryPrompt(insight: insight)
+    }
+
+    static func replayContext(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayReplayContext {
+        let bestProjectedTeamPoints = scenario.bestOption?.projectedTeamPoints ?? selected.projectedTeamPoints
+        let lostProjectedTeamPoints = max(0, bestProjectedTeamPoints - selected.projectedTeamPoints)
+        var parts = [
+            "\("الورقة".localized): \(selected.card.accessibilityName)",
+            "\("الأثر المتوقع".localized): \(impactTextValue(selected.expectedImpact))",
+            "\("نقاط فريقك بعد المحاكاة".localized): \(selected.projectedTeamPoints)"
+        ]
+
+        if lostProjectedTeamPoints > 0 {
+            parts.append("\("نقاط محاكاة ضائعة".localized): \(lostProjectedTeamPoints)")
+        } else if selected.isExpertChoice {
+            parts.append("اختيار الخبير".localized)
+        }
+
+        return WhatToPlayReplayContext(
+            text: parts.joined(separator: " · "),
+            lostProjectedTeamPoints: lostProjectedTeamPoints,
+            isExpertChoice: selected.isExpertChoice
+        )
     }
 
     static func retryPrompt(insight: WhatToPlayDecisionInsight) -> WhatToPlayRetryPrompt? {

@@ -1653,6 +1653,32 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertFalse(prompt?.detail.contains("الفرق بسيط".localized) == true)
     }
 
+    func testReplayContextExplainsExpertChoice() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
+        let selected = try XCTUnwrap(scenario.bestOption)
+
+        let context = WhatToPlayStatsAnalyzer.replayContext(for: selected, in: scenario)
+
+        XCTAssertTrue(context.isExpertChoice)
+        XCTAssertEqual(context.lostProjectedTeamPoints, 0)
+        XCTAssertTrue(context.text.contains("\("الورقة".localized): \(selected.card.accessibilityName)"))
+        XCTAssertTrue(context.text.contains("\("نقاط فريقك بعد المحاكاة".localized): \(selected.projectedTeamPoints)"))
+        XCTAssertTrue(context.text.contains("اختيار الخبير".localized))
+    }
+
+    func testReplayContextExplainsProjectedLoss() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let selected = try XCTUnwrap(scenario.options.last)
+        let best = try XCTUnwrap(scenario.bestOption)
+
+        let context = WhatToPlayStatsAnalyzer.replayContext(for: selected, in: scenario)
+
+        XCTAssertFalse(context.isExpertChoice)
+        XCTAssertEqual(context.lostProjectedTeamPoints, max(0, best.projectedTeamPoints - selected.projectedTeamPoints))
+        XCTAssertTrue(context.text.contains("\("نقاط محاكاة ضائعة".localized): \(context.lostProjectedTeamPoints)"))
+        XCTAssertTrue(context.text.contains("\("الأثر المتوقع".localized): \(selected.expectedImpact >= 0 ? "+\(selected.expectedImpact)" : "\(selected.expectedImpact)")"))
+    }
+
     func testScenarioBriefExplainsFollowSuitContext() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(
             seed: 2026,

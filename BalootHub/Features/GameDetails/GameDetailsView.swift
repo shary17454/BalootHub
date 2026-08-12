@@ -2507,10 +2507,11 @@ struct WhatToPlayTrainerView: View {
         label: String
     ) {
         guard let replay = WhatToPlayTrainer.decisionReplay(for: option.card, in: scenario) else { return }
+        let context = WhatToPlayStatsAnalyzer.replayContext(for: option, in: scenario)
         replayPresentation = WhatToPlayReplayPresentation(
             replay: replay,
             title: label,
-            contextText: "\("الورقة".localized): \(option.card.accessibilityName) · \("الأثر المتوقع".localized): \(impactText(option.expectedImpact))",
+            contextText: context.text,
             initialStep: replay.actions.count
         )
     }
