@@ -1553,6 +1553,27 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(action.expectedImprovement, 2)
     }
 
+    func testNextDecisionActionUsesProjectedLossWhenItIsLarger() {
+        let insight = WhatToPlayStatsAnalyzer.decisionInsight(
+            selectedRank: 2,
+            selectedImpact: 7,
+            bestImpact: 8,
+            secondBestImpact: 7,
+            selectedProjectedTeamPoints: 52,
+            bestProjectedTeamPoints: 68
+        )
+
+        let action = WhatToPlayStatsAnalyzer.nextDecisionAction(
+            insight: insight,
+            focusKind: .narrowChoice,
+            bestCard: PlayingCard(suit: .diamonds, rank: .ace)
+        )
+
+        XCTAssertEqual(action.title, "راجع أثر الجولة".localized)
+        XCTAssertTrue(action.detail.contains("خسر بعد استكمال الجولة".localized))
+        XCTAssertEqual(action.expectedImprovement, 16)
+    }
+
     func testNextDecisionActionDoesNotCallLargeSecondBestGapSmall() {
         let insight = WhatToPlayStatsAnalyzer.decisionInsight(
             selectedRank: 2,
@@ -1613,6 +1634,23 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(prompt?.title, "أعد نفس الموقف".localized)
         XCTAssertTrue(prompt?.detail.contains("الفرق بسيط".localized) == true)
+    }
+
+    func testRetryPromptUsesProjectedLossWhenItIsLarger() {
+        let insight = WhatToPlayStatsAnalyzer.decisionInsight(
+            selectedRank: 2,
+            selectedImpact: 7,
+            bestImpact: 8,
+            secondBestImpact: 7,
+            selectedProjectedTeamPoints: 52,
+            bestProjectedTeamPoints: 68
+        )
+
+        let prompt = WhatToPlayStatsAnalyzer.retryPrompt(insight: insight)
+
+        XCTAssertEqual(prompt?.title, "أعد نفس الموقف".localized)
+        XCTAssertTrue(prompt?.detail.contains("لن تُحسب الإعادة".localized) == true)
+        XCTAssertFalse(prompt?.detail.contains("الفرق بسيط".localized) == true)
     }
 
     func testScenarioBriefExplainsFollowSuitContext() throws {

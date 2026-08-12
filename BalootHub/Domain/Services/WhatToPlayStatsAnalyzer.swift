@@ -2134,7 +2134,7 @@ enum WhatToPlayStatsAnalyzer {
     static func retryPrompt(insight: WhatToPlayDecisionInsight) -> WhatToPlayRetryPrompt? {
         guard insight.kind != .expertMatch else { return nil }
 
-        if insight.lostExpectedPoints <= 2 {
+        if decisiveLoss(for: insight) <= 2 {
             return WhatToPlayRetryPrompt(
                 title: "أعد نفس الموقف".localized,
                 detail: "الفرق بسيط؛ أعد الموقف مرة واحدة وحاول تمييز سبب ترجيح الخبير للورقة الأفضل.".localized,
@@ -2253,7 +2253,7 @@ enum WhatToPlayStatsAnalyzer {
                 detail: closeAlternativeActionDetail(insight: insight),
                 iconName: "equal.circle.fill",
                 recommendedCard: bestCard,
-                expectedImprovement: insight.lostExpectedPoints
+                expectedImprovement: decisiveLoss(for: insight)
             )
         case .missedWinningChance:
             return WhatToPlayNextDecisionAction(
@@ -2261,31 +2261,53 @@ enum WhatToPlayStatsAnalyzer {
                 detail: "قبل اللعب، احسب هل عندك ورقة تنقل الأكلة لفريقك بدل الاكتفاء برمي ورقة قليلة الضرر.".localized,
                 iconName: "exclamationmark.triangle.fill",
                 recommendedCard: bestCard,
-                expectedImprovement: insight.lostExpectedPoints
+                expectedImprovement: decisiveLoss(for: insight)
             )
         case .pointLeak:
             return WhatToPlayNextDecisionAction(
-                title: "قلل النزيف القادم".localized,
-                detail: "في الموقف القادم ابدأ بسؤال واحد: ما أقل ورقة تخسر أقل نقاط متوقعة إذا كانت الأكلة للخصم؟".localized,
+                title: pointLeakActionTitle(insight: insight),
+                detail: pointLeakActionDetail(insight: insight),
                 iconName: "drop.fill",
                 recommendedCard: bestCard,
-                expectedImprovement: insight.lostExpectedPoints
+                expectedImprovement: decisiveLoss(for: insight)
             )
         }
     }
 
     private static func closeAlternativeActionTitle(insight: WhatToPlayDecisionInsight) -> String {
-        insight.lostExpectedPoints <= 2
+        decisiveLoss(for: insight) <= 2
             ? "درّب الفارق الصغير".localized
             : "راجع القيمة الضائعة".localized
     }
 
     private static func closeAlternativeActionDetail(insight: WhatToPlayDecisionInsight) -> String {
-        if insight.lostExpectedPoints <= 2 {
+        if decisiveLoss(for: insight) <= 2 {
             return "أعد قراءة نفس النوع من المواقف وركّز على سبب تفوق ورقة واحدة بنقطة أو نقطتين متوقعتين.".localized
         }
 
+        if insight.lostProjectedTeamPoints > insight.lostExpectedPoints {
+            return "\("خسارة المحاكاة".localized): \(insight.lostProjectedTeamPoints). \("راجع لماذا تغيّر أثر القرار بعد استكمال الجولة لا بعد الأكلة فقط.".localized)"
+        }
+
         return "\("الفارق عن اختيار الخبير".localized): \(insight.lostExpectedPoints). \("راجع سبب ارتفاع قيمة أفضل ورقة.".localized)"
+    }
+
+    private static func pointLeakActionTitle(insight: WhatToPlayDecisionInsight) -> String {
+        insight.lostProjectedTeamPoints > insight.lostExpectedPoints
+            ? "راجع أثر الجولة".localized
+            : "قلل النزيف القادم".localized
+    }
+
+    private static func pointLeakActionDetail(insight: WhatToPlayDecisionInsight) -> String {
+        if insight.lostProjectedTeamPoints > insight.lostExpectedPoints {
+            return "\("قرارك بدا قريبًا في الأكلة، لكنه خسر بعد استكمال الجولة".localized): \(insight.lostProjectedTeamPoints). \("شاهد Replay وقارن مسار أفضل ورقة.".localized)"
+        }
+
+        return "في الموقف القادم ابدأ بسؤال واحد: ما أقل ورقة تخسر أقل نقاط متوقعة إذا كانت الأكلة للخصم؟".localized
+    }
+
+    private static func decisiveLoss(for insight: WhatToPlayDecisionInsight) -> Int {
+        max(insight.lostExpectedPoints, insight.lostProjectedTeamPoints)
     }
 
     static func decisionReview(
