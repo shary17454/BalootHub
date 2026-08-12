@@ -26,6 +26,7 @@ struct HandAnalysisTests {
         #expect(analysis.buyConfidencePercent >= 70)
         #expect(analysis.hokumConfidencePercent >= 70)
         #expect(analysis.buyConfidencePercent == max(analysis.sunConfidencePercent, analysis.hokumConfidencePercent))
+        #expect(analysis.decisionGrade == .strongBuy)
         #expect(analysis.strengths.contains { $0.contains("سباتي") })
         #expect(analysis.strengths.contains { $0.contains("الولد") })
         #expect(analysis.tacticalAdvice.contains("حكم سباتي"))
@@ -74,6 +75,7 @@ struct HandAnalysisTests {
         #expect(analysis.projects.isEmpty)
         #expect(analysis.strengthPercent < 50)
         #expect(analysis.buyConfidencePercent < 50)
+        #expect(analysis.decisionGrade == .clearPass)
         #expect(analysis.weaknesses.contains { $0.contains("تقييم الصن") })
         #expect(analysis.tacticalAdvice.contains("تمرير"))
     }
@@ -104,6 +106,7 @@ struct HandAnalysisTests {
         #expect(first.buyConfidencePercent == second.buyConfidencePercent)
         #expect(first.sunConfidencePercent == second.sunConfidencePercent)
         #expect(first.hokumConfidencePercent == second.hokumConfidencePercent)
+        #expect(first.decisionGrade == second.decisionGrade)
     }
 
     @Test("احتمالات تحليل اليد تبقى ضمن النطاق المئوي")

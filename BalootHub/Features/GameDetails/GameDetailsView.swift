@@ -3310,6 +3310,7 @@ struct HandAnalyzerView: View {
                 .foregroundStyle(AppColor.primary)
 
             VStack(spacing: AppSpacing.xs) {
+                InfoRow(icon: "scope", title: "خلاصة القرار", value: decisionGradeText(analysis.decisionGrade))
                 InfoRow(icon: "hand.thumbsup.fill", title: "التوصية", value: recommendationText(analysis.recommendedBid))
                 InfoRow(icon: "gauge.with.dots.needle.67percent", title: "قوة اليد", value: "\(analysis.strengthPercent)%")
                 InfoRow(icon: "chart.line.uptrend.xyaxis", title: "احتمال الشراء", value: "\(analysis.buyConfidencePercent)%")
@@ -3377,6 +3378,19 @@ struct HandAnalyzerView: View {
         case .low: "منخفضة"
         case .medium: "متوسطة"
         case .high: "عالية"
+        }
+    }
+
+    private func decisionGradeText(_ grade: HandAnalysis.DecisionGrade) -> String {
+        switch grade {
+        case .strongBuy:
+            return "شراء قوي".localized
+        case .cautiousBuy:
+            return "شراء حذر".localized
+        case .closePass:
+            return "تمرير قريب".localized
+        case .clearPass:
+            return "تمرير واضح".localized
         }
     }
 

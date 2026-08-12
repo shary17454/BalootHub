@@ -8,6 +8,13 @@ public struct HandAnalysis: Sendable, Equatable {
         case high
     }
 
+    public enum DecisionGrade: String, Sendable, Codable, CaseIterable {
+        case strongBuy
+        case cautiousBuy
+        case closePass
+        case clearPass
+    }
+
     public let hand: [PlayingCard]
     public let evaluation: HandEvaluation
     public let recommendedBid: Bid
@@ -22,6 +29,8 @@ public struct HandAnalysis: Sendable, Equatable {
     public let sunConfidencePercent: Int
     /// احتمال تقريبي أن تكون اليد مناسبة لأفضل حكم متاح.
     public let hokumConfidencePercent: Int
+    /// ملخص تدريبي سريع يختصر قوة القرار قبل قراءة التفاصيل.
+    public let decisionGrade: DecisionGrade
     /// أسباب إيجابية تدعم التوصية، محسوبة داخل المحرك لا داخل الواجهة.
     public let strengths: [String]
     /// مخاطر أو نواقص يجب الانتباه لها قبل الشراء.
@@ -98,6 +107,11 @@ public enum HandAnalyzer {
             buyConfidencePercent: metrics.buyConfidencePercent,
             sunConfidencePercent: metrics.sunConfidencePercent,
             hokumConfidencePercent: metrics.hokumConfidencePercent,
+            decisionGrade: decisionGrade(
+                recommendedBid: recommended,
+                confidence: confidence,
+                buyConfidencePercent: metrics.buyConfidencePercent
+            ),
             strengths: rationale.strengths,
             weaknesses: rationale.weaknesses,
             tacticalAdvice: rationale.advice
@@ -269,6 +283,19 @@ public enum HandAnalyzer {
 
     private static func clampPercent(_ value: Int) -> Int {
         min(100, max(0, value))
+    }
+
+    private static func decisionGrade(
+        recommendedBid: Bid,
+        confidence: HandAnalysis.Confidence,
+        buyConfidencePercent: Int
+    ) -> HandAnalysis.DecisionGrade {
+        switch recommendedBid {
+        case .pass:
+            return buyConfidencePercent >= 40 ? .closePass : .clearPass
+        case .sun, .hokum:
+            return confidence == .high || buyConfidencePercent >= 75 ? .strongBuy : .cautiousBuy
+        }
     }
 
     private static func rationale(
