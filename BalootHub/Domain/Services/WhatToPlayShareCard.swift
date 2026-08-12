@@ -321,3 +321,97 @@ private struct WhatToPlayShareTacticalReason: Equatable {
     let detail: String
     let iconName: String
 }
+
+enum HandAnalysisShareSummary {
+    static func text(for analysis: HandAnalysis) -> String {
+        var lines = [
+            "ملخص حلّل يدي".localized,
+            "\("اليد".localized): \(analysis.hand.map(\.accessibilityName).joined(separator: "، "))",
+            "\("التوصية".localized): \(recommendationText(analysis.recommendedBid))",
+            "\("خلاصة القرار".localized): \(decisionGradeText(analysis.decisionGrade))",
+            "\("قوة اليد".localized): \(analysis.strengthPercent)%",
+            "\("احتمال الشراء".localized): \(analysis.buyConfidencePercent)%",
+            "\("الثقة".localized): \(confidenceText(analysis.confidence))",
+            "\("احتمال الصن".localized): \(analysis.sunConfidencePercent)% · \(analysis.evaluation.sunScore)",
+            "\("احتمال الحكم".localized): \(analysis.hokumConfidencePercent)%"
+        ]
+
+        if let best = analysis.evaluation.bestHokum {
+            lines.append("\("أفضل حكم".localized): \(best.suit.spokenName) · \(best.score)")
+        }
+
+        if analysis.projects.isEmpty {
+            lines.append("\("المشاريع".localized): \("لا يوجد".localized)")
+        } else {
+            lines.append("\("المشاريع".localized): \(analysis.totalProjectPoints)")
+            for project in analysis.projects.sorted(by: projectSort) {
+                let cards = project.cards.map(\.accessibilityName).joined(separator: "، ")
+                lines.append("- \(project.kind.arabicName) +\(project.points): \(cards)")
+            }
+        }
+
+        lines.append("\("نقاط القوة".localized):")
+        appendItems(analysis.strengths, to: &lines)
+
+        lines.append("\("نقاط الضعف".localized):")
+        appendItems(analysis.weaknesses, to: &lines)
+
+        lines.append("\("الخطوة التالية".localized): \(analysis.nextActionTitle)")
+        lines.append(analysis.nextActionDetail)
+        lines.append("\("النصيحة التكتيكية".localized): \(analysis.tacticalAdvice)")
+        lines.append("Baloot Hub")
+
+        return lines.joined(separator: "\n")
+    }
+
+    private static func appendItems(_ items: [String], to lines: inout [String]) {
+        if items.isEmpty {
+            lines.append("- \("لا يوجد".localized)")
+        } else {
+            for item in items {
+                lines.append("- \(item)")
+            }
+        }
+    }
+
+    private static func recommendationText(_ bid: Bid) -> String {
+        switch bid {
+        case .pass:
+            return "بس".localized
+        case .sun:
+            return "اشترِ صن".localized
+        case .hokum(let suit):
+            return "\("اشترِ حكم".localized) \(suit.spokenName)"
+        }
+    }
+
+    private static func confidenceText(_ confidence: HandAnalysis.Confidence) -> String {
+        switch confidence {
+        case .low:
+            return "منخفضة".localized
+        case .medium:
+            return "متوسطة".localized
+        case .high:
+            return "عالية".localized
+        }
+    }
+
+    private static func decisionGradeText(_ grade: HandAnalysis.DecisionGrade) -> String {
+        switch grade {
+        case .strongBuy:
+            return "شراء قوي".localized
+        case .cautiousBuy:
+            return "شراء حذر".localized
+        case .closePass:
+            return "تمرير قريب".localized
+        case .clearPass:
+            return "تمرير واضح".localized
+        }
+    }
+
+    private static func projectSort(_ lhs: Project, _ rhs: Project) -> Bool {
+        if lhs.points != rhs.points { return lhs.points > rhs.points }
+        if lhs.kind.rawValue != rhs.kind.rawValue { return lhs.kind.rawValue < rhs.kind.rawValue }
+        return lhs.id < rhs.id
+    }
+}

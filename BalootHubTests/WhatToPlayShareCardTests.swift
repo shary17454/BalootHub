@@ -280,8 +280,51 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(data.prefix(4), pngSignature)
     }
 
+    func testHandAnalysisShareSummaryIsDeterministic() {
+        let analysis = HandAnalyzer.analyze(hand: strongHokumHand())
+
+        XCTAssertEqual(
+            HandAnalysisShareSummary.text(for: analysis),
+            HandAnalysisShareSummary.text(for: analysis)
+        )
+    }
+
+    func testHandAnalysisShareSummaryIncludesRecommendationProjectsAndAdvice() {
+        let analysis = HandAnalyzer.analyze(hand: strongHokumHand())
+        let text = HandAnalysisShareSummary.text(for: analysis)
+
+        XCTAssertTrue(text.contains("ملخص حلّل يدي".localized))
+        XCTAssertTrue(text.contains("\("اليد".localized):"))
+        XCTAssertTrue(text.contains("\("التوصية".localized):"))
+        XCTAssertTrue(text.contains("\("قوة اليد".localized): \(analysis.strengthPercent)%"))
+        XCTAssertTrue(text.contains("\("احتمال الشراء".localized): \(analysis.buyConfidencePercent)%"))
+        XCTAssertTrue(text.contains("\("نقاط القوة".localized):"))
+        XCTAssertTrue(text.contains("\("نقاط الضعف".localized):"))
+        XCTAssertTrue(text.contains("\("النصيحة التكتيكية".localized):"))
+        XCTAssertTrue(text.contains(analysis.tacticalAdvice))
+        for card in analysis.hand {
+            XCTAssertTrue(text.contains(card.accessibilityName))
+        }
+        if !analysis.projects.isEmpty {
+            XCTAssertTrue(text.contains("\("المشاريع".localized): \(analysis.totalProjectPoints)"))
+        }
+    }
+
     private func contentMode(for scenario: WhatToPlayScenario) -> String {
         WhatToPlayShareCard.content(for: scenario).mode
+    }
+
+    private func strongHokumHand() -> [PlayingCard] {
+        [
+            PlayingCard(suit: .spades, rank: .jack),
+            PlayingCard(suit: .spades, rank: .nine),
+            PlayingCard(suit: .spades, rank: .ace),
+            PlayingCard(suit: .spades, rank: .ten),
+            PlayingCard(suit: .spades, rank: .king),
+            PlayingCard(suit: .hearts, rank: .ace),
+            PlayingCard(suit: .hearts, rank: .ten),
+            PlayingCard(suit: .clubs, rank: .ace)
+        ]
     }
 
     private func costlyShareSelection() throws -> (WhatToPlayScenario, WhatToPlayOption) {

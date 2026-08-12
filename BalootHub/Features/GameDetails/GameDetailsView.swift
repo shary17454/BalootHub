@@ -3273,6 +3273,14 @@ struct HandAnalyzerView: View {
         .navigationTitle("حلّل يدي")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            if let analysis {
+                ToolbarItem(placement: .topBarTrailing) {
+                    ShareLink(item: HandAnalysisShareSummary.text(for: analysis)) {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                    .accessibilityLabel("مشاركة تحليل اليد".localized)
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 Button("مسح") { selectedCards.removeAll() }
                     .disabled(selectedCards.isEmpty)
