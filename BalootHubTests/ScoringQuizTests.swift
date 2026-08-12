@@ -115,6 +115,40 @@ final class ScoringQuizTests: XCTestCase {
         XCTAssertEqual(summaries.first { $0.difficulty == .hard }?.accuracyPercent, 50)
     }
 
+    func testCoachingInsightStartsAtEasyWithoutAttempts() {
+        let insight = ScoringQuizStatsAnalyzer.coachingInsight(for: [])
+
+        XCTAssertEqual(insight.title, "ابدأ من السهل".localized)
+        XCTAssertEqual(insight.recommendedDifficulty, .easy)
+    }
+
+    func testCoachingInsightRaisesDifficultyAfterStrongStreak() {
+        let attempts = [
+            makeAttempt(seed: 1, difficulty: .easy, isCorrect: true, remainingSeconds: 20, createdAt: Date(timeIntervalSince1970: 1)),
+            makeAttempt(seed: 2, difficulty: .easy, isCorrect: true, remainingSeconds: 18, createdAt: Date(timeIntervalSince1970: 2)),
+            makeAttempt(seed: 3, difficulty: .easy, isCorrect: true, remainingSeconds: 16, createdAt: Date(timeIntervalSince1970: 3))
+        ]
+
+        let insight = ScoringQuizStatsAnalyzer.coachingInsight(for: attempts)
+
+        XCTAssertEqual(insight.title, "ارفع مستوى التحدي".localized)
+        XCTAssertEqual(insight.recommendedDifficulty, .medium)
+    }
+
+    func testCoachingInsightRecommendsEasyWhenAccuracyIsLow() {
+        let attempts = [
+            makeAttempt(seed: 1, difficulty: .hard, isCorrect: false),
+            makeAttempt(seed: 2, difficulty: .medium, isCorrect: false),
+            makeAttempt(seed: 3, difficulty: .easy, isCorrect: true),
+            makeAttempt(seed: 4, difficulty: .hard, isCorrect: false)
+        ]
+
+        let insight = ScoringQuizStatsAnalyzer.coachingInsight(for: attempts)
+
+        XCTAssertEqual(insight.title, "راجع أساس الحساب".localized)
+        XCTAssertEqual(insight.recommendedDifficulty, .easy)
+    }
+
     private func makeAttempt(
         seed: UInt64,
         difficulty: ScoringQuizDifficulty,

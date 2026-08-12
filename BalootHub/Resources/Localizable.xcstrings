@@ -20478,6 +20478,126 @@
         }
       }
     },
+    "حل أول أسئلة بدون مشاريع أو مضاعفات حتى تثبت طريقة جمع النقاط الأساسية." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solve the first questions without projects or multipliers until the basic point-counting method is stable."
+          }
+        }
+      }
+    },
+    "ثبّت مستوى الصعب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hold hard level"
+          }
+        }
+      }
+    },
+    "دقتك وسلسلتك قوية حتى في أعلى مستوى؛ ركز على السرعة ومراجعة القهوة والمضاعفات." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your accuracy and streak are strong even at the highest level; focus on speed and reviewing coffee and multipliers."
+          }
+        }
+      }
+    },
+    "ارفع مستوى التحدي" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raise the challenge level"
+          }
+        }
+      }
+    },
+    "الدقة والسلسلة تسمحان بالانتقال لمستوى أعلى مع مشاريع ومضاعفات أكثر." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your accuracy and streak support moving to a higher level with more projects and multipliers."
+          }
+        }
+      }
+    },
+    "راجع أساس الحساب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review the scoring basics"
+          }
+        }
+      }
+    },
+    "الدقة الحالية منخفضة؛ عد إلى السهل وركّز على جمع نقاط الفريق قبل تطبيق المضاعف." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Current accuracy is low; return to easy and focus on adding the team's points before applying the multiplier."
+          }
+        }
+      }
+    },
+    "خفف ضغط الوقت" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reduce time pressure"
+          }
+        }
+      }
+    },
+    "إجاباتك تصل قرب نهاية المؤقت؛ ابق على نفس المستوى حتى تزيد سرعة الجمع." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your answers arrive near the end of the timer; stay at the same level until your counting gets faster."
+          }
+        }
+      }
+    },
+    "استمر على نفس المستوى" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stay at this level"
+          }
+        }
+      }
+    },
+    "أداؤك متوسط ومستقر؛ أكمل عدة أسئلة بنفس المستوى حتى تبني سلسلة صحيحة قبل التصعيد." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your performance is steady but average; complete several questions at the same level before moving up."
+          }
+        }
+      }
+    },
+    "المستوى المقترح" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recommended level"
+          }
+        }
+      }
+    },
     "ابدأ بمواقف سهلة حتى يبني المدرب خط أساس واضحًا لطريقة لعبك." : {
       "localizations" : {
         "en" : {

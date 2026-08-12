@@ -75,6 +75,13 @@ struct ScoringQuizDifficultySummary: Identifiable, Equatable {
     var id: ScoringQuizDifficulty { difficulty }
 }
 
+struct ScoringQuizCoachingInsight: Equatable {
+    let title: String
+    let detail: String
+    let recommendedDifficulty: ScoringQuizDifficulty
+    let iconName: String
+}
+
 enum ScoringQuizEvaluator {
     static func evaluate(answerText: String, question: ScoringQuizQuestion) -> ScoringQuizEvaluation {
         let cleaned = answerText.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -124,6 +131,61 @@ enum ScoringQuizStatsAnalyzer {
         Array(attempts.sorted { $0.createdAt > $1.createdAt }.prefix(limit))
     }
 
+    static func coachingInsight(for attempts: [ScoringQuizAttempt]) -> ScoringQuizCoachingInsight {
+        let summary = summarize(attempts: attempts)
+        guard summary.attempts > 0 else {
+            return ScoringQuizCoachingInsight(
+                title: "ابدأ من السهل".localized,
+                detail: "حل أول أسئلة بدون مشاريع أو مضاعفات حتى تثبت طريقة جمع النقاط الأساسية.".localized,
+                recommendedDifficulty: .easy,
+                iconName: "flag.fill"
+            )
+        }
+
+        if summary.accuracyPercent >= 85, summary.currentStreak >= 3 {
+            if summary.hardestSolvedDifficulty == .hard {
+                return ScoringQuizCoachingInsight(
+                    title: "ثبّت مستوى الصعب".localized,
+                    detail: "دقتك وسلسلتك قوية حتى في أعلى مستوى؛ ركز على السرعة ومراجعة القهوة والمضاعفات.".localized,
+                    recommendedDifficulty: .hard,
+                    iconName: "checkmark.seal.fill"
+                )
+            }
+
+            return ScoringQuizCoachingInsight(
+                title: "ارفع مستوى التحدي".localized,
+                detail: "الدقة والسلسلة تسمحان بالانتقال لمستوى أعلى مع مشاريع ومضاعفات أكثر.".localized,
+                recommendedDifficulty: nextDifficulty(after: summary.hardestSolvedDifficulty ?? .easy),
+                iconName: "arrow.up.circle.fill"
+            )
+        }
+
+        if summary.accuracyPercent < 50 {
+            return ScoringQuizCoachingInsight(
+                title: "راجع أساس الحساب".localized,
+                detail: "الدقة الحالية منخفضة؛ عد إلى السهل وركّز على جمع نقاط الفريق قبل تطبيق المضاعف.".localized,
+                recommendedDifficulty: .easy,
+                iconName: "exclamationmark.triangle.fill"
+            )
+        }
+
+        if summary.averageRemainingSeconds <= 5 {
+            return ScoringQuizCoachingInsight(
+                title: "خفف ضغط الوقت".localized,
+                detail: "إجاباتك تصل قرب نهاية المؤقت؛ ابق على نفس المستوى حتى تزيد سرعة الجمع.".localized,
+                recommendedDifficulty: summary.hardestSolvedDifficulty ?? .medium,
+                iconName: "timer"
+            )
+        }
+
+        return ScoringQuizCoachingInsight(
+            title: "استمر على نفس المستوى".localized,
+            detail: "أداؤك متوسط ومستقر؛ أكمل عدة أسئلة بنفس المستوى حتى تبني سلسلة صحيحة قبل التصعيد.".localized,
+            recommendedDifficulty: summary.hardestSolvedDifficulty ?? .medium,
+            iconName: "target"
+        )
+    }
+
     private static func currentStreak(_ attempts: [ScoringQuizAttempt]) -> Int {
         var streak = 0
         for attempt in attempts {
@@ -161,6 +223,13 @@ enum ScoringQuizStatsAnalyzer {
         case .easy: 1
         case .medium: 2
         case .hard: 3
+        }
+    }
+
+    private static func nextDifficulty(after difficulty: ScoringQuizDifficulty) -> ScoringQuizDifficulty {
+        switch difficulty {
+        case .easy: .medium
+        case .medium, .hard: .hard
         }
     }
 

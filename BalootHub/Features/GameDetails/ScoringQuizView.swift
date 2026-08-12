@@ -18,6 +18,10 @@ struct ScoringQuizView: View {
         ScoringQuizStatsAnalyzer.summarize(attempts: attempts)
     }
 
+    private var coachingInsight: ScoringQuizCoachingInsight {
+        ScoringQuizStatsAnalyzer.coachingInsight(for: attempts)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
@@ -76,6 +80,8 @@ struct ScoringQuizView: View {
                     metric("متوسط الوقت المتبقي".localized, "\(statsSummary.averageRemainingSeconds)s", icon: "timer")
                 }
 
+                coachingInsightView(coachingInsight)
+
                 if let hardest = statsSummary.hardestSolvedDifficulty {
                     InfoRow(
                         icon: "gauge.with.dots.needle.67percent",
@@ -133,6 +139,30 @@ struct ScoringQuizView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func coachingInsightView(_ insight: ScoringQuizCoachingInsight) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                Text(insight.title)
+                    .font(AppTypography.subheadline.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(insight.detail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("\("المستوى المقترح".localized): \(insight.recommendedDifficulty.title)")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(AppColor.accent)
+            }
+        } icon: {
+            Image(systemName: insight.iconName)
+                .foregroundStyle(AppColor.accent)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.sm)
+        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
     }
 
     private var difficultyPicker: some View {
