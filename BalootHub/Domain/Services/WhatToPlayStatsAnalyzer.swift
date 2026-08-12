@@ -2357,32 +2357,8 @@ enum WhatToPlayStatsAnalyzer {
     }
 
     static func preDecisionChecklist(context: WhatToPlayScenarioContext) -> WhatToPlayPreDecisionChecklist {
-        var items: [String] = []
-
-        if context.isLeading {
-            items.append("أنت تبدأ الأكلة: لا تكشف ورقتك القوية بلا سبب واضح.".localized)
-        } else if let requiredSuit = context.requiredSuit {
-            items.append("\("اللون المطلوب".localized): \(requiredSuit.spokenName). \("ابدأ بحصر الأوراق القانونية من هذا اللون.".localized)")
-        } else {
-            items.append("لا يوجد لون مطلوب واضح؛ اقرأ الأوراق المطروحة قبل حساب الربح.".localized)
-        }
-
-        if context.mode == .hokum, let trumpSuit = context.trumpSuit {
-            let trumpState = context.hasTrumpInCurrentTrick
-                ? "الحكم موجود على الطاولة؛ لا تعلّي إلا إذا كان العائد يستحق.".localized
-                : "الحكم لم يظهر في الأكلة؛ احسب هل القطع الآن أفضل أم حفظ الحكم.".localized
-            items.append("\("الحكم".localized): \(trumpSuit.spokenName). \(trumpState)")
-        } else {
-            items.append("صن: لا يوجد حكم، فقارن قوة اللون والنقاط بدل انتظار القطع.".localized)
-        }
-
-        items.append("\("الأوراق قبل دورك".localized): \(context.playedCardCount). \("كلما زادت الأوراق زادت دقة حساب ربح الأكلة.".localized)")
-
-        if context.legalOptionCount <= 2 {
-            items.append("خياراتك قليلة؛ اختر أقل خسارة متوقعة لا أعلى شكل للورقة.".localized)
-        } else {
-            items.append("رتّب الخيارات بين ربح الأكلة، تقليل الخسارة، وحفظ ورقة قوية لاحقًا.".localized)
-        }
+        let items = WhatToPlayTrainer.decisionFactors(context: context)
+            .map(checklistItem(for:))
 
         return WhatToPlayPreDecisionChecklist(
             title: "افحص قبل اللعب".localized,
@@ -2390,6 +2366,32 @@ enum WhatToPlayStatsAnalyzer {
             iconName: "checklist",
             items: items
         )
+    }
+
+    private static func checklistItem(for factor: WhatToPlayDecisionFactor) -> String {
+        switch factor.kind {
+        case .openingLead:
+            return "أنت تبدأ الأكلة: لا تكشف ورقتك القوية بلا سبب واضح.".localized
+        case .requiredSuit:
+            let suitName = factor.suit?.spokenName ?? "اللون المطلوب".localized
+            return "\("اللون المطلوب".localized): \(suitName). \("ابدأ بحصر الأوراق القانونية من هذا اللون.".localized)"
+        case .noRequiredSuit:
+            return "لا يوجد لون مطلوب واضح؛ اقرأ الأوراق المطروحة قبل حساب الربح.".localized
+        case .trumpOnTable:
+            let suitName = factor.suit?.spokenName ?? "الحكم".localized
+            return "\("الحكم".localized): \(suitName). \("الحكم موجود على الطاولة؛ لا تعلّي إلا إذا كان العائد يستحق.".localized)"
+        case .trumpAvailable:
+            let suitName = factor.suit?.spokenName ?? "الحكم".localized
+            return "\("الحكم".localized): \(suitName). \("الحكم لم يظهر في الأكلة؛ احسب هل القطع الآن أفضل أم حفظ الحكم.".localized)"
+        case .sunMode:
+            return "صن: لا يوجد حكم، فقارن قوة اللون والنقاط بدل انتظار القطع.".localized
+        case .trickProgress:
+            return "\("الأوراق قبل دورك".localized): \(factor.count ?? 0). \("كلما زادت الأوراق زادت دقة حساب ربح الأكلة.".localized)"
+        case .narrowChoice:
+            return "خياراتك قليلة؛ اختر أقل خسارة متوقعة لا أعلى شكل للورقة.".localized
+        case .flexibleChoice:
+            return "رتّب الخيارات بين ربح الأكلة، تقليل الخسارة، وحفظ ورقة قوية لاحقًا.".localized
+        }
     }
 
     static func scenarioBrief(context: WhatToPlayScenarioContext) -> WhatToPlayScenarioBrief {

@@ -131,6 +131,31 @@ public enum WhatToPlayScenarioFocusKind: String, Sendable, Codable, CaseIterable
     case narrowChoice
 }
 
+/// عامل قرار منظّم يشرح ما يجب الانتباه له قبل اختيار ورقة في موقف «وش تلعب؟».
+public struct WhatToPlayDecisionFactor: Sendable, Codable, Equatable {
+    public enum Kind: String, Sendable, Codable, Equatable {
+        case openingLead
+        case requiredSuit
+        case noRequiredSuit
+        case trumpOnTable
+        case trumpAvailable
+        case sunMode
+        case trickProgress
+        case narrowChoice
+        case flexibleChoice
+    }
+
+    public let kind: Kind
+    public let suit: Suit?
+    public let count: Int?
+
+    public init(kind: Kind, suit: Suit? = nil, count: Int? = nil) {
+        self.kind = kind
+        self.suit = suit
+        self.count = count
+    }
+}
+
 /// قراءة موجزة لسياق موقف «وش تلعب؟» من حالة المحرك.
 public struct WhatToPlayScenarioContext: Sendable, Equatable {
     public let trickNumber: Int
@@ -510,6 +535,32 @@ public enum WhatToPlayTrainer {
             return .narrowChoice
         }
         return .openingLead
+    }
+
+    /// عوامل قرار قابلة للتنسيق في الواجهة والتعليم والمشاركة من مصدر حقيقة واحد.
+    public static func decisionFactors(context: WhatToPlayScenarioContext) -> [WhatToPlayDecisionFactor] {
+        var factors: [WhatToPlayDecisionFactor] = []
+
+        if context.isLeading {
+            factors.append(.init(kind: .openingLead))
+        } else if let requiredSuit = context.requiredSuit {
+            factors.append(.init(kind: .requiredSuit, suit: requiredSuit))
+        } else {
+            factors.append(.init(kind: .noRequiredSuit))
+        }
+
+        if context.mode == .hokum, let trumpSuit = context.trumpSuit {
+            factors.append(.init(
+                kind: context.hasTrumpInCurrentTrick ? .trumpOnTable : .trumpAvailable,
+                suit: trumpSuit
+            ))
+        } else {
+            factors.append(.init(kind: .sunMode))
+        }
+
+        factors.append(.init(kind: .trickProgress, count: context.playedCardCount))
+        factors.append(.init(kind: context.legalOptionCount <= 2 ? .narrowChoice : .flexibleChoice, count: context.legalOptionCount))
+        return factors
     }
 
     public static func impactBreakdown(

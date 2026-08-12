@@ -448,6 +448,68 @@ struct WhatToPlayTrainerTests {
         )
     }
 
+    @Test("عوامل قرار الموقف تأتي من المحرك بترتيب ثابت")
+    func decisionFactorsDescribeScenarioInStableOrder() {
+        let context = WhatToPlayScenarioContext(
+            trickNumber: 3,
+            isLeading: false,
+            requiredSuit: .clubs,
+            playedCardCount: 2,
+            legalOptionCount: 2,
+            mode: .hokum,
+            trumpSuit: .hearts,
+            hasTrumpInCurrentTrick: true,
+            focusKind: .trumpPressure
+        )
+
+        #expect(WhatToPlayTrainer.decisionFactors(context: context) == [
+            WhatToPlayDecisionFactor(kind: .requiredSuit, suit: .clubs),
+            WhatToPlayDecisionFactor(kind: .trumpOnTable, suit: .hearts),
+            WhatToPlayDecisionFactor(kind: .trickProgress, count: 2),
+            WhatToPlayDecisionFactor(kind: .narrowChoice, count: 2)
+        ])
+    }
+
+    @Test("عوامل القرار تفرق بين افتتاح الصن والحكم المحفوظ")
+    func decisionFactorsSeparateSunOpeningFromAvailableTrump() {
+        let sunContext = WhatToPlayScenarioContext(
+            trickNumber: 1,
+            isLeading: true,
+            requiredSuit: nil,
+            playedCardCount: 0,
+            legalOptionCount: 5,
+            mode: .sun,
+            trumpSuit: nil,
+            hasTrumpInCurrentTrick: false,
+            focusKind: .openingLead
+        )
+        let hokumContext = WhatToPlayScenarioContext(
+            trickNumber: 1,
+            isLeading: true,
+            requiredSuit: nil,
+            playedCardCount: 0,
+            legalOptionCount: 5,
+            mode: .hokum,
+            trumpSuit: .spades,
+            hasTrumpInCurrentTrick: false,
+            focusKind: .openingLead
+        )
+
+        #expect(WhatToPlayTrainer.decisionFactors(context: sunContext).map(\.kind) == [
+            .openingLead,
+            .sunMode,
+            .trickProgress,
+            .flexibleChoice
+        ])
+        #expect(WhatToPlayTrainer.decisionFactors(context: hokumContext).map(\.kind) == [
+            .openingLead,
+            .trumpAvailable,
+            .trickProgress,
+            .flexibleChoice
+        ])
+        #expect(WhatToPlayTrainer.decisionFactors(context: hokumContext)[1].suit == .spades)
+    }
+
     private func trickSnapshots(_ tricks: [Trick]) -> [[String]] {
         tricks.map { trickSnapshot($0) }
     }
