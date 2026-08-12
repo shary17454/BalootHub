@@ -236,6 +236,7 @@ struct CareerModeView: View {
             careerMetric("المباريات".localized, "\(summary.completedMatches)", "suit.spade.fill")
             careerMetric("قرارات صحيحة".localized, "\(summary.correctTrainingAttempts)/\(summary.trainingAttempts)", "brain.head.profile")
             careerMetric("إجابات الحساب".localized, "\(summary.correctScoringAnswers)", "function")
+            careerMetric("حساب متقدم".localized, "\(summary.correctAdvancedScoringAnswers)", "sum")
             careerMetric("دروس مكتملة".localized, "\(summary.completedAcademyLessons)", "graduationcap.fill")
             careerMetric("بطولات مكتملة".localized, "\(summary.completedTournaments)", "trophy.fill")
             careerMetric("ألقاب بطولة".localized, "\(summary.tournamentTitles)", "crown.fill")

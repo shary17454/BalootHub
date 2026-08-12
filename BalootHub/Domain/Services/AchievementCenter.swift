@@ -315,6 +315,7 @@ struct CareerProgressSummary: Equatable {
     let trainingAttempts: Int
     let correctTrainingAttempts: Int
     let correctScoringAnswers: Int
+    let correctAdvancedScoringAnswers: Int
     let completedAcademyLessons: Int
     let completedTournaments: Int
     let tournamentTitles: Int
@@ -340,6 +341,9 @@ enum CareerProgressAnalyzer {
         let completedMatches = scoreSessions.filter { $0.status == .finished || $0.winnerName(rules: rules) != nil }.count
         let correctTrainingAttempts = whatToPlayAttempts.filter(\.isCorrect).count
         let correctScoringAnswers = scoringQuizAttempts.filter(\.isCorrect).count
+        let correctAdvancedScoringAnswers = scoringQuizAttempts.filter {
+            $0.isCorrect && $0.category != .basics
+        }.count
         let tournamentStats = OfflineTournamentPlanner.stats(for: offlineTournaments)
         let completedAcademyLessonIDs = Set(academyProgress.map(\.lessonID))
             .union(legacyCompletedAcademyLessonIDs)
@@ -358,6 +362,7 @@ enum CareerProgressAnalyzer {
         let xp = completedMatches * 80
             + correctTrainingAttempts * 18
             + correctScoringAnswers * 10
+            + correctAdvancedScoringAnswers * 6
             + completedAcademyLessonIDs.count * 35
             + tournamentStats.finishedTournaments * 120
             + completedChallengeIDs.count * 30
@@ -369,6 +374,7 @@ enum CareerProgressAnalyzer {
             completedMatches: completedMatches,
             correctTrainingAttempts: correctTrainingAttempts,
             correctScoringAnswers: correctScoringAnswers,
+            correctAdvancedScoringAnswers: correctAdvancedScoringAnswers,
             completedAcademyLessons: completedAcademyLessonIDs.count,
             completedTournaments: tournamentStats.finishedTournaments,
             tournamentTitles: tournamentStats.championshipTeams.values.reduce(0, +),
@@ -392,6 +398,7 @@ enum CareerProgressAnalyzer {
             trainingAttempts: whatToPlayAttempts.count,
             correctTrainingAttempts: correctTrainingAttempts,
             correctScoringAnswers: correctScoringAnswers,
+            correctAdvancedScoringAnswers: correctAdvancedScoringAnswers,
             completedAcademyLessons: completedAcademyLessonIDs.count,
             completedTournaments: tournamentStats.finishedTournaments,
             tournamentTitles: tournamentStats.championshipTeams.values.reduce(0, +),
@@ -414,6 +421,7 @@ enum CareerProgressAnalyzer {
         completedMatches: Int,
         correctTrainingAttempts: Int,
         correctScoringAnswers: Int,
+        correctAdvancedScoringAnswers: Int,
         completedAcademyLessons: Int,
         completedTournaments: Int,
         tournamentTitles: Int,
@@ -438,6 +446,12 @@ enum CareerProgressAnalyzer {
                 title: "لقب الحاسب".localized,
                 detail: "يفتح بعد 25 إجابة صحيحة في تحدي النقاط.".localized,
                 isUnlocked: correctScoringAnswers >= 25
+            ),
+            CareerUnlock(
+                id: "advanced-accountant",
+                title: "محلل الحساب المتقدم".localized,
+                detail: "يفتح بعد 10 إجابات صحيحة في أسئلة المشاريع أو المضاعفات أو القهوة.".localized,
+                isUnlocked: correctAdvancedScoringAnswers >= 10
             ),
             CareerUnlock(
                 id: "academy-certificate",

@@ -450,6 +450,22 @@ final class AchievementCenterTests: XCTestCase {
         XCTAssertTrue(summary.unlocks.first { $0.id == "challenge-board" }?.isUnlocked == true)
     }
 
+    func testCareerProgressCountsAdvancedScoringAnswersSeparately() throws {
+        var scoringAttempts = try (0..<4).map { index in
+            try makeScoringQuizAttempt(category: .basics, seedOffset: UInt64(index), isCorrect: true)
+        }
+        scoringAttempts += try (0..<10).map { index in
+            try makeScoringQuizAttempt(category: .coffee, seedOffset: UInt64(index), isCorrect: true)
+        }
+
+        let summary = CareerProgressAnalyzer.summarize(scoringQuizAttempts: scoringAttempts)
+
+        XCTAssertEqual(summary.correctScoringAnswers, 14)
+        XCTAssertEqual(summary.correctAdvancedScoringAnswers, 10)
+        XCTAssertTrue(summary.unlocks.first { $0.id == "advanced-accountant" }?.isUnlocked == true)
+        XCTAssertFalse(summary.unlocks.first { $0.id == "accountant-badge" }?.isUnlocked == true)
+    }
+
     private func makeWhatToPlayAttempt(seed: UInt64, isCorrect: Bool) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
             difficulty: .medium,
