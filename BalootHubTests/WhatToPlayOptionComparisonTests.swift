@@ -79,6 +79,44 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertFalse(costlySummary.nextActionDetail?.isEmpty ?? true)
     }
 
+    func testDecisionQualityUsesProjectedRoundLossWhenLargerThanImmediateImpact() {
+        XCTAssertEqual(
+            WhatToPlayDecisionQuality.classify(
+                isExpertChoice: false,
+                lostExpectedPoints: 1,
+                lostProjectedTeamPoints: 12
+            ),
+            .costly
+        )
+    }
+
+    func testSummaryPrioritizesSimulationReviewWhenProjectedLossIsLarger() throws {
+        var matchingScenario: WhatToPlayScenario?
+        var selectedOption: WhatToPlayOption?
+
+        for seed in 1...300 {
+            let scenario = try WhatToPlayTrainer.generateScenario(seed: UInt64(seed), difficulty: .hard)
+            guard let best = scenario.bestOption else { continue }
+            if let selected = scenario.options.first(where: {
+                $0.card != best.card
+                    && max(0, best.expectedImpact - $0.expectedImpact) <= 2
+                    && max(0, best.projectedTeamPoints - $0.projectedTeamPoints) >= 9
+            }) {
+                matchingScenario = scenario
+                selectedOption = selected
+                break
+            }
+        }
+
+        let scenario = try XCTUnwrap(matchingScenario)
+        let selected = try XCTUnwrap(selectedOption)
+        let summary = WhatToPlayOptionComparison.summary(for: scenario, selectedCard: selected.card)
+
+        XCTAssertEqual(summary.decisionQuality, .costly)
+        XCTAssertEqual(summary.nextActionTitle, "راجع المحاكاة".localized)
+        XCTAssertTrue(summary.nextActionDetail?.contains("بعد استكمال الجولة".localized) ?? false)
+    }
+
     func testRowsAreSortedByExpertRankAndMarkSelectedCard() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
         let selected = try XCTUnwrap(scenario.secondBestOption ?? scenario.bestOption)
