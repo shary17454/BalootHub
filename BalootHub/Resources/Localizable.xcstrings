@@ -23424,7 +23424,327 @@
     "راجع الفرق الصغير" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Review the small gap" } } } },
     "قارن قبل اللعب" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Compare before playing" } } } },
     "أعد الموقف" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Replay the scenario" } } } },
-    "الإجراء التالي" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Next action" } } } }
+    "الإجراء التالي" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Next action" } } } },
+    "قرار مطابق للخبير" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entscheidung entspricht dem Experten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expert-matched decision"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decisión coincide con el experto"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Décision conforme à l’expert"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "विशेषज्ञ से मेल खाता निर्णय"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keputusan sesuai ahli"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Решение совпадает с экспертным"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uzmanla eşleşen karar"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ماہر سے مطابقت رکھنے والا فیصلہ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "符合专家的决策"
+          }
+        }
+      }
+    },
+    "تحليل قرار الخبير" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analyse der Expertenentscheidung"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expert decision analysis"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Análisis de decisión experta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analyse de décision experte"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "विशेषज्ञ निर्णय विश्लेषण"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analisis keputusan ahli"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Анализ экспертного решения"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uzman karar analizi"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ماہر فیصلے کا تجزیہ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "专家决策分析"
+          }
+        }
+      }
+    },
+    "الورقة الملعوبة" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gespielte Karte"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Played card"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carta jugada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carte jouée"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "खेला गया पत्ता"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kartu yang dimainkan"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сыгранная карта"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oynanan kart"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "کھیلا گیا کارڈ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已出的牌"
+          }
+        }
+      }
+    },
+    "ثاني أفضل ورقة" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zweitbeste Karte"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Second-best card"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Segunda mejor carta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deuxième meilleure carte"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "दूसरा सबसे अच्छा पत्ता"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kartu terbaik kedua"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вторая лучшая карта"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "İkinci en iyi kart"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "دوسرا بہترین کارڈ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "第二佳牌"
+          }
+        }
+      }
+    },
+    "فاقد متوقع" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erwarteter Verlust"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expected loss"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pérdida esperada"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Perte attendue"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "अपेक्षित नुकसान"
+          }
+        },
+        "id" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kerugian yang diperkirakan"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ожидаемая потеря"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beklenen kayıp"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "متوقع نقصان"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "预期损失"
+          }
+        }
+      }
+    }
   },
   "version" : "1.0"
 }
