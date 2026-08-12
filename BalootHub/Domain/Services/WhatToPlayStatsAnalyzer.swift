@@ -1452,22 +1452,27 @@ enum WhatToPlayStatsAnalyzer {
         for attempts: [WhatToPlayAttempt],
         plan: WhatToPlayTrainingSessionPlan
     ) -> UInt64 {
-        let matchingAttemptCount = attempts.filter {
+        let matchingAttempts = attempts.filter {
             $0.difficulty == plan.difficulty && (plan.focusKind == nil || $0.focusKind == plan.focusKind)
-        }.count
+        }
         let difficultyComponent = UInt64(difficultyOrder(plan.difficulty)) * 1_000_000
         let focusComponent = UInt64(plan.focusKind.map(scenarioFocusOrder) ?? 0) * 100_000
         let countComponent = UInt64(max(1, plan.scenarioCount)) * 1_000
         let accuracyComponent = UInt64(max(0, plan.targetAccuracyPercent)) * 10
         let impactComponent = UInt64(max(0, plan.targetAverageExpectedImpact))
 
-        return 9_000_000
+        var candidate = 9_000_000
             + difficultyComponent
             + focusComponent
             + countComponent
             + accuracyComponent
             + impactComponent
-            + UInt64(matchingAttemptCount)
+            + UInt64(matchingAttempts.count)
+        let attemptedSeeds = Set(matchingAttempts.map(\.replaySeed))
+        while attemptedSeeds.contains(candidate) {
+            candidate &+= 1
+        }
+        return candidate
     }
 
     static func trainingSessionProgress(

@@ -2486,6 +2486,21 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(seed, 10_204_703)
     }
 
+    func testNextTrainingSessionSeedSkipsAlreadyAttemptedMatchingSeed() {
+        let plan = sessionPlan(difficulty: .medium, focusKind: .trumpPressure, count: 4, target: 70, impactTarget: 1)
+        let collidingSeed: UInt64 = 10_204_703
+        let attempts = [
+            attempt(daysAgo: 4, difficulty: .easy, correct: true, impact: 2, focusKind: .trumpPressure, seed: collidingSeed + 1),
+            attempt(daysAgo: 3, difficulty: .medium, correct: false, impact: -2, focusKind: .openingLead, seed: collidingSeed + 2),
+            attempt(daysAgo: 2, difficulty: .medium, correct: true, impact: 3, focusKind: .trumpPressure, seed: 7),
+            attempt(daysAgo: 1, difficulty: .medium, correct: false, impact: -1, focusKind: .trumpPressure, seed: collidingSeed)
+        ]
+
+        let seed = WhatToPlayStatsAnalyzer.nextTrainingSessionSeed(for: attempts, plan: plan)
+
+        XCTAssertEqual(seed, collidingSeed + 1)
+    }
+
     func testTrainingSessionPlanPrioritizesReviewWhenRecentAttemptsNeedIt() {
         let attempts = [
             attempt(daysAgo: 4, difficulty: .medium, correct: true, impact: 5, bestImpact: 5, focusKind: .openingLead),
