@@ -241,6 +241,30 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(data.prefix(4), pngSignature)
     }
 
+    @MainActor
+    func testShareCardImageRendererWritesReviewedDecisionPNGFile() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let selected = try XCTUnwrap(scenario.options.last)
+        let content = WhatToPlayShareCard.content(for: scenario, selectedOption: selected)
+
+        XCTAssertTrue(content.includesAnswerReview)
+        XCTAssertNotNil(content.selectedCardName)
+        XCTAssertNotNil(content.bestCardName)
+
+        let url = try WhatToPlayShareCardImageRenderer.render(
+            content: content,
+            fileName: "baloothub-share-card-review-test.png",
+            scale: 2
+        )
+        defer { try? FileManager.default.removeItem(at: url) }
+
+        let data = try Data(contentsOf: url)
+        let pngSignature = Data([0x89, 0x50, 0x4E, 0x47])
+
+        XCTAssertGreaterThan(data.count, 1024)
+        XCTAssertEqual(data.prefix(4), pngSignature)
+    }
+
     private func contentMode(for scenario: WhatToPlayScenario) -> String {
         WhatToPlayShareCard.content(for: scenario).mode
     }

@@ -2376,6 +2376,8 @@ struct WhatToPlayTrainerView: View {
             try? modelContext.save()
         }
         selectedOption = evaluated
+        shareImageURL = nil
+        renderShareImageForCurrentScenario()
         isRetryingCurrentScenario = false
     }
 
