@@ -344,6 +344,33 @@ enum DailyChallengeCenter {
         )
     }
 
+    static func completedChallengeIDs(
+        for challenges: [BalootChallenge],
+        attempts: [WhatToPlayAttempt],
+        scoringQuizAttempts: [ScoringQuizAttempt] = [],
+        academyProgress: [AcademyLessonProgress] = [],
+        scoreSessions: [ScoreSession] = [],
+        rules: ScoreRules = .standard,
+        legacyCompletedAcademyLessonIDs: Set<String> = [],
+        now: Date = Date(),
+        calendar: Calendar = Calendar(identifier: .gregorian)
+    ) -> Set<String> {
+        Set(challenges.compactMap { challenge in
+            let progress = progress(
+                for: challenge,
+                attempts: attempts,
+                scoringQuizAttempts: scoringQuizAttempts,
+                academyProgress: academyProgress,
+                scoreSessions: scoreSessions,
+                rules: rules,
+                legacyCompletedAcademyLessonIDs: legacyCompletedAcademyLessonIDs,
+                now: now,
+                calendar: calendar
+            )
+            return progress?.isComplete == true ? challenge.id : nil
+        })
+    }
+
     private static func completedWhatToPlaySeeds(
         attempts: [WhatToPlayAttempt],
         interval: DateInterval,

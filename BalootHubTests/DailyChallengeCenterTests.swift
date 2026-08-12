@@ -243,6 +243,50 @@ final class DailyChallengeCenterTests: XCTestCase {
         XCTAssertTrue(progress.isComplete)
     }
 
+    func testCompletedChallengeIDsReturnsOnlyFinishedChallenges() {
+        let calendar = Calendar(identifier: .gregorian)
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let dayStart = calendar.startOfDay(for: date)
+        let completed = BalootChallenge(
+            id: "completed-scoring",
+            cadence: .daily,
+            category: .scoring,
+            title: "حساب",
+            detail: "اختبار",
+            targetCount: 2,
+            rewardTitle: "اختبار",
+            whatToPlaySeed: nil,
+            whatToPlayDifficulty: nil,
+            whatToPlayFocusKind: nil
+        )
+        let incomplete = BalootChallenge(
+            id: "incomplete-scoring",
+            cadence: .daily,
+            category: .scoring,
+            title: "حساب",
+            detail: "اختبار",
+            targetCount: 3,
+            rewardTitle: "اختبار",
+            whatToPlaySeed: nil,
+            whatToPlayDifficulty: nil,
+            whatToPlayFocusKind: nil
+        )
+        let scoringAttempts = [
+            scoringAttempt(at: dayStart.addingTimeInterval(60), seed: 1, isCorrect: true),
+            scoringAttempt(at: dayStart.addingTimeInterval(120), seed: 2, isCorrect: true)
+        ]
+
+        let ids = DailyChallengeCenter.completedChallengeIDs(
+            for: [completed, incomplete],
+            attempts: [],
+            scoringQuizAttempts: scoringAttempts,
+            now: date,
+            calendar: calendar
+        )
+
+        XCTAssertEqual(ids, ["completed-scoring"])
+    }
+
     func testAcademyChallengeProgressCountsCompletedLessonsInsideWeek() throws {
         let calendar = Calendar(identifier: .gregorian)
         let date = Date(timeIntervalSince1970: 1_785_888_000)

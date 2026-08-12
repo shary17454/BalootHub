@@ -25,18 +25,14 @@ struct DailyChallengesView: View {
     }
 
     private var effectiveCompletedSet: Set<String> {
-        let automatic = allChallenges
-            .filter {
-                DailyChallengeCenter.progress(
-                    for: $0,
-                    attempts: attempts,
-                    scoringQuizAttempts: scoringQuizAttempts,
-                    academyProgress: academyProgress,
-                    scoreSessions: scoreSessions,
-                    legacyCompletedAcademyLessonIDs: completedAcademySet
-                )?.isComplete == true
-            }
-            .map(\.id)
+        let automatic = DailyChallengeCenter.completedChallengeIDs(
+            for: allChallenges,
+            attempts: attempts,
+            scoringQuizAttempts: scoringQuizAttempts,
+            academyProgress: academyProgress,
+            scoreSessions: scoreSessions,
+            legacyCompletedAcademyLessonIDs: completedAcademySet
+        )
         return completedSet.union(automatic)
     }
 

@@ -30,6 +30,14 @@ struct AchievementsView: View {
 
     private var completedChallengeSet: Set<String> {
         Set(completedChallengeIDs.split(separator: ",").map(String.init))
+            .union(DailyChallengeCenter.completedChallengeIDs(
+                for: DailyChallengeCenter.challenges(),
+                attempts: whatToPlayAttempts,
+                scoringQuizAttempts: scoringQuizAttempts,
+                academyProgress: academyProgress,
+                scoreSessions: scoreSessions,
+                legacyCompletedAcademyLessonIDs: completedAcademySet
+            ))
     }
 
     var body: some View {
@@ -155,6 +163,14 @@ struct CareerModeView: View {
 
     private var completedChallengeSet: Set<String> {
         Set(completedChallengeIDs.split(separator: ",").map(String.init))
+            .union(DailyChallengeCenter.completedChallengeIDs(
+                for: DailyChallengeCenter.challenges(),
+                attempts: whatToPlayAttempts,
+                scoringQuizAttempts: scoringQuizAttempts,
+                academyProgress: academyProgress,
+                scoreSessions: scoreSessions,
+                legacyCompletedAcademyLessonIDs: completedAcademySet
+            ))
     }
 
     var body: some View {
