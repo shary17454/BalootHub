@@ -57,6 +57,62 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "即将显示" } }
       }
     },
+    "خطة تقليل القرارات المكلفة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Plan zum Reduzieren kostspieliger Entscheidungen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Costly decision reduction plan" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Plan para reducir decisiones costosas" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Plan de réduction des décisions coûteuses" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "महंगे निर्णय घटाने की योजना" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Rencana mengurangi keputusan mahal" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "План снижения дорогих решений" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Maliyetli kararları azaltma planı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "مہنگے فیصلے کم کرنے کا منصوبہ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "减少高代价决策计划" } }
+      }
+    },
+    "اجعل التدريب القادم قصيرًا ومبنيًا على مقارنة Replay اختيارك بأفضل قرار." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Halte das nächste Training kurz und baue es auf dem Vergleich des Replays deiner Wahl mit der besten Entscheidung auf." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep the next drill short and base it on comparing your replay with the best decision replay." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Haz que el próximo entrenamiento sea corto y basado en comparar la repetición de tu elección con la mejor decisión." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Gardez le prochain entraînement court et comparez le replay de votre choix au meilleur choix." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "अगला अभ्यास छोटा रखें और अपनी पसंद के रीप्ले की तुलना सर्वोत्तम निर्णय से करें।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Buat latihan berikutnya singkat dan bandingkan replay pilihan Anda dengan replay keputusan terbaik." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Сделайте следующую тренировку короткой и сравните повтор вашего выбора с повтором лучшего решения." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Sonraki çalışmayı kısa tut ve kendi seçiminin tekrarını en iyi kararın tekrarıyla karşılaştır." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اگلی مشق مختصر رکھیں اور اپنے انتخاب کے Replay کا بہترین فیصلے سے موازنہ کریں۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "下一次训练保持简短，并比较你的选择回放与最佳决策回放。" } }
+      }
+    },
+    "شاهد Replay أفضل قرار" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Replay der besten Entscheidung ansehen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Watch the best-decision replay" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Ver la repetición de la mejor decisión" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Voir le replay de la meilleure décision" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सर्वश्रेष्ठ निर्णय का रीप्ले देखें" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tonton replay keputusan terbaik" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Посмотреть повтор лучшего решения" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "En iyi kararın tekrarını izle" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "بہترین فیصلے کا Replay دیکھیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "观看最佳决策回放" } }
+      }
+    },
+    "لا ترفع الصعوبة حتى تنخفض القرارات المكلفة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erhöhe die Schwierigkeit erst, wenn kostspielige Entscheidungen sinken" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Do not raise difficulty until costly decisions drop" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "No subas la dificultad hasta que bajen las decisiones costosas" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "N’augmentez pas la difficulté avant que les décisions coûteuses diminuent" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "महंगे निर्णय घटने तक कठिनाई न बढ़ाएँ" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Jangan naikkan kesulitan sampai keputusan mahal menurun" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Не повышайте сложность, пока дорогие решения не снизятся" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Maliyetli kararlar düşmeden zorluğu artırma" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "مہنگے فیصلے کم ہونے تک مشکل نہ بڑھائیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在高代价决策减少前不要提高难度" } }
+      }
+    },
     "قلّل القرارات المكلفة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Reduziere kostspielige Entscheidungen" } },

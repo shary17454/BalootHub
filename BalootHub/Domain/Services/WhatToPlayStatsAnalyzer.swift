@@ -2433,6 +2433,25 @@ enum WhatToPlayStatsAnalyzer {
             )
         }
 
+        let qualitySummary = decisionQualitySummary(for: attempts)
+        if qualitySummary.trackedAttempts >= 3, qualitySummary.costlyPercent >= 30 {
+            let recommendation = nextScenarioRecommendation(for: attempts)
+            return WhatToPlayMicroDrill(
+                title: "خطة تقليل القرارات المكلفة".localized,
+                detail: "اجعل التدريب القادم قصيرًا ومبنيًا على مقارنة Replay اختيارك بأفضل قرار.".localized,
+                iconName: "exclamationmark.triangle.fill",
+                steps: [
+                    "\("نسبة القرارات المكلفة".localized): \(qualitySummary.costlyPercent)%",
+                    "شاهد Replay أفضل قرار".localized,
+                    "لا ترفع الصعوبة حتى تنخفض القرارات المكلفة".localized
+                ],
+                reviewItem: nil,
+                seed: microDrillSeed(attempts: attempts, difficulty: recommendation.difficulty, focusKind: recommendation.focusKind),
+                difficulty: recommendation.difficulty,
+                focusKind: recommendation.focusKind
+            )
+        }
+
         let coverage = practiceCoverage(for: attempts)
         if !coverage.isBalanced {
             let targetDifficulty = coverage.missingDifficulties.first ?? .easy

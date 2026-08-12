@@ -1867,6 +1867,24 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(drill.seed, 5)
     }
 
+    func testMicroDrillTargetsCostlyDecisionPatternBeforeCoverage() {
+        let attempts = [
+            attempt(daysAgo: 5, difficulty: .easy, correct: true, impact: 10, bestImpact: 10, focusKind: .openingLead),
+            attempt(daysAgo: 4, difficulty: .easy, correct: false, impact: -1, bestImpact: 10, focusKind: .followSuit),
+            attempt(daysAgo: 3, difficulty: .easy, correct: true, impact: 9, bestImpact: 10, focusKind: .trumpPressure),
+            attempt(daysAgo: 2, difficulty: .easy, correct: false, impact: -2, bestImpact: 10, focusKind: .narrowChoice),
+            attempt(daysAgo: 1, difficulty: .easy, correct: true, impact: 10, bestImpact: 10, focusKind: .openingLead)
+        ]
+
+        let drill = WhatToPlayStatsAnalyzer.microDrill(for: attempts)
+
+        XCTAssertEqual(drill.title, "خطة تقليل القرارات المكلفة".localized)
+        XCTAssertEqual(drill.steps.first, "\("نسبة القرارات المكلفة".localized): 40%")
+        XCTAssertEqual(drill.iconName, "exclamationmark.triangle.fill")
+        XCTAssertEqual(drill.difficulty, .easy)
+        XCTAssertEqual(drill.seed, 8_000_005)
+    }
+
     func testMicroDrillTargetsCoverageBeforeGenericPractice() {
         let attempts = [
             attempt(daysAgo: 3, difficulty: .easy, correct: true, impact: 3),
