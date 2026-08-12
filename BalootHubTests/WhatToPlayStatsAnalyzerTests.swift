@@ -1848,6 +1848,22 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(priority?.summary.accuracyPercent, 0)
     }
 
+    func testFocusTrainingPriorityUsesProjectedLossWhenExpectedLossTies() {
+        let attempts = [
+            attempt(daysAgo: 6, correct: false, impact: 1, bestImpact: 5, focusKind: .openingLead, projectedTeamPoints: 72, bestProjectedTeamPoints: 74),
+            attempt(daysAgo: 5, correct: true, impact: 3, bestImpact: 3, focusKind: .openingLead, projectedTeamPoints: 80, bestProjectedTeamPoints: 80),
+            attempt(daysAgo: 4, correct: false, impact: 1, bestImpact: 5, focusKind: .followSuit, projectedTeamPoints: 58, bestProjectedTeamPoints: 74),
+            attempt(daysAgo: 3, correct: true, impact: 3, bestImpact: 3, focusKind: .followSuit, projectedTeamPoints: 78, bestProjectedTeamPoints: 78)
+        ]
+
+        let priority = WhatToPlayStatsAnalyzer.focusTrainingPriority(for: attempts)
+
+        XCTAssertEqual(priority?.focusKind, .followSuit)
+        XCTAssertEqual(priority?.summary.lostExpectedPoints, 4)
+        XCTAssertEqual(priority?.summary.lostProjectedTeamPoints, 16)
+        XCTAssertTrue(priority?.detail.contains("سبب الترشيح من المحاكاة".localized) ?? false)
+    }
+
     func testFocusTrainingPriorityWaitsForEnoughAttemptsPerFocus() {
         let attempts = [
             attempt(daysAgo: 2, correct: false, impact: -10, bestImpact: 5, focusKind: .trumpPressure),

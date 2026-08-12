@@ -789,10 +789,18 @@ enum WhatToPlayStatsAnalyzer {
     ) -> WhatToPlayFocusTrainingPriority? {
         let candidate = summariesByScenarioFocus(attempts)
             .filter { $0.summary.attempts >= minimumAttempts }
-            .filter { $0.summary.lostExpectedPoints > 0 || $0.summary.accuracyPercent < 100 }
+            .filter {
+                $0.summary.lostExpectedPoints > 0
+                    || $0.summary.lostProjectedTeamPoints > 0
+                    || $0.summary.accuracyPercent < 100
+            }
             .sorted { lhs, rhs in
                 if lhs.summary.lostExpectedPoints != rhs.summary.lostExpectedPoints {
                     return lhs.summary.lostExpectedPoints > rhs.summary.lostExpectedPoints
+                }
+
+                if lhs.summary.lostProjectedTeamPoints != rhs.summary.lostProjectedTeamPoints {
+                    return lhs.summary.lostProjectedTeamPoints > rhs.summary.lostProjectedTeamPoints
                 }
 
                 if lhs.summary.accuracyPercent != rhs.summary.accuracyPercent {
@@ -813,7 +821,7 @@ enum WhatToPlayStatsAnalyzer {
             focusKind: candidate.focusKind,
             summary: candidate.summary,
             title: "\("أولوية التدريب".localized): \(scenarioFocusTitle(candidate.focusKind))",
-            detail: focusTrainingDetail(for: candidate.focusKind),
+            detail: focusTrainingDetail(for: candidate.focusKind, summary: candidate.summary),
             iconName: focusTrainingIcon(for: candidate.focusKind)
         )
     }
@@ -2896,17 +2904,26 @@ enum WhatToPlayStatsAnalyzer {
         }
     }
 
-    private static func focusTrainingDetail(for focusKind: WhatToPlayScenarioFocusKind) -> String {
-        switch focusKind {
+    private static func focusTrainingDetail(
+        for focusKind: WhatToPlayScenarioFocusKind,
+        summary: WhatToPlayStatsSummary
+    ) -> String {
+        let base = switch focusKind {
         case .openingLead:
-            return "تدرّب على اختيار ورقة البداية التي تكشف أقل معلومات وتحافظ على ورقة القوة للوقت المناسب.".localized
+            "تدرّب على اختيار ورقة البداية التي تكشف أقل معلومات وتحافظ على ورقة القوة للوقت المناسب.".localized
         case .followSuit:
-            return "راجع التلزيم: ابدأ بمعرفة اللون المطلوب ثم قرر هل تكسب الأكلة أم تخفف خسارة النقاط.".localized
+            "راجع التلزيم: ابدأ بمعرفة اللون المطلوب ثم قرر هل تكسب الأكلة أم تخفف خسارة النقاط.".localized
         case .trumpPressure:
-            return "ركّز على ضغط الحكم: لا تقطع بلا هدف، واحسب هل التعلية أو حفظ الحكم أقوى للفريق.".localized
+            "ركّز على ضغط الحكم: لا تقطع بلا هدف، واحسب هل التعلية أو حفظ الحكم أقوى للفريق.".localized
         case .narrowChoice:
-            return "في الخيارات المحدودة، قارن الأثر المتوقع لاختيارين فقط ولا ترم الورقة الأعلى تلقائيًا.".localized
+            "في الخيارات المحدودة، قارن الأثر المتوقع لاختيارين فقط ولا ترم الورقة الأعلى تلقائيًا.".localized
         }
+
+        if summary.lostProjectedTeamPoints > summary.lostExpectedPoints {
+            return "\(base) \("سبب الترشيح من المحاكاة".localized): \(summary.lostProjectedTeamPoints) \("نقطة ضاعت بعد استكمال الجولة.".localized)"
+        }
+
+        return base
     }
 
     private static func focusTrainingIcon(for focusKind: WhatToPlayScenarioFocusKind) -> String {

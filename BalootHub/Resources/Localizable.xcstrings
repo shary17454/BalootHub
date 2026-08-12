@@ -641,6 +641,34 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "复盘这个决定如何改变整局结果，而不只是这一墩。" } }
       }
     },
+    "سبب الترشيح من المحاكاة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Empfehlungsgrund aus der Simulation" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Simulation reason for recommendation" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Motivo de recomendación por simulación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Raison de recommandation par simulation" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सिमुलेशन से सिफारिश का कारण" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Alasan rekomendasi dari simulasi" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Причина рекомендации по симуляции" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Simülasyona göre öneri nedeni" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "سیمولیشن سے سفارش کی وجہ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "模拟给出推荐的原因" } }
+      }
+    },
+    "نقطة ضاعت بعد استكمال الجولة." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Punkte gingen nach ausgespielter Runde verloren." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "points were lost after completing the round." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "puntos se perdieron tras completar la ronda." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "points ont été perdus après la manche complète." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "राउंड पूरा होने के बाद अंक खोए।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "poin hilang setelah ronde selesai." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "очков потеряно после доигрывания раунда." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "puan tur tamamlandıktan sonra kaybedildi." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "پوائنٹس راؤنڈ مکمل ہونے کے بعد ضائع ہوئے۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "分是在打完整局后损失的。" } }
+      }
+    },
     "محاكاة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Simulation" } },
