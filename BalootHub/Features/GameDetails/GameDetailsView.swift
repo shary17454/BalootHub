@@ -2704,7 +2704,8 @@ struct WhatToPlayTrainerView: View {
     }
 
     private func decisionInsightView(_ insight: WhatToPlayDecisionInsight) -> some View {
-        Label {
+        let hasValueLoss = insight.lostExpectedPoints > 0 || insight.lostProjectedTeamPoints > 0
+        return Label {
             VStack(alignment: .leading, spacing: 2) {
                 Text(insight.title)
                     .font(AppTypography.subheadline.weight(.semibold))
@@ -2717,6 +2718,13 @@ struct WhatToPlayTrainerView: View {
                     Text("\("نقاط متوقعة ضائعة".localized): \(insight.lostExpectedPoints)")
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(AppColor.danger)
+                }
+                if insight.lostProjectedTeamPoints > 0 {
+                    Text("\("نقاط محاكاة ضائعة".localized): \(insight.lostProjectedTeamPoints)")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(AppColor.danger)
+                }
+                if hasValueLoss {
                     Text(insight.valueLossTitle)
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(valueLossSeverityTint(insight.valueLossSeverity))
