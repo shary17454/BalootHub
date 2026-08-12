@@ -52,6 +52,25 @@ struct BalootSandboxTests {
         #expect(state.currentTurnPlayerID == BalootSandbox.playerID(for: .north))
     }
 
+    @Test("النقاط اليدوية تدخل الحالة وتزيد بعد إكمال الأكلة")
+    func manualTeamPointsAreCarriedIntoPreview() throws {
+        var configuration = sandboxConfiguration()
+        configuration.teamTrickPointsBySeat = [
+            .south: 30,
+            .west: 20
+        ]
+
+        let preview = try BalootSandbox.preview(
+            playing: PlayingCard(suit: .hearts, rank: .jack),
+            configuration: configuration
+        )
+
+        #expect(preview.beforeState.teamTrickPoints[BalootSandbox.teamID(for: .south)] == 30)
+        #expect(preview.beforeState.teamTrickPoints[BalootSandbox.teamID(for: .west)] == 20)
+        #expect(preview.afterState?.teamTrickPoints[BalootSandbox.teamID(for: .south)] == 75)
+        #expect(preview.afterState?.teamTrickPoints[BalootSandbox.teamID(for: .west)] == 20)
+    }
+
     @Test("تجربة ورقة ممنوعة تعيد سبب الرفض من GameEngine")
     func previewReportsInvalidMoveReason() throws {
         let configuration = sandboxConfiguration()

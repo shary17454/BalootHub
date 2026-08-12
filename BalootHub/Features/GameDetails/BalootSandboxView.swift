@@ -37,6 +37,7 @@ struct BalootSandboxView: View {
                 header
                 sandboxControls
                 tableState
+                scoreEditor
                 trickEditor
                 handEditor
                 handPicker
@@ -123,6 +124,8 @@ struct BalootSandboxView: View {
                 metric("النمط".localized, modeText, icon: "crown.fill")
                 metric("المضاعف".localized, configuration.multiplier.arabicName.localized, icon: "multiply.circle.fill")
                 metric("الدور".localized, seatTitle(configuration.currentTurnSeat), icon: "person.crop.circle.badge.checkmark")
+                metric("نقاط فريقك".localized, "\(teamScore(for: .south))", icon: "sum")
+                metric("نقاط الخصم".localized, "\(teamScore(for: .west))", icon: "sum")
                 metric("الأوراق القانونية".localized, legalCardsText(), icon: "checkmark.seal.fill")
             }
 
@@ -140,6 +143,24 @@ struct BalootSandboxView: View {
             }
             .padding(AppSpacing.md)
             .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private var scoreEditor: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            Label("نقاط الموقف".localized, systemImage: "number.circle.fill")
+                .font(AppTypography.headline)
+                .foregroundStyle(AppColor.primary)
+
+            Stepper(value: teamScoreBinding(for: .south), in: 0...500, step: 5) {
+                InfoRow(icon: "person.2.fill", title: "فريق الجنوب والشمال".localized, value: "\(teamScore(for: .south))")
+            }
+
+            Stepper(value: teamScoreBinding(for: .west), in: 0...500, step: 5) {
+                InfoRow(icon: "person.2.fill", title: "فريق الغرب والشرق".localized, value: "\(teamScore(for: .west))")
+            }
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
@@ -347,6 +368,12 @@ struct BalootSandboxView: View {
                 if let points = preview.completedTrickPoints {
                     InfoRow(icon: "sum", title: "نقاط الأكلة".localized, value: "\(points)")
                 }
+                if let ours = preview.afterState?.teamTrickPoints[BalootSandbox.teamID(for: .south)] {
+                    InfoRow(icon: "person.2.fill", title: "مجموع فريقك بعد الحركة".localized, value: "\(ours)")
+                }
+                if let theirs = preview.afterState?.teamTrickPoints[BalootSandbox.teamID(for: .west)] {
+                    InfoRow(icon: "person.2.fill", title: "مجموع الخصم بعد الحركة".localized, value: "\(theirs)")
+                }
             }
         }
         .padding(AppSpacing.md)
@@ -419,6 +446,38 @@ struct BalootSandboxView: View {
                 configuration.currentTurnSeat = seat
             }
         )
+    }
+
+    private func teamScoreBinding(for representativeSeat: SeatPosition) -> Binding<Int> {
+        Binding(
+            get: { teamScore(for: representativeSeat) },
+            set: { score in
+                resetPreview()
+                setTeamScore(max(0, score), for: representativeSeat)
+            }
+        )
+    }
+
+    private func teamScore(for representativeSeat: SeatPosition) -> Int {
+        teamSeats(for: representativeSeat).reduce(0) { total, seat in
+            total + (configuration.teamTrickPointsBySeat[seat] ?? 0)
+        }
+    }
+
+    private func setTeamScore(_ score: Int, for representativeSeat: SeatPosition) {
+        let seats = teamSeats(for: representativeSeat)
+        guard let primary = seats.first else { return }
+        for seat in seats {
+            configuration.teamTrickPointsBySeat[seat] = 0
+        }
+        configuration.teamTrickPointsBySeat[primary] = score
+    }
+
+    private func teamSeats(for representativeSeat: SeatPosition) -> [SeatPosition] {
+        switch representativeSeat {
+        case .south, .north: [.south, .north]
+        case .west, .east: [.west, .east]
+        }
     }
 
     private var modeText: String {
