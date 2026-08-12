@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UIKit
 import BalootEngine
 
 struct GameDetailsView: View {
@@ -306,6 +307,7 @@ private struct StatTile: View {
 
 struct WhatToPlayTrainerView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.displayScale) private var displayScale
     @Query(sort: \WhatToPlayAttempt.createdAt, order: .reverse) private var attempts: [WhatToPlayAttempt]
 
     @State private var difficulty: WhatToPlayDifficulty = .medium
@@ -320,6 +322,7 @@ struct WhatToPlayTrainerView: View {
     @State private var generationTask: Task<Void, Never>?
     @State private var replayPresentation: WhatToPlayReplayPresentation?
     @State private var pendingReviewSelection: PlayingCard?
+    @State private var shareImageURL: URL?
 
     init(
         seed: UInt64? = nil,
@@ -452,6 +455,12 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayScenarioFocusKind(rawValue: preferredFocusRaw)
     }
 
+    private var shareImageRenderID: String {
+        guard let scenario else { return "empty" }
+        let selectedCard = selectedOption.map { "\($0.card.suit.ordinal)-\($0.card.rank.ordinal)" } ?? "prompt"
+        return "\(scenario.seed)-\(scenario.difficulty.rawValue)-\(scenario.context.focusKind.rawValue)-\(selectedCard)"
+    }
+
     private func saveTrainerPreferences() {
         WhatToPlayTrainerPreferences.save(
             difficulty: difficulty,
@@ -505,6 +514,9 @@ struct WhatToPlayTrainerView: View {
         .task {
             if scenario == nil { generateScenario() }
         }
+        .task(id: shareImageRenderID) {
+            renderShareImageForCurrentScenario()
+        }
         .onChange(of: difficulty) { _, _ in
             saveTrainerPreferences()
             generateScenario()
@@ -531,7 +543,23 @@ struct WhatToPlayTrainerView: View {
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 if let scenario {
-                    ShareLink(item: WhatToPlayShareCard.text(for: scenario, selectedOption: selectedOption)) {
+                    Menu {
+                        if let shareImageURL {
+                            ShareLink(item: shareImageURL) {
+                                Label("مشاركة بطاقة كصورة".localized, systemImage: "photo")
+                            }
+                        } else {
+                            Button {
+                                renderShareImageForCurrentScenario()
+                            } label: {
+                                Label("تجهيز صورة المشاركة".localized, systemImage: "photo")
+                            }
+                        }
+
+                        ShareLink(item: WhatToPlayShareCard.text(for: scenario, selectedOption: selectedOption)) {
+                            Label("مشاركة كنص".localized, systemImage: "text.quote")
+                        }
+                    } label: {
                         Image(systemName: "square.and.arrow.up")
                     }
                     .accessibilityLabel("مشاركة الموقف".localized)
@@ -2914,6 +2942,7 @@ struct WhatToPlayTrainerView: View {
         selectedOption = nil
         errorMessage = nil
         illegalMoveExplanation = nil
+        shareImageURL = nil
         isRetryingCurrentScenario = false
         scenario = nil
         isGeneratingScenario = true
@@ -2997,7 +3026,30 @@ struct WhatToPlayTrainerView: View {
     private func retryCurrentScenario() {
         selectedOption = nil
         illegalMoveExplanation = nil
+        shareImageURL = nil
         isRetryingCurrentScenario = true
+    }
+
+    @MainActor
+    private func renderShareImageForCurrentScenario() {
+        guard let scenario else {
+            shareImageURL = nil
+            return
+        }
+
+        let content = WhatToPlayShareCard.content(for: scenario, selectedOption: selectedOption)
+        let selectedCard = selectedOption.map { "\($0.card.suit.ordinal)-\($0.card.rank.ordinal)" } ?? "prompt"
+        let fileName = "baloothub-what-to-play-\(scenario.seed)-\(scenario.difficulty.rawValue)-\(selectedCard).png"
+
+        do {
+            shareImageURL = try WhatToPlayShareCardImageRenderer.render(
+                content: content,
+                fileName: fileName,
+                scale: displayScale
+            )
+        } catch {
+            shareImageURL = nil
+        }
     }
 
     private func applyTrainingSessionNextStep(_ progress: WhatToPlayTrainingSessionProgress) {
@@ -3508,6 +3560,30 @@ private struct WhatToPlayShareCardPreview: View {
         if impact > 0 { return "+\(impact) \("نقطة متوقعة".localized)" }
         if impact < 0 { return "\(impact) \("نقطة متوقعة".localized)" }
         return "أثر محايد".localized
+    }
+}
+
+private enum WhatToPlayShareCardImageRenderer {
+    @MainActor
+    static func render(
+        content: WhatToPlayShareCardContent,
+        fileName: String,
+        scale: CGFloat
+    ) throws -> URL {
+        let renderer = ImageRenderer(
+            content: WhatToPlayShareCardPreview(content: content)
+                .frame(width: 430)
+                .environment(\.layoutDirection, .rightToLeft)
+        )
+        renderer.scale = scale
+
+        guard let image = renderer.uiImage, let data = image.pngData() else {
+            throw CocoaError(.fileWriteUnknown)
+        }
+
+        let url = FileManager.default.temporaryDirectory.appending(path: fileName)
+        try data.write(to: url, options: [.atomic])
+        return url
     }
 }
 

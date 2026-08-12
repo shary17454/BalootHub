@@ -19774,6 +19774,36 @@
         }
       }
     },
+    "مشاركة بطاقة كصورة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share card as image"
+          }
+        }
+      }
+    },
+    "مشاركة كنص" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share as text"
+          }
+        }
+      }
+    },
+    "تجهيز صورة المشاركة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prepare share image"
+          }
+        }
+      }
+    },
     "دقتك هنا" : {
       "localizations" : {
         "en" : {
