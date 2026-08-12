@@ -81,6 +81,38 @@ final class OfflineTournamentTests: XCTestCase {
         XCTAssertEqual(tournament.status, .active)
     }
 
+    func testTournamentTextSummaryIsDeterministicAndIncludesResults() throws {
+        let tournament = OfflineTournamentPlanner.makeTournament(title: "دوري المجلس", format: .league, teamCount: 4, seed: 10)
+        let firstMatch = try XCTUnwrap(tournament.matches.first)
+        OfflineTournamentPlanner.recordWin(for: firstMatch.id, side: .home, in: tournament)
+
+        let first = tournament.textSummary()
+        let second = tournament.textSummary()
+
+        XCTAssertEqual(first, second)
+        XCTAssertTrue(first.contains("ملخص بطولة البلوت"))
+        XCTAssertTrue(first.contains("دوري المجلس"))
+        XCTAssertTrue(first.contains("الترتيب"))
+        XCTAssertTrue(first.contains("الجدول"))
+        XCTAssertTrue(first.contains("\(firstMatch.homeTeam) 1-0 \(firstMatch.awayTeam)"))
+        XCTAssertTrue(first.contains("الفائز: \(firstMatch.homeTeam)"))
+    }
+
+    func testTournamentTextSummaryIncludesChampionWhenFinished() throws {
+        let tournament = OfflineTournamentPlanner.makeTournament(title: "كأس", format: .knockout, teamCount: 4, seed: 10)
+        let firstRound = tournament.matches
+        OfflineTournamentPlanner.recordWin(for: firstRound[0].id, side: .home, in: tournament)
+        OfflineTournamentPlanner.recordWin(for: firstRound[1].id, side: .away, in: tournament)
+        let final = try XCTUnwrap(tournament.matches.first { $0.roundNumber == 2 })
+        OfflineTournamentPlanner.recordWin(for: final.id, side: .home, in: tournament)
+
+        let summary = tournament.textSummary()
+
+        XCTAssertEqual(tournament.status, .finished)
+        XCTAssertTrue(summary.contains("الحالة: منتهية"))
+        XCTAssertTrue(summary.contains("البطل: \(final.homeTeam)"))
+    }
+
     func testTournamentPersistsInSwiftDataSchema() throws {
         let configuration = ModelConfiguration(schema: PersistenceController.appSchema, isStoredInMemoryOnly: true)
         let container = try ModelContainer(for: PersistenceController.appSchema, configurations: [configuration])

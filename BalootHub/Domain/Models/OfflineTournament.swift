@@ -132,6 +132,32 @@ final class OfflineTournament {
         updatedAt = .now
     }
 
+    func textSummary() -> String {
+        var lines: [String] = []
+        lines.append("ملخص بطولة البلوت")
+        lines.append(title)
+        lines.append("النظام: \(format.title)")
+        lines.append("الحالة: \(status == .active ? "نشطة" : "منتهية")")
+        if let championName {
+            lines.append("البطل: \(championName)")
+        }
+        lines.append("")
+        lines.append("الترتيب")
+        for (index, standing) in OfflineTournamentPlanner.standings(for: self).enumerated() {
+            lines.append("\(index + 1). \(standing.team): \(standing.wins) فوز، \(standing.played) لعب")
+        }
+        lines.append("")
+        lines.append("الجدول")
+        for match in matches.sorted(by: { lhs, rhs in
+            if lhs.roundNumber == rhs.roundNumber { return lhs.homeTeam < rhs.homeTeam }
+            return lhs.roundNumber < rhs.roundNumber
+        }) {
+            let winner = match.winner(format: format).map { " — الفائز: \($0)" } ?? ""
+            lines.append("الجولة \(match.roundNumber): \(match.homeTeam) \(match.homeWins)-\(match.awayWins) \(match.awayTeam)\(winner)")
+        }
+        return lines.joined(separator: "\n")
+    }
+
     private static func encodeMatches(_ matches: [OfflineTournamentMatch]) -> String {
         guard let data = try? JSONEncoder().encode(matches) else { return "[]" }
         return String(data: data, encoding: .utf8) ?? "[]"

@@ -187,6 +187,14 @@ private struct OfflineTournamentDetailView: View {
         }
         .navigationTitle(tournament.title)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                ShareLink(item: tournament.textSummary()) {
+                    Image(systemName: "square.and.arrow.up")
+                }
+                .accessibilityLabel("مشاركة ملخص البطولة".localized)
+            }
+        }
     }
 
     private func record(match: OfflineTournamentMatch, side: OfflineTournamentPlanner.ResultSide) {
