@@ -32,6 +32,9 @@ struct HandAnalysisTests {
         #expect(analysis.bidOptions.first?.margin ?? -1 >= 0)
         #expect(analysis.nextActionTitle.contains("شراء"))
         #expect(analysis.nextActionDetail.contains("حكم سباتي"))
+        #expect(analysis.sunHokumScoreGap < 0)
+        #expect(analysis.modeComparisonTitle.contains("الحكم"))
+        #expect(analysis.modeComparisonDetail.contains("سباتي"))
         #expect(analysis.strengths.contains { $0.contains("سباتي") })
         #expect(analysis.strengths.contains { $0.contains("الولد") })
         #expect(analysis.tacticalAdvice.contains("حكم سباتي"))
@@ -108,6 +111,8 @@ struct HandAnalysisTests {
         #expect(first == second)
         #expect(first.recommendedBid == .sun)
         #expect(first.projects.contains { $0.kind == .fourHundred })
+        #expect(first.sunHokumScoreGap > 0)
+        #expect(first.modeComparisonTitle.contains("الصن"))
         #expect(first.strengths == second.strengths)
         #expect(first.weaknesses == second.weaknesses)
         #expect(first.tacticalAdvice == second.tacticalAdvice)
@@ -118,8 +123,31 @@ struct HandAnalysisTests {
         #expect(first.decisionGrade == second.decisionGrade)
         #expect(first.nextActionTitle == second.nextActionTitle)
         #expect(first.nextActionDetail == second.nextActionDetail)
+        #expect(first.sunHokumScoreGap == second.sunHokumScoreGap)
+        #expect(first.modeComparisonTitle == second.modeComparisonTitle)
+        #expect(first.modeComparisonDetail == second.modeComparisonDetail)
         #expect(first.bidOptions == second.bidOptions)
         #expect(first.bidOptions.map(\.id) == second.bidOptions.map(\.id))
+    }
+
+    @Test("مقارنة الصن والحكم تشرح القرار القريب")
+    func modeComparisonExplainsCloseDecision() {
+        let hand = [
+            PlayingCard(suit: .spades, rank: .ace),
+            PlayingCard(suit: .spades, rank: .jack),
+            PlayingCard(suit: .spades, rank: .nine),
+            PlayingCard(suit: .hearts, rank: .ace),
+            PlayingCard(suit: .hearts, rank: .king),
+            PlayingCard(suit: .diamonds, rank: .ten),
+            PlayingCard(suit: .clubs, rank: .ten),
+            PlayingCard(suit: .clubs, rank: .seven)
+        ]
+
+        let analysis = HandAnalyzer.analyze(hand: hand)
+
+        #expect(abs(analysis.sunHokumScoreGap) < 8)
+        #expect(analysis.modeComparisonTitle.contains("قريب"))
+        #expect(analysis.modeComparisonDetail.contains("سياق المزايدة"))
     }
 
     @Test("تحقق إدخال اليد يرفض النقص والتكرار دون تحليل صامت")

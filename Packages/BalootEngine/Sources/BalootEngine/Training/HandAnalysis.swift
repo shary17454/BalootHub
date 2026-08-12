@@ -43,6 +43,14 @@ public struct HandAnalysis: Sendable, Equatable {
     public let sunConfidencePercent: Int
     /// احتمال تقريبي أن تكون اليد مناسبة لأفضل حكم متاح.
     public let hokumConfidencePercent: Int
+    /// فرق تقييم الصن عن أفضل حكم متاح بعد تطبيق سياسة المزايدة.
+    ///
+    /// قيمة موجبة تعني أن الصن أقوى، وسالبة تعني أن الحكم أقوى.
+    public let sunHokumScoreGap: Int
+    /// عنوان قصير يقارن الصن بأفضل حكم.
+    public let modeComparisonTitle: String
+    /// تفسير عملي لسبب ترجيح الصن أو الحكم أو اعتبار القرار قريبًا.
+    public let modeComparisonDetail: String
     /// ملخص تدريبي سريع يختصر قوة القرار قبل قراءة التفاصيل.
     public let decisionGrade: DecisionGrade
     /// عنوان قصير للخطوة التالية بعد قراءة التحليل.
@@ -135,6 +143,7 @@ public enum HandAnalyzer {
             policy: policy,
             projectPoints: projectPoints
         )
+        let comparison = modeComparison(evaluation: evaluation, policy: policy)
         let confidence = confidence(for: recommended, evaluation: evaluation, policy: policy, projectPoints: projectPoints)
         let grade = decisionGrade(
             recommendedBid: recommended,
@@ -168,6 +177,9 @@ public enum HandAnalyzer {
             buyConfidencePercent: metrics.buyConfidencePercent,
             sunConfidencePercent: metrics.sunConfidencePercent,
             hokumConfidencePercent: metrics.hokumConfidencePercent,
+            sunHokumScoreGap: comparison.gap,
+            modeComparisonTitle: comparison.title,
+            modeComparisonDetail: comparison.detail,
             decisionGrade: grade,
             nextActionTitle: nextAction.title,
             nextActionDetail: nextAction.detail,
@@ -481,6 +493,42 @@ public enum HandAnalyzer {
             buyPercent,
             sunPercent,
             hokumPercent
+        )
+    }
+
+    private static func modeComparison(
+        evaluation: HandEvaluation,
+        policy: BiddingPolicy
+    ) -> (gap: Int, title: String, detail: String) {
+        let sunScore = evaluation.sunScore + policy.sunBias
+        guard let bestHokum = evaluation.bestHokum, bestHokum.score != Int.min else {
+            return (
+                sunScore,
+                "الصن هو الخيار الوحيد الواضح",
+                "لا يوجد لون حكم كافٍ للمقارنة؛ ركّز على قوة الصن والأوراق العالية قبل الشراء."
+            )
+        }
+
+        let hokumScore = bestHokum.score + policy.hokumBias
+        let gap = sunScore - hokumScore
+        if gap >= 8 {
+            return (
+                gap,
+                "الصن أقوى بفارق \(gap)",
+                "تقييم الصن أعلى بوضوح من أفضل حكم \(bestHokum.suit.arabicName)، فاليد تعتمد على أوراق عالية موزعة لا على لون حكم واحد."
+            )
+        }
+        if gap <= -8 {
+            return (
+                gap,
+                "الحكم أقوى بفارق \(abs(gap))",
+                "أفضل حكم هو \(bestHokum.suit.arabicName) ويتفوق بوضوح على الصن؛ ابحث عن السيطرة في هذا اللون قبل التفكير بالصن."
+            )
+        }
+        return (
+            gap,
+            "القرار قريب بين الصن والحكم",
+            "الفارق \(abs(gap)) فقط بين الصن وأفضل حكم \(bestHokum.suit.arabicName)، لذلك سياق المزايدة والورقة المكشوفة قد يغيّران القرار."
         )
     }
 

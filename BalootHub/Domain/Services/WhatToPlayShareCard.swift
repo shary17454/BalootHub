@@ -374,7 +374,8 @@ enum HandAnalysisShareSummary {
             "\("احتمال الشراء".localized): \(analysis.buyConfidencePercent)%",
             "\("الثقة".localized): \(confidenceText(analysis.confidence))",
             "\("احتمال الصن".localized): \(analysis.sunConfidencePercent)% · \(analysis.evaluation.sunScore)",
-            "\("احتمال الحكم".localized): \(analysis.hokumConfidencePercent)%"
+            "\("احتمال الحكم".localized): \(analysis.hokumConfidencePercent)%",
+            "\("مقارنة الصن والحكم".localized): \(analysis.modeComparisonTitle)"
         ]
 
         if let best = analysis.evaluation.bestHokum {
@@ -387,6 +388,8 @@ enum HandAnalysisShareSummary {
                 lines.append("- \(bidOptionText(option))")
             }
         }
+
+        lines.append(analysis.modeComparisonDetail)
 
         if analysis.projects.isEmpty {
             lines.append("\("المشاريع".localized): \("لا يوجد".localized)")

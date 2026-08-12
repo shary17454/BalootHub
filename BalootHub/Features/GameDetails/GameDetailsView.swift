@@ -3438,12 +3438,25 @@ struct HandAnalyzerView: View {
                 if let best = analysis.evaluation.bestHokum {
                     InfoRow(icon: "crown.fill", title: "أفضل حكم", value: "\(best.suit.spokenName) · \(analysis.hokumConfidencePercent)% · \(best.score)")
                 }
+                InfoRow(icon: "arrow.left.arrow.right", title: "مقارنة الصن والحكم".localized, value: analysis.modeComparisonTitle)
                 InfoRow(icon: "star.fill", title: "المشاريع", value: projectsText(analysis.projects))
             }
 
             rationaleGroup(title: "نقاط القوة".localized, systemImage: "plus.circle.fill", items: analysis.strengths, tint: AppColor.success)
             rationaleGroup(title: "نقاط الضعف".localized, systemImage: "exclamationmark.triangle.fill", items: analysis.weaknesses, tint: AppColor.warning)
             bidOptionsView(analysis.bidOptions)
+
+            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                Label("مقارنة الصن والحكم".localized, systemImage: "arrow.left.arrow.right")
+                    .font(AppTypography.headline)
+                    .foregroundStyle(AppColor.primary)
+                Text(analysis.modeComparisonDetail)
+                    .font(AppTypography.subheadline)
+                    .foregroundStyle(AppColor.textPrimary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(AppSpacing.md)
+            .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
 
             VStack(alignment: .leading, spacing: AppSpacing.xs) {
                 Label("الخطوة التالية".localized, systemImage: "arrow.triangle.branch")
