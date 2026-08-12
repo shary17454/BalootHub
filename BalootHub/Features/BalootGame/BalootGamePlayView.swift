@@ -248,6 +248,7 @@ struct BalootGamePlayView: View {
                     profilePill(viewModel.selectedAIProfileModePreferenceText)
                     profilePill(viewModel.selectedAIProfileMultiplierText)
                 }
+                profilePill(viewModel.selectedAIProfileAnalysisText)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

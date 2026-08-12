@@ -190,6 +190,20 @@ final class BalootGameViewModel {
         "\("المضاعفة".localized): \(selectedAIProfile.multiplierAggression)%"
     }
 
+    var selectedAIProfileAnalysisText: String {
+        "\("التحليل".localized): \(analysisSummary)"
+    }
+
+    private var analysisSummary: String {
+        let samples = selectedAIProfile.level.monteCarloSamples
+        if samples > 0 {
+            return String(format: "يحاكي %d احتمالات لكل قرار".localized, samples)
+        }
+        return selectedAIProfile.level.tracksCardMemory
+            ? "يتتبع الأوراق الخارجة بلا محاكاة".localized
+            : "يلعب قانونيًا بلا ذاكرة أوراق".localized
+    }
+
     var selectedAIProfileModePreferenceText: String {
         switch selectedAIProfile.preferredMode {
         case .sun?:

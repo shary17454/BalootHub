@@ -247,6 +247,14 @@ struct AIProfileTests {
         }
     }
 
+    @Test("اختيار خصوم المستوى لا يكرر معرّفات الخصوم")
+    func opponentSelectionKeepsUniqueIDs() {
+        for level in AIProfile.Level.allCases {
+            let opponents = AIProfile.opponents(for: level)
+            #expect(Set(opponents.map(\.id)).count == opponents.count)
+        }
+    }
+
     @Test("كل خصم يملك بيانات عرض قابلة للاستخدام في الواجهة والإحصائيات")
     func profilesExposeDisplayMetadata() {
         for profile in AIProfile.roster {
@@ -255,9 +263,21 @@ struct AIProfileTests {
             #expect(!profile.personalityTitle.isEmpty)
             #expect(!profile.profileDescription.isEmpty)
             #expect(!profile.styleSummary.isEmpty)
+            #expect(!profile.analysisSummary.isEmpty)
             #expect((0...100).contains(profile.riskScore))
             #expect((0...100).contains(profile.multiplierAggression))
         }
+    }
+
+    @Test("ملخص تحليل الخصم يعكس الذاكرة والمحاكاة")
+    func profileAnalysisSummaryReflectsAnalysisDepth() {
+        let beginner = AIProfile(id: "test.beginner", level: .beginner, personality: .balanced, avatarSystemName: "person.fill")
+        let casual = AIProfile(id: "test.casual", level: .casual, personality: .balanced, avatarSystemName: "person.fill")
+        let sheikh = AIProfile(id: "test.sheikh", level: .sheikh, personality: .balanced, avatarSystemName: "crown.fill")
+
+        #expect(beginner.analysisSummary.contains("بلا ذاكرة"))
+        #expect(casual.analysisSummary.contains("يتتبع"))
+        #expect(sheikh.analysisSummary.contains("\(AIProfile.Level.sheikh.monteCarloSamples)"))
     }
 
     @Test("ميل الصن والحكم في بيانات الخصم يطابق شخصيته")

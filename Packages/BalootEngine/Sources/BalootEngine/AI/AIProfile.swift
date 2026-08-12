@@ -147,6 +147,16 @@ public struct AIProfile: Sendable, Equatable, Codable, Identifiable {
         }
     }
 
+    /// ملخص عمق التحليل الحقيقي خلف المستوى، لعرضه للمستخدم بدل الاكتفاء باسم الصعوبة.
+    public var analysisSummary: String {
+        if level.monteCarloSamples > 0 {
+            return "يحاكي \(level.monteCarloSamples) احتمالات لكل قرار"
+        }
+        return level.tracksCardMemory
+            ? "يتتبع الأوراق الخارجة بلا محاكاة"
+            : "يلعب قانونيًا بلا ذاكرة أوراق"
+    }
+
     /// درجة المخاطرة من 0 إلى 100. مشتقة من الشخصية والمستوى، وليست رقمًا تجميليًا.
     public var riskScore: Int {
         let base: Int
