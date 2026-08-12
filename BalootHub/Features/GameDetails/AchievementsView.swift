@@ -16,6 +16,7 @@ struct AchievementsView: View {
                 whatToPlayAttempts: whatToPlayAttempts,
                 scoringQuizAttempts: scoringQuizAttempts,
                 scoreSessions: scoreSessions,
+                offlineTournaments: offlineTournaments,
                 academyProgress: academyProgress,
                 legacyCompletedAcademyLessonIDs: completedAcademySet
             ))

@@ -78,6 +78,22 @@ enum AchievementCenter {
             rarity: .gold
         ),
         LocalAchievement(
+            id: "offline-cup-winner",
+            title: "بطل المجلس".localized,
+            detail: "أنهى بطولة Offline واعتمد بطلها.".localized,
+            requirement: "يفتح عند إنهاء أول بطولة Offline.".localized,
+            iconName: "trophy.fill",
+            rarity: .silver
+        ),
+        LocalAchievement(
+            id: "offline-dynasty",
+            title: "سلالة بطولات".localized,
+            detail: "فريق واحد سيطر على بطولات المجلس المحلية.".localized,
+            requirement: "يفتح عندما يحقق فريق واحد 3 بطولات Offline.".localized,
+            iconName: "crown.fill",
+            rarity: .legendary
+        ),
+        LocalAchievement(
             id: "ten-win-streak",
             title: "10 انتصارات متتالية",
             detail: "حافظ على سلسلة انتصارات طويلة.",
@@ -120,6 +136,7 @@ enum AchievementCenter {
         whatToPlayAttempts: [WhatToPlayAttempt],
         scoringQuizAttempts: [ScoringQuizAttempt],
         scoreSessions: [ScoreSession] = [],
+        offlineTournaments: [OfflineTournament] = [],
         rules: ScoreRules = .standard,
         academyProgress: [AcademyLessonProgress] = [],
         legacyCompletedAcademyLessonIDs: Set<String> = []
@@ -136,6 +153,7 @@ enum AchievementCenter {
             earned.insert("academy-master")
         }
         earned.formUnion(earnedScoreSessionAchievementIDs(scoreSessions: scoreSessions, rules: rules))
+        earned.formUnion(earnedOfflineTournamentAchievementIDs(tournaments: offlineTournaments))
         return earned
     }
 
@@ -180,6 +198,20 @@ enum AchievementCenter {
         let finishedMatches = scoreSessions.filter { $0.status == .finished || $0.winnerName(rules: rules) != nil }.count
         if finishedMatches >= 100 {
             earned.insert("hundred-matches")
+        }
+
+        return earned
+    }
+
+    private static func earnedOfflineTournamentAchievementIDs(tournaments: [OfflineTournament]) -> Set<String> {
+        var earned: Set<String> = []
+        let stats = OfflineTournamentPlanner.stats(for: tournaments)
+
+        if stats.finishedTournaments >= 1 {
+            earned.insert("offline-cup-winner")
+        }
+        if stats.championshipTeams.values.contains(where: { $0 >= 3 }) {
+            earned.insert("offline-dynasty")
         }
 
         return earned
@@ -263,6 +295,7 @@ enum CareerProgressAnalyzer {
             whatToPlayAttempts: whatToPlayAttempts,
             scoringQuizAttempts: scoringQuizAttempts,
             scoreSessions: scoreSessions,
+            offlineTournaments: offlineTournaments,
             rules: rules,
             academyProgress: academyProgress,
             legacyCompletedAcademyLessonIDs: legacyCompletedAcademyLessonIDs

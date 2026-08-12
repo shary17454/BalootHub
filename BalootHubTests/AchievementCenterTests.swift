@@ -226,6 +226,42 @@ final class AchievementCenterTests: XCTestCase {
         )
     }
 
+    func testOfflineCupWinnerUnlocksFromFinishedTournament() throws {
+        let tournament = try makeFinishedTournament(seed: 10)
+
+        XCTAssertTrue(
+            AchievementCenter.earnedAchievementIDs(
+                whatToPlayAttempts: [],
+                scoringQuizAttempts: [],
+                offlineTournaments: [tournament]
+            )
+            .contains("offline-cup-winner")
+        )
+    }
+
+    func testOfflineDynastyUnlocksWhenSameTeamWinsThreeTournaments() {
+        let tournaments = (0..<3).map { index in
+            OfflineTournament(
+                createdAt: Date(timeIntervalSince1970: TimeInterval(index)),
+                title: "بطولة \(index)",
+                format: .knockout,
+                teams: ["فريقنا", "الخصم", "فريق 3", "فريق 4"],
+                matches: [],
+                status: .finished,
+                championName: "فريقنا"
+            )
+        }
+
+        let earned = AchievementCenter.earnedAchievementIDs(
+            whatToPlayAttempts: [],
+            scoringQuizAttempts: [],
+            offlineTournaments: tournaments
+        )
+
+        XCTAssertTrue(earned.contains("offline-cup-winner"))
+        XCTAssertTrue(earned.contains("offline-dynasty"))
+    }
+
     func testCareerProgressStartsAsNewcomerWithFirstMatchNextStep() {
         let summary = CareerProgressAnalyzer.summarize()
 
@@ -329,5 +365,15 @@ final class AchievementCenterTests: XCTestCase {
         }
         session.rounds = rounds
         return session
+    }
+
+    private func makeFinishedTournament(seed: UInt64) throws -> OfflineTournament {
+        let tournament = OfflineTournamentPlanner.makeTournament(title: "كأس", format: .knockout, teamCount: 4, seed: seed)
+        let firstRound = tournament.matches
+        OfflineTournamentPlanner.recordWin(for: firstRound[0].id, side: .home, in: tournament)
+        OfflineTournamentPlanner.recordWin(for: firstRound[1].id, side: .away, in: tournament)
+        let final = try XCTUnwrap(tournament.matches.first { $0.roundNumber == 2 })
+        OfflineTournamentPlanner.recordWin(for: final.id, side: .home, in: tournament)
+        return tournament
     }
 }
