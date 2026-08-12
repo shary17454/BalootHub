@@ -949,6 +949,12 @@ enum WhatToPlayStatsAnalyzer {
             attempts
                 .filter { !$0.isCorrect }
                 .sorted { lhs, rhs in
+                    if lhs.lostProjectedTeamPoints >= 6 || rhs.lostProjectedTeamPoints >= 6 {
+                        if lhs.lostProjectedTeamPoints != rhs.lostProjectedTeamPoints {
+                            return lhs.lostProjectedTeamPoints > rhs.lostProjectedTeamPoints
+                        }
+                    }
+
                     if lhs.lostExpectedPoints != rhs.lostExpectedPoints {
                         return lhs.lostExpectedPoints > rhs.lostExpectedPoints
                     }
@@ -1194,6 +1200,15 @@ enum WhatToPlayStatsAnalyzer {
             )
         }
 
+        if summary.projectedTeamPointAttempts >= 3 && summary.averageLostProjectedTeamPoints >= 6 {
+            return WhatToPlayPracticeRecommendation(
+                difficulty: focusDifficulty(attempts)?.difficulty ?? highestAttemptedDifficulty(in: attempts) ?? .medium,
+                title: "راجع المحاكاة".localized,
+                detail: "\("متوسط نقاط محاكاة ضائعة".localized): \(summary.averageLostProjectedTeamPoints). \("قرارك يخسر بعد استكمال الجولة؛ راجع Replay كامل قبل لعب موقف جديد.".localized)",
+                iconName: "chart.bar.xaxis"
+            )
+        }
+
         if let focus = focusDifficulty(attempts),
            focus.summary.accuracyPercent < 70 || focus.summary.averageExpectedImpact < 0 {
             return WhatToPlayPracticeRecommendation(
@@ -1278,6 +1293,20 @@ enum WhatToPlayStatsAnalyzer {
                 detail: "راجع Replay اختيارك وأفضل قرار بعد كل موقف، وابق على مستوى قريب حتى تنخفض القرارات المكلفة.".localized,
                 successMetric: "هدف الجلسة: لا يوجد أكثر من قرار مكلف واحد.".localized,
                 iconName: "exclamationmark.triangle.fill"
+            )
+        }
+
+        if summary.projectedTeamPointAttempts >= 3 && summary.averageLostProjectedTeamPoints >= 6 {
+            return WhatToPlayTrainingSessionPlan(
+                difficulty: recommendation.difficulty,
+                focusKind: focusKind,
+                scenarioCount: 4,
+                targetAccuracyPercent: 75,
+                targetAverageExpectedImpact: 1,
+                title: "جلسة مراجعة المحاكاة".localized,
+                detail: "قراراتك لا تخسر الأثر اللحظي فقط؛ المحاكاة تكشف فاقدًا بعد اكتمال الجولة. راجع Replay لكل اختيار وقارن نتيجة الفريق.".localized,
+                successMetric: "هدف الجلسة: متوسط نقاط محاكاة ضائعة أقل من 6.".localized,
+                iconName: "chart.bar.xaxis"
             )
         }
 

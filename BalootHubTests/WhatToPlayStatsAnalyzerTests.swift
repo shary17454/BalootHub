@@ -747,6 +747,18 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(queue.map(\.lostProjectedTeamPoints), [15, 2])
     }
 
+    func testReviewQueuePrioritizesLargeSimulationLossOverImmediateGap() {
+        let attempts = [
+            attempt(daysAgo: 2, correct: false, impact: 0, bestImpact: 10, projectedTeamPoints: 70, bestProjectedTeamPoints: 72),
+            attempt(daysAgo: 1, correct: false, impact: 4, bestImpact: 6, projectedTeamPoints: 50, bestProjectedTeamPoints: 68)
+        ]
+
+        let queue = WhatToPlayStatsAnalyzer.reviewQueue(for: attempts, limit: 2)
+
+        XCTAssertEqual(queue.map(\.lostProjectedTeamPoints), [18, 2])
+        XCTAssertEqual(queue.map(\.lostExpectedPoints), [2, 10])
+    }
+
     func testReviewQueueUsesExactReplaySeed() throws {
         let attempt = attempt(daysAgo: 1, correct: false, impact: -4, bestImpact: 3, seed: UInt64.max)
 
@@ -1278,6 +1290,21 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(recommendation.difficulty, .medium)
         XCTAssertEqual(recommendation.title, "راجع القيمة قبل الصعوبة".localized)
+    }
+
+    func testPracticeRecommendationPrioritizesSimulationLoss() {
+        let attempts = [
+            attempt(daysAgo: 4, difficulty: .medium, correct: false, impact: 2, bestImpact: 4, projectedTeamPoints: 54, bestProjectedTeamPoints: 72),
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 3, bestImpact: 3, projectedTeamPoints: 70, bestProjectedTeamPoints: 70),
+            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: 2, bestImpact: 4, projectedTeamPoints: 58, bestProjectedTeamPoints: 74),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 3, bestImpact: 3, projectedTeamPoints: 76, bestProjectedTeamPoints: 76)
+        ]
+
+        let recommendation = WhatToPlayStatsAnalyzer.practiceRecommendation(for: attempts)
+
+        XCTAssertEqual(recommendation.difficulty, .medium)
+        XCTAssertEqual(recommendation.title, "راجع المحاكاة".localized)
+        XCTAssertEqual(recommendation.iconName, "chart.bar.xaxis")
     }
 
     func testPracticeRecommendationPrioritizesCostlyDecisionQuality() {
@@ -2385,6 +2412,26 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(plan.targetAccuracyPercent, 75)
         XCTAssertEqual(plan.targetAverageExpectedImpact, 1)
         XCTAssertEqual(plan.successMetric, "هدف الجلسة: متوسط نقاط ضائعة أقل من 4.".localized)
+    }
+
+    func testTrainingSessionPlanTargetsSimulationLoss() {
+        let attempts = [
+            attempt(daysAgo: 4, difficulty: .medium, correct: false, impact: 2, bestImpact: 4, focusKind: .followSuit, projectedTeamPoints: 54, bestProjectedTeamPoints: 72),
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 3, bestImpact: 3, focusKind: .followSuit, projectedTeamPoints: 70, bestProjectedTeamPoints: 70),
+            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: 2, bestImpact: 4, focusKind: .followSuit, projectedTeamPoints: 58, bestProjectedTeamPoints: 74),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 3, bestImpact: 3, focusKind: .followSuit, projectedTeamPoints: 76, bestProjectedTeamPoints: 76)
+        ]
+
+        let plan = WhatToPlayStatsAnalyzer.trainingSessionPlan(for: attempts)
+
+        XCTAssertEqual(plan.difficulty, .medium)
+        XCTAssertEqual(plan.focusKind, .followSuit)
+        XCTAssertEqual(plan.title, "جلسة مراجعة المحاكاة".localized)
+        XCTAssertEqual(plan.scenarioCount, 4)
+        XCTAssertEqual(plan.targetAccuracyPercent, 75)
+        XCTAssertEqual(plan.targetAverageExpectedImpact, 1)
+        XCTAssertEqual(plan.successMetric, "هدف الجلسة: متوسط نقاط محاكاة ضائعة أقل من 6.".localized)
+        XCTAssertEqual(plan.iconName, "chart.bar.xaxis")
     }
 
     func testTrainingSessionPlanTargetsCostlyDecisionQuality() {

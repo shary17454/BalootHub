@@ -571,6 +571,76 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "损失的模拟分数" } }
       }
     },
+    "راجع المحاكاة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Simulation überprüfen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Review the simulation" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Revisa la simulación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Revoir la simulation" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सिमुलेशन की समीक्षा करें" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tinjau simulasi" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверьте симуляцию" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Simülasyonu gözden geçir" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "سیمولیشن کا جائزہ لیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "复盘模拟" } }
+      }
+    },
+    "قرارك يخسر بعد استكمال الجولة؛ راجع Replay كامل قبل لعب موقف جديد." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Deine Entscheidung verliert nach Abschluss der Runde; prüfe das vollständige Replay, bevor du eine neue Situation spielst." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your decision loses after the round is completed; review the full replay before playing a new scenario." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tu decisión pierde al completar la ronda; revisa la repetición completa antes de jugar una nueva situación." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ta décision perd après la fin de la manche ; revois le replay complet avant de jouer une nouvelle situation." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "राउंड पूरा होने के बाद आपका निर्णय अंक गंवाता है; नया परिदृश्य खेलने से पहले पूरा replay देखें।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Keputusanmu kalah setelah ronde selesai; tinjau replay penuh sebelum memainkan skenario baru." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Ваше решение проигрывает после завершения раунда; просмотрите полный повтор перед новым сценарием." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Kararın tur tamamlandıktan sonra kaybettiriyor; yeni bir senaryo oynamadan önce tam replay'i incele." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "راؤنڈ مکمل ہونے کے بعد آپ کا فیصلہ نقصان دیتا ہے؛ نیا منظر کھیلنے سے پہلے مکمل replay دیکھیں۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你的决策在整轮完成后会失分；开始新局面前先复盘完整回放。" } }
+      }
+    },
+    "جلسة مراجعة المحاكاة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Simulations-Review-Sitzung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Simulation review session" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Sesión de revisión de simulación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Session de revue de simulation" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सिमुलेशन समीक्षा सत्र" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Sesi tinjauan simulasi" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Сессия разбора симуляции" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Simülasyon inceleme seansı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "سیمولیشن جائزہ سیشن" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "模拟复盘训练" } }
+      }
+    },
+    "قراراتك لا تخسر الأثر اللحظي فقط؛ المحاكاة تكشف فاقدًا بعد اكتمال الجولة. راجع Replay لكل اختيار وقارن نتيجة الفريق." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Deine Entscheidungen verlieren nicht nur Sofortwirkung; die Simulation zeigt Verluste nach der gesamten Runde. Prüfe für jede Wahl das Replay und vergleiche das Teamergebnis." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your decisions are not only losing immediate impact; the simulation shows loss after the round finishes. Review each choice replay and compare the team result." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tus decisiones no solo pierden impacto inmediato; la simulación muestra pérdida tras completar la ronda. Revisa el replay de cada elección y compara el resultado del equipo." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tes décisions ne perdent pas seulement l'impact immédiat ; la simulation révèle une perte après la manche complète. Revois le replay de chaque choix et compare le résultat de l'équipe." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आपके निर्णय केवल तत्काल प्रभाव नहीं गंवाते; सिमुलेशन पूरे राउंड के बाद नुकसान दिखाता है। हर चुनाव का replay देखें और टीम परिणाम की तुलना करें।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Keputusanmu tidak hanya kehilangan dampak langsung; simulasi menunjukkan kerugian setelah ronde selesai. Tinjau replay tiap pilihan dan bandingkan hasil tim." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Ваши решения теряют не только мгновенный эффект; симуляция показывает потери после завершения раунда. Просмотрите replay каждого выбора и сравните результат команды." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Kararların yalnızca anlık etki kaybetmiyor; simülasyon tur tamamlandıktan sonra kaybı gösteriyor. Her seçimin replay'ini incele ve takım sonucunu karşılaştır." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ کے فیصلے صرف فوری اثر نہیں کھوتے؛ سیمولیشن راؤنڈ مکمل ہونے کے بعد نقصان دکھاتی ہے۔ ہر انتخاب کا replay دیکھیں اور ٹیم کا نتیجہ موازنہ کریں۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你的决策不只损失即时影响；模拟会显示整轮结束后的损失。复盘每个选择的回放，并比较队伍结果。" } }
+      }
+    },
+    "هدف الجلسة: متوسط نقاط محاكاة ضائعة أقل من 6." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sitzungsziel: durchschnittlich weniger als 6 verlorene Simulationspunkte." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Session goal: average lost simulation points under 6." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Objetivo de la sesión: promedio de puntos de simulación perdidos por debajo de 6." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Objectif de session : moins de 6 points de simulation perdus en moyenne." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सत्र लक्ष्य: औसत खोए हुए सिमुलेशन अंक 6 से कम।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Target sesi: rata-rata poin simulasi hilang di bawah 6." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Цель сессии: средние потерянные очки симуляции меньше 6." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Seans hedefi: ortalama kaybedilen simülasyon puanı 6'nın altında." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "سیشن کا ہدف: اوسط ضائع شدہ سیمولیشن پوائنٹس 6 سے کم۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "训练目标：平均损失模拟分数低于 6。" } }
+      }
+    },
     "خطة محاكاة القرار" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Entscheidungssimulationsplan" } },
