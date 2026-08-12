@@ -2312,7 +2312,7 @@ enum WhatToPlayStatsAnalyzer {
                     "لا تنتقل قبل إجابة صحيحة".localized
                 ],
                 reviewItem: reviewItem,
-                seed: nil,
+                seed: reviewItem?.seed,
                 difficulty: reviewItem?.difficulty,
                 focusKind: reviewItem?.focusKind
             )
@@ -2330,7 +2330,7 @@ enum WhatToPlayStatsAnalyzer {
                     "قارن أفضل وثاني أفضل".localized
                 ],
                 reviewItem: highValueReview,
-                seed: nil,
+                seed: highValueReview.seed,
                 difficulty: highValueReview.difficulty,
                 focusKind: highValueReview.focusKind
             )

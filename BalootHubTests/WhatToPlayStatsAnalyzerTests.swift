@@ -1738,7 +1738,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(drill.steps.first, "\("أعد موقف".localized) \("صعب".localized) · \("نقاط متوقعة ضائعة".localized): 11")
         XCTAssertEqual(drill.reviewItem?.difficulty, .hard)
         XCTAssertEqual(drill.reviewItem?.lostExpectedPoints, 11)
-        XCTAssertNil(drill.seed)
+        XCTAssertEqual(drill.seed, 2)
         XCTAssertEqual(drill.difficulty, .hard)
     }
 
@@ -1758,7 +1758,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(drill.reviewItem?.lostExpectedPoints, 9)
         XCTAssertEqual(drill.difficulty, .easy)
         XCTAssertEqual(drill.focusKind, .trumpPressure)
-        XCTAssertNil(drill.seed)
+        XCTAssertEqual(drill.seed, 5)
     }
 
     func testMicroDrillTargetsCoverageBeforeGenericPractice() {
