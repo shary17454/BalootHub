@@ -178,6 +178,15 @@ final class CatalogIntegrityTests: XCTestCase {
     }
 
     @MainActor
+    func testGameplayRenamesAIPlayersFromAssignedProfiles() throws {
+        let viewModel = BalootGameViewModel(rules: .standard)
+        let profileNames = Set(viewModel.aiOpponentProfiles.map { $0.displayName.localized })
+        let playerNames = Set(viewModel.state.players.filter { $0.kind == .ai }.map(\.name))
+
+        XCTAssertEqual(playerNames, profileNames)
+    }
+
+    @MainActor
     func testGameplayAIProfileSummaryUsesSelectedProfileMetadata() throws {
         let viewModel = BalootGameViewModel(rules: .standard)
         let hokum = try XCTUnwrap(AIProfile.profile(id: "ai.hokum"))

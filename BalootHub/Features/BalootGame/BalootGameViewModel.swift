@@ -119,7 +119,7 @@ final class BalootGameViewModel {
         let profile = Self.profile(for: aiLevel)
         let initialState = Self.makeInitialState(tableMode: tableMode, rules: playRules)
         let assignments = Self.makeAIAssignments(for: initialState, selectedProfile: profile)
-        self.state = initialState
+        self.state = Self.state(initialState, applyingAIProfiles: assignments.profiles)
         self.variant = variant
         self.tableMode = tableMode
         self.rules = playRules
@@ -157,6 +157,20 @@ final class BalootGameViewModel {
             agents[player.id] = ProfiledBalootAgent(profile: profile)
         }
         return (profiles, agents)
+    }
+
+    private static func state(
+        _ state: GameState,
+        applyingAIProfiles profiles: [Player.ID: AIProfile]
+    ) -> GameState {
+        var updated = state
+        updated.players = updated.players.map { player in
+            guard player.kind == .ai, let profile = profiles[player.id] else { return player }
+            var renamed = player
+            renamed.name = profile.displayName.localized
+            return renamed
+        }
+        return updated
     }
 
     var selectedAIProfileTitle: String {
@@ -307,6 +321,7 @@ final class BalootGameViewModel {
         let assignments = Self.makeAIAssignments(for: state, selectedProfile: selectedAIProfile)
         aiProfilesByPlayerID = assignments.profiles
         aiAgentsByPlayerID = assignments.agents
+        state = Self.state(state, applyingAIProfiles: assignments.profiles)
     }
 
     func deal() {
