@@ -3375,7 +3375,7 @@ struct HandAnalyzerView: View {
 
 }
 
-private struct WhatToPlayShareCardPreview: View {
+struct WhatToPlayShareCardPreview: View {
     let content: WhatToPlayShareCardContent
 
     var body: some View {
@@ -3563,7 +3563,7 @@ private struct WhatToPlayShareCardPreview: View {
     }
 }
 
-private enum WhatToPlayShareCardImageRenderer {
+enum WhatToPlayShareCardImageRenderer {
     @MainActor
     static func render(
         content: WhatToPlayShareCardContent,

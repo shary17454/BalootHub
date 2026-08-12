@@ -222,6 +222,25 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("شدة خسارة القيمة".localized): \("خسارة عالية".localized)"))
     }
 
+    @MainActor
+    func testShareCardImageRendererWritesPNGFile() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
+        let content = WhatToPlayShareCard.content(for: scenario)
+
+        let url = try WhatToPlayShareCardImageRenderer.render(
+            content: content,
+            fileName: "baloothub-share-card-test.png",
+            scale: 2
+        )
+        defer { try? FileManager.default.removeItem(at: url) }
+
+        let data = try Data(contentsOf: url)
+        let pngSignature = Data([0x89, 0x50, 0x4E, 0x47])
+
+        XCTAssertGreaterThan(data.count, 1024)
+        XCTAssertEqual(data.prefix(4), pngSignature)
+    }
+
     private func contentMode(for scenario: WhatToPlayScenario) -> String {
         WhatToPlayShareCard.content(for: scenario).mode
     }
