@@ -160,7 +160,8 @@ final class WhatToPlayAttempt {
         guard bestExpectedImpact != nil else { return nil }
         return WhatToPlayDecisionQuality.classify(
             isExpertChoice: isCorrect,
-            lostExpectedPoints: lostExpectedPoints
+            lostExpectedPoints: lostExpectedPoints,
+            lostProjectedTeamPoints: lostProjectedTeamPoints
         )
     }
 
