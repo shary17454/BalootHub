@@ -394,6 +394,27 @@ struct MultiplierTests {
         #expect(GameEngine.legalMultiplierActions(for: playerID, state: state).isEmpty)
     }
 
+    @Test("إعلان نفس المشروع مرتين يُرفض بدل مضاعفة نقاطه")
+    func duplicateProjectDeclarationIsRejected() throws {
+        var state = GameState.newLocalMatch(rules: .standard)
+        let player = try #require(state.player(at: state.dealerSeat.next))
+        state.phase = .declaring
+        state.mode = .hokum
+        state.trumpSuit = .spades
+        state.currentTurnPlayerID = player.id
+        state.originalHands[player.id] = [
+            PlayingCard(suit: .spades, rank: .king),
+            PlayingCard(suit: .spades, rank: .queen),
+            PlayingCard(suit: .hearts, rank: .seven)
+        ]
+
+        let belot = try #require(GameEngine.declarableProjects(for: player.id, state: state).first)
+
+        #expect(throws: GameEngineError.bidding(.duplicateProjectDeclaration)) {
+            try GameEngine.apply(.declareProjects(playerID: player.id, projects: [belot, belot]), to: state)
+        }
+    }
+
     @Test("قفل المضاعفة يُعاد من سجل الأفعال كما حدث")
     func lockedMultiplierReplaysDeterministically() throws {
         let initial = GameState.newLocalMatch(rules: .standard)

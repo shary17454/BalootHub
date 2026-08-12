@@ -22,6 +22,8 @@ public enum BiddingError: String, Error, Sendable, Equatable {
     case notDeclaringStage
     /// المشروع المُعلن غير موجود فعلًا في يد اللاعب.
     case undetectedProject
+    /// المشروع نفسه أُرسل أكثر من مرة في إعلان واحد أو سبق إعلانه.
+    case duplicateProjectDeclaration
     /// أسلوب المزايدة الحالي لا يسمح بهذا الفعل.
     case unsupportedInBiddingStyle
 }
@@ -452,6 +454,12 @@ enum BiddingEngine {
         let available = declarableProjects(for: playerID, state: state)
         for project in projects where !available.contains(project) {
             throw GameEngineError.bidding(.undetectedProject)
+        }
+        guard Set(projects).count == projects.count else {
+            throw GameEngineError.bidding(.duplicateProjectDeclaration)
+        }
+        guard !projects.contains(where: { state.declaredProjects.contains($0) }) else {
+            throw GameEngineError.bidding(.duplicateProjectDeclaration)
         }
 
         state.declaredProjects.append(contentsOf: projects)
