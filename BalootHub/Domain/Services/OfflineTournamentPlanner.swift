@@ -12,6 +12,7 @@ enum OfflineTournamentPlanner {
         let finishedTournaments: Int
         let fourTeamTournaments: Int
         let eightTeamTournaments: Int
+        let finishedEightTeamTournaments: Int
         let scheduledMatches: Int
         let completedMatches: Int
         let championshipTeams: [String: Int]
@@ -25,6 +26,7 @@ enum OfflineTournamentPlanner {
             finishedTournaments: 0,
             fourTeamTournaments: 0,
             eightTeamTournaments: 0,
+            finishedEightTeamTournaments: 0,
             scheduledMatches: 0,
             completedMatches: 0,
             championshipTeams: [:],
@@ -73,6 +75,9 @@ enum OfflineTournamentPlanner {
         let finished = tournaments.filter { $0.status == .finished }.count
         let fourTeamTournaments = tournaments.filter { $0.teams.count == 4 }.count
         let eightTeamTournaments = tournaments.filter { $0.teams.count == 8 }.count
+        let finishedEightTeamTournaments = tournaments.filter {
+            $0.status == .finished && $0.teams.count == 8
+        }.count
         let scheduledMatches = tournaments.reduce(0) { $0 + $1.matches.count }
         let completedMatches = tournaments.reduce(0) { total, tournament in
             total + tournament.matches.filter { $0.isComplete(format: tournament.format) }.count
@@ -93,6 +98,7 @@ enum OfflineTournamentPlanner {
             finishedTournaments: finished,
             fourTeamTournaments: fourTeamTournaments,
             eightTeamTournaments: eightTeamTournaments,
+            finishedEightTeamTournaments: finishedEightTeamTournaments,
             scheduledMatches: scheduledMatches,
             completedMatches: completedMatches,
             championshipTeams: champions,

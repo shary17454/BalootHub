@@ -102,6 +102,14 @@ enum AchievementCenter {
             rarity: .legendary
         ),
         LocalAchievement(
+            id: "offline-eight-team-champion",
+            title: "بطل الثمانية".localized,
+            detail: "أنهى بطولة Offline كاملة من 8 فرق واعتمد بطلها.".localized,
+            requirement: "يفتح عند إنهاء أول بطولة Offline من 8 فرق.".localized,
+            iconName: "trophy.circle.fill",
+            rarity: .gold
+        ),
+        LocalAchievement(
             id: "challenge-regular",
             title: "ملتزم التحديات".localized,
             detail: "أكمل عدة تحديات يومية أو أسبوعية محلية.".localized,
@@ -238,6 +246,9 @@ enum AchievementCenter {
         }
         if stats.championshipTeams.values.contains(where: { $0 >= 3 }) {
             earned.insert("offline-dynasty")
+        }
+        if stats.finishedEightTeamTournaments >= 1 {
+            earned.insert("offline-eight-team-champion")
         }
 
         return earned

@@ -65,6 +65,17 @@ final class OfflineTournamentTests: XCTestCase {
 
         XCTAssertEqual(summary.fourTeamTournaments, 1)
         XCTAssertEqual(summary.eightTeamTournaments, 1)
+        XCTAssertEqual(summary.finishedEightTeamTournaments, 0)
+    }
+
+    func testTournamentStatsTrackFinishedEightTeamTournamentsOnly() throws {
+        let activeEight = OfflineTournamentPlanner.makeTournament(title: "ثماني نشط", format: .knockout, teamCount: 8, seed: 10)
+        let finishedEight = try finishKnockoutTournament(teamCount: 8, seed: 11)
+
+        let summary = OfflineTournamentPlanner.stats(for: [activeEight, finishedEight])
+
+        XCTAssertEqual(summary.eightTeamTournaments, 2)
+        XCTAssertEqual(summary.finishedEightTeamTournaments, 1)
     }
 
     func testBestOfThreeRequiresTwoWins() throws {
@@ -159,5 +170,25 @@ final class OfflineTournamentTests: XCTestCase {
         let saved = try context.fetch(FetchDescriptor<OfflineTournament>())
         XCTAssertEqual(saved.count, 1)
         XCTAssertEqual(saved.first?.matches.count, 2)
+    }
+
+    private func finishKnockoutTournament(teamCount: Int, seed: UInt64) throws -> OfflineTournament {
+        let tournament = OfflineTournamentPlanner.makeTournament(
+            title: "كأس",
+            format: .knockout,
+            teamCount: teamCount,
+            seed: seed
+        )
+
+        var completedMatchIDs: Set<UUID> = []
+        while tournament.status == .active {
+            let nextMatch = try XCTUnwrap(tournament.matches.first {
+                !completedMatchIDs.contains($0.id) && !$0.isComplete(format: tournament.format)
+            })
+            OfflineTournamentPlanner.recordWin(for: nextMatch.id, side: .home, in: tournament)
+            completedMatchIDs.insert(nextMatch.id)
+        }
+
+        return tournament
     }
 }

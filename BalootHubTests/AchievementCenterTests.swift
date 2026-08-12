@@ -305,6 +305,25 @@ final class AchievementCenterTests: XCTestCase {
         XCTAssertTrue(earned.contains("offline-dynasty"))
     }
 
+    func testEightTeamChampionUnlocksOnlyAfterFinishedEightTeamTournament() throws {
+        let activeEight = OfflineTournamentPlanner.makeTournament(title: "ثماني", format: .knockout, teamCount: 8, seed: 10)
+        let finishedEight = try makeFinishedKnockoutTournament(teamCount: 8, seed: 11)
+
+        let activeEarned = AchievementCenter.earnedAchievementIDs(
+            whatToPlayAttempts: [],
+            scoringQuizAttempts: [],
+            offlineTournaments: [activeEight]
+        )
+        let finishedEarned = AchievementCenter.earnedAchievementIDs(
+            whatToPlayAttempts: [],
+            scoringQuizAttempts: [],
+            offlineTournaments: [finishedEight]
+        )
+
+        XCTAssertFalse(activeEarned.contains("offline-eight-team-champion"))
+        XCTAssertTrue(finishedEarned.contains("offline-eight-team-champion"))
+    }
+
     func testChallengeRegularUnlocksAfterFiveCompletedChallenges() {
         let completedChallengeIDs = Set((0..<5).map { "challenge-\($0)" })
 
@@ -443,6 +462,19 @@ final class AchievementCenterTests: XCTestCase {
         OfflineTournamentPlanner.recordWin(for: firstRound[1].id, side: .away, in: tournament)
         let final = try XCTUnwrap(tournament.matches.first { $0.roundNumber == 2 })
         OfflineTournamentPlanner.recordWin(for: final.id, side: .home, in: tournament)
+        return tournament
+    }
+
+    private func makeFinishedKnockoutTournament(teamCount: Int, seed: UInt64) throws -> OfflineTournament {
+        let tournament = OfflineTournamentPlanner.makeTournament(title: "كأس", format: .knockout, teamCount: teamCount, seed: seed)
+        var completedMatchIDs: Set<UUID> = []
+        while tournament.status == .active {
+            let nextMatch = try XCTUnwrap(tournament.matches.first {
+                !completedMatchIDs.contains($0.id) && !$0.isComplete(format: tournament.format)
+            })
+            OfflineTournamentPlanner.recordWin(for: nextMatch.id, side: .home, in: tournament)
+            completedMatchIDs.insert(nextMatch.id)
+        }
         return tournament
     }
 }
