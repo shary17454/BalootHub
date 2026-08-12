@@ -15,6 +15,21 @@ final class ScoringQuizTests: XCTestCase {
         XCTAssertEqual(question.teamOneProjects, 0)
         XCTAssertEqual(question.teamTwoProjects, 0)
         XCTAssertEqual(question.multiplier, .none)
+        XCTAssertEqual(question.category, .basics)
+    }
+
+    func testQuestionCategoryMatchesProjectsAndMultipliers() {
+        let questions = (1...120).map {
+            ScoringQuizGenerator.generate(seed: UInt64($0), difficulty: .hard)
+        }
+
+        XCTAssertTrue(questions.contains { $0.category == .projects })
+        XCTAssertTrue(questions.contains { $0.category == .multipliers })
+        XCTAssertTrue(questions.contains { $0.category == .coffee })
+
+        for question in questions {
+            XCTAssertEqual(question.category, expectedCategory(for: question))
+        }
     }
 
     func testQuestionAnswerMatchesConfiguredScoreRules() {
@@ -201,5 +216,18 @@ final class ScoringQuizTests: XCTestCase {
             evaluation: evaluation,
             remainingSeconds: remainingSeconds
         )
+    }
+
+    private func expectedCategory(for question: ScoringQuizQuestion) -> ScoringQuizQuestionCategory {
+        if question.multiplier == .coffee {
+            return .coffee
+        }
+        if question.multiplier != .none {
+            return .multipliers
+        }
+        if question.teamOneProjects + question.teamTwoProjects > 0 {
+            return .projects
+        }
+        return .basics
     }
 }

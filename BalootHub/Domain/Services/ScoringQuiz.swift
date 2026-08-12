@@ -24,9 +24,26 @@ enum ScoringQuizDifficulty: String, CaseIterable, Identifiable {
     }
 }
 
+enum ScoringQuizQuestionCategory: String, Equatable {
+    case basics
+    case projects
+    case multipliers
+    case coffee
+
+    var title: String {
+        switch self {
+        case .basics: "أساسيات".localized
+        case .projects: "المشاريع".localized
+        case .multipliers: "مضاعفات".localized
+        case .coffee: "قهوة".localized
+        }
+    }
+}
+
 struct ScoringQuizQuestion: Identifiable, Equatable {
     let id: UInt64
     let difficulty: ScoringQuizDifficulty
+    let category: ScoringQuizQuestionCategory
     let mode: BalootMode
     let teamOneBase: Int
     let teamTwoBase: Int
@@ -286,6 +303,7 @@ enum ScoringQuizGenerator {
         return ScoringQuizQuestion(
             id: seed,
             difficulty: difficulty,
+            category: category(projects: teamOneProjects + teamTwoProjects, multiplier: multiplier),
             mode: mode,
             teamOneBase: teamOneBase,
             teamTwoBase: teamTwoBase,
@@ -296,6 +314,19 @@ enum ScoringQuizGenerator {
             answer: answer,
             explanation: "\("نجمع نقاط الفريق".localized): \(targetBase) + \(targetProjects) = \(subtotal)، \("ثم نطبق المضاعف".localized) ×\(factor) = \(answer)."
         )
+    }
+
+    private static func category(projects: Int, multiplier: ScoreMultiplier) -> ScoringQuizQuestionCategory {
+        if multiplier == .coffee {
+            return .coffee
+        }
+        if multiplier != .none {
+            return .multipliers
+        }
+        if projects > 0 {
+            return .projects
+        }
+        return .basics
     }
 }
 

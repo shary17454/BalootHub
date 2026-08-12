@@ -199,6 +199,7 @@ struct ScoringQuizView: View {
                 .foregroundStyle(AppColor.textPrimary)
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppSpacing.sm) {
+                metric("نوع السؤال".localized, question.category.title, icon: "tag.fill")
                 metric("النمط", question.mode.title, icon: question.mode == .sun ? "sun.max.fill" : "suit.spade.fill")
                 metric("المضاعف", question.multiplier.title, icon: "multiply")
                 metric("نقاط فريقنا", "\(question.teamOneBase)", icon: "1.circle.fill")
