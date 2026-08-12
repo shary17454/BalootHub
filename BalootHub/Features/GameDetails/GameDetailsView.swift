@@ -779,6 +779,16 @@ struct WhatToPlayTrainerView: View {
                         value: impactText(progress.averageLostExpectedPoints)
                     )
                 }
+                if progress.projectedTeamPointAttempts > 0 && progress.lostProjectedTeamPoints > 0 {
+                    miniPlanMetric(
+                        title: "نقاط محاكاة ضائعة".localized,
+                        value: "\(progress.lostProjectedTeamPoints)"
+                    )
+                    miniPlanMetric(
+                        title: "متوسط فاقد المحاكاة".localized,
+                        value: "\(progress.averageLostProjectedTeamPoints)"
+                    )
+                }
                 if let maxCostlyDecisions = progress.maxCostlyDecisions {
                     miniPlanMetric(
                         title: "قرارات مكلفة".localized,

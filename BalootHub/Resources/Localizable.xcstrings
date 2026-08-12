@@ -557,6 +557,20 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "平均模拟分数" } }
       }
     },
+    "متوسط فاقد المحاكاة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Durchschnittlicher Simulationsverlust" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Average simulation loss" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Pérdida media de simulación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Perte moyenne en simulation" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "औसत सिमुलेशन नुकसान" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Rata-rata kehilangan simulasi" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Средняя потеря в симуляции" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Ortalama simülasyon kaybı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اوسط سیمولیشن نقصان" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "平均模拟损失" } }
+      }
+    },
     "نقاط محاكاة ضائعة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Verlorene Simulationspunkte" } },

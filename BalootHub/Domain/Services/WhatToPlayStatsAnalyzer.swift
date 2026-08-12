@@ -331,6 +331,9 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let impactRecoveryHighPressure: Bool
     let lostExpectedPoints: Int
     let averageLostExpectedPoints: Int
+    let lostProjectedTeamPoints: Int
+    let averageLostProjectedTeamPoints: Int
+    let projectedTeamPointAttempts: Int
     let valueCapturePercent: Int
     let valueCaptureAttempts: Int
     let impactTitle: String
@@ -1513,6 +1516,9 @@ enum WhatToPlayStatsAnalyzer {
                 impactRecoveryHighPressure: false,
                 lostExpectedPoints: 0,
                 averageLostExpectedPoints: 0,
+                lostProjectedTeamPoints: 0,
+                averageLostProjectedTeamPoints: 0,
+                projectedTeamPointAttempts: 0,
                 valueCapturePercent: 0,
                 valueCaptureAttempts: 0,
                 impactTitle: impactReading.title,
@@ -1566,6 +1572,9 @@ enum WhatToPlayStatsAnalyzer {
                 impactRecoveryHighPressure: impactRecoveryHighPressure,
                 lostExpectedPoints: sessionSummary.lostExpectedPoints,
                 averageLostExpectedPoints: sessionSummary.averageLostExpectedPoints,
+                lostProjectedTeamPoints: sessionSummary.lostProjectedTeamPoints,
+                averageLostProjectedTeamPoints: sessionSummary.averageLostProjectedTeamPoints,
+                projectedTeamPointAttempts: sessionSummary.projectedTeamPointAttempts,
                 valueCapturePercent: sessionSummary.valueCapturePercent,
                 valueCaptureAttempts: sessionSummary.valueCaptureAttempts,
                 impactTitle: impactReading.title,
@@ -1619,6 +1628,9 @@ enum WhatToPlayStatsAnalyzer {
                 impactRecoveryHighPressure: false,
                 lostExpectedPoints: sessionSummary.lostExpectedPoints,
                 averageLostExpectedPoints: sessionSummary.averageLostExpectedPoints,
+                lostProjectedTeamPoints: sessionSummary.lostProjectedTeamPoints,
+                averageLostProjectedTeamPoints: sessionSummary.averageLostProjectedTeamPoints,
+                projectedTeamPointAttempts: sessionSummary.projectedTeamPointAttempts,
                 valueCapturePercent: sessionSummary.valueCapturePercent,
                 valueCaptureAttempts: sessionSummary.valueCaptureAttempts,
                 impactTitle: impactReading.title,
@@ -1671,6 +1683,9 @@ enum WhatToPlayStatsAnalyzer {
             impactRecoveryHighPressure: false,
             lostExpectedPoints: sessionSummary.lostExpectedPoints,
             averageLostExpectedPoints: sessionSummary.averageLostExpectedPoints,
+            lostProjectedTeamPoints: sessionSummary.lostProjectedTeamPoints,
+            averageLostProjectedTeamPoints: sessionSummary.averageLostProjectedTeamPoints,
+            projectedTeamPointAttempts: sessionSummary.projectedTeamPointAttempts,
             valueCapturePercent: sessionSummary.valueCapturePercent,
             valueCaptureAttempts: sessionSummary.valueCaptureAttempts,
             impactTitle: impactReading.title,
