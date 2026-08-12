@@ -43,12 +43,32 @@ public struct RoundBiddingDecisionAnalysis: Identifiable, Sendable, Equatable {
     }
 }
 
+/// تحليل فرصة إعلان مشاريع داخل جولة قابلة للإعادة.
+public struct RoundProjectOpportunityAnalysis: Identifiable, Sendable, Equatable {
+    public let stepIndex: Int
+    public let playerID: Player.ID
+    public let availableProjects: [Project]
+    public let declaredProjects: [Project]
+    public let missedProjects: [Project]
+    public let estimatedLostPoints: Int
+    public let explanation: String
+
+    public var id: String {
+        "\(stepIndex)-projects-\(playerID.uuidString)"
+    }
+
+    public var capturedAllProjects: Bool {
+        missedProjects.isEmpty
+    }
+}
+
 /// تقرير تحليل الجولة بعد انتهائها.
 public struct RoundAnalysisReport: Sendable, Equatable {
     public let playerID: Player.ID
     public let scoreOutOf100: Int
     public let decisions: [RoundDecisionAnalysis]
     public let biddingDecisions: [RoundBiddingDecisionAnalysis]
+    public let projectOpportunities: [RoundProjectOpportunityAnalysis]
     public let bestDecision: RoundDecisionAnalysis?
     public let worstDecision: RoundDecisionAnalysis?
     public let totalEstimatedLostPoints: Int
@@ -85,6 +105,7 @@ public enum RoundAnalyzer {
         state.actionHistory = []
         var decisions: [RoundDecisionAnalysis] = []
         var biddingDecisions: [RoundBiddingDecisionAnalysis] = []
+        var projectOpportunities: [RoundProjectOpportunityAnalysis] = []
 
         for (index, action) in actions.enumerated() {
             if case .placeBid(let actorID, let bid) = action,
@@ -120,19 +141,33 @@ public enum RoundAnalyzer {
                 ) {
                     decisions.append(decision)
                 }
+            } else if case .declareProjects(let actorID, let projects) = action,
+                      actorID == playerID,
+                      state.phase == .declaring,
+                      let opportunity = projectOpportunityAnalysis(
+                        stepIndex: index,
+                        playerID: actorID,
+                        declaredProjects: projects,
+                        state: state
+                      ) {
+                projectOpportunities.append(opportunity)
             }
 
             state = try GameEngine.apply(action, to: state)
         }
 
-        guard !decisions.isEmpty || !biddingDecisions.isEmpty else { throw AnalysisError.noPlayableDecisions }
+        guard !decisions.isEmpty || !biddingDecisions.isEmpty || !projectOpportunities.isEmpty else {
+            throw AnalysisError.noPlayableDecisions
+        }
 
         let playLost = decisions.reduce(0) { $0 + $1.estimatedLostPoints }
         let biddingLost = biddingDecisions.reduce(0) { $0 + $1.estimatedLostPoints }
-        let totalLost = playLost + biddingLost
+        let projectLost = projectOpportunities.reduce(0) { $0 + $1.estimatedLostPoints }
+        let totalLost = playLost + biddingLost + projectLost
         let nonExpertPenalty = decisions.filter { !$0.matchedExpert }.count * 4
         let biddingPenalty = biddingDecisions.filter { !$0.matchedRecommendation }.count * 8
-        let score = max(0, min(100, 100 - (totalLost * 2) - nonExpertPenalty - biddingPenalty))
+        let projectPenalty = projectOpportunities.filter { !$0.capturedAllProjects }.count * 6
+        let score = max(0, min(100, 100 - (totalLost * 2) - nonExpertPenalty - biddingPenalty - projectPenalty))
 
         let bestDecision = decisions
             .sorted { lhs, rhs in
@@ -155,13 +190,26 @@ public enum RoundAnalyzer {
             scoreOutOf100: score,
             decisions: decisions,
             biddingDecisions: biddingDecisions,
+            projectOpportunities: projectOpportunities,
             bestDecision: bestDecision,
             worstDecision: worstDecision,
             totalEstimatedLostPoints: totalLost,
-            tacticalMistakes: tacticalMistakes(from: decisions, biddingDecisions: biddingDecisions),
-            strengths: strengths(from: decisions),
-            weaknesses: weaknesses(from: decisions, biddingDecisions: biddingDecisions),
-            tips: tips(from: decisions, biddingDecisions: biddingDecisions)
+            tacticalMistakes: tacticalMistakes(
+                from: decisions,
+                biddingDecisions: biddingDecisions,
+                projectOpportunities: projectOpportunities
+            ),
+            strengths: strengths(from: decisions, projectOpportunities: projectOpportunities),
+            weaknesses: weaknesses(
+                from: decisions,
+                biddingDecisions: biddingDecisions,
+                projectOpportunities: projectOpportunities
+            ),
+            tips: tips(
+                from: decisions,
+                biddingDecisions: biddingDecisions,
+                projectOpportunities: projectOpportunities
+            )
         )
     }
 
@@ -246,6 +294,27 @@ public enum RoundAnalyzer {
         )
     }
 
+    private static func projectOpportunityAnalysis(
+        stepIndex: Int,
+        playerID: Player.ID,
+        declaredProjects: [Project],
+        state: GameState
+    ) -> RoundProjectOpportunityAnalysis? {
+        let available = GameEngine.declarableProjects(for: playerID, state: state)
+        guard !available.isEmpty else { return nil }
+        let missed = available.filter { !declaredProjects.contains($0) }
+        let lost = missed.reduce(0) { $0 + $1.points }
+        return RoundProjectOpportunityAnalysis(
+            stepIndex: stepIndex,
+            playerID: playerID,
+            availableProjects: available,
+            declaredProjects: declaredProjects,
+            missedProjects: missed,
+            estimatedLostPoints: lost,
+            explanation: projectExplanation(available: available, missed: missed)
+        )
+    }
+
     private static func resettableInitialState(from state: GameState) -> GameState {
         GameState(
             players: state.players,
@@ -258,7 +327,8 @@ public enum RoundAnalyzer {
 
     private static func tacticalMistakes(
         from decisions: [RoundDecisionAnalysis],
-        biddingDecisions: [RoundBiddingDecisionAnalysis]
+        biddingDecisions: [RoundBiddingDecisionAnalysis],
+        projectOpportunities: [RoundProjectOpportunityAnalysis]
     ) -> [String] {
         let biddingMistakes = biddingDecisions
             .filter { !$0.matchedRecommendation }
@@ -267,25 +337,39 @@ public enum RoundAnalyzer {
                 "في المزايدة، اخترت \(bidLabel(decision.bid)) بينما تقييم اليد يقترح \(bidLabel(decision.recommendedBid))."
             }
 
+        let projectMistakes = projectOpportunities
+            .filter { !$0.capturedAllProjects }
+            .prefix(2)
+            .map { opportunity in
+                "فوّت إعلان مشروع بقيمة \(opportunity.estimatedLostPoints) نقطة."
+            }
+
         let playMistakes = decisions
             .filter { !$0.matchedExpert }
             .sorted { lhs, rhs in
                 if lhs.estimatedLostPoints != rhs.estimatedLostPoints { return lhs.estimatedLostPoints > rhs.estimatedLostPoints }
                 return lhs.stepIndex < rhs.stepIndex
             }
-            .prefix(3 - min(2, biddingMistakes.count))
+            .prefix(max(0, 3 - min(2, biddingMistakes.count) - min(2, projectMistakes.count)))
             .map { decision in
                 "في الأكلة \(decision.trickNumber)، لعبت \(decision.playedCard.displayLabel) بينما اختيار الخبير \(decision.bestCard.displayLabel)."
             }
 
-        return Array(biddingMistakes) + playMistakes
+        return Array(biddingMistakes) + Array(projectMistakes) + playMistakes
     }
 
-    private static func strengths(from decisions: [RoundDecisionAnalysis]) -> [String] {
+    private static func strengths(
+        from decisions: [RoundDecisionAnalysis],
+        projectOpportunities: [RoundProjectOpportunityAnalysis]
+    ) -> [String] {
         var result: [String] = []
         let matches = decisions.filter(\.matchedExpert).count
         if matches > 0 {
             result.append("وافقت قرار الخبير في \(matches) من \(decisions.count) قرارات محللة.")
+        }
+        if projectOpportunities.contains(where: { !$0.availableProjects.isEmpty })
+            && projectOpportunities.allSatisfy(\.capturedAllProjects) {
+            result.append("أعلنت كل المشاريع المتاحة ولم تترك نقاطًا مجانية.")
         }
         if decisions.allSatisfy({ $0.estimatedLostPoints == 0 }) {
             result.append("لم يظهر قرار تسبب بخسارة نقاط متوقعة في الأكلات المحللة.")
@@ -295,10 +379,12 @@ public enum RoundAnalyzer {
 
     private static func weaknesses(
         from decisions: [RoundDecisionAnalysis],
-        biddingDecisions: [RoundBiddingDecisionAnalysis]
+        biddingDecisions: [RoundBiddingDecisionAnalysis],
+        projectOpportunities: [RoundProjectOpportunityAnalysis]
     ) -> [String] {
         let costly = decisions.filter { $0.estimatedLostPoints > 0 }
         let biddingMisses = biddingDecisions.filter { !$0.matchedRecommendation }
+        let missedProjects = projectOpportunities.filter { !$0.capturedAllProjects }
         var result: [String] = []
         if !costly.isEmpty {
             result.append("توجد \(costly.count) قرارات كان يمكن أن تحقق أثرًا نقطيًا أفضل حسب تحليل الخبير.")
@@ -306,17 +392,34 @@ public enum RoundAnalyzer {
         if !biddingMisses.isEmpty {
             result.append("توجد \(biddingMisses.count) قرارات مزايدة خالفت تقييم اليد وخيارات الشراء القانونية.")
         }
+        if !missedProjects.isEmpty {
+            let lost = missedProjects.reduce(0) { $0 + $1.estimatedLostPoints }
+            result.append("فوّت \(lost) نقطة مشاريع كان يمكن إعلانها في وقتها.")
+        }
         return result.isEmpty ? ["لا توجد نقطة ضعف واضحة في القرارات المحللة."] : result
     }
 
     private static func tips(
         from decisions: [RoundDecisionAnalysis],
-        biddingDecisions: [RoundBiddingDecisionAnalysis]
+        biddingDecisions: [RoundBiddingDecisionAnalysis],
+        projectOpportunities: [RoundProjectOpportunityAnalysis]
     ) -> [String] {
         if let biddingMiss = biddingDecisions.first(where: { !$0.matchedRecommendation }) {
+            var result = [
+                "راجع قرار المزايدة: \(bidLabel(biddingMiss.bid)) مقابل \(bidLabel(biddingMiss.recommendedBid)) حسب قوة اليد."
+            ]
+            if let missed = projectOpportunities.first(where: { !$0.capturedAllProjects }) {
+                result.append("قبل أول أكلة، راجع التسلسلات والمتشابهات: فاتك إعلان مشروع بقيمة \(missed.estimatedLostPoints) نقطة.")
+            } else {
+                result.append("قبل الشراء، احصر الخيارات القانونية ثم قارن قوة الصن بأفضل حكم متاح فقط.")
+            }
+            return result
+        }
+
+        if let missed = projectOpportunities.first(where: { !$0.capturedAllProjects }) {
             return [
-                "راجع قرار المزايدة: \(bidLabel(biddingMiss.bid)) مقابل \(bidLabel(biddingMiss.recommendedBid)) حسب قوة اليد.",
-                "قبل الشراء، احصر الخيارات القانونية ثم قارن قوة الصن بأفضل حكم متاح فقط."
+                "قبل أول أكلة، راجع التسلسلات والمتشابهات: فاتك إعلان مشروع بقيمة \(missed.estimatedLostPoints) نقطة.",
+                "ثبّت عادة فحص المشاريع بعد اكتمال اليد وقبل اللعب، خصوصًا في الحكم حيث يظهر مشروع البلوت."
             ]
         }
 
@@ -342,6 +445,15 @@ public enum RoundAnalyzer {
             return "قرار المزايدة يطابق تقييم اليد الحالي بدرجة قوة \(handStrengthScore)."
         }
         return "تقييم اليد بدرجة \(handStrengthScore) يرجّح \(bidLabel(recommendedBid)) بدل \(bidLabel(bid))."
+    }
+
+    private static func projectExplanation(available: [Project], missed: [Project]) -> String {
+        if missed.isEmpty {
+            return "إعلان المشاريع طابق كل ما اكتشفه المحرك في اليد."
+        }
+        let names = missed.map { $0.kind.arabicName }.joined(separator: "، ")
+        let points = missed.reduce(0) { $0 + $1.points }
+        return "كان يمكن إعلان \(names) بقيمة \(points) نقطة من أصل \(available.count) مشروع متاح."
     }
 
     private static func biddingLostPoints(bid: Bid, recommendedBid: Bid, analysis: HandAnalysis) -> Int {

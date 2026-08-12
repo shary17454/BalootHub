@@ -22302,6 +22302,34 @@
         }
       }
     },
+    "فرصة مشروع" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Projektchance" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Project opportunity" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Oportunidad de proyecto" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Occasion de projet" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "प्रोजेक्ट अवसर" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Peluang proyek" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Возможность проекта" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Proje fırsatı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "پروجیکٹ کا موقع" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "项目机会" } }
+      }
+    },
+    "نقطة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Punkt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "point" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "punto" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "point" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "अंक" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "poin" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "очко" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "puan" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "پوائنٹ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "分" } }
+      }
+    },
     "ورقة غير معروفة" : {
       "localizations" : {
         "en" : {

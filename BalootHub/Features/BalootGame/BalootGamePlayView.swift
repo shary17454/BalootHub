@@ -425,6 +425,13 @@ struct BalootGamePlayView: View {
                         value: biddingAnalysisValue(bidding)
                     )
                 }
+                if let missedProject = report.projectOpportunities.first(where: { !$0.capturedAllProjects }) {
+                    analysisRow(
+                        icon: "sparkles",
+                        title: "فرصة مشروع".localized,
+                        value: "\(missedProject.estimatedLostPoints) \("نقطة".localized)"
+                    )
+                }
                 if let best = report.bestDecision {
                     analysisRow(
                         icon: "checkmark.seal.fill",

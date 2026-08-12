@@ -92,6 +92,32 @@ struct RoundAnalysisTests {
         #expect(report.scoreOutOf100 < 100)
     }
 
+    @Test("تحليل الجولة يرصد فرص المشاريع التي لم تُعلن")
+    func missedProjectDeclarationIsReportedAsLostOpportunity() throws {
+        let scenario = try missedProjectScenario()
+
+        var state = scenario.state
+        state = try GameEngine.apply(.declareProjects(playerID: scenario.playerID, projects: []), to: state)
+
+        let report = try RoundAnalyzer.analyze(
+            initialState: scenario.initial,
+            actions: state.actionHistory,
+            playerID: scenario.playerID
+        )
+
+        let opportunity = try #require(report.projectOpportunities.first)
+        #expect(opportunity.playerID == scenario.playerID)
+        #expect(opportunity.availableProjects == scenario.availableProjects)
+        #expect(opportunity.declaredProjects.isEmpty)
+        #expect(opportunity.missedProjects == scenario.availableProjects)
+        #expect(opportunity.capturedAllProjects == false)
+        #expect(opportunity.estimatedLostPoints == scenario.availableProjects.reduce(0) { $0 + $1.points })
+        #expect(report.totalEstimatedLostPoints >= opportunity.estimatedLostPoints)
+        #expect(report.tacticalMistakes.contains { $0.contains("فوّت إعلان مشروع") })
+        #expect(report.weaknesses.contains { $0.contains("نقطة مشاريع") })
+        #expect(report.tips.contains { $0.contains("قبل أول أكلة") })
+    }
+
     private func makeAIMatch() -> GameState {
         var state = GameState.newLocalMatch(rules: .standard)
         state.players = state.players.map { player in
@@ -111,6 +137,37 @@ struct RoundAnalysisTests {
                 return (initial, state)
             }
         }
+        throw RoundAnalyzer.AnalysisError.noPlayableDecisions
+    }
+
+    private func missedProjectScenario() throws -> (
+        initial: GameState,
+        state: GameState,
+        playerID: Player.ID,
+        availableProjects: [Project]
+    ) {
+        var rules = BalootRulesConfiguration.standard
+        rules.multipliersEnabled = false
+        rules.projectsRequireDeclaration = true
+
+        for seed in UInt64(1)...300 {
+            let initial = GameState.newLocalMatch(rules: rules)
+            var state = try GameEngine.apply(.dealCards(seed: seed), to: initial)
+            let buyerID = try #require(state.currentTurnPlayerID)
+            let upSuit = try #require(state.bidding.upCard?.suit)
+            state = try GameEngine.apply(.placeBid(playerID: buyerID, bid: .hokum(suit: upSuit)), to: state)
+            for _ in 0..<3 {
+                state = try GameEngine.apply(.placeBid(playerID: try #require(state.currentTurnPlayerID), bid: .pass), to: state)
+            }
+
+            guard state.phase == .declaring,
+                  state.currentTurnPlayerID == buyerID else { continue }
+            let available = GameEngine.declarableProjects(for: buyerID, state: state)
+            if !available.isEmpty {
+                return (initial, state, buyerID, available)
+            }
+        }
+
         throw RoundAnalyzer.AnalysisError.noPlayableDecisions
     }
 
