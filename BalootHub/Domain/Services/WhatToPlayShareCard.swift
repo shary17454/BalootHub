@@ -26,6 +26,8 @@ struct WhatToPlayShareCardContent: Equatable {
     let lostAgainstSecondBestPoints: Int?
     let valueLossTitle: String?
     let decisionQualityTitle: String?
+    let nextActionTitle: String?
+    let nextActionDetail: String?
     let selectedRank: Int?
     let selectedImpact: Int?
     let selectedImpactDetail: String?
@@ -72,6 +74,9 @@ enum WhatToPlayShareCard {
                 ).title
             }
         }
+        let comparisonSummary = selectedOption.map {
+            WhatToPlayOptionComparison.summary(for: scenario, selectedCard: $0.card)
+        }
         let tacticalReason = selectedOption.flatMap(tacticalReason(for:))
         let selectedSimulationDisplay = selectedOption.map { WhatToPlaySimulationFormatter.display(for: $0.simulation) }
         return WhatToPlayShareCardContent(
@@ -101,6 +106,8 @@ enum WhatToPlayShareCard {
             lostAgainstSecondBestPoints: lostAgainstSecondBest,
             valueLossTitle: valueLossTitle,
             decisionQualityTitle: decisionQualityTitle,
+            nextActionTitle: comparisonSummary?.nextActionTitle,
+            nextActionDetail: comparisonSummary?.nextActionDetail,
             selectedRank: selectedOption?.rank,
             selectedImpact: selectedOption?.expectedImpact,
             selectedImpactDetail: selectedOption.map { WhatToPlayImpactFormatter.detail(for: $0.impactBreakdown) },
@@ -173,6 +180,12 @@ enum WhatToPlayShareCard {
             }
             if let decisionQualityTitle = content.decisionQualityTitle {
                 lines.append("\("تقييم القرار".localized): \(decisionQualityTitle)")
+            }
+            if let nextActionTitle = content.nextActionTitle {
+                lines.append("\("الإجراء التالي".localized): \(nextActionTitle)")
+            }
+            if let nextActionDetail = content.nextActionDetail {
+                lines.append(nextActionDetail)
             }
             if let lostAgainstSecondBestPoints = content.lostAgainstSecondBestPoints {
                 lines.append("\("فارق عن ثاني أفضل".localized): \(lostAgainstSecondBestPoints)")

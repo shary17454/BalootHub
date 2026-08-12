@@ -2214,6 +2214,9 @@ struct WhatToPlayTrainerView: View {
                         if let decisionQualityTitle = content.decisionQualityTitle {
                             shareChip("\("تقييم القرار".localized): \(decisionQualityTitle)")
                         }
+                        if let nextActionTitle = content.nextActionTitle {
+                            shareChip("\("الإجراء التالي".localized): \(nextActionTitle)")
+                        }
                         if let lostAgainstSecondBestPoints = content.lostAgainstSecondBestPoints {
                             shareChip("\("فارق عن ثاني أفضل".localized): \(lostAgainstSecondBestPoints)")
                         }

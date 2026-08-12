@@ -131,6 +131,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).lostAgainstSecondBestPoints)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).valueLossTitle)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).decisionQualityTitle)
+        XCTAssertNil(WhatToPlayShareCard.content(for: scenario).nextActionTitle)
+        XCTAssertNil(WhatToPlayShareCard.content(for: scenario).nextActionDetail)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).selectedSimulationSummary)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).selectedSimulationTeamResult)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).selectedSimulationTrickPoints)
@@ -150,6 +152,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(reviewed.lostAgainstSecondBestPoints, max(0, secondBest.expectedImpact - selected.expectedImpact))
         XCTAssertEqual(reviewed.valueLossTitle, "لا توجد خسارة قيمة".localized)
         XCTAssertEqual(reviewed.decisionQualityTitle, "مطابق للخبير".localized)
+        XCTAssertEqual(reviewed.nextActionTitle, "ثبّت القراءة".localized)
+        XCTAssertTrue(reviewed.nextActionDetail?.contains(selected.card.accessibilityName) ?? false)
         XCTAssertEqual(reviewed.selectedImpact, selected.expectedImpact)
         XCTAssertEqual(reviewed.selectedImpactDetail, WhatToPlayImpactFormatter.detail(for: selected.impactBreakdown))
         XCTAssertEqual(reviewed.selectedProjectedTeamPoints, selected.projectedTeamPoints)
@@ -186,7 +190,11 @@ final class WhatToPlayShareCardTests: XCTestCase {
         let text = WhatToPlayShareCard.text(for: scenario, selectedOption: selected)
 
         XCTAssertNotNil(content.decisionQualityTitle)
+        XCTAssertNotNil(content.nextActionTitle)
+        XCTAssertNotNil(content.nextActionDetail)
         XCTAssertTrue(text.contains("\("تقييم القرار".localized): \(try XCTUnwrap(content.decisionQualityTitle))"))
+        XCTAssertTrue(text.contains("\("الإجراء التالي".localized): \(try XCTUnwrap(content.nextActionTitle))"))
+        XCTAssertTrue(text.contains(try XCTUnwrap(content.nextActionDetail)))
     }
 
     private func contentMode(for scenario: WhatToPlayScenario) -> String {

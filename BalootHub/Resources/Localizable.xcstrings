@@ -23192,7 +23192,8 @@
     "تمرير واضح" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Clear pass" } } } },
     "راجع الفرق الصغير" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Review the small gap" } } } },
     "قارن قبل اللعب" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Compare before playing" } } } },
-    "أعد الموقف" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Replay the scenario" } } } }
+    "أعد الموقف" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Replay the scenario" } } } },
+    "الإجراء التالي" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Next action" } } } }
   },
   "version" : "1.0"
 }
