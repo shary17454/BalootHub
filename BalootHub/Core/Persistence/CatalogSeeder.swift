@@ -424,6 +424,32 @@ private extension CatalogSeeder {
             ]
         ),
         GameDefinition(
+            slug: "baloot-sandbox",
+            arabicTitle: "مختبر البلوت",
+            englishTitle: "Baloot Sandbox",
+            shortDescription: "مختبر تدريبي يبني موقف بلوت يدويًا ويجرب الورقة عبر BalootEngine لشرح القانونية والفائز والنقاط.",
+            category: .balootTool,
+            playerCountText: "لاعب واحد (محاكاة موقف)",
+            difficulty: .advanced,
+            estimatedDuration: "دقيقة إلى ثلاث دقائق لكل موقف",
+            iconName: "slider.horizontal.3",
+            accentToken: "primary",
+            isPlayable: false,
+            sortOrder: 12,
+            sections: [
+                .objective: "تمكين اللاعب من تجربة سؤال: ماذا يحدث لو لعبت هذه الورقة؟ من داخل محرك البلوت نفسه.",
+                .playerCount: "الأداة فردية، لكنها تبني طاولة بأربعة مقاعد وفريقين حتى تبقى القواعد مطابقة للعبة.",
+                .setup: "تبدأ النسخة الحالية من موقف حكم جاهز وقابل للتوسيع إلى إدخال كامل للأوراق والأدوار والمشاريع.",
+                .dealing: "لا توزع الأداة أوراقًا عشوائية؛ بل تستخدم توزيعًا محددًا داخل GameState حتى تكون النتيجة قابلة لإعادة الاختبار.",
+                .cardRanking: "كل تجربة تمر عبر LegalMoveValidator وScoreCalculator، لذلك ترتيب الصن والحكم مطابق للعب الحقيقي.",
+                .howToPlay: "اختر ورقة من يد اللاعب الحالي، وسيعرض المختبر هل الحركة قانونية، سبب الرفض إن وُجد، أو فائز الأكلة ونقاطها.",
+                .scoring: "نقاط الأكلة والمضاعف والمشاريع تُحمل داخل حالة Sandbox، ويحتسب المحرك أثر الورقة دون منطق واجهة جانبي.",
+                .projects: "تدعم طبقة المحرك إدخال مشاريع معلنة يدويًا، ويمكن ربطها بواجهة تحرير كاملة في مرحلة لاحقة.",
+                .roundEnd: "الهدف ليس إنهاء مباراة كاملة، بل اختبار موقف محدد ثم مقارنة أثر البدائل قبل تطبيقها في تدريب أو Replay.",
+                .commonMistakes: "اعتبار المختبر لعبة مستقلة عن المحرك، أو السماح بحركة لا يقبلها LegalMoveValidator في الجولة الحقيقية."
+            ]
+        ),
+        GameDefinition(
             slug: "daily-baloot-challenges",
             arabicTitle: "تحديات البلوت",
             englishTitle: "Baloot Challenges",
@@ -435,7 +461,7 @@ private extension CatalogSeeder {
             iconName: "calendar.badge.checkmark",
             accentToken: "accent",
             isPlayable: false,
-            sortOrder: 12,
+            sortOrder: 13,
             sections: [
                 .objective: "تقديم أهداف تدريب قصيرة ومتجددة تساعد اللاعب على ممارسة البلوت بانتظام دون الحاجة إلى اتصال أو خادم.",
                 .playerCount: "التحديات فردية، لكنها تحيل اللاعب إلى اللعب ضد الذكاء أو أدوات التدريب الموجودة داخل التطبيق.",
@@ -461,7 +487,7 @@ private extension CatalogSeeder {
             iconName: "trophy.fill",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 13,
+            sortOrder: 14,
             sections: [
                 .objective: "إعطاء اللاعب أهدافًا طويلة المدى مثل أول كبوت، ملك الصن، شيخ الحكم، وحل تحديات الحساب.",
                 .playerCount: "الإنجازات فردية ومحفوظة محليًا، ولا تحتاج حسابًا أو اتصالًا بالإنترنت في النسخة الحالية.",
@@ -487,7 +513,7 @@ private extension CatalogSeeder {
             iconName: "trophy.fill",
             accentToken: "accent",
             isPlayable: false,
-            sortOrder: 14,
+            sortOrder: 15,
             sections: [
                 .objective: "تنظيم بطولة بلوت تعمل دون إنترنت، مع حفظ الجدول والتاريخ والبطل محليًا.",
                 .playerCount: "تدعم البطولة 4 أو 8 فرق، ويمكن استخدامها لجلسات المجلس أو التدريب ضد خصوم محليين.",
@@ -513,7 +539,7 @@ private extension CatalogSeeder {
             iconName: "list.clipboard.fill",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 15,
+            sortOrder: 16,
             sections: [
                 .objective: "تتبّع نقاط جلسة بلوت حقيقية بدقة، وإعلان الفريق الفائز فور بلوغ الهدف المتفق عليه.",
                 .playerCount: "يُسجَّل باسم فريقين، كل فريق من لاعبين على الطاولة.",
@@ -539,7 +565,7 @@ private extension CatalogSeeder {
             iconName: "quote.bubble.fill",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 16,
+            sortOrder: 17,
             sections: [
                 .objective: "توضيح قرارات المزايدة قبل اللعب حتى يعرف اللاعب متى يمر، ومتى يطلب صن أو حكم، ومتى تكون المضاعفة منطقية.",
                 .playerCount: "المزايدة تُفهم حول طاولة من أربعة لاعبين، لكن الدليل مخصص للتعلم الفردي.",
@@ -565,7 +591,7 @@ private extension CatalogSeeder {
             iconName: "rectangle.stack.badge.plus",
             accentToken: "accent",
             isPlayable: false,
-            sortOrder: 17,
+            sortOrder: 18,
             sections: [
                 .objective: "جمع أسماء المشاريع المشهورة وشروطها في مكان واحد ليسهل الرجوع إليها أثناء التعلم أو قبل الجلسة.",
                 .playerCount: "المشاريع تخص يد لاعب ضمن فريقين من أربعة لاعبين، لكن المرجع فردي.",
@@ -591,7 +617,7 @@ private extension CatalogSeeder {
             iconName: "mic.and.signal.meter.fill",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 18,
+            sortOrder: 19,
             sections: [
                 .objective: "توضيح الفروق بين اللعب ضد الذكاء الاصطناعي، اللعب المحلي بين الأشخاص، واللعب الشبكي بالصوت حتى يعرف اللاعب ما المتاح الآن وما يحتاج اتصالًا آمنًا.",
                 .playerCount: "اللعب ضد الذكاء يدعم لاعبًا واحدًا مع ثلاثة آليين. اللعب المحلي يدعم أربعة أشخاص على نفس الجهاز بتمريره حسب الدور. اللعب الصوتي عن بعد يحتاج غرفة Online لأربعة لاعبين.",
@@ -620,7 +646,7 @@ private extension CatalogSeeder {
             iconName: "6.circle.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 19,
+            sortOrder: 20,
             sections: [
                 .objective: "تحقيق أفضل نتيجة عبر تجنّب أوراق أو أكلات معيّنة تخسر نقاطًا، بحسب الصيغة المعتمدة من اللاعبين.",
                 .playerCount: "تُلعب غالبًا بأربعة لاعبين، وتختلف التفاصيل بين المجالس.",
@@ -646,7 +672,7 @@ private extension CatalogSeeder {
             iconName: "suit.club.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 20,
+            sortOrder: 21,
             sections: [
                 .objective: "تحقيق عدد الأكلات الذي التزم به اللاعب أو الفريق أثناء المزايدة، أو أكثر.",
                 .playerCount: "أربعة لاعبين، إما كل لاعب لنفسه أو في فريقين متقابلين حسب الصيغة المعتمدة.",
@@ -672,7 +698,7 @@ private extension CatalogSeeder {
             iconName: "suit.diamond.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 21,
+            sortOrder: 22,
             sections: [
                 .objective: "تحقيق أقل عدد نقاط سلبية (أو أعلى نقاط إيجابية حسب الجولة) عبر دورة من عدة أنماط لعب مختلفة.",
                 .playerCount: "أربعة لاعبين، كل لاعب يلعب لحسابه الخاص دون فرق ثابتة.",
@@ -698,7 +724,7 @@ private extension CatalogSeeder {
             iconName: "hand.raised.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 22,
+            sortOrder: 23,
             sections: [
                 .objective: "التخلص من كل الأوراق في يد اللاعب قبل بقية اللاعبين، أو تحقيق أقل عدد نقاط متبقية بحسب الصيغة.",
                 .playerCount: "من لاعبين حتى أربعة لاعبين، أفرادًا أو في فرق صغيرة.",

@@ -206,6 +206,18 @@ struct GameDetailsView: View {
                 .controlSize(.large)
             }
 
+            if item.slug == "baloot-sandbox" {
+                Button {
+                    appEnvironment.navigate(to: .balootSandbox, tab: appEnvironment.selectedTab)
+                } label: {
+                    Label("فتح المختبر".localized, systemImage: "slider.horizontal.3")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(AppColor.primary)
+                .controlSize(.large)
+            }
+
             if item.isPlayable {
                 Button {
                     appEnvironment.navigate(to: .balootGamePlay(slug: item.slug), tab: appEnvironment.selectedTab)
@@ -256,7 +268,7 @@ struct GameDetailsView: View {
     }
 }
 
-private struct InfoRow: View {
+struct InfoRow: View {
     let icon: String
     let title: String
     let value: String

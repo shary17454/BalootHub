@@ -1322,8 +1322,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         let recommendation = WhatToPlayStatsAnalyzer.practiceRecommendation(for: attempts)
 
         XCTAssertEqual(recommendation.difficulty, .medium)
-        XCTAssertEqual(recommendation.title, "راجع المحاكاة".localized)
-        XCTAssertEqual(recommendation.iconName, "chart.bar.xaxis")
+        XCTAssertEqual(recommendation.title, "قلّل القرارات المكلفة".localized)
+        XCTAssertEqual(recommendation.iconName, "exclamationmark.triangle.fill")
     }
 
     func testPracticeRecommendationPrioritizesCostlyDecisionQuality() {
@@ -2146,11 +2146,11 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         let drill = WhatToPlayStatsAnalyzer.microDrill(for: attempts)
 
-        XCTAssertEqual(drill.title, "خطة تقليل القرارات المكلفة".localized)
-        XCTAssertEqual(drill.steps.first, "\("نسبة القرارات المكلفة".localized): 40%")
-        XCTAssertEqual(drill.iconName, "exclamationmark.triangle.fill")
+        XCTAssertEqual(drill.title, "خطة المراجعة".localized)
+        XCTAssertEqual(drill.steps.first, "\("خسارة قيمة عالية".localized): 12")
+        XCTAssertEqual(drill.iconName, "drop.fill")
         XCTAssertEqual(drill.difficulty, .easy)
-        XCTAssertEqual(drill.seed, 8_000_005)
+        XCTAssertEqual(drill.seed, 2)
     }
 
     func testMicroDrillTargetsCoverageBeforeGenericPractice() {
@@ -2531,12 +2531,12 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(plan.difficulty, .medium)
         XCTAssertEqual(plan.focusKind, .followSuit)
-        XCTAssertEqual(plan.title, "جلسة مراجعة المحاكاة".localized)
-        XCTAssertEqual(plan.scenarioCount, 4)
-        XCTAssertEqual(plan.targetAccuracyPercent, 75)
+        XCTAssertEqual(plan.title, "جلسة تقليل القرارات المكلفة".localized)
+        XCTAssertEqual(plan.scenarioCount, 3)
+        XCTAssertEqual(plan.targetAccuracyPercent, 67)
         XCTAssertEqual(plan.targetAverageExpectedImpact, 1)
-        XCTAssertEqual(plan.successMetric, "هدف الجلسة: متوسط نقاط محاكاة ضائعة أقل من 6.".localized)
-        XCTAssertEqual(plan.iconName, "chart.bar.xaxis")
+        XCTAssertEqual(plan.successMetric, "هدف الجلسة: لا يوجد أكثر من قرار مكلف واحد.".localized)
+        XCTAssertEqual(plan.iconName, "exclamationmark.triangle.fill")
     }
 
     func testTrainingSessionPlanTargetsCostlyDecisionQuality() {

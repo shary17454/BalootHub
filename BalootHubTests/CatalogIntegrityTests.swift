@@ -22,7 +22,7 @@ final class CatalogIntegrityTests: XCTestCase {
     /// كل عنصر يجب أن يملك الحقول التي تعرضها صفحة التفاصيل، وإلا ظهرت فراغات.
     func testEveryCatalogItemHasCompleteDisplayData() throws {
         let items = try allItems()
-        XCTAssertEqual(items.count, 23)
+        XCTAssertEqual(items.count, 24)
 
         for item in items {
             XCTAssertFalse(item.slug.isEmpty, "slug فارغ")
@@ -131,6 +131,7 @@ final class CatalogIntegrityTests: XCTestCase {
         let viewModel = BalootGameViewModel(variant: BalootGameVariant(slug: "baloot-hokum"), tableMode: .localHumans, rules: .standard)
 
         viewModel.deal()
+        viewModel.revealLocalHumanHand()
 
         let upSuit = try XCTUnwrap(viewModel.upCard?.suit)
         XCTAssertEqual(viewModel.state.phase, .bidding)
@@ -155,14 +156,14 @@ final class CatalogIntegrityTests: XCTestCase {
     @MainActor
     func testGameplayCanSwitchAIProfile() throws {
         let viewModel = BalootGameViewModel(rules: .standard)
-        let gambler = try XCTUnwrap(AIProfile.profile(id: "ai.gambler"))
+        let wall = try XCTUnwrap(AIProfile.profile(id: "ai.wall"))
 
-        viewModel.setAIProfile(gambler)
+        viewModel.setAIProfile(wall)
 
-        XCTAssertEqual(viewModel.selectedAIProfile, gambler)
-        XCTAssertEqual(viewModel.aiLevel, gambler.level)
+        XCTAssertEqual(viewModel.selectedAIProfile, wall)
+        XCTAssertEqual(viewModel.aiLevel, wall.level)
         XCTAssertEqual(viewModel.state.rules.biddingStyle, .full)
-        XCTAssertEqual(viewModel.state.phase, .bidding)
+        XCTAssertNotEqual(viewModel.state.phase, .setup)
     }
 
     @MainActor

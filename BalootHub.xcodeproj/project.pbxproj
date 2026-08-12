@@ -59,6 +59,7 @@
 		11DB90A3C4F54107B6920FA9 /* GameDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69C0BE86F2246FB8D1A7E46 /* GameDetailsView.swift */; };
 		760B33B8E4CF45069E83A1F8 /* AchievementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F7992AFC7994C918BD99B64 /* AchievementsView.swift */; };
 		2F5DAB8C1A664481B5A2F9E0 /* BalootAcademyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12F4C7E2B5849279DE053AA /* BalootAcademyView.swift */; };
+		A0B10123456789ABCDEF0101 /* BalootSandboxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0B10123456789ABCDEF0100 /* BalootSandboxView.swift */; };
 		C768421D8F15445490E32AB4 /* DailyChallengesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DB39145A21E4CA2A44D6B28 /* DailyChallengesView.swift */; };
 		E24052E61F914D53A11EA526 /* OfflineTournamentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258E49D412F9485B97815F28 /* OfflineTournamentsView.swift */; };
 		8A3E5D6C9F224CCB8D1076FA /* ScoringQuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B917E8B5C44A0CB153A9C2 /* ScoringQuizView.swift */; };
@@ -167,6 +168,7 @@
 		C69C0BE86F2246FB8D1A7E46 /* GameDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameDetailsView.swift; sourceTree = "<group>"; };
 		8F7992AFC7994C918BD99B64 /* AchievementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementsView.swift; sourceTree = "<group>"; };
 		B12F4C7E2B5849279DE053AA /* BalootAcademyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootAcademyView.swift; sourceTree = "<group>"; };
+		A0B10123456789ABCDEF0100 /* BalootSandboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootSandboxView.swift; sourceTree = "<group>"; };
 		0DB39145A21E4CA2A44D6B28 /* DailyChallengesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyChallengesView.swift; sourceTree = "<group>"; };
 		258E49D412F9485B97815F28 /* OfflineTournamentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineTournamentsView.swift; sourceTree = "<group>"; };
 		D4B917E8B5C44A0CB153A9C2 /* ScoringQuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoringQuizView.swift; sourceTree = "<group>"; };
@@ -381,6 +383,7 @@
 				C69C0BE86F2246FB8D1A7E46 /* GameDetailsView.swift */,
 				8F7992AFC7994C918BD99B64 /* AchievementsView.swift */,
 				B12F4C7E2B5849279DE053AA /* BalootAcademyView.swift */,
+				A0B10123456789ABCDEF0100 /* BalootSandboxView.swift */,
 				0DB39145A21E4CA2A44D6B28 /* DailyChallengesView.swift */,
 				258E49D412F9485B97815F28 /* OfflineTournamentsView.swift */,
 				D4B917E8B5C44A0CB153A9C2 /* ScoringQuizView.swift */,
@@ -694,6 +697,7 @@
 				11DB90A3C4F54107B6920FA9 /* GameDetailsView.swift in Sources */,
 				760B33B8E4CF45069E83A1F8 /* AchievementsView.swift in Sources */,
 				2F5DAB8C1A664481B5A2F9E0 /* BalootAcademyView.swift in Sources */,
+				A0B10123456789ABCDEF0101 /* BalootSandboxView.swift in Sources */,
 				C768421D8F15445490E32AB4 /* DailyChallengesView.swift in Sources */,
 				E24052E61F914D53A11EA526 /* OfflineTournamentsView.swift in Sources */,
 				8A3E5D6C9F224CCB8D1076FA /* ScoringQuizView.swift in Sources */,

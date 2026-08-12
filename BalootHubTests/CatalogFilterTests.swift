@@ -53,8 +53,8 @@ final class CatalogFilterTests: XCTestCase {
         XCTAssertTrue(result.isEmpty)
     }
 
-    func testCatalogHasExactlyTwentyThreeSeedItems() {
-        XCTAssertEqual(makeItems().count, 23)
+    func testCatalogHasExactlyTwentyFourSeedItems() {
+        XCTAssertEqual(makeItems().count, 24)
     }
 
     func testCatalogIncludesAdvancedBalootReferences() {
@@ -68,6 +68,7 @@ final class CatalogFilterTests: XCTestCase {
         XCTAssertTrue(slugs.contains("baloot-multiplayer-voice-guide"))
         XCTAssertTrue(slugs.contains("hand-analyzer"))
         XCTAssertTrue(slugs.contains("what-to-play-trainer"))
+        XCTAssertTrue(slugs.contains("baloot-sandbox"))
         XCTAssertTrue(slugs.contains("daily-baloot-challenges"))
         XCTAssertTrue(slugs.contains("baloot-achievements"))
         XCTAssertTrue(slugs.contains("offline-tournaments"))

@@ -46,5 +46,6 @@ enum AppRoute: Hashable {
     case dailyChallenges
     case achievements
     case offlineTournaments
+    case balootSandbox
     case trainingIntro
 }
