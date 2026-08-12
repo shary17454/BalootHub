@@ -57,6 +57,20 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "即将显示" } }
       }
     },
+    "مشاهدة القرار في الإعادة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Entscheidung im Replay ansehen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Watch decision replay" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Ver la decisión en la repetición" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Voir la décision en replay" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "निर्णय का रीप्ले देखें" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tonton replay keputusan" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Посмотреть решение в повторе" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Kararı tekrarda izle" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "فیصلے کا ری پلے دیکھیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "观看决策回放" } }
+      }
+    },
     "الأثر المتوقع" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Erwarteter Effekt" } },

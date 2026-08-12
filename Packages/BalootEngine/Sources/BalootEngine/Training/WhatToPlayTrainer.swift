@@ -180,6 +180,22 @@ public struct WhatToPlayScenario: Sendable {
     }
 }
 
+/// Replay مرئي لقرار تدريب «وش تلعب؟».
+///
+/// يعيد الجولة من البداية حتى حالة الموقف، ثم يضيف ورقة المستخدم المختارة كآخر فعل.
+/// بهذا يمكن للواجهة فتح نفس عارض Replay المستخدم في اللعبة بدون بناء منطق جانبي.
+public struct WhatToPlayDecisionReplay: Sendable {
+    public let initialState: GameState
+    public let actions: [GameAction]
+    public let selectedCard: PlayingCard
+
+    public init(initialState: GameState, actions: [GameAction], selectedCard: PlayingCard) {
+        self.initialState = initialState
+        self.actions = actions
+        self.selectedCard = selectedCard
+    }
+}
+
 /// مولّد ومحلّل مواقف «وش تلعب؟».
 public enum WhatToPlayTrainer {
     public enum ScenarioError: Error, Sendable, Equatable {
@@ -341,6 +357,27 @@ public enum WhatToPlayTrainer {
     /// يقيّم اختيار المستخدم مقارنة باختيار الخبير.
     public static func evaluateChoice(card: PlayingCard, in scenario: WhatToPlayScenario) -> WhatToPlayOption? {
         scenario.options.first { $0.card == card }
+    }
+
+    /// يبني Replay قابلًا للتشغيل لقرار معيّن في موقف «وش تلعب؟».
+    public static func decisionReplay(
+        for card: PlayingCard,
+        in scenario: WhatToPlayScenario
+    ) -> WhatToPlayDecisionReplay? {
+        guard evaluateChoice(card: card, in: scenario) != nil else { return nil }
+
+        var initialState = GameState.newLocalMatch(
+            rules: scenario.state.rules,
+            dealerSeat: scenario.state.dealerSeat
+        )
+        initialState.players = scenario.state.players
+        initialState.teams = scenario.state.teams
+
+        return WhatToPlayDecisionReplay(
+            initialState: initialState,
+            actions: scenario.state.actionHistory + [.playCard(playerID: scenario.playerID, card: card)],
+            selectedCard: card
+        )
     }
 
     /// كل أوراق يد اللاعب غير القانونية في هذا الموقف، مع سبب الرفض من المحرك.

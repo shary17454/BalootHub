@@ -98,6 +98,38 @@ struct WhatToPlayTrainerTests {
         #expect(result?.rank == scenario.options.count)
     }
 
+    @Test("Replay قرار التدريب يعيد الجولة حتى الورقة المختارة")
+    func decisionReplayRebuildsScenarioAndSelectedCard() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let selected = try #require(scenario.options.last?.card)
+        let replay = try #require(WhatToPlayTrainer.decisionReplay(for: selected, in: scenario))
+
+        let replayedScenario = try GameEngine.replay(
+            initialState: replay.initialState,
+            actions: Array(replay.actions.dropLast())
+        )
+        let replayedDecision = try GameEngine.replay(
+            initialState: replay.initialState,
+            actions: replay.actions
+        )
+        let directDecision = try GameEngine.apply(
+            .playCard(playerID: scenario.playerID, card: selected),
+            to: scenario.state
+        )
+
+        #expect(replay.selectedCard == selected)
+        #expect(replayedScenario.phase == scenario.state.phase)
+        #expect(replayedScenario.currentTurnPlayerID == scenario.state.currentTurnPlayerID)
+        #expect(replayedScenario.hands[scenario.playerID] == scenario.state.hands[scenario.playerID])
+        #expect(trickSnapshot(replayedScenario.currentTrick) == trickSnapshot(scenario.state.currentTrick))
+        #expect(trickSnapshots(replayedScenario.completedTricks) == trickSnapshots(scenario.state.completedTricks))
+        #expect(replayedDecision.currentTurnPlayerID == directDecision.currentTurnPlayerID)
+        #expect(replayedDecision.hands[scenario.playerID] == directDecision.hands[scenario.playerID])
+        #expect(trickSnapshot(replayedDecision.currentTrick) == trickSnapshot(directDecision.currentTrick))
+        #expect(trickSnapshots(replayedDecision.completedTricks) == trickSnapshots(directDecision.completedTricks))
+        #expect(replayedDecision.actionHistory == directDecision.actionHistory)
+    }
+
     @Test("الأوراق غير القانونية في الموقف تأتي من سبب رفض المحرك نفسه")
     func blockedCardsUseEngineInvalidMoveReasons() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(
@@ -319,5 +351,15 @@ struct WhatToPlayTrainerTests {
                 legalOptionCount: 4
             ) == .openingLead
         )
+    }
+
+    private func trickSnapshots(_ tricks: [Trick]) -> [[String]] {
+        tricks.map { trickSnapshot($0) }
+    }
+
+    private func trickSnapshot(_ trick: Trick?) -> [String] {
+        guard let trick else { return [] }
+        return trick.playedCards.map { "\($0.playerID.uuidString):\($0.card.suit.rawValue):\($0.card.rank.rawValue)" }
+            + ["leader:\(trick.leaderSeat.rawValue)", "winner:\(trick.winnerPlayerID?.uuidString ?? "nil")"]
     }
 }

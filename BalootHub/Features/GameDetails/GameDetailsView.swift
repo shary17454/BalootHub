@@ -318,6 +318,7 @@ struct WhatToPlayTrainerView: View {
     @State private var isGeneratingScenario = false
     @State private var isRetryingCurrentScenario = false
     @State private var generationTask: Task<Void, Never>?
+    @State private var replayPresentation: WhatToPlayReplayPresentation?
 
     init(
         seed: UInt64? = nil,
@@ -495,6 +496,14 @@ struct WhatToPlayTrainerView: View {
         }
         .onDisappear {
             generationTask?.cancel()
+        }
+        .sheet(item: $replayPresentation) { presentation in
+            NavigationStack {
+                RoundReplayView(
+                    initialState: presentation.replay.initialState,
+                    actions: presentation.replay.actions
+                )
+            }
         }
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
@@ -2341,6 +2350,11 @@ struct WhatToPlayTrainerView: View {
         isRetryingCurrentScenario = false
     }
 
+    private func showDecisionReplay(for option: WhatToPlayOption, in scenario: WhatToPlayScenario) {
+        guard let replay = WhatToPlayTrainer.decisionReplay(for: option.card, in: scenario) else { return }
+        replayPresentation = WhatToPlayReplayPresentation(replay: replay)
+    }
+
     private func resultCard(_ option: WhatToPlayOption, scenario: WhatToPlayScenario) -> some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
             Label(option.isExpertChoice ? "قرار مطابق للخبير" : "تحليل اختيارك", systemImage: option.isExpertChoice ? "checkmark.seal.fill" : "lightbulb.fill")
@@ -2381,6 +2395,15 @@ struct WhatToPlayTrainerView: View {
             }
 
             optionSimulationView(option.simulation, scenario: scenario)
+
+            Button {
+                showDecisionReplay(for: option, in: scenario)
+            } label: {
+                Label("مشاهدة القرار في الإعادة".localized, systemImage: "play.rectangle.fill")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .tint(AppColor.primary)
 
             Text(option.explanation)
                 .font(AppTypography.subheadline)
@@ -3148,6 +3171,11 @@ struct HandAnalyzerView: View {
             .joined(separator: " · ")
     }
 
+}
+
+private struct WhatToPlayReplayPresentation: Identifiable {
+    let id = UUID()
+    let replay: WhatToPlayDecisionReplay
 }
 
 private struct MiniAnalysisCard: View {
