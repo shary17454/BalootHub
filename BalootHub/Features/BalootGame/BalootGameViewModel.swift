@@ -68,6 +68,7 @@ final class BalootGameViewModel {
     private(set) var tableMode: BalootTableMode
     private(set) var roundAnalysisReport: RoundAnalysisReport?
     private var revealedLocalHumanID: Player.ID?
+    private var roundReplayInitialState: GameState
 
     let variant: BalootGameVariant
     /// مستوى الخصوم الآليين المختار.
@@ -120,7 +121,9 @@ final class BalootGameViewModel {
         let profile = Self.profile(for: aiLevel)
         let initialState = Self.makeInitialState(tableMode: tableMode, rules: playRules)
         let assignments = Self.makeAIAssignments(for: initialState, selectedProfile: profile)
-        self.state = Self.state(initialState, applyingAIProfiles: assignments.profiles)
+        let configuredState = Self.state(initialState, applyingAIProfiles: assignments.profiles)
+        self.state = configuredState
+        self.roundReplayInitialState = configuredState
         self.variant = variant
         self.tableMode = tableMode
         self.rules = playRules
@@ -345,6 +348,7 @@ final class BalootGameViewModel {
         revealedLocalHumanID = nil
         state = Self.makeInitialState(tableMode: tableMode, rules: rules)
         rebuildAIAssignments()
+        roundReplayInitialState = replayInitialState(from: state)
         errorMessage = nil
         roundAnalysisReport = nil
         deal()
@@ -376,8 +380,19 @@ final class BalootGameViewModel {
     }
 
     func deal() {
+        roundReplayInitialState = replayInitialState(from: state)
         perform(.dealCards(seed: UInt64.random(in: .min ... .max)))
         advanceAI()
+    }
+
+    private func replayInitialState(from source: GameState) -> GameState {
+        GameState(
+            players: source.players,
+            teams: source.teams,
+            rules: source.rules,
+            dealerSeat: source.dealerSeat,
+            roundNumber: source.roundNumber
+        )
     }
 
     func chooseMode(_ mode: GameMode, trumpSuit: Suit?) {
@@ -506,13 +521,7 @@ final class BalootGameViewModel {
     }
 
     var currentRoundReplayInitialState: GameState {
-        GameState(
-            players: state.players,
-            teams: state.teams,
-            rules: state.rules,
-            dealerSeat: state.dealerSeat,
-            roundNumber: state.roundNumber
-        )
+        roundReplayInitialState
     }
 
     func declareProjects(_ projects: [Project]) {

@@ -142,6 +142,34 @@ final class CatalogIntegrityTests: XCTestCase {
         XCTAssertTrue(viewModel.legalBidsForHuman.contains(.hokum(suit: upSuit)))
     }
 
+    /// Replay يجب أن يبدأ من لقطة ما قبل التوزيع لا من الحالة النهائية، لأن الدورة
+    /// الميتة تنقل الموزّع للجولة التالية.
+    @MainActor
+    func testGameplayReplayInitialStateSurvivesVoidDealerRotation() throws {
+        let viewModel = BalootGameViewModel(tableMode: .localHumans, rules: .standard)
+
+        viewModel.deal()
+        let replayInitial = viewModel.currentRoundReplayInitialState
+        let startingDealer = viewModel.state.dealerSeat
+
+        for _ in 0..<8 {
+            viewModel.revealLocalHumanHand()
+            viewModel.placeBid(.pass)
+        }
+
+        XCTAssertEqual(viewModel.state.bidding.stage, .voided)
+        XCTAssertEqual(viewModel.state.dealerSeat, startingDealer.next)
+        XCTAssertEqual(replayInitial.dealerSeat, startingDealer)
+
+        let replayed = try GameEngine.replay(
+            initialState: replayInitial,
+            actions: viewModel.state.actionHistory
+        )
+        XCTAssertEqual(replayed.bidding.stage, .voided)
+        XCTAssertEqual(replayed.dealerSeat, viewModel.state.dealerSeat)
+        XCTAssertEqual(replayed.lastRoundResult, viewModel.state.lastRoundResult)
+    }
+
     /// إعدادات المجلس قد تُستخدم في المحرك لاختبارات أو دروس مبسطة، لكن شاشة اللعب
     /// النهائية لا تفصل الصن والحكم؛ تفرض مزايدة بلوت كاملة دائمًا.
     @MainActor
