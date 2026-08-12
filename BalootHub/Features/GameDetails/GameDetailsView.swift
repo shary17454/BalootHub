@@ -319,6 +319,7 @@ struct WhatToPlayTrainerView: View {
     @State private var isRetryingCurrentScenario = false
     @State private var generationTask: Task<Void, Never>?
     @State private var replayPresentation: WhatToPlayReplayPresentation?
+    @State private var pendingReviewSelection: PlayingCard?
 
     init(
         seed: UInt64? = nil,
@@ -2806,6 +2807,8 @@ struct WhatToPlayTrainerView: View {
         let requestSeed = seed
         let requestDifficulty = difficulty
         let requestFocus = preferredFocus
+        let reviewSelection = pendingReviewSelection
+        pendingReviewSelection = nil
         generationTask = Task {
             do {
                 let generated = try await WhatToPlayScenarioLoader.generate(
@@ -2815,6 +2818,10 @@ struct WhatToPlayTrainerView: View {
                 )
                 guard !Task.isCancelled else { return }
                 scenario = generated
+                if let reviewSelection {
+                    selectedOption = WhatToPlayTrainer.evaluateChoice(card: reviewSelection, in: generated)
+                    isRetryingCurrentScenario = selectedOption != nil
+                }
                 errorMessage = nil
             } catch {
                 guard !Task.isCancelled else { return }
@@ -2835,6 +2842,7 @@ struct WhatToPlayTrainerView: View {
         seed = item.seed
         preferredFocusRaw = item.focusKind?.rawValue ?? "auto"
         selectedOption = nil
+        pendingReviewSelection = item.selectedCard
         isRetryingCurrentScenario = false
         if difficulty == item.difficulty {
             generateScenario()
