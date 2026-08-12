@@ -21,6 +21,19 @@ final class RuleExplanationFormatterTests: XCTestCase {
         )
     }
 
+    func testCardSpecificOvertrumpExplanationNamesBlockedCard() {
+        let card = PlayingCard(suit: .clubs, rank: .seven)
+
+        let explanation = RuleExplanationFormatter.illegalMoveExplanation(
+            for: card,
+            reason: .mustOvertrump,
+            trumpSuit: .clubs
+        )
+
+        XCTAssertTrue(explanation.contains(card.accessibilityName))
+        XCTAssertTrue(explanation.contains("يجب أن تعلو على أعلى حكم مطروح ما دام لديك ما يعلوه.".localized))
+    }
+
     func testFollowSuitExplanationMatchesRuleLanguage() {
         let explanation = RuleExplanationFormatter.illegalMoveExplanation(
             for: .mustFollowSuit,

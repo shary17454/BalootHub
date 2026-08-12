@@ -528,7 +528,7 @@ final class BalootGameViewModel {
     func explanation(forPlaying card: PlayingCard) -> String? {
         guard let reason = moveValidationsForHuman.first(where: { $0.card == card })?.invalidReason
         else { return nil }
-        return RuleExplanationFormatter.illegalMoveExplanation(for: reason, trumpSuit: state.trumpSuit)
+        return RuleExplanationFormatter.illegalMoveExplanation(for: card, reason: reason, trumpSuit: state.trumpSuit)
     }
 
     /// يعرض تفسير المنع للاعب. تستدعيها الواجهة عند الضغط على ورقة غير قانونية.
