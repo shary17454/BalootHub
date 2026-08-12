@@ -2238,6 +2238,7 @@ struct WhatToPlayTrainerView: View {
                 InfoRow(icon: "flag.checkered", title: "النمط", value: modeText(scenario.state))
                 InfoRow(icon: "person.crop.circle.fill", title: "الدور", value: scenario.state.player(id: scenario.playerID)?.name ?? "أنت")
                 InfoRow(icon: "list.number", title: "الأكلة", value: "\(scenario.state.completedTricks.count + 1) من 8")
+                InfoRow(icon: "chart.bar.fill", title: "النقاط".localized, value: scenarioScoreText(scenario.context))
                 InfoRow(icon: "arrow.turn.up.left", title: "قراءة الدور".localized, value: turnContextText(scenario.context))
                 InfoRow(icon: "scope", title: "تركيز التدريب".localized, value: focusText(scenario.context.focusKind))
                 InfoRow(icon: "rectangle.stack.fill", title: "الأوراق القانونية".localized, value: "\(scenario.context.legalOptionCount)")
@@ -3229,6 +3230,12 @@ struct WhatToPlayTrainerView: View {
             return "أنت تفتتح الأكلة".localized
         }
         return "\("أنت ترد بعد".localized) \(context.playedCardCount) \("ورقة".localized)"
+    }
+
+    private func scenarioScoreText(_ context: WhatToPlayScenarioContext) -> String {
+        let margin = context.playerTeamPointMargin
+        let marginPrefix = margin > 0 ? "+" : ""
+        return "\("فريقنا".localized) \(context.playerTeamTrickPoints) · \("الخصم".localized) \(context.opponentTeamTrickPoints) · \(marginPrefix)\(margin)"
     }
 
     private func focusText(_ focusKind: WhatToPlayScenarioFocusKind) -> String {

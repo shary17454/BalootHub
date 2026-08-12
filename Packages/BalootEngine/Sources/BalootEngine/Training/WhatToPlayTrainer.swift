@@ -141,6 +141,9 @@ public struct WhatToPlayScenarioContext: Sendable, Equatable {
     public let mode: GameMode?
     public let trumpSuit: Suit?
     public let hasTrumpInCurrentTrick: Bool
+    public let playerTeamTrickPoints: Int
+    public let opponentTeamTrickPoints: Int
+    public let playerTeamPointMargin: Int
     public let focusKind: WhatToPlayScenarioFocusKind
 
     public init(
@@ -152,6 +155,9 @@ public struct WhatToPlayScenarioContext: Sendable, Equatable {
         mode: GameMode?,
         trumpSuit: Suit?,
         hasTrumpInCurrentTrick: Bool,
+        playerTeamTrickPoints: Int = 0,
+        opponentTeamTrickPoints: Int = 0,
+        playerTeamPointMargin: Int = 0,
         focusKind: WhatToPlayScenarioFocusKind
     ) {
         self.trickNumber = trickNumber
@@ -162,6 +168,9 @@ public struct WhatToPlayScenarioContext: Sendable, Equatable {
         self.mode = mode
         self.trumpSuit = trumpSuit
         self.hasTrumpInCurrentTrick = hasTrumpInCurrentTrick
+        self.playerTeamTrickPoints = playerTeamTrickPoints
+        self.opponentTeamTrickPoints = opponentTeamTrickPoints
+        self.playerTeamPointMargin = playerTeamPointMargin
         self.focusKind = focusKind
     }
 }
@@ -236,7 +245,7 @@ public enum WhatToPlayTrainer {
                 if state.phase == .playing, state.currentTurnPlayerID == humanID {
                     let options = try analyzeOptions(state: state, playerID: humanID, difficulty: difficulty)
                     guard options.count > 1 else { break }
-                    let context = scenarioContext(state: state, options: options)
+                    let context = scenarioContext(state: state, options: options, playerID: humanID)
                     if preferredFocus == nil || context.focusKind == preferredFocus {
                         return WhatToPlayScenario(
                             seed: seed &+ UInt64(offset),
@@ -441,11 +450,20 @@ public enum WhatToPlayTrainer {
     }
 
     public static func scenarioContext(state: GameState, options: [WhatToPlayOption]) -> WhatToPlayScenarioContext {
+        scenarioContext(state: state, options: options, playerID: state.currentTurnPlayerID)
+    }
+
+    public static func scenarioContext(
+        state: GameState,
+        options: [WhatToPlayOption],
+        playerID: Player.ID?
+    ) -> WhatToPlayScenarioContext {
         let trick = state.currentTrick
         let trumpSuit = state.trumpSuit
         let hasTrump = state.mode == .hokum
             && trumpSuit != nil
             && (trick?.playedCards.contains { $0.card.suit == trumpSuit } ?? false)
+        let scoreboard = scenarioScoreboard(state: state, playerID: playerID)
 
         return WhatToPlayScenarioContext(
             trickNumber: state.completedTricks.count + 1,
@@ -456,6 +474,9 @@ public enum WhatToPlayTrainer {
             mode: state.mode,
             trumpSuit: trumpSuit,
             hasTrumpInCurrentTrick: hasTrump,
+            playerTeamTrickPoints: scoreboard.player,
+            opponentTeamTrickPoints: scoreboard.opponent,
+            playerTeamPointMargin: scoreboard.player - scoreboard.opponent,
             focusKind: scenarioFocusKind(
                 isLeading: trick?.playedCards.isEmpty ?? true,
                 requiredSuit: trick?.requiredSuit,
@@ -463,6 +484,18 @@ public enum WhatToPlayTrainer {
                 legalOptionCount: options.count
             )
         )
+    }
+
+    private static func scenarioScoreboard(state: GameState, playerID: Player.ID?) -> (player: Int, opponent: Int) {
+        guard let playerID, let player = state.player(id: playerID) else {
+            return (0, 0)
+        }
+
+        let playerPoints = state.teamTrickPoints[player.teamID] ?? 0
+        let opponentPoints = state.teams
+            .filter { $0.id != player.teamID }
+            .reduce(0) { $0 + (state.teamTrickPoints[$1.id] ?? 0) }
+        return (playerPoints, opponentPoints)
     }
 
     public static func scenarioFocusKind(

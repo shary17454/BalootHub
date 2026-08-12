@@ -355,6 +355,14 @@ struct WhatToPlayTrainerTests {
         #expect(scenario.context.legalOptionCount == scenario.options.count)
         #expect(scenario.context.mode == scenario.state.mode)
         #expect(scenario.context.trumpSuit == scenario.state.trumpSuit)
+        let player = try #require(scenario.state.player(id: scenario.playerID))
+        let playerPoints = scenario.state.teamTrickPoints[player.teamID] ?? 0
+        let opponentPoints = scenario.state.teams
+            .filter { $0.id != player.teamID }
+            .reduce(0) { $0 + (scenario.state.teamTrickPoints[$1.id] ?? 0) }
+        #expect(scenario.context.playerTeamTrickPoints == playerPoints)
+        #expect(scenario.context.opponentTeamTrickPoints == opponentPoints)
+        #expect(scenario.context.playerTeamPointMargin == playerPoints - opponentPoints)
         #expect(
             scenario.context.focusKind == WhatToPlayTrainer.scenarioFocusKind(
                 isLeading: scenario.context.isLeading,
