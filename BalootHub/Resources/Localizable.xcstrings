@@ -57,6 +57,48 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "即将显示" } }
       }
     },
+    "جلسة تقليل القرارات المكلفة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sitzung zum Reduzieren kostspieliger Entscheidungen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Costly decision reduction session" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Sesión para reducir decisiones costosas" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Session de réduction des décisions coûteuses" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "महंगे निर्णय घटाने का सत्र" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Sesi mengurangi keputusan mahal" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Сессия снижения дорогих решений" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Maliyetli kararları azaltma oturumu" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "مہنگے فیصلے کم کرنے کی نشست" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "减少高代价决策训练" } }
+      }
+    },
+    "راجع Replay اختيارك وأفضل قرار بعد كل موقف، وابق على مستوى قريب حتى تنخفض القرارات المكلفة." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prüfe nach jedem Szenario das Replay deiner Wahl und der besten Entscheidung und bleibe auf einem nahen Niveau, bis kostspielige Entscheidungen sinken." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "After each scenario, review your choice replay and the best decision replay, and stay near your current level until costly decisions drop." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Después de cada situación, revisa la repetición de tu elección y la mejor decisión, y mantente cerca de tu nivel hasta que bajen las decisiones costosas." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Après chaque situation, revoyez le replay de votre choix et du meilleur choix, et restez près de votre niveau jusqu’à ce que les décisions coûteuses diminuent." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "हर स्थिति के बाद अपनी पसंद और सर्वोत्तम निर्णय का रीप्ले देखें, और महंगे निर्णय घटने तक अपने स्तर के पास रहें।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Setelah tiap skenario, tinjau replay pilihan Anda dan keputusan terbaik, lalu tetap di level yang dekat sampai keputusan mahal menurun." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "После каждого сценария просматривайте повтор вашего выбора и лучшего решения и оставайтесь рядом с текущим уровнем, пока дорогие решения не снизятся." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Her senaryodan sonra kendi seçiminin ve en iyi kararın tekrarını incele; maliyetli kararlar düşene kadar seviyene yakın kal." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "ہر موقف کے بعد اپنے انتخاب اور بہترین فیصلے کا Replay دیکھیں، اور مہنگے فیصلے کم ہونے تک اپنی سطح کے قریب رہیں۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "每个情境后复盘你的选择回放和最佳决策回放，并在高代价决策减少前保持接近当前水平。" } }
+      }
+    },
+    "هدف الجلسة: لا يوجد أكثر من قرار مكلف واحد." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sitzungsziel: höchstens eine kostspielige Entscheidung." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Session goal: no more than one costly decision." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Objetivo de la sesión: no más de una decisión costosa." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Objectif de session : pas plus d’une décision coûteuse." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सत्र लक्ष्य: एक से अधिक महंगा निर्णय नहीं।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Target sesi: tidak lebih dari satu keputusan mahal." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Цель сессии: не более одного дорогого решения." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Oturum hedefi: en fazla bir maliyetli karar." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "نشست کا ہدف: ایک سے زیادہ مہنگا فیصلہ نہیں۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "训练目标：高代价决策不超过一次。" } }
+      }
+    },
     "خطة تقليل القرارات المكلفة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Plan zum Reduzieren kostspieliger Entscheidungen" } },

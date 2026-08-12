@@ -2250,6 +2250,26 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(plan.successMetric, "هدف الجلسة: متوسط نقاط ضائعة أقل من 4.".localized)
     }
 
+    func testTrainingSessionPlanTargetsCostlyDecisionQuality() {
+        let attempts = [
+            attempt(daysAgo: 5, difficulty: .medium, correct: true, impact: 10, bestImpact: 10, focusKind: .openingLead),
+            attempt(daysAgo: 4, difficulty: .medium, correct: false, impact: -1, bestImpact: 10, focusKind: .followSuit),
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 9, bestImpact: 10, focusKind: .trumpPressure),
+            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: -2, bestImpact: 10, focusKind: .narrowChoice),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 10, bestImpact: 10, focusKind: .openingLead)
+        ]
+
+        let plan = WhatToPlayStatsAnalyzer.trainingSessionPlan(for: attempts)
+        let recommendation = WhatToPlayStatsAnalyzer.nextScenarioRecommendation(for: attempts)
+
+        XCTAssertEqual(plan.title, "جلسة تقليل القرارات المكلفة".localized)
+        XCTAssertEqual(plan.scenarioCount, 3)
+        XCTAssertEqual(plan.targetAverageExpectedImpact, 1)
+        XCTAssertEqual(plan.iconName, "exclamationmark.triangle.fill")
+        XCTAssertEqual(recommendation.iconName, "exclamationmark.triangle.fill")
+        XCTAssertTrue(recommendation.detail.contains("متوسط".localized))
+    }
+
     func testTrainingSessionPlanTargetsPointLeakForCautiousStyle() {
         let attempts = [
             attempt(daysAgo: 4, correct: true, impact: -4),

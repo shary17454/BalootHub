@@ -1217,6 +1217,21 @@ enum WhatToPlayStatsAnalyzer {
             )
         }
 
+        let qualitySummary = decisionQualitySummary(for: attempts)
+        if qualitySummary.trackedAttempts >= 3, qualitySummary.costlyPercent >= 30 {
+            return WhatToPlayTrainingSessionPlan(
+                difficulty: recommendation.difficulty,
+                focusKind: focusKind,
+                scenarioCount: 3,
+                targetAccuracyPercent: 67,
+                targetAverageExpectedImpact: 1,
+                title: "جلسة تقليل القرارات المكلفة".localized,
+                detail: "راجع Replay اختيارك وأفضل قرار بعد كل موقف، وابق على مستوى قريب حتى تنخفض القرارات المكلفة.".localized,
+                successMetric: "هدف الجلسة: لا يوجد أكثر من قرار مكلف واحد.".localized,
+                iconName: "exclamationmark.triangle.fill"
+            )
+        }
+
         if summary.attempts >= 3 && summary.averageLostExpectedPoints >= 4 {
             return WhatToPlayTrainingSessionPlan(
                 difficulty: recommendation.difficulty,
