@@ -55,6 +55,20 @@ struct BalootChallengeProgress: Equatable {
     }
 }
 
+struct WhatToPlayChallengeProgress: Equatable {
+    let base: BalootChallengeProgress
+    let seedSeries: [UInt64]
+    let completedSeeds: Set<UInt64>
+
+    var isComplete: Bool {
+        base.isComplete
+    }
+
+    var nextSeed: UInt64? {
+        seedSeries.first { !completedSeeds.contains($0) } ?? seedSeries.last
+    }
+}
+
 enum DailyChallengeCenter {
     static func challenges(
         for date: Date = Date(),
@@ -201,20 +215,70 @@ enum DailyChallengeCenter {
               let interval = dateInterval(for: challenge.cadence, containing: now, calendar: calendar)
         else { return nil }
 
-        let challengeSeeds = Set(whatToPlaySeedSeries(for: challenge))
-        let completed = attempts.filter { attempt in
-            attempt.createdAt >= interval.start
-                && attempt.createdAt < interval.end
-                && attempt.difficulty == difficulty
-                && attempt.focusKind == focusKind
-                && challengeSeeds.contains(attempt.replaySeed)
-                && attempt.isCorrect
-        }.count
+        let completedSeeds = completedWhatToPlaySeeds(
+            attempts: attempts,
+            interval: interval,
+            difficulty: difficulty,
+            focusKind: focusKind,
+            challengeSeeds: Set(whatToPlaySeedSeries(for: challenge))
+        )
 
         return BalootChallengeProgress(
-            completedCount: min(completed, challenge.targetCount),
+            completedCount: min(completedSeeds.count, challenge.targetCount),
             targetCount: challenge.targetCount
         )
+    }
+
+    static func whatToPlayProgress(
+        for challenge: BalootChallenge,
+        attempts: [WhatToPlayAttempt],
+        now: Date = Date(),
+        calendar: Calendar = Calendar(identifier: .gregorian)
+    ) -> WhatToPlayChallengeProgress? {
+        guard challenge.category == .tactics,
+              let difficulty = challenge.whatToPlayDifficulty,
+              let focusKind = challenge.whatToPlayFocusKind,
+              let interval = dateInterval(for: challenge.cadence, containing: now, calendar: calendar)
+        else { return nil }
+
+        let seedSeries = whatToPlaySeedSeries(for: challenge)
+        let completedSeeds = completedWhatToPlaySeeds(
+            attempts: attempts,
+            interval: interval,
+            difficulty: difficulty,
+            focusKind: focusKind,
+            challengeSeeds: Set(seedSeries)
+        )
+        let base = BalootChallengeProgress(
+            completedCount: min(completedSeeds.count, challenge.targetCount),
+            targetCount: challenge.targetCount
+        )
+
+        return WhatToPlayChallengeProgress(
+            base: base,
+            seedSeries: seedSeries,
+            completedSeeds: completedSeeds
+        )
+    }
+
+    private static func completedWhatToPlaySeeds(
+        attempts: [WhatToPlayAttempt],
+        interval: DateInterval,
+        difficulty: WhatToPlayDifficulty,
+        focusKind: WhatToPlayScenarioFocusKind,
+        challengeSeeds: Set<UInt64>
+    ) -> Set<UInt64> {
+        Set(attempts.compactMap { attempt -> UInt64? in
+            guard attempt.createdAt >= interval.start,
+                  attempt.createdAt < interval.end,
+                  attempt.difficulty == difficulty,
+                  attempt.focusKind == focusKind,
+                  attempt.isCorrect,
+                  challengeSeeds.contains(attempt.replaySeed)
+            else { return nil }
+
+            return attempt.replaySeed
+        })
     }
 
     private static func dateInterval(

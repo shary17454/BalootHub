@@ -68,6 +68,7 @@ struct DailyChallengesView: View {
 
     private func challengeCard(_ challenge: BalootChallenge) -> some View {
         let progress = DailyChallengeCenter.progress(for: challenge, attempts: attempts)
+        let whatToPlayProgress = DailyChallengeCenter.whatToPlayProgress(for: challenge, attempts: attempts)
         let isAutomaticallyCompleted = progress?.isComplete == true
         let isCompleted = completedSet.contains(challenge.id) || isAutomaticallyCompleted
 
@@ -107,7 +108,7 @@ struct DailyChallengesView: View {
             if let seed = challenge.whatToPlaySeed,
                let difficulty = challenge.whatToPlayDifficulty,
                let focusKind = challenge.whatToPlayFocusKind {
-                let nextSeed = nextWhatToPlaySeed(for: challenge, progress: progress) ?? seed
+                let nextSeed = whatToPlayProgress?.nextSeed ?? seed
                 HStack {
                     scoreBox(title: "موقف اليوم".localized, value: "\(nextSeed)")
                     scoreBox(title: "المستوى", value: difficultyTitle(difficulty))
@@ -180,13 +181,6 @@ struct DailyChallengesView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
-    }
-
-    private func nextWhatToPlaySeed(for challenge: BalootChallenge, progress: BalootChallengeProgress?) -> UInt64? {
-        let series = DailyChallengeCenter.whatToPlaySeedSeries(for: challenge)
-        guard !series.isEmpty else { return challenge.whatToPlaySeed }
-        let nextIndex = min(progress?.completedCount ?? 0, series.count - 1)
-        return series[nextIndex]
     }
 
     private func toggleCompletion(_ challengeID: String) {

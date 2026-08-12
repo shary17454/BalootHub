@@ -175,6 +175,59 @@ final class DailyChallengeCenterTests: XCTestCase {
         XCTAssertTrue(progress.isComplete)
     }
 
+    func testWhatToPlayProgressCountsDuplicateChallengeSeedOnce() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = try XCTUnwrap(DailyChallengeCenter.dailyChallenges(for: date, calendar: calendar).first { $0.category == .tactics })
+        let difficulty = try XCTUnwrap(challenge.whatToPlayDifficulty)
+        let focusKind = try XCTUnwrap(challenge.whatToPlayFocusKind)
+        let seed = try XCTUnwrap(challenge.whatToPlaySeed)
+        let laterSeed = seed &+ UInt64(min(1, challenge.targetCount - 1))
+        let dayStart = calendar.startOfDay(for: date)
+        let attempts = [
+            attempt(at: dayStart.addingTimeInterval(60), difficulty: difficulty, focusKind: focusKind, seed: seed),
+            attempt(at: dayStart.addingTimeInterval(120), difficulty: difficulty, focusKind: focusKind, seed: seed),
+            attempt(at: dayStart.addingTimeInterval(180), difficulty: difficulty, focusKind: focusKind, seed: laterSeed)
+        ]
+
+        let progress = try XCTUnwrap(DailyChallengeCenter.progress(
+            for: challenge,
+            attempts: attempts,
+            now: date,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(progress.completedCount, min(2, challenge.targetCount))
+    }
+
+    func testWhatToPlayProgressReturnsFirstMissingChallengeSeed() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = challengeWithWhatToPlaySeed(targetCount: 3)
+        let difficulty = try XCTUnwrap(challenge.whatToPlayDifficulty)
+        let focusKind = try XCTUnwrap(challenge.whatToPlayFocusKind)
+        let seed = try XCTUnwrap(challenge.whatToPlaySeed)
+        let skippedSeed = seed &+ 2
+        let dayStart = calendar.startOfDay(for: date)
+        let attempts = [
+            attempt(at: dayStart.addingTimeInterval(60), difficulty: difficulty, focusKind: focusKind, seed: seed),
+            attempt(at: dayStart.addingTimeInterval(120), difficulty: difficulty, focusKind: focusKind, seed: skippedSeed)
+        ]
+
+        let progress = try XCTUnwrap(DailyChallengeCenter.whatToPlayProgress(
+            for: challenge,
+            attempts: attempts,
+            now: date,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(progress.base.completedCount, min(2, challenge.targetCount))
+        XCTAssertEqual(progress.nextSeed, seed &+ 1)
+        XCTAssertTrue(progress.completedSeeds.contains(seed))
+        XCTAssertTrue(progress.completedSeeds.contains(skippedSeed))
+        XCTAssertFalse(progress.completedSeeds.contains(seed &+ 1))
+    }
+
     func testWhatToPlayProgressIgnoresMatchingTrainingOutsideChallengeSeedSeries() throws {
         let calendar = Calendar(identifier: .gregorian)
         let date = Date(timeIntervalSince1970: 1_785_888_000)
@@ -225,6 +278,21 @@ final class DailyChallengeCenterTests: XCTestCase {
             bestExpectedImpact: 1,
             focusKind: focusKind,
             outcome: isCorrect ? .winsTrick : .losesTrick
+        )
+    }
+
+    private func challengeWithWhatToPlaySeed(targetCount: Int) -> BalootChallenge {
+        BalootChallenge(
+            id: "test-what-to-play",
+            cadence: .daily,
+            category: .tactics,
+            title: "وش تلعب؟",
+            detail: "اختبار",
+            targetCount: targetCount,
+            rewardTitle: "اختبار",
+            whatToPlaySeed: 9_000_000,
+            whatToPlayDifficulty: .medium,
+            whatToPlayFocusKind: .openingLead
         )
     }
 }
