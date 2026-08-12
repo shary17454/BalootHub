@@ -60,11 +60,12 @@ public struct BiddingPolicy: Sendable, Equatable {
         // الفريق بدل أن تقوّيه.
         let partnerHoldsBuy = partnerOwnsCurrentBuy(state: state)
 
-        let evaluation = HandEvaluator.evaluate(hand: hand)
+        let purchaseHand = Self.purchaseEvaluationHand(hand: hand, state: state)
+        let evaluation = HandEvaluator.evaluate(hand: purchaseHand)
         var best: (bid: Bid, margin: Int)?
 
         for bid in legalBids where bid.isBuy {
-            guard let score = score(for: bid, hand: hand, evaluation: evaluation) else { continue }
+            guard let score = score(for: bid, hand: purchaseHand, evaluation: evaluation) else { continue }
             let threshold = self.threshold(for: bid, state: state) + (partnerHoldsBuy ? partnerOverbidPenalty : 0)
             let margin = score - threshold
             guard margin >= 0 else { continue }
@@ -72,6 +73,21 @@ public struct BiddingPolicy: Sendable, Equatable {
         }
 
         return best?.bid ?? .pass
+    }
+
+    /// اليد المعروفة التي يملكها اللاعب عند تقييم الشراء في دورة المزايدة الكاملة.
+    ///
+    /// في البلوت الكامل لا يشتري اللاعب بخمس أوراق فقط: المشتري يأخذ الورقة المكشوفة
+    /// بعد استقرار الشراء. لذلك يجب أن تدخل هذه الورقة في تقييم شراء الصن/الحكم،
+    /// وإلا سيمرّر الوكيل يدًا صالحة لمجرد أن الورقة التي ستدخل يده لم تُحسب.
+    static func purchaseEvaluationHand(hand: [PlayingCard], state: GameState) -> [PlayingCard] {
+        guard state.rules.biddingStyle == .full,
+              state.phase == .bidding,
+              let upCard = state.bidding.upCard,
+              !hand.contains(upCard)
+        else { return hand }
+
+        return hand + [upCard]
     }
 
     /// فارق إضافي مطلوب للمزايدة فوق شراء الشريك.

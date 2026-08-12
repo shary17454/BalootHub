@@ -92,6 +92,39 @@ struct RoundAnalysisTests {
         #expect(report.scoreOutOf100 < 100)
     }
 
+    @Test("تحليل المزايدة يحسب الورقة المكشوفة ضمن يد المشتري")
+    func biddingAnalysisIncludesUpCardForPurchaseEvaluation() throws {
+        var rules = BalootRulesConfiguration.standard
+        rules.multipliersEnabled = false
+        rules.projectsRequireDeclaration = false
+
+        let initial = GameState.newLocalMatch(rules: rules)
+        var state = try GameEngine.apply(.dealCards(seed: 31), to: initial)
+        let playerID = try #require(state.currentTurnPlayerID)
+        state.bidding.upCard = PlayingCard(suit: .spades, rank: .queen)
+        state.hands[playerID] = [
+            PlayingCard(suit: .spades, rank: .jack),
+            PlayingCard(suit: .spades, rank: .nine),
+            PlayingCard(suit: .hearts, rank: .seven),
+            PlayingCard(suit: .diamonds, rank: .eight),
+            PlayingCard(suit: .clubs, rank: .seven)
+        ]
+        let biddingSnapshot = state
+
+        state = try GameEngine.apply(.placeBid(playerID: playerID, bid: .hokum(suit: .spades)), to: state)
+
+        let report = try RoundAnalyzer.analyze(
+            initialState: biddingSnapshot,
+            actions: [.placeBid(playerID: playerID, bid: .hokum(suit: .spades))],
+            playerID: playerID
+        )
+
+        let decision = try #require(report.biddingDecisions.first)
+        #expect(decision.bid == .hokum(suit: .spades))
+        #expect(decision.recommendedBid == .hokum(suit: .spades))
+        #expect(decision.matchedRecommendation)
+    }
+
     @Test("تحليل الجولة يرصد فرص المشاريع التي لم تُعلن")
     func missedProjectDeclarationIsReportedAsLostOpportunity() throws {
         let scenario = try missedProjectScenario()

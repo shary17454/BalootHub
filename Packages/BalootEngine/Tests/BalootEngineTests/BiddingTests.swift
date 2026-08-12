@@ -208,6 +208,28 @@ struct BiddingCycleTests {
             try GameEngine.apply(.chooseMode(playerID: playerID, mode: .sun, trumpSuit: nil), to: state)
         }
     }
+
+    @Test("تقييم شراء AI يحسب الورقة المكشوفة التي سيأخذها المشتري")
+    func aiBidEvaluationIncludesUpCardForBuyer() throws {
+        var state = GameState.newLocalMatch(rules: .standard)
+        state = try GameEngine.apply(.dealCards(seed: 31), to: state)
+
+        let playerID = try #require(state.currentTurnPlayerID)
+        state.bidding.upCard = PlayingCard(suit: .spades, rank: .queen)
+        let hand = [
+            PlayingCard(suit: .spades, rank: .jack),
+            PlayingCard(suit: .spades, rank: .nine),
+            PlayingCard(suit: .hearts, rank: .seven),
+            PlayingCard(suit: .diamonds, rank: .eight),
+            PlayingCard(suit: .clubs, rank: .seven)
+        ]
+        state.hands[playerID] = hand
+
+        let legal = GameEngine.legalBids(for: playerID, state: state)
+
+        #expect(HandEvaluator.hokumScore(hand: hand, trumpSuit: .spades) == Int.min)
+        #expect(BiddingPolicy.standard.chooseBid(hand: hand, legalBids: legal, state: state) == .hokum(suit: .spades))
+    }
 }
 
 // MARK: - المضاعفات
