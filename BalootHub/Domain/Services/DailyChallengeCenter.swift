@@ -136,6 +136,15 @@ enum DailyChallengeCenter {
         var generator = ChallengeSeededGenerator(seed: weekKey)
         let streakTarget = generator.nextInt(in: 3...5)
         let academyTarget = generator.nextInt(in: 4...8)
+        let tacticsTarget = generator.nextInt(in: 5...9)
+        let tacticsDifficulty = WhatToPlayDifficulty.allCases[generator.nextInt(in: 0...(WhatToPlayDifficulty.allCases.count - 1))]
+        let tacticsFocus = WhatToPlayScenarioFocusKind.allCases[generator.nextInt(in: 0...(WhatToPlayScenarioFocusKind.allCases.count - 1))]
+        let tacticsSeed = weeklyWhatToPlaySeed(
+            for: date,
+            calendar: calendar,
+            difficulty: tacticsDifficulty,
+            focusKind: tacticsFocus
+        )
         return [
             makeChallenge(
                 id: "weekly-\(weekKey)-streak-\(generator.nextInt(in: 3...7))",
@@ -154,6 +163,18 @@ enum DailyChallengeCenter {
                 detail: "أكمل \(academyTarget) دروس تفاعلية من أكاديمية البلوت.",
                 targetCount: academyTarget,
                 rewardTitle: "لقب طالب المجلس"
+            ),
+            makeChallenge(
+                id: "weekly-\(weekKey)-what-play-\(generator.nextInt(in: 5...11))",
+                cadence: .weekly,
+                category: .tactics,
+                title: "شيخ القرار",
+                detail: "حل \(tacticsTarget) مواقف من مدرب وش تلعب خلال الأسبوع بنفس مسار التركيز.",
+                targetCount: tacticsTarget,
+                rewardTitle: "وسام التكتيك",
+                whatToPlaySeed: tacticsSeed,
+                whatToPlayDifficulty: tacticsDifficulty,
+                whatToPlayFocusKind: tacticsFocus
             )
         ]
     }
@@ -193,6 +214,17 @@ enum DailyChallengeCenter {
         let difficultyComponent = UInt64(WhatToPlayDifficulty.allCases.firstIndex(of: difficulty) ?? 0) * 1_000_000
         let focusComponent = UInt64(WhatToPlayScenarioFocusKind.allCases.firstIndex(of: focusKind) ?? 0) * 100_000
         return 7_000_000 + dailySeed(for: date, calendar: calendar) + difficultyComponent + focusComponent
+    }
+
+    static func weeklyWhatToPlaySeed(
+        for date: Date = Date(),
+        calendar: Calendar = Calendar(identifier: .gregorian),
+        difficulty: WhatToPlayDifficulty,
+        focusKind: WhatToPlayScenarioFocusKind
+    ) -> UInt64 {
+        let difficultyComponent = UInt64(WhatToPlayDifficulty.allCases.firstIndex(of: difficulty) ?? 0) * 1_000_000
+        let focusComponent = UInt64(WhatToPlayScenarioFocusKind.allCases.firstIndex(of: focusKind) ?? 0) * 100_000
+        return 8_000_000 + weeklySeed(for: date, calendar: calendar) + difficultyComponent + focusComponent
     }
 
     static func whatToPlaySeedSeries(for challenge: BalootChallenge) -> [UInt64] {

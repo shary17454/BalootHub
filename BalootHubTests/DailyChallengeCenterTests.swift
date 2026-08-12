@@ -49,6 +49,53 @@ final class DailyChallengeCenterTests: XCTestCase {
         XCTAssertTrue(firstIDs.isDisjoint(with: nextWeekIDs))
     }
 
+    func testWeeklyWhatToPlayChallengeCarriesDeterministicScenarioRequest() throws {
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = DailyChallengeCenter.weeklyChallenges(for: date).first { $0.category == .tactics }
+
+        let tactics = try XCTUnwrap(challenge)
+        let seed = try XCTUnwrap(tactics.whatToPlaySeed)
+        let difficulty = try XCTUnwrap(tactics.whatToPlayDifficulty)
+        let focusKind = try XCTUnwrap(tactics.whatToPlayFocusKind)
+
+        XCTAssertEqual(tactics.cadence, .weekly)
+        XCTAssertEqual(
+            seed,
+            DailyChallengeCenter.weeklyWhatToPlaySeed(
+                for: date,
+                difficulty: difficulty,
+                focusKind: focusKind
+            )
+        )
+        XCTAssertEqual(DailyChallengeCenter.whatToPlaySeedSeries(for: tactics).count, tactics.targetCount)
+    }
+
+    func testWeeklyWhatToPlayProgressCountsMatchingAttemptsInsideChallengeWeek() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = try XCTUnwrap(DailyChallengeCenter.weeklyChallenges(for: date, calendar: calendar).first { $0.category == .tactics })
+        let difficulty = try XCTUnwrap(challenge.whatToPlayDifficulty)
+        let focusKind = try XCTUnwrap(challenge.whatToPlayFocusKind)
+        let seed = try XCTUnwrap(challenge.whatToPlaySeed)
+        let weekStart = try XCTUnwrap(calendar.dateInterval(of: .weekOfYear, for: date)?.start)
+        let attempts = [
+            attempt(at: weekStart.addingTimeInterval(60), difficulty: difficulty, focusKind: focusKind, seed: seed),
+            attempt(at: weekStart.addingTimeInterval(120), difficulty: difficulty, focusKind: focusKind, seed: seed &+ 1),
+            attempt(at: weekStart.addingTimeInterval(-60), difficulty: difficulty, focusKind: focusKind, seed: seed &+ 2),
+            attempt(at: weekStart.addingTimeInterval(180), difficulty: difficulty, focusKind: focusKind, seed: seed &+ 2, isCorrect: false)
+        ]
+
+        let progress = try XCTUnwrap(DailyChallengeCenter.progress(
+            for: challenge,
+            attempts: attempts,
+            now: date,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(progress.completedCount, min(2, challenge.targetCount))
+        XCTAssertEqual(progress.targetCount, challenge.targetCount)
+    }
+
     func testGeneratedChallengesHaveUniqueIDsAndTargets() {
         let challenges = DailyChallengeCenter.challenges(for: Date(timeIntervalSince1970: 1_785_888_000))
         let ids = challenges.map(\.id)
