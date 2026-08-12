@@ -484,6 +484,14 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: trainingSessionPlan)
     }
 
+    private var trainingSessionReview: WhatToPlayTrainingSessionReview {
+        WhatToPlayStatsAnalyzer.trainingSessionReview(
+            for: trainingSessionProgress,
+            attempts: attempts,
+            plan: trainingSessionPlan
+        )
+    }
+
     private var preferredFocus: WhatToPlayScenarioFocusKind? {
         WhatToPlayScenarioFocusKind(rawValue: preferredFocusRaw)
     }
@@ -745,6 +753,7 @@ struct WhatToPlayTrainerView: View {
                 .fixedSize(horizontal: false, vertical: true)
 
             trainingSessionProgressView(progress)
+            trainingSessionReviewView(trainingSessionReview)
         }
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
@@ -1004,6 +1013,31 @@ struct WhatToPlayTrainerView: View {
             }
         }
         .padding(.top, AppSpacing.xs)
+    }
+
+    private func trainingSessionReviewView(_ review: WhatToPlayTrainingSessionReview) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(review.title)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(review.detail)
+                    .font(.caption2)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("\("المستوى".localized): \(review.difficulty?.displayTitle ?? "تلقائي".localized) · \("تركيز التدريب".localized): \(review.focusKind.map(focusTitle) ?? "تلقائي".localized)")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(AppColor.accent)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.85)
+            }
+        } icon: {
+            Image(systemName: review.iconName)
+                .foregroundStyle(AppColor.accent)
+        }
+        .padding(AppSpacing.sm)
+        .background(AppColor.accent.opacity(0.10), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
     }
 
     private func sessionTargetBadge(title: String, isMet: Bool) -> some View {

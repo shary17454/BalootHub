@@ -3118,6 +3118,54 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.reviewItem?.focusKind, .followSuit)
     }
 
+    func testTrainingSessionReviewStartsWithDeterministicPlanSeed() {
+        let plan = sessionPlan(difficulty: .easy, focusKind: .openingLead, count: 3, target: 67)
+
+        let review = WhatToPlayStatsAnalyzer.trainingSessionReview(for: [], plan: plan)
+
+        XCTAssertEqual(review.action, .start)
+        XCTAssertEqual(review.title, "ابدأ خطة المدرب".localized)
+        XCTAssertEqual(review.nextSeed, WhatToPlayStatsAnalyzer.nextTrainingSessionSeed(for: [], plan: plan))
+        XCTAssertEqual(review.difficulty, .easy)
+        XCTAssertEqual(review.focusKind, .openingLead)
+        XCTAssertNil(review.replaySeed)
+    }
+
+    func testTrainingSessionReviewReplaysWorstMistakeBeforeRepeating() {
+        let plan = sessionPlan(difficulty: .medium, focusKind: .followSuit, count: 3, target: 67)
+        let attempts = [
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 2, bestImpact: 2, focusKind: .followSuit, seed: 101),
+            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: -4, bestImpact: 5, focusKind: .followSuit, seed: 202),
+            attempt(daysAgo: 1, difficulty: .medium, correct: false, impact: 1, bestImpact: 4, focusKind: .followSuit, seed: 303)
+        ]
+
+        let review = WhatToPlayStatsAnalyzer.trainingSessionReview(for: attempts, plan: plan)
+
+        XCTAssertEqual(review.action, .replayMistake)
+        XCTAssertEqual(review.title, "راجع الخطأ الأعلى أثرًا".localized)
+        XCTAssertEqual(review.replaySeed, 202)
+        XCTAssertEqual(review.nextSeed, 202)
+        XCTAssertEqual(review.difficulty, .medium)
+        XCTAssertEqual(review.focusKind, .followSuit)
+    }
+
+    func testTrainingSessionReviewMovesToNextChallengeAfterAchievement() {
+        let plan = sessionPlan(difficulty: .easy, count: 3, target: 67, impactTarget: 1)
+        let attempts = [
+            attempt(daysAgo: 3, difficulty: .easy, correct: true, impact: 2, bestImpact: 2, seed: 11),
+            attempt(daysAgo: 2, difficulty: .easy, correct: true, impact: 2, bestImpact: 2, seed: 12),
+            attempt(daysAgo: 1, difficulty: .easy, correct: true, impact: 2, bestImpact: 2, seed: 13)
+        ]
+
+        let review = WhatToPlayStatsAnalyzer.trainingSessionReview(for: attempts, plan: plan)
+
+        XCTAssertEqual(review.action, .nextChallenge)
+        XCTAssertEqual(review.title, "افتح تحدي أقوى".localized)
+        XCTAssertEqual(review.difficulty, .hard)
+        XCTAssertNotNil(review.nextSeed)
+        XCTAssertNil(review.replaySeed)
+    }
+
     func testCoachingTipForEmptyAttemptsEncouragesBaseline() {
         let tip = WhatToPlayStatsAnalyzer.coachingTip(for: [])
 

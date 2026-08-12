@@ -368,6 +368,25 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let gradeReasonDetail: String
 }
 
+enum WhatToPlayTrainingSessionReviewAction: Equatable {
+    case start
+    case continueSession
+    case replayMistake
+    case repeatSession
+    case nextChallenge
+}
+
+struct WhatToPlayTrainingSessionReview: Equatable {
+    let action: WhatToPlayTrainingSessionReviewAction
+    let title: String
+    let detail: String
+    let iconName: String
+    let replaySeed: UInt64?
+    let nextSeed: UInt64?
+    let difficulty: WhatToPlayDifficulty?
+    let focusKind: WhatToPlayScenarioFocusKind?
+}
+
 enum WhatToPlayDecisionInsightKind: Equatable {
     case expertMatch
     case closeAlternative
@@ -1767,6 +1786,84 @@ enum WhatToPlayStatsAnalyzer {
             gradeReasonTitle: grade.reasonTitle,
             gradeReasonDetail: grade.reasonDetail
         )
+    }
+
+    static func trainingSessionReview(
+        for attempts: [WhatToPlayAttempt],
+        plan: WhatToPlayTrainingSessionPlan
+    ) -> WhatToPlayTrainingSessionReview {
+        let progress = trainingSessionProgress(for: attempts, plan: plan)
+        return trainingSessionReview(for: progress, attempts: attempts, plan: plan)
+    }
+
+    static func trainingSessionReview(
+        for progress: WhatToPlayTrainingSessionProgress,
+        attempts: [WhatToPlayAttempt],
+        plan: WhatToPlayTrainingSessionPlan
+    ) -> WhatToPlayTrainingSessionReview {
+        switch progress.state {
+        case .notStarted:
+            return WhatToPlayTrainingSessionReview(
+                action: .start,
+                title: "ابدأ خطة المدرب".localized,
+                detail: "ابدأ أول موقف من نفس الخطة حتى يقيس المدرب الدقة والأثر من بيانات فعلية.".localized,
+                iconName: "play.circle.fill",
+                replaySeed: nil,
+                nextSeed: nextTrainingSessionSeed(for: attempts, plan: plan),
+                difficulty: plan.difficulty,
+                focusKind: plan.focusKind
+            )
+        case .inProgress:
+            return WhatToPlayTrainingSessionReview(
+                action: .continueSession,
+                title: "أكمل نفس الجلسة".localized,
+                detail: progress.nextStepDetail,
+                iconName: progress.nextStepIconName,
+                replaySeed: nil,
+                nextSeed: nextTrainingSessionSeed(for: attempts, plan: plan),
+                difficulty: plan.difficulty,
+                focusKind: plan.focusKind
+            )
+        case .achieved:
+            let recommendation = nextScenarioRecommendation(for: attempts)
+            return WhatToPlayTrainingSessionReview(
+                action: .nextChallenge,
+                title: "افتح تحدي أقوى".localized,
+                detail: "\("نتيجة الجلسة".localized): \(progress.gradePercent)/100. \("ابدأ موقفًا جديدًا بالمستوى المقترح بدل تكرار خطة أتقنتها.".localized)",
+                iconName: "arrow.up.circle.fill",
+                replaySeed: nil,
+                nextSeed: microDrillSeed(
+                    attempts: attempts,
+                    difficulty: recommendation.difficulty,
+                    focusKind: recommendation.focusKind
+                ),
+                difficulty: recommendation.difficulty,
+                focusKind: recommendation.focusKind
+            )
+        case .needsRepeat:
+            if let reviewItem = progress.reviewItem {
+                return WhatToPlayTrainingSessionReview(
+                    action: .replayMistake,
+                    title: "راجع الخطأ الأعلى أثرًا".localized,
+                    detail: "\("ابدأ بإعادة موقف".localized) \(reviewItem.seed) \("قبل تكرار الجلسة؛ هذا يربط التدريب بسبب الخسارة لا بعدد المحاولات فقط.".localized)",
+                    iconName: reviewItem.iconName,
+                    replaySeed: reviewItem.seed,
+                    nextSeed: reviewItem.seed,
+                    difficulty: reviewItem.difficulty,
+                    focusKind: reviewItem.focusKind
+                )
+            }
+            return WhatToPlayTrainingSessionReview(
+                action: .repeatSession,
+                title: "كرر الخطة نفسها".localized,
+                detail: progress.nextStepDetail,
+                iconName: "arrow.counterclockwise.circle.fill",
+                replaySeed: nil,
+                nextSeed: nextTrainingSessionSeed(for: attempts, plan: plan),
+                difficulty: plan.difficulty,
+                focusKind: plan.focusKind
+            )
+        }
     }
 
     private static func uniqueMatchingTrainingAttempts(
