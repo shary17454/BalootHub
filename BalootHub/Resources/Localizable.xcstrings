@@ -21422,6 +21422,16 @@
         }
       }
     },
+    "تقييم القرار" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Decision rating"
+          }
+        }
+      }
+    },
     "قلل القرارات المكلفة" : {
       "localizations" : {
         "en" : {

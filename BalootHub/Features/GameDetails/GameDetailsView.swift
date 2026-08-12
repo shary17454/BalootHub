@@ -2163,6 +2163,9 @@ struct WhatToPlayTrainerView: View {
                         if let valueLossTitle = content.valueLossTitle {
                             shareChip("\("شدة خسارة القيمة".localized): \(valueLossTitle)")
                         }
+                        if let decisionQualityTitle = content.decisionQualityTitle {
+                            shareChip("\("تقييم القرار".localized): \(decisionQualityTitle)")
+                        }
                         if let lostAgainstSecondBestPoints = content.lostAgainstSecondBestPoints {
                             shareChip("\("فارق عن ثاني أفضل".localized): \(lostAgainstSecondBestPoints)")
                         }
