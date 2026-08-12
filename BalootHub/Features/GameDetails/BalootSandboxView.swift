@@ -715,7 +715,11 @@ struct BalootSandboxView: View {
     }
 
     private func legalCardsText() -> String {
-        guard let cards = try? BalootSandbox.legalCards(configuration: configuration), !cards.isEmpty else {
+        let cards: [PlayingCard] = (try? BalootSandbox.legalMoves(configuration: configuration).compactMap { action in
+            guard case .playCard(_, let card) = action else { return nil }
+            return card
+        }) ?? []
+        guard !cards.isEmpty else {
             return "لا يوجد".localized
         }
         return cards.map(\.accessibilityName).joined(separator: "، ")

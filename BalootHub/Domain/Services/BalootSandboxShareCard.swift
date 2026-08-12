@@ -59,12 +59,16 @@ enum BalootSandboxShareCard {
     }
 
     private static func legalCards(configuration: BalootSandboxConfiguration) -> [PlayingCard] {
-        (try? BalootSandbox.legalCards(configuration: configuration))?.sorted {
+        let cards: [PlayingCard] = (try? BalootSandbox.legalMoves(configuration: configuration).compactMap { action in
+            guard case .playCard(_, let card) = action else { return nil }
+            return card
+        }) ?? []
+        return cards.sorted {
             if $0.suit.ordinal != $1.suit.ordinal {
                 return $0.suit.ordinal < $1.suit.ordinal
             }
             return $0.rank.ordinal < $1.rank.ordinal
-        } ?? []
+        }
     }
 
     private static func teamScore(

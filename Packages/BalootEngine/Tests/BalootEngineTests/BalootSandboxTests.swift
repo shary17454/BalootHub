@@ -29,6 +29,7 @@ struct BalootSandboxTests {
 
         let state = try BalootSandbox.makeState(configuration: configuration)
         let legalCards = try BalootSandbox.legalCards(configuration: configuration)
+        let legalMoves = try BalootSandbox.legalMoves(configuration: configuration)
 
         #expect(state.mode == .sun)
         #expect(state.trumpSuit == nil)
@@ -37,6 +38,9 @@ struct BalootSandboxTests {
             PlayingCard(suit: .hearts, rank: .jack),
             PlayingCard(suit: .clubs, rank: .ace)
         ])
+        #expect(legalMoves == legalCards.map {
+            .playCard(playerID: BalootSandbox.playerID(for: configuration.currentTurnSeat), card: $0)
+        })
     }
 
     @Test("الموقف اليدوي يمكن أن يبدأ أكلة فارغة من أي مقعد")

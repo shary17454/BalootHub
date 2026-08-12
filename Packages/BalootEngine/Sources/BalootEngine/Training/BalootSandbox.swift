@@ -203,8 +203,15 @@ public enum BalootSandbox {
     }
 
     public static func legalCards(configuration: BalootSandboxConfiguration) throws -> [PlayingCard] {
+        try legalMoves(configuration: configuration).compactMap { action in
+            guard case .playCard(_, let card) = action else { return nil }
+            return card
+        }
+    }
+
+    public static func legalMoves(configuration: BalootSandboxConfiguration) throws -> [GameAction] {
         let state = try makeState(configuration: configuration)
-        return GameEngine.legalCards(for: playerID(for: configuration.currentTurnSeat), state: state)
+        return GameEngine.legalMoves(for: playerID(for: configuration.currentTurnSeat), state: state)
     }
 
     public static func suggestedProjectDeclaration(
