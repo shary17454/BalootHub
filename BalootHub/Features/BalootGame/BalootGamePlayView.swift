@@ -512,6 +512,13 @@ struct BalootGamePlayView: View {
                         value: biddingAnalysisValue(bidding)
                     )
                 }
+                if report.needsBiddingReview {
+                    analysisRow(
+                        icon: "magnifyingglass.circle.fill",
+                        title: "مراجعة المزايدة".localized,
+                        value: "\(report.biddingMistakeCount) · \(report.biddingLostPoints) \("نقطة".localized)"
+                    )
+                }
                 if let missedProject = report.projectOpportunities.first(where: { !$0.capturedAllProjects }) {
                     analysisRow(
                         icon: "sparkles",

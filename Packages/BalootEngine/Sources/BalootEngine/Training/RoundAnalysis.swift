@@ -102,6 +102,21 @@ public struct RoundAnalysisReport: Sendable, Equatable {
         let matches = decisions.filter(\.matchedExpert).count
         return Double(matches) / Double(decisions.count)
     }
+
+    /// عدد قرارات المزايدة التي خالفت تقييم اليد والخيارات القانونية.
+    public var biddingMistakeCount: Int {
+        biddingDecisions.filter { !$0.matchedRecommendation }.count
+    }
+
+    /// النقاط التقديرية الضائعة من قرارات المزايدة فقط.
+    public var biddingLostPoints: Int {
+        biddingDecisions.reduce(0) { $0 + $1.estimatedLostPoints }
+    }
+
+    /// هل تحتاج الجولة إلى مراجعة مزايدة قبل مراجعة الأكلات؟
+    public var needsBiddingReview: Bool {
+        biddingMistakeCount > 0 && biddingLostPoints >= 4
+    }
 }
 
 /// يعيد تشغيل الجولة من سجل الأفعال ويقارن قرارات لاعب محدد بقرار الخبير.

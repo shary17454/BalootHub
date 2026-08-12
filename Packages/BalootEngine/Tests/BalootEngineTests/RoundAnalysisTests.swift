@@ -40,6 +40,41 @@ struct RoundAnalysisTests {
         #expect(first == second)
     }
 
+    @Test("مؤشر مراجعة المزايدة يتفعل عند فاقد مزايدة مؤثر")
+    func biddingReviewFlagRequiresMeaningfulBiddingLoss() {
+        let team = Team(name: "أ")
+        let player = Player(name: "لاعب", kind: .human, seat: .south, teamID: team.id)
+        let decision = RoundBiddingDecisionAnalysis(
+            stepIndex: 1,
+            playerID: player.id,
+            bid: .pass,
+            recommendedBid: .sun,
+            legalBids: [.pass, .sun],
+            handStrengthScore: 42,
+            estimatedLostPoints: 6,
+            explanation: "اختبار"
+        )
+        let report = RoundAnalysisReport(
+            playerID: player.id,
+            scoreOutOf100: 70,
+            decisions: [],
+            biddingDecisions: [decision],
+            projectOpportunities: [],
+            multiplierDecisions: [],
+            bestDecision: nil,
+            worstDecision: nil,
+            totalEstimatedLostPoints: 6,
+            tacticalMistakes: [],
+            strengths: [],
+            weaknesses: [],
+            tips: []
+        )
+
+        #expect(report.biddingMistakeCount == 1)
+        #expect(report.biddingLostPoints == 6)
+        #expect(report.needsBiddingReview)
+    }
+
     @Test("اختيار غير الأفضل يظهر في أسوأ قرار")
     func nonExpertChoiceCanBeReportedAsWorstDecision() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
@@ -87,6 +122,9 @@ struct RoundAnalysisTests {
         #expect(report.biddingDecisions.first?.matchedRecommendation == false)
         #expect((report.biddingDecisions.first?.estimatedLostPoints ?? 0) > 0)
         #expect(report.totalEstimatedLostPoints == report.biddingDecisions.first?.estimatedLostPoints)
+        #expect(report.biddingMistakeCount == 1)
+        #expect(report.biddingLostPoints == report.biddingDecisions.first?.estimatedLostPoints)
+        #expect(report.needsBiddingReview == (report.biddingLostPoints >= 4))
         #expect(report.tacticalMistakes.contains { $0.contains("في المزايدة") })
         #expect(report.tips.contains { $0.contains("راجع قرار المزايدة") })
         #expect(report.scoreOutOf100 < 100)
