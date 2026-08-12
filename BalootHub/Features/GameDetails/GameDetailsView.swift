@@ -194,6 +194,18 @@ struct GameDetailsView: View {
                 .controlSize(.large)
             }
 
+            if item.slug == "baloot-career-mode" {
+                Button {
+                    appEnvironment.navigate(to: .careerMode, tab: appEnvironment.selectedTab)
+                } label: {
+                    Label("فتح المسيرة".localized, systemImage: "flag.checkered")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(AppColor.primary)
+                .controlSize(.large)
+            }
+
             if item.slug == "offline-tournaments" {
                 Button {
                     appEnvironment.navigate(to: .offlineTournaments, tab: appEnvironment.selectedTab)

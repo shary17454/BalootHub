@@ -83,6 +83,8 @@ struct RootTabView: View {
             DailyChallengesView()
         case .achievements:
             AchievementsView()
+        case .careerMode:
+            CareerModeView()
         case .offlineTournaments:
             OfflineTournamentsView()
         case .balootSandbox:

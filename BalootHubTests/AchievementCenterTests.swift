@@ -226,6 +226,53 @@ final class AchievementCenterTests: XCTestCase {
         )
     }
 
+    func testCareerProgressStartsAsNewcomerWithFirstMatchNextStep() {
+        let summary = CareerProgressAnalyzer.summarize()
+
+        XCTAssertEqual(summary.xp, 0)
+        XCTAssertEqual(summary.rank, .newcomer)
+        XCTAssertEqual(summary.nextRank, .majlisRegular)
+        XCTAssertEqual(summary.progressToNextRank, 0)
+        XCTAssertEqual(summary.completedMatches, 0)
+        XCTAssertEqual(summary.nextStepTitle, "ابدأ أول مباراة".localized)
+        XCTAssertTrue(summary.unlocks.allSatisfy { !$0.isUnlocked })
+    }
+
+    func testCareerProgressAccumulatesXPAndUnlocksFromLocalData() {
+        let session = makeScoreSession(
+            status: .finished,
+            rounds: [
+                ScoreRound(roundNumber: 1, mode: .hokum, teamOneBaseScore: 100, teamTwoBaseScore: 62)
+            ]
+        )
+        let whatToPlayAttempts = (0..<10).map { index in
+            makeWhatToPlayAttempt(seed: UInt64(index), isCorrect: true)
+        }
+        let scoringAttempts = (0..<25).map { index in
+            makeScoringQuizAttempt(seed: UInt64(index), isCorrect: true)
+        }
+        let academyProgress = BalootAcademyCatalog.lessons.prefix(8).map {
+            AcademyLessonProgress(lesson: $0, selectedOptionID: $0.correctOptionID)
+        }
+
+        let summary = CareerProgressAnalyzer.summarize(
+            scoreSessions: [session],
+            whatToPlayAttempts: whatToPlayAttempts,
+            scoringQuizAttempts: scoringAttempts,
+            academyProgress: academyProgress
+        )
+
+        XCTAssertEqual(summary.completedMatches, 1)
+        XCTAssertEqual(summary.correctTrainingAttempts, 10)
+        XCTAssertEqual(summary.correctScoringAnswers, 25)
+        XCTAssertEqual(summary.completedAcademyLessons, 8)
+        XCTAssertGreaterThanOrEqual(summary.xp, CareerRank.tableReader.requiredXP)
+        XCTAssertTrue(summary.unlocks.first { $0.id == "majlis-table" }?.isUnlocked == true)
+        XCTAssertTrue(summary.unlocks.first { $0.id == "trainer-path" }?.isUnlocked == true)
+        XCTAssertTrue(summary.unlocks.first { $0.id == "accountant-badge" }?.isUnlocked == true)
+        XCTAssertTrue(summary.unlocks.first { $0.id == "academy-certificate" }?.isUnlocked == true)
+    }
+
     private func makeWhatToPlayAttempt(seed: UInt64, isCorrect: Bool) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
             difficulty: .medium,

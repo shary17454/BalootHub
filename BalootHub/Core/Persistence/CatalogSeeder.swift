@@ -491,14 +491,40 @@ private extension CatalogSeeder {
             sections: [
                 .objective: "إعطاء اللاعب أهدافًا طويلة المدى مثل أول كبوت، ملك الصن، شيخ الحكم، وحل تحديات الحساب.",
                 .playerCount: "الإنجازات فردية ومحفوظة محليًا، ولا تحتاج حسابًا أو اتصالًا بالإنترنت في النسخة الحالية.",
-                .setup: "تظهر الإنجازات في شاشة مستقلة، ويمكن لاحقًا ربط فتحها تلقائيًا بنتائج المحرك والسجل.",
+                .setup: "تظهر الإنجازات في شاشة مستقلة، وتقرأ تلقائيًا تقدم التدريب والحساب والأكاديمية وسجل مسجل النقاط.",
                 .dealing: "لا توجد طريقة توزيع خاصة؛ الإنجازات تقرأ أحداث اللعب أو التسجيل أو التدريب عند اكتمال الربط الآلي.",
-                .cardRanking: "إنجازات الصن والحكم تعتمد مستقبلًا على نفس تصنيف BalootEngine للجولات ولا تُحسب من الواجهة.",
+                .cardRanking: "إنجازات الصن والحكم تُحسب من نمط الصكة المسجل وسجل التقدم المحلي، لا من حالة عرض مؤقتة في الواجهة.",
                 .howToPlay: "راجع قائمة الإنجازات، اعرف شرط كل لقب، وتابع تقدمك عبر اللعب والتدريب والتحديات.",
                 .scoring: "الإنجازات لا تمنح نقاط قوة داخل اللعب ولا تفتح أفضلية Pay-to-Win؛ هي تقدم وتجميع ألقاب فقط.",
                 .projects: "يمكن إضافة إنجازات للمشاريع مثل إتقان المشاريع عند اكتمال منطق المشاريع الكامل داخل المحرك.",
                 .roundEnd: "عند نهاية الجولة أو المباراة يمكن للمحرك لاحقًا إرسال حدث فتح إنجاز واحد قابل للإعادة والتحقق.",
                 .commonMistakes: "ربط الإنجاز بالواجهة مباشرة بدل أحداث المحرك أو السجل، أو جعله يغير قوة اللاعب داخل المباراة."
+            ]
+        ),
+        GameDefinition(
+            slug: "baloot-career-mode",
+            arabicTitle: "نمط المسيرة",
+            englishTitle: "Career Mode",
+            shortDescription: "مسيرة Offline تحول اللعب والتدريب والحساب والإنجازات إلى رتبة XP ومحتوى مفتوح وخطوة تدريب تالية.",
+            category: .balootTool,
+            playerCountText: "لاعب واحد (تقدم محلي)",
+            difficulty: .intermediate,
+            estimatedDuration: "يتقدم مع الاستخدام",
+            iconName: "flag.checkered",
+            accentToken: "warning",
+            isPlayable: false,
+            sortOrder: 15,
+            sections: [
+                .objective: "تحويل تقدم اللاعب إلى مسار واضح يبدأ من لاعب مبتدئ ويتدرج حتى شيخ البلوت عبر اللعب والتدريب.",
+                .playerCount: "المسيرة فردية وتعمل دون إنترنت، وتقرأ بيانات اللاعب المحلية من السجل والتدريب والأكاديمية.",
+                .setup: "لا تحتاج إنشاء حساب؛ تبدأ المسيرة من بياناتك الحالية وتعرض XP والرتبة والمحتوى المفتوح تلقائيًا.",
+                .dealing: "لا تغيّر المسيرة توزيع الجولة؛ هي طبقة تقدم فوق اللعب الحقيقي ومدرب وش تلعب وتحدي النقاط.",
+                .cardRanking: "أي تقدم مرتبط بقرارات اللعب يعتمد على BalootEngine ومدرب الخبير، لا على تقييم واجهة مستقل.",
+                .howToPlay: "العب مباريات، حل مواقف وش تلعب، أكمل دروس الأكاديمية، وأجب على تحديات الحساب لرفع رتبتك.",
+                .scoring: "تضيف المباريات والتدريب والحساب والدروس والإنجازات XP، ولا تمنح أي قوة Pay-to-Win داخل اللعب.",
+                .projects: "يمكن لاحقًا ربط مشاريع البلوت والكبوت داخل المسيرة عندما تتوسع أحداث المحرك التفصيلية.",
+                .roundEnd: "بعد نهاية مباراة أو تدريب أو درس، تُعاد قراءة التقدم المحلي وتظهر الرتبة والخطوة التالية.",
+                .commonMistakes: "اعتبار المسيرة متجر قوة أو محتوى مدفوع؛ الصحيح أنها تقدم تدريبي وتجميلي فقط."
             ]
         ),
         GameDefinition(
@@ -513,7 +539,7 @@ private extension CatalogSeeder {
             iconName: "trophy.fill",
             accentToken: "accent",
             isPlayable: false,
-            sortOrder: 15,
+            sortOrder: 17,
             sections: [
                 .objective: "تنظيم بطولة بلوت تعمل دون إنترنت، مع حفظ الجدول والتاريخ والبطل محليًا.",
                 .playerCount: "تدعم البطولة 4 أو 8 فرق، ويمكن استخدامها لجلسات المجلس أو التدريب ضد خصوم محليين.",
@@ -565,7 +591,7 @@ private extension CatalogSeeder {
             iconName: "quote.bubble.fill",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 17,
+            sortOrder: 18,
             sections: [
                 .objective: "توضيح قرارات المزايدة قبل اللعب حتى يعرف اللاعب متى يمر، ومتى يطلب صن أو حكم، ومتى تكون المضاعفة منطقية.",
                 .playerCount: "المزايدة تُفهم حول طاولة من أربعة لاعبين، لكن الدليل مخصص للتعلم الفردي.",
@@ -591,7 +617,7 @@ private extension CatalogSeeder {
             iconName: "rectangle.stack.badge.plus",
             accentToken: "accent",
             isPlayable: false,
-            sortOrder: 18,
+            sortOrder: 19,
             sections: [
                 .objective: "جمع أسماء المشاريع المشهورة وشروطها في مكان واحد ليسهل الرجوع إليها أثناء التعلم أو قبل الجلسة.",
                 .playerCount: "المشاريع تخص يد لاعب ضمن فريقين من أربعة لاعبين، لكن المرجع فردي.",
@@ -617,7 +643,7 @@ private extension CatalogSeeder {
             iconName: "mic.and.signal.meter.fill",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 19,
+            sortOrder: 20,
             sections: [
                 .objective: "توضيح الفروق بين اللعب ضد الذكاء الاصطناعي، اللعب المحلي بين الأشخاص، واللعب الشبكي بالصوت حتى يعرف اللاعب ما المتاح الآن وما يحتاج اتصالًا آمنًا.",
                 .playerCount: "اللعب ضد الذكاء يدعم لاعبًا واحدًا مع ثلاثة آليين. اللعب المحلي يدعم أربعة أشخاص على نفس الجهاز بتمريره حسب الدور. اللعب الصوتي عن بعد يحتاج غرفة Online لأربعة لاعبين.",
@@ -646,7 +672,7 @@ private extension CatalogSeeder {
             iconName: "6.circle.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 20,
+            sortOrder: 21,
             sections: [
                 .objective: "تحقيق أفضل نتيجة عبر تجنّب أوراق أو أكلات معيّنة تخسر نقاطًا، بحسب الصيغة المعتمدة من اللاعبين.",
                 .playerCount: "تُلعب غالبًا بأربعة لاعبين، وتختلف التفاصيل بين المجالس.",
@@ -672,7 +698,7 @@ private extension CatalogSeeder {
             iconName: "suit.club.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 21,
+            sortOrder: 22,
             sections: [
                 .objective: "تحقيق عدد الأكلات الذي التزم به اللاعب أو الفريق أثناء المزايدة، أو أكثر.",
                 .playerCount: "أربعة لاعبين، إما كل لاعب لنفسه أو في فريقين متقابلين حسب الصيغة المعتمدة.",
@@ -698,7 +724,7 @@ private extension CatalogSeeder {
             iconName: "suit.diamond.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 22,
+            sortOrder: 23,
             sections: [
                 .objective: "تحقيق أقل عدد نقاط سلبية (أو أعلى نقاط إيجابية حسب الجولة) عبر دورة من عدة أنماط لعب مختلفة.",
                 .playerCount: "أربعة لاعبين، كل لاعب يلعب لحسابه الخاص دون فرق ثابتة.",
@@ -724,7 +750,7 @@ private extension CatalogSeeder {
             iconName: "hand.raised.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 23,
+            sortOrder: 24,
             sections: [
                 .objective: "التخلص من كل الأوراق في يد اللاعب قبل بقية اللاعبين، أو تحقيق أقل عدد نقاط متبقية بحسب الصيغة.",
                 .playerCount: "من لاعبين حتى أربعة لاعبين، أفرادًا أو في فرق صغيرة.",

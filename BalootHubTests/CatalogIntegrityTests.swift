@@ -22,7 +22,7 @@ final class CatalogIntegrityTests: XCTestCase {
     /// كل عنصر يجب أن يملك الحقول التي تعرضها صفحة التفاصيل، وإلا ظهرت فراغات.
     func testEveryCatalogItemHasCompleteDisplayData() throws {
         let items = try allItems()
-        XCTAssertEqual(items.count, 24)
+        XCTAssertEqual(items.count, 25)
 
         for item in items {
             XCTAssertFalse(item.slug.isEmpty, "slug فارغ")
