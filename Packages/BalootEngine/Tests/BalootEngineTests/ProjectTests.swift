@@ -85,6 +85,30 @@ struct ProjectDetectionTests {
         #expect(projects.contains { $0.kind == .fourHundred && $0.points == 400 })
     }
 
+    @Test("معرّف مشروع نفس القيمة حتمي ولا يتأثر بترتيب اليد")
+    func sameRankProjectIDIsStableAcrossHandOrder() throws {
+        let ordered = Suit.allCases.map { card($0, .ace) }
+        let shuffled = [card(.spades, .ace), card(.clubs, .ace), card(.hearts, .ace), card(.diamonds, .ace)]
+
+        let first = try #require(ProjectDetector.detect(
+            hand: ordered,
+            player: table.south,
+            mode: .sun,
+            trumpSuit: nil,
+            rules: .standard
+        ).first { $0.kind == .fourHundred })
+        let second = try #require(ProjectDetector.detect(
+            hand: shuffled,
+            player: table.south,
+            mode: .sun,
+            trumpSuit: nil,
+            rules: .standard
+        ).first { $0.kind == .fourHundred })
+
+        #expect(first.cards == second.cards)
+        #expect(first.id == second.id)
+    }
+
     @Test("أربعة شياب = مية، وأربع تسعات لا مشروع لها")
     func fourOfAKindRules() {
         let kings = Suit.allCases.map { card($0, .king) }

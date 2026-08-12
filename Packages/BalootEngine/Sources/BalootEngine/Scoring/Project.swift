@@ -53,7 +53,11 @@ public struct Project: Identifiable, Codable, Sendable, Hashable, Equatable {
     public let kind: Kind
     public let teamID: Team.ID
     public let playerID: Player.ID
-    /// الأوراق المكوِّنة للمشروع، مرتبة تصاعديًا حسب ``Rank/sequenceOrder``.
+    /// الأوراق المكوِّنة للمشروع، مرتبة تصاعديًا حسب ``Rank/sequenceOrder`` ثم النوع.
+    ///
+    /// كسر التعادل بالنوع ضروري لمشاريع نفس القيمة (مثل أربعة آسات): كل الأوراق لها
+    /// نفس الرتبة، والاعتماد على ترتيب اليد كان يجعل `id` يتغير إذا تغيّر ترتيب
+    /// الإدخال فقط، وهذا يكسر ثبات الـReplay والمقارنات.
     public let cards: [PlayingCard]
     public let points: Int
 
@@ -61,7 +65,12 @@ public struct Project: Identifiable, Codable, Sendable, Hashable, Equatable {
         self.kind = kind
         self.teamID = teamID
         self.playerID = playerID
-        self.cards = cards.sorted { $0.rank.sequenceOrder < $1.rank.sequenceOrder }
+        self.cards = cards.sorted { lhs, rhs in
+            if lhs.rank.sequenceOrder != rhs.rank.sequenceOrder {
+                return lhs.rank.sequenceOrder < rhs.rank.sequenceOrder
+            }
+            return lhs.suit.ordinal < rhs.suit.ordinal
+        }
         self.points = points
     }
 
