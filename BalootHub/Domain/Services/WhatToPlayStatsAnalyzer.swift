@@ -1136,6 +1136,16 @@ enum WhatToPlayStatsAnalyzer {
             )
         }
 
+        let qualitySummary = decisionQualitySummary(for: attempts)
+        if qualitySummary.trackedAttempts >= 3, qualitySummary.costlyPercent >= 30 {
+            return WhatToPlayPracticeRecommendation(
+                difficulty: focusDifficulty(attempts)?.difficulty ?? highestAttemptedDifficulty(in: attempts) ?? .medium,
+                title: "قلّل القرارات المكلفة".localized,
+                detail: "\("نسبة القرارات المكلفة".localized): \(qualitySummary.costlyPercent)%. \("اختر مواقف قريبة من مستواك وراجع Replay أفضل قرار قبل رفع الصعوبة.".localized)",
+                iconName: "exclamationmark.triangle.fill"
+            )
+        }
+
         if let focus = focusDifficulty(attempts),
            focus.summary.accuracyPercent < 70 || focus.summary.averageExpectedImpact < 0 {
             return WhatToPlayPracticeRecommendation(

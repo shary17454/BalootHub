@@ -57,6 +57,34 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "即将显示" } }
       }
     },
+    "قلّل القرارات المكلفة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Reduziere kostspielige Entscheidungen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reduce costly decisions" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Reduce decisiones costosas" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Réduire les décisions coûteuses" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "महंगे निर्णय कम करें" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kurangi keputusan mahal" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Снизьте число дорогих решений" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Maliyetli kararları azalt" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "مہنگے فیصلے کم کریں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "减少高代价决策" } }
+      }
+    },
+    "اختر مواقف قريبة من مستواك وراجع Replay أفضل قرار قبل رفع الصعوبة." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wähle Situationen nahe an deinem Niveau und prüfe das Replay der besten Entscheidung, bevor du die Schwierigkeit erhöhst." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose scenarios close to your level and review the best-decision replay before raising difficulty." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Elige situaciones cercanas a tu nivel y revisa la repetición de la mejor decisión antes de subir la dificultad." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Choisissez des situations proches de votre niveau et revoyez le replay de la meilleure décision avant d’augmenter la difficulté." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "अपने स्तर के करीब स्थितियाँ चुनें और कठिनाई बढ़ाने से पहले सर्वश्रेष्ठ निर्णय का रीप्ले देखें।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Pilih skenario yang dekat dengan level Anda dan tinjau replay keputusan terbaik sebelum menaikkan kesulitan." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выбирайте ситуации близко к вашему уровню и пересматривайте повтор лучшего решения перед повышением сложности." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Zorluğu artırmadan önce seviyene yakın senaryolar seç ve en iyi kararın tekrarını incele." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اپنی سطح کے قریب مواقف منتخب کریں اور مشکل بڑھانے سے پہلے بہترین فیصلے کا Replay دیکھیں۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "选择接近你水平的情境，并在提高难度前复盘最佳决策回放。" } }
+      }
+    },
     "قرارات مكلفة متكررة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Wiederholt kostspielige Entscheidungen" } },

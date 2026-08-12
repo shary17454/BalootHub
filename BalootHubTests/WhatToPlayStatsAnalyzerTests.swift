@@ -1181,6 +1181,22 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(recommendation.title, "راجع القيمة قبل الصعوبة".localized)
     }
 
+    func testPracticeRecommendationPrioritizesCostlyDecisionQuality() {
+        let attempts = [
+            attempt(daysAgo: 5, difficulty: .medium, correct: true, impact: 10, bestImpact: 10),
+            attempt(daysAgo: 4, difficulty: .medium, correct: false, impact: -1, bestImpact: 10),
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 9, bestImpact: 10),
+            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: -2, bestImpact: 10),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 10, bestImpact: 10)
+        ]
+
+        let recommendation = WhatToPlayStatsAnalyzer.practiceRecommendation(for: attempts)
+
+        XCTAssertEqual(recommendation.difficulty, .medium)
+        XCTAssertEqual(recommendation.title, "قلّل القرارات المكلفة".localized)
+        XCTAssertEqual(recommendation.iconName, "exclamationmark.triangle.fill")
+    }
+
     func testPracticeRecommendationRespondsToDecline() {
         let attempts = [
             attempt(daysAgo: 6, difficulty: .medium, correct: true, impact: 5),
