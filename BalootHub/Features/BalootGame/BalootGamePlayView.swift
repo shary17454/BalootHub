@@ -505,11 +505,11 @@ struct BalootGamePlayView: View {
             }
 
             VStack(spacing: AppSpacing.xs) {
-                if report.primaryReviewPriority != .none {
+                if let focus = report.primaryReviewFocus {
                     analysisRow(
-                        icon: reviewPriorityIcon(report.primaryReviewPriority),
+                        icon: reviewPriorityIcon(focus.priority),
                         title: "أولوية المراجعة".localized,
-                        value: reviewPriorityValue(report.primaryReviewPriority)
+                        value: reviewPriorityValue(focus)
                     )
                 }
                 if let bidding = report.biddingDecisions.first {
@@ -601,19 +601,20 @@ struct BalootGamePlayView: View {
         }
     }
 
-    private func reviewPriorityValue(_ priority: RoundReviewPriority) -> String {
-        switch priority {
+    private func reviewPriorityValue(_ focus: RoundReviewFocus) -> String {
+        let title = switch focus.priority {
         case .bidding:
-            return "ابدأ بالمزايدة".localized
+            "ابدأ بالمزايدة".localized
         case .projects:
-            return "ابدأ بالمشاريع".localized
+            "ابدأ بالمشاريع".localized
         case .multipliers:
-            return "ابدأ بالمضاعفات".localized
+            "ابدأ بالمضاعفات".localized
         case .play:
-            return "ابدأ باللعب".localized
+            "ابدأ باللعب".localized
         case .none:
-            return "لا توجد أولوية".localized
+            "لا توجد أولوية".localized
         }
+        return "\(title) · \(focus.estimatedLostPoints) \("نقطة".localized)"
     }
 
     private func biddingAnalysisValue(_ decision: RoundBiddingDecisionAnalysis) -> String {

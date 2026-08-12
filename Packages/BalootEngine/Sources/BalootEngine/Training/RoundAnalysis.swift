@@ -90,6 +90,19 @@ public enum RoundReviewPriority: String, Sendable, Codable, Equatable {
     case none
 }
 
+/// ملخص المجال الأعلى أولوية في مراجعة الجولة.
+public struct RoundReviewFocus: Sendable, Codable, Equatable {
+    public let priority: RoundReviewPriority
+    public let estimatedLostPoints: Int
+    public let mistakeCount: Int
+
+    public init(priority: RoundReviewPriority, estimatedLostPoints: Int, mistakeCount: Int) {
+        self.priority = priority
+        self.estimatedLostPoints = estimatedLostPoints
+        self.mistakeCount = mistakeCount
+    }
+}
+
 /// تقرير تحليل الجولة بعد انتهائها.
 public struct RoundAnalysisReport: Sendable, Equatable {
     public let playerID: Player.ID
@@ -169,11 +182,16 @@ public struct RoundAnalysisReport: Sendable, Equatable {
 
     /// يختار أول مجال مراجعة حسب أكبر فاقد تقديري، مع ترتيب ثابت عند التعادل.
     public var primaryReviewPriority: RoundReviewPriority {
-        let candidates: [(priority: RoundReviewPriority, lost: Int, order: Int)] = [
-            (.bidding, needsBiddingReview ? biddingLostPoints : 0, 0),
-            (.projects, needsProjectReview ? projectLostPoints : 0, 1),
-            (.multipliers, needsMultiplierReview ? multiplierLostPoints : 0, 2),
-            (.play, needsPlayReview ? playLostPoints : 0, 3)
+        primaryReviewFocus?.priority ?? .none
+    }
+
+    /// يختار ملخص المراجعة الأعلى أولوية حسب أكبر فاقد تقديري، مع ترتيب ثابت عند التعادل.
+    public var primaryReviewFocus: RoundReviewFocus? {
+        let candidates: [(priority: RoundReviewPriority, lost: Int, mistakes: Int, order: Int)] = [
+            (.bidding, needsBiddingReview ? biddingLostPoints : 0, biddingMistakeCount, 0),
+            (.projects, needsProjectReview ? projectLostPoints : 0, projectMistakeCount, 1),
+            (.multipliers, needsMultiplierReview ? multiplierLostPoints : 0, multiplierMistakeCount, 2),
+            (.play, needsPlayReview ? playLostPoints : 0, decisions.filter { !$0.matchedExpert }.count, 3)
         ]
 
         return candidates
@@ -182,8 +200,14 @@ public struct RoundAnalysisReport: Sendable, Equatable {
                 if $0.lost != $1.lost { return $0.lost > $1.lost }
                 return $0.order < $1.order
             }
-            .first?
-            .priority ?? .none
+            .first
+            .map {
+                RoundReviewFocus(
+                    priority: $0.priority,
+                    estimatedLostPoints: $0.lost,
+                    mistakeCount: $0.mistakes
+                )
+            }
     }
 }
 

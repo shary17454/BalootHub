@@ -121,6 +121,11 @@ struct RoundAnalysisTests {
         #expect(report.playLostPoints == 10)
         #expect(report.needsPlayReview)
         #expect(report.primaryReviewPriority == .play)
+        #expect(report.primaryReviewFocus == RoundReviewFocus(
+            priority: .play,
+            estimatedLostPoints: 10,
+            mistakeCount: 1
+        ))
     }
 
     @Test("أولوية مراجعة الجولة تستخدم ترتيبًا ثابتًا عند التعادل")
@@ -163,6 +168,11 @@ struct RoundAnalysisTests {
         )
 
         #expect(report.primaryReviewPriority == RoundReviewPriority.bidding)
+        #expect(report.primaryReviewFocus == RoundReviewFocus(
+            priority: .bidding,
+            estimatedLostPoints: 8,
+            mistakeCount: 1
+        ))
     }
 
     @Test("أولوية مراجعة الجولة تكون none عند عدم وجود فاقد")
@@ -188,6 +198,7 @@ struct RoundAnalysisTests {
         #expect(report.playLostPoints == 0)
         #expect(report.needsPlayReview == false)
         #expect(report.primaryReviewPriority == .none)
+        #expect(report.primaryReviewFocus == nil)
     }
 
     @Test("اختيار غير الأفضل يظهر في أسوأ قرار")
