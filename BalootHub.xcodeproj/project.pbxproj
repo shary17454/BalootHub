@@ -49,6 +49,7 @@
 		B1A2C3D4E5F60718293A4B5D /* WhatToPlayShareCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F60718293A4B5C /* WhatToPlayShareCard.swift */; };
 		A9B8C7D6E5F4012345678902 /* WhatToPlaySimulationFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9B8C7D6E5F4012345678901 /* WhatToPlaySimulationFormatter.swift */; };
 		C2B3D4E5F60718293A4B5C62 /* WhatToPlayStatsAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2B3D4E5F60718293A4B5C61 /* WhatToPlayStatsAnalyzer.swift */; };
+		AB12CD34EF56789012345671 /* WhatToPlayTrainerPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB12CD34EF56789012345670 /* WhatToPlayTrainerPreferences.swift */; };
 		32ACBC56B3044B9EBB30C480 /* BalootGamePlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E31630790994E7BB9617012 /* BalootGamePlayView.swift */; };
 		BF35E3077EDB42F186FE72CB /* BalootGameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE8450C865F4F15A45940DC /* BalootGameViewModel.swift */; };
 		9B68F276832B4D0191D79F10 /* RoundReplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63CE859BAE4F7DB4607E4B /* RoundReplayView.swift */; };
@@ -87,6 +88,7 @@
 		B1A2C3D4E5F60718293A4B5F /* WhatToPlayShareCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F60718293A4B5E /* WhatToPlayShareCardTests.swift */; };
 		A9B8C7D6E5F4012345678904 /* WhatToPlaySimulationFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9B8C7D6E5F4012345678903 /* WhatToPlaySimulationFormatterTests.swift */; };
 		C2B3D4E5F60718293A4B5C64 /* WhatToPlayStatsAnalyzerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2B3D4E5F60718293A4B5C63 /* WhatToPlayStatsAnalyzerTests.swift */; };
+		AB12CD34EF56789012345673 /* WhatToPlayTrainerPreferencesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB12CD34EF56789012345672 /* WhatToPlayTrainerPreferencesTests.swift */; };
 		1534A5689A6145759E26A22A /* ScoreRulesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE9E72237F624BCFAA8EE59D /* ScoreRulesTests.swift */; };
 		F5E7838995964BF181779782 /* ScoreSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DAF1F1F27B4D3FB87ACC84 /* ScoreSessionTests.swift */; };
 		48D369A5FB1E459C8B133283 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 20E0FBBD7CE549F2A3856DB6 /* Assets.xcassets */; };
@@ -150,6 +152,7 @@
 		B1A2C3D4E5F60718293A4B5C /* WhatToPlayShareCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayShareCard.swift; sourceTree = "<group>"; };
 		A9B8C7D6E5F4012345678901 /* WhatToPlaySimulationFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlaySimulationFormatter.swift; sourceTree = "<group>"; };
 		C2B3D4E5F60718293A4B5C61 /* WhatToPlayStatsAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayStatsAnalyzer.swift; sourceTree = "<group>"; };
+		AB12CD34EF56789012345670 /* WhatToPlayTrainerPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayTrainerPreferences.swift; sourceTree = "<group>"; };
 		7E31630790994E7BB9617012 /* BalootGamePlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootGamePlayView.swift; sourceTree = "<group>"; };
 		FAE8450C865F4F15A45940DC /* BalootGameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootGameViewModel.swift; sourceTree = "<group>"; };
 		4F63CE859BAE4F7DB4607E4B /* RoundReplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundReplayView.swift; sourceTree = "<group>"; };
@@ -188,6 +191,7 @@
 		B1A2C3D4E5F60718293A4B5E /* WhatToPlayShareCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayShareCardTests.swift; sourceTree = "<group>"; };
 		A9B8C7D6E5F4012345678903 /* WhatToPlaySimulationFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlaySimulationFormatterTests.swift; sourceTree = "<group>"; };
 		C2B3D4E5F60718293A4B5C63 /* WhatToPlayStatsAnalyzerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayStatsAnalyzerTests.swift; sourceTree = "<group>"; };
+		AB12CD34EF56789012345672 /* WhatToPlayTrainerPreferencesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayTrainerPreferencesTests.swift; sourceTree = "<group>"; };
 		EE9E72237F624BCFAA8EE59D /* ScoreRulesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreRulesTests.swift; sourceTree = "<group>"; };
 		09DAF1F1F27B4D3FB87ACC84 /* ScoreSessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreSessionTests.swift; sourceTree = "<group>"; };
 		20E0FBBD7CE549F2A3856DB6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -326,6 +330,7 @@
 				B1A2C3D4E5F60718293A4B5C /* WhatToPlayShareCard.swift */,
 				A9B8C7D6E5F4012345678901 /* WhatToPlaySimulationFormatter.swift */,
 				C2B3D4E5F60718293A4B5C61 /* WhatToPlayStatsAnalyzer.swift */,
+				AB12CD34EF56789012345670 /* WhatToPlayTrainerPreferences.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -465,6 +470,7 @@
 				B1A2C3D4E5F60718293A4B5E /* WhatToPlayShareCardTests.swift */,
 				A9B8C7D6E5F4012345678903 /* WhatToPlaySimulationFormatterTests.swift */,
 				C2B3D4E5F60718293A4B5C63 /* WhatToPlayStatsAnalyzerTests.swift */,
+				AB12CD34EF56789012345672 /* WhatToPlayTrainerPreferencesTests.swift */,
 				EE9E72237F624BCFAA8EE59D /* ScoreRulesTests.swift */,
 				09DAF1F1F27B4D3FB87ACC84 /* ScoreSessionTests.swift */,
 			);
@@ -663,6 +669,7 @@
 				B1A2C3D4E5F60718293A4B5D /* WhatToPlayShareCard.swift in Sources */,
 				A9B8C7D6E5F4012345678902 /* WhatToPlaySimulationFormatter.swift in Sources */,
 				C2B3D4E5F60718293A4B5C62 /* WhatToPlayStatsAnalyzer.swift in Sources */,
+				AB12CD34EF56789012345671 /* WhatToPlayTrainerPreferences.swift in Sources */,
 				32ACBC56B3044B9EBB30C480 /* BalootGamePlayView.swift in Sources */,
 				BF35E3077EDB42F186FE72CB /* BalootGameViewModel.swift in Sources */,
 				9B68F276832B4D0191D79F10 /* RoundReplayView.swift in Sources */,
@@ -711,6 +718,7 @@
 				B1A2C3D4E5F60718293A4B5F /* WhatToPlayShareCardTests.swift in Sources */,
 				A9B8C7D6E5F4012345678904 /* WhatToPlaySimulationFormatterTests.swift in Sources */,
 				C2B3D4E5F60718293A4B5C64 /* WhatToPlayStatsAnalyzerTests.swift in Sources */,
+				AB12CD34EF56789012345673 /* WhatToPlayTrainerPreferencesTests.swift in Sources */,
 				1534A5689A6145759E26A22A /* ScoreRulesTests.swift in Sources */,
 				F5E7838995964BF181779782 /* ScoreSessionTests.swift in Sources */,
 			);

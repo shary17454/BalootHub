@@ -326,8 +326,9 @@ struct WhatToPlayTrainerView: View {
         difficulty: WhatToPlayDifficulty? = nil,
         preferredFocus: WhatToPlayScenarioFocusKind? = nil
     ) {
-        _difficulty = State(initialValue: difficulty ?? .medium)
-        _preferredFocusRaw = State(initialValue: preferredFocus?.rawValue ?? "auto")
+        let storedPreferences = WhatToPlayTrainerPreferences.load()
+        _difficulty = State(initialValue: difficulty ?? storedPreferences.difficulty)
+        _preferredFocusRaw = State(initialValue: (preferredFocus ?? storedPreferences.preferredFocus)?.rawValue ?? "auto")
         _seed = State(initialValue: seed ?? 2026)
     }
 
@@ -451,6 +452,13 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayScenarioFocusKind(rawValue: preferredFocusRaw)
     }
 
+    private func saveTrainerPreferences() {
+        WhatToPlayTrainerPreferences.save(
+            difficulty: difficulty,
+            preferredFocus: preferredFocus
+        )
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
@@ -498,9 +506,11 @@ struct WhatToPlayTrainerView: View {
             if scenario == nil { generateScenario() }
         }
         .onChange(of: difficulty) { _, _ in
+            saveTrainerPreferences()
             generateScenario()
         }
         .onChange(of: preferredFocusRaw) { _, _ in
+            saveTrainerPreferences()
             generateScenario()
         }
         .onDisappear {
