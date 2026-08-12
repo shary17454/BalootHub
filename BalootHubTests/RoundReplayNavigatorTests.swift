@@ -85,6 +85,16 @@ final class RoundReplayNavigatorTests: XCTestCase {
         XCTAssertTrue(summary.contains("فريقنا"))
         XCTAssertTrue(summary.contains("الخصم"))
         XCTAssertTrue(summary.contains("لعب") || summary.contains("played"))
+        XCTAssertTrue(summary.contains("تحليل قرارات الخبير".localized))
+    }
+
+    func testReplayShareSummaryIncludesExpertDecisionReviewWhenAvailable() throws {
+        let replay = try makeReplayWithCostlyDecision()
+        let summary = RoundReplayShareSummary.text(initialState: replay.initial, actions: replay.actions)
+
+        XCTAssertTrue(summary.contains("تحليل قرارات الخبير".localized))
+        XCTAssertTrue(summary.contains("أفضل قرار".localized))
+        XCTAssertTrue(summary.contains("الفاقد المتوقع".localized))
     }
 
     private func makeCompletedReplay(seed: UInt64) throws -> (initial: GameState, actions: [GameAction]) {
@@ -100,6 +110,23 @@ final class RoundReplayNavigatorTests: XCTestCase {
         XCTAssertEqual(state.phase, .finished)
         XCTAssertGreaterThanOrEqual(state.completedTricks.count, 1)
         return (initial, state.actionHistory)
+    }
+
+    private func makeReplayWithCostlyDecision() throws -> (initial: GameState, actions: [GameAction]) {
+        for seed in 1_400..<1_460 {
+            let replay = try makeCompletedReplay(seed: UInt64(seed))
+            let hasCostlyDecision = replay.actions.indices.contains { index in
+                guard let hint = RoundReplayDecisionAdvisor.hint(
+                    initialState: replay.initial,
+                    actions: replay.actions,
+                    currentStep: index + 1
+                ) else { return false }
+                return !hint.matchedExpert || hint.estimatedLostPoints > 0
+            }
+            if hasCostlyDecision { return replay }
+        }
+        XCTFail("لم يتم العثور على Replay يحتوي قرارًا يحتاج مراجعة")
+        throw NSError(domain: "RoundReplayNavigatorTests", code: 1)
     }
 
     private func makeAIMatch() -> GameState {

@@ -95,12 +95,63 @@ enum RoundReplayShareSummary {
             }
         }
 
+        appendExpertDecisionSummary(
+            initialState: initialState,
+            actions: actions,
+            finalState: finalState,
+            to: &lines
+        )
+
         lines.append("سجل الأحداث".localized)
         for (index, action) in actions.enumerated() {
             lines.append("\(index + 1). \(actionTitle(action, in: finalState))")
         }
 
         return lines.joined(separator: "\n")
+    }
+
+    private static func appendExpertDecisionSummary(
+        initialState: GameState,
+        actions: [GameAction],
+        finalState: GameState,
+        to lines: inout [String]
+    ) {
+        let hints = actions.indices.compactMap { index in
+            RoundReplayDecisionAdvisor.hint(
+                initialState: initialState,
+                actions: actions,
+                currentStep: index + 1
+            )
+        }
+        guard !hints.isEmpty else { return }
+
+        let costly = hints
+            .filter { !$0.matchedExpert || $0.estimatedLostPoints > 0 }
+            .sorted {
+                if $0.estimatedLostPoints != $1.estimatedLostPoints {
+                    return $0.estimatedLostPoints > $1.estimatedLostPoints
+                }
+                if $0.selectedRank != $1.selectedRank {
+                    return $0.selectedRank > $1.selectedRank
+                }
+                return $0.stepIndex < $1.stepIndex
+            }
+
+        lines.append("تحليل قرارات الخبير".localized)
+        guard !costly.isEmpty else {
+            lines.append("- \("كل قرارات اللعب المعروضة طابقت اختيار الخبير.".localized)")
+            return
+        }
+
+        for hint in costly.prefix(3) {
+            let second = hint.secondBestCard.map { " · \("ثاني أفضل".localized): \($0.accessibilityName)" } ?? ""
+            lines.append(
+                "- \("الأكلة".localized) \(hint.trickNumber) · \(playerName(hint.playerID, in: finalState)): " +
+                "\("لعب".localized) \(hint.playedCard.accessibilityName) · " +
+                "\("أفضل قرار".localized): \(hint.bestCard.accessibilityName)\(second) · " +
+                "\("الفاقد المتوقع".localized) \(hint.estimatedLostPoints)"
+            )
+        }
     }
 
     private static func trickSummaryLine(index: Int, trick: Trick, state: GameState) -> String {
