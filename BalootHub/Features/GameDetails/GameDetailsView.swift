@@ -531,10 +531,22 @@ struct WhatToPlayTrainerView: View {
         }
         .onChange(of: difficulty) { _, _ in
             saveTrainerPreferences()
+            seed = WhatToPlayScenarioLoader.unattemptedSeed(
+                startingAt: seed,
+                difficulty: difficulty,
+                preferredFocus: preferredFocus,
+                attempts: attempts
+            )
             generateScenario()
         }
         .onChange(of: preferredFocusRaw) { _, _ in
             saveTrainerPreferences()
+            seed = WhatToPlayScenarioLoader.unattemptedSeed(
+                startingAt: seed,
+                difficulty: difficulty,
+                preferredFocus: preferredFocus,
+                attempts: attempts
+            )
             generateScenario()
         }
         .onDisappear {

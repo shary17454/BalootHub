@@ -3,6 +3,37 @@ import BalootEngine
 @testable import BalootHub
 
 final class WhatToPlayScenarioLoaderTests: XCTestCase {
+    func testUnattemptedSeedKeepsCurrentSeedWhenItWasNotSolvedForFilter() {
+        let attempts = [
+            attempt(seed: 2027, difficulty: .medium, focusKind: .openingLead)
+        ]
+
+        let seed = WhatToPlayScenarioLoader.unattemptedSeed(
+            startingAt: 2026,
+            difficulty: .medium,
+            preferredFocus: .openingLead,
+            attempts: attempts
+        )
+
+        XCTAssertEqual(seed, 2026)
+    }
+
+    func testUnattemptedSeedSkipsCurrentSeedWhenAlreadySolvedForFilter() {
+        let attempts = [
+            attempt(seed: 2026, difficulty: .medium, focusKind: .followSuit),
+            attempt(seed: 2027, difficulty: .medium, focusKind: .followSuit)
+        ]
+
+        let seed = WhatToPlayScenarioLoader.unattemptedSeed(
+            startingAt: 2026,
+            difficulty: .medium,
+            preferredFocus: .followSuit,
+            attempts: attempts
+        )
+
+        XCTAssertEqual(seed, 2028)
+    }
+
     func testNextUnattemptedSeedSkipsSolvedSeedsForDifficultyAndAutoFocus() {
         let attempts = [
             attempt(seed: 2027, difficulty: .medium, focusKind: .openingLead),
