@@ -67,6 +67,7 @@ final class BalootGameViewModel {
     private(set) var errorMessage: String?
     private(set) var tableMode: BalootTableMode
     private(set) var roundAnalysisReport: RoundAnalysisReport?
+    private var revealedLocalHumanID: Player.ID?
 
     let variant: BalootGameVariant
     /// مستوى الخصوم الآليين المختار.
@@ -252,12 +253,28 @@ final class BalootGameViewModel {
         return player.name
     }
 
+    var requiresLocalHandoffConfirmation: Bool {
+        tableMode == .localHumans && isHumanTurn && revealedLocalHumanID != activeHumanID
+    }
+
+    var isLocalHumanHandRevealed: Bool {
+        tableMode != .localHumans || (activeHumanID != nil && revealedLocalHumanID == activeHumanID)
+    }
+
+    var canCurrentHumanAct: Bool {
+        isHumanTurn && isLocalHumanHandRevealed
+    }
+
     var humanHand: [PlayingCard] {
         guard let activeHumanID else { return [] }
         return (state.hands[activeHumanID] ?? []).sorted { lhs, rhs in
             if lhs.suit != rhs.suit { return lhs.suit.rawValue < rhs.suit.rawValue }
             return lhs.strength(mode: state.mode ?? .sun, trumpSuit: state.trumpSuit) < rhs.strength(mode: state.mode ?? .sun, trumpSuit: state.trumpSuit)
         }
+    }
+
+    var visibleHumanHand: [PlayingCard] {
+        isLocalHumanHandRevealed ? humanHand : []
     }
 
     /// الأوراق التي تُعرض في منطقة الأكلة.
@@ -287,7 +304,7 @@ final class BalootGameViewModel {
     }
 
     var legalCardsForHuman: [PlayingCard] {
-        guard let mode = state.mode else { return [] }
+        guard canCurrentHumanAct, let mode = state.mode else { return [] }
         return LegalMoveValidator.legalCards(hand: humanHand, trick: state.currentTrick, mode: mode, trumpSuit: state.trumpSuit, rules: state.rules)
     }
 
@@ -303,6 +320,7 @@ final class BalootGameViewModel {
     func startNewMatch() {
         aiTask.cancel()
         analysisTask.cancel()
+        revealedLocalHumanID = nil
         state = Self.makeInitialState(tableMode: tableMode, rules: rules)
         rebuildAIAssignments()
         errorMessage = nil
@@ -314,7 +332,18 @@ final class BalootGameViewModel {
         guard tableMode != newMode else { return }
         aiTask.cancel()
         tableMode = newMode
+        revealedLocalHumanID = nil
         startNewMatch()
+    }
+
+    func revealLocalHumanHand() {
+        guard tableMode == .localHumans, isHumanTurn, let activeHumanID else { return }
+        revealedLocalHumanID = activeHumanID
+    }
+
+    func concealLocalHumanHand() {
+        guard tableMode == .localHumans else { return }
+        revealedLocalHumanID = nil
     }
 
     private func rebuildAIAssignments() {
@@ -348,7 +377,7 @@ final class BalootGameViewModel {
     /// المزايدات المتاحة للاعب البشري الآن — مصدرها المحرك نفسه، فلا تعرض الواجهة
     /// خيارًا يرفضه المحرك بعد الضغط عليه.
     var legalBidsForHuman: [Bid] {
-        guard usesFullBidding, let activeHumanID else { return [] }
+        guard usesFullBidding, canCurrentHumanAct, let activeHumanID else { return [] }
         return GameEngine.legalBids(for: activeHumanID, state: state)
     }
 
@@ -366,7 +395,7 @@ final class BalootGameViewModel {
     var currentMultiplier: Multiplier { state.bidding.multiplier }
 
     func placeBid(_ bid: Bid) {
-        guard let activeHumanID else { return }
+        guard canCurrentHumanAct, let activeHumanID else { return }
         perform(.placeBid(playerID: activeHumanID, bid: bid))
         advanceAI()
     }
@@ -383,7 +412,7 @@ final class BalootGameViewModel {
 
     /// حركات المضاعفة القانونية للاعب البشري الآن، مصدرها المحرك نفسه.
     private var legalMultiplierActionsForHuman: [LegalMultiplierAction] {
-        guard let activeHumanID else { return [] }
+        guard canCurrentHumanAct, let activeHumanID else { return [] }
         return GameEngine.legalMultiplierActions(for: activeHumanID, state: state)
     }
 
@@ -415,20 +444,21 @@ final class BalootGameViewModel {
     }
 
     func raiseMultiplier(to level: Multiplier) {
-        guard let activeHumanID else { return }
+        guard canCurrentHumanAct, let activeHumanID else { return }
         guard legalMultiplierActionsForHuman.contains(.raise(level)) else { return }
         perform(.raiseMultiplier(playerID: activeHumanID, level: level))
         advanceAI()
     }
 
     func passMultiplier() {
-        guard let activeHumanID else { return }
+        guard canCurrentHumanAct, let activeHumanID else { return }
         guard legalMultiplierActionsForHuman.contains(.pass) else { return }
         perform(.passMultiplier(playerID: activeHumanID))
         advanceAI()
     }
 
     func lockMultiplier() {
+        guard canCurrentHumanAct else { return }
         guard let playerID = humanMultiplierLockerID else { return }
         perform(.lockMultiplier(playerID: playerID))
         advanceAI()
@@ -442,7 +472,7 @@ final class BalootGameViewModel {
 
     /// المشاريع الموجودة فعلًا في يد اللاعب البشري والقابلة للإعلان.
     var declarableProjectsForHuman: [Project] {
-        guard let activeHumanID, state.phase == .declaring else { return [] }
+        guard canCurrentHumanAct, let activeHumanID, state.phase == .declaring else { return [] }
         return GameEngine.declarableProjects(for: activeHumanID, state: state)
     }
 
@@ -464,7 +494,7 @@ final class BalootGameViewModel {
     }
 
     func declareProjects(_ projects: [Project]) {
-        guard let activeHumanID else { return }
+        guard canCurrentHumanAct, let activeHumanID else { return }
         perform(.declareProjects(playerID: activeHumanID, projects: projects))
         advanceAI()
     }
@@ -474,7 +504,7 @@ final class BalootGameViewModel {
     }
 
     func play(_ card: PlayingCard) {
-        guard let activeHumanID else { return }
+        guard canCurrentHumanAct, let activeHumanID else { return }
         perform(.playCard(playerID: activeHumanID, card: card))
         advanceAI()
     }
@@ -509,6 +539,7 @@ final class BalootGameViewModel {
     private func perform(_ action: GameAction) {
         do {
             state = try GameEngine.apply(action, to: state)
+            concealLocalHumanHand()
             errorMessage = nil
             scheduleRoundAnalysisIfNeeded()
         } catch {

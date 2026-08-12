@@ -201,9 +201,11 @@ struct BalootGamePlayView: View {
                 StatusBadge(viewModel.currentMultiplier.arabicName, systemImage: "flame.fill", tint: AppColor.danger)
             }
 
-            if viewModel.isShowingHumanMultiplierControls {
+            if viewModel.requiresLocalHandoffConfirmation {
+                localHandoffCard
+            } else if viewModel.isShowingHumanMultiplierControls {
                 multiplierButtons
-            } else if viewModel.isHumanTurn && !viewModel.legalBidsForHuman.isEmpty {
+            } else if viewModel.canCurrentHumanAct && !viewModel.legalBidsForHuman.isEmpty {
                 bidOptionButtons
             } else {
                 LoadingStateView(message: "بقية اللاعبين يزايدون…")
@@ -375,7 +377,9 @@ struct BalootGamePlayView: View {
         VStack(spacing: AppSpacing.md) {
             Text("إعلان المشاريع").font(AppTypography.headline)
 
-            if viewModel.isAwaitingHumanDeclaration {
+            if viewModel.requiresLocalHandoffConfirmation {
+                localHandoffCard
+            } else if viewModel.isAwaitingHumanDeclaration && viewModel.canCurrentHumanAct {
                 let projects = viewModel.declarableProjectsForHuman
                 if projects.isEmpty {
                     Text("لا يوجد مشروع في يدك")
@@ -706,20 +710,23 @@ struct BalootGamePlayView: View {
                     .font(AppTypography.subheadline)
                     .foregroundStyle(viewModel.isHumanTurn ? AppColor.success : AppColor.textSecondary)
             }
+            if viewModel.requiresLocalHandoffConfirmation && viewModel.state.phase == .playing {
+                localHandoffCard
+            }
             ScrollView(.horizontal, showsIndicators: false) {
                 // تُحسب مرة واحدة لكل إعادة رسم بدل مرة لكل ورقة.
                 let legalCards = viewModel.legalCardIDsForHuman
-                let isHumanTurn = viewModel.isHumanTurn
+                let canAct = viewModel.canCurrentHumanAct
                 HStack(spacing: AppSpacing.xs) {
-                    ForEach(viewModel.humanHand) { card in
-                        let isPlayable = isHumanTurn && legalCards.contains(card)
+                    ForEach(viewModel.visibleHumanHand) { card in
+                        let isPlayable = canAct && legalCards.contains(card)
                         CardView(card: card)
                             .opacity(isPlayable ? 1 : 0.4)
                             .onTapGesture {
                                 // الضغط على ورقة ممنوعة يشرح السبب بدل أن يُتجاهل بصمت.
                                 if isPlayable {
                                     viewModel.play(card)
-                                } else if isHumanTurn {
+                                } else if canAct {
                                     viewModel.explainIllegalMove(card)
                                 }
                             }
@@ -730,6 +737,33 @@ struct BalootGamePlayView: View {
                 .padding(.vertical, AppSpacing.xs)
             }
         }
+    }
+
+    private var localHandoffCard: some View {
+        VStack(spacing: AppSpacing.sm) {
+            Image(systemName: "hand.raised.fill")
+                .font(.title2)
+                .foregroundStyle(AppColor.primary)
+            Text("\("سلّم الجهاز إلى".localized) \(viewModel.currentTurnPlayerName)")
+                .font(AppTypography.headline)
+                .multilineTextAlignment(.center)
+            Text("اضغط جاهز عندما يكون الجهاز مع اللاعب الحالي فقط.".localized)
+                .font(AppTypography.caption)
+                .foregroundStyle(AppColor.textSecondary)
+                .multilineTextAlignment(.center)
+            Button {
+                viewModel.revealLocalHumanHand()
+            } label: {
+                Label("جاهز".localized, systemImage: "eye.fill")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(AppColor.primary)
+        }
+        .padding(AppSpacing.md)
+        .frame(maxWidth: .infinity)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+        .accessibilityElement(children: .combine)
     }
 
     private var turnStatusText: String {
