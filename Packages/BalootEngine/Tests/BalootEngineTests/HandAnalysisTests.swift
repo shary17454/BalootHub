@@ -122,6 +122,30 @@ struct HandAnalysisTests {
         #expect(first.bidOptions.map(\.id) == second.bidOptions.map(\.id))
     }
 
+    @Test("تحقق إدخال اليد يرفض النقص والتكرار دون تحليل صامت")
+    func inputValidationReportsMissingAndDuplicateCards() {
+        let duplicate = PlayingCard(suit: .spades, rank: .ace)
+        let hand = [
+            duplicate,
+            duplicate,
+            PlayingCard(suit: .hearts, rank: .ace),
+            PlayingCard(suit: .diamonds, rank: .ace),
+            PlayingCard(suit: .clubs, rank: .ace),
+            PlayingCard(suit: .hearts, rank: .ten),
+            PlayingCard(suit: .diamonds, rank: .ten),
+            PlayingCard(suit: .clubs, rank: .king)
+        ]
+
+        let validation = HandAnalyzer.inputValidation(for: hand)
+
+        #expect(!validation.isValid)
+        #expect(validation.cardCount == 8)
+        #expect(validation.uniqueCardCount == 7)
+        #expect(validation.missingCardCount == 1)
+        #expect(validation.extraCardCount == 0)
+        #expect(validation.duplicateCards == [duplicate])
+    }
+
     @Test("ترتيب بدائل المزايدة يثبت الخيار الموصى به أولًا ويعرض الصن والحكم والبس")
     func bidOptionsRankLegalChoicesDeterministically() {
         let hand = [

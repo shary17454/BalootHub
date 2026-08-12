@@ -73,6 +73,29 @@ public struct HandAnalysis: Sendable, Equatable {
     }
 }
 
+/// نتيجة فحص مدخلات أداة «حلل يدي».
+///
+/// تفصل هذه البنية تحقق الإدخال عن واجهة SwiftUI، حتى يمكن استخدام نفس الفحص لاحقًا
+/// مع إدخال يدوي آخر أو قراءة كاميرا/Vision دون أن يغيّر ذلك منطق التحليل نفسه.
+public struct HandAnalysisInputValidation: Sendable, Equatable {
+    public let requiredCardCount: Int
+    public let cardCount: Int
+    public let uniqueCardCount: Int
+    public let duplicateCards: [PlayingCard]
+
+    public var missingCardCount: Int {
+        max(0, requiredCardCount - uniqueCardCount)
+    }
+
+    public var extraCardCount: Int {
+        max(0, uniqueCardCount - requiredCardCount)
+    }
+
+    public var isValid: Bool {
+        cardCount == requiredCardCount && uniqueCardCount == requiredCardCount && duplicateCards.isEmpty
+    }
+}
+
 /// أداة تحليل اليد اليدوي. لا تعتمد على حالة واجهة أو أرقام عشوائية.
 public enum HandAnalyzer {
     private static let analysisTeamID = UUID(uuidString: "00000000-0000-0000-0000-000000000101")!
@@ -151,6 +174,30 @@ public enum HandAnalyzer {
             strengths: rationale.strengths,
             weaknesses: rationale.weaknesses,
             tacticalAdvice: rationale.advice
+        )
+    }
+
+    public static func inputValidation(
+        for hand: [PlayingCard],
+        requiredCardCount: Int = 8
+    ) -> HandAnalysisInputValidation {
+        var counts: [PlayingCard: Int] = [:]
+        for card in hand {
+            counts[card, default: 0] += 1
+        }
+        let duplicates = counts
+            .filter { $0.value > 1 }
+            .map(\.key)
+            .sorted {
+                if $0.suit.ordinal != $1.suit.ordinal { return $0.suit.ordinal < $1.suit.ordinal }
+                return $0.rank.sequenceOrder < $1.rank.sequenceOrder
+            }
+
+        return HandAnalysisInputValidation(
+            requiredCardCount: requiredCardCount,
+            cardCount: hand.count,
+            uniqueCardCount: counts.count,
+            duplicateCards: duplicates
         )
     }
 

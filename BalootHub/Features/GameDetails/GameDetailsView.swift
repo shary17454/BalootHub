@@ -3293,8 +3293,9 @@ struct HandAnalyzerView: View {
     }
 
     private var analysis: HandAnalysis? {
-        guard selectedCards.count == 8 else { return nil }
-        return HandAnalyzer.analyze(hand: sortedSelectedCards)
+        let hand = sortedSelectedCards
+        guard HandAnalyzer.inputValidation(for: hand).isValid else { return nil }
+        return HandAnalyzer.analyze(hand: hand)
     }
 
     var body: some View {
