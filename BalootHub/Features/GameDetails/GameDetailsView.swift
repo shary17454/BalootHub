@@ -2171,6 +2171,9 @@ struct WhatToPlayTrainerView: View {
                     .fixedSize(horizontal: false, vertical: true)
                 HStack(spacing: AppSpacing.xs) {
                     StatusBadge(item.difficulty.displayTitle, systemImage: "slider.horizontal.3", tint: AppColor.primary)
+                    if let gameMode = item.gameMode {
+                        StatusBadge(modeTitle(gameMode), systemImage: gameMode == .hokum ? "crown.fill" : "sun.max.fill", tint: AppColor.accent)
+                    }
                     StatusBadge(impactText(item.expectedImpact), systemImage: "chart.line.downtrend.xyaxis", tint: item.expectedImpact < 0 ? AppColor.danger : AppColor.accent)
                     if item.lostExpectedPoints > 0 {
                         StatusBadge("\(item.lostExpectedPoints)", systemImage: "drop.fill", tint: AppColor.danger)
@@ -3198,6 +3201,7 @@ struct WhatToPlayTrainerView: View {
     private func replayReviewItem(_ item: WhatToPlayReviewItem) {
         seed = item.seed
         preferredFocusRaw = item.focusKind?.rawValue ?? "auto"
+        preferredModeRaw = item.gameMode?.rawValue ?? "auto"
         selectedOption = nil
         pendingReviewSelection = item.selectedCard
         isRetryingCurrentScenario = false

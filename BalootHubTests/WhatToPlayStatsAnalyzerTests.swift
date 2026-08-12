@@ -880,6 +880,23 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(queue.first?.focusKind, .followSuit)
     }
 
+    func testReviewQueueCarriesGameModeForReplay() {
+        let attempts = [
+            attempt(
+                daysAgo: 1,
+                difficulty: .medium,
+                correct: false,
+                impact: -4,
+                bestImpact: 3,
+                gameMode: .hokum
+            )
+        ]
+
+        let queue = WhatToPlayStatsAnalyzer.reviewQueue(for: attempts)
+
+        XCTAssertEqual(queue.first?.gameMode, .hokum)
+    }
+
     func testReviewQueueCarriesCompletedTrickSimulationOutcome() throws {
         let winnerID = UUID()
         let simulation = WhatToPlayOptionSimulation(

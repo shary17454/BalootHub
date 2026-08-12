@@ -195,6 +195,7 @@ struct WhatToPlayReviewItem: Equatable, Identifiable {
     let seed: UInt64
     let difficulty: WhatToPlayDifficulty
     let focusKind: WhatToPlayScenarioFocusKind?
+    let gameMode: GameMode?
     let selectedCard: PlayingCard?
     let bestCard: PlayingCard?
     let secondBestCard: PlayingCard?
@@ -1035,6 +1036,7 @@ enum WhatToPlayStatsAnalyzer {
                 seed: attempt.replaySeed,
                 difficulty: attempt.difficulty,
                 focusKind: attempt.focusKind,
+                gameMode: attempt.gameMode,
                 selectedCard: attempt.selectedCard,
                 bestCard: attempt.bestCard,
                 secondBestCard: attempt.secondBestCard,
