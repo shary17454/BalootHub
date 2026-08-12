@@ -320,6 +320,28 @@ struct WhatToPlayTrainerTests {
         #expect(alternative.explanation.contains("المحاكاة"))
     }
 
+    @Test("شرح الخيار يعطي أولوية لخسارة المحاكاة العالية")
+    func optionExplanationPrioritizesHighSimulationLoss() throws {
+        var matchedOption: WhatToPlayOption?
+
+        for seed in 1...300 {
+            let scenario = try WhatToPlayTrainer.generateScenario(seed: UInt64(seed), difficulty: .hard)
+            guard let best = scenario.bestOption else { continue }
+            if let option = scenario.options.first(where: {
+                !$0.isExpertChoice
+                    && max(0, best.projectedTeamPoints - $0.projectedTeamPoints) > max(2, abs($0.expectedImpact))
+            }) {
+                matchedOption = option
+                break
+            }
+        }
+
+        let option = try #require(matchedOption)
+        #expect(option.explanation.contains("يخسر بعد استكمال الجولة"))
+        #expect(option.explanation.contains("نقاط المحاكاة"))
+        #expect(!option.explanation.contains("خيار جيد"))
+    }
+
     @Test("سياق الموقف يطابق حالة الأكلة الحالية")
     func scenarioContextMatchesCurrentTrickState() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)

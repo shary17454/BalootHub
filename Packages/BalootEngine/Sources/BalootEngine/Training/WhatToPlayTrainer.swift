@@ -690,6 +690,9 @@ public enum WhatToPlayTrainer {
         if isExpertChoice {
             return "اختيار الخبير رقم \(rank) لأنه أعلى تقييم في هذا الموقف ويوازن بين حفظ القوة ونتيجة الجولة المتوقعة."
         }
+        if projectedGap > max(2, abs(impact)) {
+            return "هذا الخيار يبدو مقبولًا في الأكلة الحالية، لكنه يخسر بعد استكمال الجولة؛ الفارق عن الخبير \(bestGap) في التقييم و\(projectedGap) في نقاط المحاكاة."
+        }
         if impact > 0 {
             return "خيار جيد لأنه يتوقع ربح نقاط هذه الأكلة، لكنه أقل من اختيار الخبير بفارق تقييم \(bestGap) وفارق نقاط المحاكاة \(projectedGap)."
         }
