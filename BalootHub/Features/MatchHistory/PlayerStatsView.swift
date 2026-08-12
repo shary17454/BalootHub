@@ -1,11 +1,17 @@
 import SwiftUI
 import SwiftData
+import BalootEngine
 
 struct PlayerStatsView: View {
     @Query(sort: \ScoreSession.updatedAt, order: .reverse) private var sessions: [ScoreSession]
     @Query(sort: \WhatToPlayAttempt.createdAt, order: .reverse) private var whatToPlayAttempts: [WhatToPlayAttempt]
     @Query(sort: \ScoringQuizAttempt.createdAt, order: .reverse) private var scoringQuizAttempts: [ScoringQuizAttempt]
+    @Query(sort: \ProjectDeclarationRecord.createdAt, order: .reverse) private var projectDeclarations: [ProjectDeclarationRecord]
     @Query private var settingsList: [AppSettings]
+
+    private var projectKindStats: [ProjectKindStat] {
+        ProjectStatsAnalyzer.kindBreakdown(records: projectDeclarations)
+    }
 
     private var rules: ScoreRules {
         settingsList.first?.scoreRules ?? .standard
@@ -35,6 +41,9 @@ struct PlayerStatsView: View {
                     statsGrid
                     styleCard
                     modeBreakdown
+                    if !projectKindStats.isEmpty {
+                        projectKindBreakdown
+                    }
                     trainingBreakdown
                     scoringQuizBreakdown
                     trainingStyleBreakdown
@@ -99,6 +108,33 @@ struct PlayerStatsView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private var projectKindBreakdown: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            Text("مشاريعك حسب النوع".localized)
+                .font(AppTypography.headline)
+            ForEach(projectKindStats) { stat in
+                projectKindRow(stat)
+            }
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func projectKindRow(_ stat: ProjectKindStat) -> some View {
+        HStack {
+            Label(stat.kind.arabicName, systemImage: "rectangle.stack.badge.plus")
+                .font(AppTypography.subheadline)
+                .foregroundStyle(AppColor.textSecondary)
+            Spacer()
+            Text("\(stat.declaredCount) \("مرة".localized) · \(stat.successRatePercent)% \("نجاح".localized)")
+                .font(AppTypography.caption)
+                .foregroundStyle(AppColor.textPrimary)
+        }
+        .padding(AppSpacing.sm)
+        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
     }
 
     private var trainingBreakdown: some View {

@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 import BalootEngine
 
 struct BalootGamePlayView: View {
@@ -6,6 +7,7 @@ struct BalootGamePlayView: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.modelContext) private var modelContext
     @Environment(PurchaseManager.self) private var purchaseManager
     @State private var viewModel: BalootGameViewModel
     @State private var isPresentingStopConfirm = false
@@ -93,6 +95,12 @@ struct BalootGamePlayView: View {
             Button("متابعة اللعب", role: .cancel) {}
         }
         .onAppear {
+            if viewModel.onRoundFinished == nil {
+                let context = modelContext
+                viewModel.onRoundFinished = { finishedState in
+                    Self.persistProjectDeclarations(from: finishedState, into: context)
+                }
+            }
             if viewModel.state.phase == .setup {
                 viewModel.deal()
             }
@@ -797,6 +805,24 @@ struct BalootGamePlayView: View {
             guard let winnerID = trick.winnerPlayerID else { return false }
             return viewModel.state.player(id: winnerID)?.teamID == teamID
         }
+    }
+
+    /// يحفظ مشاريع اللاعب البشري المُعلَنة في هذه الجولة كسجلات إحصائية دائمة،
+    /// تغذّي تفصيل المشاريع حسب النوع في ``PlayerStatsView``.
+    private static func persistProjectDeclarations(from finishedState: GameState, into modelContext: ModelContext) {
+        guard let humanID = finishedState.players.first(where: { $0.kind == .human })?.id else { return }
+        let declared = finishedState.declaredProjects.filter { $0.playerID == humanID }
+        guard !declared.isEmpty else { return }
+
+        let awardedIDs = Set(finishedState.awardedProjects.map(\.id))
+        for project in declared {
+            modelContext.insert(ProjectDeclarationRecord(
+                kind: project.kind,
+                points: project.points,
+                wasAwarded: awardedIDs.contains(project.id)
+            ))
+        }
+        try? modelContext.save()
     }
 }
 

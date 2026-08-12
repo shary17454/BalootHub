@@ -69,6 +69,12 @@ final class BalootGameViewModel {
     private(set) var roundAnalysisReport: RoundAnalysisReport?
     private var revealedLocalHumanID: Player.ID?
     private var roundReplayInitialState: GameState
+    private var didNotifyRoundFinished = false
+
+    /// يُستدعى مرة واحدة فقط عند انتهاء كل جولة، بعد احتساب ``GameState/awardedProjects``.
+    /// الواجهة تستخدمه لحفظ إحصائيات خارج نطاق المحرك (مثل سجل المشاريع) عبر SwiftData،
+    /// لأن ``BalootGameViewModel`` نفسه لا يعرف عن `modelContext`.
+    var onRoundFinished: ((GameState) -> Void)?
 
     let variant: BalootGameVariant
     /// مستوى الخصوم الآليين المختار.
@@ -351,6 +357,7 @@ final class BalootGameViewModel {
         roundReplayInitialState = replayInitialState(from: state)
         errorMessage = nil
         roundAnalysisReport = nil
+        didNotifyRoundFinished = false
         deal()
     }
 
@@ -364,6 +371,7 @@ final class BalootGameViewModel {
         revealedLocalHumanID = nil
         errorMessage = nil
         roundAnalysisReport = nil
+        didNotifyRoundFinished = false
         deal()
     }
 
@@ -585,9 +593,18 @@ final class BalootGameViewModel {
             concealLocalHumanHand()
             errorMessage = nil
             scheduleRoundAnalysisIfNeeded()
+            notifyRoundFinishedIfNeeded()
         } catch {
             errorMessage = Self.moveErrorMessage
         }
+    }
+
+    /// يبلّغ ``onRoundFinished`` مرة واحدة بالضبط لكل جولة، بعد أن يحتسب المحرك
+    /// ``GameState/awardedProjects`` النهائية في ``GameEngine/applyFinishRound``.
+    private func notifyRoundFinishedIfNeeded() {
+        guard state.phase == .finished, !didNotifyRoundFinished else { return }
+        didNotifyRoundFinished = true
+        onRoundFinished?(state)
     }
 
     private func scheduleRoundAnalysisIfNeeded() {

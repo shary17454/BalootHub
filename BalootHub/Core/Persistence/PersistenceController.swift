@@ -12,6 +12,7 @@ enum PersistenceController {
             OfflineTournament.self,
             WhatToPlayAttempt.self,
             ScoringQuizAttempt.self,
+            ProjectDeclarationRecord.self,
             AcademyLessonProgress.self,
             AppSettings.self
         ])
