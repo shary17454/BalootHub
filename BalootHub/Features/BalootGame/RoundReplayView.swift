@@ -7,6 +7,7 @@ struct RoundReplayView: View {
     let title: String
     let contextText: String?
     let initialStep: Int
+    let visiblePlayerID: Player.ID?
 
     @Environment(\.dismiss) private var dismiss
     @State private var step: Int
@@ -28,13 +29,15 @@ struct RoundReplayView: View {
         actions: [GameAction],
         title: String = "إعادة الجولة",
         contextText: String? = nil,
-        initialStep: Int = 0
+        initialStep: Int = 0,
+        visiblePlayerID: Player.ID? = nil
     ) {
         self.initialState = initialState
         self.actions = actions
         self.title = title
         self.contextText = contextText
         self.initialStep = min(actions.count, max(0, initialStep))
+        self.visiblePlayerID = visiblePlayerID
         _step = State(initialValue: self.initialStep)
     }
 
@@ -278,6 +281,8 @@ struct RoundReplayView: View {
     private func seatCard(_ seat: SeatPosition, state: GameState) -> some View {
         let player = state.player(at: seat)
         let hand = player.flatMap { state.hands[$0.id] } ?? []
+        let revealsVisiblePlayerHand = player?.id == visiblePlayerID
+        let shouldShowHand = showAllHands || revealsVisiblePlayerHand
         return VStack(spacing: AppSpacing.xxs) {
             Image(systemName: state.currentTurnPlayerID == player?.id ? "person.crop.circle.fill.badge.checkmark" : "person.crop.circle")
                 .font(.title2)
@@ -285,10 +290,10 @@ struct RoundReplayView: View {
             Text(player?.name ?? "")
                 .font(AppTypography.caption.weight(.semibold))
                 .lineLimit(1)
-            Text("\(hand.count) أوراق")
+            Text(revealsVisiblePlayerHand ? "\("يد اللاعب".localized) · \(hand.count) \("أوراق".localized)" : "\(hand.count) \("أوراق".localized)")
                 .font(.caption2)
-                .foregroundStyle(AppColor.textSecondary)
-            if showAllHands, !hand.isEmpty {
+                .foregroundStyle(revealsVisiblePlayerHand ? AppColor.primary : AppColor.textSecondary)
+            if shouldShowHand, !hand.isEmpty {
                 Text(hand.map(\.displayLabel).joined(separator: " "))
                     .font(.caption2)
                     .foregroundStyle(AppColor.textSecondary)
@@ -298,7 +303,7 @@ struct RoundReplayView: View {
             }
         }
         .frame(width: 92)
-        .frame(minHeight: showAllHands ? 104 : 70)
+        .frame(minHeight: shouldShowHand ? 104 : 70)
         .padding(AppSpacing.xs)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
         .accessibilityElement(children: .combine)

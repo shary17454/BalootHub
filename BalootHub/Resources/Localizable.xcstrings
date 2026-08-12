@@ -15,6 +15,34 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "当前事件" } }
       }
     },
+    "أوراق" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Karten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cards" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Cartas" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Cartes" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कार्ड" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kartu" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Карты" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Kartlar" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "کارڈز" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "张牌" } }
+      }
+    },
+    "يد اللاعب" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Spielerhand" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Player hand" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Mano del jugador" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Main du joueur" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "खिलाड़ी का हाथ" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kartu pemain" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Рука игрока" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Oyuncu eli" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "کھلاڑی کا ہاتھ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "玩家手牌" } }
+      }
+    },
     "تم عرضه" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Bereits gezeigt" } },

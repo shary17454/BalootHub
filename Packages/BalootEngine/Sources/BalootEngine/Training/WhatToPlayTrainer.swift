@@ -192,11 +192,13 @@ public struct WhatToPlayScenario: Sendable {
 public struct WhatToPlayDecisionReplay: Sendable {
     public let initialState: GameState
     public let actions: [GameAction]
+    public let playerID: Player.ID
     public let selectedCard: PlayingCard
 
-    public init(initialState: GameState, actions: [GameAction], selectedCard: PlayingCard) {
+    public init(initialState: GameState, actions: [GameAction], playerID: Player.ID, selectedCard: PlayingCard) {
         self.initialState = initialState
         self.actions = actions
+        self.playerID = playerID
         self.selectedCard = selectedCard
     }
 }
@@ -410,6 +412,7 @@ public enum WhatToPlayTrainer {
         return WhatToPlayDecisionReplay(
             initialState: initialState,
             actions: scenario.state.actionHistory + [.playCard(playerID: scenario.playerID, card: card)],
+            playerID: scenario.playerID,
             selectedCard: card
         )
     }

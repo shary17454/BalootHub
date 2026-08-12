@@ -118,6 +118,7 @@ struct WhatToPlayTrainerTests {
         )
 
         #expect(replay.selectedCard == selected)
+        #expect(replay.playerID == scenario.playerID)
         #expect(replayedScenario.phase == scenario.state.phase)
         #expect(replayedScenario.currentTurnPlayerID == scenario.state.currentTurnPlayerID)
         #expect(replayedScenario.hands[scenario.playerID] == scenario.state.hands[scenario.playerID])

@@ -523,7 +523,8 @@ struct WhatToPlayTrainerView: View {
                     actions: presentation.replay.actions,
                     title: presentation.title,
                     contextText: presentation.contextText,
-                    initialStep: presentation.initialStep
+                    initialStep: presentation.initialStep,
+                    visiblePlayerID: presentation.replay.playerID
                 )
             }
         }
