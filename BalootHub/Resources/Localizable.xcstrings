@@ -22316,6 +22316,20 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "项目机会" } }
       }
     },
+    "قرار المضاعفة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Doppelentscheidung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Multiplier decision" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Decisión de multiplicador" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Décision de multiplicateur" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "मल्टीप्लायर निर्णय" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Keputusan pengali" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Решение о множителе" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Çarpan kararı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "ملٹی پلائر کا فیصلہ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "倍数决定" } }
+      }
+    },
     "نقطة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Punkt" } },

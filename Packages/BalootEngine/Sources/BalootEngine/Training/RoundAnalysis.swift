@@ -62,6 +62,25 @@ public struct RoundProjectOpportunityAnalysis: Identifiable, Sendable, Equatable
     }
 }
 
+/// تحليل قرار مضاعفة واحد داخل جولة قابلة للإعادة.
+public struct RoundMultiplierDecisionAnalysis: Identifiable, Sendable, Equatable {
+    public let stepIndex: Int
+    public let playerID: Player.ID
+    public let selectedAction: LegalMultiplierAction
+    public let recommendedAction: LegalMultiplierAction
+    public let legalActions: [LegalMultiplierAction]
+    public let estimatedLostPoints: Int
+    public let explanation: String
+
+    public var id: String {
+        "\(stepIndex)-multiplier-\(playerID.uuidString)"
+    }
+
+    public var matchedRecommendation: Bool {
+        selectedAction == recommendedAction
+    }
+}
+
 /// تقرير تحليل الجولة بعد انتهائها.
 public struct RoundAnalysisReport: Sendable, Equatable {
     public let playerID: Player.ID
@@ -69,6 +88,7 @@ public struct RoundAnalysisReport: Sendable, Equatable {
     public let decisions: [RoundDecisionAnalysis]
     public let biddingDecisions: [RoundBiddingDecisionAnalysis]
     public let projectOpportunities: [RoundProjectOpportunityAnalysis]
+    public let multiplierDecisions: [RoundMultiplierDecisionAnalysis]
     public let bestDecision: RoundDecisionAnalysis?
     public let worstDecision: RoundDecisionAnalysis?
     public let totalEstimatedLostPoints: Int
@@ -106,6 +126,7 @@ public enum RoundAnalyzer {
         var decisions: [RoundDecisionAnalysis] = []
         var biddingDecisions: [RoundBiddingDecisionAnalysis] = []
         var projectOpportunities: [RoundProjectOpportunityAnalysis] = []
+        var multiplierDecisions: [RoundMultiplierDecisionAnalysis] = []
 
         for (index, action) in actions.enumerated() {
             if case .placeBid(let actorID, let bid) = action,
@@ -151,23 +172,32 @@ public enum RoundAnalyzer {
                         state: state
                       ) {
                 projectOpportunities.append(opportunity)
+            } else if let multiplier = multiplierDecisionAnalysis(
+                stepIndex: index,
+                action: action,
+                playerID: playerID,
+                state: state
+            ) {
+                multiplierDecisions.append(multiplier)
             }
 
             state = try GameEngine.apply(action, to: state)
         }
 
-        guard !decisions.isEmpty || !biddingDecisions.isEmpty || !projectOpportunities.isEmpty else {
+        guard !decisions.isEmpty || !biddingDecisions.isEmpty || !projectOpportunities.isEmpty || !multiplierDecisions.isEmpty else {
             throw AnalysisError.noPlayableDecisions
         }
 
         let playLost = decisions.reduce(0) { $0 + $1.estimatedLostPoints }
         let biddingLost = biddingDecisions.reduce(0) { $0 + $1.estimatedLostPoints }
         let projectLost = projectOpportunities.reduce(0) { $0 + $1.estimatedLostPoints }
-        let totalLost = playLost + biddingLost + projectLost
+        let multiplierLost = multiplierDecisions.reduce(0) { $0 + $1.estimatedLostPoints }
+        let totalLost = playLost + biddingLost + projectLost + multiplierLost
         let nonExpertPenalty = decisions.filter { !$0.matchedExpert }.count * 4
         let biddingPenalty = biddingDecisions.filter { !$0.matchedRecommendation }.count * 8
         let projectPenalty = projectOpportunities.filter { !$0.capturedAllProjects }.count * 6
-        let score = max(0, min(100, 100 - (totalLost * 2) - nonExpertPenalty - biddingPenalty - projectPenalty))
+        let multiplierPenalty = multiplierDecisions.filter { !$0.matchedRecommendation }.count * 7
+        let score = max(0, min(100, 100 - (totalLost * 2) - nonExpertPenalty - biddingPenalty - projectPenalty - multiplierPenalty))
 
         let bestDecision = decisions
             .sorted { lhs, rhs in
@@ -191,24 +221,32 @@ public enum RoundAnalyzer {
             decisions: decisions,
             biddingDecisions: biddingDecisions,
             projectOpportunities: projectOpportunities,
+            multiplierDecisions: multiplierDecisions,
             bestDecision: bestDecision,
             worstDecision: worstDecision,
             totalEstimatedLostPoints: totalLost,
             tacticalMistakes: tacticalMistakes(
                 from: decisions,
                 biddingDecisions: biddingDecisions,
-                projectOpportunities: projectOpportunities
+                projectOpportunities: projectOpportunities,
+                multiplierDecisions: multiplierDecisions
             ),
-            strengths: strengths(from: decisions, projectOpportunities: projectOpportunities),
+            strengths: strengths(
+                from: decisions,
+                projectOpportunities: projectOpportunities,
+                multiplierDecisions: multiplierDecisions
+            ),
             weaknesses: weaknesses(
                 from: decisions,
                 biddingDecisions: biddingDecisions,
-                projectOpportunities: projectOpportunities
+                projectOpportunities: projectOpportunities,
+                multiplierDecisions: multiplierDecisions
             ),
             tips: tips(
                 from: decisions,
                 biddingDecisions: biddingDecisions,
-                projectOpportunities: projectOpportunities
+                projectOpportunities: projectOpportunities,
+                multiplierDecisions: multiplierDecisions
             )
         )
     }
@@ -315,6 +353,64 @@ public enum RoundAnalyzer {
         )
     }
 
+    private static func multiplierDecisionAnalysis(
+        stepIndex: Int,
+        action: GameAction,
+        playerID: Player.ID,
+        state: GameState
+    ) -> RoundMultiplierDecisionAnalysis? {
+        let selected: LegalMultiplierAction
+        let actorID: Player.ID
+        switch action {
+        case .raiseMultiplier(let id, let level):
+            actorID = id
+            selected = .raise(level)
+        case .passMultiplier(let id):
+            actorID = id
+            selected = .pass
+        case .lockMultiplier(let id):
+            actorID = id
+            selected = .lock
+        default:
+            return nil
+        }
+
+        guard actorID == playerID,
+              let hand = state.hands[playerID] else { return nil }
+        let legal = GameEngine.legalMultiplierActions(for: playerID, state: state)
+        guard legal.contains(selected),
+              let recommended = recommendedMultiplierAction(hand: hand, legal: legal, state: state)
+        else { return nil }
+
+        return RoundMultiplierDecisionAnalysis(
+            stepIndex: stepIndex,
+            playerID: playerID,
+            selectedAction: selected,
+            recommendedAction: recommended,
+            legalActions: legal,
+            estimatedLostPoints: multiplierLostPoints(selected: selected, recommended: recommended, rules: state.rules),
+            explanation: multiplierExplanation(selected: selected, recommended: recommended)
+        )
+    }
+
+    private static func recommendedMultiplierAction(
+        hand: [PlayingCard],
+        legal: [LegalMultiplierAction],
+        state: GameState
+    ) -> LegalMultiplierAction? {
+        let decision = BiddingPolicy.standard.chooseMultiplierAction(hand: hand, state: state)
+        switch decision {
+        case .raise(let level) where legal.contains(.raise(level)):
+            return .raise(level)
+        case .lock where legal.contains(.lock):
+            return .lock
+        case .pass where legal.contains(.pass):
+            return .pass
+        default:
+            return legal.contains(.pass) ? .pass : legal.first
+        }
+    }
+
     private static func resettableInitialState(from state: GameState) -> GameState {
         GameState(
             players: state.players,
@@ -328,7 +424,8 @@ public enum RoundAnalyzer {
     private static func tacticalMistakes(
         from decisions: [RoundDecisionAnalysis],
         biddingDecisions: [RoundBiddingDecisionAnalysis],
-        projectOpportunities: [RoundProjectOpportunityAnalysis]
+        projectOpportunities: [RoundProjectOpportunityAnalysis],
+        multiplierDecisions: [RoundMultiplierDecisionAnalysis]
     ) -> [String] {
         let biddingMistakes = biddingDecisions
             .filter { !$0.matchedRecommendation }
@@ -344,23 +441,31 @@ public enum RoundAnalyzer {
                 "فوّت إعلان مشروع بقيمة \(opportunity.estimatedLostPoints) نقطة."
             }
 
+        let multiplierMistakes = multiplierDecisions
+            .filter { !$0.matchedRecommendation }
+            .prefix(2)
+            .map { decision in
+                "في المضاعفة، اخترت \(multiplierActionLabel(decision.selectedAction)) بينما التوصية \(multiplierActionLabel(decision.recommendedAction))."
+            }
+
         let playMistakes = decisions
             .filter { !$0.matchedExpert }
             .sorted { lhs, rhs in
                 if lhs.estimatedLostPoints != rhs.estimatedLostPoints { return lhs.estimatedLostPoints > rhs.estimatedLostPoints }
                 return lhs.stepIndex < rhs.stepIndex
             }
-            .prefix(max(0, 3 - min(2, biddingMistakes.count) - min(2, projectMistakes.count)))
+            .prefix(max(0, 3 - min(2, biddingMistakes.count) - min(2, projectMistakes.count) - min(2, multiplierMistakes.count)))
             .map { decision in
                 "في الأكلة \(decision.trickNumber)، لعبت \(decision.playedCard.displayLabel) بينما اختيار الخبير \(decision.bestCard.displayLabel)."
             }
 
-        return Array(biddingMistakes) + Array(projectMistakes) + playMistakes
+        return Array(biddingMistakes) + Array(projectMistakes) + Array(multiplierMistakes) + playMistakes
     }
 
     private static func strengths(
         from decisions: [RoundDecisionAnalysis],
-        projectOpportunities: [RoundProjectOpportunityAnalysis]
+        projectOpportunities: [RoundProjectOpportunityAnalysis],
+        multiplierDecisions: [RoundMultiplierDecisionAnalysis]
     ) -> [String] {
         var result: [String] = []
         let matches = decisions.filter(\.matchedExpert).count
@@ -371,6 +476,10 @@ public enum RoundAnalyzer {
             && projectOpportunities.allSatisfy(\.capturedAllProjects) {
             result.append("أعلنت كل المشاريع المتاحة ولم تترك نقاطًا مجانية.")
         }
+        if multiplierDecisions.contains(where: { !$0.legalActions.isEmpty })
+            && multiplierDecisions.allSatisfy(\.matchedRecommendation) {
+            result.append("قرارات المضاعفة وافقت تقييم قوة اليد والمخاطرة.")
+        }
         if decisions.allSatisfy({ $0.estimatedLostPoints == 0 }) {
             result.append("لم يظهر قرار تسبب بخسارة نقاط متوقعة في الأكلات المحللة.")
         }
@@ -380,11 +489,13 @@ public enum RoundAnalyzer {
     private static func weaknesses(
         from decisions: [RoundDecisionAnalysis],
         biddingDecisions: [RoundBiddingDecisionAnalysis],
-        projectOpportunities: [RoundProjectOpportunityAnalysis]
+        projectOpportunities: [RoundProjectOpportunityAnalysis],
+        multiplierDecisions: [RoundMultiplierDecisionAnalysis]
     ) -> [String] {
         let costly = decisions.filter { $0.estimatedLostPoints > 0 }
         let biddingMisses = biddingDecisions.filter { !$0.matchedRecommendation }
         let missedProjects = projectOpportunities.filter { !$0.capturedAllProjects }
+        let multiplierMisses = multiplierDecisions.filter { !$0.matchedRecommendation }
         var result: [String] = []
         if !costly.isEmpty {
             result.append("توجد \(costly.count) قرارات كان يمكن أن تحقق أثرًا نقطيًا أفضل حسب تحليل الخبير.")
@@ -396,13 +507,17 @@ public enum RoundAnalyzer {
             let lost = missedProjects.reduce(0) { $0 + $1.estimatedLostPoints }
             result.append("فوّت \(lost) نقطة مشاريع كان يمكن إعلانها في وقتها.")
         }
+        if !multiplierMisses.isEmpty {
+            result.append("توجد \(multiplierMisses.count) قرارات مضاعفة لم توافق قوة اليد أو توقيت التصعيد.")
+        }
         return result.isEmpty ? ["لا توجد نقطة ضعف واضحة في القرارات المحللة."] : result
     }
 
     private static func tips(
         from decisions: [RoundDecisionAnalysis],
         biddingDecisions: [RoundBiddingDecisionAnalysis],
-        projectOpportunities: [RoundProjectOpportunityAnalysis]
+        projectOpportunities: [RoundProjectOpportunityAnalysis],
+        multiplierDecisions: [RoundMultiplierDecisionAnalysis]
     ) -> [String] {
         if let biddingMiss = biddingDecisions.first(where: { !$0.matchedRecommendation }) {
             var result = [
@@ -414,6 +529,13 @@ public enum RoundAnalyzer {
                 result.append("قبل الشراء، احصر الخيارات القانونية ثم قارن قوة الصن بأفضل حكم متاح فقط.")
             }
             return result
+        }
+
+        if let multiplierMiss = multiplierDecisions.first(where: { !$0.matchedRecommendation }) {
+            return [
+                "راجع قرار المضاعفة: \(multiplierActionLabel(multiplierMiss.selectedAction)) مقابل \(multiplierActionLabel(multiplierMiss.recommendedAction)) حسب قوة اليد.",
+                "لا تصعّد الدبل إلا إذا كانت أوراقك الدفاعية أو أوراق الحكم العالية تبرر المخاطرة."
+            ]
         }
 
         if let missed = projectOpportunities.first(where: { !$0.capturedAllProjects }) {
@@ -456,6 +578,35 @@ public enum RoundAnalyzer {
         return "كان يمكن إعلان \(names) بقيمة \(points) نقطة من أصل \(available.count) مشروع متاح."
     }
 
+    private static func multiplierExplanation(selected: LegalMultiplierAction, recommended: LegalMultiplierAction) -> String {
+        if selected == recommended {
+            return "قرار المضاعفة يطابق تقييم اليد الحالي."
+        }
+        return "تقييم اليد يرجّح \(multiplierActionLabel(recommended)) بدل \(multiplierActionLabel(selected))."
+    }
+
+    private static func multiplierLostPoints(
+        selected: LegalMultiplierAction,
+        recommended: LegalMultiplierAction,
+        rules: BalootRulesConfiguration
+    ) -> Int {
+        guard selected != recommended else { return 0 }
+        switch (selected, recommended) {
+        case (.pass, .raise(let level)):
+            return max(2, level.factor(rules: rules) * 3)
+        case (.raise(let level), .pass):
+            return max(2, level.factor(rules: rules) * 4)
+        case (.pass, .lock), (.raise, .lock):
+            return 4
+        case (.lock, .raise(let level)):
+            return max(2, level.factor(rules: rules) * 2)
+        case (.lock, .pass):
+            return 2
+        default:
+            return 3
+        }
+    }
+
     private static func biddingLostPoints(bid: Bid, recommendedBid: Bid, analysis: HandAnalysis) -> Int {
         guard bid != recommendedBid else { return 0 }
         let recommendedScore = score(for: recommendedBid, analysis: analysis)
@@ -483,6 +634,17 @@ public enum RoundAnalyzer {
             return "صن"
         case .hokum(let suit):
             return "حكم \(suit.arabicName)"
+        }
+    }
+
+    private static func multiplierActionLabel(_ action: LegalMultiplierAction) -> String {
+        switch action {
+        case .pass:
+            return "بس"
+        case .raise(let level):
+            return level.arabicName
+        case .lock:
+            return "قفل"
         }
     }
 }

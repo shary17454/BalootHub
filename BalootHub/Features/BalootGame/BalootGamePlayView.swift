@@ -432,6 +432,13 @@ struct BalootGamePlayView: View {
                         value: "\(missedProject.estimatedLostPoints) \("نقطة".localized)"
                     )
                 }
+                if let multiplier = report.multiplierDecisions.first(where: { !$0.matchedRecommendation }) {
+                    analysisRow(
+                        icon: "flame.fill",
+                        title: "قرار المضاعفة".localized,
+                        value: multiplierAnalysisValue(multiplier)
+                    )
+                }
                 if let best = report.bestDecision {
                     analysisRow(
                         icon: "checkmark.seal.fill",
@@ -468,6 +475,23 @@ struct BalootGamePlayView: View {
         let bid = bidAnalysisLabel(decision.bid)
         guard !decision.matchedRecommendation else { return bid }
         return "\(bid) \("بدل".localized) \(bidAnalysisLabel(decision.recommendedBid))"
+    }
+
+    private func multiplierAnalysisValue(_ decision: RoundMultiplierDecisionAnalysis) -> String {
+        let selected = multiplierActionLabel(decision.selectedAction)
+        guard !decision.matchedRecommendation else { return selected }
+        return "\(selected) \("بدل".localized) \(multiplierActionLabel(decision.recommendedAction))"
+    }
+
+    private func multiplierActionLabel(_ action: LegalMultiplierAction) -> String {
+        switch action {
+        case .pass:
+            return "بس".localized
+        case .raise(let level):
+            return level.arabicName.localized
+        case .lock:
+            return "قفل".localized
+        }
     }
 
     private func bidAnalysisLabel(_ bid: Bid) -> String {

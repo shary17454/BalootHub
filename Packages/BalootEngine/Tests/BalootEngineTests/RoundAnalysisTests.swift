@@ -118,6 +118,31 @@ struct RoundAnalysisTests {
         #expect(report.tips.contains { $0.contains("قبل أول أكلة") })
     }
 
+    @Test("تحليل الجولة يرصد قرار مضاعفة مخالفًا للتوصية")
+    func nonRecommendedMultiplierDecisionIsReported() throws {
+        let scenario = try multiplierScenarioRecommendingDouble()
+
+        let final = try GameEngine.apply(.passMultiplier(playerID: scenario.playerID), to: scenario.state)
+        let report = try RoundAnalyzer.analyze(
+            initialState: scenario.state,
+            actions: [.passMultiplier(playerID: scenario.playerID)],
+            playerID: scenario.playerID
+        )
+
+        let decision = try #require(report.multiplierDecisions.first)
+        #expect(final.bidding.doublingPasses == 1)
+        #expect(decision.playerID == scenario.playerID)
+        #expect(decision.selectedAction == .pass)
+        #expect(decision.recommendedAction == .raise(.double))
+        #expect(decision.legalActions.contains(.raise(.double)))
+        #expect(decision.matchedRecommendation == false)
+        #expect(decision.estimatedLostPoints > 0)
+        #expect(report.totalEstimatedLostPoints == decision.estimatedLostPoints)
+        #expect(report.tacticalMistakes.contains { $0.contains("في المضاعفة") })
+        #expect(report.weaknesses.contains { $0.contains("قرارات مضاعفة") })
+        #expect(report.tips.contains { $0.contains("راجع قرار المضاعفة") })
+    }
+
     private func makeAIMatch() -> GameState {
         var state = GameState.newLocalMatch(rules: .standard)
         state.players = state.players.map { player in
@@ -169,6 +194,31 @@ struct RoundAnalysisTests {
         }
 
         throw RoundAnalyzer.AnalysisError.noPlayableDecisions
+    }
+
+    private func multiplierScenarioRecommendingDouble() throws -> (state: GameState, playerID: Player.ID) {
+        var state = GameState.newLocalMatch(rules: .standard)
+        state = try GameEngine.apply(.dealCards(seed: 17), to: state)
+        let buyerID = try #require(state.currentTurnPlayerID)
+        let upSuit = try #require(state.bidding.upCard?.suit)
+        state = try GameEngine.apply(.placeBid(playerID: buyerID, bid: .hokum(suit: upSuit)), to: state)
+        for _ in 0..<3 {
+            state = try GameEngine.apply(.placeBid(playerID: try #require(state.currentTurnPlayerID), bid: .pass), to: state)
+        }
+
+        let playerID = try #require(state.currentTurnPlayerID)
+        let hand: [PlayingCard] = [
+            PlayingCard(suit: upSuit, rank: .jack),
+            PlayingCard(suit: upSuit, rank: .nine),
+            PlayingCard(suit: upSuit, rank: .ace),
+            PlayingCard(suit: .hearts, rank: .ace),
+            PlayingCard(suit: .diamonds, rank: .ace)
+        ]
+        state.hands[playerID] = hand
+
+        #expect(GameEngine.legalMultiplierActions(for: playerID, state: state).contains(.raise(.double)))
+        #expect(BiddingPolicy.standard.chooseMultiplierAction(hand: hand, state: state) == .raise(.double))
+        return (state, playerID)
     }
 
     private func profiledAgent(_ level: AIProfile.Level) -> ProfiledBalootAgent {
