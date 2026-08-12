@@ -73,8 +73,9 @@ final class BalootGameViewModel {
     private(set) var aiLevel: AIProfile.Level
     /// شخصية الخصوم الآليين المختارة. تعرضها الواجهة وتستخدمها سياسة المزايدة واللعب.
     private(set) var selectedAIProfile: AIProfile
-    // الخصم مبني على ``AIProfile`` فيختلف تفكيره بالمستوى والشخصية، لا بأخطاء عشوائية.
-    private var agent: BalootAgent
+    /// الخصوم الآليون موزعون حسب المقعد، حتى لا يلعب الثلاثة بالشخصية نفسها.
+    private var aiProfilesByPlayerID: [Player.ID: AIProfile]
+    private var aiAgentsByPlayerID: [Player.ID: ProfiledBalootAgent]
     private let rules: BalootRulesConfiguration
     /// مهمة أدوار اللاعبين الآليين الجارية، تُلغى قبل بدء غيرها حتى لا تتداخل
     /// جولتان (مثلًا عند الضغط على "جولة جديدة" أثناء لعب الآليين).
@@ -116,18 +117,46 @@ final class BalootGameViewModel {
     ) {
         let playRules = Self.playRules(from: rules)
         let profile = Self.profile(for: aiLevel)
-        self.state = Self.makeInitialState(tableMode: tableMode, rules: playRules)
+        let initialState = Self.makeInitialState(tableMode: tableMode, rules: playRules)
+        let assignments = Self.makeAIAssignments(for: initialState, selectedProfile: profile)
+        self.state = initialState
         self.variant = variant
         self.tableMode = tableMode
         self.rules = playRules
         self.aiLevel = profile.level
         self.selectedAIProfile = profile
-        self.agent = ProfiledBalootAgent(profile: profile)
+        self.aiProfilesByPlayerID = assignments.profiles
+        self.aiAgentsByPlayerID = assignments.agents
     }
 
     private static func profile(for level: AIProfile.Level) -> AIProfile {
         AIProfile.roster.first { $0.level == level }
             ?? AIProfile(id: "ai.default", level: level, personality: .balanced, avatarSystemName: "person.fill")
+    }
+
+    private static func makeAIAssignments(
+        for state: GameState,
+        selectedProfile: AIProfile
+    ) -> (profiles: [Player.ID: AIProfile], agents: [Player.ID: ProfiledBalootAgent]) {
+        var profilePool = [selectedProfile]
+        for profile in AIProfile.opponents(for: selectedProfile.level) where !profilePool.contains(profile) {
+            profilePool.append(profile)
+        }
+        if profilePool.count < 3 {
+            for profile in AIProfile.roster where profile.level == selectedProfile.level && !profilePool.contains(profile) {
+                profilePool.append(profile)
+            }
+        }
+
+        var profiles: [Player.ID: AIProfile] = [:]
+        var agents: [Player.ID: ProfiledBalootAgent] = [:]
+        let aiPlayers = state.players.filter { $0.kind == .ai }.sorted { $0.seat.rawValue < $1.seat.rawValue }
+        for (index, player) in aiPlayers.enumerated() {
+            let profile = profilePool[index % profilePool.count]
+            profiles[player.id] = profile
+            agents[player.id] = ProfiledBalootAgent(profile: profile)
+        }
+        return (profiles, agents)
     }
 
     var selectedAIProfileTitle: String {
@@ -157,6 +186,13 @@ final class BalootGameViewModel {
         }
     }
 
+    var aiOpponentProfiles: [AIProfile] {
+        state.players
+            .filter { $0.kind == .ai }
+            .sorted { $0.seat.rawValue < $1.seat.rawValue }
+            .compactMap { aiProfilesByPlayerID[$0.id] }
+    }
+
     /// يغيّر مستوى الخصوم ويبدأ مباراة جديدة به.
     func setAILevel(_ level: AIProfile.Level) {
         guard aiLevel != level else { return }
@@ -169,7 +205,6 @@ final class BalootGameViewModel {
         aiTask.cancel()
         selectedAIProfile = profile
         aiLevel = profile.level
-        agent = ProfiledBalootAgent(profile: profile)
         startNewMatch()
     }
 
@@ -255,6 +290,7 @@ final class BalootGameViewModel {
         aiTask.cancel()
         analysisTask.cancel()
         state = Self.makeInitialState(tableMode: tableMode, rules: rules)
+        rebuildAIAssignments()
         errorMessage = nil
         roundAnalysisReport = nil
         deal()
@@ -265,6 +301,12 @@ final class BalootGameViewModel {
         aiTask.cancel()
         tableMode = newMode
         startNewMatch()
+    }
+
+    private func rebuildAIAssignments() {
+        let assignments = Self.makeAIAssignments(for: state, selectedProfile: selectedAIProfile)
+        aiProfilesByPlayerID = assignments.profiles
+        aiAgentsByPlayerID = assignments.agents
     }
 
     func deal() {
@@ -515,10 +557,12 @@ final class BalootGameViewModel {
     /// كان يُجمّدها قبل كل نقلة آلية. التطبيق على الحالة يبقى على `@MainActor`.
     private func advanceAI() {
         aiTask.cancel()
-        let agent = self.agent
         aiTask.replace(with: Task { [weak self] in
             while !Task.isCancelled {
-                guard let self, self.isAITurn else { break }
+                guard let self, self.isAITurn,
+                      let playerID = self.state.currentTurnPlayerID,
+                      let agent = self.aiAgentsByPlayerID[playerID]
+                else { break }
 
                 let snapshot = self.state
                 let action = await Task.detached(priority: .userInitiated) {

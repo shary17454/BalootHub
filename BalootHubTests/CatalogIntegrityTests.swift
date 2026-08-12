@@ -166,6 +166,18 @@ final class CatalogIntegrityTests: XCTestCase {
     }
 
     @MainActor
+    func testGameplayAssignsDistinctProfilesToAISeats() throws {
+        let viewModel = BalootGameViewModel(rules: .standard)
+        let gambler = try XCTUnwrap(AIProfile.profile(id: "ai.gambler"))
+
+        viewModel.setAIProfile(gambler)
+
+        XCTAssertEqual(viewModel.aiOpponentProfiles.count, 3)
+        XCTAssertTrue(viewModel.aiOpponentProfiles.contains(gambler))
+        XCTAssertGreaterThan(Set(viewModel.aiOpponentProfiles.map(\.personality)).count, 1)
+    }
+
+    @MainActor
     func testGameplayAIProfileSummaryUsesSelectedProfileMetadata() throws {
         let viewModel = BalootGameViewModel(rules: .standard)
         let hokum = try XCTUnwrap(AIProfile.profile(id: "ai.hokum"))

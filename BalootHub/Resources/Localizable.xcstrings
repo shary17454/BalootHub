@@ -23168,7 +23168,8 @@
     "يفضل الحكم والسيطرة باللون" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Prefers Hokum and suit control" } } } },
     "يفضل الصن والأوراق العالية" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Prefers Sun and high cards" } } } },
     "مخاطرة عالية وتصعيد مضاعفات" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "High risk and multiplier escalation" } } } },
-    "دفاع قوي ضد المشتري" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Strong defense against the buyer" } } } }
+    "دفاع قوي ضد المشتري" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Strong defense against the buyer" } } } },
+    "الخصوم" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Gegner" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Opponents" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Oponentes" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Adversaires" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "विरोधी" } }, "id" : { "stringUnit" : { "state" : "translated", "value" : "Lawan" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Соперники" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Rakipler" } }, "ur" : { "stringUnit" : { "state" : "translated", "value" : "حریف" } }, "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "对手" } } } }
   },
   "version" : "1.0"
 }

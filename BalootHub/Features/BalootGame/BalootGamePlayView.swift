@@ -236,6 +236,11 @@ struct BalootGamePlayView: View {
                     .foregroundStyle(AppColor.textSecondary)
                     .lineLimit(2)
                     .minimumScaleFactor(0.75)
+                Text(opponentRosterSummary)
+                    .font(.caption2)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
                 HStack(spacing: AppSpacing.xs) {
                     profilePill(viewModel.selectedAIProfileRiskText)
                     profilePill(viewModel.selectedAIProfileModePreferenceText)
@@ -245,6 +250,12 @@ struct BalootGamePlayView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityElement(children: .combine)
+    }
+
+    private var opponentRosterSummary: String {
+        let names = viewModel.aiOpponentProfiles.map { $0.displayName.localized }
+        guard !names.isEmpty else { return "" }
+        return "\("الخصوم".localized): \(names.joined(separator: " · "))"
     }
 
     private func profilePill(_ text: String) -> some View {
