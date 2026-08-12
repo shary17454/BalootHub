@@ -2234,6 +2234,15 @@ struct WhatToPlayTrainerView: View {
                         if let lostAgainstSecondBestPoints = content.lostAgainstSecondBestPoints {
                             shareChip("\("فارق عن ثاني أفضل".localized): \(lostAgainstSecondBestPoints)")
                         }
+                        if let selectedProjectedTeamPoints = content.selectedProjectedTeamPoints {
+                            shareChip("\("نقاط فريقك بعد المحاكاة".localized): \(selectedProjectedTeamPoints)")
+                        }
+                        if let selectedSimulationSummary = content.selectedSimulationSummary {
+                            shareChip("\("نتيجة المحاكاة".localized): \(selectedSimulationSummary)")
+                        }
+                        if let selectedSimulationTeamResult = content.selectedSimulationTeamResult {
+                            shareChip("\("اتجاه الأكلة".localized): \(selectedSimulationTeamResult)")
+                        }
                         if let tacticalReasonTitle = content.tacticalReasonTitle {
                             shareChip("\("سبب تكتيكي".localized): \(tacticalReasonTitle)")
                         }
