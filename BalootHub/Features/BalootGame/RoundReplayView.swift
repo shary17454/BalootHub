@@ -6,9 +6,10 @@ struct RoundReplayView: View {
     let actions: [GameAction]
     let title: String
     let contextText: String?
+    let initialStep: Int
 
     @Environment(\.dismiss) private var dismiss
-    @State private var step = 0
+    @State private var step: Int
     @State private var isPlaying = false
     @State private var speed: ReplayPlaybackSpeed = .normal
     @State private var showAllHands = false
@@ -26,12 +27,15 @@ struct RoundReplayView: View {
         initialState: GameState,
         actions: [GameAction],
         title: String = "إعادة الجولة",
-        contextText: String? = nil
+        contextText: String? = nil,
+        initialStep: Int = 0
     ) {
         self.initialState = initialState
         self.actions = actions
         self.title = title
         self.contextText = contextText
+        self.initialStep = min(actions.count, max(0, initialStep))
+        _step = State(initialValue: self.initialStep)
     }
 
     var body: some View {

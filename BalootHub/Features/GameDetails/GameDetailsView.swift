@@ -504,7 +504,8 @@ struct WhatToPlayTrainerView: View {
                     initialState: presentation.replay.initialState,
                     actions: presentation.replay.actions,
                     title: presentation.title,
-                    contextText: presentation.contextText
+                    contextText: presentation.contextText,
+                    initialStep: presentation.initialStep
                 )
             }
         }
@@ -2362,7 +2363,8 @@ struct WhatToPlayTrainerView: View {
         replayPresentation = WhatToPlayReplayPresentation(
             replay: replay,
             title: label,
-            contextText: "\("الورقة".localized): \(option.card.accessibilityName) · \("الأثر المتوقع".localized): \(impactText(option.expectedImpact))"
+            contextText: "\("الورقة".localized): \(option.card.accessibilityName) · \("الأثر المتوقع".localized): \(impactText(option.expectedImpact))",
+            initialStep: replay.actions.count
         )
     }
 
@@ -3226,6 +3228,7 @@ private struct WhatToPlayReplayPresentation: Identifiable {
     let replay: WhatToPlayDecisionReplay
     let title: String
     let contextText: String
+    let initialStep: Int
 }
 
 private struct MiniAnalysisCard: View {
