@@ -3031,9 +3031,7 @@ struct WhatToPlayTrainerView: View {
         }
 
         let content = WhatToPlayShareCard.content(for: scenario, selectedOption: selectedOption)
-        let selectedCard = selectedOption.map { "\($0.card.suit.ordinal)-\($0.card.rank.ordinal)" } ?? "prompt"
-        let focus = scenario.context.focusKind.rawValue
-        let fileName = "baloothub-what-to-play-\(scenario.seed)-\(scenario.difficulty.rawValue)-\(focus)-\(selectedCard).png"
+        let fileName = WhatToPlayShareCardImageRenderer.fileName(for: scenario, selectedOption: selectedOption)
 
         do {
             shareImageURL = try WhatToPlayShareCardImageRenderer.render(
@@ -3564,6 +3562,12 @@ struct WhatToPlayShareCardPreview: View {
 }
 
 enum WhatToPlayShareCardImageRenderer {
+    static func fileName(for scenario: WhatToPlayScenario, selectedOption: WhatToPlayOption?) -> String {
+        let selectedCard = selectedOption.map { "\($0.card.suit.ordinal)-\($0.card.rank.ordinal)" } ?? "prompt"
+        let focus = scenario.context.focusKind.rawValue
+        return "baloothub-what-to-play-\(scenario.seed)-\(scenario.difficulty.rawValue)-\(focus)-\(selectedCard).png"
+    }
+
     @MainActor
     static func render(
         content: WhatToPlayShareCardContent,

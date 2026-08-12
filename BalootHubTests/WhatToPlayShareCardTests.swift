@@ -222,6 +222,21 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("شدة خسارة القيمة".localized): \("خسارة عالية".localized)"))
     }
 
+    func testShareCardImageFileNameIncludesFocusAndSelectedCard() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
+        let selected = try XCTUnwrap(scenario.options.last)
+
+        let promptFileName = WhatToPlayShareCardImageRenderer.fileName(for: scenario, selectedOption: nil)
+        let reviewedFileName = WhatToPlayShareCardImageRenderer.fileName(for: scenario, selectedOption: selected)
+
+        XCTAssertTrue(promptFileName.contains("\(scenario.seed)"))
+        XCTAssertTrue(promptFileName.contains(scenario.difficulty.rawValue))
+        XCTAssertTrue(promptFileName.contains(scenario.context.focusKind.rawValue))
+        XCTAssertTrue(promptFileName.hasSuffix("-prompt.png"))
+        XCTAssertTrue(reviewedFileName.contains("\(selected.card.suit.ordinal)-\(selected.card.rank.ordinal)"))
+        XCTAssertNotEqual(promptFileName, reviewedFileName)
+    }
+
     @MainActor
     func testShareCardImageRendererWritesPNGFile() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
