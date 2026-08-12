@@ -224,7 +224,11 @@ struct RoundReplayView: View {
             HStack(spacing: AppSpacing.sm) {
                 Button {
                     isPlaying = false
-                    step = previousTrickStep()
+                    step = RoundReplayNavigator.previousTrickStep(
+                        initialState: initialState,
+                        actions: actions,
+                        currentStep: step
+                    )
                 } label: {
                     Image(systemName: "backward.end.fill")
                 }
@@ -256,7 +260,11 @@ struct RoundReplayView: View {
 
                 Button {
                     isPlaying = false
-                    step = nextTrickStep()
+                    step = RoundReplayNavigator.nextTrickStep(
+                        initialState: initialState,
+                        actions: actions,
+                        currentStep: step
+                    )
                 } label: {
                     Image(systemName: "forward.end.fill")
                 }
@@ -366,31 +374,6 @@ struct RoundReplayView: View {
                 }
             }
         }
-    }
-
-    private func previousTrickStep() -> Int {
-        let currentTricks = snapshot.completedTricks.count
-        var best = 0
-        guard step > 0 else { return 0 }
-        for candidate in 0..<step {
-            let candidateState = try? GameEngine.replay(initialState: initialState, actions: actions, upTo: candidate)
-            if (candidateState?.completedTricks.count ?? 0) < currentTricks {
-                best = candidate
-            }
-        }
-        return best
-    }
-
-    private func nextTrickStep() -> Int {
-        let currentTricks = snapshot.completedTricks.count
-        guard step < actions.count else { return actions.count }
-        for candidate in (step + 1)...actions.count {
-            let candidateState = try? GameEngine.replay(initialState: initialState, actions: actions, upTo: candidate)
-            if (candidateState?.completedTricks.count ?? 0) > currentTricks || candidate == actions.count {
-                return candidate
-            }
-        }
-        return actions.count
     }
 
     private func actionTitle(_ action: GameAction?, in state: GameState) -> String {
