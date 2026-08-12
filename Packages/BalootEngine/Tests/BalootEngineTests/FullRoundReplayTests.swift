@@ -246,6 +246,54 @@ struct AIProfileTests {
             #expect(AIProfile.opponents(for: level) == first)
         }
     }
+
+    @Test("كل خصم يملك بيانات عرض قابلة للاستخدام في الواجهة والإحصائيات")
+    func profilesExposeDisplayMetadata() {
+        for profile in AIProfile.roster {
+            #expect(!profile.displayName.isEmpty)
+            #expect(!profile.levelTitle.isEmpty)
+            #expect(!profile.personalityTitle.isEmpty)
+            #expect(!profile.profileDescription.isEmpty)
+            #expect(!profile.styleSummary.isEmpty)
+            #expect((0...100).contains(profile.riskScore))
+            #expect((0...100).contains(profile.multiplierAggression))
+        }
+    }
+
+    @Test("ميل الصن والحكم في بيانات الخصم يطابق شخصيته")
+    func profileModePreferenceMatchesPersonality() {
+        let hokum = AIProfile(
+            id: "test.hokum", level: .pro, personality: .hokumSpecialist,
+            avatarSystemName: "suit.spade.fill"
+        )
+        let sun = AIProfile(
+            id: "test.sun", level: .pro, personality: .sunSpecialist,
+            avatarSystemName: "sun.max.fill"
+        )
+        let balanced = AIProfile(
+            id: "test.balanced", level: .pro, personality: .balanced,
+            avatarSystemName: "person.fill"
+        )
+
+        #expect(hokum.preferredMode == .hokum)
+        #expect(sun.preferredMode == .sun)
+        #expect(balanced.preferredMode == nil)
+    }
+
+    @Test("المخاطر أكثر مخاطرة وميلًا للمضاعفة من المحافظ")
+    func profileRiskMetadataReflectsBiddingPolicy() {
+        let gambler = AIProfile(
+            id: "test.gambler", level: .expert, personality: .gambler,
+            avatarSystemName: "dice.fill"
+        )
+        let conservative = AIProfile(
+            id: "test.conservative", level: .expert, personality: .conservative,
+            avatarSystemName: "shield.fill"
+        )
+
+        #expect(gambler.riskScore > conservative.riskScore)
+        #expect(gambler.multiplierAggression > conservative.multiplierAggression)
+    }
 }
 
 // MARK: - تقييم اليد

@@ -71,6 +71,113 @@ public struct AIProfile: Sendable, Equatable, Codable, Identifiable {
         self.avatarSystemName = avatarSystemName
     }
 
+    // MARK: - بيانات العرض والتحليل
+
+    /// اسم المستوى كما يظهر للمستخدم.
+    public var levelTitle: String {
+        switch level {
+        case .beginner: "مبتدئ"
+        case .casual: "عادي"
+        case .pro: "محترف"
+        case .expert: "خبير"
+        case .sheikh: "شيخ البلوت"
+        }
+    }
+
+    /// اسم الشخصية كما يظهر للمستخدم.
+    public var personalityTitle: String {
+        switch personality {
+        case .balanced: "متوازن"
+        case .conservative: "محافظ"
+        case .aggressive: "هجومي"
+        case .hokumSpecialist: "متخصص حكم"
+        case .sunSpecialist: "متخصص صن"
+        case .gambler: "مخاطر"
+        case .defensive: "دفاعي"
+        }
+    }
+
+    /// اسم خصم جاهز وثابت. لا يعتمد على عشوائية حتى تبقى الإحصائيات قابلة للربط بالمعرّف.
+    public var displayName: String {
+        switch personality {
+        case .balanced where level == .beginner: "سالم"
+        case .balanced where level == .sheikh: "أبو ناصر"
+        case .balanced: "فهد"
+        case .conservative: "ماجد المحافظ"
+        case .aggressive: "راكان الهجومي"
+        case .hokumSpecialist: "ناصر الحكم"
+        case .sunSpecialist: "بدر الصن"
+        case .gambler: "تركي المخاطر"
+        case .defensive: "خالد الدفاعي"
+        }
+    }
+
+    /// وصف مختصر يشرح للاعب ما الذي يميّز الخصم قبل بدء المباراة.
+    public var profileDescription: String {
+        switch personality {
+        case .balanced:
+            level == .sheikh
+                ? "يوازن بين قراءة الشريك والمخاطرة، ويستخدم محاكاة أعمق قبل القرارات الحساسة."
+                : "يلعب بأسلوب متزن، لا يبالغ في الشراء ولا يترك اليد القوية تمر بسهولة."
+        case .conservative:
+            "يتجنب الشراء الهش، ولا يضاعف إلا عندما يرى أفضلية دفاعية واضحة."
+        case .aggressive:
+            "يضغط مبكرًا في المزايدة، ويميل لرفع قيمة اليد المتوسطة إذا وجد فرصة."
+        case .hokumSpecialist:
+            "يفضل الحكم عندما يملك طولًا وسيطرة في لون واضح، ويحسن استغلال ولد وتسعة الحكم."
+        case .sunSpecialist:
+            "يميل للصن عند وجود آسات وعشرات موزعة، ويقلل الاعتماد على لون حكم قصير."
+        case .gambler:
+            "يتقبل المخاطرة، يشتري أكثر من غيره، ولا يتردد في الدبل والتصعيد."
+        case .defensive:
+            "يركز على إسقاط المشتري، ويحافظ على الأوراق المؤثرة لقطع مجرى الجولة."
+        }
+    }
+
+    /// ملخص عملي لأسلوب اللعب، يستخدمه التطبيق في صفحة اختيار الخصوم والإحصائيات.
+    public var styleSummary: String {
+        switch personality {
+        case .balanced: "قرارات متوازنة بين الشراء والدفاع"
+        case .conservative: "شراء قليل ومضاعفة نادرة"
+        case .aggressive: "شراء وضغط مبكر"
+        case .hokumSpecialist: "يفضل الحكم والسيطرة باللون"
+        case .sunSpecialist: "يفضل الصن والأوراق العالية"
+        case .gambler: "مخاطرة عالية وتصعيد مضاعفات"
+        case .defensive: "دفاع قوي ضد المشتري"
+        }
+    }
+
+    /// درجة المخاطرة من 0 إلى 100. مشتقة من الشخصية والمستوى، وليست رقمًا تجميليًا.
+    public var riskScore: Int {
+        let base: Int
+        switch personality {
+        case .conservative: base = 20
+        case .defensive: base = 35
+        case .balanced: base = 45
+        case .hokumSpecialist, .sunSpecialist: base = 50
+        case .aggressive: base = 70
+        case .gambler: base = 88
+        }
+        return min(100, max(0, base + level.order * 3))
+    }
+
+    /// ميل نمط اللعب: يوضح هل الخصم أقرب للصن أو الحكم أو متوازن.
+    public var preferredMode: GameMode? {
+        switch personality {
+        case .hokumSpecialist: .hokum
+        case .sunSpecialist: .sun
+        default: nil
+        }
+    }
+
+    /// درجة الميل للمضاعفة من 0 إلى 100، مشتقة من السياسة الفعلية.
+    public var multiplierAggression: Int {
+        let policy = biddingPolicy
+        let thresholdPressure = max(0, 60 - policy.doubleThreshold)
+        let escalationBonus = policy.escalatesMultiplier ? 24 : 0
+        return min(100, max(0, thresholdPressure + policy.riskTolerance + escalationBonus + level.order * 4))
+    }
+
     /// سياسة المزايدة الناتجة عن دمج المستوى بالشخصية.
     ///
     /// المستوى يضبط جودة التقدير (كلما ارتفع قلّ الهامش الاحتياطي لأن التقدير أدق)،
