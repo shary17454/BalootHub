@@ -1,6 +1,48 @@
 {
   "sourceLanguage" : "ar",
   "strings" : {
+    "اقرأ مواقف وش تلعب واختر نفس قرار الخبير." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Lies Was spielst du?-Szenarien und wähle dieselbe Entscheidung wie der Experte." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Read What to Play scenarios and choose the same decision as the expert." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Lee escenarios de ¿Qué juegas? y elige la misma decisión que el experto." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Lis les situations Que jouer ? et choisis la même décision que l'expert." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "क्या खेलें स्थितियाँ पढ़ें और विशेषज्ञ जैसा ही निर्णय चुनें।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Baca skenario Apa yang dimainkan? dan pilih keputusan yang sama seperti ahli." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Разбирайте сценарии «Что сыграть?» и выбирайте то же решение, что и эксперт." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Ne oynarsın? senaryolarını oku ve uzmanla aynı kararı seç." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "وش تلعب؟ کے مواقف پڑھیں اور ماہر جیسا فیصلہ چنیں۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "阅读“该出什么？”局面，并选择与专家相同的决策。" } }
+      }
+    },
+    "عين الخبير" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Expertenauge" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Expert Eye" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Ojo experto" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Oeil d'expert" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "विशेषज्ञ नज़र" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Mata Ahli" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Глаз эксперта" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Uzman Gözü" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "ماہر کی نظر" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "专家之眼" } }
+      }
+    },
+    "يفتح عند مطابقة قرار الخبير في 5 مواقف من مدرب وش تلعب." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wird freigeschaltet, wenn du in 5 Was spielst du?-Szenarien die Expertenentscheidung triffst." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unlocks when you match the expert decision in 5 What to Play trainer scenarios." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Se desbloquea al igualar la decisión del experto en 5 escenarios del entrenador ¿Qué juegas?." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Se débloque quand tu égales la décision de l'expert dans 5 situations de l'entraîneur Que jouer ?." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "क्या खेलें ट्रेनर की 5 स्थितियों में विशेषज्ञ के निर्णय से मिलान करने पर खुलता है।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Terbuka saat kamu menyamai keputusan ahli dalam 5 skenario pelatih Apa yang dimainkan?." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открывается, когда вы совпадаете с решением эксперта в 5 сценариях тренера «Что сыграть?»." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Ne oynarsın? antrenöründe 5 senaryoda uzman kararıyla eşleşince açılır." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "وش تلعب؟ ٹرینر کے 5 مواقف میں ماہر کے فیصلے سے مطابقت پر کھلتا ہے۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在“该出什么？”训练器的 5 个局面中匹配专家决策后解锁。" } }
+      }
+    },
     "الحدث الحالي" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Aktuelles Ereignis" } },

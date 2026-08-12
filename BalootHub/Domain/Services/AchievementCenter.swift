@@ -62,6 +62,14 @@ enum AchievementCenter {
             rarity: .silver
         ),
         LocalAchievement(
+            id: "expert-eye",
+            title: "عين الخبير".localized,
+            detail: "اقرأ مواقف وش تلعب واختر نفس قرار الخبير.".localized,
+            requirement: "يفتح عند مطابقة قرار الخبير في 5 مواقف من مدرب وش تلعب.".localized,
+            iconName: "eye.fill",
+            rarity: .gold
+        ),
+        LocalAchievement(
             id: "academy-master",
             title: "إتقان المشاريع",
             detail: "أكمل دروس المشاريع والتكتيك في الأكاديمية.",
@@ -97,5 +105,10 @@ enum AchievementCenter {
 
     static func unlockedAchievements(from unlockedIDs: Set<String>) -> [LocalAchievement] {
         all.filter { unlockedIDs.contains($0.id) }
+    }
+
+    static func earnedAchievementIDs(whatToPlayAttempts: [WhatToPlayAttempt]) -> Set<String> {
+        let expertMatches = whatToPlayAttempts.filter(\.isCorrect).count
+        return expertMatches >= 5 ? ["expert-eye"] : []
     }
 }
