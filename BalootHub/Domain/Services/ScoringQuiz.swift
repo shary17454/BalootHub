@@ -56,6 +56,25 @@ struct ScoringQuizEvaluation: Equatable {
     let isCorrect: Bool
 }
 
+struct ScoringQuizStatsSummary: Equatable {
+    let attempts: Int
+    let correctAnswers: Int
+    let accuracyPercent: Int
+    let currentStreak: Int
+    let bestStreak: Int
+    let averageRemainingSeconds: Int
+    let hardestSolvedDifficulty: ScoringQuizDifficulty?
+}
+
+struct ScoringQuizDifficultySummary: Identifiable, Equatable {
+    let difficulty: ScoringQuizDifficulty
+    let attempts: Int
+    let correctAnswers: Int
+    let accuracyPercent: Int
+
+    var id: ScoringQuizDifficulty { difficulty }
+}
+
 enum ScoringQuizEvaluator {
     static func evaluate(answerText: String, question: ScoringQuizQuestion) -> ScoringQuizEvaluation {
         let cleaned = answerText.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -65,6 +84,89 @@ enum ScoringQuizEvaluator {
             expectedAnswer: question.answer,
             isCorrect: submittedAnswer == question.answer
         )
+    }
+}
+
+enum ScoringQuizStatsAnalyzer {
+    static func summarize(attempts: [ScoringQuizAttempt]) -> ScoringQuizStatsSummary {
+        let sorted = attempts.sorted { $0.createdAt > $1.createdAt }
+        let correct = sorted.filter(\.isCorrect).count
+        let attemptsCount = sorted.count
+        let averageRemainingSeconds = attemptsCount == 0
+            ? 0
+            : sorted.reduce(0) { $0 + $1.remainingSeconds } / attemptsCount
+
+        return ScoringQuizStatsSummary(
+            attempts: attemptsCount,
+            correctAnswers: correct,
+            accuracyPercent: percent(correct, of: attemptsCount),
+            currentStreak: currentStreak(sorted),
+            bestStreak: bestStreak(sorted),
+            averageRemainingSeconds: averageRemainingSeconds,
+            hardestSolvedDifficulty: hardestSolvedDifficulty(sorted)
+        )
+    }
+
+    static func summariesByDifficulty(_ attempts: [ScoringQuizAttempt]) -> [ScoringQuizDifficultySummary] {
+        ScoringQuizDifficulty.allCases.map { difficulty in
+            let matching = attempts.filter { $0.difficulty == difficulty }
+            let correct = matching.filter(\.isCorrect).count
+            return ScoringQuizDifficultySummary(
+                difficulty: difficulty,
+                attempts: matching.count,
+                correctAnswers: correct,
+                accuracyPercent: percent(correct, of: matching.count)
+            )
+        }
+    }
+
+    static func recentAttempts(_ attempts: [ScoringQuizAttempt], limit: Int = 5) -> [ScoringQuizAttempt] {
+        Array(attempts.sorted { $0.createdAt > $1.createdAt }.prefix(limit))
+    }
+
+    private static func currentStreak(_ attempts: [ScoringQuizAttempt]) -> Int {
+        var streak = 0
+        for attempt in attempts {
+            guard attempt.isCorrect else { break }
+            streak += 1
+        }
+        return streak
+    }
+
+    private static func bestStreak(_ attempts: [ScoringQuizAttempt]) -> Int {
+        var best = 0
+        var current = 0
+        for attempt in attempts.sorted(by: { $0.createdAt < $1.createdAt }) {
+            if attempt.isCorrect {
+                current += 1
+                best = max(best, current)
+            } else {
+                current = 0
+            }
+        }
+        return best
+    }
+
+    private static func hardestSolvedDifficulty(_ attempts: [ScoringQuizAttempt]) -> ScoringQuizDifficulty? {
+        attempts
+            .filter(\.isCorrect)
+            .map(\.difficulty)
+            .max { lhs, rhs in
+                difficultyWeight(lhs) < difficultyWeight(rhs)
+            }
+    }
+
+    private static func difficultyWeight(_ difficulty: ScoringQuizDifficulty) -> Int {
+        switch difficulty {
+        case .easy: 1
+        case .medium: 2
+        case .hard: 3
+        }
+    }
+
+    private static func percent(_ numerator: Int, of denominator: Int) -> Int {
+        guard denominator > 0 else { return 0 }
+        return Int((Double(numerator) / Double(denominator) * 100).rounded())
     }
 }
 

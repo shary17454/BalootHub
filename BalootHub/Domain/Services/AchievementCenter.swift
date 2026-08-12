@@ -115,4 +115,16 @@ enum AchievementCenter {
         )
         return uniqueExpertMatchSeeds.count >= 5 ? ["expert-eye"] : []
     }
+
+    static func earnedAchievementIDs(
+        whatToPlayAttempts: [WhatToPlayAttempt],
+        scoringQuizAttempts: [ScoringQuizAttempt]
+    ) -> Set<String> {
+        var earned = earnedAchievementIDs(whatToPlayAttempts: whatToPlayAttempts)
+        let correctScoringAnswers = scoringQuizAttempts.filter(\.isCorrect).count
+        if correctScoringAnswers >= 25 {
+            earned.insert("scorekeeper")
+        }
+        return earned
+    }
 }

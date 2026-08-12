@@ -32,6 +32,7 @@
 		5F6247EDBCD44AB7BCDDE0FB /* ScoreSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = D580074AC68348148D5DC26D /* ScoreSession.swift */; };
 		1F1CB02E49114969893329E4 /* OfflineTournament.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96B0E69259F48239E70C5E8 /* OfflineTournament.swift */; };
 		C2B3D4E5F60718293A4B5C60 /* WhatToPlayAttempt.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2B3D4E5F60718293A4B5C5F /* WhatToPlayAttempt.swift */; };
+		4D8A0D8E4FC34C9587EAF731 /* ScoringQuizAttempt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E98C1D6A2A142ED953F3D57 /* ScoringQuizAttempt.swift */; };
 		41C5D46DD8114F4EA837279D /* SettingsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58DE3BF27BC849B48E1249E4 /* SettingsRepository.swift */; };
 		10F7E300CEB243B0A5B5531F /* CatalogFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774F64E2FF1449F4BFBB8528 /* CatalogFilter.swift */; };
 		DDA37C25EA9445F6A7AF6F6F /* ScoreRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08D5EFA6DCEE4185BB3648B4 /* ScoreRules.swift */; };
@@ -143,6 +144,7 @@
 		D580074AC68348148D5DC26D /* ScoreSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreSession.swift; sourceTree = "<group>"; };
 		D96B0E69259F48239E70C5E8 /* OfflineTournament.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineTournament.swift; sourceTree = "<group>"; };
 		C2B3D4E5F60718293A4B5C5F /* WhatToPlayAttempt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayAttempt.swift; sourceTree = "<group>"; };
+		3E98C1D6A2A142ED953F3D57 /* ScoringQuizAttempt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoringQuizAttempt.swift; sourceTree = "<group>"; };
 		58DE3BF27BC849B48E1249E4 /* SettingsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRepository.swift; sourceTree = "<group>"; };
 		774F64E2FF1449F4BFBB8528 /* CatalogFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogFilter.swift; sourceTree = "<group>"; };
 		08D5EFA6DCEE4185BB3648B4 /* ScoreRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreRules.swift; sourceTree = "<group>"; };
@@ -314,6 +316,7 @@
 				D580074AC68348148D5DC26D /* ScoreSession.swift */,
 				D96B0E69259F48239E70C5E8 /* OfflineTournament.swift */,
 				C2B3D4E5F60718293A4B5C5F /* WhatToPlayAttempt.swift */,
+				3E98C1D6A2A142ED953F3D57 /* ScoringQuizAttempt.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -676,6 +679,7 @@
 				5F6247EDBCD44AB7BCDDE0FB /* ScoreSession.swift in Sources */,
 				1F1CB02E49114969893329E4 /* OfflineTournament.swift in Sources */,
 				C2B3D4E5F60718293A4B5C60 /* WhatToPlayAttempt.swift in Sources */,
+				4D8A0D8E4FC34C9587EAF731 /* ScoringQuizAttempt.swift in Sources */,
 				41C5D46DD8114F4EA837279D /* SettingsRepository.swift in Sources */,
 				10F7E300CEB243B0A5B5531F /* CatalogFilter.swift in Sources */,
 				DDA37C25EA9445F6A7AF6F6F /* ScoreRules.swift in Sources */,

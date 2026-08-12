@@ -11,6 +11,7 @@ enum PersistenceController {
             ScoreRound.self,
             OfflineTournament.self,
             WhatToPlayAttempt.self,
+            ScoringQuizAttempt.self,
             AppSettings.self
         ])
     }

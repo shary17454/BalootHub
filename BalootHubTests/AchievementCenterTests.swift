@@ -65,6 +65,34 @@ final class AchievementCenterTests: XCTestCase {
         XCTAssertTrue(AchievementCenter.earnedAchievementIDs(whatToPlayAttempts: attempts).isEmpty)
     }
 
+    func testScorekeeperUnlocksAfterTwentyFiveCorrectScoringQuizAnswers() {
+        let scoringAttempts = (0..<25).map { index in
+            makeScoringQuizAttempt(seed: UInt64(index), isCorrect: true)
+        }
+
+        XCTAssertTrue(
+            AchievementCenter.earnedAchievementIDs(
+                whatToPlayAttempts: [],
+                scoringQuizAttempts: scoringAttempts
+            )
+            .contains("scorekeeper")
+        )
+    }
+
+    func testScorekeeperIgnoresWrongScoringQuizAnswers() {
+        let scoringAttempts = (0..<25).map { index in
+            makeScoringQuizAttempt(seed: UInt64(index), isCorrect: index != 24)
+        }
+
+        XCTAssertFalse(
+            AchievementCenter.earnedAchievementIDs(
+                whatToPlayAttempts: [],
+                scoringQuizAttempts: scoringAttempts
+            )
+            .contains("scorekeeper")
+        )
+    }
+
     private func makeWhatToPlayAttempt(seed: UInt64, isCorrect: Bool) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
             difficulty: .medium,
@@ -74,6 +102,16 @@ final class AchievementCenterTests: XCTestCase {
             isCorrect: isCorrect,
             expectedImpact: isCorrect ? 12 : 5,
             bestExpectedImpact: 12
+        )
+    }
+
+    private func makeScoringQuizAttempt(seed: UInt64, isCorrect: Bool) -> ScoringQuizAttempt {
+        let question = ScoringQuizGenerator.generate(seed: seed, difficulty: .medium)
+        let submitted = isCorrect ? question.answer : question.answer + 1
+        return ScoringQuizAttempt(
+            question: question,
+            evaluation: ScoringQuizEvaluator.evaluate(answerText: "\(submitted)", question: question),
+            remainingSeconds: isCorrect ? 10 : 0
         )
     }
 }

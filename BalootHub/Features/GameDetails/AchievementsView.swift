@@ -4,10 +4,14 @@ import SwiftData
 struct AchievementsView: View {
     @AppStorage("unlockedBalootAchievementIDs") private var unlockedAchievementIDs = ""
     @Query(sort: \WhatToPlayAttempt.createdAt, order: .reverse) private var whatToPlayAttempts: [WhatToPlayAttempt]
+    @Query(sort: \ScoringQuizAttempt.createdAt, order: .reverse) private var scoringQuizAttempts: [ScoringQuizAttempt]
 
     private var unlockedSet: Set<String> {
         Set(unlockedAchievementIDs.split(separator: ",").map(String.init))
-            .union(AchievementCenter.earnedAchievementIDs(whatToPlayAttempts: whatToPlayAttempts))
+            .union(AchievementCenter.earnedAchievementIDs(
+                whatToPlayAttempts: whatToPlayAttempts,
+                scoringQuizAttempts: scoringQuizAttempts
+            ))
     }
 
     var body: some View {

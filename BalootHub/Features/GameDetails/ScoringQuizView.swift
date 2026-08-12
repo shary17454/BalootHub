@@ -1,6 +1,10 @@
 import SwiftUI
+import SwiftData
 
 struct ScoringQuizView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query(sort: \ScoringQuizAttempt.createdAt, order: .reverse) private var attempts: [ScoringQuizAttempt]
+
     @State private var difficulty: ScoringQuizDifficulty = .medium
     @State private var seed: UInt64 = UInt64(Date().timeIntervalSince1970)
     @State private var question = ScoringQuizGenerator.generate(seed: UInt64(Date().timeIntervalSince1970), difficulty: .medium)
@@ -10,10 +14,15 @@ struct ScoringQuizView: View {
     @State private var remainingSeconds = ScoringQuizDifficulty.medium.timeLimitSeconds
     @AppStorage("scoringQuizBestStreak") private var bestStreak = 0
 
+    private var statsSummary: ScoringQuizStatsSummary {
+        ScoringQuizStatsAnalyzer.summarize(attempts: attempts)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
                 header
+                statsCard
                 difficultyPicker
                 questionCard
                 answerCard
@@ -42,7 +51,84 @@ struct ScoringQuizView: View {
             }
             HStack {
                 scorePill(title: "السلسلة", value: "\(streak)", tint: AppColor.success)
-                scorePill(title: "أفضل رقم", value: "\(bestStreak)", tint: AppColor.primary)
+                scorePill(title: "أفضل رقم", value: "\(max(bestStreak, statsSummary.bestStreak))", tint: AppColor.primary)
+            }
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private var statsCard: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            Label("سجل تحدي النقاط".localized, systemImage: "chart.bar.xaxis")
+                .font(AppTypography.headline)
+                .foregroundStyle(AppColor.primary)
+
+            if statsSummary.attempts == 0 {
+                Text("أجب على أول سؤال ليبدأ التطبيق بحفظ أدائك محليًا دون إنترنت.".localized)
+                    .font(AppTypography.subheadline)
+                    .foregroundStyle(AppColor.textSecondary)
+            } else {
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppSpacing.xs) {
+                    metric("المحاولات".localized, "\(statsSummary.attempts)", icon: "number")
+                    metric("الدقة".localized, "\(statsSummary.accuracyPercent)%", icon: "target")
+                    metric("إجابات صحيحة".localized, "\(statsSummary.correctAnswers)", icon: "checkmark.seal.fill")
+                    metric("متوسط الوقت المتبقي".localized, "\(statsSummary.averageRemainingSeconds)s", icon: "timer")
+                }
+
+                if let hardest = statsSummary.hardestSolvedDifficulty {
+                    InfoRow(
+                        icon: "gauge.with.dots.needle.67percent",
+                        title: "أصعب مستوى محلول".localized,
+                        value: hardest.title
+                    )
+                }
+
+                VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                    ForEach(ScoringQuizStatsAnalyzer.summariesByDifficulty(attempts)) { summary in
+                        HStack {
+                            Text(summary.difficulty.title)
+                                .font(AppTypography.caption.weight(.semibold))
+                                .foregroundStyle(AppColor.textPrimary)
+                            Spacer()
+                            Text("\(summary.correctAnswers)/\(summary.attempts) · \(summary.accuracyPercent)%")
+                                .font(AppTypography.caption)
+                                .foregroundStyle(AppColor.textSecondary)
+                        }
+                        .accessibilityElement(children: .combine)
+                    }
+                }
+                .padding(AppSpacing.sm)
+                .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+
+                let recent = ScoringQuizStatsAnalyzer.recentAttempts(attempts)
+                if !recent.isEmpty {
+                    VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                        Label("آخر المحاولات".localized, systemImage: "clock.arrow.circlepath")
+                            .font(AppTypography.subheadline.weight(.semibold))
+                            .foregroundStyle(AppColor.textPrimary)
+                        ForEach(recent) { attempt in
+                            HStack {
+                                Image(systemName: attempt.isCorrect ? "checkmark.circle.fill" : "xmark.circle.fill")
+                                    .foregroundStyle(attempt.isCorrect ? AppColor.success : AppColor.danger)
+                                Text(attempt.difficulty.title)
+                                    .font(AppTypography.caption.weight(.semibold))
+                                    .foregroundStyle(AppColor.textPrimary)
+                                Text("\(attempt.mode.title) · \(attempt.multiplier.title)")
+                                    .font(AppTypography.caption)
+                                    .foregroundStyle(AppColor.textSecondary)
+                                    .lineLimit(1)
+                                Spacer()
+                                Text("\(attempt.submittedAnswer.map(String.init) ?? "—") / \(attempt.expectedAnswer)")
+                                    .font(AppTypography.caption.monospacedDigit())
+                                    .foregroundStyle(AppColor.textSecondary)
+                            }
+                            .accessibilityElement(children: .combine)
+                        }
+                    }
+                    .padding(AppSpacing.sm)
+                    .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+                }
             }
         }
         .padding(AppSpacing.md)
@@ -184,6 +270,7 @@ struct ScoringQuizView: View {
             streak = 0
         }
         feedback = QuizFeedback(evaluation: evaluation)
+        saveAttempt(evaluation)
     }
 
     private func loadQuestion(seed: UInt64, difficulty: ScoringQuizDifficulty) {
@@ -202,12 +289,24 @@ struct ScoringQuizView: View {
         }
         if remainingSeconds == 0, feedback == nil {
             streak = 0
-            feedback = QuizFeedback(evaluation: ScoringQuizEvaluation(
+            let evaluation = ScoringQuizEvaluation(
                 submittedAnswer: nil,
                 expectedAnswer: question.answer,
                 isCorrect: false
-            ))
+            )
+            feedback = QuizFeedback(evaluation: evaluation)
+            saveAttempt(evaluation)
         }
+    }
+
+    private func saveAttempt(_ evaluation: ScoringQuizEvaluation) {
+        let attempt = ScoringQuizAttempt(
+            question: question,
+            evaluation: evaluation,
+            remainingSeconds: remainingSeconds
+        )
+        modelContext.insert(attempt)
+        try? modelContext.save()
     }
 }
 
