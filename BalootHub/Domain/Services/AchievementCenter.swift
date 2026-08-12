@@ -70,6 +70,14 @@ enum AchievementCenter {
             rarity: .gold
         ),
         LocalAchievement(
+            id: "coffee-calculator",
+            title: "خبير القهوة".localized,
+            detail: "أتقن حساب جولات القهوة والمضاعفات العالية في تحدي النقاط.".localized,
+            requirement: "يفتح عند حل 5 أسئلة قهوة صحيحة في تحدي حساب النقاط.".localized,
+            iconName: "cup.and.saucer.fill",
+            rarity: .gold
+        ),
+        LocalAchievement(
             id: "expert-eye",
             title: "عين الخبير".localized,
             detail: "اقرأ مواقف وش تلعب واختر نفس قرار الخبير.".localized,
@@ -176,6 +184,12 @@ enum AchievementCenter {
         }.count
         if correctHardScoringAnswers >= 5 {
             earned.insert("scoring-sheikh")
+        }
+        let correctCoffeeAnswers = scoringQuizAttempts.filter {
+            $0.isCorrect && $0.category == .coffee
+        }.count
+        if correctCoffeeAnswers >= 5 {
+            earned.insert("coffee-calculator")
         }
         if BalootAcademyCatalog.progressSummary(
             progress: academyProgress,

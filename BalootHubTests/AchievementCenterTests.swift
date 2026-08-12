@@ -136,6 +136,46 @@ final class AchievementCenterTests: XCTestCase {
         )
     }
 
+    func testCoffeeCalculatorAchievementExists() throws {
+        let achievement = try XCTUnwrap(AchievementCenter.all.first { $0.id == "coffee-calculator" })
+
+        XCTAssertEqual(achievement.rarity, .gold)
+        XCTAssertEqual(achievement.iconName, "cup.and.saucer.fill")
+        XCTAssertFalse(achievement.title.isEmpty)
+        XCTAssertFalse(achievement.detail.isEmpty)
+        XCTAssertFalse(achievement.requirement.isEmpty)
+    }
+
+    func testCoffeeCalculatorUnlocksAfterFiveCorrectCoffeeQuestions() throws {
+        let scoringAttempts = try (0..<5).map { index in
+            try makeScoringQuizAttempt(category: .coffee, seedOffset: UInt64(index), isCorrect: true)
+        }
+
+        XCTAssertTrue(
+            AchievementCenter.earnedAchievementIDs(
+                whatToPlayAttempts: [],
+                scoringQuizAttempts: scoringAttempts
+            )
+            .contains("coffee-calculator")
+        )
+    }
+
+    func testCoffeeCalculatorIgnoresWrongAndNonCoffeeQuestions() throws {
+        var scoringAttempts = try (0..<4).map { index in
+            try makeScoringQuizAttempt(category: .coffee, seedOffset: UInt64(index), isCorrect: true)
+        }
+        scoringAttempts.append(try makeScoringQuizAttempt(category: .coffee, seedOffset: 20, isCorrect: false))
+        scoringAttempts.append(try makeScoringQuizAttempt(category: .multipliers, seedOffset: 30, isCorrect: true))
+
+        XCTAssertFalse(
+            AchievementCenter.earnedAchievementIDs(
+                whatToPlayAttempts: [],
+                scoringQuizAttempts: scoringAttempts
+            )
+            .contains("coffee-calculator")
+        )
+    }
+
     func testAcademyMasterUnlocksAfterAllLessonsCompleted() {
         let progress = BalootAcademyCatalog.lessons.map {
             AcademyLessonProgress(lesson: $0, selectedOptionID: $0.correctOptionID)
@@ -434,6 +474,30 @@ final class AchievementCenterTests: XCTestCase {
             evaluation: ScoringQuizEvaluator.evaluate(answerText: "\(submitted)", question: question),
             remainingSeconds: isCorrect ? 10 : 0
         )
+    }
+
+    private func makeScoringQuizAttempt(
+        category: ScoringQuizQuestionCategory,
+        seedOffset: UInt64,
+        isCorrect: Bool
+    ) throws -> ScoringQuizAttempt {
+        var matchedOffset: UInt64 = 0
+        for seed in 1...1_200 {
+            let question = ScoringQuizGenerator.generate(seed: UInt64(seed), difficulty: .hard)
+            guard question.category == category else { continue }
+            if matchedOffset < seedOffset {
+                matchedOffset += 1
+                continue
+            }
+            let submitted = isCorrect ? question.answer : question.answer + 1
+            return ScoringQuizAttempt(
+                question: question,
+                evaluation: ScoringQuizEvaluator.evaluate(answerText: "\(submitted)", question: question),
+                remainingSeconds: isCorrect ? 10 : 0
+            )
+        }
+        XCTFail("لم يتم العثور على سؤال من نوع \(category.rawValue)")
+        throw NSError(domain: "AchievementCenterTests", code: 1)
     }
 
     private func makeScoreSession(
