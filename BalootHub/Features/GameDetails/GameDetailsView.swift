@@ -455,12 +455,6 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayScenarioFocusKind(rawValue: preferredFocusRaw)
     }
 
-    private var shareImageRenderID: String {
-        guard let scenario else { return "empty" }
-        let selectedCard = selectedOption.map { "\($0.card.suit.ordinal)-\($0.card.rank.ordinal)" } ?? "prompt"
-        return "\(scenario.seed)-\(scenario.difficulty.rawValue)-\(scenario.context.focusKind.rawValue)-\(selectedCard)"
-    }
-
     private func saveTrainerPreferences() {
         WhatToPlayTrainerPreferences.save(
             difficulty: difficulty,
@@ -513,9 +507,6 @@ struct WhatToPlayTrainerView: View {
         .navigationBarTitleDisplayMode(.inline)
         .task {
             if scenario == nil { generateScenario() }
-        }
-        .task(id: shareImageRenderID) {
-            renderShareImageForCurrentScenario()
         }
         .onChange(of: difficulty) { _, _ in
             saveTrainerPreferences()
