@@ -632,6 +632,60 @@ struct EngineRegressionTests {
         #expect(state.actionHistory == [.dealCards(seed: 10)])
     }
 
+    /// كانت لقطة إعادة العرض الابتدائية في الواجهة تستخدم `dealerSeat` **قبل**
+    /// دورانه (تُبنى قبل تطبيق `.dealCards` الذي يدوّره فعليًا)، فتُوزَّع الأوراق
+    /// على مقاعد مختلفة عن اللعب الحي بدءًا من الجولة الثانية، ويفشل إعادة تطبيق
+    /// أول فعل مزايدة مسجَّل. ``GameEngine/nextDealerSeat(after:)`` هو مصدر الحقيقة
+    /// الوحيد لهذا الدوران حتى لا تنحرف الواجهة عنه مرة أخرى.
+    @Test("دور الموزّع التالي يطابق ما يطبّقه إعادة التوزيع الحي")
+    func nextDealerSeatMatchesLiveRedeal() throws {
+        var state = GameState.newLocalMatch(rules: .standard)
+        state = try GameEngine.apply(.dealCards(seed: 9), to: state)
+
+        // جولة اشتُريت فيها فعلًا (لا دورة ميتة): الموزّع يدور عادة.
+        state = try GameEngine.apply(.placeBid(playerID: try #require(state.currentTurnPlayerID), bid: .sun), to: state)
+        while state.phase != .finished {
+            if state.phase == .bidding, state.bidding.stage == .doubling {
+                state = try GameEngine.apply(.passMultiplier(playerID: try #require(state.currentTurnPlayerID)), to: state)
+                continue
+            }
+            if state.phase == .declaring {
+                state = try GameEngine.apply(.declareProjects(playerID: try #require(state.currentTurnPlayerID), projects: []), to: state)
+                continue
+            }
+            if state.phase == .scoring {
+                state = try GameEngine.apply(.finishRound, to: state)
+                continue
+            }
+            let playerID = try #require(state.currentTurnPlayerID)
+            let hand = try #require(state.hands[playerID])
+            let legal = LegalMoveValidator.legalCards(
+                hand: hand, trick: state.currentTrick, mode: state.mode ?? .sun, trumpSuit: state.trumpSuit, rules: state.rules
+            )
+            state = try GameEngine.apply(.playCard(playerID: playerID, card: try #require(legal.first)), to: state)
+        }
+
+        let expectedNextDealer = state.dealerSeat.next
+        #expect(GameEngine.nextDealerSeat(after: state) == expectedNextDealer)
+
+        let redealt = try GameEngine.apply(.dealCards(seed: 11), to: state)
+        #expect(redealt.dealerSeat == expectedNextDealer)
+
+        // دورة ميتة: الموزّع دار مسبقًا داخل `voidRound`، فلا يجوز أن يدور ثانية.
+        var voided = GameState.newLocalMatch(rules: .standard)
+        voided = try GameEngine.apply(.dealCards(seed: 9), to: voided)
+        for _ in 0..<8 {
+            let playerID = try #require(voided.currentTurnPlayerID)
+            voided = try GameEngine.apply(.placeBid(playerID: playerID, bid: .pass), to: voided)
+        }
+        #expect(GameEngine.nextDealerSeat(after: voided) == voided.dealerSeat)
+
+        // حالة لم تنتهِ بعد: لا يوجد دوران متوقَّع أصلًا، تُعاد كما هي.
+        var inProgress = GameState.newLocalMatch(rules: .standard)
+        inProgress = try GameEngine.apply(.dealCards(seed: 9), to: inProgress)
+        #expect(GameEngine.nextDealerSeat(after: inProgress) == inProgress.dealerSeat)
+    }
+
     @Test("الجولة المحلية البشرية تنشئ أربعة لاعبين بلا آليين")
     func localHumanMatchUsesFourHumanPlayers() throws {
         var state = GameState.newLocalHumanMatch(rules: .simpleBidding)

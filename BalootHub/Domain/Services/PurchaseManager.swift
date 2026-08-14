@@ -2,20 +2,6 @@ import Foundation
 import StoreKit
 import Observation
 
-private final class PurchaseTaskBox: @unchecked Sendable {
-    private var task: Task<Void, Never>?
-
-    func replace(with newTask: Task<Void, Never>) {
-        task?.cancel()
-        task = newTask
-    }
-
-    func cancel() {
-        task?.cancel()
-        task = nil
-    }
-}
-
 /// معرّف منتج الشراء غير المستهلك (Non-Consumable) لفتح اللعبة الكاملة بدفعة واحدة.
 enum ProductID {
     static let fullGameUnlock = "app.balooThub.ios.fullgame"
@@ -32,7 +18,7 @@ final class PurchaseManager {
     private(set) var isLoading = false
     private(set) var errorMessage: String?
 
-    private let transactionListenerTask = PurchaseTaskBox()
+    private let transactionListenerTask = CancellableTaskBox()
 
     init() {
         transactionListenerTask.replace(with: listenForTransactionUpdates())

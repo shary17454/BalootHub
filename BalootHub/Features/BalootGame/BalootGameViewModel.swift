@@ -2,20 +2,6 @@ import Foundation
 import Observation
 import BalootEngine
 
-private final class GameTaskBox: @unchecked Sendable {
-    private var task: Task<Void, Never>?
-
-    func replace(with newTask: Task<Void, Never>) {
-        task?.cancel()
-        task = newTask
-    }
-
-    func cancel() {
-        task?.cancel()
-        task = nil
-    }
-}
-
 /// يربط واجهة شاشة اللعب بمحرك BalootEngine. لا يحتوي أي منطق قواعد؛
 /// كل قرار قانوني أو احتساب نقاط يمر عبر المحرك نفسه.
 /// نمط الجولة المسموح به في شاشة اللعب.
@@ -87,8 +73,8 @@ final class BalootGameViewModel {
     private let rules: BalootRulesConfiguration
     /// مهمة أدوار اللاعبين الآليين الجارية، تُلغى قبل بدء غيرها حتى لا تتداخل
     /// جولتان (مثلًا عند الضغط على "جولة جديدة" أثناء لعب الآليين).
-    private let aiTask = GameTaskBox()
-    private let analysisTask = GameTaskBox()
+    private let aiTask = CancellableTaskBox()
+    private let analysisTask = CancellableTaskBox()
 
     /// أسماء اللاعبين والفريقين مترجمة حسب لغة الجهاز، بدل الأسماء العربية
     /// المثبّتة داخل المحرك.
@@ -401,17 +387,27 @@ final class BalootGameViewModel {
     }
 
     func deal() {
+        deal(seed: UInt64.random(in: .min ... .max))
+    }
+
+    /// نفس ``deal()`` ببذرة صريحة، لضبط توزيع قابل للتكرار في الاختبارات.
+    func deal(seed: UInt64) {
         roundReplayInitialState = replayInitialState(from: state)
-        perform(.dealCards(seed: UInt64.random(in: .min ... .max)))
+        perform(.dealCards(seed: seed))
         advanceAI()
     }
 
+    /// لقطة بداية الجولة التالية لاستخدامها في إعادة العرض، بنفس الموزّع الذي
+    /// سيستخدمه `applyDeal` فعليًا. `source.dealerSeat` قد يكون **قبل** الدوران
+    /// (لو `source.phase == .finished`)، وكان استخدامه مباشرة يجعل إعادة العرض
+    /// تُوزّع الأوراق على مقاعد مختلفة عن اللعب الحي بدءًا من الجولة الثانية،
+    /// فتفشل إعادة تطبيق أول فعل مزايدة مسجَّل (دور لاعب مختلف عن المتوقع).
     private func replayInitialState(from source: GameState) -> GameState {
         GameState(
             players: source.players,
             teams: source.teams,
             rules: source.rules,
-            dealerSeat: source.dealerSeat,
+            dealerSeat: GameEngine.nextDealerSeat(after: source),
             roundNumber: source.roundNumber
         )
     }
@@ -515,8 +511,14 @@ final class BalootGameViewModel {
         advanceAI()
     }
 
+    /// القفل حركة **خارج الدور** بتصميم المحرك: يملكه الفريق صاحب المضاعفة
+    /// الحالية دائمًا (حتى لو كان الدور الآن للفريق المقابل بانتظار رده)، لا
+    /// الفريق صاحب الدور الحالي. لذا لا يصح ربط هذا الفعل بـ`canCurrentHumanAct`
+    /// (يشترط دور اللاعب البشري الحالي) — هذا كان يجعل زر القفل يظهر لكنه لا
+    /// يفعل شيئًا في الحالة الوحيدة التي يظهر فيها فعلًا. ولا يصح ربطه أيضًا
+    /// بإخفاء/كشف اليد في وضع «أربعة أشخاص»: القفل قرار فريق بلا معلومة عن
+    /// الأوراق (بخلاف المزايدة واللعب)، فلا حاجة تعرض يد أحد لاتخاذه.
     func lockMultiplier() {
-        guard canCurrentHumanAct else { return }
         guard let playerID = humanMultiplierLockerID else { return }
         perform(.lockMultiplier(playerID: playerID))
         advanceAI()
@@ -682,6 +684,11 @@ final class BalootGameViewModel {
                 do {
                     self.state = try GameEngine.apply(action, to: self.state)
                     self.errorMessage = nil
+                    // مسار مباشر إلى `.finished` بلا مرور بـ`.scoring` ممكن هنا (دورة
+                    // ميتة تُغلقها مزايدة آلية)، وهذا الحلقة لا تمر عبر `perform(_:)`
+                    // فيفوّت `onRoundFinished` بدونه — لا يضر استدعاؤه هنا في المسار
+                    // العادي لأن `didNotifyRoundFinished` يمنع أي تكرار.
+                    self.notifyRoundFinishedIfNeeded()
                 } catch {
                     self.errorMessage = Self.aiErrorMessage
                     return

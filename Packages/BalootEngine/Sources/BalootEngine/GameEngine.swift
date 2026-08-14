@@ -272,14 +272,24 @@ public enum GameEngine {
             throw GameEngineError.unknownPlayer
         }
         if state.phase == .finished {
-            let dealerAlreadyRotated = state.bidding.stage == .voided
             state.actionHistory = []
             state.roundNumber += 1
-            if !dealerAlreadyRotated {
-                state.dealerSeat = state.dealerSeat.next
-            }
+            state.dealerSeat = nextDealerSeat(after: state)
         }
         try BiddingEngine.deal(seed: seed, state: &state)
+    }
+
+    /// دور الموزّع الذي سيُستخدم فعليًا في أول توزيع تالٍ لهذه الحالة.
+    ///
+    /// مطابق تمامًا لدوران الموزّع الذي يطبّقه ``applyDeal`` عند إعادة التوزيع بعد
+    /// جولة منتهية (يدور إلا إذا كانت الجولة السابقة دورة ميتة دار فيها الموزّع
+    /// مسبقًا عبر ``BiddingEngine/voidRound(state:)``). مكشوف علنًا حتى تستطيع طبقة
+    /// الواجهة بناء لقطة إعادة عرض ابتدائية بنفس الموزّع الذي سيُنتجه اللعب الحي،
+    /// بدل تكرار هذا المنطق بشكل مستقل قد ينحرف عنه.
+    public static func nextDealerSeat(after state: GameState) -> SeatPosition {
+        guard state.phase == .finished else { return state.dealerSeat }
+        let dealerAlreadyRotated = state.bidding.stage == .voided
+        return dealerAlreadyRotated ? state.dealerSeat : state.dealerSeat.next
     }
 
     // MARK: - Choose mode (النمط المبسّط)

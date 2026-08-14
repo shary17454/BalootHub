@@ -61,11 +61,11 @@ struct BalootEncyclopediaView: View {
     private var categoryChips: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: AppSpacing.xs) {
-                glossaryChip(title: "الكل".localized, isSelected: selectedCategory == nil) {
+                SelectableChip(title: "الكل".localized, isSelected: selectedCategory == nil) {
                     selectedCategory = nil
                 }
                 ForEach(BalootGlossaryCategory.allCases) { category in
-                    glossaryChip(title: category.title, isSelected: selectedCategory == category) {
+                    SelectableChip(title: category.title, isSelected: selectedCategory == category) {
                         selectedCategory = category
                     }
                 }
@@ -73,20 +73,6 @@ struct BalootEncyclopediaView: View {
             .padding(.horizontal, AppSpacing.md)
             .padding(.vertical, AppSpacing.sm)
         }
-    }
-
-    private func glossaryChip(title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(title)
-                .font(AppTypography.subheadline)
-                .padding(.horizontal, AppSpacing.md)
-                .padding(.vertical, AppSpacing.xs)
-                .frame(minHeight: 44)
-                .background(isSelected ? AppColor.primary : AppColor.surface, in: Capsule())
-                .foregroundStyle(isSelected ? AppColor.textOnPrimary : AppColor.textPrimary)
-                .overlay(Capsule().stroke(isSelected ? .clear : AppColor.border, lineWidth: 1))
-        }
-        .accessibilityAddTraits(isSelected ? [.isSelected] : [])
     }
 
     private func termCard(_ term: BalootGlossaryTerm) -> some View {

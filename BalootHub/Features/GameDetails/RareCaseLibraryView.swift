@@ -61,11 +61,11 @@ struct RareCaseLibraryView: View {
     private var categoryChips: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: AppSpacing.xs) {
-                rareCaseChip(title: "الكل".localized, isSelected: selectedCategory == nil) {
+                SelectableChip(title: "الكل".localized, isSelected: selectedCategory == nil) {
                     selectedCategory = nil
                 }
                 ForEach(RareCaseCategory.allCases) { category in
-                    rareCaseChip(title: category.title, isSelected: selectedCategory == category) {
+                    SelectableChip(title: category.title, isSelected: selectedCategory == category) {
                         selectedCategory = category
                     }
                 }
@@ -73,20 +73,6 @@ struct RareCaseLibraryView: View {
             .padding(.horizontal, AppSpacing.md)
             .padding(.vertical, AppSpacing.sm)
         }
-    }
-
-    private func rareCaseChip(title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(title)
-                .font(AppTypography.subheadline)
-                .padding(.horizontal, AppSpacing.md)
-                .padding(.vertical, AppSpacing.xs)
-                .frame(minHeight: 44)
-                .background(isSelected ? AppColor.primary : AppColor.surface, in: Capsule())
-                .foregroundStyle(isSelected ? AppColor.textOnPrimary : AppColor.textPrimary)
-                .overlay(Capsule().stroke(isSelected ? .clear : AppColor.border, lineWidth: 1))
-        }
-        .accessibilityAddTraits(isSelected ? [.isSelected] : [])
     }
 
     private func rulingCard(_ ruling: RareCaseRuling) -> some View {
