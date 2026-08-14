@@ -621,10 +621,13 @@ final class BalootGameViewModel {
         else { return }
 
         let snapshot = state
-        analysisTask.replace(with: Task { [weak self] in
-            let report = await Task.detached(priority: .utility) {
-                try? RoundAnalyzer.analyze(finalState: snapshot, playerID: playerID, difficulty: .medium)
-            }.value
+        analysisTask.replace(with: Task(priority: .utility) { [weak self] in
+            // `async let` تنشئ مهمة بنيوية فرعية تُلغى تلقائيًا إن أُلغيت هذه المهمة
+            // الأم (عبر `analysisTask.cancel()`)، بخلاف `Task.detached` سابقًا الذي
+            // كان يستمر بإعادة تحليل خبير للجولة كاملة (محاكاة Monte Carlo لكل أكلة)
+            // حتى بعد أن ينتقل المستخدم لجولة تالية ويُلغى طلب التحليل القديم.
+            async let computedReport = try? RoundAnalyzer.analyze(finalState: snapshot, playerID: playerID, difficulty: .medium)
+            let report = await computedReport
 
             guard !Task.isCancelled else { return }
             await MainActor.run {
@@ -666,7 +669,7 @@ final class BalootGameViewModel {
     /// كان يُجمّدها قبل كل نقلة آلية. التطبيق على الحالة يبقى على `@MainActor`.
     private func advanceAI() {
         aiTask.cancel()
-        aiTask.replace(with: Task { [weak self] in
+        aiTask.replace(with: Task(priority: .userInitiated) { [weak self] in
             while !Task.isCancelled {
                 guard let self, self.isAITurn,
                       let playerID = self.state.currentTurnPlayerID,
@@ -674,9 +677,12 @@ final class BalootGameViewModel {
                 else { break }
 
                 let snapshot = self.state
-                let action = await Task.detached(priority: .userInitiated) {
-                    GameEngine.nextAIAction(state: snapshot, agent: agent)
-                }.value
+                // `async let` تنشئ مهمة بنيوية فرعية تُلغى تلقائيًا إن أُلغيت هذه
+                // الحلقة (`aiTask.cancel()`)، بخلاف `Task.detached` سابقًا الذي كان
+                // يستمر بحساب بحث Monte Carlo كاملًا (حتى 16 عيّنة × 8 مرشحين لمستوى
+                // الشيخ) حتى لو بدأ المستخدم جولة جديدة فورًا وأصبحت نتيجته مهملة.
+                async let computedAction = GameEngine.nextAIAction(state: snapshot, agent: agent)
+                let action = await computedAction
 
                 // الحالة قد تكون تغيّرت أثناء الحساب (جولة جديدة مثلًا)، فنتوقف بدل
                 // تطبيق فعل محسوب على حالة قديمة.
