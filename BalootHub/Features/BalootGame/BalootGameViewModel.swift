@@ -597,6 +597,7 @@ final class BalootGameViewModel {
             scheduleRoundAnalysisIfNeeded()
             notifyRoundFinishedIfNeeded()
         } catch {
+            AppLogger.game.error("رفض المحرك فعلًا: \(String(describing: action), privacy: .public) — \(String(describing: error), privacy: .public)")
             errorMessage = Self.moveErrorMessage
         }
     }
@@ -690,6 +691,7 @@ final class BalootGameViewModel {
                     // العادي لأن `didNotifyRoundFinished` يمنع أي تكرار.
                     self.notifyRoundFinishedIfNeeded()
                 } catch {
+                    AppLogger.game.error("رفض المحرك فعل لاعب آلي: \(String(describing: action), privacy: .public) — \(String(describing: error), privacy: .public)")
                     self.errorMessage = Self.aiErrorMessage
                     return
                 }

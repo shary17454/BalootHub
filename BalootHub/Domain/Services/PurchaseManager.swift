@@ -43,6 +43,7 @@ final class PurchaseManager {
             product = products.first
             errorMessage = nil
         } catch {
+            AppLogger.purchase.error("تعذّر تحميل المنتج \(ProductID.fullGameUnlock, privacy: .public): \(error.localizedDescription, privacy: .public)")
             errorMessage = "تعذّر تحميل معلومات الشراء. تحقق من الاتصال وحاول مرة أخرى."
         }
     }
@@ -93,6 +94,7 @@ final class PurchaseManager {
                 break
             }
         } catch {
+            AppLogger.purchase.error("فشلت عملية الشراء: \(error.localizedDescription, privacy: .public)")
             errorMessage = "تعذّرت عملية الشراء. حاول مرة أخرى لاحقًا."
         }
     }
@@ -109,6 +111,7 @@ final class PurchaseManager {
                 errorMessage = nil
             }
         } catch {
+            AppLogger.purchase.error("فشلت استعادة المشتريات: \(error.localizedDescription, privacy: .public)")
             errorMessage = "تعذّرت استعادة المشتريات. حاول مرة أخرى لاحقًا."
         }
     }

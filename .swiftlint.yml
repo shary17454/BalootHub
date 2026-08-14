@@ -1,0 +1,64 @@
+excluded:
+  - Packages/BalootEngine/.build
+  - Packages/BalootEngine/.swiftpm
+  - .build
+
+# "inclusive_language" الافتراضية ترفض كلمات مثل "master" حتى لو استُخدمت بمعنى
+# "إتقان" في مجال التدريب هنا (mastery/master level)، لا بمعنى حسّاس فعلي — كانت
+# تنتج عشرات التنبيهات الزائفة بلا فائدة حقيقية.
+disabled_rules:
+  - inclusive_language
+
+opt_in_rules:
+  - unused_import
+
+# السطر الطويل هنا غالبًا تعليق عربي توثيقي طويل، لا كود منطق معقّد؛ السقف
+# الافتراضي (120) كان يُنتج مئات التنبيهات على تعليقات لا مشكلة فيها فعليًا.
+line_length:
+  warning: 200
+  error: 400
+
+# القيم الحالية أعلى من افتراضي SwiftLint عمدًا: تطابق حجم الملفات الكبيرة
+# الموجودة فعلًا (أبرزها GameDetailsView.swift وWhatToPlayStatsAnalyzer.swift)
+# بدل إغراق أول تشغيل بعشرات التحذيرات على ملفات لن تُقسَّم فورًا. الهدف أن
+# يمنع اللنتر أي **زيادة** أخرى على الوضع الحالي، لا أن يطالب بإعادة كتابة كل
+# شيء دفعة واحدة.
+type_body_length:
+  warning: 400
+  error: 3200
+
+file_length:
+  warning: 600
+  error: 4100
+
+function_body_length:
+  warning: 100
+  error: 300
+
+# `try!` في كود اختبار على بيانات صحيحة إنشائيًا (تجهيز حالة الاختبار) نمط
+# مقبول شائع، لا يستحق درجة "خطأ" توقف عملية lint.
+force_try: warning
+
+# القواعد التالية موجودة أصلًا في كود عامل ومُختبر (مثل `Project.comparisonKey`
+# رباعي القيم، أو أسماء إحداثيات `x`/`y` في AppShadow، أو دوال بناء نماذج بحقول
+# كثيرة في BalootAcademy/AchievementCenter). لا فائدة من جعلها "أخطاء" توقف
+# lint على كود مقبول شكله فعلًا؛ تبقى تحذيرات إرشادية فقط.
+identifier_name:
+  min_length:
+    warning: 1
+    error: 0
+  max_length:
+    warning: 40
+    error: 60
+
+large_tuple:
+  warning: 3
+  error: 9
+
+function_parameter_count:
+  warning: 6
+  error: 12
+
+cyclomatic_complexity:
+  warning: 15
+  error: 30

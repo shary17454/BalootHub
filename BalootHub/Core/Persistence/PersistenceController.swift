@@ -28,16 +28,19 @@ enum PersistenceController {
         createApplicationSupportDirectoryIfNeeded()
 
         let configuration = ModelConfiguration(schema: appSchema, isStoredInMemoryOnly: false)
-        if let container = try? ModelContainer(for: appSchema, configurations: [configuration]) {
+        do {
+            let container = try ModelContainer(for: appSchema, configurations: [configuration])
             CatalogSeeder.seedIfNeeded(container: container)
             SettingsRepository.ensureSettingsExist(container: container)
             return container
+        } catch {
+            // المخزن الدائم غير صالح للفتح: نكمل بمخزن مؤقت بدل إسقاط التطبيق.
+            // البيانات المحلية تبقى على القرص كما هي ولا تُمسح، فيمكن استرجاعها لاحقًا
+            // إن أصلح تحديثٌ قادمٌ سببَ الفشل. `try?` كانت تبتلع سبب الفشل الفعلي
+            // بلا أي أثر يُشخَّص منه لاحقًا؛ السبب الحقيقي الآن يُسجَّل صراحة.
+            AppLogger.persistence.error("تعذّر فتح مخزن SwiftData الدائم: \(error.localizedDescription, privacy: .public)")
+            assertionFailure("تعذّر فتح مخزن SwiftData الدائم؛ تم التحويل إلى مخزن داخل الذاكرة")
         }
-
-        // المخزن الدائم غير صالح للفتح: نكمل بمخزن مؤقت بدل إسقاط التطبيق.
-        // البيانات المحلية تبقى على القرص كما هي ولا تُمسح، فيمكن استرجاعها لاحقًا
-        // إن أصلح تحديثٌ قادمٌ سببَ الفشل.
-        assertionFailure("تعذّر فتح مخزن SwiftData الدائم؛ تم التحويل إلى مخزن داخل الذاكرة")
         return makePreviewContainer()
     }
 

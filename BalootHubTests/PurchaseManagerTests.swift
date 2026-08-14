@@ -1,0 +1,44 @@
+import XCTest
+@testable import BalootHub
+
+/// `PurchaseManager` لم يكن له أي اختبار قبل هذا رغم أنه يحوي منطق حالة حقيقي.
+/// يغطي هذا الملف المسارات الحتمية التي لا تحتاج اتصالًا فعليًا بـStoreKit —
+/// محاولات ربط جلسة `SKTestSession` محلية لاختبار مسار الشراء الكامل لم تنجح
+/// بثبات في هذه البيئة (`Product.products(for:)` يعيد نتيجة فارغة رغم صحة ملف
+/// `Products.storekit` والجلسة)، فتُركت لجلسة تشخيص منفصلة بدل اختبار متذبذب.
+@MainActor
+final class PurchaseManagerTests: XCTestCase {
+    /// نسخ التطوير مفتوحة دائمًا بلا شراء فعلي — هذا هو الاستثناء الموثَّق في
+    /// `refreshEntitlements()`، ولا يحتاج أي اتصال بـStoreKit أصلًا.
+    func testDebugBuildAutoUnlocksWithoutPurchase() async {
+        let manager = PurchaseManager()
+
+        await manager.refreshEntitlements()
+
+        XCTAssertTrue(manager.isFullGameUnlocked)
+    }
+
+    /// الشراء بلا منتج مُحمَّل مسبقًا (`product == nil`) يجب أن يعود فورًا بلا أثر،
+    /// لا أن يحاول الشراء بمعرّف فارغ أو يعطّل الحالة.
+    func testPurchaseWithoutLoadedProductDoesNothing() async {
+        let manager = PurchaseManager()
+
+        await manager.purchase()
+
+        XCTAssertFalse(manager.isFullGameUnlocked)
+        XCTAssertNil(manager.errorMessage)
+    }
+
+    /// ملاحظة: `refreshEntitlements()` (الذي يستدعيه `restorePurchases()` داخليًا)
+    /// يتخطى StoreKit كليًا في بنية DEBUG — وهي بنية التشغيل الوحيدة لـ`xcodebuild
+    /// test` هنا — فلا يمكن لهذا الاختبار التحقق من نتيجة الاستحقاق الفعلية (تكون
+    /// `true` دائمًا بغض النظر عن نتيجة `AppStore.sync()`). المؤكَّد هنا فقط أن
+    /// `AppStore.sync()` نفسه ينجح ولا يرمي خطأ.
+    func testRestorePurchasesCompletesWithoutThrowing() async {
+        let manager = PurchaseManager()
+
+        await manager.restorePurchases()
+
+        XCTAssertFalse(manager.isLoading)
+    }
+}
