@@ -7,6 +7,16 @@ enum ProductID {
     static let fullGameUnlock = "app.balooThub.ios.fullgame"
 }
 
+/// تتحكم في ظهور StoreKit داخل التطبيق.
+///
+/// منتج الشراء الكامل غير مُرسل حاليًا مع مراجعة App Store، لذلك تُبقي النسخة
+/// الحالية اللعبة مفتوحة وتمنع ظهور أي مطالبة شراء حتى لا تُرفض المراجعة بسبب IAP
+/// غير مرفق. عند تجهيز المنتج في App Store Connect وإرساله للمراجعة يمكن تفعيلها
+/// من هنا فقط.
+enum CommerceConfiguration {
+    static let inAppPurchasesEnabled = false
+}
+
 /// يدير عملية شراء "فتح اللعبة الكاملة" مرة واحدة عبر StoreKit 2،
 /// ويتحقق من الاستحقاقات الحالية (Entitlements) عند بدء التطبيق.
 /// لا يحتوي أي بيانات دفع: Apple تتولى كامل عملية الدفع والفوترة عبر App Store.
@@ -14,14 +24,16 @@ enum ProductID {
 @MainActor
 final class PurchaseManager {
     private(set) var product: Product?
-    private(set) var isFullGameUnlocked = false
+    private(set) var isFullGameUnlocked = !CommerceConfiguration.inAppPurchasesEnabled
     private(set) var isLoading = false
     private(set) var errorMessage: String?
 
     private let transactionListenerTask = CancellableTaskBox()
 
     init() {
-        transactionListenerTask.replace(with: listenForTransactionUpdates())
+        if CommerceConfiguration.inAppPurchasesEnabled {
+            transactionListenerTask.replace(with: listenForTransactionUpdates())
+        }
     }
 
     deinit {
@@ -31,11 +43,22 @@ final class PurchaseManager {
     }
 
     func start() async {
+        guard CommerceConfiguration.inAppPurchasesEnabled else {
+            isFullGameUnlocked = true
+            product = nil
+            errorMessage = nil
+            return
+        }
         await loadProduct()
         await refreshEntitlements()
     }
 
     func loadProduct() async {
+        guard CommerceConfiguration.inAppPurchasesEnabled else {
+            product = nil
+            errorMessage = nil
+            return
+        }
         isLoading = true
         defer { isLoading = false }
         do {
@@ -49,6 +72,10 @@ final class PurchaseManager {
     }
 
     func refreshEntitlements() async {
+        guard CommerceConfiguration.inAppPurchasesEnabled else {
+            isFullGameUnlocked = true
+            return
+        }
         #if DEBUG
         // نسخ التطوير (تشغيل من Xcode مباشرة) مفتوحة دائمًا لصاحب المشروع دون شراء،
         // حتى لا يحتاج اختبار اللعبة الكاملة على جهازه الشخصي لعملية شراء فعلية.
@@ -67,6 +94,11 @@ final class PurchaseManager {
     }
 
     func purchase() async {
+        guard CommerceConfiguration.inAppPurchasesEnabled else {
+            isFullGameUnlocked = true
+            errorMessage = nil
+            return
+        }
         guard let product else { return }
         isLoading = true
         defer { isLoading = false }
@@ -100,6 +132,11 @@ final class PurchaseManager {
     }
 
     func restorePurchases() async {
+        guard CommerceConfiguration.inAppPurchasesEnabled else {
+            isFullGameUnlocked = true
+            errorMessage = nil
+            return
+        }
         isLoading = true
         defer { isLoading = false }
         do {

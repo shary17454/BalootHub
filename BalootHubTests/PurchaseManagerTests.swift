@@ -18,15 +18,26 @@ final class PurchaseManagerTests: XCTestCase {
         XCTAssertTrue(manager.isFullGameUnlocked)
     }
 
-    /// الشراء بلا منتج مُحمَّل مسبقًا (`product == nil`) يجب أن يعود فورًا بلا أثر،
-    /// لا أن يحاول الشراء بمعرّف فارغ أو يعطّل الحالة.
-    func testPurchaseWithoutLoadedProductDoesNothing() async {
+    /// عند تعطيل المشتريات لنسخة المراجعة الحالية، لا يحاول المدير فتح StoreKit
+    /// ولا يعرض خطأ، وتبقى اللعبة مفتوحة حتى لا تظهر مراجع IAP غير مُرسلة للمراجعة.
+    func testPurchaseWhenCommerceDisabledKeepsGameUnlocked() async {
         let manager = PurchaseManager()
 
         await manager.purchase()
 
-        XCTAssertFalse(manager.isFullGameUnlocked)
+        XCTAssertTrue(manager.isFullGameUnlocked)
         XCTAssertNil(manager.errorMessage)
+    }
+
+    func testStartWhenCommerceDisabledDoesNotLoadProduct() async {
+        let manager = PurchaseManager()
+
+        await manager.start()
+
+        XCTAssertTrue(manager.isFullGameUnlocked)
+        XCTAssertNil(manager.product)
+        XCTAssertNil(manager.errorMessage)
+        XCTAssertFalse(manager.isLoading)
     }
 
     /// ملاحظة: `refreshEntitlements()` (الذي يستدعيه `restorePurchases()` داخليًا)

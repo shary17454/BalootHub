@@ -8,7 +8,6 @@ struct BalootGamePlayView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.modelContext) private var modelContext
-    @Environment(PurchaseManager.self) private var purchaseManager
     @State private var viewModel: BalootGameViewModel
     @State private var isPresentingStopConfirm = false
     @State private var isPresentingRules = false
@@ -22,15 +21,7 @@ struct BalootGamePlayView: View {
     }
 
     var body: some View {
-        Group {
-            if purchaseManager.isFullGameUnlocked {
-                gameContent
-            } else {
-                PaywallView()
-                    .navigationTitle("طاولة اللعب")
-                    .navigationBarTitleDisplayMode(.inline)
-            }
-        }
+        gameContent
     }
 
     private var gameContent: some View {
