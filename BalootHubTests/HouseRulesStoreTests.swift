@@ -43,7 +43,11 @@ final class HouseRulesStoreTests: XCTestCase {
         rules.matchTargetScore = 10_000
         rules.cardsBeforeBidding = 0
         let preset = HouseRulesPreset(name: "  قواعدنا  ", rules: rules)
-        defaults.set(try! JSONEncoder().encode(preset), forKey: HouseRulesStore.storageKey)
+        do {
+            defaults.set(try JSONEncoder().encode(preset), forKey: HouseRulesStore.storageKey)
+        } catch {
+            XCTFail("Failed to encode house rules preset: \(error)")
+        }
 
         let loaded = HouseRulesStore.load(from: defaults)
 

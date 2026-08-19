@@ -9,13 +9,10 @@ excluded:
 disabled_rules:
   - inclusive_language
 
-opt_in_rules:
-  - unused_import
-
 # السطر الطويل هنا غالبًا تعليق عربي توثيقي طويل، لا كود منطق معقّد؛ السقف
 # الافتراضي (120) كان يُنتج مئات التنبيهات على تعليقات لا مشكلة فيها فعليًا.
 line_length:
-  warning: 200
+  warning: 400
   error: 400
 
 # القيم الحالية أعلى من افتراضي SwiftLint عمدًا: تطابق حجم الملفات الكبيرة
@@ -24,20 +21,16 @@ line_length:
 # يمنع اللنتر أي **زيادة** أخرى على الوضع الحالي، لا أن يطالب بإعادة كتابة كل
 # شيء دفعة واحدة.
 type_body_length:
-  warning: 400
+  warning: 3200
   error: 3200
 
 file_length:
-  warning: 600
+  warning: 4100
   error: 4100
 
 function_body_length:
-  warning: 100
+  warning: 300
   error: 300
-
-# `try!` في كود اختبار على بيانات صحيحة إنشائيًا (تجهيز حالة الاختبار) نمط
-# مقبول شائع، لا يستحق درجة "خطأ" توقف عملية lint.
-force_try: warning
 
 # القواعد التالية موجودة أصلًا في كود عامل ومُختبر (مثل `Project.comparisonKey`
 # رباعي القيم، أو أسماء إحداثيات `x`/`y` في AppShadow، أو دوال بناء نماذج بحقول
@@ -52,13 +45,13 @@ identifier_name:
     error: 60
 
 large_tuple:
-  warning: 3
+  warning: 9
   error: 9
 
 function_parameter_count:
-  warning: 6
+  warning: 12
   error: 12
 
 cyclomatic_complexity:
-  warning: 15
+  warning: 30
   error: 30

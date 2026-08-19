@@ -323,7 +323,6 @@ struct InfoRow: View {
     }
 }
 
-
 #Preview {
     NavigationStack {
         GameDetailsView(slug: "baloot-classic")
@@ -331,4 +330,3 @@ struct InfoRow: View {
     .environment(AppEnvironment())
     .modelContainer(PersistenceController.makePreviewContainer())
 }
-
