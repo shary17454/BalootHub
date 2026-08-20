@@ -31,8 +31,34 @@ public struct RoundBiddingDecisionAnalysis: Identifiable, Sendable, Equatable {
     public let recommendedBid: Bid
     public let legalBids: [Bid]
     public let handStrengthScore: Int
+    public let selectedBidMargin: Int?
+    public let recommendedBidMargin: Int?
     public let estimatedLostPoints: Int
     public let explanation: String
+
+    public init(
+        stepIndex: Int,
+        playerID: Player.ID,
+        bid: Bid,
+        recommendedBid: Bid,
+        legalBids: [Bid],
+        handStrengthScore: Int,
+        estimatedLostPoints: Int,
+        explanation: String,
+        selectedBidMargin: Int? = nil,
+        recommendedBidMargin: Int? = nil
+    ) {
+        self.stepIndex = stepIndex
+        self.playerID = playerID
+        self.bid = bid
+        self.recommendedBid = recommendedBid
+        self.legalBids = legalBids
+        self.handStrengthScore = handStrengthScore
+        self.selectedBidMargin = selectedBidMargin
+        self.recommendedBidMargin = recommendedBidMargin
+        self.estimatedLostPoints = estimatedLostPoints
+        self.explanation = explanation
+    }
 
     public var id: String {
         "\(stepIndex)-\(bid)"
@@ -568,7 +594,9 @@ public enum RoundAnalyzer {
             legalBids: legal,
             handStrengthScore: analysis.strengthScore,
             estimatedLostPoints: biddingLostPoints(bid: bid, recommendedBid: analysis.recommendedBid, analysis: analysis),
-            explanation: biddingExplanation(bid: bid, recommendedBid: analysis.recommendedBid, analysis: analysis)
+            explanation: biddingExplanation(bid: bid, recommendedBid: analysis.recommendedBid, analysis: analysis),
+            selectedBidMargin: bidMargin(for: bid, analysis: analysis),
+            recommendedBidMargin: bidMargin(for: analysis.recommendedBid, analysis: analysis)
         )
     }
 
@@ -591,7 +619,9 @@ public enum RoundAnalyzer {
             legalBids: legal,
             handStrengthScore: analysis.strengthScore,
             estimatedLostPoints: biddingLostPoints(bid: bid, recommendedBid: analysis.recommendedBid, analysis: analysis),
-            explanation: biddingExplanation(bid: bid, recommendedBid: analysis.recommendedBid, analysis: analysis)
+            explanation: biddingExplanation(bid: bid, recommendedBid: analysis.recommendedBid, analysis: analysis),
+            selectedBidMargin: bidMargin(for: bid, analysis: analysis),
+            recommendedBidMargin: bidMargin(for: analysis.recommendedBid, analysis: analysis)
         )
     }
 
@@ -899,6 +929,10 @@ public enum RoundAnalyzer {
         let recommendedScore = score(for: recommendedBid, analysis: analysis)
         let selectedScore = score(for: bid, analysis: analysis)
         return max(1, recommendedScore - selectedScore)
+    }
+
+    private static func bidMargin(for bid: Bid, analysis: HandAnalysis) -> Int? {
+        analysis.bidOptions.first { $0.bid == bid }?.margin
     }
 
     private static func score(for bid: Bid, analysis: HandAnalysis) -> Int {

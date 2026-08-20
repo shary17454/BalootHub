@@ -415,6 +415,8 @@ struct RoundAnalysisTests {
         #expect(decision.bid == .sun)
         #expect(decision.recommendedBid == .pass)
         #expect(decision.estimatedLostPoints >= 20)
+        #expect((decision.selectedBidMargin ?? 0) <= -20)
+        #expect((decision.recommendedBidMargin ?? 0) > 0)
         #expect(decision.explanation.contains("تحت عتبة الأمان"))
         #expect(decision.explanation.contains("يرجّح بس"))
         #expect(report.needsBiddingReview)
@@ -448,6 +450,8 @@ struct RoundAnalysisTests {
         #expect(decision.bid == .pass)
         #expect(decision.recommendedBid == .hokum(suit: .spades))
         #expect(decision.estimatedLostPoints > 0)
+        #expect((decision.selectedBidMargin ?? 0) < 0)
+        #expect((decision.recommendedBidMargin ?? 0) > 0)
         #expect(decision.explanation.contains("تتجاوز عتبة"))
         #expect(decision.explanation.contains("فوّت فرصة شراء واضحة"))
     }
