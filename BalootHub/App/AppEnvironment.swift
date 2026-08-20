@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import BalootEngine
 
 /// حالة التنقّل والتبويب المشتركة عبر التطبيق. لا تحتوي منطق أعمال، فقط تنسيق واجهة.
 @Observable
@@ -28,5 +29,15 @@ final class AppEnvironment {
 
     func openGameDetails(slug: String, from tab: AppTab) {
         navigate(to: .gameDetails(slug: slug), tab: tab)
+    }
+
+    func openPracticeRecommendation(_ recommendation: RoundPracticeRecommendation, from tab: AppTab) {
+        navigate(
+            to: .whatToPlayTrainer(
+                seed: recommendation.scenarioSeed,
+                difficulty: recommendation.difficulty
+            ),
+            tab: tab
+        )
     }
 }

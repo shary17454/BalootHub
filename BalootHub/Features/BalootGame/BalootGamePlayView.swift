@@ -8,6 +8,7 @@ struct BalootGamePlayView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppEnvironment.self) private var appEnvironment
     @State private var viewModel: BalootGameViewModel
     @State private var isPresentingStopConfirm = false
     @State private var isPresentingRules = false
@@ -588,6 +589,18 @@ struct BalootGamePlayView: View {
                         title: "مستوى التدريب".localized,
                         value: "\(difficultyTitle(recommendation.difficulty)) · \(recommendation.suggestedScenarioCount) \("مواقف".localized)"
                     )
+                    Button {
+                        appEnvironment.openPracticeRecommendation(
+                            recommendation,
+                            from: appEnvironment.selectedTab
+                        )
+                    } label: {
+                        Label("ابدأ التدريب المقترح".localized, systemImage: "brain.head.profile")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(AppColor.primary)
+                    .accessibilityHint("يفتح مدرب وش تلعب؟ بنفس صعوبة وبذرة خطة التدريب.".localized)
                 }
             }
 
