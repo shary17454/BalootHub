@@ -111,6 +111,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.gameModeCoverage(for: attempts)
     }
 
+    private var gameModeTrainingPriority: WhatToPlayGameModeTrainingPriority? {
+        WhatToPlayStatsAnalyzer.gameModeTrainingPriority(for: attempts)
+    }
+
     private var scenarioFocusCoverage: WhatToPlayScenarioFocusCoverage {
         WhatToPlayStatsAnalyzer.scenarioFocusCoverage(for: attempts)
     }
@@ -1544,6 +1548,10 @@ struct WhatToPlayTrainerView: View {
 
                 modeCoverageView(coverage)
 
+                if let gameModeTrainingPriority {
+                    gameModeTrainingPriorityView(gameModeTrainingPriority)
+                }
+
                 LazyVGrid(columns: [
                     GridItem(.flexible(), spacing: AppSpacing.xs),
                     GridItem(.flexible(), spacing: AppSpacing.xs)
@@ -1593,6 +1601,30 @@ struct WhatToPlayTrainerView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppSpacing.sm)
         .background((coverage.isBalanced ? AppColor.success : AppColor.accent).opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func gameModeTrainingPriorityView(_ priority: WhatToPlayGameModeTrainingPriority) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(priority.title)
+                    .font(AppTypography.caption.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(priority.detail)
+                    .font(.caption2)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("\("دقتك هنا".localized): \(priority.summary.accuracyPercent)% (\(priority.summary.correct)/\(priority.summary.attempts))")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(priority.summary.accuracyPercent >= 70 ? AppColor.success : AppColor.accent)
+            }
+        } icon: {
+            Image(systemName: priority.iconName)
+                .foregroundStyle(AppColor.accent)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.sm)
+        .background(AppColor.accent.opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
         .accessibilityElement(children: .combine)
     }
 

@@ -1224,6 +1224,51 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(focus?.summary.lostExpectedPoints, 7)
     }
 
+    func testGameModeTrainingPriorityUsesProjectedLossBeforeExpectedLoss() {
+        let attempts = [
+            attempt(daysAgo: 6, correct: false, impact: 1, bestImpact: 5, gameMode: .sun, projectedTeamPoints: 70, bestProjectedTeamPoints: 74),
+            attempt(daysAgo: 5, correct: true, impact: 3, bestImpact: 3, gameMode: .sun, projectedTeamPoints: 78, bestProjectedTeamPoints: 78),
+            attempt(daysAgo: 4, correct: false, impact: 2, bestImpact: 5, gameMode: .hokum, projectedTeamPoints: 54, bestProjectedTeamPoints: 76),
+            attempt(daysAgo: 3, correct: true, impact: 3, bestImpact: 3, gameMode: .hokum, projectedTeamPoints: 82, bestProjectedTeamPoints: 82)
+        ]
+
+        let priority = WhatToPlayStatsAnalyzer.gameModeTrainingPriority(for: attempts)
+
+        XCTAssertEqual(priority?.mode, .hokum)
+        XCTAssertEqual(priority?.summary.lostExpectedPoints, 3)
+        XCTAssertEqual(priority?.summary.lostProjectedTeamPoints, 22)
+        XCTAssertEqual(priority?.title, "\("أولوية التدريب".localized): \("حكم".localized)")
+        XCTAssertEqual(priority?.iconName, "crown.fill")
+        XCTAssertTrue(priority?.detail.contains("سبب الترشيح من المحاكاة".localized) ?? false)
+    }
+
+    func testGameModeTrainingPriorityUsesExpectedLossWhenProjectionIsTied() {
+        let attempts = [
+            attempt(daysAgo: 6, correct: false, impact: -1, bestImpact: 1, gameMode: .sun, projectedTeamPoints: 70, bestProjectedTeamPoints: 76),
+            attempt(daysAgo: 5, correct: true, impact: 3, bestImpact: 3, gameMode: .sun, projectedTeamPoints: 80, bestProjectedTeamPoints: 80),
+            attempt(daysAgo: 4, correct: false, impact: -4, bestImpact: 3, gameMode: .hokum, projectedTeamPoints: 66, bestProjectedTeamPoints: 72),
+            attempt(daysAgo: 3, correct: true, impact: 2, bestImpact: 2, gameMode: .hokum, projectedTeamPoints: 78, bestProjectedTeamPoints: 78)
+        ]
+
+        let priority = WhatToPlayStatsAnalyzer.gameModeTrainingPriority(for: attempts)
+
+        XCTAssertEqual(priority?.mode, .hokum)
+        XCTAssertEqual(priority?.summary.lostExpectedPoints, 7)
+        XCTAssertEqual(priority?.summary.lostProjectedTeamPoints, 6)
+        XCTAssertTrue(priority?.detail.contains("متوسط النقاط الضائعة".localized) ?? false)
+    }
+
+    func testGameModeTrainingPriorityReturnsNilWhenModesArePerfect() {
+        let attempts = [
+            attempt(daysAgo: 4, correct: true, impact: 2, bestImpact: 2, gameMode: .sun),
+            attempt(daysAgo: 3, correct: true, impact: 3, bestImpact: 3, gameMode: .sun),
+            attempt(daysAgo: 2, correct: true, impact: 2, bestImpact: 2, gameMode: .hokum),
+            attempt(daysAgo: 1, correct: true, impact: 3, bestImpact: 3, gameMode: .hokum)
+        ]
+
+        XCTAssertNil(WhatToPlayStatsAnalyzer.gameModeTrainingPriority(for: attempts))
+    }
+
     func testFocusScenarioKindPicksWeakestTrainingFocus() {
         let attempts = [
             attempt(daysAgo: 6, difficulty: .easy, correct: true, impact: 3, bestImpact: 3, focusKind: .openingLead),

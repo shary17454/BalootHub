@@ -173,6 +173,14 @@ struct WhatToPlayGameModeSummary: Equatable {
     let summary: WhatToPlayStatsSummary
 }
 
+struct WhatToPlayGameModeTrainingPriority: Equatable {
+    let mode: GameMode
+    let summary: WhatToPlayStatsSummary
+    let title: String
+    let detail: String
+    let iconName: String
+}
+
 struct WhatToPlayFocusTrainingPriority: Equatable {
     let focusKind: WhatToPlayScenarioFocusKind
     let summary: WhatToPlayStatsSummary
@@ -883,6 +891,49 @@ enum WhatToPlayStatsAnalyzer {
                 return gameModeOrder(lhs.mode) < gameModeOrder(rhs.mode)
             }
             .first
+    }
+
+    static func gameModeTrainingPriority(
+        for attempts: [WhatToPlayAttempt],
+        minimumAttempts: Int = 2
+    ) -> WhatToPlayGameModeTrainingPriority? {
+        let candidate = summariesByGameMode(attempts)
+            .filter { $0.summary.attempts >= minimumAttempts }
+            .filter {
+                $0.summary.lostExpectedPoints > 0
+                    || $0.summary.lostProjectedTeamPoints > 0
+                    || $0.summary.accuracyPercent < 100
+            }
+            .sorted { lhs, rhs in
+                if lhs.summary.lostProjectedTeamPoints != rhs.summary.lostProjectedTeamPoints {
+                    return lhs.summary.lostProjectedTeamPoints > rhs.summary.lostProjectedTeamPoints
+                }
+
+                if lhs.summary.lostExpectedPoints != rhs.summary.lostExpectedPoints {
+                    return lhs.summary.lostExpectedPoints > rhs.summary.lostExpectedPoints
+                }
+
+                if lhs.summary.accuracyPercent != rhs.summary.accuracyPercent {
+                    return lhs.summary.accuracyPercent < rhs.summary.accuracyPercent
+                }
+
+                if lhs.summary.averageExpectedImpact != rhs.summary.averageExpectedImpact {
+                    return lhs.summary.averageExpectedImpact < rhs.summary.averageExpectedImpact
+                }
+
+                return gameModeOrder(lhs.mode) < gameModeOrder(rhs.mode)
+            }
+            .first
+
+        guard let candidate else { return nil }
+
+        return WhatToPlayGameModeTrainingPriority(
+            mode: candidate.mode,
+            summary: candidate.summary,
+            title: "\("أولوية التدريب".localized): \(gameModeTitle(candidate.mode))",
+            detail: gameModeTrainingDetail(for: candidate.mode, summary: candidate.summary),
+            iconName: gameModeTrainingIcon(for: candidate.mode)
+        )
     }
 
     static func focusTrainingPriority(
@@ -3450,6 +3501,37 @@ enum WhatToPlayStatsAnalyzer {
             return "crown.fill"
         case .narrowChoice:
             return "2.circle.fill"
+        }
+    }
+
+    private static func gameModeTrainingDetail(
+        for mode: GameMode,
+        summary: WhatToPlayStatsSummary
+    ) -> String {
+        let base = switch mode {
+        case .sun:
+            "شرح نمط الصن داخل لعبة البلوت الواحدة؛ لا يُفتح كلعبة منفصلة بل يُشترى أثناء المزايدة.".localized
+        case .hokum:
+            "شرح نمط الحكم داخل لعبة البلوت الواحدة؛ يحدده اللاعب المشتري ولونه أثناء دورة المزايدة.".localized
+        }
+
+        if summary.lostProjectedTeamPoints > summary.lostExpectedPoints {
+            return "\(base) \("سبب الترشيح من المحاكاة".localized): \(summary.lostProjectedTeamPoints) \("نقطة ضاعت بعد استكمال الجولة.".localized)"
+        }
+
+        if summary.averageLostExpectedPoints > 0 {
+            return "\(base) \("متوسط النقاط الضائعة".localized): \(summary.averageLostExpectedPoints)."
+        }
+
+        return "\(base) \("دقتك هنا".localized): \(summary.accuracyPercent)%."
+    }
+
+    private static func gameModeTrainingIcon(for mode: GameMode) -> String {
+        switch mode {
+        case .sun:
+            return "sun.max.fill"
+        case .hokum:
+            return "crown.fill"
         }
     }
 
