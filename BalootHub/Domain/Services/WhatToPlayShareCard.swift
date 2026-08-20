@@ -39,6 +39,8 @@ struct WhatToPlayShareCardContent: Equatable {
     let lostAgainstSecondBestPoints: Int?
     let valueLossTitle: String?
     let decisionQualityTitle: String?
+    let bestMoveConfidenceTitle: String?
+    let bestMoveConfidenceDetail: String?
     let nextActionTitle: String?
     let nextActionDetail: String?
     let selectedRank: Int?
@@ -143,6 +145,8 @@ enum WhatToPlayShareCard {
             lostAgainstSecondBestPoints: lostAgainstSecondBest,
             valueLossTitle: valueLossTitle,
             decisionQualityTitle: decisionQualityTitle,
+            bestMoveConfidenceTitle: comparisonSummary?.bestMoveConfidence?.title,
+            bestMoveConfidenceDetail: comparisonSummary?.bestMoveConfidence?.detail,
             nextActionTitle: comparisonSummary?.nextActionTitle,
             nextActionDetail: comparisonSummary?.nextActionDetail,
             selectedRank: selectedOption?.rank,
@@ -235,6 +239,12 @@ enum WhatToPlayShareCard {
             }
             if let decisionQualityTitle = content.decisionQualityTitle {
                 lines.append("\("تقييم القرار".localized): \(decisionQualityTitle)")
+            }
+            if let bestMoveConfidenceTitle = content.bestMoveConfidenceTitle {
+                lines.append("\("ثقة أفضل ورقة".localized): \(bestMoveConfidenceTitle)")
+            }
+            if let bestMoveConfidenceDetail = content.bestMoveConfidenceDetail {
+                lines.append(bestMoveConfidenceDetail)
             }
             if let nextActionTitle = content.nextActionTitle {
                 lines.append("\("الإجراء التالي".localized): \(nextActionTitle)")

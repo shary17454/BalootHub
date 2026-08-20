@@ -3815,6 +3815,12 @@ struct WhatToPlayShareCardPreview: View {
             if let decisionQualityTitle = content.decisionQualityTitle {
                 shareChip("\("تقييم القرار".localized): \(decisionQualityTitle)")
             }
+            if let bestMoveConfidenceTitle = content.bestMoveConfidenceTitle {
+                shareChip("\("ثقة أفضل ورقة".localized): \(bestMoveConfidenceTitle)")
+            }
+            if let bestMoveConfidenceDetail = content.bestMoveConfidenceDetail {
+                shareNote(bestMoveConfidenceDetail)
+            }
             if let nextActionTitle = content.nextActionTitle {
                 shareChip("\("الإجراء التالي".localized): \(nextActionTitle)")
             }

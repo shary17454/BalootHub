@@ -130,6 +130,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertFalse(text.contains("نتيجة المحاكاة".localized))
         XCTAssertFalse(text.contains("اتجاه الأكلة".localized))
         XCTAssertFalse(text.contains("نقاط فريقك بعد المحاكاة".localized))
+        XCTAssertFalse(text.contains("ثقة أفضل ورقة".localized))
     }
 
     func testShareTextIncludesAnswerReviewAfterSelection() throws {
@@ -155,6 +156,11 @@ final class WhatToPlayShareCardTests: XCTestCase {
             )
         )
         XCTAssertTrue(text.contains("\("شدة خسارة القيمة".localized): \(WhatToPlayStatsAnalyzer.valueLossTitle(for: severity))"))
+        let confidence = try XCTUnwrap(
+            WhatToPlayOptionComparison.summary(for: scenario, selectedCard: selected.card).bestMoveConfidence
+        )
+        XCTAssertTrue(text.contains("\("ثقة أفضل ورقة".localized): \(confidence.title)"))
+        XCTAssertTrue(text.contains(confidence.detail))
         XCTAssertTrue(text.contains("\("فارق عن ثاني أفضل".localized): \(max(0, secondBest.expectedImpact - selected.expectedImpact))"))
         XCTAssertTrue(text.contains("\("الأثر المتوقع".localized): \(selected.expectedImpact >= 0 ? "+\(selected.expectedImpact)" : "\(selected.expectedImpact)")"))
         XCTAssertTrue(text.contains("\("تفصيل الأثر".localized): \(WhatToPlayImpactFormatter.detail(for: selected.impactBreakdown))"))
@@ -179,6 +185,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).lostProjectedTeamPoints)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).valueLossTitle)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).decisionQualityTitle)
+        XCTAssertNil(WhatToPlayShareCard.content(for: scenario).bestMoveConfidenceTitle)
+        XCTAssertNil(WhatToPlayShareCard.content(for: scenario).bestMoveConfidenceDetail)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).nextActionTitle)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).nextActionDetail)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).selectedSimulationSummary)
@@ -206,6 +214,11 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(reviewed.lostAgainstSecondBestPoints, max(0, secondBest.expectedImpact - selected.expectedImpact))
         XCTAssertEqual(reviewed.valueLossTitle, "لا توجد خسارة قيمة".localized)
         XCTAssertEqual(reviewed.decisionQualityTitle, "مطابق للخبير".localized)
+        let confidence = try XCTUnwrap(
+            WhatToPlayOptionComparison.summary(for: scenario, selectedCard: selected.card).bestMoveConfidence
+        )
+        XCTAssertEqual(reviewed.bestMoveConfidenceTitle, confidence.title)
+        XCTAssertEqual(reviewed.bestMoveConfidenceDetail, confidence.detail)
         XCTAssertEqual(reviewed.nextActionTitle, "ثبّت القراءة".localized)
         XCTAssertTrue(reviewed.nextActionDetail?.contains(selected.card.accessibilityName) ?? false)
         XCTAssertEqual(reviewed.selectedImpact, selected.expectedImpact)
