@@ -2072,6 +2072,8 @@ struct WhatToPlayTrainerView: View {
             trickNumber: attempt.contextTrickNumber,
             isLeading: attempt.contextIsLeading,
             requiredSuit: attempt.contextRequiredSuit,
+            trumpSuit: attempt.contextTrumpSuit,
+            hasTrumpInCurrentTrick: attempt.contextHasTrumpInCurrentTrick,
             playedCardCount: attempt.contextPlayedCardCount,
             legalOptionCount: attempt.contextLegalOptionCount,
             playerTeamPoints: attempt.contextPlayerTeamTrickPoints,
@@ -2084,6 +2086,8 @@ struct WhatToPlayTrainerView: View {
             trickNumber: item.contextTrickNumber,
             isLeading: item.contextIsLeading,
             requiredSuit: item.contextRequiredSuit,
+            trumpSuit: item.contextTrumpSuit,
+            hasTrumpInCurrentTrick: item.contextHasTrumpInCurrentTrick,
             playedCardCount: item.contextPlayedCardCount,
             legalOptionCount: item.contextLegalOptionCount,
             playerTeamPoints: item.contextPlayerTeamTrickPoints,
@@ -2096,6 +2100,8 @@ struct WhatToPlayTrainerView: View {
         trickNumber: Int?,
         isLeading: Bool?,
         requiredSuit: Suit?,
+        trumpSuit: Suit?,
+        hasTrumpInCurrentTrick: Bool?,
         playedCardCount: Int?,
         legalOptionCount: Int?,
         playerTeamPoints: Int?,
@@ -2110,6 +2116,14 @@ struct WhatToPlayTrainerView: View {
                 parts.append("أنت تفتتح الأكلة".localized)
             } else if let requiredSuit {
                 parts.append("\("اللون المطلوب".localized): \(requiredSuit.arabicName)")
+            }
+        }
+        if let trumpSuit {
+            let trumpText = "\("الحكم".localized): \(trumpSuit.arabicName)"
+            if hasTrumpInCurrentTrick == true {
+                parts.append("\(trumpText) · \("الحكم على الطاولة".localized)")
+            } else {
+                parts.append(trumpText)
             }
         }
         if let playedCardCount, let legalOptionCount {

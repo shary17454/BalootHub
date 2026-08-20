@@ -227,6 +227,8 @@ struct WhatToPlayReviewItem: Equatable, Identifiable {
     let contextTrickNumber: Int?
     let contextIsLeading: Bool?
     let contextRequiredSuit: Suit?
+    let contextTrumpSuit: Suit?
+    let contextHasTrumpInCurrentTrick: Bool?
     let contextPlayedCardCount: Int?
     let contextLegalOptionCount: Int?
     let contextPlayerTeamTrickPoints: Int?
@@ -1163,6 +1165,8 @@ enum WhatToPlayStatsAnalyzer {
                 contextTrickNumber: attempt.contextTrickNumber,
                 contextIsLeading: attempt.contextIsLeading,
                 contextRequiredSuit: attempt.contextRequiredSuit,
+                contextTrumpSuit: attempt.contextTrumpSuit,
+                contextHasTrumpInCurrentTrick: attempt.contextHasTrumpInCurrentTrick,
                 contextPlayedCardCount: attempt.contextPlayedCardCount,
                 contextLegalOptionCount: attempt.contextLegalOptionCount,
                 contextPlayerTeamTrickPoints: attempt.contextPlayerTeamTrickPoints,

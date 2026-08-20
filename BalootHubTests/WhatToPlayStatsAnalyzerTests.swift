@@ -284,6 +284,20 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             playerRemainingCards: 4,
             actionHistoryCount: 18
         )
+        let scenarioContext = WhatToPlayScenarioContext(
+            trickNumber: 5,
+            isLeading: false,
+            requiredSuit: .hearts,
+            playedCardCount: 3,
+            legalOptionCount: 2,
+            mode: .hokum,
+            trumpSuit: .spades,
+            hasTrumpInCurrentTrick: true,
+            playerTeamTrickPoints: 44,
+            opponentTeamTrickPoints: 39,
+            playerTeamPointMargin: 5,
+            focusKind: .trumpPressure
+        )
         let attempt = WhatToPlayAttempt(
             difficulty: .hard,
             seed: 2_026,
@@ -302,7 +316,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             gameMode: .hokum,
             outcome: .losesTrick,
             impactBreakdown: breakdown,
-            simulation: simulation
+            simulation: simulation,
+            scenarioContext: scenarioContext
         )
 
         context.insert(attempt)
@@ -344,6 +359,15 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(saved.simulationNextTurnPlayerIDRaw, nextPlayerID.uuidString)
         XCTAssertEqual(saved.simulationPlayerRemainingCards, 4)
         XCTAssertEqual(saved.simulationActionHistoryCount, 18)
+        XCTAssertEqual(saved.contextTrickNumber, 5)
+        XCTAssertEqual(saved.contextIsLeading, false)
+        XCTAssertEqual(saved.contextRequiredSuit, .hearts)
+        XCTAssertEqual(saved.contextTrumpSuit, .spades)
+        XCTAssertEqual(saved.contextHasTrumpInCurrentTrick, true)
+        XCTAssertEqual(saved.contextPlayedCardCount, 3)
+        XCTAssertEqual(saved.contextLegalOptionCount, 2)
+        XCTAssertEqual(saved.contextPlayerTeamTrickPoints, 44)
+        XCTAssertEqual(saved.contextOpponentTeamTrickPoints, 39)
     }
 
     func testAttemptStoresFullUInt64SeedForExactReplay() {
@@ -798,6 +822,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(stored.contextTrickNumber, 4)
         XCTAssertEqual(stored.contextIsLeading, false)
         XCTAssertEqual(stored.contextRequiredSuit, Suit.hearts)
+        XCTAssertEqual(stored.contextTrumpSuit, Suit.spades)
+        XCTAssertEqual(stored.contextHasTrumpInCurrentTrick, true)
         XCTAssertEqual(stored.contextPlayedCardCount, 2)
         XCTAssertEqual(stored.contextLegalOptionCount, 3)
         XCTAssertEqual(stored.contextPlayerTeamTrickPoints, 28)
@@ -811,8 +837,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             requiredSuit: nil,
             playedCardCount: 0,
             legalOptionCount: 5,
-            mode: .sun,
-            trumpSuit: nil,
+            mode: .hokum,
+            trumpSuit: .clubs,
             hasTrumpInCurrentTrick: false,
             playerTeamTrickPoints: 42,
             opponentTeamTrickPoints: 21,
@@ -832,10 +858,20 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(item.contextTrickNumber, 6)
         XCTAssertEqual(item.contextIsLeading, true)
         XCTAssertNil(item.contextRequiredSuit)
+        XCTAssertEqual(item.contextTrumpSuit, .clubs)
+        XCTAssertEqual(item.contextHasTrumpInCurrentTrick, false)
         XCTAssertEqual(item.contextPlayedCardCount, 0)
         XCTAssertEqual(item.contextLegalOptionCount, 5)
         XCTAssertEqual(item.contextPlayerTeamTrickPoints, 42)
         XCTAssertEqual(item.contextOpponentTeamTrickPoints, 21)
+    }
+
+    func testAttemptWithoutTrumpContextKeepsBackwardCompatibleNilValues() {
+        let stored = attempt(daysAgo: 1, correct: false, impact: -4)
+
+        XCTAssertNil(stored.contextTrumpSuitRaw)
+        XCTAssertNil(stored.contextTrumpSuit)
+        XCTAssertNil(stored.contextHasTrumpInCurrentTrick)
     }
 
     func testReviewQueueUsesProjectedLossAsTieBreaker() {

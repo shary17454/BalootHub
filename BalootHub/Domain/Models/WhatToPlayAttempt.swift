@@ -42,6 +42,8 @@ final class WhatToPlayAttempt {
     var contextTrickNumber: Int?
     var contextIsLeading: Bool?
     var contextRequiredSuitRaw: String?
+    var contextTrumpSuitRaw: String?
+    var contextHasTrumpInCurrentTrick: Bool?
     var contextPlayedCardCount: Int?
     var contextLegalOptionCount: Int?
     var contextPlayerTeamTrickPoints: Int?
@@ -110,6 +112,8 @@ final class WhatToPlayAttempt {
         self.contextTrickNumber = scenarioContext?.trickNumber
         self.contextIsLeading = scenarioContext?.isLeading
         self.contextRequiredSuitRaw = scenarioContext?.requiredSuit?.rawValue
+        self.contextTrumpSuitRaw = scenarioContext?.trumpSuit?.rawValue
+        self.contextHasTrumpInCurrentTrick = scenarioContext?.hasTrumpInCurrentTrick
         self.contextPlayedCardCount = scenarioContext?.playedCardCount
         self.contextLegalOptionCount = scenarioContext?.legalOptionCount
         self.contextPlayerTeamTrickPoints = scenarioContext?.playerTeamTrickPoints
@@ -226,10 +230,17 @@ final class WhatToPlayAttempt {
         return Suit(rawValue: contextRequiredSuitRaw)
     }
 
+    var contextTrumpSuit: Suit? {
+        guard let contextTrumpSuitRaw else { return nil }
+        return Suit(rawValue: contextTrumpSuitRaw)
+    }
+
     var hasScenarioContext: Bool {
         contextTrickNumber != nil
             || contextIsLeading != nil
             || contextRequiredSuit != nil
+            || contextTrumpSuit != nil
+            || contextHasTrumpInCurrentTrick != nil
             || contextPlayedCardCount != nil
             || contextLegalOptionCount != nil
             || contextPlayerTeamTrickPoints != nil
