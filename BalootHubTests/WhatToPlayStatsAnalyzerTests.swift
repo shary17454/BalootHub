@@ -3541,12 +3541,12 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(review.action, .replayMistake)
         XCTAssertEqual(review.title, "راجع الخطأ الأعلى أثرًا".localized)
         XCTAssertEqual(review.replaySeed, progress.reviewItem?.seed)
-        XCTAssertEqual(review.nextSeed, progress.reviewItem?.seed)
         XCTAssertEqual(review.replaySeed, 202)
         XCTAssertEqual(review.nextSeed, 202)
         XCTAssertEqual(review.difficulty, .medium)
         XCTAssertEqual(review.focusKind, .followSuit)
         XCTAssertEqual(review.gameMode, .hokum)
+        XCTAssertTrue(["\("ابدأ بإعادة موقف".localized) 202", "\("اختيارك".localized): \(PlayingCard(suit: .clubs, rank: .seven).accessibilityName)", "\("أفضل ورقة".localized): \(PlayingCard(suit: .clubs, rank: .seven).accessibilityName)", "\("الفاقد".localized): 9"].allSatisfy { review.detail.contains($0) })
         XCTAssertEqual(
             review.contextLine,
             "\("المستوى".localized): \("متوسط".localized) · \("تركيز التدريب".localized): \("اتباع اللون".localized) · \("النمط".localized): \("حكم".localized)"

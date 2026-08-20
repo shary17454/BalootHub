@@ -2145,7 +2145,7 @@ enum WhatToPlayStatsAnalyzer {
                 return WhatToPlayTrainingSessionReview(
                     action: .replayMistake,
                     title: "راجع الخطأ الأعلى أثرًا".localized,
-                    detail: "\("ابدأ بإعادة موقف".localized) \(reviewItem.seed) \("قبل تكرار الجلسة؛ هذا يربط التدريب بسبب الخسارة لا بعدد المحاولات فقط.".localized)",
+                    detail: trainingSessionReviewMistakeDetail(reviewItem),
                     contextLine: trainingSessionReviewContext(difficulty: reviewItem.difficulty, focusKind: reviewItem.focusKind, gameMode: reviewItem.gameMode, trumpSuit: reviewItem.contextTrumpSuit),
                     iconName: reviewItem.iconName,
                     replaySeed: reviewItem.seed,
@@ -2170,6 +2170,26 @@ enum WhatToPlayStatsAnalyzer {
                 trumpSuit: plan.trumpSuit
             )
         }
+    }
+
+    private static func trainingSessionReviewMistakeDetail(_ item: WhatToPlayReviewItem) -> String {
+        var parts = [
+            "\("ابدأ بإعادة موقف".localized) \(item.seed)",
+            "قبل تكرار الجلسة؛ هذا يربط التدريب بسبب الخسارة لا بعدد المحاولات فقط.".localized
+        ]
+        if let selectedCard = item.selectedCard {
+            parts.append("\("اختيارك".localized): \(selectedCard.accessibilityName)")
+        }
+        if let bestCard = item.bestCard {
+            parts.append("\("أفضل ورقة".localized): \(bestCard.accessibilityName)")
+        }
+        if item.lostExpectedPoints > 0 {
+            parts.append("\("الفاقد".localized): \(item.lostExpectedPoints)")
+        }
+        if item.lostProjectedTeamPoints > 0 {
+            parts.append("\("نقاط محاكاة ضائعة".localized): \(item.lostProjectedTeamPoints)")
+        }
+        return parts.joined(separator: " · ")
     }
 
     private static func trainingSessionReviewContext(
