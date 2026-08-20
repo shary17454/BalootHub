@@ -26,6 +26,8 @@ private struct StatTile: View {
 }
 
 struct WhatToPlayTrainerView: View {
+    private let targetCount: Int?
+
     @Environment(\.modelContext) private var modelContext
     @Environment(\.displayScale) private var displayScale
     @Query(sort: \WhatToPlayAttempt.createdAt, order: .reverse) private var attempts: [WhatToPlayAttempt]
@@ -51,8 +53,10 @@ struct WhatToPlayTrainerView: View {
         seed: UInt64? = nil,
         difficulty: WhatToPlayDifficulty? = nil,
         preferredFocus: WhatToPlayScenarioFocusKind? = nil,
-        preferredMode: GameMode? = nil
+        preferredMode: GameMode? = nil,
+        targetCount: Int? = nil
     ) {
+        self.targetCount = targetCount
         let storedPreferences = WhatToPlayTrainerPreferences.load()
         _difficulty = State(initialValue: difficulty ?? storedPreferences.difficulty)
         _preferredFocusRaw = State(initialValue: (preferredFocus ?? storedPreferences.preferredFocus)?.rawValue ?? "auto")
@@ -229,6 +233,9 @@ struct WhatToPlayTrainerView: View {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
                 header
                 controls
+                if let targetCount {
+                    roundPracticePlanCard(targetCount: targetCount)
+                }
                 practiceRecommendationCard
                 microDrillCard
                 statsCard
@@ -412,6 +419,26 @@ struct WhatToPlayTrainerView: View {
             .tint(AppColor.primary)
             .disabled(isGeneratingScenario)
         }
+    }
+
+    private func roundPracticePlanCard(targetCount: Int) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            Label("خطة من تحليل الجولة".localized, systemImage: "target")
+                .font(AppTypography.headline)
+                .foregroundStyle(AppColor.primary)
+
+            Text("أكمل هذه المواقف بنفس البذرة والصعوبة المقترحة من تقرير الجولة السابقة.".localized)
+                .font(AppTypography.caption)
+                .foregroundStyle(AppColor.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            HStack(spacing: AppSpacing.xs) {
+                StatTile(title: "عدد المواقف", value: "\(targetCount)", icon: "number")
+                StatTile(title: "بذرة التدريب", value: "\(seed)", icon: "number.circle.fill")
+            }
+        }
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
     }
 
     private var practiceRecommendationCard: some View {

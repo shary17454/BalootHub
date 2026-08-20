@@ -45,7 +45,7 @@ final class AppRouteTests: XCTestCase {
 
         XCTAssertEqual(appEnvironment.selectedTab, .catalog)
         XCTAssertEqual(appEnvironment.catalogPath, [
-            .whatToPlayTrainer(seed: 987_654, difficulty: .expert)
+            .whatToPlayTrainer(seed: 987_654, difficulty: .expert, targetCount: 5)
         ])
         XCTAssertTrue(appEnvironment.homePath.isEmpty)
         XCTAssertTrue(appEnvironment.scorekeeperPath.isEmpty)

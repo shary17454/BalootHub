@@ -35,7 +35,8 @@ final class AppEnvironment {
         navigate(
             to: .whatToPlayTrainer(
                 seed: recommendation.scenarioSeed,
-                difficulty: recommendation.difficulty
+                difficulty: recommendation.difficulty,
+                targetCount: recommendation.suggestedScenarioCount
             ),
             tab: tab
         )

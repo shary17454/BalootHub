@@ -45,7 +45,8 @@ enum AppRoute: Hashable {
         seed: UInt64? = nil,
         difficulty: WhatToPlayDifficulty? = nil,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
-        gameMode: GameMode? = nil
+        gameMode: GameMode? = nil,
+        targetCount: Int? = nil
     )
     case scoringQuiz
     case dailyChallenges
