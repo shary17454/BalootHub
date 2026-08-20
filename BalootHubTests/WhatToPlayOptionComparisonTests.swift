@@ -227,6 +227,19 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertEqual(rows.filter(\.isBestSimulationResult).count, 1)
     }
 
+    func testAttemptFactoryPersistsBestSimulationProjection() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let selected = try XCTUnwrap(scenario.options.last)
+        let bestSimulation = try XCTUnwrap(WhatToPlayOptionComparison.bestSimulationOption(scenario.options))
+
+        let attempt = try XCTUnwrap(WhatToPlayAttemptFactory.makeAttempt(scenario: scenario, evaluated: selected))
+
+        XCTAssertEqual(attempt.selectedCard, selected.card)
+        XCTAssertEqual(attempt.bestCard, scenario.bestOption?.card)
+        XCTAssertEqual(attempt.bestProjectedTeamPoints, bestSimulation.projectedTeamPoints)
+        XCTAssertEqual(attempt.lostProjectedTeamPoints, max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints))
+    }
+
     func testRowsPreserveImpactBreakdownForEveryOption() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
         let selected = try XCTUnwrap(scenario.bestOption)

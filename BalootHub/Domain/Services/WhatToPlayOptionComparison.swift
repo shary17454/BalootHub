@@ -302,7 +302,7 @@ enum WhatToPlayOptionComparison {
         }
     }
 
-    private static func bestSimulationOption(_ options: [WhatToPlayOption]) -> WhatToPlayOption? {
+    static func bestSimulationOption(_ options: [WhatToPlayOption]) -> WhatToPlayOption? {
         options.max { lhs, rhs in
             if lhs.projectedTeamPoints != rhs.projectedTeamPoints {
                 return lhs.projectedTeamPoints < rhs.projectedTeamPoints

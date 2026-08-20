@@ -2643,7 +2643,8 @@ enum WhatToPlayStatsAnalyzer {
     }
 
     static func replayContext(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayReplayContext {
-        let bestProjectedTeamPoints = scenario.bestOption?.projectedTeamPoints ?? selected.projectedTeamPoints
+        let bestProjectedTeamPoints = WhatToPlayOptionComparison.bestSimulationOption(scenario.options)?.projectedTeamPoints
+            ?? selected.projectedTeamPoints
         let lostProjectedTeamPoints = max(0, bestProjectedTeamPoints - selected.projectedTeamPoints)
         var parts = [
             "\("الورقة".localized): \(selected.card.accessibilityName)",

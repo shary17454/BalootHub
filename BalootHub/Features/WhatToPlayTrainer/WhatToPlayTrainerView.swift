@@ -2512,28 +2512,9 @@ struct WhatToPlayTrainerView: View {
     private func choose(_ option: WhatToPlayOption, in scenario: WhatToPlayScenario) {
         guard let evaluated = WhatToPlayTrainer.evaluateChoice(card: option.card, in: scenario) else { return }
         illegalMoveExplanation = nil
-        if selectedOption == nil, !isRetryingCurrentScenario, let bestCard = scenario.bestOption?.card {
-            let attempt = WhatToPlayAttempt(
-                difficulty: scenario.difficulty,
-                seed: scenario.seed,
-                selectedCard: evaluated.card,
-                bestCard: bestCard,
-                secondBestCard: scenario.secondBestOption?.card,
-                isCorrect: evaluated.isExpertChoice,
-                selectedRank: evaluated.rank,
-                expectedImpact: evaluated.expectedImpact,
-                bestExpectedImpact: scenario.bestOption?.expectedImpact,
-                secondBestExpectedImpact: scenario.secondBestOption?.expectedImpact,
-                projectedTeamPoints: evaluated.projectedTeamPoints,
-                bestProjectedTeamPoints: scenario.bestOption?.projectedTeamPoints,
-                secondBestProjectedTeamPoints: scenario.secondBestOption?.projectedTeamPoints,
-                focusKind: scenario.context.focusKind,
-                gameMode: scenario.state.mode,
-                outcome: evaluated.outcome,
-                impactBreakdown: evaluated.impactBreakdown,
-                simulation: evaluated.simulation,
-                scenarioContext: scenario.context
-            )
+        if selectedOption == nil,
+           !isRetryingCurrentScenario,
+           let attempt = WhatToPlayAttemptFactory.makeAttempt(scenario: scenario, evaluated: evaluated) {
             modelContext.insert(attempt)
             try? modelContext.save()
         }
