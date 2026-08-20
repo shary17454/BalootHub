@@ -662,7 +662,10 @@ struct BalootGamePlayView: View {
     private func biddingAnalysisValue(_ decision: RoundBiddingDecisionAnalysis) -> String {
         let bid = bidAnalysisLabel(decision.bid)
         guard !decision.matchedRecommendation else { return bid }
-        return "\(bid) \("بدل".localized) \(bidAnalysisLabel(decision.recommendedBid))"
+        let comparison = "\(bid) \("بدل".localized) \(bidAnalysisLabel(decision.recommendedBid))"
+        guard let selected = decision.selectedBidMargin,
+              let recommended = decision.recommendedBidMargin else { return comparison }
+        return "\(comparison) · \("الهامش".localized): \(recommended - selected)"
     }
 
     private func multiplierAnalysisValue(_ decision: RoundMultiplierDecisionAnalysis) -> String {
