@@ -255,6 +255,8 @@ struct RoundAnalysisTests {
         #expect(recommendation?.priority == .play)
         #expect(recommendation?.difficulty == .expert)
         #expect(recommendation?.suggestedScenarioCount == 3)
+        #expect(recommendation?.focusKind == .narrowChoice)
+        #expect(recommendation?.gameMode == nil)
         #expect(recommendation?.title == "تدرب على وش تلعب؟")
         #expect(recommendation?.detail.contains("14 نقطة") == true)
         #expect(recommendation?.scenarioSeed == repeatedReport.practiceRecommendation?.scenarioSeed)
@@ -292,6 +294,8 @@ struct RoundAnalysisTests {
 
         #expect(report.practiceRecommendation?.priority == .bidding)
         #expect(report.practiceRecommendation?.difficulty == .medium)
+        #expect(report.practiceRecommendation?.focusKind == .trumpPressure)
+        #expect(report.practiceRecommendation?.gameMode == .hokum)
         #expect(report.practiceRecommendation?.title == "تدرب على قراءة المزايدة")
     }
 

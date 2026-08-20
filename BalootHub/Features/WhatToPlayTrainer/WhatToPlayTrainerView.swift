@@ -436,6 +436,19 @@ struct WhatToPlayTrainerView: View {
                 StatTile(title: "عدد المواقف", value: "\(targetCount)", icon: "number")
                 StatTile(title: "بذرة التدريب", value: "\(seed)", icon: "number.circle.fill")
             }
+
+            HStack(spacing: AppSpacing.xs) {
+                StatTile(
+                    title: "تركيز التدريب",
+                    value: preferredFocus.map(focusTitle) ?? "تلقائي".localized,
+                    icon: "scope"
+                )
+                StatTile(
+                    title: "النمط",
+                    value: preferredMode.map(modeTitle) ?? "تلقائي".localized,
+                    icon: "suit.club.fill"
+                )
+            }
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))

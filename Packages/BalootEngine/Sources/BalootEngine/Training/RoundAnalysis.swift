@@ -109,6 +109,8 @@ public struct RoundPracticeRecommendation: Sendable, Codable, Equatable {
     public let difficulty: WhatToPlayDifficulty
     public let scenarioSeed: UInt64
     public let suggestedScenarioCount: Int
+    public let focusKind: WhatToPlayScenarioFocusKind?
+    public let gameMode: GameMode?
     public let title: String
     public let detail: String
 
@@ -117,6 +119,8 @@ public struct RoundPracticeRecommendation: Sendable, Codable, Equatable {
         difficulty: WhatToPlayDifficulty,
         scenarioSeed: UInt64,
         suggestedScenarioCount: Int,
+        focusKind: WhatToPlayScenarioFocusKind? = nil,
+        gameMode: GameMode? = nil,
         title: String,
         detail: String
     ) {
@@ -124,6 +128,8 @@ public struct RoundPracticeRecommendation: Sendable, Codable, Equatable {
         self.difficulty = difficulty
         self.scenarioSeed = scenarioSeed
         self.suggestedScenarioCount = suggestedScenarioCount
+        self.focusKind = focusKind
+        self.gameMode = gameMode
         self.title = title
         self.detail = detail
     }
@@ -245,6 +251,8 @@ public struct RoundAnalysisReport: Sendable, Equatable {
             difficulty: difficulty,
             scenarioSeed: deterministicPracticeSeed(for: focus),
             suggestedScenarioCount: recommendedScenarioCount(for: focus),
+            focusKind: recommendedPracticeFocusKind(for: focus.priority),
+            gameMode: recommendedPracticeGameMode(for: focus.priority),
             title: practiceTitle(for: focus.priority),
             detail: practiceDetail(for: focus, difficulty: difficulty)
         )
@@ -267,6 +275,30 @@ public struct RoundAnalysisReport: Sendable, Equatable {
 
     private func recommendedScenarioCount(for focus: RoundReviewFocus) -> Int {
         min(10, max(3, focus.mistakeCount * 2 + focus.estimatedLostPoints / 8))
+    }
+
+    private func recommendedPracticeFocusKind(for priority: RoundReviewPriority) -> WhatToPlayScenarioFocusKind? {
+        switch priority {
+        case .bidding:
+            .trumpPressure
+        case .projects:
+            .openingLead
+        case .multipliers:
+            .trumpPressure
+        case .play:
+            .narrowChoice
+        case .none:
+            nil
+        }
+    }
+
+    private func recommendedPracticeGameMode(for priority: RoundReviewPriority) -> GameMode? {
+        switch priority {
+        case .bidding, .multipliers:
+            .hokum
+        case .projects, .play, .none:
+            nil
+        }
     }
 
     private func deterministicPracticeSeed(for focus: RoundReviewFocus) -> UInt64 {

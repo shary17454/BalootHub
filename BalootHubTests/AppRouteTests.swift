@@ -37,6 +37,8 @@ final class AppRouteTests: XCTestCase {
             difficulty: .expert,
             scenarioSeed: 987_654,
             suggestedScenarioCount: 5,
+            focusKind: .narrowChoice,
+            gameMode: .sun,
             title: "تدرب على وش تلعب؟",
             detail: "اختبار"
         )
@@ -45,7 +47,13 @@ final class AppRouteTests: XCTestCase {
 
         XCTAssertEqual(appEnvironment.selectedTab, .catalog)
         XCTAssertEqual(appEnvironment.catalogPath, [
-            .whatToPlayTrainer(seed: 987_654, difficulty: .expert, targetCount: 5)
+            .whatToPlayTrainer(
+                seed: 987_654,
+                difficulty: .expert,
+                focusKind: .narrowChoice,
+                gameMode: .sun,
+                targetCount: 5
+            )
         ])
         XCTAssertTrue(appEnvironment.homePath.isEmpty)
         XCTAssertTrue(appEnvironment.scorekeeperPath.isEmpty)
