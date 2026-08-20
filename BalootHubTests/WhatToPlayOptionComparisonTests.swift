@@ -12,6 +12,17 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         }
         let best = try XCTUnwrap(sorted.first)
         let second = try XCTUnwrap(sorted.dropFirst().first)
+        let bestSimulation = try XCTUnwrap(
+            scenario.options.max { lhs, rhs in
+                if lhs.projectedTeamPoints != rhs.projectedTeamPoints {
+                    return lhs.projectedTeamPoints < rhs.projectedTeamPoints
+                }
+                if lhs.expectedImpact != rhs.expectedImpact {
+                    return lhs.expectedImpact < rhs.expectedImpact
+                }
+                return lhs.rank > rhs.rank
+            }
+        )
 
         let summary = WhatToPlayOptionComparison.summary(for: scenario)
 
@@ -22,6 +33,10 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertEqual(summary.secondBestExpectedImpact, second.expectedImpact)
         XCTAssertEqual(summary.secondBestProjectedTeamPoints, second.projectedTeamPoints)
         XCTAssertEqual(summary.bestToSecondGap, max(0, best.expectedImpact - second.expectedImpact))
+        XCTAssertEqual(summary.bestSimulationCard, bestSimulation.card)
+        XCTAssertEqual(summary.bestSimulationExpectedImpact, bestSimulation.expectedImpact)
+        XCTAssertEqual(summary.bestSimulationProjectedTeamPoints, bestSimulation.projectedTeamPoints)
+        XCTAssertEqual(summary.expertToBestSimulationGap, max(0, bestSimulation.projectedTeamPoints - best.projectedTeamPoints))
         XCTAssertNil(summary.selectedCard)
         XCTAssertNil(summary.selectedExpectedImpact)
         XCTAssertNil(summary.selectedProjectedTeamPoints)
@@ -64,7 +79,10 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertEqual(bestSummary.selectedExpectedImpact, best.expectedImpact)
         XCTAssertEqual(bestSummary.selectedProjectedTeamPoints, best.projectedTeamPoints)
         XCTAssertEqual(bestSummary.selectedLostExpectedPoints, 0)
-        XCTAssertEqual(bestSummary.selectedLostProjectedTeamPoints, 0)
+        XCTAssertEqual(
+            bestSummary.selectedLostProjectedTeamPoints,
+            max(0, (bestSummary.bestSimulationProjectedTeamPoints ?? 0) - best.projectedTeamPoints)
+        )
         XCTAssertEqual(bestSummary.decisionQuality, .expertMatch)
         XCTAssertEqual(bestSummary.decisionQuality?.title, "مطابق للخبير".localized)
         XCTAssertFalse(bestSummary.decisionQuality?.systemImage.isEmpty ?? true)
@@ -78,11 +96,12 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertEqual(costlySummary.selectedLostExpectedPoints, expectedLost)
         XCTAssertEqual(
             costlySummary.selectedLostProjectedTeamPoints,
-            max(0, best.projectedTeamPoints - costly.projectedTeamPoints)
+            max(0, (costlySummary.bestSimulationProjectedTeamPoints ?? 0) - costly.projectedTeamPoints)
         )
-        if expectedLost <= 2 {
+        let decisiveLost = max(expectedLost, costlySummary.selectedLostProjectedTeamPoints ?? 0)
+        if decisiveLost <= 2 {
             XCTAssertEqual(costlySummary.decisionQuality, .close)
-        } else if expectedLost <= 8 {
+        } else if decisiveLost <= 8 {
             XCTAssertEqual(costlySummary.decisionQuality, .acceptable)
         } else {
             XCTAssertEqual(costlySummary.decisionQuality, .costly)
@@ -170,7 +189,7 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
     func testRowsCalculateProjectedPointLossForEveryOption() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
         let selected = try XCTUnwrap(scenario.bestOption)
-        let bestProjected = try XCTUnwrap(scenario.bestOption?.projectedTeamPoints)
+        let bestProjected = try XCTUnwrap(scenario.options.map(\.projectedTeamPoints).max())
 
         let rows = WhatToPlayOptionComparison.rows(for: scenario, selectedCard: selected.card)
 
@@ -179,6 +198,33 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
             let option = try XCTUnwrap(scenario.options.first { $0.card == row.card })
             XCTAssertEqual(row.lostProjectedTeamPoints, max(0, bestProjected - option.projectedTeamPoints))
         }
+    }
+
+    func testSummaryTracksBestSimulationResultIndependently() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let expert = try XCTUnwrap(scenario.bestOption)
+        let bestSimulation = try XCTUnwrap(
+            scenario.options.max { lhs, rhs in
+                if lhs.projectedTeamPoints != rhs.projectedTeamPoints {
+                    return lhs.projectedTeamPoints < rhs.projectedTeamPoints
+                }
+                if lhs.expectedImpact != rhs.expectedImpact {
+                    return lhs.expectedImpact < rhs.expectedImpact
+                }
+                return lhs.rank > rhs.rank
+            }
+        )
+
+        let summary = WhatToPlayOptionComparison.summary(for: scenario, selectedCard: expert.card)
+        let rows = WhatToPlayOptionComparison.rows(for: scenario, selectedCard: expert.card)
+
+        XCTAssertEqual(summary.bestCard, expert.card)
+        XCTAssertEqual(summary.bestSimulationCard, bestSimulation.card)
+        XCTAssertEqual(summary.bestSimulationProjectedTeamPoints, bestSimulation.projectedTeamPoints)
+        XCTAssertEqual(summary.expertToBestSimulationGap, max(0, bestSimulation.projectedTeamPoints - expert.projectedTeamPoints))
+        XCTAssertEqual(summary.selectedLostProjectedTeamPoints, max(0, bestSimulation.projectedTeamPoints - expert.projectedTeamPoints))
+        XCTAssertTrue(rows.first { $0.card == bestSimulation.card }?.isBestSimulationResult ?? false)
+        XCTAssertEqual(rows.filter(\.isBestSimulationResult).count, 1)
     }
 
     func testRowsPreserveImpactBreakdownForEveryOption() throws {

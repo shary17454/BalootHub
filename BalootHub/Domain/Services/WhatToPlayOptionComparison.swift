@@ -20,6 +20,7 @@ struct WhatToPlayOptionComparisonRow: Identifiable, Equatable {
     let rationale: String
     let isSelected: Bool
     let isExpertChoice: Bool
+    let isBestSimulationResult: Bool
 
     var id: PlayingCard { card }
 }
@@ -32,6 +33,10 @@ struct WhatToPlayOptionComparisonSummary: Equatable {
     let secondBestExpectedImpact: Int?
     let secondBestProjectedTeamPoints: Int?
     let bestToSecondGap: Int?
+    let bestSimulationCard: PlayingCard?
+    let bestSimulationExpectedImpact: Int?
+    let bestSimulationProjectedTeamPoints: Int?
+    let expertToBestSimulationGap: Int?
     let selectedCard: PlayingCard?
     let selectedExpectedImpact: Int?
     let selectedProjectedTeamPoints: Int?
@@ -198,8 +203,12 @@ enum WhatToPlayOptionComparison {
         let sorted = sortedOptions(scenario.options)
         let best = sorted.first
         let second = sorted.dropFirst().first
+        let bestSimulation = bestSimulationOption(scenario.options)
         let gap = best.flatMap { bestOption in
             second.map { max(0, bestOption.expectedImpact - $0.expectedImpact) }
+        }
+        let simulationGap = best.flatMap { bestOption in
+            bestSimulation.map { max(0, $0.projectedTeamPoints - bestOption.projectedTeamPoints) }
         }
         let selected = selectedCard.flatMap { card in
             sorted.first { $0.card == card }
@@ -208,7 +217,7 @@ enum WhatToPlayOptionComparison {
             best.map { max(0, $0.expectedImpact - selectedOption.expectedImpact) }
         }
         let projectedLost = selected.flatMap { selectedOption in
-            best.map { max(0, $0.projectedTeamPoints - selectedOption.projectedTeamPoints) }
+            bestSimulation.map { max(0, $0.projectedTeamPoints - selectedOption.projectedTeamPoints) }
         }
         let action = nextAction(
             selected: selected,
@@ -226,6 +235,10 @@ enum WhatToPlayOptionComparison {
             secondBestExpectedImpact: second?.expectedImpact,
             secondBestProjectedTeamPoints: second?.projectedTeamPoints,
             bestToSecondGap: gap,
+            bestSimulationCard: bestSimulation?.card,
+            bestSimulationExpectedImpact: bestSimulation?.expectedImpact,
+            bestSimulationProjectedTeamPoints: bestSimulation?.projectedTeamPoints,
+            expertToBestSimulationGap: simulationGap,
             selectedCard: selected?.card,
             selectedExpectedImpact: selected?.expectedImpact,
             selectedProjectedTeamPoints: selected?.projectedTeamPoints,
@@ -244,7 +257,8 @@ enum WhatToPlayOptionComparison {
 
     static func rows(for scenario: WhatToPlayScenario, selectedCard: PlayingCard) -> [WhatToPlayOptionComparisonRow] {
         let bestImpact = scenario.bestOption?.expectedImpact ?? scenario.options.map(\.expectedImpact).max() ?? 0
-        let bestProjectedTeamPoints = scenario.bestOption?.projectedTeamPoints ?? scenario.options.map(\.projectedTeamPoints).max() ?? 0
+        let bestSimulation = bestSimulationOption(scenario.options)
+        let bestProjectedTeamPoints = bestSimulation?.projectedTeamPoints ?? scenario.options.map(\.projectedTeamPoints).max() ?? 0
         return sortedOptions(scenario.options)
             .map { option in
                 let simulationDisplay = WhatToPlaySimulationFormatter.display(for: option.simulation)
@@ -274,7 +288,8 @@ enum WhatToPlayOptionComparison {
                     ),
                     rationale: option.explanation,
                     isSelected: option.card == selectedCard,
-                    isExpertChoice: option.isExpertChoice
+                    isExpertChoice: option.isExpertChoice,
+                    isBestSimulationResult: option.card == bestSimulation?.card
                 )
             }
     }
@@ -284,6 +299,24 @@ enum WhatToPlayOptionComparison {
             if lhs.rank != rhs.rank { return lhs.rank < rhs.rank }
             if lhs.card.suit.ordinal != rhs.card.suit.ordinal { return lhs.card.suit.ordinal < rhs.card.suit.ordinal }
             return lhs.card.rank.ordinal < rhs.card.rank.ordinal
+        }
+    }
+
+    private static func bestSimulationOption(_ options: [WhatToPlayOption]) -> WhatToPlayOption? {
+        options.max { lhs, rhs in
+            if lhs.projectedTeamPoints != rhs.projectedTeamPoints {
+                return lhs.projectedTeamPoints < rhs.projectedTeamPoints
+            }
+            if lhs.expectedImpact != rhs.expectedImpact {
+                return lhs.expectedImpact < rhs.expectedImpact
+            }
+            if lhs.rank != rhs.rank {
+                return lhs.rank > rhs.rank
+            }
+            if lhs.card.suit.ordinal != rhs.card.suit.ordinal {
+                return lhs.card.suit.ordinal > rhs.card.suit.ordinal
+            }
+            return lhs.card.rank.ordinal > rhs.card.rank.ordinal
         }
     }
 

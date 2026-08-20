@@ -18796,6 +18796,26 @@
         }
       }
     },
+    "أفضل نتيجة محاكاة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Best simulation result"
+          }
+        }
+      }
+    },
+    "أفضل محاكاة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Best simulation"
+          }
+        }
+      }
+    },
     "ثاني أفضل" : {
       "localizations" : {
         "en" : {

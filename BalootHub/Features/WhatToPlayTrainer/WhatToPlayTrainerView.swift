@@ -2944,16 +2944,28 @@ struct WhatToPlayTrainerView: View {
                     "\("تقييم اختيارك".localized): \(quality.title) · \("الفاقد".localized): \(impactText(lost))",
                     systemImage: quality.systemImage
                 )
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(decisionQualityTint(quality))
+                .font(.caption2.weight(.semibold)).foregroundStyle(decisionQualityTint(quality))
             }
             if let projectedLoss = summary.selectedLostProjectedTeamPoints, projectedLoss > 0 {
-                Label(
-                    "\("نقاط محاكاة ضائعة".localized): \(projectedLoss)",
-                    systemImage: "chart.bar.doc.horizontal.fill"
-                )
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(AppColor.danger)
+                Label("\("نقاط محاكاة ضائعة".localized): \(projectedLoss)", systemImage: "chart.bar.doc.horizontal.fill")
+                    .font(.caption2.weight(.semibold)).foregroundStyle(AppColor.danger)
+            }
+            if let simulationGap = summary.expertToBestSimulationGap,
+               simulationGap > 0,
+               let simulationCard = summary.bestSimulationCard,
+               let simulationPoints = summary.bestSimulationProjectedTeamPoints {
+                let detail = "\(simulationCard.accessibilityName) · \("نقاط فريقك بعد المحاكاة".localized): \(simulationPoints) · \("فارق عن اختيار الخبير".localized): \(simulationGap)"
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("أفضل نتيجة محاكاة".localized)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(AppColor.textPrimary)
+                        Text(detail).font(.caption2).foregroundStyle(AppColor.textSecondary).fixedSize(horizontal: false, vertical: true)
+                    }
+                } icon: {
+                    Image(systemName: "chart.line.uptrend.xyaxis").foregroundStyle(AppColor.accent)
+                }
+                .padding(.top, AppSpacing.xs)
             }
             if let nextActionTitle = summary.nextActionTitle,
                let nextActionDetail = summary.nextActionDetail {
@@ -3037,6 +3049,9 @@ struct WhatToPlayTrainerView: View {
                     }
                     if row.isExpertChoice {
                         StatusBadge("الأفضل".localized, systemImage: "star.fill", tint: AppColor.success)
+                    }
+                    if row.isBestSimulationResult && !row.isExpertChoice {
+                        StatusBadge("أفضل محاكاة".localized, systemImage: "chart.line.uptrend.xyaxis", tint: AppColor.accent)
                     }
                 }
                 Text("\("الترتيب".localized) \(row.rank)")
