@@ -460,7 +460,7 @@ struct WhatToPlayTrainerView: View {
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
-                Text("\("المستوى".localized): \(recommendation.difficulty.displayTitle) · \("تركيز التدريب".localized): \(recommendation.focusKind.map(focusTitle) ?? "تلقائي".localized) · \("النمط".localized): \(recommendation.gameMode.map(modeTitle) ?? "تلقائي".localized)")
+                Text(nextScenarioRecommendationContextText(recommendation))
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(AppColor.accent)
             }
@@ -504,6 +504,23 @@ struct WhatToPlayTrainerView: View {
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(AppColor.success)
                 .fixedSize(horizontal: false, vertical: true)
+
+            Label {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(plan.rationaleTitle)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(AppColor.textPrimary)
+                    Text(plan.rationaleDetail)
+                        .font(.caption2)
+                        .foregroundStyle(AppColor.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            } icon: {
+                Image(systemName: plan.rationaleIconName)
+                    .foregroundStyle(AppColor.accent)
+            }
+            .padding(AppSpacing.sm)
+            .background(AppColor.accent.opacity(0.10), in: RoundedRectangle(cornerRadius: AppRadius.medium))
 
             trainingSessionProgressView(progress)
             trainingSessionReviewView(trainingSessionReview)

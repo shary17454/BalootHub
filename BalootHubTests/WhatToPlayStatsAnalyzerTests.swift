@@ -2757,6 +2757,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(plan.targetAverageExpectedImpact, 0)
         XCTAssertNil(plan.maxCostlyDecisions)
         XCTAssertEqual(plan.title, "جلسة تأسيس قصيرة".localized)
+        XCTAssertEqual(plan.rationaleTitle, "سبب اختيار الخطة: بناء خط أساس".localized)
+        XCTAssertEqual(plan.rationaleIconName, "ruler.fill")
     }
 
     func testNextTrainingSessionSeedIsStableForSameAttemptsAndPlan() {
@@ -2835,6 +2837,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(plan.gameMode, .hokum)
         XCTAssertEqual(plan.trumpSuit, .spades)
+        XCTAssertTrue(plan.rationaleTitle.contains("\("حكم".localized) \(Suit.spades.spokenName)"))
+        XCTAssertTrue(plan.rationaleDetail.contains("\("الدقة".localized): 50%"))
+        XCTAssertEqual(plan.rationaleIconName, "suit.spade.fill")
     }
 
     func testTrainingSessionProgressFiltersByTargetTrumpSuit() {
@@ -2883,6 +2888,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(plan.gameMode, .hokum)
         XCTAssertEqual(recommendation.gameMode, .hokum)
+        XCTAssertTrue(plan.rationaleTitle.contains("حكم".localized))
+        XCTAssertEqual(plan.rationaleIconName, "crown.fill")
     }
 
     func testTrainingSessionPlanRaisesLevelForExpertAlignedStyle() {

@@ -310,6 +310,9 @@ struct WhatToPlayTrainingSessionPlan: Equatable {
     let title: String
     let detail: String
     let successMetric: String
+    let rationaleTitle: String
+    let rationaleDetail: String
+    let rationaleIconName: String
     let iconName: String
 
     init(
@@ -324,6 +327,9 @@ struct WhatToPlayTrainingSessionPlan: Equatable {
         title: String,
         detail: String,
         successMetric: String,
+        rationaleTitle: String = "سبب اختيار الخطة".localized,
+        rationaleDetail: String = "اختيرت هذه الجلسة من سجل أدائك الحالي في مدرب وش تلعب.".localized,
+        rationaleIconName: String = "sparkles",
         iconName: String
     ) {
         self.difficulty = difficulty
@@ -337,8 +343,17 @@ struct WhatToPlayTrainingSessionPlan: Equatable {
         self.title = title
         self.detail = detail
         self.successMetric = successMetric
+        self.rationaleTitle = rationaleTitle
+        self.rationaleDetail = rationaleDetail
+        self.rationaleIconName = rationaleIconName
         self.iconName = iconName
     }
+}
+
+private struct TrainingSessionPlanRationale {
+    let title: String
+    let detail: String
+    let iconName: String
 }
 
 struct WhatToPlayNextScenarioRecommendation: Equatable {
@@ -1527,9 +1542,22 @@ enum WhatToPlayStatsAnalyzer {
         let summary = summarize(attempts: attempts)
         let style = playStyle(for: attempts)
         let pulse = sessionPulse(for: attempts)
-        let focusKind = focusTrainingPriority(for: attempts)?.focusKind ?? focusScenarioKind(attempts)?.focusKind
-        let gameMode = gameModeTrainingPriority(for: attempts)?.mode ?? focusGameMode(attempts)?.mode
-        let trumpSuit = gameMode == .hokum ? trumpSuitTrainingPriority(for: attempts)?.suit : nil
+        let focusPriority = focusTrainingPriority(for: attempts)
+        let gameModePriority = gameModeTrainingPriority(for: attempts)
+        let focusKind = focusPriority?.focusKind ?? focusScenarioKind(attempts)?.focusKind
+        let gameMode = gameModePriority?.mode ?? focusGameMode(attempts)?.mode
+        let trumpPriority = gameMode == .hokum ? trumpSuitTrainingPriority(for: attempts) : nil
+        let trumpSuit = trumpPriority?.suit
+        let rationale = trainingSessionPlanRationale(
+            summary: summary,
+            style: style,
+            pulse: pulse,
+            focusPriority: focusPriority,
+            gameModePriority: gameModePriority,
+            trumpPriority: trumpPriority,
+            focusKind: focusKind,
+            gameMode: gameMode
+        )
 
         if style.kind == .measuring {
             return WhatToPlayTrainingSessionPlan(
@@ -1542,6 +1570,9 @@ enum WhatToPlayStatsAnalyzer {
                 title: "جلسة تأسيس قصيرة".localized,
                 detail: "ابدأ بثلاثة مواقف سهلة لبناء خط أساس واضح قبل رفع الصعوبة.".localized,
                 successMetric: "هدف الجلسة: إجابتان صحيحتان من 3.".localized,
+                rationaleTitle: rationale.title,
+                rationaleDetail: rationale.detail,
+                rationaleIconName: rationale.iconName,
                 iconName: "play.rectangle.fill"
             )
         }
@@ -1558,6 +1589,9 @@ enum WhatToPlayStatsAnalyzer {
                 title: "جلسة مراجعة مركزة".localized,
                 detail: "اختر مواقف قليلة وراجع التفسير بعد كل قرار قبل الانتقال.".localized,
                 successMetric: "هدف الجلسة: لا تكرر نفس سبب الخطأ مرتين.".localized,
+                rationaleTitle: rationale.title,
+                rationaleDetail: rationale.detail,
+                rationaleIconName: rationale.iconName,
                 iconName: "magnifyingglass.circle.fill"
             )
         }
@@ -1576,6 +1610,9 @@ enum WhatToPlayStatsAnalyzer {
                 title: "جلسة تقليل القرارات المكلفة".localized,
                 detail: "راجع Replay اختيارك وأفضل قرار بعد كل موقف، وابق على مستوى قريب حتى تنخفض القرارات المكلفة.".localized,
                 successMetric: "هدف الجلسة: لا يوجد أكثر من قرار مكلف واحد.".localized,
+                rationaleTitle: rationale.title,
+                rationaleDetail: rationale.detail,
+                rationaleIconName: rationale.iconName,
                 iconName: "exclamationmark.triangle.fill"
             )
         }
@@ -1592,6 +1629,9 @@ enum WhatToPlayStatsAnalyzer {
                 title: "جلسة مراجعة المحاكاة".localized,
                 detail: "قراراتك لا تخسر الأثر اللحظي فقط؛ المحاكاة تكشف فاقدًا بعد اكتمال الجولة. راجع Replay لكل اختيار وقارن نتيجة الفريق.".localized,
                 successMetric: "هدف الجلسة: متوسط نقاط محاكاة ضائعة أقل من 6.".localized,
+                rationaleTitle: rationale.title,
+                rationaleDetail: rationale.detail,
+                rationaleIconName: rationale.iconName,
                 iconName: "chart.bar.xaxis"
             )
         }
@@ -1608,6 +1648,9 @@ enum WhatToPlayStatsAnalyzer {
                 title: "جلسة مراجعة القيمة".localized,
                 detail: "الدقة وحدها لا تكفي هنا؛ ركز على تقليل الفارق بين اختيارك واختيار الخبير قبل رفع المستوى.".localized,
                 successMetric: "هدف الجلسة: متوسط نقاط ضائعة أقل من 4.".localized,
+                rationaleTitle: rationale.title,
+                rationaleDetail: rationale.detail,
+                rationaleIconName: rationale.iconName,
                 iconName: "chart.bar.doc.horizontal.fill"
             )
         }
@@ -1624,6 +1667,9 @@ enum WhatToPlayStatsAnalyzer {
                 title: "جلسة رفع المستوى".localized,
                 detail: "أداؤك يسمح بتحدٍ أعلى؛ اختبر قراءتك في مواقف أكثر ضغطًا.".localized,
                 successMetric: "هدف الجلسة: 4 إجابات صحيحة من 5.".localized,
+                rationaleTitle: rationale.title,
+                rationaleDetail: rationale.detail,
+                rationaleIconName: rationale.iconName,
                 iconName: "arrow.up.circle.fill"
             )
         }
@@ -1640,6 +1686,9 @@ enum WhatToPlayStatsAnalyzer {
                 title: "جلسة تقليل النزيف".localized,
                 detail: "ركز على مقارنة أفضل وثاني أفضل حتى تقل خسارة النقاط المتوقعة.".localized,
                 successMetric: "هدف الجلسة: متوسط أثر غير سلبي.".localized,
+                rationaleTitle: rationale.title,
+                rationaleDetail: rationale.detail,
+                rationaleIconName: rationale.iconName,
                 iconName: "shield.lefthalf.filled"
             )
         }
@@ -1655,6 +1704,9 @@ enum WhatToPlayStatsAnalyzer {
             title: "جلسة تثبيت القراءة".localized,
             detail: "درّب نفس المستوى في دفعة قصيرة حتى تصبح قراراتك أكثر ثباتًا.".localized,
             successMetric: "هدف الجلسة: 3 إجابات صحيحة من 4.".localized,
+            rationaleTitle: rationale.title,
+            rationaleDetail: rationale.detail,
+            rationaleIconName: rationale.iconName,
             iconName: "target"
         )
     }
@@ -3679,6 +3731,79 @@ enum WhatToPlayStatsAnalyzer {
         case .spades:
             return "suit.spade.fill"
         }
+    }
+
+    private static func trainingSessionPlanRationale(
+        summary: WhatToPlayStatsSummary,
+        style: WhatToPlayPlayStyle,
+        pulse: WhatToPlaySessionPulse,
+        focusPriority: WhatToPlayFocusTrainingPriority?,
+        gameModePriority: WhatToPlayGameModeTrainingPriority?,
+        trumpPriority: WhatToPlayTrumpSuitTrainingPriority?,
+        focusKind: WhatToPlayScenarioFocusKind?,
+        gameMode: GameMode?
+    ) -> TrainingSessionPlanRationale {
+        if let trumpPriority {
+            return TrainingSessionPlanRationale(
+                title: "\("سبب اختيار الخطة".localized): \("حكم".localized) \(trumpPriority.suit.spokenName)",
+                detail: "\("اختير لون الحكم هذا لأن نتائجه أضعف من بقية ألوان الحكم.".localized) \("الدقة".localized): \(trumpPriority.summary.accuracyPercent)% · \("النقاط الضائعة".localized): \(trumpPriority.summary.lostExpectedPoints) · \("فاقد المحاكاة".localized): \(trumpPriority.summary.lostProjectedTeamPoints).",
+                iconName: trumpSuitTrainingIcon(for: trumpPriority.suit)
+            )
+        }
+
+        if let gameModePriority {
+            return TrainingSessionPlanRationale(
+                title: "\("سبب اختيار الخطة".localized): \(gameModeTitle(gameModePriority.mode))",
+                detail: "\("اختير هذا النمط لأن سجل التدريب يظهر حاجة واضحة لمراجعته.".localized) \("الدقة".localized): \(gameModePriority.summary.accuracyPercent)% · \("النقاط الضائعة".localized): \(gameModePriority.summary.lostExpectedPoints) · \("فاقد المحاكاة".localized): \(gameModePriority.summary.lostProjectedTeamPoints).",
+                iconName: gameModeTrainingIcon(for: gameModePriority.mode)
+            )
+        }
+
+        if let focusPriority {
+            return TrainingSessionPlanRationale(
+                title: "\("سبب اختيار الخطة".localized): \(scenarioFocusTitle(focusPriority.focusKind))",
+                detail: "\("اختير هذا النوع لأن أخطاءك فيه أكثر تأثيرًا من بقية المواقف.".localized) \("الدقة".localized): \(focusPriority.summary.accuracyPercent)% · \("النقاط الضائعة".localized): \(focusPriority.summary.lostExpectedPoints).",
+                iconName: focusTrainingIcon(for: focusPriority.focusKind)
+            )
+        }
+
+        if pulse.state == .reviewNeeded {
+            return TrainingSessionPlanRationale(
+                title: "سبب اختيار الخطة: مراجعة فورية".localized,
+                detail: "آخر محاولاتك تحتاج تثبيت القرار قبل التوسع في مواقف جديدة؛ راجع التفسير بعد كل اختيار.".localized,
+                iconName: "magnifyingglass.circle.fill"
+            )
+        }
+
+        if style.kind == .measuring || summary.attempts == 0 {
+            return TrainingSessionPlanRationale(
+                title: "سبب اختيار الخطة: بناء خط أساس".localized,
+                detail: "لا توجد بيانات كافية بعد، لذلك يبدأ المدرب بمواقف قصيرة قابلة للقياس قبل تخصيص التدريب.".localized,
+                iconName: "ruler.fill"
+            )
+        }
+
+        if let gameMode {
+            return TrainingSessionPlanRationale(
+                title: "\("سبب اختيار الخطة".localized): \(gameModeTitle(gameMode))",
+                detail: "لا توجد أولوية حادة الآن، لكن الخطة تحافظ على النمط الذي يحتاج مزيدًا من العينات حتى يصبح الحكم على أدائك أدق.".localized,
+                iconName: gameModeTrainingIcon(for: gameMode)
+            )
+        }
+
+        if let focusKind {
+            return TrainingSessionPlanRationale(
+                title: "\("سبب اختيار الخطة".localized): \(scenarioFocusTitle(focusKind))",
+                detail: "لا توجد أولوية حادة الآن، لكن الخطة تواصل النوع الأقل تغطية في سجل التدريب لتحسين توازن العينات.".localized,
+                iconName: focusTrainingIcon(for: focusKind)
+            )
+        }
+
+        return TrainingSessionPlanRationale(
+            title: "سبب اختيار الخطة: تثبيت القراءة".localized,
+            detail: "اختيرت جلسة متوازنة لأن أداءك الحالي لا يشير إلى ضعف واحد واضح؛ الهدف تثبيت القرار عبر مواقف متنوعة.".localized,
+            iconName: "target"
+        )
     }
 
     private static func highestAttemptedDifficulty(in attempts: [WhatToPlayAttempt]) -> WhatToPlayDifficulty? {
