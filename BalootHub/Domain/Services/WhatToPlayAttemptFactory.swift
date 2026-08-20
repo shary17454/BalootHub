@@ -15,6 +15,7 @@ enum WhatToPlayAttemptFactory {
             selectedCard: option.card,
             bestCard: bestCard,
             secondBestCard: scenario.secondBestOption?.card,
+            bestSimulationCard: bestSimulationOption?.card,
             isCorrect: option.isExpertChoice,
             selectedRank: option.rank,
             expectedImpact: option.expectedImpact,

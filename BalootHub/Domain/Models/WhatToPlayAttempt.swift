@@ -15,6 +15,8 @@ final class WhatToPlayAttempt {
     var bestRankRaw: String
     var secondBestSuitRaw: String?
     var secondBestRankRaw: String?
+    var bestSimulationSuitRaw: String?
+    var bestSimulationRankRaw: String?
     var isCorrect: Bool
     var selectedRank: Int?
     var expectedImpact: Int
@@ -57,6 +59,7 @@ final class WhatToPlayAttempt {
         selectedCard: PlayingCard,
         bestCard: PlayingCard,
         secondBestCard: PlayingCard? = nil,
+        bestSimulationCard: PlayingCard? = nil,
         isCorrect: Bool,
         selectedRank: Int? = nil,
         expectedImpact: Int,
@@ -83,6 +86,8 @@ final class WhatToPlayAttempt {
         self.bestRankRaw = bestCard.rank.rawValue
         self.secondBestSuitRaw = secondBestCard?.suit.rawValue
         self.secondBestRankRaw = secondBestCard?.rank.rawValue
+        self.bestSimulationSuitRaw = bestSimulationCard?.suit.rawValue
+        self.bestSimulationRankRaw = bestSimulationCard?.rank.rawValue
         self.isCorrect = isCorrect
         self.selectedRank = selectedRank
         self.expectedImpact = expectedImpact
@@ -154,6 +159,15 @@ final class WhatToPlayAttempt {
               let secondBestRankRaw,
               let suit = Suit(rawValue: secondBestSuitRaw),
               let rank = Rank(rawValue: secondBestRankRaw)
+        else { return nil }
+        return PlayingCard(suit: suit, rank: rank)
+    }
+
+    var bestSimulationCard: PlayingCard? {
+        guard let bestSimulationSuitRaw,
+              let bestSimulationRankRaw,
+              let suit = Suit(rawValue: bestSimulationSuitRaw),
+              let rank = Rank(rawValue: bestSimulationRankRaw)
         else { return nil }
         return PlayingCard(suit: suit, rank: rank)
     }

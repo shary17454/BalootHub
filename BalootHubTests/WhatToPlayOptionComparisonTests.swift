@@ -236,8 +236,31 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
 
         XCTAssertEqual(attempt.selectedCard, selected.card)
         XCTAssertEqual(attempt.bestCard, scenario.bestOption?.card)
+        XCTAssertEqual(attempt.bestSimulationCard, bestSimulation.card)
         XCTAssertEqual(attempt.bestProjectedTeamPoints, bestSimulation.projectedTeamPoints)
         XCTAssertEqual(attempt.lostProjectedTeamPoints, max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints))
+    }
+
+    func testAttemptKeepsBestSimulationCardOptionalForExistingRecords() throws {
+        let selectedCard = PlayingCard(suit: .spades, rank: .ace)
+        let expertCard = PlayingCard(suit: .hearts, rank: .jack)
+
+        let attempt = WhatToPlayAttempt(
+            difficulty: .medium,
+            seed: 123,
+            selectedCard: selectedCard,
+            bestCard: expertCard,
+            isCorrect: false,
+            expectedImpact: 2,
+            bestExpectedImpact: 8,
+            projectedTeamPoints: 40,
+            bestProjectedTeamPoints: 55
+        )
+
+        XCTAssertEqual(attempt.selectedCard, selectedCard)
+        XCTAssertEqual(attempt.bestCard, expertCard)
+        XCTAssertNil(attempt.bestSimulationCard)
+        XCTAssertEqual(attempt.lostProjectedTeamPoints, 15)
     }
 
     func testRowsPreserveImpactBreakdownForEveryOption() throws {
