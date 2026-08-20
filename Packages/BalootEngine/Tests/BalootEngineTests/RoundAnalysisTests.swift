@@ -199,6 +199,100 @@ struct RoundAnalysisTests {
         #expect(report.needsPlayReview == false)
         #expect(report.primaryReviewPriority == .none)
         #expect(report.primaryReviewFocus == nil)
+        #expect(report.practiceRecommendation == nil)
+    }
+
+    @Test("تحليل الجولة يقترح خطة تدريب حتمية حسب أولوية المراجعة")
+    func practiceRecommendationUsesPrimaryReviewFocus() {
+        let team = Team(name: "أ")
+        let player = Player(name: "لاعب", kind: .human, seat: .south, teamID: team.id)
+        let playDecision = RoundDecisionAnalysis(
+            stepIndex: 4,
+            trickNumber: 2,
+            playerID: player.id,
+            playedCard: PlayingCard(suit: .clubs, rank: .seven),
+            bestCard: PlayingCard(suit: .clubs, rank: .ace),
+            secondBestCard: PlayingCard(suit: .clubs, rank: .ten),
+            selectedRank: 3,
+            expectedImpact: -4,
+            bestExpectedImpact: 10,
+            estimatedLostPoints: 14,
+            explanation: "اختبار"
+        )
+        let report = RoundAnalysisReport(
+            playerID: player.id,
+            scoreOutOf100: 58,
+            decisions: [playDecision],
+            biddingDecisions: [],
+            projectOpportunities: [],
+            multiplierDecisions: [],
+            bestDecision: nil,
+            worstDecision: playDecision,
+            totalEstimatedLostPoints: 14,
+            tacticalMistakes: [],
+            strengths: [],
+            weaknesses: [],
+            tips: []
+        )
+        let repeatedReport = RoundAnalysisReport(
+            playerID: player.id,
+            scoreOutOf100: 58,
+            decisions: [playDecision],
+            biddingDecisions: [],
+            projectOpportunities: [],
+            multiplierDecisions: [],
+            bestDecision: nil,
+            worstDecision: playDecision,
+            totalEstimatedLostPoints: 14,
+            tacticalMistakes: [],
+            strengths: [],
+            weaknesses: [],
+            tips: []
+        )
+
+        let recommendation = report.practiceRecommendation
+
+        #expect(recommendation?.priority == .play)
+        #expect(recommendation?.difficulty == .expert)
+        #expect(recommendation?.suggestedScenarioCount == 3)
+        #expect(recommendation?.title == "تدرب على وش تلعب؟")
+        #expect(recommendation?.detail.contains("14 نقطة") == true)
+        #expect(recommendation?.scenarioSeed == repeatedReport.practiceRecommendation?.scenarioSeed)
+    }
+
+    @Test("خطة التدريب تخفض صعوبة المزايدة عند الفاقد الأقل")
+    func practiceRecommendationUsesMediumDifficultyForLowerBiddingLoss() {
+        let team = Team(name: "أ")
+        let player = Player(name: "لاعب", kind: .human, seat: .south, teamID: team.id)
+        let biddingDecision = RoundBiddingDecisionAnalysis(
+            stepIndex: 1,
+            playerID: player.id,
+            bid: .pass,
+            recommendedBid: .sun,
+            legalBids: [.pass, .sun],
+            handStrengthScore: 42,
+            estimatedLostPoints: 6,
+            explanation: "اختبار"
+        )
+        let report = RoundAnalysisReport(
+            playerID: player.id,
+            scoreOutOf100: 74,
+            decisions: [],
+            biddingDecisions: [biddingDecision],
+            projectOpportunities: [],
+            multiplierDecisions: [],
+            bestDecision: nil,
+            worstDecision: nil,
+            totalEstimatedLostPoints: 6,
+            tacticalMistakes: [],
+            strengths: [],
+            weaknesses: [],
+            tips: []
+        )
+
+        #expect(report.practiceRecommendation?.priority == .bidding)
+        #expect(report.practiceRecommendation?.difficulty == .medium)
+        #expect(report.practiceRecommendation?.title == "تدرب على قراءة المزايدة")
     }
 
     @Test("اختيار غير الأفضل يظهر في أسوأ قرار")

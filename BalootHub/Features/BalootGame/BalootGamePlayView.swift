@@ -577,6 +577,18 @@ struct BalootGamePlayView: View {
                     title: "نقاط ضائعة تقديريًا",
                     value: "\(report.totalEstimatedLostPoints)"
                 )
+                if let recommendation = report.practiceRecommendation {
+                    analysisRow(
+                        icon: "target",
+                        title: "خطة تدريب".localized,
+                        value: recommendation.title.localized
+                    )
+                    analysisRow(
+                        icon: "brain.head.profile",
+                        title: "مستوى التدريب".localized,
+                        value: "\(difficultyTitle(recommendation.difficulty)) · \(recommendation.suggestedScenarioCount) \("مواقف".localized)"
+                    )
+                }
             }
 
             ForEach(report.tips.prefix(2), id: \.self) { tip in
@@ -619,6 +631,19 @@ struct BalootGamePlayView: View {
             "لا توجد أولوية".localized
         }
         return "\(title) · \(focus.estimatedLostPoints) \("نقطة".localized)"
+    }
+
+    private func difficultyTitle(_ difficulty: WhatToPlayDifficulty) -> String {
+        switch difficulty {
+        case .easy:
+            return "سهل".localized
+        case .medium:
+            return "متوسط".localized
+        case .hard:
+            return "صعب".localized
+        case .expert:
+            return "خبير".localized
+        }
     }
 
     private func biddingAnalysisValue(_ decision: RoundBiddingDecisionAnalysis) -> String {

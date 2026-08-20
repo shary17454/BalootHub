@@ -103,6 +103,32 @@ public struct RoundReviewFocus: Sendable, Codable, Equatable {
     }
 }
 
+/// توصية تدريب قابلة للإعادة بعد تحليل الجولة.
+public struct RoundPracticeRecommendation: Sendable, Codable, Equatable {
+    public let priority: RoundReviewPriority
+    public let difficulty: WhatToPlayDifficulty
+    public let scenarioSeed: UInt64
+    public let suggestedScenarioCount: Int
+    public let title: String
+    public let detail: String
+
+    public init(
+        priority: RoundReviewPriority,
+        difficulty: WhatToPlayDifficulty,
+        scenarioSeed: UInt64,
+        suggestedScenarioCount: Int,
+        title: String,
+        detail: String
+    ) {
+        self.priority = priority
+        self.difficulty = difficulty
+        self.scenarioSeed = scenarioSeed
+        self.suggestedScenarioCount = suggestedScenarioCount
+        self.title = title
+        self.detail = detail
+    }
+}
+
 /// تقرير تحليل الجولة بعد انتهائها.
 public struct RoundAnalysisReport: Sendable, Equatable {
     public let playerID: Player.ID
@@ -208,6 +234,100 @@ public struct RoundAnalysisReport: Sendable, Equatable {
                     mistakeCount: $0.mistakes
                 )
             }
+    }
+
+    /// خطة تدريب قصيرة تحوّل تحليل الجولة إلى تمرين عملي قابل للإعادة.
+    public var practiceRecommendation: RoundPracticeRecommendation? {
+        guard let focus = primaryReviewFocus else { return nil }
+        let difficulty = recommendedPracticeDifficulty(for: focus)
+        return RoundPracticeRecommendation(
+            priority: focus.priority,
+            difficulty: difficulty,
+            scenarioSeed: deterministicPracticeSeed(for: focus),
+            suggestedScenarioCount: recommendedScenarioCount(for: focus),
+            title: practiceTitle(for: focus.priority),
+            detail: practiceDetail(for: focus, difficulty: difficulty)
+        )
+    }
+
+    private func recommendedPracticeDifficulty(for focus: RoundReviewFocus) -> WhatToPlayDifficulty {
+        switch focus.priority {
+        case .bidding:
+            focus.estimatedLostPoints >= 12 ? .hard : .medium
+        case .projects:
+            focus.estimatedLostPoints >= 20 ? .hard : .medium
+        case .multipliers:
+            focus.estimatedLostPoints >= 12 ? .hard : .medium
+        case .play:
+            focus.estimatedLostPoints >= 12 || focus.mistakeCount >= 2 ? .expert : .hard
+        case .none:
+            .easy
+        }
+    }
+
+    private func recommendedScenarioCount(for focus: RoundReviewFocus) -> Int {
+        min(10, max(3, focus.mistakeCount * 2 + focus.estimatedLostPoints / 8))
+    }
+
+    private func deterministicPracticeSeed(for focus: RoundReviewFocus) -> UInt64 {
+        var seed = stableSeed(from: playerID.uuidString)
+        seed = seed &* 31 &+ UInt64(focus.priority.ordinal)
+        seed = seed &* 31 &+ UInt64(max(0, scoreOutOf100))
+        seed = seed &* 31 &+ UInt64(max(0, focus.estimatedLostPoints))
+        seed = seed &* 31 &+ UInt64(max(0, focus.mistakeCount))
+        return seed == 0 ? 1 : seed
+    }
+
+    private func stableSeed(from value: String) -> UInt64 {
+        value.unicodeScalars.reduce(UInt64(17)) { partial, scalar in
+            partial &* 31 &+ UInt64(scalar.value)
+        }
+    }
+
+    private func practiceTitle(for priority: RoundReviewPriority) -> String {
+        switch priority {
+        case .bidding:
+            "تدرب على قراءة المزايدة"
+        case .projects:
+            "تدرب على التقاط المشاريع"
+        case .multipliers:
+            "تدرب على قرارات المضاعفة"
+        case .play:
+            "تدرب على وش تلعب؟"
+        case .none:
+            "استمر على نفس المستوى"
+        }
+    }
+
+    private func practiceDetail(for focus: RoundReviewFocus, difficulty: WhatToPlayDifficulty) -> String {
+        let difficultyName = switch difficulty {
+        case .easy:
+            "سهل"
+        case .medium:
+            "متوسط"
+        case .hard:
+            "صعب"
+        case .expert:
+            "خبير"
+        }
+        return "\(recommendedScenarioCount(for: focus)) مواقف تدريبية بمستوى \(difficultyName) لأن الفاقد التقديري \(focus.estimatedLostPoints) نقطة."
+    }
+}
+
+private extension RoundReviewPriority {
+    var ordinal: Int {
+        switch self {
+        case .bidding:
+            0
+        case .projects:
+            1
+        case .multipliers:
+            2
+        case .play:
+            3
+        case .none:
+            4
+        }
     }
 }
 
