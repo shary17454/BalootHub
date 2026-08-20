@@ -43,6 +43,7 @@ enum AppRoute: Hashable {
     case handAnalyzer
     case whatToPlayTrainer(
         seed: UInt64? = nil,
+        seedBase: UInt64? = nil,
         difficulty: WhatToPlayDifficulty? = nil,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
         gameMode: GameMode? = nil,

@@ -156,9 +156,11 @@ struct DailyChallengesView: View {
                     appEnvironment.navigate(
                         to: .whatToPlayTrainer(
                             seed: nextSeed,
+                            seedBase: seed,
                             difficulty: difficulty,
                             focusKind: focusKind,
-                            gameMode: gameMode
+                            gameMode: gameMode,
+                            targetCount: challenge.targetCount
                         ),
                         tab: appEnvironment.selectedTab
                     )

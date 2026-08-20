@@ -27,6 +27,7 @@ private struct StatTile: View {
 
 struct WhatToPlayTrainerView: View {
     private let routeSeed: UInt64?
+    private let routeSeedBase: UInt64?
     private let targetCount: Int?
 
     @Environment(\.modelContext) private var modelContext
@@ -52,12 +53,14 @@ struct WhatToPlayTrainerView: View {
 
     init(
         seed: UInt64? = nil,
+        seedBase: UInt64? = nil,
         difficulty: WhatToPlayDifficulty? = nil,
         preferredFocus: WhatToPlayScenarioFocusKind? = nil,
         preferredMode: GameMode? = nil,
         targetCount: Int? = nil
     ) {
         self.routeSeed = seed
+        self.routeSeedBase = seedBase ?? seed
         self.targetCount = targetCount
         let storedPreferences = WhatToPlayTrainerPreferences.load()
         _difficulty = State(initialValue: difficulty ?? storedPreferences.difficulty)
@@ -212,7 +215,7 @@ struct WhatToPlayTrainerView: View {
             difficulty: difficulty,
             focusKind: preferredFocus,
             gameMode: preferredMode,
-            seedBase: routeSeed ?? seed,
+            seedBase: routeSeedBase ?? seed,
             scenarioCount: targetCount,
             targetAccuracyPercent: 70,
             targetAverageExpectedImpact: 0,
@@ -461,7 +464,7 @@ struct WhatToPlayTrainerView: View {
 
             HStack(spacing: AppSpacing.xs) {
                 StatTile(title: "عدد المواقف", value: "\(targetCount)", icon: "number")
-                StatTile(title: "بذرة التدريب", value: "\(routeSeed ?? seed)", icon: "number.circle.fill")
+                StatTile(title: "بذرة التدريب", value: "\(routeSeedBase ?? seed)", icon: "number.circle.fill")
             }
 
             HStack(spacing: AppSpacing.xs) {
