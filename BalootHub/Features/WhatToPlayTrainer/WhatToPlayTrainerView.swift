@@ -49,12 +49,13 @@ struct WhatToPlayTrainerView: View {
     init(
         seed: UInt64? = nil,
         difficulty: WhatToPlayDifficulty? = nil,
-        preferredFocus: WhatToPlayScenarioFocusKind? = nil
+        preferredFocus: WhatToPlayScenarioFocusKind? = nil,
+        preferredMode: GameMode? = nil
     ) {
         let storedPreferences = WhatToPlayTrainerPreferences.load()
         _difficulty = State(initialValue: difficulty ?? storedPreferences.difficulty)
         _preferredFocusRaw = State(initialValue: (preferredFocus ?? storedPreferences.preferredFocus)?.rawValue ?? "auto")
-        _preferredModeRaw = State(initialValue: storedPreferences.preferredMode?.rawValue ?? "auto")
+        _preferredModeRaw = State(initialValue: (preferredMode ?? storedPreferences.preferredMode)?.rawValue ?? "auto")
         _seed = State(initialValue: seed ?? 2026)
     }
 

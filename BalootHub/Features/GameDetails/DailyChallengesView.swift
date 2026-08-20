@@ -139,17 +139,27 @@ struct DailyChallengesView: View {
 
             if let seed = challenge.whatToPlaySeed,
                let difficulty = challenge.whatToPlayDifficulty,
-               let focusKind = challenge.whatToPlayFocusKind {
+               let focusKind = challenge.whatToPlayFocusKind,
+               let gameMode = challenge.whatToPlayGameMode {
                 let nextSeed = whatToPlayProgress?.nextSeed ?? seed
-                HStack {
+                LazyVGrid(columns: [
+                    GridItem(.flexible(), spacing: AppSpacing.xs),
+                    GridItem(.flexible(), spacing: AppSpacing.xs)
+                ], spacing: AppSpacing.xs) {
                     scoreBox(title: "موقف اليوم".localized, value: "\(nextSeed)")
-                    scoreBox(title: "المستوى", value: difficultyTitle(difficulty))
-                    scoreBox(title: "التركيز", value: focusTitle(focusKind))
+                    scoreBox(title: "المستوى".localized, value: difficultyTitle(difficulty))
+                    scoreBox(title: "تركيز التدريب".localized, value: focusTitle(focusKind))
+                    scoreBox(title: "النمط".localized, value: modeTitle(gameMode))
                 }
 
                 Button {
                     appEnvironment.navigate(
-                        to: .whatToPlayTrainer(seed: nextSeed, difficulty: difficulty, focusKind: focusKind),
+                        to: .whatToPlayTrainer(
+                            seed: nextSeed,
+                            difficulty: difficulty,
+                            focusKind: focusKind,
+                            gameMode: gameMode
+                        ),
                         tab: appEnvironment.selectedTab
                     )
                 } label: {
@@ -240,6 +250,10 @@ struct DailyChallengesView: View {
         case .trumpPressure: "ضغط الحكم".localized
         case .narrowChoice: "خيارات محدودة".localized
         }
+    }
+
+    private func modeTitle(_ mode: GameMode) -> String {
+        mode.arabicName.localized
     }
 
     private func scoreBox(title: String, value: String) -> some View {

@@ -49,6 +49,8 @@ jobs:
           xcodebuild test
           -scheme BalootHub
           -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.name }}"
+          -testLanguage ar
+          -testRegion SA
           -resultBundlePath TestResults.xcresult
           -skipMacroValidation
           CODE_SIGNING_ALLOWED=NO

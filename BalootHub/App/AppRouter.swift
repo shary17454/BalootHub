@@ -41,7 +41,12 @@ enum AppRoute: Hashable {
     case balootGamePlay(slug: String)
     case balootAcademy(lessonID: String? = nil)
     case handAnalyzer
-    case whatToPlayTrainer(seed: UInt64? = nil, difficulty: WhatToPlayDifficulty? = nil, focusKind: WhatToPlayScenarioFocusKind? = nil)
+    case whatToPlayTrainer(
+        seed: UInt64? = nil,
+        difficulty: WhatToPlayDifficulty? = nil,
+        focusKind: WhatToPlayScenarioFocusKind? = nil,
+        gameMode: GameMode? = nil
+    )
     case scoringQuiz
     case dailyChallenges
     case achievements
