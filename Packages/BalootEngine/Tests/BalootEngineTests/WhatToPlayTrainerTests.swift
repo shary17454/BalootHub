@@ -132,6 +132,34 @@ struct WhatToPlayTrainerTests {
         }
     }
 
+    @Test("طلب لون حكم محدد يولد موقف حكم مطابقًا بشكل حتمي")
+    func generationHonorsPreferredTrumpSuitDeterministically() throws {
+        for suit in Suit.allCases {
+            let first = try WhatToPlayTrainer.generateScenario(
+                seed: 2_026,
+                difficulty: .easy,
+                preferredMode: .hokum,
+                preferredTrumpSuit: suit
+            )
+            let second = try WhatToPlayTrainer.generateScenario(
+                seed: 2_026,
+                difficulty: .easy,
+                preferredMode: .hokum,
+                preferredTrumpSuit: suit
+            )
+
+            #expect(first.state.mode == .hokum)
+            #expect(second.state.mode == .hokum)
+            #expect(first.state.trumpSuit == suit)
+            #expect(second.state.trumpSuit == suit)
+            #expect(first.context.trumpSuit == suit)
+            #expect(second.context.trumpSuit == suit)
+            #expect(first.seed == second.seed)
+            #expect(first.options.map(\.card) == second.options.map(\.card))
+            #expect(first.bestOption?.card == second.bestOption?.card)
+        }
+    }
+
     @Test("تقييم اختيار المستخدم يعيد خيارًا معروفًا من نفس الموقف")
     func evaluatesUserChoiceAgainstScenarioOptions() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
