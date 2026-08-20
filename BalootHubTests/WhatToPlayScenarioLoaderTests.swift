@@ -108,6 +108,33 @@ final class WhatToPlayScenarioLoaderTests: XCTestCase {
         XCTAssertEqual(sunSeed, 2027)
     }
 
+    func testUnattemptedSeedSeparatesHokumAttemptsByPreferredTrumpSuit() {
+        let attempts = [
+            attempt(seed: 2026, difficulty: .medium, focusKind: .trumpPressure, gameMode: .hokum, trumpSuit: .hearts),
+            attempt(seed: 2027, difficulty: .medium, focusKind: .trumpPressure, gameMode: .hokum, trumpSuit: .spades)
+        ]
+
+        let heartsSeed = WhatToPlayScenarioLoader.unattemptedSeed(
+            startingAt: 2026,
+            difficulty: .medium,
+            preferredFocus: .trumpPressure,
+            preferredMode: .hokum,
+            preferredTrumpSuit: .hearts,
+            attempts: attempts
+        )
+        let spadesSeed = WhatToPlayScenarioLoader.unattemptedSeed(
+            startingAt: 2026,
+            difficulty: .medium,
+            preferredFocus: .trumpPressure,
+            preferredMode: .hokum,
+            preferredTrumpSuit: .spades,
+            attempts: attempts
+        )
+
+        XCTAssertEqual(heartsSeed, 2027)
+        XCTAssertEqual(spadesSeed, 2026)
+    }
+
     func testLoaderGeneratesScenarioWithRequestedSeedAndDifficulty() async throws {
         let scenario = try await WhatToPlayScenarioLoader.generate(seed: 2026, difficulty: .medium)
         let repeated = try await WhatToPlayScenarioLoader.generate(seed: 2026, difficulty: .medium)
@@ -141,13 +168,45 @@ final class WhatToPlayScenarioLoaderTests: XCTestCase {
         XCTAssertFalse(hokum.options.isEmpty)
     }
 
+    func testLoaderGeneratesScenarioWithRequestedTrumpSuit() async throws {
+        let scenario = try await WhatToPlayScenarioLoader.generate(
+            seed: 2026,
+            difficulty: .easy,
+            preferredMode: .hokum,
+            preferredTrumpSuit: .spades
+        )
+
+        XCTAssertEqual(scenario.state.mode, .hokum)
+        XCTAssertEqual(scenario.state.trumpSuit, .spades)
+        XCTAssertEqual(scenario.context.trumpSuit, .spades)
+        XCTAssertFalse(scenario.options.isEmpty)
+    }
+
     private func attempt(
         seed: UInt64,
         difficulty: WhatToPlayDifficulty,
         focusKind: WhatToPlayScenarioFocusKind,
-        gameMode: GameMode? = nil
+        gameMode: GameMode? = nil,
+        trumpSuit: Suit? = nil
     ) -> WhatToPlayAttempt {
-        WhatToPlayAttempt(
+        let scenarioContext = trumpSuit.map {
+            WhatToPlayScenarioContext(
+                trickNumber: 3,
+                isLeading: false,
+                requiredSuit: .hearts,
+                playedCardCount: 2,
+                legalOptionCount: 3,
+                mode: .hokum,
+                trumpSuit: $0,
+                hasTrumpInCurrentTrick: false,
+                playerTeamTrickPoints: 24,
+                opponentTeamTrickPoints: 18,
+                playerTeamPointMargin: 6,
+                focusKind: focusKind
+            )
+        }
+
+        return WhatToPlayAttempt(
             difficulty: difficulty,
             seed: seed,
             selectedCard: PlayingCard(suit: .clubs, rank: .seven),
@@ -158,7 +217,8 @@ final class WhatToPlayScenarioLoaderTests: XCTestCase {
             bestExpectedImpact: 1,
             focusKind: focusKind,
             gameMode: gameMode,
-            outcome: .winsTrick
+            outcome: .winsTrick,
+            scenarioContext: scenarioContext
         )
     }
 }

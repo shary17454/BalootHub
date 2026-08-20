@@ -302,6 +302,7 @@ struct WhatToPlayTrainingSessionPlan: Equatable {
     let difficulty: WhatToPlayDifficulty
     let focusKind: WhatToPlayScenarioFocusKind?
     let gameMode: GameMode?
+    let trumpSuit: Suit?
     let scenarioCount: Int
     let targetAccuracyPercent: Int
     let targetAverageExpectedImpact: Int
@@ -315,6 +316,7 @@ struct WhatToPlayTrainingSessionPlan: Equatable {
         difficulty: WhatToPlayDifficulty,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
         gameMode: GameMode? = nil,
+        trumpSuit: Suit? = nil,
         scenarioCount: Int,
         targetAccuracyPercent: Int,
         targetAverageExpectedImpact: Int,
@@ -327,6 +329,7 @@ struct WhatToPlayTrainingSessionPlan: Equatable {
         self.difficulty = difficulty
         self.focusKind = focusKind
         self.gameMode = gameMode
+        self.trumpSuit = trumpSuit
         self.scenarioCount = scenarioCount
         self.targetAccuracyPercent = targetAccuracyPercent
         self.targetAverageExpectedImpact = targetAverageExpectedImpact
@@ -342,6 +345,7 @@ struct WhatToPlayNextScenarioRecommendation: Equatable {
     let difficulty: WhatToPlayDifficulty
     let focusKind: WhatToPlayScenarioFocusKind?
     let gameMode: GameMode?
+    let trumpSuit: Suit?
     let title: String
     let detail: String
     let iconName: String
@@ -427,6 +431,7 @@ struct WhatToPlayTrainingSessionReview: Equatable {
     let difficulty: WhatToPlayDifficulty?
     let focusKind: WhatToPlayScenarioFocusKind?
     let gameMode: GameMode?
+    let trumpSuit: Suit?
 }
 
 enum WhatToPlayDecisionInsightKind: Equatable {
@@ -581,6 +586,7 @@ struct WhatToPlayMicroDrill: Equatable {
     let difficulty: WhatToPlayDifficulty?
     let focusKind: WhatToPlayScenarioFocusKind?
     let gameMode: GameMode?
+    let trumpSuit: Suit?
 }
 
 enum WhatToPlayStyleKind: Equatable {
@@ -1522,12 +1528,14 @@ enum WhatToPlayStatsAnalyzer {
         let style = playStyle(for: attempts)
         let pulse = sessionPulse(for: attempts)
         let focusKind = focusTrainingPriority(for: attempts)?.focusKind ?? focusScenarioKind(attempts)?.focusKind
-        let gameMode = focusGameMode(attempts)?.mode
+        let gameMode = gameModeTrainingPriority(for: attempts)?.mode ?? focusGameMode(attempts)?.mode
+        let trumpSuit = gameMode == .hokum ? trumpSuitTrainingPriority(for: attempts)?.suit : nil
 
         if style.kind == .measuring {
             return WhatToPlayTrainingSessionPlan(
                 difficulty: .easy,
                 gameMode: gameMode,
+                trumpSuit: trumpSuit,
                 scenarioCount: 3,
                 targetAccuracyPercent: 60,
                 targetAverageExpectedImpact: 0,
@@ -1543,6 +1551,7 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: recommendation.difficulty,
                 focusKind: focusKind,
                 gameMode: gameMode,
+                trumpSuit: trumpSuit,
                 scenarioCount: 3,
                 targetAccuracyPercent: 67,
                 targetAverageExpectedImpact: 0,
@@ -1559,6 +1568,7 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: recommendation.difficulty,
                 focusKind: focusKind,
                 gameMode: gameMode,
+                trumpSuit: trumpSuit,
                 scenarioCount: 3,
                 targetAccuracyPercent: 67,
                 targetAverageExpectedImpact: 1,
@@ -1575,6 +1585,7 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: recommendation.difficulty,
                 focusKind: focusKind,
                 gameMode: gameMode,
+                trumpSuit: trumpSuit,
                 scenarioCount: 4,
                 targetAccuracyPercent: 75,
                 targetAverageExpectedImpact: 1,
@@ -1590,6 +1601,7 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: recommendation.difficulty,
                 focusKind: focusKind,
                 gameMode: gameMode,
+                trumpSuit: trumpSuit,
                 scenarioCount: 4,
                 targetAccuracyPercent: 75,
                 targetAverageExpectedImpact: 1,
@@ -1605,6 +1617,7 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: nextDifficulty(after: recommendation.difficulty),
                 focusKind: focusKind,
                 gameMode: gameMode,
+                trumpSuit: trumpSuit,
                 scenarioCount: 5,
                 targetAccuracyPercent: 80,
                 targetAverageExpectedImpact: 2,
@@ -1620,6 +1633,7 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: recommendation.difficulty,
                 focusKind: focusKind,
                 gameMode: gameMode,
+                trumpSuit: trumpSuit,
                 scenarioCount: 5,
                 targetAccuracyPercent: 70,
                 targetAverageExpectedImpact: 0,
@@ -1634,6 +1648,7 @@ enum WhatToPlayStatsAnalyzer {
             difficulty: recommendation.difficulty,
             focusKind: focusKind,
             gameMode: gameMode,
+            trumpSuit: trumpSuit,
             scenarioCount: 4,
             targetAccuracyPercent: 70,
             targetAverageExpectedImpact: 1,
@@ -1651,6 +1666,7 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: plan.difficulty,
                 focusKind: focusPriority.focusKind,
                 gameMode: plan.gameMode,
+                trumpSuit: plan.trumpSuit,
                 title: "الموقف القادم".localized,
                 detail: "\("ابدأ بموقف".localized) \(scenarioFocusTitle(focusPriority.focusKind)) \("على مستوى".localized) \(difficultyTitle(plan.difficulty)). \(focusPriority.detail)",
                 iconName: focusPriority.iconName
@@ -1661,6 +1677,7 @@ enum WhatToPlayStatsAnalyzer {
             difficulty: plan.difficulty,
             focusKind: plan.focusKind,
             gameMode: plan.gameMode,
+            trumpSuit: plan.trumpSuit,
             title: "الموقف القادم".localized,
             detail: plan.focusKind.map {
                 "\("ابدأ بموقف".localized) \(scenarioFocusTitle($0)) \("على مستوى".localized) \(difficultyTitle(plan.difficulty))."
@@ -1677,6 +1694,7 @@ enum WhatToPlayStatsAnalyzer {
         let difficultyComponent = UInt64(difficultyOrder(plan.difficulty)) * 1_000_000
         let focusComponent = UInt64(plan.focusKind.map(scenarioFocusOrder) ?? 0) * 100_000
         let modeComponent = UInt64(plan.gameMode.map(gameModeOrder) ?? 0) * 10_000
+        let trumpSuitComponent = UInt64(plan.trumpSuit.map { $0.ordinal + 1 } ?? 0) * 100
         let countComponent = UInt64(max(1, plan.scenarioCount)) * 1_000
         let accuracyComponent = UInt64(max(0, plan.targetAccuracyPercent)) * 10
         let impactComponent = UInt64(max(0, plan.targetAverageExpectedImpact))
@@ -1685,6 +1703,7 @@ enum WhatToPlayStatsAnalyzer {
             + difficultyComponent
             + focusComponent
             + modeComponent
+            + trumpSuitComponent
             + countComponent
             + accuracyComponent
             + impactComponent
@@ -2011,26 +2030,28 @@ enum WhatToPlayStatsAnalyzer {
                 action: .start,
                 title: "ابدأ خطة المدرب".localized,
                 detail: "ابدأ أول موقف من نفس الخطة حتى يقيس المدرب الدقة والأثر من بيانات فعلية.".localized,
-                contextLine: trainingSessionReviewContext(difficulty: plan.difficulty, focusKind: plan.focusKind, gameMode: plan.gameMode),
+                contextLine: trainingSessionReviewContext(difficulty: plan.difficulty, focusKind: plan.focusKind, gameMode: plan.gameMode, trumpSuit: plan.trumpSuit),
                 iconName: "play.circle.fill",
                 replaySeed: nil,
                 nextSeed: nextTrainingSessionSeed(for: attempts, plan: plan),
                 difficulty: plan.difficulty,
                 focusKind: plan.focusKind,
-                gameMode: plan.gameMode
+                gameMode: plan.gameMode,
+                trumpSuit: plan.trumpSuit
             )
         case .inProgress:
             return WhatToPlayTrainingSessionReview(
                 action: .continueSession,
                 title: "أكمل نفس الجلسة".localized,
                 detail: progress.nextStepDetail,
-                contextLine: trainingSessionReviewContext(difficulty: plan.difficulty, focusKind: plan.focusKind, gameMode: plan.gameMode),
+                contextLine: trainingSessionReviewContext(difficulty: plan.difficulty, focusKind: plan.focusKind, gameMode: plan.gameMode, trumpSuit: plan.trumpSuit),
                 iconName: progress.nextStepIconName,
                 replaySeed: nil,
                 nextSeed: nextTrainingSessionSeed(for: attempts, plan: plan),
                 difficulty: plan.difficulty,
                 focusKind: plan.focusKind,
-                gameMode: plan.gameMode
+                gameMode: plan.gameMode,
+                trumpSuit: plan.trumpSuit
             )
         case .achieved:
             let recommendation = nextScenarioRecommendation(for: attempts)
@@ -2038,18 +2059,20 @@ enum WhatToPlayStatsAnalyzer {
                 action: .nextChallenge,
                 title: "ابدأ تحدي أقوى".localized,
                 detail: "\("نتيجة الجلسة".localized): \(progress.gradePercent)/100. \("ابدأ موقفًا جديدًا بالمستوى المقترح بدل تكرار خطة أتقنتها.".localized)",
-                contextLine: trainingSessionReviewContext(difficulty: recommendation.difficulty, focusKind: recommendation.focusKind, gameMode: recommendation.gameMode),
+                contextLine: trainingSessionReviewContext(difficulty: recommendation.difficulty, focusKind: recommendation.focusKind, gameMode: recommendation.gameMode, trumpSuit: recommendation.trumpSuit),
                 iconName: "arrow.up.circle.fill",
                 replaySeed: nil,
                 nextSeed: microDrillSeed(
                     attempts: attempts,
                     difficulty: recommendation.difficulty,
                     focusKind: recommendation.focusKind,
-                    gameMode: recommendation.gameMode
+                    gameMode: recommendation.gameMode,
+                    trumpSuit: recommendation.trumpSuit
                 ),
                 difficulty: recommendation.difficulty,
                 focusKind: recommendation.focusKind,
-                gameMode: recommendation.gameMode
+                gameMode: recommendation.gameMode,
+                trumpSuit: recommendation.trumpSuit
             )
         case .needsRepeat:
             if let reviewItem = progress.reviewItem {
@@ -2057,26 +2080,28 @@ enum WhatToPlayStatsAnalyzer {
                     action: .replayMistake,
                     title: "راجع الخطأ الأعلى أثرًا".localized,
                     detail: "\("ابدأ بإعادة موقف".localized) \(reviewItem.seed) \("قبل تكرار الجلسة؛ هذا يربط التدريب بسبب الخسارة لا بعدد المحاولات فقط.".localized)",
-                    contextLine: trainingSessionReviewContext(difficulty: reviewItem.difficulty, focusKind: reviewItem.focusKind, gameMode: reviewItem.gameMode),
+                    contextLine: trainingSessionReviewContext(difficulty: reviewItem.difficulty, focusKind: reviewItem.focusKind, gameMode: reviewItem.gameMode, trumpSuit: reviewItem.contextTrumpSuit),
                     iconName: reviewItem.iconName,
                     replaySeed: reviewItem.seed,
                     nextSeed: reviewItem.seed,
                     difficulty: reviewItem.difficulty,
                     focusKind: reviewItem.focusKind,
-                    gameMode: reviewItem.gameMode
+                    gameMode: reviewItem.gameMode,
+                    trumpSuit: reviewItem.contextTrumpSuit
                 )
             }
             return WhatToPlayTrainingSessionReview(
                 action: .repeatSession,
                 title: "كرر الخطة نفسها".localized,
                 detail: progress.nextStepDetail,
-                contextLine: trainingSessionReviewContext(difficulty: plan.difficulty, focusKind: plan.focusKind, gameMode: plan.gameMode),
+                contextLine: trainingSessionReviewContext(difficulty: plan.difficulty, focusKind: plan.focusKind, gameMode: plan.gameMode, trumpSuit: plan.trumpSuit),
                 iconName: "arrow.counterclockwise.circle.fill",
                 replaySeed: nil,
                 nextSeed: nextTrainingSessionSeed(for: attempts, plan: plan),
                 difficulty: plan.difficulty,
                 focusKind: plan.focusKind,
-                gameMode: plan.gameMode
+                gameMode: plan.gameMode,
+                trumpSuit: plan.trumpSuit
             )
         }
     }
@@ -2084,17 +2109,23 @@ enum WhatToPlayStatsAnalyzer {
     private static func trainingSessionReviewContext(
         difficulty: WhatToPlayDifficulty?,
         focusKind: WhatToPlayScenarioFocusKind?,
-        gameMode: GameMode?
+        gameMode: GameMode?,
+        trumpSuit: Suit?
     ) -> String {
         let difficultyText = difficulty.map(difficultyTitle) ?? "تلقائي".localized
         let focusText = focusKind.map(scenarioFocusTitle) ?? "تلقائي".localized
         let modeText = gameMode.map(gameModeTitle) ?? "تلقائي".localized
+        let trumpText = trumpSuit.map { "\("حكم".localized): \($0.spokenName)" }
 
-        return [
+        var parts = [
             "\("المستوى".localized): \(difficultyText)",
             "\("تركيز التدريب".localized): \(focusText)",
             "\("النمط".localized): \(modeText)"
-        ].joined(separator: " · ")
+        ]
+        if let trumpText {
+            parts.append(trumpText)
+        }
+        return parts.joined(separator: " · ")
     }
 
     private static func uniqueMatchingTrainingAttempts(
@@ -2106,6 +2137,7 @@ enum WhatToPlayStatsAnalyzer {
             .filter { $0.difficulty == plan.difficulty }
             .filter { plan.focusKind == nil || $0.focusKind == plan.focusKind }
             .filter { plan.gameMode == nil || $0.gameMode == plan.gameMode }
+            .filter { plan.trumpSuit == nil || $0.contextTrumpSuit == plan.trumpSuit }
             .sorted { $0.createdAt > $1.createdAt }
             .filter { attempt in
                 seenSeeds.insert(attempt.replaySeed).inserted
@@ -3043,7 +3075,8 @@ enum WhatToPlayStatsAnalyzer {
                 seed: microDrillSeed(attempts: attempts, difficulty: .easy, focusKind: nil),
                 difficulty: .easy,
                 focusKind: nil,
-                gameMode: nil
+                gameMode: nil,
+                trumpSuit: nil
             )
         }
 
@@ -3066,7 +3099,8 @@ enum WhatToPlayStatsAnalyzer {
                 seed: reviewItem?.seed,
                 difficulty: reviewItem?.difficulty,
                 focusKind: reviewItem?.focusKind,
-                gameMode: reviewItem?.gameMode
+                gameMode: reviewItem?.gameMode,
+                trumpSuit: reviewItem?.contextTrumpSuit
             )
         }
 
@@ -3085,7 +3119,8 @@ enum WhatToPlayStatsAnalyzer {
                 seed: simulatedReview.seed,
                 difficulty: simulatedReview.difficulty,
                 focusKind: simulatedReview.focusKind,
-                gameMode: simulatedReview.gameMode
+                gameMode: simulatedReview.gameMode,
+                trumpSuit: simulatedReview.contextTrumpSuit
             )
         }
 
@@ -3104,7 +3139,8 @@ enum WhatToPlayStatsAnalyzer {
                 seed: highValueReview.seed,
                 difficulty: highValueReview.difficulty,
                 focusKind: highValueReview.focusKind,
-                gameMode: highValueReview.gameMode
+                gameMode: highValueReview.gameMode,
+                trumpSuit: highValueReview.contextTrumpSuit
             )
         }
 
@@ -3125,11 +3161,13 @@ enum WhatToPlayStatsAnalyzer {
                     attempts: attempts,
                     difficulty: recommendation.difficulty,
                     focusKind: recommendation.focusKind,
-                    gameMode: recommendation.gameMode
+                    gameMode: recommendation.gameMode,
+                    trumpSuit: recommendation.trumpSuit
                 ),
                 difficulty: recommendation.difficulty,
                 focusKind: recommendation.focusKind,
-                gameMode: recommendation.gameMode
+                gameMode: recommendation.gameMode,
+                trumpSuit: recommendation.trumpSuit
             )
         }
 
@@ -3149,7 +3187,8 @@ enum WhatToPlayStatsAnalyzer {
                 seed: microDrillSeed(attempts: attempts, difficulty: targetDifficulty, focusKind: nil),
                 difficulty: targetDifficulty,
                 focusKind: nil,
-                gameMode: nil
+                gameMode: nil,
+                trumpSuit: nil
             )
         }
 
@@ -3170,7 +3209,8 @@ enum WhatToPlayStatsAnalyzer {
                 seed: microDrillSeed(attempts: attempts, difficulty: targetDifficulty, focusKind: targetFocus),
                 difficulty: targetDifficulty,
                 focusKind: targetFocus,
-                gameMode: nil
+                gameMode: nil,
+                trumpSuit: nil
             )
         }
 
@@ -3191,7 +3231,8 @@ enum WhatToPlayStatsAnalyzer {
                 seed: microDrillSeed(attempts: attempts, difficulty: targetDifficulty, focusKind: nil, gameMode: targetMode),
                 difficulty: targetDifficulty,
                 focusKind: nil,
-                gameMode: targetMode
+                gameMode: targetMode,
+                trumpSuit: nil
             )
         }
 
@@ -3209,7 +3250,8 @@ enum WhatToPlayStatsAnalyzer {
                 seed: microDrillSeed(attempts: attempts, difficulty: .hard, focusKind: .trumpPressure),
                 difficulty: .hard,
                 focusKind: .trumpPressure,
-                gameMode: nil
+                gameMode: nil,
+                trumpSuit: nil
             )
         }
 
@@ -3228,11 +3270,13 @@ enum WhatToPlayStatsAnalyzer {
                 attempts: attempts,
                 difficulty: recommendation.difficulty,
                 focusKind: recommendation.focusKind,
-                gameMode: recommendation.gameMode
+                gameMode: recommendation.gameMode,
+                trumpSuit: recommendation.trumpSuit
             ),
             difficulty: recommendation.difficulty,
             focusKind: recommendation.focusKind,
-            gameMode: recommendation.gameMode
+            gameMode: recommendation.gameMode,
+            trumpSuit: recommendation.trumpSuit
         )
     }
 
@@ -3247,12 +3291,14 @@ enum WhatToPlayStatsAnalyzer {
         attempts: [WhatToPlayAttempt],
         difficulty: WhatToPlayDifficulty,
         focusKind: WhatToPlayScenarioFocusKind?,
-        gameMode: GameMode? = nil
+        gameMode: GameMode? = nil,
+        trumpSuit: Suit? = nil
     ) -> UInt64 {
         let difficultyComponent = UInt64(difficultyOrder(difficulty)) * 1_000_000
         let focusComponent = UInt64(focusKind.map(scenarioFocusOrder) ?? 0) * 100_000
         let modeComponent = UInt64(gameMode.map(gameModeOrder) ?? 0) * 10_000
-        return 8_000_000 + difficultyComponent + focusComponent + modeComponent + UInt64(attempts.count)
+        let trumpSuitComponent = UInt64(trumpSuit.map { $0.ordinal + 1 } ?? 0) * 100
+        return 8_000_000 + difficultyComponent + focusComponent + modeComponent + trumpSuitComponent + UInt64(attempts.count)
     }
 
     static func playStyle(for attempts: [WhatToPlayAttempt]) -> WhatToPlayPlayStyle {

@@ -33,6 +33,7 @@ struct WhatToPlayTrainerView: View {
     @State private var difficulty: WhatToPlayDifficulty = .medium
     @State private var preferredFocusRaw = "auto"
     @State private var preferredModeRaw = "auto"
+    @State private var preferredTrumpSuit: Suit?
     @State private var seed: UInt64 = 2026
     @State private var scenario: WhatToPlayScenario?
     @State private var selectedOption: WhatToPlayOption?
@@ -276,8 +277,10 @@ struct WhatToPlayTrainerView: View {
                 difficulty: difficulty,
                 preferredFocus: preferredFocus,
                 preferredMode: preferredMode,
+                preferredTrumpSuit: nil,
                 attempts: attempts
             )
+            preferredTrumpSuit = nil
             generateScenario()
         }
         .onChange(of: preferredFocusRaw) { _, _ in
@@ -287,8 +290,10 @@ struct WhatToPlayTrainerView: View {
                 difficulty: difficulty,
                 preferredFocus: preferredFocus,
                 preferredMode: preferredMode,
+                preferredTrumpSuit: nil,
                 attempts: attempts
             )
+            preferredTrumpSuit = nil
             generateScenario()
         }
         .onChange(of: preferredModeRaw) { _, _ in
@@ -298,8 +303,10 @@ struct WhatToPlayTrainerView: View {
                 difficulty: difficulty,
                 preferredFocus: preferredFocus,
                 preferredMode: preferredMode,
+                preferredTrumpSuit: nil,
                 attempts: attempts
             )
+            preferredTrumpSuit = nil
             generateScenario()
         }
         .onDisappear {
@@ -485,6 +492,9 @@ struct WhatToPlayTrainerView: View {
                 miniPlanMetric(title: "المستوى".localized, value: plan.difficulty.displayTitle)
                 miniPlanMetric(title: "تركيز التدريب".localized, value: plan.focusKind.map(focusTitle) ?? "تلقائي".localized)
                 miniPlanMetric(title: "النمط".localized, value: plan.gameMode.map(modeTitle) ?? "تلقائي".localized)
+                if let trumpSuit = plan.trumpSuit {
+                    miniPlanMetric(title: "حكم".localized, value: trumpSuit.spokenName)
+                }
                 miniPlanMetric(title: "المواقف".localized, value: "\(plan.scenarioCount)")
                 miniPlanMetric(title: "هدف الدقة".localized, value: "\(plan.targetAccuracyPercent)%")
                 miniPlanMetric(title: "هدف الأثر".localized, value: "≥ \(impactText(plan.targetAverageExpectedImpact))")
@@ -892,7 +902,8 @@ struct WhatToPlayTrainerView: View {
                         scenarioSeed: seed,
                         difficulty: difficulty,
                         focusKind: microDrill.focusKind,
-                        gameMode: microDrill.gameMode
+                        gameMode: microDrill.gameMode,
+                        trumpSuit: microDrill.trumpSuit
                     )
                 } label: {
                     Label("بدء الخطة المصغرة".localized, systemImage: "play.circle.fill")
@@ -2508,7 +2519,7 @@ struct WhatToPlayTrainerView: View {
                 .font(AppTypography.caption.weight(.semibold))
                 .foregroundStyle(AppColor.textSecondary)
 
-            Text("\(recommendation.difficulty.displayTitle) · \(recommendation.focusKind.map(focusTitle) ?? "تلقائي".localized)")
+            Text(nextScenarioRecommendationContextText(recommendation))
                 .font(AppTypography.caption)
                 .foregroundStyle(AppColor.textPrimary)
 
@@ -2524,6 +2535,20 @@ struct WhatToPlayTrainerView: View {
         }
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+    }
+
+    private func nextScenarioRecommendationContextText(_ recommendation: WhatToPlayNextScenarioRecommendation) -> String {
+        var parts = [
+            recommendation.difficulty.displayTitle,
+            recommendation.focusKind.map(focusTitle) ?? "تلقائي".localized
+        ]
+        if let mode = recommendation.gameMode {
+            parts.append(modeTitle(mode))
+        }
+        if let trumpSuit = recommendation.trumpSuit {
+            parts.append("\("حكم".localized) \(trumpSuit.spokenName)")
+        }
+        return parts.joined(separator: " · ")
     }
 
     private func decisionReplayButtons(for option: WhatToPlayOption, in scenario: WhatToPlayScenario) -> some View {
@@ -3030,6 +3055,7 @@ struct WhatToPlayTrainerView: View {
         let requestDifficulty = difficulty
         let requestFocus = preferredFocus
         let requestMode = preferredMode
+        let requestTrumpSuit = preferredTrumpSuit
         let reviewSelection = pendingReviewSelection
         pendingReviewSelection = nil
         generationTask = Task {
@@ -3038,7 +3064,8 @@ struct WhatToPlayTrainerView: View {
                     seed: requestSeed,
                     difficulty: requestDifficulty,
                     preferredFocus: requestFocus,
-                    preferredMode: requestMode
+                    preferredMode: requestMode,
+                    preferredTrumpSuit: requestTrumpSuit
                 )
                 guard !Task.isCancelled else { return }
                 scenario = generated
@@ -3062,6 +3089,7 @@ struct WhatToPlayTrainerView: View {
             difficulty: difficulty,
             preferredFocus: preferredFocus,
             preferredMode: preferredMode,
+            preferredTrumpSuit: preferredTrumpSuit,
             attempts: attempts
         )
         isRetryingCurrentScenario = false
@@ -3072,6 +3100,7 @@ struct WhatToPlayTrainerView: View {
         seed = item.seed
         preferredFocusRaw = item.focusKind?.rawValue ?? "auto"
         preferredModeRaw = item.gameMode?.rawValue ?? "auto"
+        preferredTrumpSuit = item.contextTrumpSuit
         selectedOption = nil
         pendingReviewSelection = item.selectedCard
         isRetryingCurrentScenario = false
@@ -3085,15 +3114,18 @@ struct WhatToPlayTrainerView: View {
     private func startNextScenarioRecommendation() {
         let targetFocusRaw = nextScenarioRecommendation.focusKind?.rawValue ?? "auto"
         let targetModeRaw = nextScenarioRecommendation.gameMode?.rawValue ?? "auto"
+        let targetTrumpSuit = nextScenarioRecommendation.trumpSuit
         isRetryingCurrentScenario = false
         if difficulty == nextScenarioRecommendation.difficulty,
            preferredFocusRaw == targetFocusRaw,
-           preferredModeRaw == targetModeRaw {
+           preferredModeRaw == targetModeRaw,
+           preferredTrumpSuit == targetTrumpSuit {
             nextScenario()
         } else {
             difficulty = nextScenarioRecommendation.difficulty
             preferredFocusRaw = targetFocusRaw
             preferredModeRaw = targetModeRaw
+            preferredTrumpSuit = targetTrumpSuit
             generateScenario()
         }
     }
@@ -3102,7 +3134,8 @@ struct WhatToPlayTrainerView: View {
         scenarioSeed: UInt64,
         difficulty targetDifficulty: WhatToPlayDifficulty,
         focusKind: WhatToPlayScenarioFocusKind?,
-        gameMode: GameMode? = nil
+        gameMode: GameMode? = nil,
+        trumpSuit: Suit? = nil
     ) {
         let targetFocusRaw = focusKind?.rawValue ?? "auto"
         let targetModeRaw = gameMode?.rawValue ?? "auto"
@@ -3110,12 +3143,14 @@ struct WhatToPlayTrainerView: View {
         isRetryingCurrentScenario = false
         if difficulty == targetDifficulty,
            preferredFocusRaw == targetFocusRaw,
-           preferredModeRaw == targetModeRaw {
+           preferredModeRaw == targetModeRaw,
+           preferredTrumpSuit == trumpSuit {
             generateScenario()
         } else {
             difficulty = targetDifficulty
             preferredFocusRaw = targetFocusRaw
             preferredModeRaw = targetModeRaw
+            preferredTrumpSuit = trumpSuit
             generateScenario()
         }
     }
@@ -3185,7 +3220,8 @@ struct WhatToPlayTrainerView: View {
             scenarioSeed: seed,
             difficulty: difficulty,
             focusKind: review.focusKind,
-            gameMode: review.gameMode
+            gameMode: review.gameMode,
+            trumpSuit: review.trumpSuit
         )
         return true
     }
@@ -3204,15 +3240,18 @@ struct WhatToPlayTrainerView: View {
     private func startTrainingSessionPlan() {
         let targetFocusRaw = trainingSessionPlan.focusKind?.rawValue ?? "auto"
         let targetModeRaw = trainingSessionPlan.gameMode?.rawValue ?? "auto"
+        let targetTrumpSuit = trainingSessionPlan.trumpSuit
         seed = WhatToPlayStatsAnalyzer.nextTrainingSessionSeed(for: attempts, plan: trainingSessionPlan)
         if difficulty == trainingSessionPlan.difficulty,
            preferredFocusRaw == targetFocusRaw,
-           preferredModeRaw == targetModeRaw {
+           preferredModeRaw == targetModeRaw,
+           preferredTrumpSuit == targetTrumpSuit {
             generateScenario()
         } else {
             difficulty = trainingSessionPlan.difficulty
             preferredFocusRaw = targetFocusRaw
             preferredModeRaw = targetModeRaw
+            preferredTrumpSuit = targetTrumpSuit
             generateScenario()
         }
     }

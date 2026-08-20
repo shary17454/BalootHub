@@ -2810,6 +2810,48 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(hokumSeed, 10_214_701)
     }
 
+    func testNextTrainingSessionSeedIncludesTargetTrumpSuit() {
+        let heartsPlan = sessionPlan(difficulty: .medium, focusKind: .trumpPressure, gameMode: .hokum, trumpSuit: .hearts, count: 4, target: 70, impactTarget: 1)
+        let spadesPlan = sessionPlan(difficulty: .medium, focusKind: .trumpPressure, gameMode: .hokum, trumpSuit: .spades, count: 4, target: 70, impactTarget: 1)
+
+        let heartsSeed = WhatToPlayStatsAnalyzer.nextTrainingSessionSeed(for: [], plan: heartsPlan)
+        let spadesSeed = WhatToPlayStatsAnalyzer.nextTrainingSessionSeed(for: [], plan: spadesPlan)
+
+        XCTAssertNotEqual(heartsSeed, spadesSeed)
+        XCTAssertEqual(heartsSeed, 10_214_801)
+        XCTAssertEqual(spadesSeed, 10_215_101)
+    }
+
+    func testTrainingSessionPlanTargetsWeakHokumSuitWhenHokumIsWeakestMode() {
+        let attempts = [
+            attempt(daysAgo: 6, correct: false, impact: 1, bestImpact: 4, gameMode: .hokum, projectedTeamPoints: 42, bestProjectedTeamPoints: 70, scenarioContext: hokumContext(trumpSuit: .spades)),
+            attempt(daysAgo: 5, correct: true, impact: 2, bestImpact: 2, gameMode: .hokum, projectedTeamPoints: 68, bestProjectedTeamPoints: 68, scenarioContext: hokumContext(trumpSuit: .spades)),
+            attempt(daysAgo: 4, correct: false, impact: 0, bestImpact: 2, gameMode: .sun, projectedTeamPoints: 70, bestProjectedTeamPoints: 72),
+            attempt(daysAgo: 3, correct: true, impact: 2, bestImpact: 2, gameMode: .sun, projectedTeamPoints: 75, bestProjectedTeamPoints: 75),
+            attempt(daysAgo: 2, correct: true, impact: 2, bestImpact: 2, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .hearts))
+        ]
+
+        let plan = WhatToPlayStatsAnalyzer.trainingSessionPlan(for: attempts)
+
+        XCTAssertEqual(plan.gameMode, .hokum)
+        XCTAssertEqual(plan.trumpSuit, .spades)
+    }
+
+    func testTrainingSessionProgressFiltersByTargetTrumpSuit() {
+        let plan = sessionPlan(difficulty: .medium, focusKind: .trumpPressure, gameMode: .hokum, trumpSuit: .spades, count: 3, target: 67)
+        let attempts = [
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 2, bestImpact: 2, focusKind: .trumpPressure, gameMode: .hokum, seed: 101, scenarioContext: hokumContext(trumpSuit: .hearts)),
+            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: -3, bestImpact: 3, focusKind: .trumpPressure, gameMode: .hokum, seed: 202, scenarioContext: hokumContext(trumpSuit: .spades)),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 2, bestImpact: 2, focusKind: .trumpPressure, gameMode: .hokum, seed: 303, scenarioContext: hokumContext(trumpSuit: .spades))
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.completedAttempts, 2)
+        XCTAssertEqual(progress.correctAttempts, 1)
+        XCTAssertEqual(progress.reviewItem?.seed, 202)
+    }
+
     func testTrainingSessionPlanPrioritizesReviewWhenRecentAttemptsNeedIt() {
         let attempts = [
             attempt(daysAgo: 4, difficulty: .medium, correct: true, impact: 5, bestImpact: 5, focusKind: .openingLead),
@@ -3583,6 +3625,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         difficulty: WhatToPlayDifficulty,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
         gameMode: GameMode? = nil,
+        trumpSuit: Suit? = nil,
         count: Int,
         target: Int,
         impactTarget: Int = 0,
@@ -3592,6 +3635,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             difficulty: difficulty,
             focusKind: focusKind,
             gameMode: gameMode,
+            trumpSuit: trumpSuit,
             scenarioCount: count,
             targetAccuracyPercent: target,
             targetAverageExpectedImpact: impactTarget,
