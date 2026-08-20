@@ -2106,6 +2106,17 @@ struct WhatToPlayTrainerView: View {
                     .foregroundStyle(AppColor.textSecondary)
                     .lineLimit(2)
                     .minimumScaleFactor(0.85)
+                if let bestSimulationText = bestSimulationCardText(
+                    item.bestSimulationCard,
+                    expertCard: item.bestCard,
+                    lostProjectedTeamPoints: item.lostProjectedTeamPoints
+                ) {
+                    Text(bestSimulationText)
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(AppColor.warning)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.85)
+                }
                 if let secondBestCard = item.secondBestCard {
                     Text("\("ثاني أفضل".localized): \(cardName(secondBestCard))\(secondBestImpactSuffix(item.secondBestExpectedImpact))")
                         .font(.caption2)
@@ -2209,6 +2220,11 @@ struct WhatToPlayTrainerView: View {
         lostProjectedTeamPoints > 0
             ? " · \("نقاط محاكاة ضائعة".localized): \(lostProjectedTeamPoints)"
             : ""
+    }
+
+    private func bestSimulationCardText(_ card: PlayingCard?, expertCard: PlayingCard?, lostProjectedTeamPoints: Int) -> String? {
+        guard let card, lostProjectedTeamPoints > 0 || card != expertCard else { return nil }
+        return "\("أفضل محاكاة".localized): \(cardName(card))"
     }
 
     private func attemptContextText(_ attempt: WhatToPlayAttempt) -> String {
