@@ -3259,7 +3259,7 @@ struct HandAnalyzerView: View {
                 InfoRow(icon: "arrow.triangle.branch", title: "الخطوة التالية", value: analysis.nextActionTitle)
                 InfoRow(icon: "hand.thumbsup.fill", title: "التوصية", value: recommendationText(analysis.recommendedBid))
                 InfoRow(icon: "gauge.with.dots.needle.67percent", title: "قوة اليد", value: "\(analysis.strengthPercent)%")
-                InfoRow(icon: "chart.line.uptrend.xyaxis", title: "احتمال الشراء", value: "\(analysis.buyConfidencePercent)%")
+                InfoRow(icon: "chart.line.uptrend.xyaxis", title: "احتمال الشراء", value: "\(analysis.bidConfidencePercent)%")
                 InfoRow(icon: "checkmark.seal.fill", title: "الثقة", value: confidenceText(analysis.confidence))
                 InfoRow(icon: "sun.max.fill", title: "احتمال الصن", value: "\(analysis.sunConfidencePercent)% · \(analysis.evaluation.sunScore)")
                 if let best = analysis.evaluation.bestHokum {
@@ -3389,9 +3389,9 @@ struct HandAnalyzerView: View {
 
     private func decisionGradeText(_ grade: HandAnalysis.DecisionGrade) -> String {
         switch grade {
-        case .strongBuy:
+        case .strongBid:
             return "شراء قوي".localized
-        case .cautiousBuy:
+        case .cautiousBid:
             return "شراء حذر".localized
         case .closePass:
             return "تمرير قريب".localized

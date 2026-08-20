@@ -54,19 +54,19 @@ public struct BiddingPolicy: Sendable, Equatable {
     /// الـReplay ولإمكانية اختبار سلوك كل شخصية.
     public func chooseBid(hand: [PlayingCard], legalBids: [Bid], state: GameState) -> Bid {
         guard !legalBids.isEmpty else { return .pass }
-        guard legalBids.contains(where: \.isBuy) else { return .pass }
+        guard legalBids.contains(where: \.isBid) else { return .pass }
 
         // شراء الشريك لا يُنافَس عليه إلا بفارق واضح: المزايدة فوق الشريك تُضعف
         // الفريق بدل أن تقوّيه.
-        let partnerHoldsBuy = partnerOwnsCurrentBuy(state: state)
+        let partnerHoldsBid = partnerOwnsCurrentBid(state: state)
 
-        let purchaseHand = Self.purchaseEvaluationHand(hand: hand, state: state)
-        let evaluation = HandEvaluator.evaluate(hand: purchaseHand)
+        let bidEvaluationHand = Self.bidEvaluationHand(hand: hand, state: state)
+        let evaluation = HandEvaluator.evaluate(hand: bidEvaluationHand)
         var best: (bid: Bid, margin: Int)?
 
-        for bid in legalBids where bid.isBuy {
-            guard let score = score(for: bid, hand: purchaseHand, evaluation: evaluation) else { continue }
-            let threshold = self.threshold(for: bid, state: state) + (partnerHoldsBuy ? partnerOverbidPenalty : 0)
+        for bid in legalBids where bid.isBid {
+            guard let score = score(for: bid, hand: bidEvaluationHand, evaluation: evaluation) else { continue }
+            let threshold = self.threshold(for: bid, state: state) + (partnerHoldsBid ? partnerOverbidPenalty : 0)
             let margin = score - threshold
             guard margin >= 0 else { continue }
             if best == nil || margin > best!.margin { best = (bid, margin) }
@@ -80,7 +80,7 @@ public struct BiddingPolicy: Sendable, Equatable {
     /// في البلوت الكامل لا يشتري اللاعب بخمس أوراق فقط: المشتري يأخذ الورقة المكشوفة
     /// بعد استقرار الشراء. لذلك يجب أن تدخل هذه الورقة في تقييم شراء الصن/الحكم،
     /// وإلا سيمرّر الوكيل يدًا صالحة لمجرد أن الورقة التي ستدخل يده لم تُحسب.
-    static func purchaseEvaluationHand(hand: [PlayingCard], state: GameState) -> [PlayingCard] {
+    static func bidEvaluationHand(hand: [PlayingCard], state: GameState) -> [PlayingCard] {
         guard state.rules.biddingStyle == .full,
               state.phase == .bidding,
               let upCard = state.bidding.upCard,
@@ -93,12 +93,12 @@ public struct BiddingPolicy: Sendable, Equatable {
     /// فارق إضافي مطلوب للمزايدة فوق شراء الشريك.
     private var partnerOverbidPenalty: Int { 12 }
 
-    private func partnerOwnsCurrentBuy(state: GameState) -> Bool {
-        guard let buyerID = state.bidding.currentBuy?.playerID,
+    private func partnerOwnsCurrentBid(state: GameState) -> Bool {
+        guard let bidderID = state.bidding.currentBid?.playerID,
               let currentID = state.currentTurnPlayerID,
-              let buyer = state.player(id: buyerID),
+              let bidder = state.player(id: bidderID),
               let current = state.player(id: currentID) else { return false }
-        return buyer.id != current.id && buyer.teamID == current.teamID
+        return bidder.id != current.id && bidder.teamID == current.teamID
     }
 
     private func score(for bid: Bid, hand: [PlayingCard], evaluation: HandEvaluation) -> Int? {
@@ -126,7 +126,7 @@ public struct BiddingPolicy: Sendable, Equatable {
         // سقف الشراء قليلًا بدل إهدار توزيعة كاملة.
         let isLastChance = state.bidding.stage == .secondRound
             && state.bidding.actionsInCurrentRound == state.players.count - 1
-            && state.bidding.currentBuy == nil
+            && state.bidding.currentBid == nil
         return base - riskTolerance - (isLastChance ? 6 : 0)
     }
 

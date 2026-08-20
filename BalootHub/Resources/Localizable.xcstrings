@@ -9121,7 +9121,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Explains Hokum inside the single Baloot game; the buying player chooses it and its suit during bidding."
+            "value" : "Explains Hokum inside the single Baloot game; the bidder chooses it and its suit during bidding."
           }
         }
       }
@@ -9132,7 +9132,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Explains Sun inside the single Baloot game; it is not opened as a separate game, it is bought during bidding."
+            "value" : "Explains Sun inside the single Baloot game; it is not opened as a separate game; it is selected during bidding."
           }
         }
       }
@@ -13170,61 +13170,61 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Buy Hokum"
+            "value" : "Bid Hokum"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Buy Hokum"
+            "value" : "Bid Hokum"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Buy Hokum"
+            "value" : "Bid Hokum"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Buy Hokum"
+            "value" : "Bid Hokum"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Buy Hokum"
+            "value" : "Bid Hokum"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Buy Hokum"
+            "value" : "Bid Hokum"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Buy Hokum"
+            "value" : "Bid Hokum"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Buy Hokum"
+            "value" : "Bid Hokum"
           }
         },
         "ur" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Buy Hokum"
+            "value" : "Bid Hokum"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Buy Hokum"
+            "value" : "Bid Hokum"
           }
         }
       }
@@ -13235,61 +13235,61 @@
         "de" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Buy Sun"
+            "value" : "Bid Sun"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Buy Sun"
+            "value" : "Bid Sun"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Buy Sun"
+            "value" : "Bid Sun"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Buy Sun"
+            "value" : "Bid Sun"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Buy Sun"
+            "value" : "Bid Sun"
           }
         },
         "id" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Buy Sun"
+            "value" : "Bid Sun"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Buy Sun"
+            "value" : "Bid Sun"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Buy Sun"
+            "value" : "Bid Sun"
           }
         },
         "ur" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Buy Sun"
+            "value" : "Bid Sun"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Buy Sun"
+            "value" : "Bid Sun"
           }
         }
       }
@@ -23664,13 +23664,13 @@
     "المخاطرة" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Risiko" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Risk" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Riesgo" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Risque" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "जोखिम" } }, "id" : { "stringUnit" : { "state" : "translated", "value" : "Risiko" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Риск" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Risk" } }, "ur" : { "stringUnit" : { "state" : "translated", "value" : "خطرہ" } }, "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "风险" } } } },
     "الميل" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Tendenz" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Preference" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Preferencia" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Préférence" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "रुझान" } }, "id" : { "stringUnit" : { "state" : "translated", "value" : "Preferensi" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Предпочтение" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Tercih" } }, "ur" : { "stringUnit" : { "state" : "translated", "value" : "رجحان" } }, "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "偏好" } } } },
     "المضاعفة" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Verdoppeln" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Doubling" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Doble" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Double" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "डबल" } }, "id" : { "stringUnit" : { "state" : "translated", "value" : "Ganda" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Удвоение" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Katlama" } }, "ur" : { "stringUnit" : { "state" : "translated", "value" : "ڈبل" } }, "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "加倍" } } } },
-    "قرارات متوازنة بين الشراء والدفاع" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Balanced buying and defense decisions" } } } },
-    "شراء قليل ومضاعفة نادرة" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Rare buys and rare doubling" } } } },
-    "شراء وضغط مبكر" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Buys and applies early pressure" } } } },
+    "قرارات متوازنة بين الشراء والدفاع" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Balanced bidding and defense decisions" } } } },
+    "شراء قليل ومضاعفة نادرة" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Rare bids and rare doubling" } } } },
+    "شراء وضغط مبكر" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Bids and applies early pressure" } } } },
     "يفضل الحكم والسيطرة باللون" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Prefers Hokum and suit control" } } } },
     "يفضل الصن والأوراق العالية" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Prefers Sun and high cards" } } } },
     "مخاطرة عالية وتصعيد مضاعفات" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "High risk and multiplier escalation" } } } },
-    "دفاع قوي ضد المشتري" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Strong defense against the buyer" } } } },
+    "دفاع قوي ضد المشتري" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Strong defense against the bidder" } } } },
     "الخصوم" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Gegner" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Opponents" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Oponentes" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Adversaires" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "विरोधी" } }, "id" : { "stringUnit" : { "state" : "translated", "value" : "Lawan" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Соперники" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Rakipler" } }, "ur" : { "stringUnit" : { "state" : "translated", "value" : "حریف" } }, "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "对手" } } } },
     "أولوية المراجعة" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Prüfpriorität" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Review priority" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Prioridad de revisión" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Priorité de révision" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "समीक्षा प्राथमिकता" } }, "id" : { "stringUnit" : { "state" : "translated", "value" : "Prioritas tinjauan" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Приоритет разбора" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "İnceleme önceliği" } }, "ur" : { "stringUnit" : { "state" : "translated", "value" : "جائزے کی ترجیح" } }, "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "复盘优先级" } } } },
     "ابدأ بالمزايدة" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Mit dem Bieten beginnen" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Start with bidding" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Empieza con la subasta" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Commencer par les enchères" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "बोली से शुरू करें" } }, "id" : { "stringUnit" : { "state" : "translated", "value" : "Mulai dari bidding" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Начать с торгов" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "İhaleyle başla" } }, "ur" : { "stringUnit" : { "state" : "translated", "value" : "بولی سے شروع کریں" } }, "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "从叫牌开始" } } } },

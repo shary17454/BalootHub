@@ -371,7 +371,7 @@ enum HandAnalysisShareSummary {
             "\("التوصية".localized): \(recommendationText(analysis.recommendedBid))",
             "\("خلاصة القرار".localized): \(decisionGradeText(analysis.decisionGrade))",
             "\("قوة اليد".localized): \(analysis.strengthPercent)%",
-            "\("احتمال الشراء".localized): \(analysis.buyConfidencePercent)%",
+            "\("احتمال الشراء".localized): \(analysis.bidConfidencePercent)%",
             "\("الثقة".localized): \(confidenceText(analysis.confidence))",
             "\("احتمال الصن".localized): \(analysis.sunConfidencePercent)% · \(analysis.evaluation.sunScore)",
             "\("احتمال الحكم".localized): \(analysis.hokumConfidencePercent)%",
@@ -454,9 +454,9 @@ enum HandAnalysisShareSummary {
 
     private static func decisionGradeText(_ grade: HandAnalysis.DecisionGrade) -> String {
         switch grade {
-        case .strongBuy:
+        case .strongBid:
             return "شراء قوي".localized
-        case .cautiousBuy:
+        case .cautiousBid:
             return "شراء حذر".localized
         case .closePass:
             return "تمرير قريب".localized

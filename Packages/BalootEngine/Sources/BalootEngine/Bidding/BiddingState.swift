@@ -91,8 +91,8 @@ public struct BiddingState: Codable, Sendable, Equatable {
     }
 
     /// آخر شراء قائم في جولة المزايدة الحالية، أو `nil` إن لم يشترِ أحد بعد.
-    public var currentBuy: BidRecord? {
-        bids.last { $0.round == roundNumber && $0.bid.isBuy }
+    public var currentBid: BidRecord? {
+        bids.last { $0.round == roundNumber && $0.bid.isBid }
     }
 
     /// عدد اللاعبين الذين تكلّموا في جولة المزايدة الحالية.
@@ -111,16 +111,16 @@ public struct BiddingState: Codable, Sendable, Equatable {
         switch stage {
         case .firstRound:
             guard let upCard else { return [.pass] }
-            if let buy = currentBuy {
-                return buy.bid.mode == .hokum ? [.pass, .sun] : [.pass]
+            if let bidRecord = currentBid {
+                return bidRecord.bid.mode == .hokum ? [.pass, .sun] : [.pass]
             }
             var options: [Bid] = [.pass, .hokum(suit: upCard.suit)]
             if rules.sunAllowedInFirstRound { options.append(.sun) }
             return options
 
         case .secondRound:
-            if let buy = currentBuy {
-                return buy.bid.mode == .hokum ? [.pass, .sun] : [.pass]
+            if let bidRecord = currentBid {
+                return bidRecord.bid.mode == .hokum ? [.pass, .sun] : [.pass]
             }
             let excluded = upCard?.suit
             return [.pass, .sun] + Suit.allCases

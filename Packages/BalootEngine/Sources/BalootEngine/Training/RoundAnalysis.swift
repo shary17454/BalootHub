@@ -404,7 +404,7 @@ public enum RoundAnalyzer {
         let legal = GameEngine.legalBids(state: state)
         guard legal.contains(bid) else { return nil }
         let analysis = HandAnalyzer.analyze(
-            hand: BiddingPolicy.purchaseEvaluationHand(hand: hand, state: state),
+            hand: BiddingPolicy.bidEvaluationHand(hand: hand, state: state),
             rules: state.rules,
             legalBids: legal
         )

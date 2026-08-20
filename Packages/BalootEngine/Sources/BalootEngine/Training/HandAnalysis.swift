@@ -9,8 +9,8 @@ public struct HandAnalysis: Sendable, Equatable {
     }
 
     public enum DecisionGrade: String, Sendable, Codable, CaseIterable {
-        case strongBuy
-        case cautiousBuy
+        case strongBid
+        case cautiousBid
         case closePass
         case clearPass
     }
@@ -38,7 +38,7 @@ public struct HandAnalysis: Sendable, Equatable {
     /// تقييم مئوي مبسط لقوة اليد يصلح للعرض والتدريب.
     public let strengthPercent: Int
     /// احتمال تقريبي أن تكون اليد صالحة للشراء حسب نفس سياسة المزايدة.
-    public let buyConfidencePercent: Int
+    public let bidConfidencePercent: Int
     /// احتمال تقريبي أن تكون اليد مناسبة للصن.
     public let sunConfidencePercent: Int
     /// احتمال تقريبي أن تكون اليد مناسبة لأفضل حكم متاح.
@@ -148,7 +148,7 @@ public enum HandAnalyzer {
         let grade = decisionGrade(
             recommendedBid: recommended,
             confidence: confidence,
-            buyConfidencePercent: metrics.buyConfidencePercent
+            bidConfidencePercent: metrics.bidConfidencePercent
         )
         let nextAction = nextAction(
             for: recommended,
@@ -174,7 +174,7 @@ public enum HandAnalyzer {
             projects: projects,
             totalProjectPoints: projectPoints,
             strengthPercent: metrics.strengthPercent,
-            buyConfidencePercent: metrics.buyConfidencePercent,
+            bidConfidencePercent: metrics.bidConfidencePercent,
             sunConfidencePercent: metrics.sunConfidencePercent,
             hokumConfidencePercent: metrics.hokumConfidencePercent,
             sunHokumScoreGap: comparison.gap,
@@ -227,10 +227,10 @@ public enum HandAnalyzer {
         legalBids: [Bid]?
     ) -> Bid {
         let options = normalizedBidOptions(legalBids)
-        guard options.contains(where: \.isBuy) else { return .pass }
+        guard options.contains(where: \.isBid) else { return .pass }
 
         var best: (bid: Bid, margin: Int)?
-        for bid in options where bid.isBuy {
+        for bid in options where bid.isBid {
             guard let score = score(for: bid, hand: hand, evaluation: evaluation, policy: policy) else { continue }
             let margin = score - threshold(for: bid, policy: policy)
             guard margin >= 0 else { continue }
@@ -256,18 +256,18 @@ public enum HandAnalyzer {
             let confidence: Int
             switch bid {
             case .pass:
-                let bestBuyScore = bestAvailableBuyScore(
+                let bestBidScore = bestAvailableBidScore(
                     hand: hand,
                     evaluation: evaluation,
                     policy: policy,
                     legalBids: legalBids
                 )
                 let passThreshold = min(policy.sunThreshold, policy.hokumThreshold) - policy.riskTolerance
-                optionScoreValue = bestBuyScore == Int.min ? 100 : max(0, passThreshold - bestBuyScore)
-                margin = recommendedBid == .pass ? optionScoreValue : -max(1, bestBuyScore - passThreshold)
+                optionScoreValue = bestBidScore == Int.min ? 100 : max(0, passThreshold - bestBidScore)
+                margin = recommendedBid == .pass ? optionScoreValue : -max(1, bestBidScore - passThreshold)
                 confidence = recommendedBid == .pass
                     ? clampPercent(55 + optionScoreValue * 4)
-                    : clampPercent(45 - max(0, bestBuyScore - passThreshold) * 4)
+                    : clampPercent(45 - max(0, bestBidScore - passThreshold) * 4)
             case .sun, .hokum:
                 guard let optionScore = score(for: bid, hand: hand, evaluation: evaluation, policy: policy) else {
                     return nil
@@ -299,14 +299,14 @@ public enum HandAnalyzer {
         .sorted(by: bidOptionSort)
     }
 
-    private static func bestAvailableBuyScore(
+    private static func bestAvailableBidScore(
         hand: [PlayingCard],
         evaluation: HandEvaluation,
         policy: BiddingPolicy,
         legalBids: [Bid]
     ) -> Int {
         legalBids
-            .filter(\.isBuy)
+            .filter(\.isBid)
             .compactMap { score(for: $0, hand: hand, evaluation: evaluation, policy: policy) }
             .max() ?? Int.min
     }
@@ -461,7 +461,7 @@ public enum HandAnalyzer {
         recommendedBid: Bid,
         policy: BiddingPolicy,
         projectPoints: Int
-    ) -> (strengthPercent: Int, buyConfidencePercent: Int, sunConfidencePercent: Int, hokumConfidencePercent: Int) {
+    ) -> (strengthPercent: Int, bidConfidencePercent: Int, sunConfidencePercent: Int, hokumConfidencePercent: Int) {
         let bestHokumScore = evaluation.bestHokum?.score == Int.min ? 0 : (evaluation.bestHokum?.score ?? 0)
         let sunPercent = confidencePercent(
             score: evaluation.sunScore + projectPoints / 4,
@@ -471,7 +471,7 @@ public enum HandAnalyzer {
             score: bestHokumScore + projectPoints / 4,
             threshold: policy.hokumThreshold
         )
-        let buyPercent = max(sunPercent, hokumPercent)
+        let bidPercent = max(sunPercent, hokumPercent)
         let recommendedBonus: Int
         switch recommendedBid {
         case .pass:
@@ -490,7 +490,7 @@ public enum HandAnalyzer {
 
         return (
             strengthPercent,
-            buyPercent,
+            bidPercent,
             sunPercent,
             hokumPercent
         )
@@ -543,25 +543,25 @@ public enum HandAnalyzer {
     private static func decisionGrade(
         recommendedBid: Bid,
         confidence: HandAnalysis.Confidence,
-        buyConfidencePercent: Int
+        bidConfidencePercent: Int
     ) -> HandAnalysis.DecisionGrade {
         switch recommendedBid {
         case .pass:
-            return buyConfidencePercent >= 40 ? .closePass : .clearPass
+            return bidConfidencePercent >= 40 ? .closePass : .clearPass
         case .sun, .hokum:
-            return confidence == .high || buyConfidencePercent >= 75 ? .strongBuy : .cautiousBuy
+            return confidence == .high || bidConfidencePercent >= 75 ? .strongBid : .cautiousBid
         }
     }
 
     private static func nextAction(
         for recommendedBid: Bid,
         grade: HandAnalysis.DecisionGrade,
-        metrics: (strengthPercent: Int, buyConfidencePercent: Int, sunConfidencePercent: Int, hokumConfidencePercent: Int),
+        metrics: (strengthPercent: Int, bidConfidencePercent: Int, sunConfidencePercent: Int, hokumConfidencePercent: Int),
         projects: [Project]
     ) -> (title: String, detail: String) {
         let projectHint = projects.isEmpty ? "" : " وأعلن مشاريعك في توقيتها قبل أول أكلة."
         switch grade {
-        case .strongBuy:
+        case .strongBid:
             switch recommendedBid {
             case .hokum(let suit):
                 return (
@@ -576,7 +576,7 @@ public enum HandAnalyzer {
             case .pass:
                 return ("راقب المزايدة", "اليد قوية نسبيًا لكن خيار الشراء غير متاح في هذا السياق؛ انتظر قرار الشريك.")
             }
-        case .cautiousBuy:
+        case .cautiousBid:
             return (
                 "اشترِ بحذر",
                 "الشراء ممكن لكنه ليس مضمونًا؛ لا ترفع المخاطرة إلا إذا كان الشريك يدعمك أو كانت المزايدة تسمح بسعر منخفض\(projectHint)"

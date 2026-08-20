@@ -14,7 +14,7 @@ public enum Bid: Codable, Sendable, Equatable, Hashable {
     case hokum(suit: Suit)
 
     /// هل هذه المزايدة شراء فعلي (لا تمرير)؟
-    public var isBuy: Bool {
+    public var isBid: Bool {
         switch self {
         case .pass: false
         case .sun, .hokum: true

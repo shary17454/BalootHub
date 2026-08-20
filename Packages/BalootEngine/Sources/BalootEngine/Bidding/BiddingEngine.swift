@@ -128,7 +128,7 @@ enum BiddingEngine {
         }
 
         state.bidding.bids.append(BidRecord(playerID: playerID, bid: bid, round: state.bidding.roundNumber))
-        if bid.isBuy {
+        if bid.isBid {
             state.bidding.declarerID = playerID
             state.bidding.mode = bid.mode
             state.bidding.trumpSuit = bid.trumpSuit
@@ -144,7 +144,7 @@ enum BiddingEngine {
     private static func advanceBiddingTurn(state: inout GameState) throws {
         let everyoneSpoke = state.bidding.actionsInCurrentRound >= state.players.count
         // شراء الصن لا يعلوه شيء، فلا معنى لإكمال الدورة بعده.
-        let sunLocksRound = state.bidding.currentBuy?.bid.mode == .sun
+        let sunLocksRound = state.bidding.currentBid?.bid.mode == .sun
 
         if everyoneSpoke || sunLocksRound {
             try finishBiddingRound(state: &state)
@@ -161,8 +161,8 @@ enum BiddingEngine {
 
     /// ينهي جولة مزايدة: ينتقل إلى جولة الأشكال، أو يستقر على شراء، أو يُعلن دورة ميتة.
     private static func finishBiddingRound(state: inout GameState) throws {
-        if state.bidding.currentBuy != nil {
-            try settleBuy(state: &state)
+        if state.bidding.currentBid != nil {
+            try settleBid(state: &state)
             return
         }
 
@@ -192,7 +192,7 @@ enum BiddingEngine {
     }
 
     /// بعد استقرار الشراء: إما فتح جولة المضاعفة، أو المضي مباشرة للتوزيع والإعلان.
-    private static func settleBuy(state: inout GameState) throws {
+    private static func settleBid(state: inout GameState) throws {
         guard let mode = state.bidding.mode else { throw GameEngineError.bidding(.illegalBid) }
 
         let multipliersApply = state.rules.multipliersEnabled

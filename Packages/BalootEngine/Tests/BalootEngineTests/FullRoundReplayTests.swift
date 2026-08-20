@@ -187,8 +187,8 @@ struct AIProfileTests {
         let gambler = agent(.pro, .gambler)
         let conservative = agent(.pro, .conservative)
 
-        var gamblerBuys = 0
-        var conservativeBuys = 0
+        var gamblerBids = 0
+        var conservativeBids = 0
 
         for seed in (1...40).map(UInt64.init) {
             var state = GameState.newLocalMatch(rules: .standard)
@@ -197,11 +197,11 @@ struct AIProfileTests {
             let hand = try #require(state.hands[playerID])
             let legal = state.bidding.legalBids(rules: state.rules)
 
-            if gambler.chooseBid(hand: hand, legalBids: legal, state: state).isBuy { gamblerBuys += 1 }
-            if conservative.chooseBid(hand: hand, legalBids: legal, state: state).isBuy { conservativeBuys += 1 }
+            if gambler.chooseBid(hand: hand, legalBids: legal, state: state).isBid { gamblerBids += 1 }
+            if conservative.chooseBid(hand: hand, legalBids: legal, state: state).isBid { conservativeBids += 1 }
         }
 
-        #expect(gamblerBuys > conservativeBuys, "المخاطر \(gamblerBuys) مقابل المحافظ \(conservativeBuys)")
+        #expect(gamblerBids > conservativeBids, "المخاطر \(gamblerBids) مقابل المحافظ \(conservativeBids)")
     }
 
     @Test("متخصص الحكم يميل للحكم أكثر من متخصص الصن")

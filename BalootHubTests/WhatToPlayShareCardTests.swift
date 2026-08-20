@@ -338,7 +338,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("اليد".localized):"))
         XCTAssertTrue(text.contains("\("التوصية".localized):"))
         XCTAssertTrue(text.contains("\("قوة اليد".localized): \(analysis.strengthPercent)%"))
-        XCTAssertTrue(text.contains("\("احتمال الشراء".localized): \(analysis.buyConfidencePercent)%"))
+        XCTAssertTrue(text.contains("\("احتمال الشراء".localized): \(analysis.bidConfidencePercent)%"))
         XCTAssertTrue(text.contains("\("مقارنة الصن والحكم".localized): \(analysis.modeComparisonTitle)"))
         XCTAssertTrue(text.contains(analysis.modeComparisonDetail))
         XCTAssertTrue(text.contains("\("ترتيب خيارات المزايدة".localized):"))
