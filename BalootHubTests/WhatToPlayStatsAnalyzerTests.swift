@@ -3342,6 +3342,10 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(review.difficulty, .easy)
         XCTAssertEqual(review.focusKind, .openingLead)
         XCTAssertEqual(review.gameMode, .sun)
+        XCTAssertEqual(
+            review.contextLine,
+            "\("المستوى".localized): \("سهل".localized) · \("تركيز التدريب".localized): \("افتتاح الأكلة".localized) · \("النمط".localized): \("صن".localized)"
+        )
         XCTAssertNil(review.replaySeed)
     }
 
@@ -3362,6 +3366,10 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(review.difficulty, .medium)
         XCTAssertEqual(review.focusKind, .followSuit)
         XCTAssertEqual(review.gameMode, .hokum)
+        XCTAssertEqual(
+            review.contextLine,
+            "\("المستوى".localized): \("متوسط".localized) · \("تركيز التدريب".localized): \("اتباع اللون".localized) · \("النمط".localized): \("حكم".localized)"
+        )
     }
 
     func testTrainingSessionReviewMovesToNextChallengeAfterAchievement() {
@@ -3379,6 +3387,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(review.difficulty, .hard)
         XCTAssertNotNil(review.nextSeed)
         XCTAssertNil(review.replaySeed)
+        XCTAssertTrue(review.contextLine.contains("\("النمط".localized):"))
     }
 
     func testCoachingTipForEmptyAttemptsEncouragesBaseline() {

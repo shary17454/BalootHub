@@ -397,6 +397,7 @@ struct WhatToPlayTrainingSessionReview: Equatable {
     let action: WhatToPlayTrainingSessionReviewAction
     let title: String
     let detail: String
+    let contextLine: String
     let iconName: String
     let replaySeed: UInt64?
     let nextSeed: UInt64?
@@ -1889,6 +1890,7 @@ enum WhatToPlayStatsAnalyzer {
                 action: .start,
                 title: "ابدأ خطة المدرب".localized,
                 detail: "ابدأ أول موقف من نفس الخطة حتى يقيس المدرب الدقة والأثر من بيانات فعلية.".localized,
+                contextLine: trainingSessionReviewContext(difficulty: plan.difficulty, focusKind: plan.focusKind, gameMode: plan.gameMode),
                 iconName: "play.circle.fill",
                 replaySeed: nil,
                 nextSeed: nextTrainingSessionSeed(for: attempts, plan: plan),
@@ -1901,6 +1903,7 @@ enum WhatToPlayStatsAnalyzer {
                 action: .continueSession,
                 title: "أكمل نفس الجلسة".localized,
                 detail: progress.nextStepDetail,
+                contextLine: trainingSessionReviewContext(difficulty: plan.difficulty, focusKind: plan.focusKind, gameMode: plan.gameMode),
                 iconName: progress.nextStepIconName,
                 replaySeed: nil,
                 nextSeed: nextTrainingSessionSeed(for: attempts, plan: plan),
@@ -1914,6 +1917,7 @@ enum WhatToPlayStatsAnalyzer {
                 action: .nextChallenge,
                 title: "ابدأ تحدي أقوى".localized,
                 detail: "\("نتيجة الجلسة".localized): \(progress.gradePercent)/100. \("ابدأ موقفًا جديدًا بالمستوى المقترح بدل تكرار خطة أتقنتها.".localized)",
+                contextLine: trainingSessionReviewContext(difficulty: recommendation.difficulty, focusKind: recommendation.focusKind, gameMode: recommendation.gameMode),
                 iconName: "arrow.up.circle.fill",
                 replaySeed: nil,
                 nextSeed: microDrillSeed(
@@ -1932,6 +1936,7 @@ enum WhatToPlayStatsAnalyzer {
                     action: .replayMistake,
                     title: "راجع الخطأ الأعلى أثرًا".localized,
                     detail: "\("ابدأ بإعادة موقف".localized) \(reviewItem.seed) \("قبل تكرار الجلسة؛ هذا يربط التدريب بسبب الخسارة لا بعدد المحاولات فقط.".localized)",
+                    contextLine: trainingSessionReviewContext(difficulty: reviewItem.difficulty, focusKind: reviewItem.focusKind, gameMode: reviewItem.gameMode),
                     iconName: reviewItem.iconName,
                     replaySeed: reviewItem.seed,
                     nextSeed: reviewItem.seed,
@@ -1944,6 +1949,7 @@ enum WhatToPlayStatsAnalyzer {
                 action: .repeatSession,
                 title: "كرر الخطة نفسها".localized,
                 detail: progress.nextStepDetail,
+                contextLine: trainingSessionReviewContext(difficulty: plan.difficulty, focusKind: plan.focusKind, gameMode: plan.gameMode),
                 iconName: "arrow.counterclockwise.circle.fill",
                 replaySeed: nil,
                 nextSeed: nextTrainingSessionSeed(for: attempts, plan: plan),
@@ -1952,6 +1958,22 @@ enum WhatToPlayStatsAnalyzer {
                 gameMode: plan.gameMode
             )
         }
+    }
+
+    private static func trainingSessionReviewContext(
+        difficulty: WhatToPlayDifficulty?,
+        focusKind: WhatToPlayScenarioFocusKind?,
+        gameMode: GameMode?
+    ) -> String {
+        let difficultyText = difficulty.map(difficultyTitle) ?? "تلقائي".localized
+        let focusText = focusKind.map(scenarioFocusTitle) ?? "تلقائي".localized
+        let modeText = gameMode.map(gameModeTitle) ?? "تلقائي".localized
+
+        return [
+            "\("المستوى".localized): \(difficultyText)",
+            "\("تركيز التدريب".localized): \(focusText)",
+            "\("النمط".localized): \(modeText)"
+        ].joined(separator: " · ")
     }
 
     private static func uniqueMatchingTrainingAttempts(

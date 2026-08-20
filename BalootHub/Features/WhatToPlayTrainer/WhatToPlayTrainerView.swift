@@ -759,7 +759,7 @@ struct WhatToPlayTrainerView: View {
                     .font(.caption2)
                     .foregroundStyle(AppColor.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
-                Text("\("المستوى".localized): \(review.difficulty?.displayTitle ?? "تلقائي".localized) · \("تركيز التدريب".localized): \(review.focusKind.map(focusTitle) ?? "تلقائي".localized)")
+                Text(review.contextLine)
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(AppColor.accent)
                     .lineLimit(2)
