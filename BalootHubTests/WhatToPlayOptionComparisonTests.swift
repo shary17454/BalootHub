@@ -28,9 +28,21 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertNil(summary.selectedLostExpectedPoints)
         XCTAssertNil(summary.selectedLostProjectedTeamPoints)
         XCTAssertNil(summary.decisionQuality)
+        XCTAssertEqual(summary.bestMoveConfidence, WhatToPlayBestMoveConfidence.classify(bestToSecondGap: summary.bestToSecondGap))
         XCTAssertNil(summary.nextActionTitle)
         XCTAssertNil(summary.nextActionDetail)
         XCTAssertTrue(summary.hasSecondBest)
+    }
+
+    func testBestMoveConfidenceClassifiesGapAgainstSecondBest() {
+        XCTAssertNil(WhatToPlayBestMoveConfidence.classify(bestToSecondGap: nil))
+        XCTAssertEqual(WhatToPlayBestMoveConfidence.classify(bestToSecondGap: 0), .tied)
+        XCTAssertEqual(WhatToPlayBestMoveConfidence.classify(bestToSecondGap: 2), .narrow)
+        XCTAssertEqual(WhatToPlayBestMoveConfidence.classify(bestToSecondGap: 8), .clear)
+        XCTAssertEqual(WhatToPlayBestMoveConfidence.classify(bestToSecondGap: 9), .decisive)
+        XCTAssertEqual(WhatToPlayBestMoveConfidence.decisive.title, "أفضلية حاسمة".localized)
+        XCTAssertFalse(WhatToPlayBestMoveConfidence.narrow.detail.isEmpty)
+        XCTAssertFalse(WhatToPlayBestMoveConfidence.clear.systemImage.isEmpty)
     }
 
     func testSummaryClassifiesSelectedDecisionQuality() throws {

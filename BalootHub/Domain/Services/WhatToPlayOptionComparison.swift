@@ -38,11 +38,66 @@ struct WhatToPlayOptionComparisonSummary: Equatable {
     let selectedLostExpectedPoints: Int?
     let selectedLostProjectedTeamPoints: Int?
     let decisionQuality: WhatToPlayDecisionQuality?
+    let bestMoveConfidence: WhatToPlayBestMoveConfidence?
     let nextActionTitle: String?
     let nextActionDetail: String?
 
     var hasSecondBest: Bool {
         secondBestCard != nil
+    }
+}
+
+enum WhatToPlayBestMoveConfidence: Equatable {
+    case tied
+    case narrow
+    case clear
+    case decisive
+
+    static func classify(bestToSecondGap: Int?) -> WhatToPlayBestMoveConfidence? {
+        guard let bestToSecondGap else { return nil }
+        if bestToSecondGap == 0 { return .tied }
+        if bestToSecondGap <= 2 { return .narrow }
+        if bestToSecondGap <= 8 { return .clear }
+        return .decisive
+    }
+
+    var title: String {
+        switch self {
+        case .tied:
+            "أفضلية متعادلة".localized
+        case .narrow:
+            "أفضلية ضيقة".localized
+        case .clear:
+            "أفضلية واضحة".localized
+        case .decisive:
+            "أفضلية حاسمة".localized
+        }
+    }
+
+    var detail: String {
+        switch self {
+        case .tied:
+            "الخياران الأول والثاني متقاربان جدًا؛ راجع السبب التكتيكي قبل اعتبار أحدهما خطأ.".localized
+        case .narrow:
+            "ثاني أفضل قريب من اختيار الخبير؛ ركز على الفارق الصغير في الأثر المتوقع.".localized
+        case .clear:
+            "أفضل ورقة تتقدم بفارق واضح، والبديل يحتاج سببًا تكتيكيًا قويًا.".localized
+        case .decisive:
+            "اختيار الخبير يتقدم بفارق كبير؛ أعد قراءة الموقف قبل اختيار بديل.".localized
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .tied:
+            "equal.circle.fill"
+        case .narrow:
+            "arrow.left.and.right.circle.fill"
+        case .clear:
+            "checkmark.seal.fill"
+        case .decisive:
+            "exclamationmark.triangle.fill"
+        }
     }
 }
 
@@ -181,6 +236,7 @@ enum WhatToPlayOptionComparison {
                 lostExpectedPoints: lost,
                 lostProjectedTeamPoints: projectedLost
             ),
+            bestMoveConfidence: WhatToPlayBestMoveConfidence.classify(bestToSecondGap: gap),
             nextActionTitle: action.title,
             nextActionDetail: action.detail
         )

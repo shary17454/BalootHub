@@ -2837,6 +2837,23 @@ struct WhatToPlayTrainerView: View {
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(gap <= 2 ? AppColor.accent : AppColor.warning)
             }
+            if let confidence = summary.bestMoveConfidence {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(confidence.title)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(AppColor.textPrimary)
+                        Text(confidence.detail)
+                            .font(.caption2)
+                            .foregroundStyle(AppColor.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                } icon: {
+                    Image(systemName: confidence.systemImage)
+                        .foregroundStyle(bestMoveConfidenceTint(confidence))
+                }
+                .padding(.top, AppSpacing.xs)
+            }
             if let quality = summary.decisionQuality,
                let lost = summary.selectedLostExpectedPoints {
                 Label(
@@ -2874,6 +2891,17 @@ struct WhatToPlayTrainerView: View {
             }
         }
         .accessibilityElement(children: .combine)
+    }
+
+    private func bestMoveConfidenceTint(_ confidence: WhatToPlayBestMoveConfidence) -> Color {
+        switch confidence {
+        case .tied, .narrow:
+            AppColor.accent
+        case .clear:
+            AppColor.success
+        case .decisive:
+            AppColor.warning
+        }
     }
 
     private func decisionQualityTint(_ quality: WhatToPlayDecisionQuality) -> Color {
