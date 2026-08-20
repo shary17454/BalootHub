@@ -872,6 +872,21 @@ public enum RoundAnalyzer {
 
     private static func biddingLostPoints(bid: Bid, recommendedBid: Bid, analysis: HandAnalysis) -> Int {
         guard bid != recommendedBid else { return 0 }
+        let selectedOption = analysis.bidOptions.first { $0.bid == bid }
+        let recommendedOption = analysis.bidOptions.first { $0.bid == recommendedBid }
+
+        if recommendedBid == .pass, bid.isBid, let selectedOption {
+            return max(1, -selectedOption.margin)
+        }
+
+        if bid == .pass, recommendedBid.isBid, let recommendedOption {
+            return max(1, recommendedOption.margin)
+        }
+
+        if let selectedOption, let recommendedOption {
+            return max(1, recommendedOption.margin - selectedOption.margin)
+        }
+
         let recommendedScore = score(for: recommendedBid, analysis: analysis)
         let selectedScore = score(for: bid, analysis: analysis)
         return max(1, recommendedScore - selectedScore)

@@ -387,6 +387,37 @@ struct RoundAnalysisTests {
         #expect(decision.matchedRecommendation)
     }
 
+    @Test("تحليل المزايدة يعاقب الشراء الضعيف بهامش العتبة لا بنقطة رمزية")
+    func weakPurchaseAgainstPassRecommendationUsesThresholdMargin() throws {
+        var rules = BalootRulesConfiguration.standard
+        rules.multipliersEnabled = false
+        rules.projectsRequireDeclaration = false
+
+        let initial = GameState.newLocalMatch(rules: rules)
+        var state = try GameEngine.apply(.dealCards(seed: 41), to: initial)
+        let playerID = try #require(state.currentTurnPlayerID)
+        state.hands[playerID] = [
+            PlayingCard(suit: .spades, rank: .seven),
+            PlayingCard(suit: .hearts, rank: .eight),
+            PlayingCard(suit: .diamonds, rank: .seven),
+            PlayingCard(suit: .clubs, rank: .eight),
+            PlayingCard(suit: .hearts, rank: .nine)
+        ]
+        state.bidding.upCard = PlayingCard(suit: .diamonds, rank: .eight)
+
+        let report = try RoundAnalyzer.analyze(
+            initialState: state,
+            actions: [.placeBid(playerID: playerID, bid: .sun)],
+            playerID: playerID
+        )
+
+        let decision = try #require(report.biddingDecisions.first)
+        #expect(decision.bid == .sun)
+        #expect(decision.recommendedBid == .pass)
+        #expect(decision.estimatedLostPoints >= 20)
+        #expect(report.needsBiddingReview)
+    }
+
     @Test("تحليل الجولة يرصد فرص المشاريع التي لم تُعلن")
     func missedProjectDeclarationIsReportedAsLostOpportunity() throws {
         let scenario = try missedProjectScenario()
