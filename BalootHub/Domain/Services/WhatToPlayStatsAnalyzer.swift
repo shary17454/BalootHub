@@ -303,6 +303,7 @@ struct WhatToPlayTrainingSessionPlan: Equatable {
     let focusKind: WhatToPlayScenarioFocusKind?
     let gameMode: GameMode?
     let trumpSuit: Suit?
+    let seedBase: UInt64?
     let scenarioCount: Int
     let targetAccuracyPercent: Int
     let targetAverageExpectedImpact: Int
@@ -320,6 +321,7 @@ struct WhatToPlayTrainingSessionPlan: Equatable {
         focusKind: WhatToPlayScenarioFocusKind? = nil,
         gameMode: GameMode? = nil,
         trumpSuit: Suit? = nil,
+        seedBase: UInt64? = nil,
         scenarioCount: Int,
         targetAccuracyPercent: Int,
         targetAverageExpectedImpact: Int,
@@ -336,6 +338,7 @@ struct WhatToPlayTrainingSessionPlan: Equatable {
         self.focusKind = focusKind
         self.gameMode = gameMode
         self.trumpSuit = trumpSuit
+        self.seedBase = seedBase
         self.scenarioCount = scenarioCount
         self.targetAccuracyPercent = targetAccuracyPercent
         self.targetAverageExpectedImpact = targetAverageExpectedImpact
@@ -1743,6 +1746,15 @@ enum WhatToPlayStatsAnalyzer {
         plan: WhatToPlayTrainingSessionPlan
     ) -> UInt64 {
         let matchingAttempts = uniqueMatchingTrainingAttempts(for: attempts, plan: plan)
+        if let seedBase = plan.seedBase {
+            let attemptedSeeds = Set(matchingAttempts.map(\.replaySeed))
+            var candidate = seedBase
+            while attemptedSeeds.contains(candidate) {
+                candidate &+= 1
+            }
+            return candidate
+        }
+
         let difficultyComponent = UInt64(difficultyOrder(plan.difficulty)) * 1_000_000
         let focusComponent = UInt64(plan.focusKind.map(scenarioFocusOrder) ?? 0) * 100_000
         let modeComponent = UInt64(plan.gameMode.map(gameModeOrder) ?? 0) * 10_000
@@ -2190,6 +2202,12 @@ enum WhatToPlayStatsAnalyzer {
             .filter { plan.focusKind == nil || $0.focusKind == plan.focusKind }
             .filter { plan.gameMode == nil || $0.gameMode == plan.gameMode }
             .filter { plan.trumpSuit == nil || $0.contextTrumpSuit == plan.trumpSuit }
+            .filter { attempt in
+                guard let seedBase = plan.seedBase else { return true }
+                let seed = attempt.replaySeed
+                let seedLimit = seedBase &+ UInt64(max(1, plan.scenarioCount))
+                return seed >= seedBase && seed < seedLimit
+            }
             .sorted { $0.createdAt > $1.createdAt }
             .filter { attempt in
                 seenSeeds.insert(attempt.replaySeed).inserted

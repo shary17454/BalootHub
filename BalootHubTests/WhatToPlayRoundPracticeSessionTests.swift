@@ -1,0 +1,80 @@
+import XCTest
+import BalootEngine
+@testable import BalootHub
+
+final class WhatToPlayRoundPracticeSessionTests: XCTestCase {
+    func testProgressCountsOnlyAttemptsInsideSeedBatch() {
+        let plan = sessionPlan(difficulty: .hard, focusKind: .narrowChoice, seedBase: 900, count: 3)
+        let attempts = [
+            attempt(daysAgo: 5, difficulty: .hard, correct: true, impact: 4, focusKind: .narrowChoice, seed: 899),
+            attempt(daysAgo: 4, difficulty: .hard, correct: true, impact: 4, focusKind: .narrowChoice, seed: 900),
+            attempt(daysAgo: 3, difficulty: .hard, correct: false, impact: -2, focusKind: .openingLead, seed: 901),
+            attempt(daysAgo: 2, difficulty: .hard, correct: false, impact: -1, focusKind: .narrowChoice, seed: 902),
+            attempt(daysAgo: 1, difficulty: .hard, correct: true, impact: 5, focusKind: .narrowChoice, seed: 903)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.state, .inProgress)
+        XCTAssertEqual(progress.completedAttempts, 2)
+        XCTAssertEqual(progress.correctAttempts, 1)
+        XCTAssertEqual(progress.remainingAttempts, 1)
+        XCTAssertEqual(progress.totalExpectedImpact, 3)
+    }
+
+    func testNextSeedUsesFirstUnattemptedSeedInBatch() {
+        let plan = sessionPlan(difficulty: .expert, seedBase: 1_200, count: 4)
+        let attempts = [
+            attempt(daysAgo: 4, difficulty: .expert, correct: true, impact: 3, seed: 1_200),
+            attempt(daysAgo: 3, difficulty: .expert, correct: true, impact: 2, seed: 1_202),
+            attempt(daysAgo: 2, difficulty: .expert, correct: true, impact: 2, seed: 1_204),
+            attempt(daysAgo: 1, difficulty: .hard, correct: true, impact: 2, seed: 1_201)
+        ]
+
+        let seed = WhatToPlayStatsAnalyzer.nextTrainingSessionSeed(for: attempts, plan: plan)
+
+        XCTAssertEqual(seed, 1_201)
+    }
+
+    private func sessionPlan(
+        difficulty: WhatToPlayDifficulty,
+        focusKind: WhatToPlayScenarioFocusKind? = nil,
+        seedBase: UInt64,
+        count: Int
+    ) -> WhatToPlayTrainingSessionPlan {
+        WhatToPlayTrainingSessionPlan(
+            difficulty: difficulty,
+            focusKind: focusKind,
+            seedBase: seedBase,
+            scenarioCount: count,
+            targetAccuracyPercent: 67,
+            targetAverageExpectedImpact: 0,
+            title: "خطة اختبار",
+            detail: "تفاصيل اختبار",
+            successMetric: "هدف اختبار",
+            iconName: "target"
+        )
+    }
+
+    private func attempt(
+        daysAgo: TimeInterval,
+        difficulty: WhatToPlayDifficulty,
+        correct: Bool,
+        impact: Int,
+        focusKind: WhatToPlayScenarioFocusKind? = nil,
+        seed: UInt64
+    ) -> WhatToPlayAttempt {
+        WhatToPlayAttempt(
+            createdAt: Date(timeIntervalSinceNow: -daysAgo * 86_400),
+            difficulty: difficulty,
+            seed: seed,
+            selectedCard: PlayingCard(suit: .clubs, rank: .seven),
+            bestCard: PlayingCard(suit: .clubs, rank: .seven),
+            isCorrect: correct,
+            selectedRank: correct ? 1 : 3,
+            expectedImpact: impact,
+            bestExpectedImpact: max(impact, 4),
+            focusKind: focusKind
+        )
+    }
+}

@@ -26,6 +26,7 @@ private struct StatTile: View {
 }
 
 struct WhatToPlayTrainerView: View {
+    private let routeSeed: UInt64?
     private let targetCount: Int?
 
     @Environment(\.modelContext) private var modelContext
@@ -56,6 +57,7 @@ struct WhatToPlayTrainerView: View {
         preferredMode: GameMode? = nil,
         targetCount: Int? = nil
     ) {
+        self.routeSeed = seed
         self.targetCount = targetCount
         let storedPreferences = WhatToPlayTrainerPreferences.load()
         _difficulty = State(initialValue: difficulty ?? storedPreferences.difficulty)
@@ -202,6 +204,31 @@ struct WhatToPlayTrainerView: View {
 
     private var trainingSessionProgress: WhatToPlayTrainingSessionProgress {
         WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: trainingSessionPlan)
+    }
+
+    private var roundPracticeSessionPlan: WhatToPlayTrainingSessionPlan? {
+        guard let targetCount else { return nil }
+        return WhatToPlayTrainingSessionPlan(
+            difficulty: difficulty,
+            focusKind: preferredFocus,
+            gameMode: preferredMode,
+            seedBase: routeSeed ?? seed,
+            scenarioCount: targetCount,
+            targetAccuracyPercent: 70,
+            targetAverageExpectedImpact: 0,
+            title: "خطة من تحليل الجولة".localized,
+            detail: "أكمل هذه المواقف بنفس البذرة والصعوبة المقترحة من تقرير الجولة السابقة.".localized,
+            successMetric: "هدف الجلسة: أنهي الدفعة بدقة 70% أو أعلى.".localized,
+            rationaleTitle: "مصدر الخطة".localized,
+            rationaleDetail: "هذه الخطة مبنية على تقرير الجولة السابقة، لذلك تُحسب منفصلة عن بقية تدريباتك.".localized,
+            rationaleIconName: "doc.text.magnifyingglass",
+            iconName: "target"
+        )
+    }
+
+    private var roundPracticeSessionProgress: WhatToPlayTrainingSessionProgress? {
+        guard let roundPracticeSessionPlan else { return nil }
+        return WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: roundPracticeSessionPlan)
     }
 
     private var trainingSessionReview: WhatToPlayTrainingSessionReview {
@@ -434,7 +461,7 @@ struct WhatToPlayTrainerView: View {
 
             HStack(spacing: AppSpacing.xs) {
                 StatTile(title: "عدد المواقف", value: "\(targetCount)", icon: "number")
-                StatTile(title: "بذرة التدريب", value: "\(seed)", icon: "number.circle.fill")
+                StatTile(title: "بذرة التدريب", value: "\(routeSeed ?? seed)", icon: "number.circle.fill")
             }
 
             HStack(spacing: AppSpacing.xs) {
@@ -448,6 +475,20 @@ struct WhatToPlayTrainerView: View {
                     value: preferredMode.map(modeTitle) ?? "تلقائي".localized,
                     icon: "suit.club.fill"
                 )
+            }
+
+            if let progress = roundPracticeSessionProgress {
+                trainingSessionProgressView(progress)
+
+                Button {
+                    startRoundPracticeSessionPlan()
+                } label: {
+                    Label(roundPracticeActionTitle(for: progress), systemImage: "play.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(progress.state == .achieved ? AppColor.success : AppColor.primary)
+                .disabled(isGeneratingScenario)
             }
         }
         .padding(AppSpacing.md)
@@ -3338,6 +3379,39 @@ struct WhatToPlayTrainerView: View {
             preferredModeRaw = targetModeRaw
             preferredTrumpSuit = targetTrumpSuit
             generateScenario()
+        }
+    }
+
+    private func startRoundPracticeSessionPlan() {
+        guard let plan = roundPracticeSessionPlan else { return }
+        let targetFocusRaw = plan.focusKind?.rawValue ?? "auto"
+        let targetModeRaw = plan.gameMode?.rawValue ?? "auto"
+        let targetTrumpSuit = plan.trumpSuit
+        seed = WhatToPlayStatsAnalyzer.nextTrainingSessionSeed(for: attempts, plan: plan)
+        if difficulty == plan.difficulty,
+           preferredFocusRaw == targetFocusRaw,
+           preferredModeRaw == targetModeRaw,
+           preferredTrumpSuit == targetTrumpSuit {
+            generateScenario()
+        } else {
+            difficulty = plan.difficulty
+            preferredFocusRaw = targetFocusRaw
+            preferredModeRaw = targetModeRaw
+            preferredTrumpSuit = targetTrumpSuit
+            generateScenario()
+        }
+    }
+
+    private func roundPracticeActionTitle(for progress: WhatToPlayTrainingSessionProgress) -> String {
+        switch progress.state {
+        case .notStarted:
+            "ابدأ خطة الجولة".localized
+        case .inProgress:
+            "أكمل خطة الجولة".localized
+        case .achieved:
+            "تدريب إضافي".localized
+        case .needsRepeat:
+            "أعد خطة الجولة".localized
         }
     }
 
