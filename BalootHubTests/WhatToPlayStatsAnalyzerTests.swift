@@ -1305,6 +1305,54 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertNil(WhatToPlayStatsAnalyzer.gameModeTrainingPriority(for: attempts))
     }
 
+    func testSummariesByTrumpSuitSkipSunAndLegacyAttemptsAndPreserveSuitOrder() {
+        let attempts = [
+            attempt(daysAgo: 5, correct: true, impact: 4, bestImpact: 4, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .spades)),
+            attempt(daysAgo: 4, correct: false, impact: -3, bestImpact: 3, gameMode: .sun, scenarioContext: hokumContext(trumpSuit: .hearts)),
+            attempt(daysAgo: 3, correct: false, impact: -2, bestImpact: 4, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .hearts)),
+            attempt(daysAgo: 2, correct: true, impact: 2, bestImpact: 2, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .hearts)),
+            attempt(daysAgo: 1, correct: false, impact: -1, bestImpact: 2, gameMode: .hokum)
+        ]
+
+        let summaries = WhatToPlayStatsAnalyzer.summariesByTrumpSuit(attempts)
+
+        XCTAssertEqual(summaries.map(\.suit), [.hearts, .spades])
+        XCTAssertEqual(summaries.first?.summary.attempts, 2)
+        XCTAssertEqual(summaries.first?.summary.accuracyPercent, 50)
+        XCTAssertEqual(summaries.first?.summary.lostExpectedPoints, 6)
+        XCTAssertEqual(summaries.last?.summary.attempts, 1)
+        XCTAssertEqual(summaries.last?.summary.accuracyPercent, 100)
+    }
+
+    func testTrumpSuitTrainingPriorityUsesProjectedLossBeforeExpectedLoss() {
+        let attempts = [
+            attempt(daysAgo: 6, correct: false, impact: -4, bestImpact: 4, gameMode: .hokum, projectedTeamPoints: 50, bestProjectedTeamPoints: 56, scenarioContext: hokumContext(trumpSuit: .hearts)),
+            attempt(daysAgo: 5, correct: true, impact: 3, bestImpact: 3, gameMode: .hokum, projectedTeamPoints: 62, bestProjectedTeamPoints: 62, scenarioContext: hokumContext(trumpSuit: .hearts)),
+            attempt(daysAgo: 4, correct: false, impact: 1, bestImpact: 4, gameMode: .hokum, projectedTeamPoints: 44, bestProjectedTeamPoints: 70, scenarioContext: hokumContext(trumpSuit: .spades)),
+            attempt(daysAgo: 3, correct: true, impact: 2, bestImpact: 2, gameMode: .hokum, projectedTeamPoints: 72, bestProjectedTeamPoints: 72, scenarioContext: hokumContext(trumpSuit: .spades))
+        ]
+
+        let priority = WhatToPlayStatsAnalyzer.trumpSuitTrainingPriority(for: attempts)
+
+        XCTAssertEqual(priority?.suit, .spades)
+        XCTAssertEqual(priority?.summary.lostExpectedPoints, 3)
+        XCTAssertEqual(priority?.summary.lostProjectedTeamPoints, 26)
+        XCTAssertEqual(priority?.title, "\("أولوية التدريب".localized): \("حكم".localized) \(Suit.spades.spokenName)")
+        XCTAssertEqual(priority?.iconName, "suit.spade.fill")
+        XCTAssertTrue(priority?.detail.contains("سبب الترشيح من المحاكاة".localized) ?? false)
+    }
+
+    func testTrumpSuitTrainingPriorityReturnsNilWhenTrumpSuitsArePerfect() {
+        let attempts = [
+            attempt(daysAgo: 4, correct: true, impact: 2, bestImpact: 2, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .hearts)),
+            attempt(daysAgo: 3, correct: true, impact: 3, bestImpact: 3, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .hearts)),
+            attempt(daysAgo: 2, correct: true, impact: 2, bestImpact: 2, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .clubs)),
+            attempt(daysAgo: 1, correct: true, impact: 3, bestImpact: 3, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .clubs))
+        ]
+
+        XCTAssertNil(WhatToPlayStatsAnalyzer.trumpSuitTrainingPriority(for: attempts))
+    }
+
     func testFocusScenarioKindPicksWeakestTrainingFocus() {
         let attempts = [
             attempt(daysAgo: 6, difficulty: .easy, correct: true, impact: 3, bestImpact: 3, focusKind: .openingLead),
@@ -3552,6 +3600,23 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             detail: "تفاصيل اختبار",
             successMetric: "هدف اختبار",
             iconName: "target"
+        )
+    }
+
+    private func hokumContext(trumpSuit: Suit) -> WhatToPlayScenarioContext {
+        WhatToPlayScenarioContext(
+            trickNumber: 3,
+            isLeading: false,
+            requiredSuit: .hearts,
+            playedCardCount: 2,
+            legalOptionCount: 3,
+            mode: .hokum,
+            trumpSuit: trumpSuit,
+            hasTrumpInCurrentTrick: false,
+            playerTeamTrickPoints: 24,
+            opponentTeamTrickPoints: 18,
+            playerTeamPointMargin: 6,
+            focusKind: .trumpPressure
         )
     }
 

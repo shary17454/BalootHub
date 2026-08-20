@@ -181,6 +181,19 @@ struct WhatToPlayGameModeTrainingPriority: Equatable {
     let iconName: String
 }
 
+struct WhatToPlayTrumpSuitSummary: Equatable {
+    let suit: Suit
+    let summary: WhatToPlayStatsSummary
+}
+
+struct WhatToPlayTrumpSuitTrainingPriority: Equatable {
+    let suit: Suit
+    let summary: WhatToPlayStatsSummary
+    let title: String
+    let detail: String
+    let iconName: String
+}
+
 struct WhatToPlayFocusTrainingPriority: Equatable {
     let focusKind: WhatToPlayScenarioFocusKind
     let summary: WhatToPlayStatsSummary
@@ -853,6 +866,16 @@ enum WhatToPlayStatsAnalyzer {
         }
     }
 
+    static func summariesByTrumpSuit(_ attempts: [WhatToPlayAttempt]) -> [WhatToPlayTrumpSuitSummary] {
+        Suit.allCases.compactMap { suit in
+            let filtered = attempts.filter {
+                $0.gameMode == .hokum && $0.contextTrumpSuit == suit
+            }
+            guard !filtered.isEmpty else { return nil }
+            return WhatToPlayTrumpSuitSummary(suit: suit, summary: summarize(attempts: filtered))
+        }
+    }
+
     static func focusScenarioKind(_ attempts: [WhatToPlayAttempt], minimumAttempts: Int = 2) -> WhatToPlayScenarioFocusSummary? {
         summariesByScenarioFocus(attempts)
             .filter { $0.summary.attempts >= minimumAttempts }
@@ -935,6 +958,49 @@ enum WhatToPlayStatsAnalyzer {
             title: "\("أولوية التدريب".localized): \(gameModeTitle(candidate.mode))",
             detail: gameModeTrainingDetail(for: candidate.mode, summary: candidate.summary),
             iconName: gameModeTrainingIcon(for: candidate.mode)
+        )
+    }
+
+    static func trumpSuitTrainingPriority(
+        for attempts: [WhatToPlayAttempt],
+        minimumAttempts: Int = 2
+    ) -> WhatToPlayTrumpSuitTrainingPriority? {
+        let candidate = summariesByTrumpSuit(attempts)
+            .filter { $0.summary.attempts >= minimumAttempts }
+            .filter {
+                $0.summary.lostExpectedPoints > 0
+                    || $0.summary.lostProjectedTeamPoints > 0
+                    || $0.summary.accuracyPercent < 100
+            }
+            .sorted { lhs, rhs in
+                if lhs.summary.lostProjectedTeamPoints != rhs.summary.lostProjectedTeamPoints {
+                    return lhs.summary.lostProjectedTeamPoints > rhs.summary.lostProjectedTeamPoints
+                }
+
+                if lhs.summary.lostExpectedPoints != rhs.summary.lostExpectedPoints {
+                    return lhs.summary.lostExpectedPoints > rhs.summary.lostExpectedPoints
+                }
+
+                if lhs.summary.accuracyPercent != rhs.summary.accuracyPercent {
+                    return lhs.summary.accuracyPercent < rhs.summary.accuracyPercent
+                }
+
+                if lhs.summary.averageExpectedImpact != rhs.summary.averageExpectedImpact {
+                    return lhs.summary.averageExpectedImpact < rhs.summary.averageExpectedImpact
+                }
+
+                return lhs.suit.ordinal < rhs.suit.ordinal
+            }
+            .first
+
+        guard let candidate else { return nil }
+
+        return WhatToPlayTrumpSuitTrainingPriority(
+            suit: candidate.suit,
+            summary: candidate.summary,
+            title: "\("أولوية التدريب".localized): \("حكم".localized) \(candidate.suit.spokenName)",
+            detail: trumpSuitTrainingDetail(for: candidate.suit, summary: candidate.summary),
+            iconName: trumpSuitTrainingIcon(for: candidate.suit)
         )
     }
 
@@ -3536,6 +3602,36 @@ enum WhatToPlayStatsAnalyzer {
             return "sun.max.fill"
         case .hokum:
             return "crown.fill"
+        }
+    }
+
+    private static func trumpSuitTrainingDetail(
+        for suit: Suit,
+        summary: WhatToPlayStatsSummary
+    ) -> String {
+        let base = "\("شرح نمط الحكم داخل لعبة البلوت الواحدة؛ يحدده اللاعب المشتري ولونه أثناء دورة المزايدة.".localized) \("حكم".localized) \(suit.spokenName)."
+
+        if summary.lostProjectedTeamPoints > summary.lostExpectedPoints {
+            return "\(base) \("سبب الترشيح من المحاكاة".localized): \(summary.lostProjectedTeamPoints) \("نقطة ضاعت بعد استكمال الجولة.".localized)"
+        }
+
+        if summary.averageLostExpectedPoints > 0 {
+            return "\(base) \("متوسط النقاط الضائعة".localized): \(summary.averageLostExpectedPoints)."
+        }
+
+        return "\(base) \("دقتك هنا".localized): \(summary.accuracyPercent)%."
+    }
+
+    private static func trumpSuitTrainingIcon(for suit: Suit) -> String {
+        switch suit {
+        case .hearts:
+            return "suit.heart.fill"
+        case .diamonds:
+            return "suit.diamond.fill"
+        case .clubs:
+            return "suit.club.fill"
+        case .spades:
+            return "suit.spade.fill"
         }
     }
 
