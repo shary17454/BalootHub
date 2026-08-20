@@ -53,8 +53,7 @@ jobs:
           -skipMacroValidation
           CODE_SIGNING_ALLOWED=NO
 
-      # نسخة Release تسلك مسارات كود مختلفة (`#if DEBUG` في PurchaseManager يفتح
-      # اللعبة بلا شراء) وتُبنى بتحسينات مختلفة، فبناء Debug وحده لا يثبت أن نسخة
+      # نسخة Release تسلك مسارات كود مختلفة وتُبنى بتحسينات مختلفة، فبناء Debug وحده لا يثبت أن نسخة
       # المتجر تُبنى أصلًا.
       - name: بناء نسخة Release
         run: >

@@ -21,6 +21,9 @@ struct WhatToPlayShareCardContent: Equatable {
     let trickProgress: String
     let scoreLine: String
     let turnPlayerName: String
+    let turnContextLine: String
+    let legalOptionCount: Int
+    let playedCardCount: Int
     let tableCards: [PlayedCardLine]
     let legalCardNames: [String]
     let blockedCards: [BlockedCardLine]
@@ -109,6 +112,9 @@ enum WhatToPlayShareCard {
             trickProgress: "\(state.completedTricks.count + 1) \("من".localized) 8",
             scoreLine: scoreText(scenario.context),
             turnPlayerName: state.player(id: scenario.playerID)?.name ?? "أنت".localized,
+            turnContextLine: turnContextText(scenario.context),
+            legalOptionCount: scenario.context.legalOptionCount,
+            playedCardCount: scenario.context.playedCardCount,
             tableCards: played.map { playedCard in
                 WhatToPlayShareCardContent.PlayedCardLine(
                     playerName: state.player(id: playedCard.playerID)?.name ?? "لاعب".localized,
@@ -167,7 +173,9 @@ enum WhatToPlayShareCard {
             "\("تركيز التدريب".localized): \(content.focus)",
             "\("الأكلة".localized): \(content.trickProgress)",
             "\("النقاط".localized): \(content.scoreLine)",
-            "\("الدور".localized): \(content.turnPlayerName)"
+            "\("الدور".localized): \(content.turnPlayerName)",
+            content.turnContextLine,
+            "\("خيارات".localized): \(content.legalOptionCount) · \("على الطاولة".localized): \(content.playedCardCount)"
         ]
 
         if content.isOpeningTrick {
@@ -353,6 +361,16 @@ enum WhatToPlayShareCard {
         let margin = context.playerTeamPointMargin
         let marginPrefix = margin > 0 ? "+" : ""
         return "\("فريقنا".localized) \(context.playerTeamTrickPoints) · \("الخصم".localized) \(context.opponentTeamTrickPoints) · \(marginPrefix)\(margin)"
+    }
+
+    private static func turnContextText(_ context: WhatToPlayScenarioContext) -> String {
+        if context.isLeading {
+            return "أنت تفتتح الأكلة".localized
+        }
+        if let requiredSuit = context.requiredSuit {
+            return "\("اللون المطلوب".localized): \(requiredSuit.arabicName)"
+        }
+        return "الأوراق على الطاولة".localized
     }
 
 }

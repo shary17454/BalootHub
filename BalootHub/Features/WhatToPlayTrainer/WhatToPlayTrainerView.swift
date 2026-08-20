@@ -3518,6 +3518,12 @@ struct WhatToPlayShareCardPreview: View {
                 shareMetric("تركيز التدريب".localized, content.focus)
             }
 
+            HStack(spacing: AppSpacing.xs) {
+                shareMetric("الدور".localized, content.turnContextLine)
+                shareMetric("خيارات".localized, "\(content.legalOptionCount)")
+                shareMetric("على الطاولة".localized, "\(content.playedCardCount)")
+            }
+
             tableCardsSection
             legalCardsSection
 

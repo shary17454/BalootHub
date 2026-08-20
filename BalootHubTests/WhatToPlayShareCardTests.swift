@@ -23,6 +23,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("تركيز التدريب".localized):"))
         XCTAssertTrue(text.contains("\("الأكلة".localized):"))
         XCTAssertTrue(text.contains("\("النقاط".localized): \(shareScoreText(for: scenario))"))
+        XCTAssertTrue(text.contains(turnContextText(for: scenario)))
+        XCTAssertTrue(text.contains("\("خيارات".localized): \(scenario.context.legalOptionCount) · \("على الطاولة".localized): \(scenario.context.playedCardCount)"))
         XCTAssertTrue(text.contains("\("الأوراق القانونية".localized):"))
         for option in scenario.options {
             XCTAssertTrue(text.contains(option.card.accessibilityName))
@@ -40,6 +42,9 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(content.focus.isEmpty, false)
         XCTAssertEqual(content.trickProgress, "\(scenario.state.completedTricks.count + 1) \("من".localized) 8")
         XCTAssertEqual(content.scoreLine, shareScoreText(for: scenario))
+        XCTAssertEqual(content.turnContextLine, turnContextText(for: scenario))
+        XCTAssertEqual(content.legalOptionCount, scenario.context.legalOptionCount)
+        XCTAssertEqual(content.playedCardCount, scenario.context.playedCardCount)
         XCTAssertEqual(content.legalCardNames, scenario.options.sorted {
             if $0.card.suit.ordinal != $1.card.suit.ordinal {
                 return $0.card.suit.ordinal < $1.card.suit.ordinal
@@ -364,6 +369,16 @@ final class WhatToPlayShareCardTests: XCTestCase {
         let margin = scenario.context.playerTeamPointMargin
         let marginPrefix = margin > 0 ? "+" : ""
         return "\("فريقنا".localized) \(scenario.context.playerTeamTrickPoints) · \("الخصم".localized) \(scenario.context.opponentTeamTrickPoints) · \(marginPrefix)\(margin)"
+    }
+
+    private func turnContextText(for scenario: WhatToPlayScenario) -> String {
+        if scenario.context.isLeading {
+            return "أنت تفتتح الأكلة".localized
+        }
+        if let requiredSuit = scenario.context.requiredSuit {
+            return "\("اللون المطلوب".localized): \(requiredSuit.arabicName)"
+        }
+        return "الأوراق على الطاولة".localized
     }
 
     private func strongHokumHand() -> [PlayingCard] {

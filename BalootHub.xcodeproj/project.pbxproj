@@ -72,6 +72,7 @@
 		A9B8C7D6E5F4012345678904 /* WhatToPlaySimulationFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9B8C7D6E5F4012345678903 /* WhatToPlaySimulationFormatterTests.swift */; };
 		AB12CD34EF56789012345671 /* WhatToPlayTrainerPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB12CD34EF56789012345670 /* WhatToPlayTrainerPreferences.swift */; };
 		AB12CD34EF56789012345673 /* WhatToPlayTrainerPreferencesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB12CD34EF56789012345672 /* WhatToPlayTrainerPreferencesTests.swift */; };
+		AF20C826APPREVIEW0000002 /* AppReviewReadinessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF20C826APPREVIEW0000001 /* AppReviewReadinessTests.swift */; };
 		B10976A06C974F59AF68D22E /* AchievementCenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A84C2F07DB64EC18473D128 /* AchievementCenterTests.swift */; };
 		B1A2C3D4E5F60718293A4B5D /* WhatToPlayShareCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F60718293A4B5C /* WhatToPlayShareCard.swift */; };
 		B1A2C3D4E5F60718293A4B5F /* WhatToPlayShareCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A2C3D4E5F60718293A4B5E /* WhatToPlayShareCardTests.swift */; };
@@ -189,6 +190,7 @@
 		A9B8C7D6E5F4012345678903 /* WhatToPlaySimulationFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlaySimulationFormatterTests.swift; sourceTree = "<group>"; };
 		AB12CD34EF56789012345670 /* WhatToPlayTrainerPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayTrainerPreferences.swift; sourceTree = "<group>"; };
 		AB12CD34EF56789012345672 /* WhatToPlayTrainerPreferencesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayTrainerPreferencesTests.swift; sourceTree = "<group>"; };
+		AF20C826APPREVIEW0000001 /* AppReviewReadinessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppReviewReadinessTests.swift; sourceTree = "<group>"; };
 		AF7E292F6B244DE6B6E8AC3C /* HouseRulesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseRulesStore.swift; sourceTree = "<group>"; };
 		B12F4C7E2B5849279DE053AA /* BalootAcademyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootAcademyView.swift; sourceTree = "<group>"; };
 		B1A2C3D4E5F60718293A4B5C /* WhatToPlayShareCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayShareCard.swift; sourceTree = "<group>"; };
@@ -381,6 +383,7 @@
 			children = (
 				84754BC8F6B844649CF3D023 /* CatalogFilterTests.swift */,
 				05DA4313DC03409888B1B43F /* CatalogSeederTests.swift */,
+				AF20C826APPREVIEW0000001 /* AppReviewReadinessTests.swift */,
 				A1C0DE01B2F44A1E9C0D1E2F /* CatalogIntegrityTests.swift */,
 				C3E2F013D4B66C30BE2F3041 /* GamePlaythroughTests.swift */,
 				4A84C2F07DB64EC18473D128 /* AchievementCenterTests.swift */,
@@ -789,6 +792,7 @@
 			files = (
 				823142081B934ADB98E8C970 /* CatalogFilterTests.swift in Sources */,
 				0F25653820F7429F931B4AF2 /* CatalogSeederTests.swift in Sources */,
+				AF20C826APPREVIEW0000002 /* AppReviewReadinessTests.swift in Sources */,
 				B2D1EF02C3A55B2FAD1E2F30 /* CatalogIntegrityTests.swift in Sources */,
 				D4F30124E5C77D41CF304152 /* GamePlaythroughTests.swift in Sources */,
 				B10976A06C974F59AF68D22E /* AchievementCenterTests.swift in Sources */,
