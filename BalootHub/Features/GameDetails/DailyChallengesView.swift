@@ -240,6 +240,7 @@ struct DailyChallengesView: View {
         case .easy: "سهل".localized
         case .medium: "متوسط".localized
         case .hard: "صعب".localized
+        case .expert: "خبير".localized
         }
     }
 

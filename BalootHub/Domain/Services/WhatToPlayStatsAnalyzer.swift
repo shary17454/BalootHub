@@ -3821,6 +3821,7 @@ enum WhatToPlayStatsAnalyzer {
         case .easy: return "سهل".localized
         case .medium: return "متوسط".localized
         case .hard: return "صعب".localized
+        case .expert: return "خبير".localized
         }
     }
 }

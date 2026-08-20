@@ -3,6 +3,23 @@ import Testing
 
 @Suite("مدرب وش تلعب")
 struct WhatToPlayTrainerTests {
+    @Test("مستويات وش تلعب تزيد عمق تحليل الخبير تدريجيًا")
+    func difficultySamplesIncreaseWithExpertLevel() {
+        #expect(WhatToPlayDifficulty.easy.expertSamples < WhatToPlayDifficulty.medium.expertSamples)
+        #expect(WhatToPlayDifficulty.medium.expertSamples < WhatToPlayDifficulty.hard.expertSamples)
+        #expect(WhatToPlayDifficulty.hard.expertSamples < WhatToPlayDifficulty.expert.expertSamples)
+    }
+
+    @Test("مستوى الخبير يولد موقفًا حقيقيًا قابلًا للتقييم")
+    func expertDifficultyGeneratesPlayableScenario() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .expert)
+
+        #expect(scenario.difficulty == .expert)
+        #expect(scenario.state.phase == .playing)
+        #expect(!scenario.options.isEmpty)
+        #expect(scenario.options.contains { $0.isExpertChoice })
+    }
+
     @Test("توليد الموقف يعطي دور لاعب بشري وخيارات قانونية")
     func generatedScenarioStopsAtHumanTurn() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .easy)

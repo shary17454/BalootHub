@@ -5,12 +5,14 @@ public enum WhatToPlayDifficulty: String, Sendable, Codable, CaseIterable {
     case easy
     case medium
     case hard
+    case expert
 
     public var expertSamples: Int {
         switch self {
         case .easy: 2
         case .medium: 6
         case .hard: 12
+        case .expert: 24
         }
     }
 }
