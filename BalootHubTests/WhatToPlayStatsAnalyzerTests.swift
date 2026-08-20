@@ -3357,10 +3357,13 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             attempt(daysAgo: 1, difficulty: .medium, correct: false, impact: 1, bestImpact: 4, focusKind: .followSuit, gameMode: .hokum, seed: 303)
         ]
 
-        let review = WhatToPlayStatsAnalyzer.trainingSessionReview(for: attempts, plan: plan)
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+        let review = WhatToPlayStatsAnalyzer.trainingSessionReview(for: progress, attempts: attempts, plan: plan)
 
         XCTAssertEqual(review.action, .replayMistake)
         XCTAssertEqual(review.title, "راجع الخطأ الأعلى أثرًا".localized)
+        XCTAssertEqual(review.replaySeed, progress.reviewItem?.seed)
+        XCTAssertEqual(review.nextSeed, progress.reviewItem?.seed)
         XCTAssertEqual(review.replaySeed, 202)
         XCTAssertEqual(review.nextSeed, 202)
         XCTAssertEqual(review.difficulty, .medium)

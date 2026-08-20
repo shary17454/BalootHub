@@ -700,14 +700,15 @@ struct WhatToPlayTrainerView: View {
             }
             .padding(.top, AppSpacing.xs)
 
+            let review = trainingSessionReview
             Button {
-                applyTrainingSessionNextStep(progress)
+                applyTrainingSessionReview(review, progress: progress)
             } label: {
-                Label(trainingSessionNextStepButtonTitle(progress), systemImage: progress.nextStepIconName)
+                Label(review.title, systemImage: review.iconName)
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
-            .tint(progress.state == .needsRepeat ? AppColor.warning : AppColor.primary)
+            .tint(trainingSessionReviewTint(review))
             .disabled(isGeneratingScenario)
 
             if let reviewItem = progress.reviewItem {
@@ -798,19 +799,6 @@ struct WhatToPlayTrainerView: View {
             parts.append("\("البذرة".localized) \(seed)")
         }
         return parts.joined(separator: " · ")
-    }
-
-    private func trainingSessionNextStepButtonTitle(_ progress: WhatToPlayTrainingSessionProgress) -> String {
-        switch progress.state {
-        case .notStarted:
-            "ابدأ الجلسة".localized
-        case .inProgress:
-            "متابعة الجلسة".localized
-        case .achieved:
-            "انتقل للتحدي التالي".localized
-        case .needsRepeat:
-            "إعادة الخطة".localized
-        }
     }
 
     private func sessionImpactTint(_ averageImpact: Int, completed: Int) -> Color {
@@ -3086,12 +3074,51 @@ struct WhatToPlayTrainerView: View {
         }
     }
 
-    private func applyTrainingSessionNextStep(_ progress: WhatToPlayTrainingSessionProgress) {
-        switch progress.state {
-        case .notStarted, .inProgress, .needsRepeat:
+    private func applyTrainingSessionReview(
+        _ review: WhatToPlayTrainingSessionReview,
+        progress: WhatToPlayTrainingSessionProgress
+    ) {
+        switch review.action {
+        case .start, .continueSession, .repeatSession:
             startTrainingSessionPlan()
-        case .achieved:
-            startNextScenarioRecommendation()
+        case .nextChallenge:
+            if !startTrainingSessionReviewScenario(review) {
+                startNextScenarioRecommendation()
+            }
+        case .replayMistake:
+            if let item = progress.reviewItem, item.seed == review.replaySeed {
+                replayReviewItem(item)
+            } else {
+                if !startTrainingSessionReviewScenario(review) {
+                    startTrainingSessionPlan()
+                }
+            }
+        }
+    }
+
+    @discardableResult
+    private func startTrainingSessionReviewScenario(_ review: WhatToPlayTrainingSessionReview) -> Bool {
+        guard let seed = review.replaySeed ?? review.nextSeed,
+              let difficulty = review.difficulty else {
+            return false
+        }
+        startMicroDrill(
+            scenarioSeed: seed,
+            difficulty: difficulty,
+            focusKind: review.focusKind,
+            gameMode: review.gameMode
+        )
+        return true
+    }
+
+    private func trainingSessionReviewTint(_ review: WhatToPlayTrainingSessionReview) -> Color {
+        switch review.action {
+        case .replayMistake, .repeatSession:
+            return AppColor.warning
+        case .nextChallenge:
+            return AppColor.success
+        case .start, .continueSession:
+            return AppColor.primary
         }
     }
 
