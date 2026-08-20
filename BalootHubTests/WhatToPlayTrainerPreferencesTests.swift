@@ -8,7 +8,7 @@ final class WhatToPlayTrainerPreferencesTests: XCTestCase {
         WhatToPlayTrainerPreferences.clear(from: defaults)
 
         WhatToPlayTrainerPreferences.save(
-            difficulty: .hard,
+            difficulty: .expert,
             preferredFocus: .trumpPressure,
             preferredMode: .hokum,
             to: defaults
@@ -16,7 +16,7 @@ final class WhatToPlayTrainerPreferencesTests: XCTestCase {
 
         XCTAssertEqual(
             WhatToPlayTrainerPreferences.load(from: defaults),
-            WhatToPlayTrainerPreferences(difficulty: .hard, preferredFocus: .trumpPressure, preferredMode: .hokum)
+            WhatToPlayTrainerPreferences(difficulty: .expert, preferredFocus: .trumpPressure, preferredMode: .hokum)
         )
 
         WhatToPlayTrainerPreferences.clear(from: defaults)

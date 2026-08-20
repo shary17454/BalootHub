@@ -2136,8 +2136,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertFalse(coverage.isBalanced)
         XCTAssertEqual(coverage.sampledDifficulties, 1)
-        XCTAssertEqual(coverage.totalDifficulties, 3)
-        XCTAssertEqual(coverage.missingDifficulties, [.medium, .hard])
+        XCTAssertEqual(coverage.totalDifficulties, 4)
+        XCTAssertEqual(coverage.missingDifficulties, [.medium, .hard, .expert])
         XCTAssertEqual(coverage.title, "أكمل تغطية التدريب".localized)
     }
 
@@ -2147,30 +2147,30 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             attempt(daysAgo: 4, difficulty: .easy, correct: true, impact: 2),
             attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 2),
             attempt(daysAgo: 2, difficulty: .hard, correct: true, impact: 2),
-            attempt(daysAgo: 1, difficulty: .hard, correct: true, impact: 2)
+            attempt(daysAgo: 1, difficulty: .expert, correct: true, impact: 2)
         ]
 
         let coverage = WhatToPlayStatsAnalyzer.practiceCoverage(for: attempts)
 
         XCTAssertFalse(coverage.isBalanced)
-        XCTAssertEqual(coverage.sampledDifficulties, 2)
-        XCTAssertEqual(coverage.missingDifficulties, [.medium])
+        XCTAssertEqual(coverage.sampledDifficulties, 1)
+        XCTAssertEqual(coverage.missingDifficulties, [.medium, .hard, .expert])
     }
 
     func testPracticeCoverageReportsBalancedCoverage() {
         let attempts = [
-            attempt(daysAgo: 6, difficulty: .easy, correct: true, impact: 2),
-            attempt(daysAgo: 5, difficulty: .easy, correct: false, impact: -2),
-            attempt(daysAgo: 4, difficulty: .medium, correct: true, impact: 2),
-            attempt(daysAgo: 3, difficulty: .medium, correct: false, impact: -2),
-            attempt(daysAgo: 2, difficulty: .hard, correct: true, impact: 2),
-            attempt(daysAgo: 1, difficulty: .hard, correct: false, impact: -2)
-        ]
+            attempt(daysAgo: 8, difficulty: .easy, correct: true, impact: 2),
+            attempt(daysAgo: 7, difficulty: .easy, correct: false, impact: -2),
+            attempt(daysAgo: 6, difficulty: .medium, correct: true, impact: 2),
+            attempt(daysAgo: 5, difficulty: .medium, correct: false, impact: -2),
+            attempt(daysAgo: 4, difficulty: .hard, correct: true, impact: 2),
+            attempt(daysAgo: 3, difficulty: .hard, correct: false, impact: -2)
+        ] + expertCoverageAttempts()
 
         let coverage = WhatToPlayStatsAnalyzer.practiceCoverage(for: attempts)
 
         XCTAssertTrue(coverage.isBalanced)
-        XCTAssertEqual(coverage.sampledDifficulties, 3)
+        XCTAssertEqual(coverage.sampledDifficulties, 4)
         XCTAssertTrue(coverage.missingDifficulties.isEmpty)
         XCTAssertEqual(coverage.title, "تغطية متوازنة".localized)
     }
@@ -2472,14 +2472,14 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             attempt(daysAgo: 3, difficulty: .medium, correct: false, impact: 0, bestImpact: 0, focusKind: .openingLead),
             attempt(daysAgo: 2, difficulty: .hard, correct: true, impact: 0, focusKind: .openingLead),
             attempt(daysAgo: 1, difficulty: .hard, correct: true, impact: 0, focusKind: .openingLead)
-        ]
+        ] + expertCoverageAttempts(focusKind: .openingLead)
 
         let drill = WhatToPlayStatsAnalyzer.microDrill(for: attempts)
 
         XCTAssertEqual(drill.title, "خطة أنواع المواقف".localized)
         XCTAssertEqual(drill.steps.first, "\("استهدف نوع موقف ناقص".localized): \("اتباع اللون".localized)")
-        XCTAssertEqual(drill.seed, 8_100_006)
-        XCTAssertEqual(drill.difficulty, .easy)
+        XCTAssertEqual(drill.seed, 9_100_008)
+        XCTAssertEqual(drill.difficulty, .medium)
         XCTAssertEqual(drill.focusKind, .followSuit)
     }
 
@@ -2493,14 +2493,14 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             attempt(daysAgo: 3, difficulty: .hard, correct: true, impact: 1, focusKind: .followSuit, gameMode: .sun),
             attempt(daysAgo: 2, difficulty: .easy, correct: true, impact: 1, focusKind: .trumpPressure, gameMode: .sun),
             attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 1, focusKind: .narrowChoice, gameMode: .sun)
-        ]
+        ] + expertCoverageAttempts(gameMode: .sun)
 
         let drill = WhatToPlayStatsAnalyzer.microDrill(for: attempts)
 
         XCTAssertEqual(drill.title, "خطة الصن والحكم".localized)
         XCTAssertEqual(drill.steps.first, "\("استهدف نمطًا ناقصًا".localized): \("حكم".localized)")
         XCTAssertEqual(drill.gameMode, .hokum)
-        XCTAssertEqual(drill.seed, 10_010_008)
+        XCTAssertEqual(drill.seed, 11_010_010)
         XCTAssertNotNil(drill.difficulty)
         XCTAssertNil(drill.focusKind)
     }
@@ -2515,14 +2515,14 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             attempt(daysAgo: 3, difficulty: .hard, correct: true, impact: 10, focusKind: .followSuit, gameMode: .hokum),
             attempt(daysAgo: 2, difficulty: .easy, correct: true, impact: 10, focusKind: .trumpPressure, gameMode: .sun),
             attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 10, focusKind: .narrowChoice, gameMode: .sun)
-        ]
+        ] + expertCoverageAttempts(impact: 10)
 
         let drill = WhatToPlayStatsAnalyzer.microDrill(for: attempts)
 
         XCTAssertEqual(drill.title, "خطة التحدي".localized)
-        XCTAssertEqual(drill.steps.first, "انتقل إلى الصعب".localized)
-        XCTAssertEqual(drill.seed, 10_200_008)
-        XCTAssertEqual(drill.difficulty, .hard)
+        XCTAssertEqual(drill.steps.first, "\("ابدأ بالمستوى المقترح".localized): \("خبير".localized)")
+        XCTAssertEqual(drill.seed, 11_200_010)
+        XCTAssertEqual(drill.difficulty, .expert)
         XCTAssertEqual(drill.focusKind, .trumpPressure)
     }
 
@@ -2536,7 +2536,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             attempt(daysAgo: 3, difficulty: .hard, correct: false, impact: 0, focusKind: .followSuit, gameMode: .hokum),
             attempt(daysAgo: 2, difficulty: .easy, correct: true, impact: 0, focusKind: .trumpPressure, gameMode: .sun),
             attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 0, focusKind: .narrowChoice, gameMode: .sun)
-        ]
+        ] + expertCoverageAttempts(correctSecond: false)
 
         let drill = WhatToPlayStatsAnalyzer.microDrill(for: attempts)
 
@@ -3710,6 +3710,10 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             seed: seed,
             scenarioContext: scenarioContext
         )
+    }
+
+    private func expertCoverageAttempts(impact: Int = 2, focusKind: WhatToPlayScenarioFocusKind? = nil, gameMode: GameMode? = nil, correctSecond: Bool = true) -> [WhatToPlayAttempt] {
+        [attempt(daysAgo: 0, difficulty: .expert, correct: true, impact: impact, focusKind: focusKind, gameMode: gameMode), attempt(daysAgo: 0, difficulty: .expert, correct: correctSecond, impact: impact, focusKind: focusKind, gameMode: gameMode)]
     }
 
     private func attempt(

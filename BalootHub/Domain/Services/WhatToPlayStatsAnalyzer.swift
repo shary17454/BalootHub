@@ -3294,13 +3294,13 @@ enum WhatToPlayStatsAnalyzer {
                 detail: "أداؤك قوي؛ اجعل التدريب القادم على المواقف التي تضغط قراءة الشريك والخصم.".localized,
                 iconName: "flame.fill",
                 steps: [
-                    "انتقل إلى الصعب".localized,
+                    "\("ابدأ بالمستوى المقترح".localized): \("خبير".localized)",
                     "استهدف 3 إجابات صحيحة".localized,
                     "شارك موقفًا صعبًا للمراجعة".localized
                 ],
                 reviewItem: nil,
-                seed: microDrillSeed(attempts: attempts, difficulty: .hard, focusKind: .trumpPressure),
-                difficulty: .hard,
+                seed: microDrillSeed(attempts: attempts, difficulty: .expert, focusKind: .trumpPressure),
+                difficulty: .expert,
                 focusKind: .trumpPressure,
                 gameMode: nil,
                 trumpSuit: nil
@@ -3821,6 +3821,7 @@ enum WhatToPlayStatsAnalyzer {
         case .easy: return "سهل".localized
         case .medium: return "متوسط".localized
         case .hard: return "صعب".localized
+        case .expert: return "خبير".localized
         }
     }
 }
