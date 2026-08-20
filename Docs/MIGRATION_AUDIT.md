@@ -88,14 +88,41 @@ Quality changes made during verification:
 Known remaining production gaps:
 
 - iPad is still not enabled in the Xcode target (`TARGETED_DEVICE_FAMILY = 1`), so iPad App Store screenshots and iPad support remain future work.
-- StoreKit code remains in the codebase, but purchase gating is intentionally disabled for the current App Review-safe build until the App Store Connect in-app purchase product is ready and submitted with a build.
+- StoreKit/IAP code and resources were removed from the current App Review-safe build. If IAP is added later, the App Store Connect product must be submitted with the same build that references it.
 - This pass did not perform an App Store archive upload or submission. Local tests, lint, and Release simulator build are verified only.
+
+## App Review IAP Rejection Fix
+
+Verification date: 2026-08-20
+
+Apple rejected version `1.1 (149)` under Guideline 2.1(b) because the app referenced in-app purchase content while the associated IAP products were not submitted for review.
+
+Changes made for the next binary:
+
+- Raised `CURRENT_PROJECT_VERSION` to `150`.
+- Removed `Products.storekit` from the repository and app resources.
+- Removed StoreKit scheme references from `BalootHub.xcscheme`.
+- Removed the compiled paywall view and purchase manager from the app target.
+- Removed purchase-specific string catalog keys so App Store review does not see IAP UI strings in the app bundle.
+- Kept the app fully usable without a paywall.
+
+Verification completed:
+
+- Source and Xcode project scan for StoreKit/IAP/paywall/product identifiers: passed.
+- String Catalog scan for purchase UI keys: passed.
+- SwiftLint strict: passed (`0` violations).
+- Engine tests: passed with `swift test --quiet` in `Packages/BalootEngine` (`158` tests in `21` suites).
+- App tests: passed with `xcodebuild test` on `iPhone 17 Pro`, iOS `26.5`.
+- Release simulator build: passed.
+- Device archive: passed with `xcodebuild archive` to `/tmp/BalootHubIAPFix.xcarchive`.
+- Archive bundle scan for StoreKit/IAP/paywall/product identifiers: passed.
 
 ## Next Phase Gate
 
 Before moving into broader implementation phases, the next safe engineering steps are:
 
-1. Generate and validate a device archive with signing before any App Store upload.
-2. Decide whether the current submission should remain free with IAP disabled or re-enable IAP only after the App Store Connect product is submitted for review.
-3. Audit iPad support separately before changing `TARGETED_DEVICE_FAMILY`.
-4. Continue Phase 2 by selecting the next functional area and verifying it requirement-by-requirement against the product specification.
+1. Upload a fresh archive/build `1.1 (150)` to App Store Connect or let Xcode Cloud produce a new build from the pushed commit.
+2. Select build `150` for the version and resubmit it for review.
+3. Keep the current submission free, or add IAP later only after the App Store Connect product metadata and review screenshot are ready to submit with the app version.
+4. Audit iPad support separately before changing `TARGETED_DEVICE_FAMILY`.
+5. Continue Phase 2 by selecting the next functional area and verifying it requirement-by-requirement against the product specification.

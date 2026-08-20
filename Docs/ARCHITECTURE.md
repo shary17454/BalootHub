@@ -58,16 +58,16 @@ The container falls back to an in-memory store if the persistent store cannot op
 
 ## Commerce State
 
-StoreKit code exists, but in-app purchases are disabled in the current review build through `CommerceConfiguration.inAppPurchasesEnabled = false`.
+The current review build is fully free and contains no StoreKit implementation, no local StoreKit configuration file, and no compiled paywall view.
 
-Reason: App Review rejected version 1.1 because the app referenced IAP while the associated product was not submitted for review. The current production-safe behavior is to keep the app usable without a paywall until the product is fully configured and submitted with a future binary.
+Reason: App Review rejected version 1.1 because the app referenced IAP while the associated product was not submitted for review. The production-safe behavior for this version is to remove IAP references from the binary and keep the app usable without a paywall.
 
-To re-enable IAP later:
+To add IAP later:
 
 1. Configure the product in App Store Connect.
 2. Add required IAP metadata and review screenshot.
 3. Submit the IAP product together with the app version.
-4. Set `CommerceConfiguration.inAppPurchasesEnabled = true`.
+4. Add StoreKit 2 code and UI only in the same release that submits the product.
 5. Run purchase tests, Release build, and App Review smoke checks.
 
 ## Current Compliance Notes

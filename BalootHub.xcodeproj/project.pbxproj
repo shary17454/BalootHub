@@ -29,7 +29,6 @@
 		32ACBC56B3044B9EBB30C480 /* BalootGamePlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E31630790994E7BB9617012 /* BalootGamePlayView.swift */; };
 		3619A8C48E9B496CA0D77398 /* ScoreRound.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0811162DCF843A7B33CF1E3 /* ScoreRound.swift */; };
 		39D4EE2E35DE4766933134A7 /* Difficulty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F8A5DDE9514264999D32AF /* Difficulty.swift */; };
-		412C9F7A2439837930D9209C /* PurchaseManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8708E003E75904E5410AC481 /* PurchaseManagerTests.swift */; };
 		41C5D46DD8114F4EA837279D /* SettingsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58DE3BF27BC849B48E1249E4 /* SettingsRepository.swift */; };
 		46A8F05EEA264D8A8F12D237 /* StatusBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26F1901589540B5AF735A37 /* StatusBadge.swift */; };
 		48D369A5FB1E459C8B133283 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 20E0FBBD7CE549F2A3856DB6 /* Assets.xcassets */; };
@@ -41,11 +40,9 @@
 		5F0C8B4A7D6E4B3EB15C229A /* DailyChallengeCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88C1D026EA1418FA1FEC017 /* DailyChallengeCenter.swift */; };
 		5F6247EDBCD44AB7BCDDE0FB /* ScoreSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = D580074AC68348148D5DC26D /* ScoreSession.swift */; };
 		61F13B5488C84DEAA09C1DF3 /* AppShadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848EDA40DF184CF781C61A94 /* AppShadow.swift */; };
-		65A1AE5C58E64E6C83790D91 /* PurchaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4758A99A56664E9C962452F2 /* PurchaseManager.swift */; };
 		6B5655E03DEC17338A9D5AD1 /* SelectableChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7173E22B6806A36935F07399 /* SelectableChip.swift */; };
 		6B91A47E26184C3FA73A0E58 /* ScoringQuizTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C2D6F5E9A4B6D9C3E1F82 /* ScoringQuizTests.swift */; };
 		6E40B5D22B9148959715D4A7 /* HouseRulesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF7E292F6B244DE6B6E8AC3C /* HouseRulesStore.swift */; };
-		7290276C730BBEF9C058D0EE /* Products.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 9AB10419E6C901CDCC45162A /* Products.storekit */; };
 		7371B0D4CEFD48E8B52434BC /* OfflineTournamentPlanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31E143820BE3422EB209A656 /* OfflineTournamentPlanner.swift */; };
 		760B33B8E4CF45069E83A1F8 /* AchievementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F7992AFC7994C918BD99B64 /* AchievementsView.swift */; };
 		77D2F8E6A63B4F0E94D2A15C /* BalootAcademy.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A58DE91B234B9A8D2E7781 /* BalootAcademy.swift */; };
@@ -63,7 +60,6 @@
 		8C9A6F2E1B174E8AB13B4702 /* AcademyLessonProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F7C403B472B49CDA9E081AA /* AcademyLessonProgress.swift */; };
 		900B5945118245E694BD58F3 /* HouseRulesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8F07391EC254A07B8FD6B6F /* HouseRulesView.swift */; };
 		91C0E4D6FA8D491CA2A82F43 /* AchievementCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F43B2E6742474EAC83E071 /* AchievementCenter.swift */; };
-		92078686623F498BBE8CF9D2 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70BBCF20A74430985D4CF5E /* PaywallView.swift */; };
 		979E68290B6B4463975F8D21 /* GameRuleSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01AE34D93AC440DDB9A6F2F0 /* GameRuleSection.swift */; };
 		9B68F276832B4D0191D79F10 /* RoundReplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63CE859BAE4F7DB4607E4B /* RoundReplayView.swift */; };
 		9CAD4557F7D248428C5F6CE5 /* AppTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74199DC881014B42882FE6C3 /* AppTypography.swift */; };
@@ -161,7 +157,6 @@
 		43F8A5DDE9514264999D32AF /* Difficulty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Difficulty.swift; sourceTree = "<group>"; };
 		45BD7ECD51144879B505C6CB /* CatalogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogView.swift; sourceTree = "<group>"; };
 		45F37EE22BE547E6818E907D /* BalootHubTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BalootHubTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		4758A99A56664E9C962452F2 /* PurchaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseManager.swift; sourceTree = "<group>"; };
 		4A12CB5F40B64B06A4684331 /* HouseRulesStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseRulesStoreTests.swift; sourceTree = "<group>"; };
 		4A84C2F07DB64EC18473D128 /* AchievementCenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementCenterTests.swift; sourceTree = "<group>"; };
 		4B8D6F9A33124E5DB6D3A2F1 /* ScoringQuiz.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoringQuiz.swift; sourceTree = "<group>"; };
@@ -184,10 +179,8 @@
 		84754BC8F6B844649CF3D023 /* CatalogFilterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogFilterTests.swift; sourceTree = "<group>"; };
 		848EDA40DF184CF781C61A94 /* AppShadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppShadow.swift; sourceTree = "<group>"; };
 		8656E5E144954110A70861C4 /* ScorekeeperHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScorekeeperHomeView.swift; sourceTree = "<group>"; };
-		8708E003E75904E5410AC481 /* PurchaseManagerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PurchaseManagerTests.swift; sourceTree = "<group>"; };
 		8F7992AFC7994C918BD99B64 /* AchievementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementsView.swift; sourceTree = "<group>"; };
 		8FEAB8A9EE094A00B96258EF /* AppSpacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSpacing.swift; sourceTree = "<group>"; };
-		9AB10419E6C901CDCC45162A /* Products.storekit */ = {isa = PBXFileReference; includeInIndex = 1; path = Products.storekit; sourceTree = "<group>"; };
 		A0B10123456789ABCDEF0100 /* BalootSandboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootSandboxView.swift; sourceTree = "<group>"; };
 		A118D65D0C193EC4C802174D /* ProjectStatsAnalyzerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ProjectStatsAnalyzerTests.swift; sourceTree = "<group>"; };
 		A1C0DE01B2F44A1E9C0D1E2F /* CatalogIntegrityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogIntegrityTests.swift; sourceTree = "<group>"; };
@@ -201,7 +194,6 @@
 		B1A2C3D4E5F60718293A4B5C /* WhatToPlayShareCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayShareCard.swift; sourceTree = "<group>"; };
 		B1A2C3D4E5F60718293A4B5E /* WhatToPlayShareCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayShareCardTests.swift; sourceTree = "<group>"; };
 		B65370442FE445AB8978857A /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		B70BBCF20A74430985D4CF5E /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
 		B86D021D851B4EE2B3C92D16 /* GameCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCardView.swift; sourceTree = "<group>"; };
 		BA50000123456789ABCDEF00 /* BalootSandboxShareCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootSandboxShareCard.swift; sourceTree = "<group>"; };
 		BA50000123456789ABCDEF02 /* BalootSandboxShareCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootSandboxShareCardTests.swift; sourceTree = "<group>"; };
@@ -316,7 +308,6 @@
 			isa = PBXGroup;
 			children = (
 				774F64E2FF1449F4BFBB8528 /* CatalogFilter.swift */,
-				4758A99A56664E9C962452F2 /* PurchaseManager.swift */,
 				A7F43B2E6742474EAC83E071 /* AchievementCenter.swift */,
 				C3A58DE91B234B9A8D2E7781 /* BalootAcademy.swift */,
 				F88C1D026EA1418FA1FEC017 /* DailyChallengeCenter.swift */,
@@ -354,7 +345,6 @@
 				FE6DF1A40BF14397892588AB /* Rules */,
 				173708000B104C4D978011F3 /* Scorekeeper */,
 				423ADE61FD1E4589B2F5B22E /* Settings */,
-				97018DFF13F94EE38E91F034 /* Purchase */,
 				E87BDC566FBD4283B0C40316 /* WhatToPlayTrainer */,
 			);
 			path = Features;
@@ -417,7 +407,6 @@
 				A118D65D0C193EC4C802174D /* ProjectStatsAnalyzerTests.swift */,
 				DD926CE4B79280B21E0E0D42 /* BalootEncyclopediaAndRareCaseTests.swift */,
 				5CC7A18FF788A656EA6E3D2F /* BalootGameViewModelRegressionTests.swift */,
-				8708E003E75904E5410AC481 /* PurchaseManagerTests.swift */,
 			);
 			path = BalootHubTests;
 			sourceTree = "<group>";
@@ -478,14 +467,6 @@
 			);
 			name = Utilities;
 			path = Utilities;
-			sourceTree = "<group>";
-		};
-		97018DFF13F94EE38E91F034 /* Purchase */ = {
-			isa = PBXGroup;
-			children = (
-				B70BBCF20A74430985D4CF5E /* PaywallView.swift */,
-			);
-			path = Purchase;
 			sourceTree = "<group>";
 		};
 		9AA065D1ED164A03A556B4E3 /* Home */ = {
@@ -553,7 +534,6 @@
 				FED908994DC2411AAE804BF8 /* Domain */,
 				2AA28A5DE0714FE4A52FFE5F /* Features */,
 				90E3EACA277A409DABA0EA4C /* Resources */,
-				9AB10419E6C901CDCC45162A /* Products.storekit */,
 			);
 			path = BalootHub;
 			sourceTree = "<group>";
@@ -701,7 +681,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7290276C730BBEF9C058D0EE /* Products.storekit in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -791,8 +770,6 @@
 				900B5945118245E694BD58F3 /* HouseRulesView.swift in Sources */,
 				79BA9746DCA54A48B4846ED5 /* SettingsView.swift in Sources */,
 				F2BAAC0D94FF47CA855544E0 /* String+Localized.swift in Sources */,
-				65A1AE5C58E64E6C83790D91 /* PurchaseManager.swift in Sources */,
-				92078686623F498BBE8CF9D2 /* PaywallView.swift in Sources */,
 				B613485B54B27AD9B941AD0A /* ProjectDeclarationRecord.swift in Sources */,
 				821A2A823B60776A5228256C /* ProjectStatsAnalyzer.swift in Sources */,
 				F9CAD0269B3EDCA7F3964A0B /* BalootEncyclopedia.swift in Sources */,
@@ -838,7 +815,6 @@
 				8562A90A1A02EAFDFCA320F2 /* ProjectStatsAnalyzerTests.swift in Sources */,
 				280958DE94573315B4BAD7BA /* BalootEncyclopediaAndRareCaseTests.swift in Sources */,
 				89D2F0E3C6E0C3D132BAEAAD /* BalootGameViewModelRegressionTests.swift in Sources */,
-				412C9F7A2439837930D9209C /* PurchaseManagerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -922,7 +898,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 150;
 				DEVELOPMENT_ASSET_PATHS = BalootHub/PreviewContent;
 				DEVELOPMENT_TEAM = 4HM66AD594;
 				ENABLE_PREVIEWS = YES;
@@ -954,7 +930,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 150;
 				DEVELOPMENT_TEAM = 4HM66AD594;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.1;
@@ -972,7 +948,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 150;
 				DEVELOPMENT_TEAM = 4HM66AD594;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.1;
@@ -1047,7 +1023,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 17;
+				CURRENT_PROJECT_VERSION = 150;
 				DEVELOPMENT_ASSET_PATHS = BalootHub/PreviewContent;
 				DEVELOPMENT_TEAM = 4HM66AD594;
 				ENABLE_PREVIEWS = YES;
