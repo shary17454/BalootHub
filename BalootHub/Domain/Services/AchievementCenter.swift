@@ -33,7 +33,7 @@ enum AchievementCenter {
             id: "first-kaboot",
             title: "أول كبوت",
             detail: "حقق كبوتًا في جولة بلوت.",
-            requirement: "يفتح عند تسجيل أو لعب أول كبوت.",
+            requirement: "يتحقق عند تسجيل أو لعب أول كبوت.",
             iconName: "crown.fill",
             rarity: .gold
         ),
@@ -41,7 +41,7 @@ enum AchievementCenter {
             id: "sun-king",
             title: "ملك الصن",
             detail: "افز بعدة جولات صن متتالية.",
-            requirement: "يفتح عند وصول سلسلة انتصارات الصن إلى 5.",
+            requirement: "يتحقق عند وصول سلسلة انتصارات الصن إلى 5.",
             iconName: "sun.max.fill",
             rarity: .silver
         ),
@@ -49,7 +49,7 @@ enum AchievementCenter {
             id: "hokum-sheikh",
             title: "شيخ الحكم",
             detail: "أثبت قوتك في جولات الحكم.",
-            requirement: "يفتح عند الفوز بـ10 جولات حكم.",
+            requirement: "يتحقق عند الفوز بـ10 جولات حكم.",
             iconName: "suit.spade.fill",
             rarity: .gold
         ),
@@ -57,7 +57,7 @@ enum AchievementCenter {
             id: "scorekeeper",
             title: "الحاسب",
             detail: "أتقن حساب النتائج بدون أخطاء.",
-            requirement: "يفتح عند حل 25 سؤالًا من تحدي حساب النقاط.",
+            requirement: "يتحقق عند حل 25 سؤالًا من تحدي حساب النقاط.",
             iconName: "function",
             rarity: .silver
         ),
@@ -65,7 +65,7 @@ enum AchievementCenter {
             id: "scoring-sheikh",
             title: "شيخ الحساب".localized,
             detail: "أتقن حساب النقاط في الأسئلة الصعبة التي تشمل المشاريع والمضاعفات.".localized,
-            requirement: "يفتح عند حل 5 أسئلة صعبة صحيحة في تحدي حساب النقاط.".localized,
+            requirement: "يتحقق عند حل 5 أسئلة صعبة صحيحة في تحدي حساب النقاط.".localized,
             iconName: "function",
             rarity: .gold
         ),
@@ -73,7 +73,7 @@ enum AchievementCenter {
             id: "coffee-calculator",
             title: "خبير القهوة".localized,
             detail: "أتقن حساب جولات القهوة والمضاعفات العالية في تحدي النقاط.".localized,
-            requirement: "يفتح عند حل 5 أسئلة قهوة صحيحة في تحدي حساب النقاط.".localized,
+            requirement: "يتحقق عند حل 5 أسئلة قهوة صحيحة في تحدي حساب النقاط.".localized,
             iconName: "cup.and.saucer.fill",
             rarity: .gold
         ),
@@ -81,7 +81,7 @@ enum AchievementCenter {
             id: "expert-eye",
             title: "عين الخبير".localized,
             detail: "اقرأ مواقف وش تلعب واختر نفس قرار الخبير.".localized,
-            requirement: "يفتح عند مطابقة قرار الخبير في 5 مواقف من مدرب وش تلعب.".localized,
+            requirement: "يتحقق عند مطابقة قرار الخبير في 5 مواقف من مدرب وش تلعب.".localized,
             iconName: "eye.fill",
             rarity: .gold
         ),
@@ -89,7 +89,7 @@ enum AchievementCenter {
             id: "academy-master",
             title: "إتقان المشاريع",
             detail: "أكمل دروس المشاريع والتكتيك في الأكاديمية.",
-            requirement: "يفتح عند إكمال كل دروس الأكاديمية الحالية.",
+            requirement: "يتحقق عند إكمال كل دروس الأكاديمية الحالية.",
             iconName: "graduationcap.fill",
             rarity: .gold
         ),
@@ -97,7 +97,7 @@ enum AchievementCenter {
             id: "offline-cup-winner",
             title: "بطل المجلس".localized,
             detail: "أنهى بطولة Offline واعتمد بطلها.".localized,
-            requirement: "يفتح عند إنهاء أول بطولة Offline.".localized,
+            requirement: "يتحقق عند إنهاء أول بطولة Offline.".localized,
             iconName: "trophy.fill",
             rarity: .silver
         ),
@@ -105,7 +105,7 @@ enum AchievementCenter {
             id: "offline-dynasty",
             title: "سلالة بطولات".localized,
             detail: "فريق واحد سيطر على بطولات المجلس المحلية.".localized,
-            requirement: "يفتح عندما يحقق فريق واحد 3 بطولات Offline.".localized,
+            requirement: "يتحقق عندما يحقق فريق واحد 3 بطولات Offline.".localized,
             iconName: "crown.fill",
             rarity: .legendary
         ),
@@ -113,7 +113,7 @@ enum AchievementCenter {
             id: "offline-eight-team-champion",
             title: "بطل الثمانية".localized,
             detail: "أنهى بطولة Offline كاملة من 8 فرق واعتمد بطلها.".localized,
-            requirement: "يفتح عند إنهاء أول بطولة Offline من 8 فرق.".localized,
+            requirement: "يتحقق عند إنهاء أول بطولة Offline من 8 فرق.".localized,
             iconName: "trophy.circle.fill",
             rarity: .gold
         ),
@@ -121,7 +121,7 @@ enum AchievementCenter {
             id: "challenge-regular",
             title: "ملتزم التحديات".localized,
             detail: "أكمل عدة تحديات يومية أو أسبوعية محلية.".localized,
-            requirement: "يفتح عند إكمال 5 تحديات بلوت Offline.".localized,
+            requirement: "يتحقق عند إكمال 5 تحديات بلوت Offline.".localized,
             iconName: "calendar.badge.checkmark",
             rarity: .silver
         ),
@@ -129,7 +129,7 @@ enum AchievementCenter {
             id: "ten-win-streak",
             title: "10 انتصارات متتالية",
             detail: "حافظ على سلسلة انتصارات طويلة.",
-            requirement: "يفتح عند تحقيق 10 انتصارات متتالية.",
+            requirement: "يتحقق عند تحقيق 10 انتصارات متتالية.",
             iconName: "flame.fill",
             rarity: .legendary
         ),
@@ -137,7 +137,7 @@ enum AchievementCenter {
             id: "hundred-matches",
             title: "100 مباراة",
             detail: "استمر في اللعب والتدريب.",
-            requirement: "يفتح عند لعب أو تسجيل 100 مباراة.",
+            requirement: "يتحقق عند لعب أو تسجيل 100 مباراة.",
             iconName: "100.circle.fill",
             rarity: .legendary
         ),
@@ -145,7 +145,7 @@ enum AchievementCenter {
             id: "expert-slayer",
             title: "الفوز على أعلى AI",
             detail: "اهزم أصعب مستوى ذكاء اصطناعي.",
-            requirement: "يفتح عند الفوز على مستوى شيخ البلوت.",
+            requirement: "يتحقق عند الفوز على مستوى شيخ البلوت.",
             iconName: "brain.head.profile",
             rarity: .legendary
         )
@@ -432,55 +432,55 @@ enum CareerProgressAnalyzer {
             CareerUnlock(
                 id: "majlis-table",
                 title: "طاولة المجلس".localized,
-                detail: "تفتح بعد أول مباراة مكتملة.".localized,
+                detail: "تتحقق بعد أول مباراة مكتملة.".localized,
                 isUnlocked: completedMatches >= 1
             ),
             CareerUnlock(
                 id: "trainer-path",
                 title: "مسار قارئ الطاولة".localized,
-                detail: "يفتح بعد 10 قرارات صحيحة في وش تلعب.".localized,
+                detail: "يتحقق بعد 10 قرارات صحيحة في وش تلعب.".localized,
                 isUnlocked: correctTrainingAttempts >= 10
             ),
             CareerUnlock(
                 id: "accountant-badge",
                 title: "لقب الحاسب".localized,
-                detail: "يفتح بعد 25 إجابة صحيحة في تحدي النقاط.".localized,
+                detail: "يتحقق بعد 25 إجابة صحيحة في تحدي النقاط.".localized,
                 isUnlocked: correctScoringAnswers >= 25
             ),
             CareerUnlock(
                 id: "advanced-accountant",
                 title: "محلل الحساب المتقدم".localized,
-                detail: "يفتح بعد 10 إجابات صحيحة في أسئلة المشاريع أو المضاعفات أو القهوة.".localized,
+                detail: "يتحقق بعد 10 إجابات صحيحة في أسئلة المشاريع أو المضاعفات أو القهوة.".localized,
                 isUnlocked: correctAdvancedScoringAnswers >= 10
             ),
             CareerUnlock(
                 id: "academy-certificate",
                 title: "شهادة الأكاديمية".localized,
-                detail: "تفتح بعد 8 دروس مكتملة.".localized,
+                detail: "تتحقق بعد 8 دروس مكتملة.".localized,
                 isUnlocked: completedAcademyLessons >= 8
             ),
             CareerUnlock(
                 id: "offline-cup-path",
                 title: "مسار البطولات".localized,
-                detail: "يفتح بعد إنهاء أول بطولة Offline.".localized,
+                detail: "يتحقق بعد إنهاء أول بطولة Offline.".localized,
                 isUnlocked: completedTournaments >= 1
             ),
             CareerUnlock(
                 id: "champion-title",
                 title: "لقب بطل المجلس".localized,
-                detail: "يفتح بعد اعتماد بطل في بطولة Offline.".localized,
+                detail: "يتحقق بعد اعتماد بطل في بطولة Offline.".localized,
                 isUnlocked: tournamentTitles >= 1
             ),
             CareerUnlock(
                 id: "challenge-board",
                 title: "لوحة التحديات".localized,
-                detail: "تفتح بعد 5 تحديات مكتملة.".localized,
+                detail: "تتحقق بعد 5 تحديات مكتملة.".localized,
                 isUnlocked: completedChallenges >= 5
             ),
             CareerUnlock(
                 id: "titles-room",
                 title: "مجلس الألقاب".localized,
-                detail: "يفتح بعد 5 إنجازات.".localized,
+                detail: "يتحقق بعد 5 إنجازات.".localized,
                 isUnlocked: unlockedAchievementCount >= 5
             )
         ]

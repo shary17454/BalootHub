@@ -110,7 +110,7 @@ enum WhatToPlayOptionTacticalTag: Equatable {
         case .holdsPosition:
             "يحافظ على الوضع".localized
         case .opensRisk:
-            "يفتح مخاطرة".localized
+            "يرفع المخاطرة".localized
         case .costly:
             "مكلف".localized
         }

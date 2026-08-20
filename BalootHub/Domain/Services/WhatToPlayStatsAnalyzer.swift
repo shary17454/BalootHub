@@ -1898,7 +1898,7 @@ enum WhatToPlayStatsAnalyzer {
             let recommendation = nextScenarioRecommendation(for: attempts)
             return WhatToPlayTrainingSessionReview(
                 action: .nextChallenge,
-                title: "افتح تحدي أقوى".localized,
+                title: "ابدأ تحدي أقوى".localized,
                 detail: "\("نتيجة الجلسة".localized): \(progress.gradePercent)/100. \("ابدأ موقفًا جديدًا بالمستوى المقترح بدل تكرار خطة أتقنتها.".localized)",
                 iconName: "arrow.up.circle.fill",
                 replaySeed: nil,

@@ -3313,7 +3313,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         let review = WhatToPlayStatsAnalyzer.trainingSessionReview(for: attempts, plan: plan)
 
         XCTAssertEqual(review.action, .nextChallenge)
-        XCTAssertEqual(review.title, "افتح تحدي أقوى".localized)
+        XCTAssertEqual(review.title, "ابدأ تحدي أقوى".localized)
         XCTAssertEqual(review.difficulty, .hard)
         XCTAssertNotNil(review.nextSeed)
         XCTAssertNil(review.replaySeed)

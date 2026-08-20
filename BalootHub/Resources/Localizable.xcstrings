@@ -19,7 +19,7 @@
     "أنهى بطولة Offline كاملة من 8 فرق واعتمد بطلها." : {
 
     },
-    "يفتح عند إنهاء أول بطولة Offline من 8 فرق." : {
+    "يتحقق عند إنهاء أول بطولة Offline من 8 فرق." : {
 
     },
     "حاسب البلوت" : {
@@ -40,7 +40,7 @@
     "أتقن حساب جولات القهوة والمضاعفات العالية في تحدي النقاط." : {
 
     },
-    "يفتح عند حل 5 أسئلة قهوة صحيحة في تحدي حساب النقاط." : {
+    "يتحقق عند حل 5 أسئلة قهوة صحيحة في تحدي حساب النقاط." : {
 
     },
     "حساب النقاط" : {
@@ -82,7 +82,7 @@
     "محلل الحساب المتقدم" : {
 
     },
-    "يفتح بعد 10 إجابات صحيحة في أسئلة المشاريع أو المضاعفات أو القهوة." : {
+    "يتحقق بعد 10 إجابات صحيحة في أسئلة المشاريع أو المضاعفات أو القهوة." : {
 
     },
     "مقارنة الصن والحكم" : {
@@ -127,7 +127,7 @@
     "ابدأ أول مباراة" : {
 
     },
-    "افتح تحدي أقوى" : {
+    "ابدأ تحدي أقوى" : {
 
     },
     "أجب على تحديات النقاط حتى تصل إلى 25 إجابة صحيحة." : {
@@ -259,10 +259,10 @@
     "فريق واحد سيطر على بطولات المجلس المحلية." : {
 
     },
-    "تفتح بعد 8 دروس مكتملة." : {
+    "تتحقق بعد 8 دروس مكتملة." : {
 
     },
-    "تفتح بعد أول مباراة مكتملة." : {
+    "تتحقق بعد أول مباراة مكتملة." : {
 
     },
     "تقدم رتبة المسيرة" : {
@@ -271,7 +271,7 @@
     "تحديات مكتملة" : {
 
     },
-    "تفتح بعد 5 تحديات مكتملة." : {
+    "تتحقق بعد 5 تحديات مكتملة." : {
 
     },
     "لقب بطل المجلس" : {
@@ -334,28 +334,28 @@
     "وصلت إلى أعلى رتبة حالية في المسيرة." : {
 
     },
-    "يفتح بعد 10 قرارات صحيحة في وش تلعب." : {
+    "يتحقق بعد 10 قرارات صحيحة في وش تلعب." : {
 
     },
-    "يفتح بعد 25 إجابة صحيحة في تحدي النقاط." : {
+    "يتحقق بعد 25 إجابة صحيحة في تحدي النقاط." : {
 
     },
-    "يفتح بعد اعتماد بطل في بطولة Offline." : {
+    "يتحقق بعد اعتماد بطل في بطولة Offline." : {
 
     },
-    "يفتح بعد إنهاء أول بطولة Offline." : {
+    "يتحقق بعد إنهاء أول بطولة Offline." : {
 
     },
-    "يفتح عندما يحقق فريق واحد 3 بطولات Offline." : {
+    "يتحقق عندما يحقق فريق واحد 3 بطولات Offline." : {
 
     },
     "أنهى بطولة Offline واعتمد بطلها." : {
 
     },
-    "يفتح بعد 5 إنجازات." : {
+    "يتحقق بعد 5 إنجازات." : {
 
     },
-    "يفتح عند إكمال 5 تحديات بلوت Offline." : {
+    "يتحقق عند إكمال 5 تحديات بلوت Offline." : {
 
     },
     "أكمل مباراة أو جلسة تسجيل حتى يبدأ سجل المسيرة من نتيجة حقيقية." : {
@@ -419,10 +419,10 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "专家之眼" } }
       }
     },
-    "يفتح عند مطابقة قرار الخبير في 5 مواقف من مدرب وش تلعب." : {
+    "يتحقق عند مطابقة قرار الخبير في 5 مواقف من مدرب وش تلعب." : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Wird freigeschaltet, wenn du in 5 Was spielst du?-Szenarien die Expertenentscheidung triffst." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unlocks when you match the expert decision in 5 What to Play trainer scenarios." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Earned when you match the expert decision in 5 What to Play trainer scenarios." } },
         "es" : { "stringUnit" : { "state" : "translated", "value" : "Se desbloquea al igualar la decisión del experto en 5 escenarios del entrenador ¿Qué juegas?." } },
         "fr" : { "stringUnit" : { "state" : "translated", "value" : "Se débloque quand tu égales la décision de l'expert dans 5 situations de l'entraîneur Que jouer ?." } },
         "hi" : { "stringUnit" : { "state" : "translated", "value" : "क्या खेलें ट्रेनर की 5 स्थितियों में विशेषज्ञ के निर्णय से मिलान करने पर खुलता है।" } },
@@ -9439,12 +9439,12 @@
         }
       }
     },
-    "يفتح عند حل 5 أسئلة صعبة صحيحة في تحدي حساب النقاط." : {
+    "يتحقق عند حل 5 أسئلة صعبة صحيحة في تحدي حساب النقاط." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Unlocks after 5 correct hard scoring challenge answers."
+            "value" : "Earned after 5 correct hard scoring challenge answers."
           }
         }
       }
@@ -18882,7 +18882,7 @@
         }
       }
     },
-    "يفتح مخاطرة" : {
+    "يرفع المخاطرة" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -23684,11 +23684,11 @@
     "مراجعة المزايدة" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Bietprüfung" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Bidding review" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Revisión de la subasta" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Révision des enchères" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "बोली समीक्षा" } }, "id" : { "stringUnit" : { "state" : "translated", "value" : "Tinjauan bidding" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверка торгов" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "İhale incelemesi" } }, "ur" : { "stringUnit" : { "state" : "translated", "value" : "بولی کا جائزہ" } }, "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "叫牌复盘" } } } },
     "مراجعة المشاريع" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Projektprüfung" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Project review" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Revisión de proyectos" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Révision des projets" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "प्रोजेक्ट समीक्षा" } }, "id" : { "stringUnit" : { "state" : "translated", "value" : "Tinjauan proyek" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверка проектов" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Proje incelemesi" } }, "ur" : { "stringUnit" : { "state" : "translated", "value" : "پروجیکٹ جائزہ" } }, "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "项目复盘" } } } },
     "مراجعة المضاعفة" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Verdopplungsprüfung" } }, "en" : { "stringUnit" : { "state" : "translated", "value" : "Doubling review" } }, "es" : { "stringUnit" : { "state" : "translated", "value" : "Revisión de doblaje" } }, "fr" : { "stringUnit" : { "state" : "translated", "value" : "Révision du double" } }, "hi" : { "stringUnit" : { "state" : "translated", "value" : "डबल समीक्षा" } }, "id" : { "stringUnit" : { "state" : "translated", "value" : "Tinjauan ganda" } }, "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверка удвоения" } }, "tr" : { "stringUnit" : { "state" : "translated", "value" : "Katlama incelemesi" } }, "ur" : { "stringUnit" : { "state" : "translated", "value" : "ڈبل جائزہ" } }, "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "加倍复盘" } } } },
-    "احتمال الشراء" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Buy chance" } } } },
+    "احتمال الشراء" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Bid chance" } } } },
     "احتمال الصن" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Sun chance" } } } },
     "خلاصة القرار" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Decision summary" } } } },
-    "شراء قوي" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Strong buy" } } } },
-    "شراء حذر" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Cautious buy" } } } },
+    "شراء قوي" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Strong bid" } } } },
+    "شراء حذر" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Cautious bid" } } } },
     "تمرير قريب" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Close pass" } } } },
     "تمرير واضح" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Clear pass" } } } },
     "راجع الفرق الصغير" : { "localizations" : { "en" : { "stringUnit" : { "state" : "translated", "value" : "Review the small gap" } } } },
