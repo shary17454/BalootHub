@@ -568,7 +568,7 @@ public enum RoundAnalyzer {
             legalBids: legal,
             handStrengthScore: analysis.strengthScore,
             estimatedLostPoints: biddingLostPoints(bid: bid, recommendedBid: analysis.recommendedBid, analysis: analysis),
-            explanation: biddingExplanation(bid: bid, recommendedBid: analysis.recommendedBid, handStrengthScore: analysis.strengthScore)
+            explanation: biddingExplanation(bid: bid, recommendedBid: analysis.recommendedBid, analysis: analysis)
         )
     }
 
@@ -591,7 +591,7 @@ public enum RoundAnalyzer {
             legalBids: legal,
             handStrengthScore: analysis.strengthScore,
             estimatedLostPoints: biddingLostPoints(bid: bid, recommendedBid: analysis.recommendedBid, analysis: analysis),
-            explanation: biddingExplanation(bid: bid, recommendedBid: analysis.recommendedBid, handStrengthScore: analysis.strengthScore)
+            explanation: biddingExplanation(bid: bid, recommendedBid: analysis.recommendedBid, analysis: analysis)
         )
     }
 
@@ -825,11 +825,20 @@ public enum RoundAnalyzer {
         ]
     }
 
-    private static func biddingExplanation(bid: Bid, recommendedBid: Bid, handStrengthScore: Int) -> String {
+    private static func biddingExplanation(bid: Bid, recommendedBid: Bid, analysis: HandAnalysis) -> String {
         if bid == recommendedBid {
-            return "قرار المزايدة يطابق تقييم اليد الحالي بدرجة قوة \(handStrengthScore)."
+            return "قرار المزايدة يطابق تقييم اليد الحالي بدرجة قوة \(analysis.strengthScore)."
         }
-        return "تقييم اليد بدرجة \(handStrengthScore) يرجّح \(bidLabel(recommendedBid)) بدل \(bidLabel(bid))."
+
+        let selectedOption = analysis.bidOptions.first { $0.bid == bid }
+        let recommendedOption = analysis.bidOptions.first { $0.bid == recommendedBid }
+        if recommendedBid == .pass, bid.isBid, let selectedOption {
+            return "الشراء \(bidLabel(bid)) تحت عتبة الأمان بـ\(abs(min(0, selectedOption.margin))) نقطة؛ تقييم اليد يرجّح بس بدل المخاطرة."
+        }
+        if bid == .pass, recommendedBid.isBid, let recommendedOption {
+            return "اليد تتجاوز عتبة \(bidLabel(recommendedBid)) بهامش \(max(0, recommendedOption.margin)) نقطة؛ التمرير فوّت فرصة شراء واضحة."
+        }
+        return "تقييم اليد بدرجة \(analysis.strengthScore) يرجّح \(bidLabel(recommendedBid)) بدل \(bidLabel(bid))."
     }
 
     private static func projectExplanation(available: [Project], missed: [Project]) -> String {

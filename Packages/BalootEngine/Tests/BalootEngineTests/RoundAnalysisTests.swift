@@ -415,7 +415,41 @@ struct RoundAnalysisTests {
         #expect(decision.bid == .sun)
         #expect(decision.recommendedBid == .pass)
         #expect(decision.estimatedLostPoints >= 20)
+        #expect(decision.explanation.contains("تحت عتبة الأمان"))
+        #expect(decision.explanation.contains("يرجّح بس"))
         #expect(report.needsBiddingReview)
+    }
+
+    @Test("تحليل المزايدة يشرح تمرير فرصة شراء واضحة")
+    func passAgainstStrongPurchaseRecommendationExplainsMissedBidMargin() throws {
+        var rules = BalootRulesConfiguration.standard
+        rules.multipliersEnabled = false
+        rules.projectsRequireDeclaration = false
+
+        let initial = GameState.newLocalMatch(rules: rules)
+        var state = try GameEngine.apply(.dealCards(seed: 42), to: initial)
+        let playerID = try #require(state.currentTurnPlayerID)
+        state.bidding.upCard = PlayingCard(suit: .spades, rank: .queen)
+        state.hands[playerID] = [
+            PlayingCard(suit: .spades, rank: .jack),
+            PlayingCard(suit: .spades, rank: .nine),
+            PlayingCard(suit: .spades, rank: .ace),
+            PlayingCard(suit: .hearts, rank: .ace),
+            PlayingCard(suit: .clubs, rank: .ten)
+        ]
+
+        let report = try RoundAnalyzer.analyze(
+            initialState: state,
+            actions: [.placeBid(playerID: playerID, bid: .pass)],
+            playerID: playerID
+        )
+
+        let decision = try #require(report.biddingDecisions.first)
+        #expect(decision.bid == .pass)
+        #expect(decision.recommendedBid == .hokum(suit: .spades))
+        #expect(decision.estimatedLostPoints > 0)
+        #expect(decision.explanation.contains("تتجاوز عتبة"))
+        #expect(decision.explanation.contains("فوّت فرصة شراء واضحة"))
     }
 
     @Test("تحليل الجولة يرصد فرص المشاريع التي لم تُعلن")
