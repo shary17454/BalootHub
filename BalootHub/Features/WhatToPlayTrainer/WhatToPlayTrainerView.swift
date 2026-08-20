@@ -1808,6 +1808,13 @@ struct WhatToPlayTrainerView: View {
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(optionOutcomeTint(outcome))
                 }
+                if attempt.hasScenarioContext {
+                    Text(attemptContextText(attempt))
+                        .font(.caption2)
+                        .foregroundStyle(AppColor.textSecondary)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 if let breakdown = attempt.impactBreakdown {
                     Text(WhatToPlayImpactFormatter.detail(for: breakdown))
                         .font(.caption2)
@@ -1922,6 +1929,13 @@ struct WhatToPlayTrainerView: View {
                         .lineLimit(2)
                         .minimumScaleFactor(0.85)
                 }
+                if let contextText = reviewContextText(item) {
+                    Text(contextText)
+                        .font(.caption2)
+                        .foregroundStyle(AppColor.textSecondary)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 Text("\("اختيارك".localized): \(cardName(item.selectedCard)) · \("أفضل ورقة".localized): \(cardName(item.bestCard))")
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(AppColor.textSecondary)
@@ -2030,6 +2044,62 @@ struct WhatToPlayTrainerView: View {
         lostProjectedTeamPoints > 0
             ? " · \("نقاط محاكاة ضائعة".localized): \(lostProjectedTeamPoints)"
             : ""
+    }
+
+    private func attemptContextText(_ attempt: WhatToPlayAttempt) -> String {
+        scenarioContextText(
+            trickNumber: attempt.contextTrickNumber,
+            isLeading: attempt.contextIsLeading,
+            requiredSuit: attempt.contextRequiredSuit,
+            playedCardCount: attempt.contextPlayedCardCount,
+            legalOptionCount: attempt.contextLegalOptionCount,
+            playerTeamPoints: attempt.contextPlayerTeamTrickPoints,
+            opponentTeamPoints: attempt.contextOpponentTeamTrickPoints
+        )
+    }
+
+    private func reviewContextText(_ item: WhatToPlayReviewItem) -> String? {
+        let text = scenarioContextText(
+            trickNumber: item.contextTrickNumber,
+            isLeading: item.contextIsLeading,
+            requiredSuit: item.contextRequiredSuit,
+            playedCardCount: item.contextPlayedCardCount,
+            legalOptionCount: item.contextLegalOptionCount,
+            playerTeamPoints: item.contextPlayerTeamTrickPoints,
+            opponentTeamPoints: item.contextOpponentTeamTrickPoints
+        )
+        return text.isEmpty ? nil : text
+    }
+
+    private func scenarioContextText(
+        trickNumber: Int?,
+        isLeading: Bool?,
+        requiredSuit: Suit?,
+        playedCardCount: Int?,
+        legalOptionCount: Int?,
+        playerTeamPoints: Int?,
+        opponentTeamPoints: Int?
+    ) -> String {
+        var parts: [String] = []
+        if let trickNumber {
+            parts.append("\("الأكلة".localized) \(trickNumber)")
+        }
+        if let isLeading {
+            if isLeading {
+                parts.append("أنت تفتتح الأكلة".localized)
+            } else if let requiredSuit {
+                parts.append("\("اللون المطلوب".localized): \(requiredSuit.arabicName)")
+            }
+        }
+        if let playedCardCount, let legalOptionCount {
+            parts.append("\("خيارات".localized): \(legalOptionCount) · \("على الطاولة".localized): \(playedCardCount)")
+        } else if let legalOptionCount {
+            parts.append("\("خيارات".localized): \(legalOptionCount)")
+        }
+        if let playerTeamPoints, let opponentTeamPoints {
+            parts.append("\("نقاط فريقك".localized): \(playerTeamPoints) · \("للخصم".localized): \(opponentTeamPoints)")
+        }
+        return parts.joined(separator: " · ")
     }
 
     private func scenarioSummary(_ scenario: WhatToPlayScenario) -> some View {
@@ -2282,7 +2352,8 @@ struct WhatToPlayTrainerView: View {
                 gameMode: scenario.state.mode,
                 outcome: evaluated.outcome,
                 impactBreakdown: evaluated.impactBreakdown,
-                simulation: evaluated.simulation
+                simulation: evaluated.simulation,
+                scenarioContext: scenario.context
             )
             modelContext.insert(attempt)
             try? modelContext.save()

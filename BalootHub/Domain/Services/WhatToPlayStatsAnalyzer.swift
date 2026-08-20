@@ -216,6 +216,13 @@ struct WhatToPlayReviewItem: Equatable, Identifiable {
     let simulationSummary: String?
     let simulationTeamResult: String?
     let simulationTrickPoints: Int?
+    let contextTrickNumber: Int?
+    let contextIsLeading: Bool?
+    let contextRequiredSuit: Suit?
+    let contextPlayedCardCount: Int?
+    let contextLegalOptionCount: Int?
+    let contextPlayerTeamTrickPoints: Int?
+    let contextOpponentTeamTrickPoints: Int?
 }
 
 struct WhatToPlayReviewPriority: Equatable {
@@ -1100,7 +1107,14 @@ enum WhatToPlayStatsAnalyzer {
                 tacticalReasonIconName: tacticalReason?.iconName,
                 simulationSummary: simulationDisplay?.summary,
                 simulationTeamResult: simulationDisplay?.teamResult,
-                simulationTrickPoints: simulationDisplay?.trickPoints
+                simulationTrickPoints: simulationDisplay?.trickPoints,
+                contextTrickNumber: attempt.contextTrickNumber,
+                contextIsLeading: attempt.contextIsLeading,
+                contextRequiredSuit: attempt.contextRequiredSuit,
+                contextPlayedCardCount: attempt.contextPlayedCardCount,
+                contextLegalOptionCount: attempt.contextLegalOptionCount,
+                contextPlayerTeamTrickPoints: attempt.contextPlayerTeamTrickPoints,
+                contextOpponentTeamTrickPoints: attempt.contextOpponentTeamTrickPoints
             )
         }
     }

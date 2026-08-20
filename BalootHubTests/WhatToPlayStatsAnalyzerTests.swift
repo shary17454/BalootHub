@@ -776,6 +776,68 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(item?.lostProjectedTeamPoints, 13)
     }
 
+    func testAttemptStoresScenarioContextForReplayableReview() {
+        let context = WhatToPlayScenarioContext(
+            trickNumber: 4,
+            isLeading: false,
+            requiredSuit: .hearts,
+            playedCardCount: 2,
+            legalOptionCount: 3,
+            mode: .hokum,
+            trumpSuit: .spades,
+            hasTrumpInCurrentTrick: true,
+            playerTeamTrickPoints: 28,
+            opponentTeamTrickPoints: 35,
+            playerTeamPointMargin: -7,
+            focusKind: .trumpPressure
+        )
+
+        let stored = attempt(daysAgo: 1, correct: false, impact: -4, scenarioContext: context)
+
+        XCTAssertTrue(stored.hasScenarioContext)
+        XCTAssertEqual(stored.contextTrickNumber, 4)
+        XCTAssertEqual(stored.contextIsLeading, false)
+        XCTAssertEqual(stored.contextRequiredSuit, Suit.hearts)
+        XCTAssertEqual(stored.contextPlayedCardCount, 2)
+        XCTAssertEqual(stored.contextLegalOptionCount, 3)
+        XCTAssertEqual(stored.contextPlayerTeamTrickPoints, 28)
+        XCTAssertEqual(stored.contextOpponentTeamTrickPoints, 35)
+    }
+
+    func testReviewQueueCarriesScenarioContextForMistakeReview() throws {
+        let context = WhatToPlayScenarioContext(
+            trickNumber: 6,
+            isLeading: true,
+            requiredSuit: nil,
+            playedCardCount: 0,
+            legalOptionCount: 5,
+            mode: .sun,
+            trumpSuit: nil,
+            hasTrumpInCurrentTrick: false,
+            playerTeamTrickPoints: 42,
+            opponentTeamTrickPoints: 21,
+            playerTeamPointMargin: 21,
+            focusKind: .openingLead
+        )
+        let stored = attempt(
+            daysAgo: 1,
+            correct: false,
+            impact: -3,
+            bestImpact: 4,
+            scenarioContext: context
+        )
+
+        let item = try XCTUnwrap(WhatToPlayStatsAnalyzer.reviewQueue(for: [stored]).first)
+
+        XCTAssertEqual(item.contextTrickNumber, 6)
+        XCTAssertEqual(item.contextIsLeading, true)
+        XCTAssertNil(item.contextRequiredSuit)
+        XCTAssertEqual(item.contextPlayedCardCount, 0)
+        XCTAssertEqual(item.contextLegalOptionCount, 5)
+        XCTAssertEqual(item.contextPlayerTeamTrickPoints, 42)
+        XCTAssertEqual(item.contextOpponentTeamTrickPoints, 21)
+    }
+
     func testReviewQueueUsesProjectedLossAsTieBreaker() {
         let attempts = [
             attempt(daysAgo: 2, correct: false, impact: 1, bestImpact: 5, projectedTeamPoints: 70, bestProjectedTeamPoints: 72),
@@ -3416,7 +3478,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         projectedTeamPoints: Int? = nil,
         bestProjectedTeamPoints: Int? = nil,
         secondBestProjectedTeamPoints: Int? = nil,
-        seed: UInt64? = nil
+        seed: UInt64? = nil,
+        scenarioContext: WhatToPlayScenarioContext? = nil
     ) -> WhatToPlayAttempt {
         attempt(
             daysAgo: daysAgo,
@@ -3435,7 +3498,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             projectedTeamPoints: projectedTeamPoints,
             bestProjectedTeamPoints: bestProjectedTeamPoints,
             secondBestProjectedTeamPoints: secondBestProjectedTeamPoints,
-            seed: seed
+            seed: seed,
+            scenarioContext: scenarioContext
         )
     }
 
@@ -3457,7 +3521,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         projectedTeamPoints: Int? = nil,
         bestProjectedTeamPoints: Int? = nil,
         secondBestProjectedTeamPoints: Int? = nil,
-        seed: UInt64? = nil
+        seed: UInt64? = nil,
+        scenarioContext: WhatToPlayScenarioContext? = nil
     ) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
             createdAt: Date(timeIntervalSince1970: 2_000_000 - daysAgo * 86_400),
@@ -3478,7 +3543,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             gameMode: gameMode,
             outcome: outcome,
             impactBreakdown: impactBreakdown,
-            simulation: simulation
+            simulation: simulation,
+            scenarioContext: scenarioContext
         )
     }
 

@@ -358,7 +358,7 @@ struct WhatToPlayTrainerTests {
         }
     }
 
-    @Test("شرح الخيار يذكر ترتيب الخبير والفارق الرقمي عن الأفضل")
+    @Test("شرح الخيار يذكر ترتيب الخبير والفارق العددي عن الأفضل")
     func optionExplanationIncludesRankAndBestGap() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
         let best = try #require(scenario.bestOption)

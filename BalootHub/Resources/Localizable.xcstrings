@@ -4,6 +4,48 @@
     "أساسيات" : {
 
     },
+    "خيارات" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Optionen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Options" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Opciones" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Options" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "विकल्प" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Opsi" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Варианты" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Seçenekler" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اختیارات" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "选项" } }
+      }
+    },
+    "على الطاولة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Auf dem Tisch" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "On table" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "En la mesa" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Sur la table" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "मेज पर" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Di meja" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "На столе" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Masada" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "میز پر" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "桌上" } }
+      }
+    },
+    "نقاط فريقك" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Deine Teampunkte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your team points" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Puntos de tu equipo" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Points de votre équipe" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आपकी टीम के अंक" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Poin tim Anda" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Очки вашей команды" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Takım puanın" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ کی ٹیم کے پوائنٹس" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你的队伍分数" } }
+      }
+    },
     "مضاعفات" : {
 
     },
@@ -8915,71 +8957,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The other players are bidding Sun or Hokum…"
-          }
-        }
-      }
-    },
-    "بلا إعلانات نهائيًا، الآن ومستقبلًا" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keine Werbung, niemals — jetzt und in Zukunft"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No ads, ever — now and in the future"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sin anuncios, nunca — ahora y en el futuro"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aucune publicité, jamais — aujourd'hui comme demain"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "कोई विज्ञापन नहीं, कभी नहीं — अभी भी और आगे भी"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tanpa iklan, selamanya — sekarang dan nanti"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Никакой рекламы — ни сейчас, ни в будущем"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hiç reklam yok — şimdi de, gelecekte de"
-          }
-        },
-        "ur" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "کوئی اشتہار نہیں، کبھی نہیں — اب بھی اور آئندہ بھی"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "永远没有广告——现在和将来都是"
           }
         }
       }

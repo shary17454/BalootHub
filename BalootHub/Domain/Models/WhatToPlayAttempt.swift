@@ -39,6 +39,13 @@ final class WhatToPlayAttempt {
     var simulationNextTurnPlayerIDRaw: String?
     var simulationPlayerRemainingCards: Int?
     var simulationActionHistoryCount: Int?
+    var contextTrickNumber: Int?
+    var contextIsLeading: Bool?
+    var contextRequiredSuitRaw: String?
+    var contextPlayedCardCount: Int?
+    var contextLegalOptionCount: Int?
+    var contextPlayerTeamTrickPoints: Int?
+    var contextOpponentTeamTrickPoints: Int?
 
     init(
         id: UUID = UUID(),
@@ -60,7 +67,8 @@ final class WhatToPlayAttempt {
         gameMode: GameMode? = nil,
         outcome: WhatToPlayOptionOutcome? = nil,
         impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil,
-        simulation: WhatToPlayOptionSimulation? = nil
+        simulation: WhatToPlayOptionSimulation? = nil,
+        scenarioContext: WhatToPlayScenarioContext? = nil
     ) {
         self.id = id
         self.createdAt = createdAt
@@ -99,6 +107,13 @@ final class WhatToPlayAttempt {
         self.simulationNextTurnPlayerIDRaw = simulation?.nextTurnPlayerID?.uuidString
         self.simulationPlayerRemainingCards = simulation?.playerRemainingCards
         self.simulationActionHistoryCount = simulation?.actionHistoryCount
+        self.contextTrickNumber = scenarioContext?.trickNumber
+        self.contextIsLeading = scenarioContext?.isLeading
+        self.contextRequiredSuitRaw = scenarioContext?.requiredSuit?.rawValue
+        self.contextPlayedCardCount = scenarioContext?.playedCardCount
+        self.contextLegalOptionCount = scenarioContext?.legalOptionCount
+        self.contextPlayerTeamTrickPoints = scenarioContext?.playerTeamTrickPoints
+        self.contextOpponentTeamTrickPoints = scenarioContext?.opponentTeamTrickPoints
     }
 
     var difficulty: WhatToPlayDifficulty {
@@ -204,5 +219,20 @@ final class WhatToPlayAttempt {
     var simulationPhaseAfterPlay: GamePhase? {
         guard let simulationPhaseAfterPlayRaw else { return nil }
         return GamePhase(rawValue: simulationPhaseAfterPlayRaw)
+    }
+
+    var contextRequiredSuit: Suit? {
+        guard let contextRequiredSuitRaw else { return nil }
+        return Suit(rawValue: contextRequiredSuitRaw)
+    }
+
+    var hasScenarioContext: Bool {
+        contextTrickNumber != nil
+            || contextIsLeading != nil
+            || contextRequiredSuit != nil
+            || contextPlayedCardCount != nil
+            || contextLegalOptionCount != nil
+            || contextPlayerTeamTrickPoints != nil
+            || contextOpponentTeamTrickPoints != nil
     }
 }
