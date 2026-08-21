@@ -2249,6 +2249,73 @@ public struct WhatToPlayExpectedImprovementMetrics: Sendable, Equatable {
     }
 }
 
+/// مفاتيح اختيار أفضل قرار في ملخص «وش تلعب؟» دون نصوص واجهة.
+public struct WhatToPlayBestDecisionHighlightRankMetrics: Sendable, Equatable {
+    public let expectedImpact: Int
+    public let isCorrect: Bool
+    public let createdAt: Date
+
+    public init(expectedImpact: Int, isCorrect: Bool, createdAt: Date) {
+        self.expectedImpact = expectedImpact
+        self.isCorrect = isCorrect
+        self.createdAt = createdAt
+    }
+
+    public static func ranksBefore(
+        _ lhs: WhatToPlayBestDecisionHighlightRankMetrics,
+        _ rhs: WhatToPlayBestDecisionHighlightRankMetrics
+    ) -> Bool {
+        if lhs.expectedImpact != rhs.expectedImpact {
+            return lhs.expectedImpact > rhs.expectedImpact
+        }
+
+        if lhs.isCorrect != rhs.isCorrect {
+            return lhs.isCorrect
+        }
+
+        return lhs.createdAt > rhs.createdAt
+    }
+}
+
+/// مفاتيح اختيار أسوأ قرار في ملخص «وش تلعب؟» دون نصوص واجهة.
+public struct WhatToPlayWorstDecisionHighlightRankMetrics: Sendable, Equatable {
+    public let lostExpectedPoints: Int
+    public let lostProjectedTeamPoints: Int
+    public let expectedImpact: Int
+    public let createdAt: Date
+
+    public init(
+        lostExpectedPoints: Int,
+        lostProjectedTeamPoints: Int,
+        expectedImpact: Int,
+        createdAt: Date
+    ) {
+        self.lostExpectedPoints = lostExpectedPoints
+        self.lostProjectedTeamPoints = lostProjectedTeamPoints
+        self.expectedImpact = expectedImpact
+        self.createdAt = createdAt
+    }
+
+    public var decisiveLoss: Int {
+        max(lostExpectedPoints, lostProjectedTeamPoints)
+    }
+
+    public static func ranksBefore(
+        _ lhs: WhatToPlayWorstDecisionHighlightRankMetrics,
+        _ rhs: WhatToPlayWorstDecisionHighlightRankMetrics
+    ) -> Bool {
+        if lhs.decisiveLoss != rhs.decisiveLoss {
+            return lhs.decisiveLoss > rhs.decisiveLoss
+        }
+
+        if lhs.expectedImpact != rhs.expectedImpact {
+            return lhs.expectedImpact < rhs.expectedImpact
+        }
+
+        return lhs.createdAt > rhs.createdAt
+    }
+}
+
 /// أرقام موجزة تستخدم عند فتح Replay لقرار تدريب «وش تلعب؟».
 public struct WhatToPlayReplayMetrics: Sendable, Equatable {
     public let selectedOption: WhatToPlayOption

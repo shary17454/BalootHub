@@ -591,6 +591,57 @@ struct WhatToPlayTrainerTests {
         #expect(none.points == 0)
     }
 
+    @Test("ترتيب أفضل وأسوأ قرار في وش تلعب يأتي من المحرك")
+    func decisionHighlightRankMetricsSortHighlights() {
+        let now = Date(timeIntervalSince1970: 2_000)
+        let strong = WhatToPlayBestDecisionHighlightRankMetrics(
+            expectedImpact: 5,
+            isCorrect: false,
+            createdAt: now
+        )
+        let correctTie = WhatToPlayBestDecisionHighlightRankMetrics(
+            expectedImpact: 5,
+            isCorrect: true,
+            createdAt: now.addingTimeInterval(-10)
+        )
+        let laterTie = WhatToPlayBestDecisionHighlightRankMetrics(
+            expectedImpact: 5,
+            isCorrect: true,
+            createdAt: now.addingTimeInterval(10)
+        )
+        #expect(WhatToPlayBestDecisionHighlightRankMetrics.ranksBefore(strong, .init(expectedImpact: 3, isCorrect: true, createdAt: now)))
+        #expect(WhatToPlayBestDecisionHighlightRankMetrics.ranksBefore(correctTie, strong))
+        #expect(WhatToPlayBestDecisionHighlightRankMetrics.ranksBefore(laterTie, correctTie))
+
+        let projectedLoss = WhatToPlayWorstDecisionHighlightRankMetrics(
+            lostExpectedPoints: 2,
+            lostProjectedTeamPoints: 9,
+            expectedImpact: 0,
+            createdAt: now
+        )
+        let expectedLoss = WhatToPlayWorstDecisionHighlightRankMetrics(
+            lostExpectedPoints: 7,
+            lostProjectedTeamPoints: 0,
+            expectedImpact: -1,
+            createdAt: now
+        )
+        let lowerImpactTie = WhatToPlayWorstDecisionHighlightRankMetrics(
+            lostExpectedPoints: 7,
+            lostProjectedTeamPoints: 0,
+            expectedImpact: -3,
+            createdAt: now.addingTimeInterval(-10)
+        )
+        let laterWorstTie = WhatToPlayWorstDecisionHighlightRankMetrics(
+            lostExpectedPoints: 7,
+            lostProjectedTeamPoints: 0,
+            expectedImpact: -3,
+            createdAt: now.addingTimeInterval(10)
+        )
+        #expect(WhatToPlayWorstDecisionHighlightRankMetrics.ranksBefore(projectedLoss, expectedLoss))
+        #expect(WhatToPlayWorstDecisionHighlightRankMetrics.ranksBefore(lowerImpactTie, expectedLoss))
+        #expect(WhatToPlayWorstDecisionHighlightRankMetrics.ranksBefore(laterWorstTie, lowerImpactTie))
+    }
+
     @Test("ملخص أداء وش تلعب يأتي من المحرك ويحافظ على السلاسل وفاقد القيمة")
     func statsSummaryMetricsCalculateTrainingPerformance() {
         let metrics = WhatToPlayStatsSummaryMetrics.summarize(chronologicalSamples: [

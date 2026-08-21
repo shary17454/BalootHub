@@ -1326,13 +1326,10 @@ enum WhatToPlayStatsAnalyzer {
     static func bestDecisionHighlight(for attempts: [WhatToPlayAttempt]) -> WhatToPlayDecisionHighlight? {
         attempts
             .max { lhs, rhs in
-                if lhs.expectedImpact != rhs.expectedImpact {
-                    return lhs.expectedImpact < rhs.expectedImpact
-                }
-                if lhs.isCorrect != rhs.isCorrect {
-                    return !lhs.isCorrect && rhs.isCorrect
-                }
-                return lhs.createdAt < rhs.createdAt
+                WhatToPlayBestDecisionHighlightRankMetrics.ranksBefore(
+                    bestDecisionHighlightRankMetrics(for: rhs),
+                    bestDecisionHighlightRankMetrics(for: lhs)
+                )
             }
             .map(decisionHighlight)
     }
@@ -1340,17 +1337,33 @@ enum WhatToPlayStatsAnalyzer {
     static func worstDecisionHighlight(for attempts: [WhatToPlayAttempt]) -> WhatToPlayDecisionHighlight? {
         attempts
             .max { lhs, rhs in
-                let lhsLoss = max(lhs.lostExpectedPoints, lhs.lostProjectedTeamPoints)
-                let rhsLoss = max(rhs.lostExpectedPoints, rhs.lostProjectedTeamPoints)
-                if lhsLoss != rhsLoss {
-                    return lhsLoss < rhsLoss
-                }
-                if lhs.expectedImpact != rhs.expectedImpact {
-                    return lhs.expectedImpact > rhs.expectedImpact
-                }
-                return lhs.createdAt < rhs.createdAt
+                WhatToPlayWorstDecisionHighlightRankMetrics.ranksBefore(
+                    worstDecisionHighlightRankMetrics(for: rhs),
+                    worstDecisionHighlightRankMetrics(for: lhs)
+                )
             }
             .map(decisionHighlight)
+    }
+
+    private static func bestDecisionHighlightRankMetrics(
+        for attempt: WhatToPlayAttempt
+    ) -> WhatToPlayBestDecisionHighlightRankMetrics {
+        WhatToPlayBestDecisionHighlightRankMetrics(
+            expectedImpact: attempt.expectedImpact,
+            isCorrect: attempt.isCorrect,
+            createdAt: attempt.createdAt
+        )
+    }
+
+    private static func worstDecisionHighlightRankMetrics(
+        for attempt: WhatToPlayAttempt
+    ) -> WhatToPlayWorstDecisionHighlightRankMetrics {
+        WhatToPlayWorstDecisionHighlightRankMetrics(
+            lostExpectedPoints: attempt.lostExpectedPoints,
+            lostProjectedTeamPoints: attempt.lostProjectedTeamPoints,
+            expectedImpact: attempt.expectedImpact,
+            createdAt: attempt.createdAt
+        )
     }
 
     private static func decisionHighlight(for attempt: WhatToPlayAttempt) -> WhatToPlayDecisionHighlight {
