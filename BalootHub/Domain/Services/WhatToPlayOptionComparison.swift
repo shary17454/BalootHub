@@ -43,6 +43,7 @@ struct WhatToPlayOptionComparisonSummary: Equatable {
     let selectedLostExpectedPoints: Int?
     let selectedLostProjectedTeamPoints: Int?
     let decisionQuality: WhatToPlayDecisionQuality?
+    let decisionQualityDetail: String?
     let bestMoveConfidence: WhatToPlayBestMoveConfidence?
     let nextActionTitle: String?
     let nextActionDetail: String?
@@ -134,6 +135,19 @@ enum WhatToPlayDecisionQuality: Equatable {
             "قرار مقبول".localized
         case .costly:
             "قرار مكلف".localized
+        }
+    }
+
+    var detail: String {
+        switch self {
+        case .expertMatch:
+            "اختيارك يطابق أعلى تحليل؛ ركز على تثبيت سبب القرار قبل الموقف التالي.".localized
+        case .close:
+            "اختيارك قريب من الأفضل، لكن الفارق البسيط يتراكم مع تكرار المواقف.".localized
+        case .acceptable:
+            "القرار قابل للدفاع عنه، لكنه يترك قيمة واضحة مقارنة بخيار الخبير.".localized
+        case .costly:
+            "هذا القرار يكلّف نقاطًا متوقعة أو نتيجة محاكاة مهمة؛ أعد الموقف قبل المتابعة.".localized
         }
     }
 
@@ -249,6 +263,11 @@ enum WhatToPlayOptionComparison {
                 lostExpectedPoints: lost,
                 lostProjectedTeamPoints: projectedLost
             ),
+            decisionQualityDetail: decisionQuality(
+                selected: selected,
+                lostExpectedPoints: lost,
+                lostProjectedTeamPoints: projectedLost
+            )?.detail,
             bestMoveConfidence: WhatToPlayBestMoveConfidence.classify(bestToSecondGap: gap),
             nextActionTitle: action.title,
             nextActionDetail: action.detail

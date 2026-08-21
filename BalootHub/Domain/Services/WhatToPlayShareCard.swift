@@ -40,6 +40,7 @@ struct WhatToPlayShareCardContent: Equatable {
     let lostAgainstSecondBestPoints: Int?
     let valueLossTitle: String?
     let decisionQualityTitle: String?
+    let decisionQualityDetail: String?
     let bestMoveConfidenceTitle: String?
     let bestMoveConfidenceDetail: String?
     let nextActionTitle: String?
@@ -147,6 +148,7 @@ enum WhatToPlayShareCard {
             lostAgainstSecondBestPoints: lostAgainstSecondBest,
             valueLossTitle: valueLossTitle,
             decisionQualityTitle: decisionQualityTitle,
+            decisionQualityDetail: comparisonSummary?.decisionQualityDetail,
             bestMoveConfidenceTitle: comparisonSummary?.bestMoveConfidence?.title,
             bestMoveConfidenceDetail: comparisonSummary?.bestMoveConfidence?.detail,
             nextActionTitle: comparisonSummary?.nextActionTitle,
@@ -240,9 +242,7 @@ enum WhatToPlayShareCard {
             if let valueLossTitle = content.valueLossTitle {
                 lines.append("\("شدة خسارة القيمة".localized): \(valueLossTitle)")
             }
-            if let decisionQualityTitle = content.decisionQualityTitle {
-                lines.append("\("تقييم القرار".localized): \(decisionQualityTitle)")
-            }
+            appendDecisionQualityLines(to: &lines, content: content)
             if let bestMoveConfidenceTitle = content.bestMoveConfidenceTitle {
                 lines.append("\("ثقة أفضل ورقة".localized): \(bestMoveConfidenceTitle)")
             }
@@ -287,6 +287,18 @@ enum WhatToPlayShareCard {
         lines.append(content.prompt)
 
         return lines.joined(separator: "\n")
+    }
+
+    private static func appendDecisionQualityLines(
+        to lines: inout [String],
+        content: WhatToPlayShareCardContent
+    ) {
+        if let decisionQualityTitle = content.decisionQualityTitle {
+            lines.append("\("تقييم القرار".localized): \(decisionQualityTitle)")
+        }
+        if let decisionQualityDetail = content.decisionQualityDetail {
+            lines.append(decisionQualityDetail)
+        }
     }
 
     private static func sortedOptions(_ options: [WhatToPlayOption]) -> [WhatToPlayOption] {

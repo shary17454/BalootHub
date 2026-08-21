@@ -2966,11 +2966,22 @@ struct WhatToPlayTrainerView: View {
             }
             if let quality = summary.decisionQuality,
                let lost = summary.selectedLostExpectedPoints {
-                Label(
-                    "\("تقييم اختيارك".localized): \(quality.title) · \("الفاقد".localized): \(impactText(lost))",
-                    systemImage: quality.systemImage
-                )
-                .font(.caption2.weight(.semibold)).foregroundStyle(decisionQualityTint(quality))
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("\("تقييم اختيارك".localized): \(quality.title) · \("الفاقد".localized): \(impactText(lost))")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(decisionQualityTint(quality))
+                        if let detail = summary.decisionQualityDetail {
+                            Text(detail)
+                                .font(.caption2)
+                                .foregroundStyle(AppColor.textSecondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                } icon: {
+                    Image(systemName: quality.systemImage)
+                        .foregroundStyle(decisionQualityTint(quality))
+                }
             }
             if let projectedLoss = summary.selectedLostProjectedTeamPoints, projectedLoss > 0 {
                 Label("\("نقاط محاكاة ضائعة".localized): \(projectedLoss)", systemImage: "chart.bar.doc.horizontal.fill")
@@ -3936,6 +3947,9 @@ struct WhatToPlayShareCardPreview: View {
             }
             if let decisionQualityTitle = content.decisionQualityTitle {
                 shareChip("\("تقييم القرار".localized): \(decisionQualityTitle)")
+            }
+            if let decisionQualityDetail = content.decisionQualityDetail {
+                shareNote(decisionQualityDetail)
             }
             if let bestMoveConfidenceTitle = content.bestMoveConfidenceTitle {
                 shareChip("\("ثقة أفضل ورقة".localized): \(bestMoveConfidenceTitle)")

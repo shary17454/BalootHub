@@ -43,6 +43,7 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertNil(summary.selectedLostExpectedPoints)
         XCTAssertNil(summary.selectedLostProjectedTeamPoints)
         XCTAssertNil(summary.decisionQuality)
+        XCTAssertNil(summary.decisionQualityDetail)
         XCTAssertEqual(summary.bestMoveConfidence, WhatToPlayBestMoveConfidence.classify(bestToSecondGap: summary.bestToSecondGap))
         XCTAssertNil(summary.nextActionTitle)
         XCTAssertNil(summary.nextActionDetail)
@@ -85,6 +86,7 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         )
         XCTAssertEqual(bestSummary.decisionQuality, .expertMatch)
         XCTAssertEqual(bestSummary.decisionQuality?.title, "مطابق للخبير".localized)
+        XCTAssertEqual(bestSummary.decisionQualityDetail, WhatToPlayDecisionQuality.expertMatch.detail)
         XCTAssertFalse(bestSummary.decisionQuality?.systemImage.isEmpty ?? true)
         XCTAssertEqual(bestSummary.nextActionTitle, "ثبّت القراءة".localized)
         XCTAssertTrue(bestSummary.nextActionDetail?.contains(best.card.accessibilityName) ?? false)
@@ -106,6 +108,7 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         } else {
             XCTAssertEqual(costlySummary.decisionQuality, .costly)
         }
+        XCTAssertEqual(costlySummary.decisionQualityDetail, costlySummary.decisionQuality?.detail)
         XCTAssertNotNil(costlySummary.nextActionTitle)
         XCTAssertFalse(costlySummary.nextActionDetail?.isEmpty ?? true)
     }
@@ -144,6 +147,7 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         let summary = WhatToPlayOptionComparison.summary(for: scenario, selectedCard: selected.card)
 
         XCTAssertEqual(summary.decisionQuality, .costly)
+        XCTAssertEqual(summary.decisionQualityDetail, WhatToPlayDecisionQuality.costly.detail)
         XCTAssertEqual(summary.nextActionTitle, "راجع المحاكاة".localized)
         XCTAssertTrue(summary.nextActionDetail?.contains("بعد استكمال الجولة".localized) ?? false)
     }

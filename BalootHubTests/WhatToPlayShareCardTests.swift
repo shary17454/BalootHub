@@ -228,6 +228,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).lostProjectedTeamPoints)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).valueLossTitle)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).decisionQualityTitle)
+        XCTAssertNil(WhatToPlayShareCard.content(for: scenario).decisionQualityDetail)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).bestMoveConfidenceTitle)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).bestMoveConfidenceDetail)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).nextActionTitle)
@@ -257,6 +258,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(reviewed.lostAgainstSecondBestPoints, max(0, secondBest.expectedImpact - selected.expectedImpact))
         XCTAssertEqual(reviewed.valueLossTitle, "لا توجد خسارة قيمة".localized)
         XCTAssertEqual(reviewed.decisionQualityTitle, "مطابق للخبير".localized)
+        XCTAssertEqual(reviewed.decisionQualityDetail, WhatToPlayDecisionQuality.expertMatch.detail)
         let confidence = try XCTUnwrap(
             WhatToPlayOptionComparison.summary(for: scenario, selectedCard: selected.card).bestMoveConfidence
         )
@@ -300,9 +302,11 @@ final class WhatToPlayShareCardTests: XCTestCase {
         let text = WhatToPlayShareCard.text(for: scenario, selectedOption: selected)
 
         XCTAssertNotNil(content.decisionQualityTitle)
+        XCTAssertNotNil(content.decisionQualityDetail)
         XCTAssertNotNil(content.nextActionTitle)
         XCTAssertNotNil(content.nextActionDetail)
         XCTAssertTrue(text.contains("\("تقييم القرار".localized): \(try XCTUnwrap(content.decisionQualityTitle))"))
+        XCTAssertTrue(text.contains(try XCTUnwrap(content.decisionQualityDetail)))
         XCTAssertTrue(text.contains("\("الإجراء التالي".localized): \(try XCTUnwrap(content.nextActionTitle))"))
         XCTAssertTrue(text.contains(try XCTUnwrap(content.nextActionDetail)))
     }
@@ -318,9 +322,11 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(max(0, best.projectedTeamPoints - selected.projectedTeamPoints), 9)
         XCTAssertEqual(content.lostProjectedTeamPoints, max(0, best.projectedTeamPoints - selected.projectedTeamPoints))
         XCTAssertEqual(content.decisionQualityTitle, "قرار مكلف".localized)
+        XCTAssertEqual(content.decisionQualityDetail, WhatToPlayDecisionQuality.costly.detail)
         XCTAssertEqual(content.valueLossTitle, "خسارة قيمة عالية".localized)
         XCTAssertTrue(text.contains("\("نقاط محاكاة ضائعة".localized): \(try XCTUnwrap(content.lostProjectedTeamPoints))"))
         XCTAssertTrue(text.contains("\("تقييم القرار".localized): \("قرار مكلف".localized)"))
+        XCTAssertTrue(text.contains(WhatToPlayDecisionQuality.costly.detail))
         XCTAssertTrue(text.contains("\("شدة خسارة القيمة".localized): \("خسارة قيمة عالية".localized)"))
     }
 

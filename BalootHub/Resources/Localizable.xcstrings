@@ -994,6 +994,62 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "代价高的决策" } }
       }
     },
+    "اختيارك يطابق أعلى تحليل؛ ركز على تثبيت سبب القرار قبل الموقف التالي." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Deine Wahl entspricht der besten Analyse. Festige vor der nächsten Situation den Grund der Entscheidung." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your choice matches the strongest analysis. Lock in the reason before the next scenario." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tu elección coincide con el análisis más sólido. Refuerza la razón antes del siguiente caso." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Votre choix correspond à l’analyse la plus forte. Fixez-en la raison avant le prochain scénario." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आपका चयन सबसे मजबूत विश्लेषण से मेल खाता है। अगले परिदृश्य से पहले कारण पक्का करें।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Pilihan Anda cocok dengan analisis terkuat. Mantapkan alasannya sebelum skenario berikutnya." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Ваш выбор совпадает с самым сильным анализом. Закрепите причину перед следующим сценарием." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Seçimin en güçlü analizle eşleşiyor. Sonraki senaryodan önce nedeni pekiştir." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ کا انتخاب مضبوط ترین تجزیے سے ملتا ہے۔ اگلے منظر سے پہلے وجہ مضبوط کریں۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你的选择符合最强分析。进入下一局面前先巩固原因。" } }
+      }
+    },
+    "اختيارك قريب من الأفضل، لكن الفارق البسيط يتراكم مع تكرار المواقف." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Deine Wahl liegt nah am Optimum, aber kleine Abstände summieren sich mit der Zeit." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your choice is close to best, but small gaps add up over repeated scenarios." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tu elección está cerca de la mejor, pero las pequeñas diferencias se acumulan." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Votre choix est proche du meilleur, mais les petits écarts s’accumulent." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आपका चयन सर्वश्रेष्ठ के करीब है, लेकिन छोटे अंतर बार-बार जुड़ते जाते हैं।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Pilihan Anda dekat dengan yang terbaik, tetapi selisih kecil akan menumpuk." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Ваш выбор близок к лучшему, но небольшие разрывы со временем накапливаются." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Seçimin en iyiye yakın, ancak küçük farklar tekrarlandıkça birikir." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ کا انتخاب بہترین کے قریب ہے، مگر چھوٹا فرق بار بار جمع ہوتا ہے۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你的选择接近最佳，但小差距会在反复局面中累积。" } }
+      }
+    },
+    "القرار قابل للدفاع عنه، لكنه يترك قيمة واضحة مقارنة بخيار الخبير." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die Entscheidung ist vertretbar, lässt aber gegenüber der Expertenwahl klaren Wert liegen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The decision is defensible, but it leaves clear value compared with the expert choice." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "La decisión es defendible, pero deja valor claro frente a la opción experta." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "La décision se défend, mais laisse une valeur nette face au choix expert." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "निर्णय बचाव योग्य है, लेकिन विशेषज्ञ विकल्प की तुलना में स्पष्ट मूल्य छोड़ता है।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Keputusan ini masih dapat diterima, tetapi meninggalkan nilai jelas dibanding pilihan pakar." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Решение можно защитить, но оно оставляет явную ценность по сравнению с выбором эксперта." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Karar savunulabilir, ancak uzman seçimine göre belirgin değer bırakıyor." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "فیصلہ قابل دفاع ہے، مگر ماہر کے انتخاب کے مقابلے میں واضح قدر چھوڑتا ہے۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "这个决定可以解释，但相较专家选择留下了明显价值。" } }
+      }
+    },
+    "هذا القرار يكلّف نقاطًا متوقعة أو نتيجة محاكاة مهمة؛ أعد الموقف قبل المتابعة." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Diese Entscheidung kostet erwartete Punkte oder ein wichtiges Simulationsergebnis. Wiederhole die Situation vor dem Fortfahren." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "This decision costs expected points or an important simulation result. Replay the scenario before continuing." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Esta decisión cuesta puntos esperados o un resultado importante de simulación. Repite el caso antes de continuar." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Cette décision coûte des points attendus ou un résultat de simulation important. Rejouez le scénario avant de continuer." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "यह निर्णय अपेक्षित अंक या अहम सिमुलेशन परिणाम खोता है। आगे बढ़ने से पहले परिदृश्य दोहराएँ।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Keputusan ini mengorbankan poin perkiraan atau hasil simulasi penting. Ulangi skenario sebelum lanjut." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Это решение стоит ожидаемых очков или важного результата симуляции. Повторите сценарий перед продолжением." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Bu karar beklenen puanlara veya önemli bir simülasyon sonucuna mal olur. Devam etmeden önce senaryoyu tekrarla." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "یہ فیصلہ متوقع پوائنٹس یا اہم سیمولیشن نتیجہ ضائع کرتا ہے۔ آگے بڑھنے سے پہلے منظر دہرائیں۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "这个决定会损失预期分或重要模拟结果。继续前请重做该局面。" } }
+      }
+    },
     "قرارات مكلفة" : {
       "localizations" : {
         "en" : {
