@@ -2884,12 +2884,15 @@ enum WhatToPlayStatsAnalyzer {
     }
 
     static func retryPrompt(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayRetryPrompt? {
-        guard let insight = decisionInsight(for: selected, in: scenario) else { return nil }
-        let bestSimulation = WhatToPlayOptionComparison.bestSimulationOption(scenario.options)
-        let recommendedCard = insight.lostProjectedTeamPoints > insight.lostExpectedPoints
-            ? bestSimulation?.card
-            : scenario.bestOption?.card
-        return retryPrompt(insight: insight, bestCard: recommendedCard)
+        guard let recommendation = WhatToPlayTrainer.retryRecommendation(in: scenario, selectedCard: selected.card) else {
+            return nil
+        }
+
+        return retryPrompt(
+            kind: recommendation.kind,
+            bestCard: recommendation.recommendedCard,
+            expectedImprovement: recommendation.expectedImprovement
+        )
     }
 
     static func replayContext(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayReplayContext {
@@ -2923,8 +2926,22 @@ enum WhatToPlayStatsAnalyzer {
     ) -> WhatToPlayRetryPrompt? {
         guard insight.kind != .expertMatch else { return nil }
         let expectedImprovement = decisiveLoss(for: insight)
+        let kind: WhatToPlayRetryRecommendationKind = expectedImprovement <= 2
+            ? .smallGapPractice
+            : .replayUncounted
 
-        if expectedImprovement <= 2 {
+        return retryPrompt(kind: kind, bestCard: bestCard, expectedImprovement: expectedImprovement)
+    }
+
+    private static func retryPrompt(
+        kind: WhatToPlayRetryRecommendationKind,
+        bestCard: PlayingCard?,
+        expectedImprovement: Int
+    ) -> WhatToPlayRetryPrompt? {
+        guard expectedImprovement > 0 else { return nil }
+
+        switch kind {
+        case .smallGapPractice:
             return WhatToPlayRetryPrompt(
                 title: "أعد نفس الموقف".localized,
                 detail: "الفرق بسيط؛ أعد الموقف مرة واحدة وحاول تمييز سبب ترجيح الخبير للورقة الأفضل.".localized,
@@ -2932,15 +2949,15 @@ enum WhatToPlayStatsAnalyzer {
                 recommendedCard: bestCard,
                 expectedImprovement: expectedImprovement
             )
+        case .replayUncounted:
+            return WhatToPlayRetryPrompt(
+                title: "أعد نفس الموقف".localized,
+                detail: "لن تُحسب الإعادة كمحاولة جديدة. ركّز على الورقة الأفضل قبل الانتقال للموقف التالي.".localized,
+                iconName: "arrow.counterclockwise.circle.fill",
+                recommendedCard: bestCard,
+                expectedImprovement: expectedImprovement
+            )
         }
-
-        return WhatToPlayRetryPrompt(
-            title: "أعد نفس الموقف".localized,
-            detail: "لن تُحسب الإعادة كمحاولة جديدة. ركّز على الورقة الأفضل قبل الانتقال للموقف التالي.".localized,
-            iconName: "arrow.counterclockwise.circle.fill",
-            recommendedCard: bestCard,
-            expectedImprovement: expectedImprovement
-        )
     }
 
     static func scenarioBrief(for scenario: WhatToPlayScenario) -> WhatToPlayScenarioBrief {

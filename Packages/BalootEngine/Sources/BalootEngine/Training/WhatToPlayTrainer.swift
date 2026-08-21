@@ -522,6 +522,38 @@ public struct WhatToPlayNextActionRecommendation: Sendable, Equatable {
     }
 }
 
+/// نوع توصية إعادة موقف «وش تلعب؟».
+public enum WhatToPlayRetryRecommendationKind: String, Sendable, Codable, Equatable, CaseIterable {
+    case smallGapPractice
+    case replayUncounted
+}
+
+/// توصية خام لإعادة موقف «وش تلعب؟» دون نصوص واجهة.
+public struct WhatToPlayRetryRecommendation: Sendable, Equatable {
+    public let kind: WhatToPlayRetryRecommendationKind
+    public let selectedOption: WhatToPlayOption
+    public let bestOption: WhatToPlayOption
+    public let bestProjectedOption: WhatToPlayOption
+    public let recommendedCard: PlayingCard
+    public let expectedImprovement: Int
+
+    public init(
+        kind: WhatToPlayRetryRecommendationKind,
+        selectedOption: WhatToPlayOption,
+        bestOption: WhatToPlayOption,
+        bestProjectedOption: WhatToPlayOption,
+        recommendedCard: PlayingCard,
+        expectedImprovement: Int
+    ) {
+        self.kind = kind
+        self.selectedOption = selectedOption
+        self.bestOption = bestOption
+        self.bestProjectedOption = bestProjectedOption
+        self.recommendedCard = recommendedCard
+        self.expectedImprovement = expectedImprovement
+    }
+}
+
 /// أرقام موجزة تستخدم عند فتح Replay لقرار تدريب «وش تلعب؟».
 public struct WhatToPlayReplayMetrics: Sendable, Equatable {
     public let selectedOption: WhatToPlayOption
@@ -860,6 +892,46 @@ public enum WhatToPlayTrainer {
             secondBestOption: review.secondBestOption,
             lostExpectedPoints: lostExpectedPoints,
             lostProjectedTeamPoints: lostProjectedTeamPoints
+        )
+    }
+
+    /// يقرر هل يستحق موقف «وش تلعب؟» إعادة مباشرة، مع توصية الورقة الأفضل.
+    public static func retryRecommendation(
+        in scenario: WhatToPlayScenario,
+        selectedCard: PlayingCard?
+    ) -> WhatToPlayRetryRecommendation? {
+        retryRecommendation(from: choiceReview(in: scenario, selectedCard: selectedCard))
+    }
+
+    /// يقرر توصية الإعادة من مراجعة اختيار جاهزة.
+    public static func retryRecommendation(
+        from review: WhatToPlayChoiceReview
+    ) -> WhatToPlayRetryRecommendation? {
+        guard let selected = review.selectedOption,
+              let best = review.bestOption,
+              !selected.isExpertChoice,
+              let lostExpectedPoints = review.selectedLostExpectedPoints
+        else { return nil }
+
+        let bestProjected = review.bestProjectedOption ?? best
+        let lostProjectedTeamPoints = review.selectedLostProjectedTeamPoints ?? 0
+        let expectedImprovement = max(lostExpectedPoints, lostProjectedTeamPoints)
+        guard expectedImprovement > 0 else { return nil }
+
+        let recommendedCard = lostProjectedTeamPoints > lostExpectedPoints
+            ? bestProjected.card
+            : best.card
+        let kind: WhatToPlayRetryRecommendationKind = expectedImprovement <= 2
+            ? .smallGapPractice
+            : .replayUncounted
+
+        return WhatToPlayRetryRecommendation(
+            kind: kind,
+            selectedOption: selected,
+            bestOption: best,
+            bestProjectedOption: bestProjected,
+            recommendedCard: recommendedCard,
+            expectedImprovement: expectedImprovement
         )
     }
 

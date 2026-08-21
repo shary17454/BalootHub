@@ -231,6 +231,35 @@ struct WhatToPlayTrainerTests {
         #expect(missedWin.secondBestGap == 5)
     }
 
+    @Test("توصية إعادة موقف وش تلعب تأتي من المحرك")
+    func retryRecommendationComesFromEngine() throws {
+        let expertScenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
+        let expert = try #require(expertScenario.bestOption)
+        #expect(WhatToPlayTrainer.retryRecommendation(in: expertScenario, selectedCard: expert.card) == nil)
+
+        let simulationScenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let best = try #require(simulationScenario.bestOption)
+        let bestProjected = try #require(simulationScenario.bestProjectedOption)
+        let selected = try #require(
+            simulationScenario.options.first {
+                !$0.isExpertChoice
+                    && max(0, bestProjected.projectedTeamPoints - $0.projectedTeamPoints)
+                        > max(0, best.expectedImpact - $0.expectedImpact)
+            }
+        )
+
+        let recommendation = try #require(
+            WhatToPlayTrainer.retryRecommendation(in: simulationScenario, selectedCard: selected.card)
+        )
+
+        #expect(recommendation.kind == .replayUncounted)
+        #expect(recommendation.recommendedCard == bestProjected.card)
+        #expect(recommendation.expectedImprovement == max(
+            max(0, best.expectedImpact - selected.expectedImpact),
+            max(0, bestProjected.projectedTeamPoints - selected.projectedTeamPoints)
+        ))
+    }
+
     @Test("مستوى الخبير يولد موقفًا حقيقيًا قابلًا للتقييم")
     func expertDifficultyGeneratesPlayableScenario() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .expert)
