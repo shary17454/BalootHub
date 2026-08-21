@@ -46,6 +46,7 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
         XCTAssertTrue(review.detail.contains("\("نقاط فريقك بعد المحاكاة".localized): 50"))
         XCTAssertTrue(review.detail.contains("\("أفضل نتيجة محاكاة".localized): 62"))
         XCTAssertTrue(review.detail.contains("\("أفضل محاكاة".localized): \(bestSimulation.accessibilityName)"))
+        XCTAssertTrue(review.detail.contains(WhatToPlayStatsAnalyzer.valueLossTitle(for: .high)))
         XCTAssertTrue(review.detail.contains("\("نقاط محاكاة ضائعة".localized): 12"))
     }
 

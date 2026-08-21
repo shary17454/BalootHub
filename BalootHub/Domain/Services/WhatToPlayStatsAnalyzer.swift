@@ -2223,6 +2223,9 @@ enum WhatToPlayStatsAnalyzer {
         if let bestSimulationCard = item.bestSimulationCard {
             parts.append("\("أفضل محاكاة".localized): \(bestSimulationCard.accessibilityName)")
         }
+        if item.valueLossSeverity != .none {
+            parts.append(item.valueLossTitle)
+        }
         if item.lostExpectedPoints > 0 {
             parts.append("\("الفاقد".localized): \(item.lostExpectedPoints)")
         }
