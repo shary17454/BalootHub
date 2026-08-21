@@ -1022,6 +1022,26 @@ struct WhatToPlayTrainerTests {
         #expect(stabilize.targetAverageExpectedImpact == 1)
     }
 
+    @Test("سبب خطة جلسة وش تلعب يصنف من المحرك بترتيب ثابت")
+    func trainingSessionPlanRationaleMetricsClassifyPriorityOrder() {
+        #expect(
+            planRationale(
+                trump: true,
+                mode: true,
+                focus: true,
+                pulse: .reviewNeeded
+            ).category == .trumpSuitPriority
+        )
+        #expect(planRationale(mode: true, focus: true).category == .gameModePriority)
+        #expect(planRationale(focus: true).category == .focusPriority)
+        #expect(planRationale(pulse: .reviewNeeded).category == .immediateReview)
+        #expect(planRationale(style: .measuring, attempts: 4).category == .baseline)
+        #expect(planRationale(attempts: 0, hasGameModeTarget: true).category == .baseline)
+        #expect(planRationale(hasGameModeTarget: true, hasFocusTarget: true).category == .gameModeSampling)
+        #expect(planRationale(hasFocusTarget: true).category == .focusSampling)
+        #expect(planRationale().category == .stabilizeReading)
+    }
+
     @Test("توصية الموقف القادم تختار مصدرها من المحرك")
     func nextScenarioRecommendationMetricsSelectSource() {
         #expect(
@@ -2363,6 +2383,28 @@ private func trainingSessionPlanCategory(
             costlyDecisions: costlyDecisions
         )
     ).category
+}
+
+private func planRationale(
+    trump: Bool = false,
+    mode: Bool = false,
+    focus: Bool = false,
+    pulse: WhatToPlaySessionPulseState = .focused,
+    style: WhatToPlayPlayStyleCategory = .inconsistent,
+    attempts: Int = 4,
+    hasGameModeTarget: Bool = false,
+    hasFocusTarget: Bool = false
+) -> WhatToPlayTrainingSessionPlanRationaleMetrics {
+    WhatToPlayTrainingSessionPlanRationaleMetrics.classify(
+        hasTrumpSuitPriority: trump,
+        hasGameModePriority: mode,
+        hasFocusPriority: focus,
+        pulseState: pulse,
+        styleCategory: style,
+        attempts: attempts,
+        hasGameModeTarget: hasGameModeTarget,
+        hasFocusTarget: hasFocusTarget
+    )
 }
 
 private func valueProgressSamples(earlySelected: Int, recentSelected: Int) -> [WhatToPlayStatsSample] {

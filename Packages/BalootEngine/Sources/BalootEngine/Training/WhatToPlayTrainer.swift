@@ -1884,6 +1884,68 @@ public struct WhatToPlayTrainingSessionPlanMetrics: Sendable, Equatable {
     }
 }
 
+/// السبب الخام لاختيار خطة جلسة تدريب «وش تلعب؟» دون نصوص واجهة.
+public enum WhatToPlayTrainingSessionPlanRationaleCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case trumpSuitPriority
+    case gameModePriority
+    case focusPriority
+    case immediateReview
+    case baseline
+    case gameModeSampling
+    case focusSampling
+    case stabilizeReading
+}
+
+/// تصنيف سبب خطة الجلسة من أولويات التدريب والحالة الحالية.
+public struct WhatToPlayTrainingSessionPlanRationaleMetrics: Sendable, Equatable {
+    public let category: WhatToPlayTrainingSessionPlanRationaleCategory
+
+    public init(category: WhatToPlayTrainingSessionPlanRationaleCategory) {
+        self.category = category
+    }
+
+    public static func classify(
+        hasTrumpSuitPriority: Bool,
+        hasGameModePriority: Bool,
+        hasFocusPriority: Bool,
+        pulseState: WhatToPlaySessionPulseState,
+        styleCategory: WhatToPlayPlayStyleCategory,
+        attempts: Int,
+        hasGameModeTarget: Bool,
+        hasFocusTarget: Bool
+    ) -> WhatToPlayTrainingSessionPlanRationaleMetrics {
+        if hasTrumpSuitPriority {
+            return WhatToPlayTrainingSessionPlanRationaleMetrics(category: .trumpSuitPriority)
+        }
+
+        if hasGameModePriority {
+            return WhatToPlayTrainingSessionPlanRationaleMetrics(category: .gameModePriority)
+        }
+
+        if hasFocusPriority {
+            return WhatToPlayTrainingSessionPlanRationaleMetrics(category: .focusPriority)
+        }
+
+        if pulseState == .reviewNeeded {
+            return WhatToPlayTrainingSessionPlanRationaleMetrics(category: .immediateReview)
+        }
+
+        if styleCategory == .measuring || attempts <= 0 {
+            return WhatToPlayTrainingSessionPlanRationaleMetrics(category: .baseline)
+        }
+
+        if hasGameModeTarget {
+            return WhatToPlayTrainingSessionPlanRationaleMetrics(category: .gameModeSampling)
+        }
+
+        if hasFocusTarget {
+            return WhatToPlayTrainingSessionPlanRationaleMetrics(category: .focusSampling)
+        }
+
+        return WhatToPlayTrainingSessionPlanRationaleMetrics(category: .stabilizeReading)
+    }
+}
+
 /// ملخص نتائج قرارات «وش تلعب؟» حسب نتيجة الأكلة دون نصوص واجهة.
 public struct WhatToPlayOutcomeSummaryMetrics: Sendable, Equatable {
     public let trackedAttempts: Int

@@ -4243,60 +4243,74 @@ enum WhatToPlayStatsAnalyzer {
         focusKind: WhatToPlayScenarioFocusKind?,
         gameMode: GameMode?
     ) -> TrainingSessionPlanRationale {
-        if let trumpPriority {
+        let metrics = WhatToPlayTrainingSessionPlanRationaleMetrics.classify(
+            hasTrumpSuitPriority: trumpPriority != nil,
+            hasGameModePriority: gameModePriority != nil,
+            hasFocusPriority: focusPriority != nil,
+            pulseState: trainingPlanPulseState(pulse.state),
+            styleCategory: trainingPlanStyleCategory(style.kind),
+            attempts: summary.attempts,
+            hasGameModeTarget: gameMode != nil,
+            hasFocusTarget: focusKind != nil
+        )
+
+        switch metrics.category {
+        case .trumpSuitPriority:
+            guard let trumpPriority else { break }
             return TrainingSessionPlanRationale(
                 title: "\("سبب اختيار الخطة".localized): \("حكم".localized) \(trumpPriority.suit.spokenName)",
                 detail: "\("اختير لون الحكم هذا لأن نتائجه أضعف من بقية ألوان الحكم.".localized) \("الدقة".localized): \(trumpPriority.summary.accuracyPercent)% · \("النقاط الضائعة".localized): \(trumpPriority.summary.lostExpectedPoints) · \("فاقد المحاكاة".localized): \(trumpPriority.summary.lostProjectedTeamPoints).",
                 iconName: trumpSuitTrainingIcon(for: trumpPriority.suit)
             )
-        }
 
-        if let gameModePriority {
+        case .gameModePriority:
+            guard let gameModePriority else { break }
             return TrainingSessionPlanRationale(
                 title: "\("سبب اختيار الخطة".localized): \(gameModeTitle(gameModePriority.mode))",
                 detail: "\("اختير هذا النمط لأن سجل التدريب يظهر حاجة واضحة لمراجعته.".localized) \("الدقة".localized): \(gameModePriority.summary.accuracyPercent)% · \("النقاط الضائعة".localized): \(gameModePriority.summary.lostExpectedPoints) · \("فاقد المحاكاة".localized): \(gameModePriority.summary.lostProjectedTeamPoints).",
                 iconName: gameModeTrainingIcon(for: gameModePriority.mode)
             )
-        }
 
-        if let focusPriority {
+        case .focusPriority:
+            guard let focusPriority else { break }
             return TrainingSessionPlanRationale(
                 title: "\("سبب اختيار الخطة".localized): \(scenarioFocusTitle(focusPriority.focusKind))",
                 detail: "\("اختير هذا النوع لأن أخطاءك فيه أكثر تأثيرًا من بقية المواقف.".localized) \("الدقة".localized): \(focusPriority.summary.accuracyPercent)% · \("النقاط الضائعة".localized): \(focusPriority.summary.lostExpectedPoints).",
                 iconName: focusTrainingIcon(for: focusPriority.focusKind)
             )
-        }
 
-        if pulse.state == .reviewNeeded {
+        case .immediateReview:
             return TrainingSessionPlanRationale(
                 title: "سبب اختيار الخطة: مراجعة فورية".localized,
                 detail: "آخر محاولاتك تحتاج تثبيت القرار قبل التوسع في مواقف جديدة؛ راجع التفسير بعد كل اختيار.".localized,
                 iconName: "magnifyingglass.circle.fill"
             )
-        }
 
-        if style.kind == .measuring || summary.attempts == 0 {
+        case .baseline:
             return TrainingSessionPlanRationale(
                 title: "سبب اختيار الخطة: بناء خط أساس".localized,
                 detail: "لا توجد بيانات كافية بعد، لذلك يبدأ المدرب بمواقف قصيرة قابلة للقياس قبل تخصيص التدريب.".localized,
                 iconName: "ruler.fill"
             )
-        }
 
-        if let gameMode {
+        case .gameModeSampling:
+            guard let gameMode else { break }
             return TrainingSessionPlanRationale(
                 title: "\("سبب اختيار الخطة".localized): \(gameModeTitle(gameMode))",
                 detail: "لا توجد أولوية حادة الآن، لكن الخطة تحافظ على النمط الذي يحتاج مزيدًا من العينات حتى يصبح الحكم على أدائك أدق.".localized,
                 iconName: gameModeTrainingIcon(for: gameMode)
             )
-        }
 
-        if let focusKind {
+        case .focusSampling:
+            guard let focusKind else { break }
             return TrainingSessionPlanRationale(
                 title: "\("سبب اختيار الخطة".localized): \(scenarioFocusTitle(focusKind))",
                 detail: "لا توجد أولوية حادة الآن، لكن الخطة تواصل النوع الأقل تغطية في سجل التدريب لتحسين توازن العينات.".localized,
                 iconName: focusTrainingIcon(for: focusKind)
             )
+
+        case .stabilizeReading:
+            break
         }
 
         return TrainingSessionPlanRationale(
