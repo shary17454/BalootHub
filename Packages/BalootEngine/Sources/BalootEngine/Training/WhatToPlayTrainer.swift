@@ -3063,6 +3063,11 @@ public struct WhatToPlayNextActionRecommendation: Sendable, Equatable {
 public enum WhatToPlayRetryRecommendationKind: String, Sendable, Codable, Equatable, CaseIterable {
     case smallGapPractice
     case replayUncounted
+
+    public static func classify(expectedImprovement: Int) -> WhatToPlayRetryRecommendationKind? {
+        guard expectedImprovement > 0 else { return nil }
+        return expectedImprovement <= 2 ? .smallGapPractice : .replayUncounted
+    }
 }
 
 /// توصية خام لإعادة موقف «وش تلعب؟» دون نصوص واجهة.
@@ -3655,9 +3660,9 @@ public enum WhatToPlayTrainer {
         let recommendedCard = lostProjectedTeamPoints > lostExpectedPoints
             ? bestProjected.card
             : best.card
-        let kind: WhatToPlayRetryRecommendationKind = expectedImprovement <= 2
-            ? .smallGapPractice
-            : .replayUncounted
+        guard let kind = WhatToPlayRetryRecommendationKind.classify(
+            expectedImprovement: expectedImprovement
+        ) else { return nil }
 
         return WhatToPlayRetryRecommendation(
             kind: kind,

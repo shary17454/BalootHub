@@ -3001,9 +3001,9 @@ enum WhatToPlayStatsAnalyzer {
     ) -> WhatToPlayRetryPrompt? {
         guard insight.kind != .expertMatch else { return nil }
         let expectedImprovement = decisiveLoss(for: insight)
-        let kind: WhatToPlayRetryRecommendationKind = expectedImprovement <= 2
-            ? .smallGapPractice
-            : .replayUncounted
+        guard let kind = WhatToPlayRetryRecommendationKind.classify(
+            expectedImprovement: expectedImprovement
+        ) else { return nil }
 
         return retryPrompt(kind: kind, bestCard: bestCard, expectedImprovement: expectedImprovement)
     }

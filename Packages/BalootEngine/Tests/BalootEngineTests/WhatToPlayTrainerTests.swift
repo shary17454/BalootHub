@@ -1726,6 +1726,14 @@ struct WhatToPlayTrainerTests {
         #expect(successFocus(.narrowChoice).category == .narrowChoice)
     }
 
+    @Test("نوع إعادة موقف وش تلعب يصنف من المحرك")
+    func retryRecommendationKindClassifiesExpectedImprovement() {
+        #expect(WhatToPlayRetryRecommendationKind.classify(expectedImprovement: 0) == nil)
+        #expect(WhatToPlayRetryRecommendationKind.classify(expectedImprovement: 1) == .smallGapPractice)
+        #expect(WhatToPlayRetryRecommendationKind.classify(expectedImprovement: 2) == .smallGapPractice)
+        #expect(WhatToPlayRetryRecommendationKind.classify(expectedImprovement: 3) == .replayUncounted)
+    }
+
     @Test("توصية إعادة موقف وش تلعب تأتي من المحرك")
     func retryRecommendationComesFromEngine() throws {
         let expertScenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
@@ -1748,6 +1756,10 @@ struct WhatToPlayTrainerTests {
         )
 
         #expect(recommendation.kind == .replayUncounted)
+        #expect(
+            recommendation.kind
+                == WhatToPlayRetryRecommendationKind.classify(expectedImprovement: recommendation.expectedImprovement)
+        )
         #expect(recommendation.recommendedCard == bestProjected.card)
         #expect(recommendation.expectedImprovement == max(
             max(0, best.expectedImpact - selected.expectedImpact),
