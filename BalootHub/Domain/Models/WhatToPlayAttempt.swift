@@ -144,9 +144,12 @@ final class WhatToPlayAttempt {
     ///
     /// محسوب من الحقول المحفوظة أصلًا، لذلك لا يحتاج Migration ولا يغيّر مخطط SwiftData.
     var scenarioCode: String {
-        let focus = focusKindRaw ?? "auto"
-        let selected = selectedCard.map { "-C\($0.suit.ordinal)\($0.rank.ordinal)" } ?? "-P"
-        return "WTP-\(replaySeed)-\(difficulty.rawValue)-\(focus)\(selected)"
+        WhatToPlayScenarioCode.make(
+            seed: replaySeed,
+            difficulty: difficulty,
+            focusKindRaw: focusKindRaw,
+            selectedCard: selectedCard
+        )
     }
 
     var selectedCard: PlayingCard? {

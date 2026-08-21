@@ -108,7 +108,7 @@ enum WhatToPlayShareCard {
             subtitle: selectedOption == nil
                 ? "موقف تدريبي من Baloot Hub".localized
                 : "مراجعة قرار من Baloot Hub".localized,
-            scenarioCode: scenarioCode(for: scenario, selectedOption: selectedOption),
+            scenarioCode: WhatToPlayScenarioCode.make(for: scenario, selectedOption: selectedOption),
             contextLine: "\("أنت تلعب".localized) \(mode)",
             mode: mode,
             difficulty: difficultyText(scenario.difficulty),
@@ -296,14 +296,6 @@ enum WhatToPlayShareCard {
             }
             return lhs.card.rank.ordinal < rhs.card.rank.ordinal
         }
-    }
-
-    private static func scenarioCode(
-        for scenario: WhatToPlayScenario,
-        selectedOption: WhatToPlayOption?
-    ) -> String {
-        let selected = selectedOption.map { "-C\($0.card.suit.ordinal)\($0.card.rank.ordinal)" } ?? "-P"
-        return "WTP-\(scenario.seed)-\(scenario.difficulty.rawValue)-\(scenario.context.focusKind.rawValue)\(selected)"
     }
 
     private static func tacticalReason(for option: WhatToPlayOption) -> WhatToPlayShareTacticalReason? {
