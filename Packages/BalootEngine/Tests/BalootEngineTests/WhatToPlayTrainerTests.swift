@@ -1651,6 +1651,15 @@ struct WhatToPlayTrainerTests {
         #expect(missedWin.secondBestGap == 5)
     }
 
+    @Test("شدة خسارة قيمة وش تلعب تستخدم حدود المحرك")
+    func valueLossSeverityCategoryClassifyThresholds() {
+        #expect(WhatToPlayValueLossSeverityCategory.classify(decisiveLoss: 0) == .none)
+        #expect(WhatToPlayValueLossSeverityCategory.classify(decisiveLoss: 2) == .low)
+        #expect(WhatToPlayValueLossSeverityCategory.classify(decisiveLoss: 3) == .medium)
+        #expect(WhatToPlayValueLossSeverityCategory.classify(decisiveLoss: 5) == .medium)
+        #expect(WhatToPlayValueLossSeverityCategory.classify(decisiveLoss: 6) == .high)
+    }
+
     @Test("خطوة مراجعة قرار وش تلعب حسب محور الموقف تأتي من المحرك")
     func decisionReviewFocusStepMetricsClassifyFocus() {
         #expect(reviewFocus(.openingLead).category == .openingLead)

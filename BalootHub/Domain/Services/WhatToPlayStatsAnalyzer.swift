@@ -2882,16 +2882,9 @@ enum WhatToPlayStatsAnalyzer {
     }
 
     static func valueLossSeverity(for lostExpectedPoints: Int) -> WhatToPlayValueLossSeverity {
-        switch lostExpectedPoints {
-        case ...0:
-            .none
-        case 1...2:
-            .low
-        case 3...5:
-            .medium
-        default:
-            .high
-        }
+        valueLossSeverity(
+            for: WhatToPlayValueLossSeverityCategory.classify(decisiveLoss: lostExpectedPoints)
+        )
     }
 
     static func valueLossTitle(for severity: WhatToPlayValueLossSeverity) -> String {
