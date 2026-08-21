@@ -79,6 +79,43 @@ struct WhatToPlayTrainerTests {
         #expect(review.bestMoveConfidence != nil)
     }
 
+    @Test("وسم خيار وش تلعب التكتيكي يأتي من المحرك")
+    func tacticalTagClassifiesOption() {
+        let expert = projectedOption(
+            card: PlayingCard(suit: .spades, rank: .ace),
+            rank: 1,
+            isExpertChoice: true,
+            expectedImpact: 10
+        )
+        let close = projectedOption(card: PlayingCard(suit: .hearts, rank: .ace), rank: 2, expectedImpact: 8)
+        let costly = projectedOption(card: PlayingCard(suit: .clubs, rank: .seven), rank: 3, expectedImpact: -1)
+        let wins = projectedOption(
+            card: PlayingCard(suit: .diamonds, rank: .ace),
+            rank: 4,
+            expectedImpact: 6,
+            outcome: .winsTrick
+        )
+        let opens = projectedOption(
+            card: PlayingCard(suit: .diamonds, rank: .king),
+            rank: 5,
+            expectedImpact: 4,
+            outcome: .leadsTrick
+        )
+        let holds = projectedOption(
+            card: PlayingCard(suit: .diamonds, rank: .queen),
+            rank: 6,
+            expectedImpact: 4,
+            outcome: .losesTrick
+        )
+
+        #expect(WhatToPlayOptionTacticalTag.classify(option: expert, bestExpectedImpact: 10, bestProjectedTeamPoints: 40) == .expertPick)
+        #expect(WhatToPlayOptionTacticalTag.classify(option: close, bestExpectedImpact: 10, bestProjectedTeamPoints: 40) == .closeAlternative)
+        #expect(WhatToPlayOptionTacticalTag.classify(option: costly, bestExpectedImpact: 10, bestProjectedTeamPoints: 40) == .costly)
+        #expect(WhatToPlayOptionTacticalTag.classify(option: wins, bestExpectedImpact: 10, bestProjectedTeamPoints: 40) == .winsNow)
+        #expect(WhatToPlayOptionTacticalTag.classify(option: opens, bestExpectedImpact: 10, bestProjectedTeamPoints: 40) == .opensRisk)
+        #expect(WhatToPlayOptionTacticalTag.classify(option: holds, bestExpectedImpact: 10, bestProjectedTeamPoints: 40) == .holdsPosition)
+    }
+
     @Test("مستوى الخبير يولد موقفًا حقيقيًا قابلًا للتقييم")
     func expertDifficultyGeneratesPlayableScenario() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .expert)
@@ -729,14 +766,21 @@ struct WhatToPlayTrainerTests {
     }
 }
 
-private func projectedOption(card: PlayingCard, rank: Int) -> WhatToPlayOption {
+private func projectedOption(
+    card: PlayingCard,
+    rank: Int,
+    isExpertChoice: Bool = false,
+    expectedImpact: Int = 4,
+    projectedTeamPoints: Int = 40,
+    outcome: WhatToPlayOptionOutcome = .developsTrick
+) -> WhatToPlayOption {
     WhatToPlayOption(
         card: card,
         rank: rank,
         score: 0,
-        isExpertChoice: false,
-        expectedImpact: 4,
-        projectedTeamPoints: 40,
+        isExpertChoice: isExpertChoice,
+        expectedImpact: expectedImpact,
+        projectedTeamPoints: projectedTeamPoints,
         impactBreakdown: WhatToPlayOptionImpactBreakdown(
             playedCardPoints: 0,
             immediateImpact: 0,
@@ -756,7 +800,7 @@ private func projectedOption(card: PlayingCard, rank: Int) -> WhatToPlayOption {
             playerRemainingCards: 7,
             actionHistoryCount: 1
         ),
-        outcome: .developsTrick,
+        outcome: outcome,
         outcomeReason: "",
         explanation: ""
     )

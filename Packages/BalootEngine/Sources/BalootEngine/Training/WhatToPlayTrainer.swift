@@ -58,6 +58,34 @@ public enum WhatToPlayBestMoveConfidence: String, Sendable, Codable, Equatable, 
     }
 }
 
+/// وسم تكتيكي مختصر لخيار ورقة في موقف «وش تلعب؟».
+public enum WhatToPlayOptionTacticalTag: String, Sendable, Codable, Equatable, CaseIterable {
+    case expertPick
+    case closeAlternative
+    case winsNow
+    case holdsPosition
+    case opensRisk
+    case costly
+
+    /// يصنف الخيار من أثره المباشر ونتيجة استكمال الجولة.
+    public static func classify(
+        option: WhatToPlayOption,
+        bestExpectedImpact: Int,
+        bestProjectedTeamPoints: Int
+    ) -> WhatToPlayOptionTacticalTag {
+        let lostExpectedPoints = max(0, bestExpectedImpact - option.expectedImpact)
+        let lostProjectedTeamPoints = max(0, bestProjectedTeamPoints - option.projectedTeamPoints)
+        let decisiveLoss = max(lostExpectedPoints, lostProjectedTeamPoints)
+
+        if option.isExpertChoice { return .expertPick }
+        if decisiveLoss <= 2 { return .closeAlternative }
+        if decisiveLoss >= 9 || option.expectedImpact < 0 { return .costly }
+        if option.outcome == .winsTrick && option.expectedImpact > 0 { return .winsNow }
+        if option.outcome == .leadsTrick || option.outcome == .developsTrick { return .opensRisk }
+        return .holdsPosition
+    }
+}
+
 /// خيار ورقة في موقف تدريبي.
 public struct WhatToPlayOption: Identifiable, Sendable, Equatable {
     public let card: PlayingCard

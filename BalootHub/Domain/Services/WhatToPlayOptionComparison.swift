@@ -136,14 +136,7 @@ extension WhatToPlayDecisionQuality {
     }
 }
 
-enum WhatToPlayOptionTacticalTag: Equatable {
-    case expertPick
-    case closeAlternative
-    case winsNow
-    case holdsPosition
-    case opensRisk
-    case costly
-
+extension WhatToPlayOptionTacticalTag {
     var title: String {
         switch self {
         case .expertPick:
@@ -241,9 +234,9 @@ enum WhatToPlayOptionComparison {
                     simulationSummary: simulationDisplay.summary,
                     simulationTeamResult: simulationDisplay.teamResult,
                     simulationTrickPoints: simulationDisplay.trickPoints,
-                    tacticalTag: tacticalTag(
-                        for: option,
-                        bestImpact: bestImpact,
+                    tacticalTag: WhatToPlayOptionTacticalTag.classify(
+                        option: option,
+                        bestExpectedImpact: bestImpact,
                         bestProjectedTeamPoints: bestProjectedTeamPoints
                     ),
                     tacticalSummary: tacticalSummary(
@@ -324,22 +317,6 @@ enum WhatToPlayOptionComparison {
             "أعد الموقف".localized,
             "\(WhatToPlayDecisionQuality.costly.detail) \("النقاط الضائعة".localized): \(lostExpectedPoints). \("أفضل ورقة".localized): \(best.card.accessibilityName)."
         )
-    }
-
-    private static func tacticalTag(
-        for option: WhatToPlayOption,
-        bestImpact: Int,
-        bestProjectedTeamPoints: Int
-    ) -> WhatToPlayOptionTacticalTag {
-        let lost = max(0, bestImpact - option.expectedImpact)
-        let projectedLost = max(0, bestProjectedTeamPoints - option.projectedTeamPoints)
-        let decisiveLoss = max(lost, projectedLost)
-        if option.isExpertChoice { return .expertPick }
-        if decisiveLoss <= 2 { return .closeAlternative }
-        if decisiveLoss >= 9 || option.expectedImpact < 0 { return .costly }
-        if option.outcome == .winsTrick && option.expectedImpact > 0 { return .winsNow }
-        if option.outcome == .leadsTrick || option.outcome == .developsTrick { return .opensRisk }
-        return .holdsPosition
     }
 
     private static func tacticalSummary(
