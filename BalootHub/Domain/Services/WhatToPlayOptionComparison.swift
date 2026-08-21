@@ -243,14 +243,6 @@ enum WhatToPlayOptionComparison {
             }
     }
 
-    private static func sortedOptions(_ options: [WhatToPlayOption]) -> [WhatToPlayOption] {
-        options.sorted { lhs, rhs in
-            if lhs.rank != rhs.rank { return lhs.rank < rhs.rank }
-            if lhs.card.suit.ordinal != rhs.card.suit.ordinal { return lhs.card.suit.ordinal < rhs.card.suit.ordinal }
-            return lhs.card.rank.ordinal < rhs.card.rank.ordinal
-        }
-    }
-
     static func bestSimulationOption(_ options: [WhatToPlayOption]) -> WhatToPlayOption? {
         WhatToPlayTrainer.projectedOptions(in: options).first
     }
