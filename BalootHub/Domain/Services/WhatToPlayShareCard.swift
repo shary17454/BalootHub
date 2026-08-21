@@ -39,6 +39,7 @@ struct WhatToPlayShareCardContent: Equatable {
     let bestProjectedTeamPoints: Int?
     let secondBestSimulationCardName: String?
     let secondBestProjectedTeamPoints: Int?
+    let lostProjectedAgainstSecondBestPoints: Int?
     let lostExpectedPoints: Int?
     let lostProjectedTeamPoints: Int?
     let lostAgainstSecondBestPoints: Int?
@@ -86,6 +87,9 @@ enum WhatToPlayShareCard {
         let bestProjected = review?.bestProjectedOption
         let lost = review?.selectedLostExpectedPoints
         let projectedLost = review?.selectedLostProjectedTeamPoints
+        let lostProjectedAgainstSecondBest = selectedOption.flatMap { selected in
+            review?.secondBestProjectedOption.map { max(0, $0.projectedTeamPoints - selected.projectedTeamPoints) }
+        }
         let lostAgainstSecondBest = selectedOption.flatMap { selected in
             review?.secondBestOption.map { max(0, $0.expectedImpact - selected.expectedImpact) }
         }
@@ -143,6 +147,7 @@ enum WhatToPlayShareCard {
             bestProjectedTeamPoints: bestProjected?.projectedTeamPoints,
             secondBestSimulationCardName: review?.secondBestProjectedOption?.card.accessibilityName,
             secondBestProjectedTeamPoints: review?.secondBestProjectedOption?.projectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: lostProjectedAgainstSecondBest,
             lostExpectedPoints: lost,
             lostProjectedTeamPoints: projectedLost,
             lostAgainstSecondBestPoints: lostAgainstSecondBest,
@@ -241,6 +246,9 @@ enum WhatToPlayShareCard {
             }
             if let secondBestProjectedTeamPoints = content.secondBestProjectedTeamPoints {
                 lines.append("\("ثاني نتيجة محاكاة".localized): \(secondBestProjectedTeamPoints)")
+            }
+            if let lostProjectedAgainstSecondBestPoints = content.lostProjectedAgainstSecondBestPoints {
+                lines.append("\("فاقد ثاني محاكاة".localized): \(lostProjectedAgainstSecondBestPoints)")
             }
             if let selectedRank = content.selectedRank {
                 lines.append("\("ترتيب اختياري".localized): \(selectedRank)")

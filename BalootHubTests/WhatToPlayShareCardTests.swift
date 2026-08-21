@@ -177,6 +177,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertFalse(text.contains("أفضل نتيجة محاكاة".localized))
         XCTAssertFalse(text.contains("ثاني محاكاة".localized))
         XCTAssertFalse(text.contains("ثاني نتيجة محاكاة".localized))
+        XCTAssertFalse(text.contains("فاقد ثاني محاكاة".localized))
         XCTAssertFalse(text.contains("ثقة أفضل ورقة".localized))
     }
 
@@ -199,6 +200,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("أفضل نتيجة محاكاة".localized): \(bestSimulation.projectedTeamPoints)"))
         XCTAssertTrue(text.contains("\("ثاني محاكاة".localized): \(secondBestSimulation.card.accessibilityName)"))
         XCTAssertTrue(text.contains("\("ثاني نتيجة محاكاة".localized): \(secondBestSimulation.projectedTeamPoints)"))
+        XCTAssertTrue(text.contains("\("فاقد ثاني محاكاة".localized): \(max(0, secondBestSimulation.projectedTeamPoints - selected.projectedTeamPoints))"))
         XCTAssertTrue(text.contains("\("ترتيب اختياري".localized): \(selected.rank)"))
         XCTAssertTrue(text.contains("\("نقاط متوقعة ضائعة".localized): \(max(0, best.expectedImpact - selected.expectedImpact))"))
         XCTAssertTrue(text.contains("\("نقاط محاكاة ضائعة".localized): \(max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints))"))
@@ -238,6 +240,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).bestProjectedTeamPoints)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).secondBestSimulationCardName)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).secondBestProjectedTeamPoints)
+        XCTAssertNil(WhatToPlayShareCard.content(for: scenario).lostProjectedAgainstSecondBestPoints)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).lostAgainstSecondBestPoints)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).lostProjectedTeamPoints)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).valueLossTitle)
@@ -274,6 +277,10 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(reviewed.bestProjectedTeamPoints, review.bestProjectedOption?.projectedTeamPoints)
         XCTAssertEqual(reviewed.secondBestSimulationCardName, review.secondBestProjectedOption?.card.accessibilityName)
         XCTAssertEqual(reviewed.secondBestProjectedTeamPoints, review.secondBestProjectedOption?.projectedTeamPoints)
+        XCTAssertEqual(
+            reviewed.lostProjectedAgainstSecondBestPoints,
+            review.secondBestProjectedOption.map { max(0, $0.projectedTeamPoints - selected.projectedTeamPoints) }
+        )
         XCTAssertEqual(reviewed.lostExpectedPoints, lostExpectedPoints)
         XCTAssertEqual(reviewed.lostProjectedTeamPoints, lostProjectedTeamPoints)
         XCTAssertEqual(reviewed.lostAgainstSecondBestPoints, max(0, secondBest.expectedImpact - selected.expectedImpact))
