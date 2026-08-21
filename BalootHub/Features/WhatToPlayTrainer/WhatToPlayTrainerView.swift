@@ -126,6 +126,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.gameModeCoverage(for: attempts)
     }
 
+    private var trumpSuitCoverage: WhatToPlayTrumpSuitCoverage {
+        WhatToPlayStatsAnalyzer.trumpSuitCoverage(for: attempts)
+    }
+
     private var gameModeTrainingPriority: WhatToPlayGameModeTrainingPriority? {
         WhatToPlayStatsAnalyzer.gameModeTrainingPriority(for: attempts)
     }
@@ -1666,7 +1670,11 @@ struct WhatToPlayTrainerView: View {
                     difficultyImpactInsightView(difficultyImpactInsight)
                 }
 
-                gameModeStatsView(gameModeSummaries, coverage: gameModeCoverage)
+                gameModeStatsView(
+                    gameModeSummaries,
+                    coverage: gameModeCoverage,
+                    trumpSuitCoverage: trumpSuitCoverage
+                )
                 practiceCoverageView(practiceCoverage)
             }
             .padding(AppSpacing.md)
@@ -1675,7 +1683,11 @@ struct WhatToPlayTrainerView: View {
     }
 
     @ViewBuilder
-    private func gameModeStatsView(_ summaries: [WhatToPlayGameModeSummary], coverage: WhatToPlayGameModeCoverage) -> some View {
+    private func gameModeStatsView(
+        _ summaries: [WhatToPlayGameModeSummary],
+        coverage: WhatToPlayGameModeCoverage,
+        trumpSuitCoverage: WhatToPlayTrumpSuitCoverage
+    ) -> some View {
         if !summaries.isEmpty {
             VStack(alignment: .leading, spacing: AppSpacing.sm) {
                 Label("الأداء حسب النمط".localized, systemImage: "flag.checkered")
@@ -1683,6 +1695,10 @@ struct WhatToPlayTrainerView: View {
                     .foregroundStyle(AppColor.textPrimary)
 
                 modeCoverageView(coverage)
+
+                if summaries.contains(where: { $0.mode == .hokum }) {
+                    trumpSuitCoverageView(trumpSuitCoverage)
+                }
 
                 if let gameModeTrainingPriority {
                     gameModeTrainingPriorityView(gameModeTrainingPriority)
@@ -1731,6 +1747,30 @@ struct WhatToPlayTrainerView: View {
                     .foregroundStyle(AppColor.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
                 Text("\("التغطية".localized): \(coverage.sampledModes)/\(coverage.totalModes)")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(coverage.isBalanced ? AppColor.success : AppColor.accent)
+            }
+        } icon: {
+            Image(systemName: coverage.iconName)
+                .foregroundStyle(coverage.isBalanced ? AppColor.success : AppColor.accent)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.sm)
+        .background((coverage.isBalanced ? AppColor.success : AppColor.accent).opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func trumpSuitCoverageView(_ coverage: WhatToPlayTrumpSuitCoverage) -> some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(coverage.title)
+                    .font(AppTypography.caption.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(coverage.detail)
+                    .font(.caption2)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("\("التغطية".localized): \(coverage.sampledSuits)/\(coverage.totalSuits)")
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(coverage.isBalanced ? AppColor.success : AppColor.accent)
             }
