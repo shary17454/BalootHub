@@ -849,7 +849,8 @@ struct WhatToPlayTrainerTests {
                 bestExpectedImpact: 8,
                 secondBestExpectedImpact: 6,
                 projectedTeamPoints: 82,
-                bestProjectedTeamPoints: 82
+                bestProjectedTeamPoints: 82,
+                secondBestProjectedTeamPoints: 78
             ),
             WhatToPlayStatsSample(
                 isCorrect: false,
@@ -857,7 +858,8 @@ struct WhatToPlayTrainerTests {
                 bestExpectedImpact: 5,
                 secondBestExpectedImpact: 3,
                 projectedTeamPoints: 64,
-                bestProjectedTeamPoints: 76
+                bestProjectedTeamPoints: 76,
+                secondBestProjectedTeamPoints: 70
             ),
             WhatToPlayStatsSample(isCorrect: true, expectedImpact: 2, bestExpectedImpact: 6, projectedTeamPoints: 70)
         ])
@@ -879,6 +881,9 @@ struct WhatToPlayTrainerTests {
         #expect(metrics.averageProjectedTeamPoints == 72)
         #expect(metrics.lostProjectedTeamPoints == 12)
         #expect(metrics.averageLostProjectedTeamPoints == 6)
+        #expect(metrics.projectedSecondBestComparisonAttempts == 2)
+        #expect(metrics.lostProjectedAgainstSecondBestPoints == 6)
+        #expect(metrics.averageProjectedSecondBestGap == 3)
     }
 
     @Test("ملخص أداء وش تلعب يتجاهل أفضلية غير موجبة في نسبة التقاط القيمة")
@@ -2511,7 +2516,10 @@ private func trainingSessionPlanCategory(
             projectedTeamPointAttempts: projectedAttempts,
             averageProjectedTeamPoints: 70,
             lostProjectedTeamPoints: averageLostProjectedTeamPoints * max(1, projectedAttempts),
-            averageLostProjectedTeamPoints: averageLostProjectedTeamPoints
+            averageLostProjectedTeamPoints: averageLostProjectedTeamPoints,
+            projectedSecondBestComparisonAttempts: 0,
+            lostProjectedAgainstSecondBestPoints: 0,
+            averageProjectedSecondBestGap: 0
         ),
         decisionQualitySummary: WhatToPlayDecisionQualitySummaryMetrics(
             trackedAttempts: qualityAttempts,
@@ -2588,7 +2596,10 @@ private func practiceRecommendation(
             projectedTeamPointAttempts: projectedAttempts,
             averageProjectedTeamPoints: 70,
             lostProjectedTeamPoints: averageLostProjectedTeamPoints * max(1, projectedAttempts),
-            averageLostProjectedTeamPoints: averageLostProjectedTeamPoints
+            averageLostProjectedTeamPoints: averageLostProjectedTeamPoints,
+            projectedSecondBestComparisonAttempts: 0,
+            lostProjectedAgainstSecondBestPoints: 0,
+            averageProjectedSecondBestGap: 0
         ),
         decisionQualitySummary: WhatToPlayDecisionQualitySummaryMetrics(
             trackedAttempts: qualityAttempts,
@@ -2831,7 +2842,10 @@ private func coachingSummary(
         projectedTeamPointAttempts: 0,
         averageProjectedTeamPoints: 0,
         lostProjectedTeamPoints: 0,
-        averageLostProjectedTeamPoints: 0
+        averageLostProjectedTeamPoints: 0,
+        projectedSecondBestComparisonAttempts: 0,
+        lostProjectedAgainstSecondBestPoints: 0,
+        averageProjectedSecondBestGap: 0
     )
 }
 

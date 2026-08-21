@@ -31,6 +31,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.averageProjectedTeamPoints, 0)
         XCTAssertEqual(summary.lostProjectedTeamPoints, 0)
         XCTAssertEqual(summary.averageLostProjectedTeamPoints, 0)
+        XCTAssertEqual(summary.projectedSecondBestComparisonAttempts, 0)
+        XCTAssertEqual(summary.lostProjectedAgainstSecondBestPoints, 0)
+        XCTAssertEqual(summary.averageProjectedSecondBestGap, 0)
     }
 
     func testSummaryAccumulatesLostExpectedPointsWhenBestImpactIsKnown() {
@@ -78,8 +81,22 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
     func testSummaryTracksProjectedTeamPointLossWhenKnown() {
         let attempts = [
-            attempt(daysAgo: 3, correct: true, impact: 4, projectedTeamPoints: 82, bestProjectedTeamPoints: 82),
-            attempt(daysAgo: 2, correct: false, impact: -3, projectedTeamPoints: 64, bestProjectedTeamPoints: 76),
+            attempt(
+                daysAgo: 3,
+                correct: true,
+                impact: 4,
+                projectedTeamPoints: 82,
+                bestProjectedTeamPoints: 82,
+                secondBestProjectedTeamPoints: 78
+            ),
+            attempt(
+                daysAgo: 2,
+                correct: false,
+                impact: -3,
+                projectedTeamPoints: 64,
+                bestProjectedTeamPoints: 76,
+                secondBestProjectedTeamPoints: 70
+            ),
             attempt(daysAgo: 1, correct: false, impact: 2, projectedTeamPoints: 70)
         ]
 
@@ -89,6 +106,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.averageProjectedTeamPoints, 72)
         XCTAssertEqual(summary.lostProjectedTeamPoints, 12)
         XCTAssertEqual(summary.averageLostProjectedTeamPoints, 6)
+        XCTAssertEqual(summary.projectedSecondBestComparisonAttempts, 2)
+        XCTAssertEqual(summary.lostProjectedAgainstSecondBestPoints, 6)
+        XCTAssertEqual(summary.averageProjectedSecondBestGap, 3)
     }
 
     func testDecisionHighlightsReturnBestImpactAndWorstLoss() {

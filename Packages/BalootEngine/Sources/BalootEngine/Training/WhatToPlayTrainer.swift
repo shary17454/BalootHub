@@ -1429,6 +1429,7 @@ public struct WhatToPlayStatsSample: Sendable, Equatable {
     public let secondBestExpectedImpact: Int?
     public let projectedTeamPoints: Int?
     public let bestProjectedTeamPoints: Int?
+    public let secondBestProjectedTeamPoints: Int?
 
     public init(
         isCorrect: Bool,
@@ -1436,7 +1437,8 @@ public struct WhatToPlayStatsSample: Sendable, Equatable {
         bestExpectedImpact: Int? = nil,
         secondBestExpectedImpact: Int? = nil,
         projectedTeamPoints: Int? = nil,
-        bestProjectedTeamPoints: Int? = nil
+        bestProjectedTeamPoints: Int? = nil,
+        secondBestProjectedTeamPoints: Int? = nil
     ) {
         self.isCorrect = isCorrect
         self.expectedImpact = expectedImpact
@@ -1444,6 +1446,7 @@ public struct WhatToPlayStatsSample: Sendable, Equatable {
         self.secondBestExpectedImpact = secondBestExpectedImpact
         self.projectedTeamPoints = projectedTeamPoints
         self.bestProjectedTeamPoints = bestProjectedTeamPoints
+        self.secondBestProjectedTeamPoints = secondBestProjectedTeamPoints
     }
 
     public var lostExpectedPoints: Int {
@@ -1459,6 +1462,11 @@ public struct WhatToPlayStatsSample: Sendable, Equatable {
     public var lostProjectedTeamPoints: Int {
         guard let bestProjectedTeamPoints, let projectedTeamPoints else { return 0 }
         return max(0, bestProjectedTeamPoints - projectedTeamPoints)
+    }
+
+    public var lostProjectedAgainstSecondBestPoints: Int {
+        guard let secondBestProjectedTeamPoints, let projectedTeamPoints else { return 0 }
+        return max(0, secondBestProjectedTeamPoints - projectedTeamPoints)
     }
 }
 
@@ -1481,6 +1489,9 @@ public struct WhatToPlayStatsSummaryMetrics: Sendable, Equatable {
     public let averageProjectedTeamPoints: Int
     public let lostProjectedTeamPoints: Int
     public let averageLostProjectedTeamPoints: Int
+    public let projectedSecondBestComparisonAttempts: Int
+    public let lostProjectedAgainstSecondBestPoints: Int
+    public let averageProjectedSecondBestGap: Int
 
     public static let empty = WhatToPlayStatsSummaryMetrics(
         attempts: 0,
@@ -1499,7 +1510,10 @@ public struct WhatToPlayStatsSummaryMetrics: Sendable, Equatable {
         projectedTeamPointAttempts: 0,
         averageProjectedTeamPoints: 0,
         lostProjectedTeamPoints: 0,
-        averageLostProjectedTeamPoints: 0
+        averageLostProjectedTeamPoints: 0,
+        projectedSecondBestComparisonAttempts: 0,
+        lostProjectedAgainstSecondBestPoints: 0,
+        averageProjectedSecondBestGap: 0
     )
 
     public init(
@@ -1519,7 +1533,10 @@ public struct WhatToPlayStatsSummaryMetrics: Sendable, Equatable {
         projectedTeamPointAttempts: Int,
         averageProjectedTeamPoints: Int,
         lostProjectedTeamPoints: Int,
-        averageLostProjectedTeamPoints: Int
+        averageLostProjectedTeamPoints: Int,
+        projectedSecondBestComparisonAttempts: Int,
+        lostProjectedAgainstSecondBestPoints: Int,
+        averageProjectedSecondBestGap: Int
     ) {
         self.attempts = attempts
         self.correct = correct
@@ -1538,6 +1555,9 @@ public struct WhatToPlayStatsSummaryMetrics: Sendable, Equatable {
         self.averageProjectedTeamPoints = averageProjectedTeamPoints
         self.lostProjectedTeamPoints = lostProjectedTeamPoints
         self.averageLostProjectedTeamPoints = averageLostProjectedTeamPoints
+        self.projectedSecondBestComparisonAttempts = projectedSecondBestComparisonAttempts
+        self.lostProjectedAgainstSecondBestPoints = lostProjectedAgainstSecondBestPoints
+        self.averageProjectedSecondBestGap = averageProjectedSecondBestGap
     }
 
     public static func summarize(chronologicalSamples samples: [WhatToPlayStatsSample]) -> WhatToPlayStatsSummaryMetrics {
@@ -1575,6 +1595,15 @@ public struct WhatToPlayStatsSummaryMetrics: Sendable, Equatable {
         let averageLostProjectedTeamPoints = projectedComparisons.isEmpty
             ? 0
             : Int((Double(lostProjectedTeamPoints) / Double(projectedComparisons.count)).rounded())
+        let projectedSecondBestComparisons = samples.filter {
+            $0.projectedTeamPoints != nil && $0.secondBestProjectedTeamPoints != nil
+        }
+        let lostProjectedAgainstSecondBestPoints = projectedSecondBestComparisons.reduce(0) {
+            $0 + $1.lostProjectedAgainstSecondBestPoints
+        }
+        let averageProjectedSecondBestGap = projectedSecondBestComparisons.isEmpty
+            ? 0
+            : Int((Double(lostProjectedAgainstSecondBestPoints) / Double(projectedSecondBestComparisons.count)).rounded())
 
         var bestStreak = 0
         var runningStreak = 0
@@ -1610,7 +1639,10 @@ public struct WhatToPlayStatsSummaryMetrics: Sendable, Equatable {
             projectedTeamPointAttempts: projectedAttempts.count,
             averageProjectedTeamPoints: averageProjectedTeamPoints,
             lostProjectedTeamPoints: lostProjectedTeamPoints,
-            averageLostProjectedTeamPoints: averageLostProjectedTeamPoints
+            averageLostProjectedTeamPoints: averageLostProjectedTeamPoints,
+            projectedSecondBestComparisonAttempts: projectedSecondBestComparisons.count,
+            lostProjectedAgainstSecondBestPoints: lostProjectedAgainstSecondBestPoints,
+            averageProjectedSecondBestGap: averageProjectedSecondBestGap
         )
     }
 }

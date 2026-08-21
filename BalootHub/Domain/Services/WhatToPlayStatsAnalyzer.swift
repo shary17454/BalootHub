@@ -19,6 +19,9 @@ struct WhatToPlayStatsSummary: Equatable {
     let averageProjectedTeamPoints: Int
     let lostProjectedTeamPoints: Int
     let averageLostProjectedTeamPoints: Int
+    let projectedSecondBestComparisonAttempts: Int
+    let lostProjectedAgainstSecondBestPoints: Int
+    let averageProjectedSecondBestGap: Int
 
     static let empty = WhatToPlayStatsSummary(
         attempts: 0,
@@ -37,7 +40,10 @@ struct WhatToPlayStatsSummary: Equatable {
         projectedTeamPointAttempts: 0,
         averageProjectedTeamPoints: 0,
         lostProjectedTeamPoints: 0,
-        averageLostProjectedTeamPoints: 0
+        averageLostProjectedTeamPoints: 0,
+        projectedSecondBestComparisonAttempts: 0,
+        lostProjectedAgainstSecondBestPoints: 0,
+        averageProjectedSecondBestGap: 0
     )
 }
 
@@ -750,7 +756,8 @@ enum WhatToPlayStatsAnalyzer {
                     bestExpectedImpact: attempt.bestExpectedImpact,
                     secondBestExpectedImpact: attempt.secondBestExpectedImpact,
                     projectedTeamPoints: attempt.projectedTeamPoints,
-                    bestProjectedTeamPoints: attempt.bestProjectedTeamPoints
+                    bestProjectedTeamPoints: attempt.bestProjectedTeamPoints,
+                    secondBestProjectedTeamPoints: attempt.secondBestProjectedTeamPoints
                 )
             }
         )
@@ -772,7 +779,10 @@ enum WhatToPlayStatsAnalyzer {
             projectedTeamPointAttempts: metrics.projectedTeamPointAttempts,
             averageProjectedTeamPoints: metrics.averageProjectedTeamPoints,
             lostProjectedTeamPoints: metrics.lostProjectedTeamPoints,
-            averageLostProjectedTeamPoints: metrics.averageLostProjectedTeamPoints
+            averageLostProjectedTeamPoints: metrics.averageLostProjectedTeamPoints,
+            projectedSecondBestComparisonAttempts: metrics.projectedSecondBestComparisonAttempts,
+            lostProjectedAgainstSecondBestPoints: metrics.lostProjectedAgainstSecondBestPoints,
+            averageProjectedSecondBestGap: metrics.averageProjectedSecondBestGap
         )
     }
 
@@ -1191,7 +1201,10 @@ enum WhatToPlayStatsAnalyzer {
                     WhatToPlayStatsSample(
                         isCorrect: attempt.isCorrect,
                         expectedImpact: attempt.expectedImpact,
-                        bestExpectedImpact: attempt.bestExpectedImpact
+                        bestExpectedImpact: attempt.bestExpectedImpact,
+                        projectedTeamPoints: attempt.projectedTeamPoints,
+                        bestProjectedTeamPoints: attempt.bestProjectedTeamPoints,
+                        secondBestProjectedTeamPoints: attempt.secondBestProjectedTeamPoints
                     )
                 },
             window: window
@@ -1505,7 +1518,8 @@ enum WhatToPlayStatsAnalyzer {
                         bestExpectedImpact: attempt.bestExpectedImpact,
                         secondBestExpectedImpact: attempt.secondBestExpectedImpact,
                         projectedTeamPoints: attempt.projectedTeamPoints,
-                        bestProjectedTeamPoints: attempt.bestProjectedTeamPoints
+                        bestProjectedTeamPoints: attempt.bestProjectedTeamPoints,
+                        secondBestProjectedTeamPoints: attempt.secondBestProjectedTeamPoints
                     )
                 },
             recentWindow: recentWindow,
@@ -1566,7 +1580,10 @@ enum WhatToPlayStatsAnalyzer {
                 projectedTeamPointAttempts: summary.projectedTeamPointAttempts,
                 averageProjectedTeamPoints: summary.averageProjectedTeamPoints,
                 lostProjectedTeamPoints: summary.lostProjectedTeamPoints,
-                averageLostProjectedTeamPoints: summary.averageLostProjectedTeamPoints
+                averageLostProjectedTeamPoints: summary.averageLostProjectedTeamPoints,
+                projectedSecondBestComparisonAttempts: summary.projectedSecondBestComparisonAttempts,
+                lostProjectedAgainstSecondBestPoints: summary.lostProjectedAgainstSecondBestPoints,
+                averageProjectedSecondBestGap: summary.averageProjectedSecondBestGap
             ),
             decisionQualitySummary: WhatToPlayDecisionQualitySummaryMetrics(
                 trackedAttempts: qualitySummary.trackedAttempts,
@@ -1684,7 +1701,10 @@ enum WhatToPlayStatsAnalyzer {
                 projectedTeamPointAttempts: summary.projectedTeamPointAttempts,
                 averageProjectedTeamPoints: summary.averageProjectedTeamPoints,
                 lostProjectedTeamPoints: summary.lostProjectedTeamPoints,
-                averageLostProjectedTeamPoints: summary.averageLostProjectedTeamPoints
+                averageLostProjectedTeamPoints: summary.averageLostProjectedTeamPoints,
+                projectedSecondBestComparisonAttempts: summary.projectedSecondBestComparisonAttempts,
+                lostProjectedAgainstSecondBestPoints: summary.lostProjectedAgainstSecondBestPoints,
+                averageProjectedSecondBestGap: summary.averageProjectedSecondBestGap
             ),
             decisionQualitySummary: WhatToPlayDecisionQualitySummaryMetrics(
                 trackedAttempts: qualitySummary.trackedAttempts,
@@ -4165,7 +4185,10 @@ enum WhatToPlayStatsAnalyzer {
                 projectedTeamPointAttempts: summary.projectedTeamPointAttempts,
                 averageProjectedTeamPoints: summary.averageProjectedTeamPoints,
                 lostProjectedTeamPoints: summary.lostProjectedTeamPoints,
-                averageLostProjectedTeamPoints: summary.averageLostProjectedTeamPoints
+                averageLostProjectedTeamPoints: summary.averageLostProjectedTeamPoints,
+                projectedSecondBestComparisonAttempts: summary.projectedSecondBestComparisonAttempts,
+                lostProjectedAgainstSecondBestPoints: summary.lostProjectedAgainstSecondBestPoints,
+                averageProjectedSecondBestGap: summary.averageProjectedSecondBestGap
             ),
             choiceRankSummary: WhatToPlayChoiceRankSummaryMetrics(
                 trackedAttempts: rankSummary.trackedAttempts,
