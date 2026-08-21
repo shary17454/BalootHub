@@ -428,6 +428,23 @@ public struct WhatToPlayNextActionRecommendation: Sendable, Equatable {
     }
 }
 
+/// أرقام موجزة تستخدم عند فتح Replay لقرار تدريب «وش تلعب؟».
+public struct WhatToPlayReplayMetrics: Sendable, Equatable {
+    public let selectedOption: WhatToPlayOption
+    public let lostProjectedTeamPoints: Int
+    public let isExpertChoice: Bool
+
+    public init(
+        selectedOption: WhatToPlayOption,
+        lostProjectedTeamPoints: Int,
+        isExpertChoice: Bool
+    ) {
+        self.selectedOption = selectedOption
+        self.lostProjectedTeamPoints = lostProjectedTeamPoints
+        self.isExpertChoice = isExpertChoice
+    }
+}
+
 /// مولّد ومحلّل مواقف «وش تلعب؟».
 public enum WhatToPlayTrainer {
     public enum ScenarioError: Error, Sendable, Equatable {
@@ -750,6 +767,22 @@ public enum WhatToPlayTrainer {
             lostExpectedPoints: lostExpectedPoints,
             lostProjectedTeamPoints: lostProjectedTeamPoints
         )
+    }
+
+    /// يرجع أرقام سياق Replay لورقة مختارة من مصدر المحرك نفسه.
+    public static func replayMetrics(
+        in scenario: WhatToPlayScenario,
+        selectedCard: PlayingCard
+    ) -> WhatToPlayReplayMetrics? {
+        optionReviews(in: scenario)
+            .first { $0.option.card == selectedCard }
+            .map {
+                WhatToPlayReplayMetrics(
+                    selectedOption: $0.option,
+                    lostProjectedTeamPoints: $0.lostProjectedTeamPoints,
+                    isExpertChoice: $0.option.isExpertChoice
+                )
+            }
     }
 
     /// يعيد أفضل خيار حسب نقاط فريق اللاعب المتوقعة بعد استكمال الجولة.

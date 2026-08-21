@@ -2880,25 +2880,23 @@ enum WhatToPlayStatsAnalyzer {
     }
 
     static func replayContext(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayReplayContext {
-        let bestProjectedTeamPoints = WhatToPlayOptionComparison.bestSimulationOption(scenario.options)?.projectedTeamPoints
-            ?? selected.projectedTeamPoints
-        let lostProjectedTeamPoints = max(0, bestProjectedTeamPoints - selected.projectedTeamPoints)
+        let metrics = WhatToPlayTrainer.replayMetrics(in: scenario, selectedCard: selected.card)
         var parts = [
             "\("الورقة".localized): \(selected.card.accessibilityName)",
             "\("الأثر المتوقع".localized): \(impactTextValue(selected.expectedImpact))",
             "\("نقاط فريقك بعد المحاكاة".localized): \(selected.projectedTeamPoints)"
         ]
 
-        if lostProjectedTeamPoints > 0 {
-            parts.append("\("نقاط محاكاة ضائعة".localized): \(lostProjectedTeamPoints)")
-        } else if selected.isExpertChoice {
+        if let metrics, metrics.lostProjectedTeamPoints > 0 {
+            parts.append("\("نقاط محاكاة ضائعة".localized): \(metrics.lostProjectedTeamPoints)")
+        } else if metrics?.isExpertChoice ?? selected.isExpertChoice {
             parts.append("اختيار الخبير".localized)
         }
 
         return WhatToPlayReplayContext(
             text: parts.joined(separator: " · "),
-            lostProjectedTeamPoints: lostProjectedTeamPoints,
-            isExpertChoice: selected.isExpertChoice
+            lostProjectedTeamPoints: metrics?.lostProjectedTeamPoints ?? 0,
+            isExpertChoice: metrics?.isExpertChoice ?? selected.isExpertChoice
         )
     }
 

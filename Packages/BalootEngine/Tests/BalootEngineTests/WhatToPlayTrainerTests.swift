@@ -175,6 +175,19 @@ struct WhatToPlayTrainerTests {
         #expect(simulationRecommendation.lostProjectedTeamPoints > simulationRecommendation.lostExpectedPoints)
     }
 
+    @Test("أرقام Replay لقرار وش تلعب تأتي من مراجعة خيارات المحرك")
+    func replayMetricsUseEngineOptionReview() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2, difficulty: .hard)
+        let selected = try #require(scenario.options.last)
+        let optionReview = try #require(WhatToPlayTrainer.optionReviews(in: scenario).first { $0.option.card == selected.card })
+
+        let metrics = try #require(WhatToPlayTrainer.replayMetrics(in: scenario, selectedCard: selected.card))
+
+        #expect(metrics.selectedOption.card == selected.card)
+        #expect(metrics.lostProjectedTeamPoints == optionReview.lostProjectedTeamPoints)
+        #expect(metrics.isExpertChoice == selected.isExpertChoice)
+    }
+
     @Test("مستوى الخبير يولد موقفًا حقيقيًا قابلًا للتقييم")
     func expertDifficultyGeneratesPlayableScenario() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .expert)
