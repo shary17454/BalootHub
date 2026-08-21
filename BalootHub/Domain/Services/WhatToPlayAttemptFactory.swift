@@ -14,6 +14,7 @@ enum WhatToPlayAttemptFactory {
     ) -> WhatToPlayAttempt? {
         guard let bestCard = scenario.bestOption?.card else { return nil }
         let bestSimulationOption = WhatToPlayTrainer.bestProjectedOption(in: scenario.options)
+        let secondBestSimulationOption = WhatToPlayTrainer.secondBestProjectedOption(in: scenario.options)
 
         return WhatToPlayAttempt(
             difficulty: scenario.difficulty,
@@ -29,7 +30,7 @@ enum WhatToPlayAttemptFactory {
             secondBestExpectedImpact: scenario.secondBestOption?.expectedImpact,
             projectedTeamPoints: option.projectedTeamPoints,
             bestProjectedTeamPoints: bestSimulationOption?.projectedTeamPoints,
-            secondBestProjectedTeamPoints: scenario.secondBestOption?.projectedTeamPoints,
+            secondBestProjectedTeamPoints: secondBestSimulationOption?.projectedTeamPoints,
             focusKind: scenario.context.focusKind,
             gameMode: scenario.state.mode,
             outcome: option.outcome,

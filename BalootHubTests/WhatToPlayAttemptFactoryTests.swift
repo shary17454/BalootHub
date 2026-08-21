@@ -25,7 +25,44 @@ final class WhatToPlayAttemptFactoryTests: XCTestCase {
         XCTAssertEqual(attempt.expectedImpact, selected.expectedImpact)
         XCTAssertEqual(attempt.projectedTeamPoints, selected.projectedTeamPoints)
         XCTAssertEqual(attempt.bestProjectedTeamPoints, bestProjected.projectedTeamPoints)
+        XCTAssertEqual(
+            attempt.secondBestProjectedTeamPoints,
+            WhatToPlayTrainer.secondBestProjectedOption(in: scenario.options)?.projectedTeamPoints
+        )
         XCTAssertEqual(attempt.scenarioCode, code)
+    }
+
+    func testFactoryStoresSecondBestSimulationPointsFromProjectedRanking() async throws {
+        var matchingScenario: WhatToPlayScenario?
+        for seed in 2026..<2_080 {
+            let scenario = try await WhatToPlayScenarioLoader.generate(
+                seed: UInt64(seed),
+                difficulty: .easy
+            )
+            let projectedSecond = WhatToPlayTrainer.secondBestProjectedOption(in: scenario.options)
+            guard projectedSecond != nil,
+                  projectedSecond?.card != scenario.secondBestOption?.card
+            else { continue }
+
+            matchingScenario = scenario
+            break
+        }
+
+        let scenario = try XCTUnwrap(
+            matchingScenario,
+            "يجب أن يحتوي نطاق البذور المحدد موقفًا يختلف فيه ترتيب المحاكاة عن ترتيب الخبير"
+        )
+        let selected = try XCTUnwrap(scenario.options.last)
+        let attempt = try XCTUnwrap(WhatToPlayAttemptFactory.makeAttempt(scenario: scenario, evaluated: selected))
+
+        XCTAssertEqual(
+            attempt.secondBestProjectedTeamPoints,
+            WhatToPlayTrainer.secondBestProjectedOption(in: scenario.options)?.projectedTeamPoints
+        )
+        XCTAssertNotEqual(
+            attempt.secondBestProjectedTeamPoints,
+            scenario.secondBestOption?.projectedTeamPoints
+        )
     }
 
     func testFactoryBuildsReviewedHokumAttemptFromShareCodeWithTrumpSuit() async throws {
