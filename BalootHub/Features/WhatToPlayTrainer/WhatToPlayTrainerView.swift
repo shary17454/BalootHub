@@ -2756,7 +2756,12 @@ struct WhatToPlayTrainerView: View {
            !isRetryingCurrentScenario,
            let attempt = WhatToPlayAttemptFactory.makeAttempt(scenario: scenario, evaluated: evaluated) {
             modelContext.insert(attempt)
-            try? modelContext.save()
+            do {
+                try modelContext.save()
+            } catch {
+                modelContext.rollback()
+                errorMessage = "تم عرض النتيجة، لكن تعذّر حفظ المحاولة في الإحصاءات.".localized
+            }
         }
         selectedOption = evaluated
         shareImageURL = nil

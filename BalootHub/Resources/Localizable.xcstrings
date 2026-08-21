@@ -1,6 +1,16 @@
 {
   "sourceLanguage" : "ar",
   "strings" : {
+    "تم عرض النتيجة، لكن تعذّر حفظ المحاولة في الإحصاءات." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The result was shown, but the attempt could not be saved to statistics."
+          }
+        }
+      }
+    },
     "فاقد ثاني محاكاة" : {
       "localizations" : {
         "en" : {
