@@ -1,6 +1,7 @@
 import XCTest
 @testable import BalootHub
 
+@MainActor
 final class WhatToPlayShareCodeImporterTests: XCTestCase {
     func testImporterLoadsPromptCodeWithoutAttempt() async throws {
         let scenario = try await WhatToPlayScenarioLoader.generate(

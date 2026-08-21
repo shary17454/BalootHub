@@ -26,6 +26,7 @@ struct WhatToPlayShareCodeImportResult {
     }
 }
 
+@MainActor
 enum WhatToPlayShareCodeImporter {
     enum ImportError: Error, Equatable {
         case invalidCode

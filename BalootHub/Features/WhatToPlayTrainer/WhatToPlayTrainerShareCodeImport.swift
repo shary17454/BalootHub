@@ -62,7 +62,7 @@ extension WhatToPlayTrainerView {
         isGeneratingScenario = true
         shareCodeMessage = "جارٍ تحميل الموقف من الرمز.".localized
 
-        generationTask = Task {
+        generationTask = Task { @MainActor in
             do {
                 let imported = try await WhatToPlayShareCodeImporter.import(
                     code: code,
