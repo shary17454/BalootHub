@@ -763,6 +763,38 @@ struct WhatToPlayTrainerTests {
         #expect(metrics.bestStreak == 1)
     }
 
+    @Test("تطور التقاط قيمة وش تلعب يأتي من المحرك")
+    func valueProgressMetricsClassifyCaptureTrend() {
+        #expect(WhatToPlayValueProgressMetrics.classify(chronologicalSamples: [], window: 0) == nil)
+        #expect(WhatToPlayValueProgressMetrics.classify(chronologicalSamples: [
+            WhatToPlayStatsSample(isCorrect: true, expectedImpact: 5, bestExpectedImpact: 10)
+        ], window: 1) == nil)
+
+        let improving = WhatToPlayValueProgressMetrics.classify(
+            chronologicalSamples: valueProgressSamples(earlySelected: 2, recentSelected: 8),
+            window: 2
+        )
+        #expect(improving?.direction == .improving)
+        #expect(improving?.earlyCapturePercent == 20)
+        #expect(improving?.recentCapturePercent == 80)
+        #expect(improving?.deltaPercent == 60)
+        #expect(improving?.inspectedAttempts == 4)
+
+        let declining = WhatToPlayValueProgressMetrics.classify(
+            chronologicalSamples: valueProgressSamples(earlySelected: 8, recentSelected: 2),
+            window: 2
+        )
+        #expect(declining?.direction == .declining)
+        #expect(declining?.deltaPercent == -60)
+
+        let stable = WhatToPlayValueProgressMetrics.classify(
+            chronologicalSamples: valueProgressSamples(earlySelected: 5, recentSelected: 5),
+            window: 2
+        )
+        #expect(stable?.direction == .stable)
+        #expect(stable?.deltaPercent == 0)
+    }
+
     @Test("بذرة جلسة تدريب وش تلعب تستخدم seedBase وتتجاوز المواقف المجابة")
     func trainingSessionSeedMetricsRespectSeedBase() {
         let metrics = WhatToPlayTrainingSessionSeedMetrics(
@@ -2053,6 +2085,15 @@ private func trainingSessionPlanCategory(
             costlyDecisions: costlyDecisions
         )
     ).category
+}
+
+private func valueProgressSamples(earlySelected: Int, recentSelected: Int) -> [WhatToPlayStatsSample] {
+    [
+        WhatToPlayStatsSample(isCorrect: false, expectedImpact: earlySelected, bestExpectedImpact: 10),
+        WhatToPlayStatsSample(isCorrect: false, expectedImpact: earlySelected, bestExpectedImpact: 10),
+        WhatToPlayStatsSample(isCorrect: false, expectedImpact: recentSelected, bestExpectedImpact: 10),
+        WhatToPlayStatsSample(isCorrect: false, expectedImpact: recentSelected, bestExpectedImpact: 10)
+    ]
 }
 
 private func practiceRecommendation(

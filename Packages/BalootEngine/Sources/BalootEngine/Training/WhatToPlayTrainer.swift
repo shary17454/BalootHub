@@ -1264,6 +1264,72 @@ public struct WhatToPlayStatsSummaryMetrics: Sendable, Equatable {
     }
 }
 
+/// نتيجة تتبع تطور التقاط قيمة قرارات «وش تلعب؟» دون نصوص واجهة.
+public struct WhatToPlayValueProgressMetrics: Sendable, Equatable {
+    public let direction: WhatToPlayTrendDirectionCategory
+    public let earlyCapturePercent: Int
+    public let recentCapturePercent: Int
+    public let deltaPercent: Int
+    public let inspectedAttempts: Int
+
+    public init(
+        direction: WhatToPlayTrendDirectionCategory,
+        earlyCapturePercent: Int,
+        recentCapturePercent: Int,
+        deltaPercent: Int,
+        inspectedAttempts: Int
+    ) {
+        self.direction = direction
+        self.earlyCapturePercent = earlyCapturePercent
+        self.recentCapturePercent = recentCapturePercent
+        self.deltaPercent = deltaPercent
+        self.inspectedAttempts = inspectedAttempts
+    }
+
+    public static func classify(
+        chronologicalSamples samples: [WhatToPlayStatsSample],
+        window: Int = 4
+    ) -> WhatToPlayValueProgressMetrics? {
+        guard window > 0 else { return nil }
+
+        let valueAttempts = samples.compactMap { sample -> (selected: Int, best: Int)? in
+            guard let best = sample.bestExpectedImpact, best > 0 else { return nil }
+            return (selected: max(0, min(sample.expectedImpact, best)), best: best)
+        }
+        guard valueAttempts.count >= window * 2 else { return nil }
+
+        let early = Array(valueAttempts.prefix(window))
+        let recent = Array(valueAttempts.suffix(window))
+        let earlyPercent = valueCapturePercent(for: early)
+        let recentPercent = valueCapturePercent(for: recent)
+        let delta = recentPercent - earlyPercent
+
+        let direction: WhatToPlayTrendDirectionCategory
+        if delta >= 10 {
+            direction = .improving
+        } else if delta <= -10 {
+            direction = .declining
+        } else {
+            direction = .stable
+        }
+
+        return WhatToPlayValueProgressMetrics(
+            direction: direction,
+            earlyCapturePercent: earlyPercent,
+            recentCapturePercent: recentPercent,
+            deltaPercent: delta,
+            inspectedAttempts: valueAttempts.count
+        )
+    }
+
+    private static func valueCapturePercent(for attempts: [(selected: Int, best: Int)]) -> Int {
+        let totalBest = attempts.reduce(0) { $0 + $1.best }
+        guard totalBest > 0 else { return 0 }
+        let captured = attempts.reduce(0) { $0 + $1.selected }
+        return Int((Double(captured) / Double(totalBest) * 100).rounded())
+    }
+}
+
 /// مدخلات توليد بذرة جلسة تدريب «وش تلعب؟» دون اعتماد على طبقة التطبيق.
 public struct WhatToPlayTrainingSessionSeedMetrics: Sendable, Equatable {
     public let seedBase: UInt64?
