@@ -1665,6 +1665,45 @@ public struct WhatToPlayChoiceRankSummaryMetrics: Sendable, Equatable {
     }
 }
 
+/// مفاتيح ترتيب أضعف محور تدريب في «وش تلعب؟» دون ربطها بنوع المحور أو نصوص الواجهة.
+public struct WhatToPlayWeaknessFocusRankMetrics: Sendable, Equatable {
+    public let accuracyPercent: Int
+    public let lostExpectedPoints: Int
+    public let averageExpectedImpact: Int
+    public let stableOrder: Int
+
+    public init(
+        accuracyPercent: Int,
+        lostExpectedPoints: Int,
+        averageExpectedImpact: Int,
+        stableOrder: Int
+    ) {
+        self.accuracyPercent = accuracyPercent
+        self.lostExpectedPoints = lostExpectedPoints
+        self.averageExpectedImpact = averageExpectedImpact
+        self.stableOrder = stableOrder
+    }
+
+    public static func ranksBefore(
+        _ lhs: WhatToPlayWeaknessFocusRankMetrics,
+        _ rhs: WhatToPlayWeaknessFocusRankMetrics
+    ) -> Bool {
+        if lhs.accuracyPercent != rhs.accuracyPercent {
+            return lhs.accuracyPercent < rhs.accuracyPercent
+        }
+
+        if lhs.lostExpectedPoints != rhs.lostExpectedPoints {
+            return lhs.lostExpectedPoints > rhs.lostExpectedPoints
+        }
+
+        if lhs.averageExpectedImpact != rhs.averageExpectedImpact {
+            return lhs.averageExpectedImpact < rhs.averageExpectedImpact
+        }
+
+        return lhs.stableOrder < rhs.stableOrder
+    }
+}
+
 /// ملخص جودة قرارات «وش تلعب؟» من تصنيفات المحرك نفسها.
 public struct WhatToPlayDecisionQualitySummaryMetrics: Sendable, Equatable {
     public let trackedAttempts: Int

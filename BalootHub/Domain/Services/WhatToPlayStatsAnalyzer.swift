@@ -974,19 +974,10 @@ enum WhatToPlayStatsAnalyzer {
         summariesByScenarioFocus(attempts)
             .filter { $0.summary.attempts >= minimumAttempts }
             .sorted { lhs, rhs in
-                if lhs.summary.accuracyPercent != rhs.summary.accuracyPercent {
-                    return lhs.summary.accuracyPercent < rhs.summary.accuracyPercent
-                }
-
-                if lhs.summary.lostExpectedPoints != rhs.summary.lostExpectedPoints {
-                    return lhs.summary.lostExpectedPoints > rhs.summary.lostExpectedPoints
-                }
-
-                if lhs.summary.averageExpectedImpact != rhs.summary.averageExpectedImpact {
-                    return lhs.summary.averageExpectedImpact < rhs.summary.averageExpectedImpact
-                }
-
-                return scenarioFocusOrder(lhs.focusKind) < scenarioFocusOrder(rhs.focusKind)
+                WhatToPlayWeaknessFocusRankMetrics.ranksBefore(
+                    weaknessFocusRankMetrics(summary: lhs.summary, stableOrder: scenarioFocusOrder(lhs.focusKind)),
+                    weaknessFocusRankMetrics(summary: rhs.summary, stableOrder: scenarioFocusOrder(rhs.focusKind))
+                )
             }
             .first
     }
@@ -995,19 +986,10 @@ enum WhatToPlayStatsAnalyzer {
         summariesByGameMode(attempts)
             .filter { $0.summary.attempts >= minimumAttempts }
             .sorted { lhs, rhs in
-                if lhs.summary.accuracyPercent != rhs.summary.accuracyPercent {
-                    return lhs.summary.accuracyPercent < rhs.summary.accuracyPercent
-                }
-
-                if lhs.summary.lostExpectedPoints != rhs.summary.lostExpectedPoints {
-                    return lhs.summary.lostExpectedPoints > rhs.summary.lostExpectedPoints
-                }
-
-                if lhs.summary.averageExpectedImpact != rhs.summary.averageExpectedImpact {
-                    return lhs.summary.averageExpectedImpact < rhs.summary.averageExpectedImpact
-                }
-
-                return gameModeOrder(lhs.mode) < gameModeOrder(rhs.mode)
+                WhatToPlayWeaknessFocusRankMetrics.ranksBefore(
+                    weaknessFocusRankMetrics(summary: lhs.summary, stableOrder: gameModeOrder(lhs.mode)),
+                    weaknessFocusRankMetrics(summary: rhs.summary, stableOrder: gameModeOrder(rhs.mode))
+                )
             }
             .first
     }
@@ -1121,19 +1103,35 @@ enum WhatToPlayStatsAnalyzer {
         )
     }
 
+    private static func weaknessFocusRankMetrics(
+        summary: WhatToPlayStatsSummary,
+        stableOrder: Int,
+        includeExpectedLoss: Bool = true
+    ) -> WhatToPlayWeaknessFocusRankMetrics {
+        WhatToPlayWeaknessFocusRankMetrics(
+            accuracyPercent: summary.accuracyPercent,
+            lostExpectedPoints: includeExpectedLoss ? summary.lostExpectedPoints : 0,
+            averageExpectedImpact: summary.averageExpectedImpact,
+            stableOrder: stableOrder
+        )
+    }
+
     static func focusDifficulty(_ attempts: [WhatToPlayAttempt], minimumAttempts: Int = 2) -> WhatToPlayDifficultyFocus? {
         summariesByDifficulty(attempts)
             .filter { $0.summary.attempts >= minimumAttempts }
             .sorted { lhs, rhs in
-                if lhs.summary.accuracyPercent != rhs.summary.accuracyPercent {
-                    return lhs.summary.accuracyPercent < rhs.summary.accuracyPercent
-                }
-
-                if lhs.summary.averageExpectedImpact != rhs.summary.averageExpectedImpact {
-                    return lhs.summary.averageExpectedImpact < rhs.summary.averageExpectedImpact
-                }
-
-                return difficultyOrder(lhs.difficulty) < difficultyOrder(rhs.difficulty)
+                WhatToPlayWeaknessFocusRankMetrics.ranksBefore(
+                    weaknessFocusRankMetrics(
+                        summary: lhs.summary,
+                        stableOrder: difficultyOrder(lhs.difficulty),
+                        includeExpectedLoss: false
+                    ),
+                    weaknessFocusRankMetrics(
+                        summary: rhs.summary,
+                        stableOrder: difficultyOrder(rhs.difficulty),
+                        includeExpectedLoss: false
+                    )
+                )
             }
             .first
             .map { WhatToPlayDifficultyFocus(difficulty: $0.difficulty, summary: $0.summary) }

@@ -937,6 +937,65 @@ struct WhatToPlayTrainerTests {
         #expect(metrics.farPickPercent == 40)
     }
 
+    @Test("ترتيب أضعف محور تدريب وش تلعب يأتي من المحرك")
+    func weaknessFocusRankMetricsRankTrainingFocus() {
+        let lowerAccuracy = WhatToPlayWeaknessFocusRankMetrics(
+            accuracyPercent: 40,
+            lostExpectedPoints: 0,
+            averageExpectedImpact: 5,
+            stableOrder: 2
+        )
+        let higherAccuracy = WhatToPlayWeaknessFocusRankMetrics(
+            accuracyPercent: 60,
+            lostExpectedPoints: 20,
+            averageExpectedImpact: -5,
+            stableOrder: 1
+        )
+        #expect(WhatToPlayWeaknessFocusRankMetrics.ranksBefore(lowerAccuracy, higherAccuracy))
+
+        let higherLoss = WhatToPlayWeaknessFocusRankMetrics(
+            accuracyPercent: 50,
+            lostExpectedPoints: 12,
+            averageExpectedImpact: 4,
+            stableOrder: 2
+        )
+        let lowerLoss = WhatToPlayWeaknessFocusRankMetrics(
+            accuracyPercent: 50,
+            lostExpectedPoints: 4,
+            averageExpectedImpact: -4,
+            stableOrder: 1
+        )
+        #expect(WhatToPlayWeaknessFocusRankMetrics.ranksBefore(higherLoss, lowerLoss))
+
+        let weakerImpact = WhatToPlayWeaknessFocusRankMetrics(
+            accuracyPercent: 50,
+            lostExpectedPoints: 4,
+            averageExpectedImpact: -3,
+            stableOrder: 2
+        )
+        let strongerImpact = WhatToPlayWeaknessFocusRankMetrics(
+            accuracyPercent: 50,
+            lostExpectedPoints: 4,
+            averageExpectedImpact: 2,
+            stableOrder: 1
+        )
+        #expect(WhatToPlayWeaknessFocusRankMetrics.ranksBefore(weakerImpact, strongerImpact))
+
+        let earlierStableOrder = WhatToPlayWeaknessFocusRankMetrics(
+            accuracyPercent: 50,
+            lostExpectedPoints: 4,
+            averageExpectedImpact: 2,
+            stableOrder: 1
+        )
+        let laterStableOrder = WhatToPlayWeaknessFocusRankMetrics(
+            accuracyPercent: 50,
+            lostExpectedPoints: 4,
+            averageExpectedImpact: 2,
+            stableOrder: 2
+        )
+        #expect(WhatToPlayWeaknessFocusRankMetrics.ranksBefore(earlierStableOrder, laterStableOrder))
+    }
+
     @Test("ملخص جودة قرارات وش تلعب يأتي من المحرك")
     func decisionQualitySummaryMetricsClassifyQualities() {
         #expect(WhatToPlayDecisionQualitySummaryMetrics.summarize(qualities: []) == .empty)
