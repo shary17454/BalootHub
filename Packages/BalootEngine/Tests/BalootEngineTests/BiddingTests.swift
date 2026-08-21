@@ -198,6 +198,28 @@ struct BiddingCycleTests {
         #expect(state.bidding.stage == .completed)
     }
 
+    @Test("تعطيل الصن في الجولة الأولى يمنعه حتى فوق شراء الحكم")
+    func firstRoundSunDisableAlsoBlocksSunOverHokum() throws {
+        var rules = BalootRulesConfiguration.standard
+        rules.sunAllowedInFirstRound = false
+        rules.multipliersEnabled = false
+        rules.projectsRequireDeclaration = false
+        var state = GameState.newLocalMatch(rules: rules)
+        state = try GameEngine.apply(.dealCards(seed: 15), to: state)
+
+        let upSuit = try #require(state.bidding.upCard?.suit)
+        let buyerID = try #require(state.currentTurnPlayerID)
+
+        #expect(GameEngine.legalBids(for: buyerID, state: state) == [.pass, .hokum(suit: upSuit)])
+        state = try GameEngine.apply(.placeBid(playerID: buyerID, bid: .hokum(suit: upSuit)), to: state)
+
+        let nextID = try #require(state.currentTurnPlayerID)
+        #expect(GameEngine.legalBids(for: nextID, state: state) == [.pass])
+        #expect(throws: GameEngineError.bidding(.illegalBid)) {
+            try GameEngine.apply(.placeBid(playerID: nextID, bid: .sun), to: state)
+        }
+    }
+
     @Test("بعد استقرار الشراء توزَّع الأوراق المتبقية والمشتري يأخذ الورقة المكشوفة")
     func declarerReceivesUpCardAfterBidding() throws {
         var rules = BalootRulesConfiguration.standard

@@ -112,7 +112,7 @@ public struct BiddingState: Codable, Sendable, Equatable {
         case .firstRound:
             guard let upCard else { return [.pass] }
             if let bidRecord = currentBid {
-                return bidRecord.bid.mode == .hokum ? [.pass, .sun] : [.pass]
+                return bidRecord.bid.mode == .hokum && rules.sunAllowedInFirstRound ? [.pass, .sun] : [.pass]
             }
             var options: [Bid] = [.pass, .hokum(suit: upCard.suit)]
             if rules.sunAllowedInFirstRound { options.append(.sun) }
