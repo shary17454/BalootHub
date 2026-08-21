@@ -2,6 +2,10 @@ import Foundation
 import BalootEngine
 
 enum WhatToPlayScenarioLoader {
+    enum ScenarioCodeError: Error, Equatable {
+        case invalidCode
+    }
+
     static func unattemptedSeed(
         startingAt seed: UInt64,
         difficulty: WhatToPlayDifficulty,
@@ -86,5 +90,17 @@ enum WhatToPlayScenarioLoader {
                 preferredTrumpSuit: preferredTrumpSuit
             )
         }.value
+    }
+
+    static func generate(code: String) async throws -> WhatToPlayScenario {
+        guard let parsed = WhatToPlayScenarioCode.parse(code) else {
+            throw ScenarioCodeError.invalidCode
+        }
+
+        return try await generate(
+            seed: parsed.seed,
+            difficulty: parsed.difficulty,
+            preferredFocus: parsed.focusKind
+        )
     }
 }

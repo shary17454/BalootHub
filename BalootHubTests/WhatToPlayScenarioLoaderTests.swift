@@ -182,6 +182,34 @@ final class WhatToPlayScenarioLoaderTests: XCTestCase {
         XCTAssertFalse(scenario.options.isEmpty)
     }
 
+    func testLoaderGeneratesScenarioFromShareCode() async throws {
+        let original = try await WhatToPlayScenarioLoader.generate(
+            seed: 2026,
+            difficulty: .easy,
+            preferredFocus: .followSuit
+        )
+        let code = WhatToPlayShareCard.content(for: original).scenarioCode
+
+        let replayed = try await WhatToPlayScenarioLoader.generate(code: code)
+
+        XCTAssertEqual(replayed.seed, original.seed)
+        XCTAssertEqual(replayed.difficulty, original.difficulty)
+        XCTAssertEqual(replayed.context.focusKind, original.context.focusKind)
+        XCTAssertEqual(replayed.options.map(\.card), original.options.map(\.card))
+        XCTAssertEqual(replayed.bestOption?.card, original.bestOption?.card)
+    }
+
+    func testLoaderRejectsMalformedScenarioCode() async {
+        do {
+            _ = try await WhatToPlayScenarioLoader.generate(code: "WTP-invalid")
+            XCTFail("كان يجب رفض رمز الموقف غير الصالح")
+        } catch let error as WhatToPlayScenarioLoader.ScenarioCodeError {
+            XCTAssertEqual(error, .invalidCode)
+        } catch {
+            XCTFail("خطأ غير متوقع: \(error)")
+        }
+    }
+
     private func attempt(
         seed: UInt64,
         difficulty: WhatToPlayDifficulty,
