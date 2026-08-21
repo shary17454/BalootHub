@@ -135,6 +135,24 @@ final class WhatToPlayScenarioLoaderTests: XCTestCase {
         XCTAssertEqual(spadesSeed, 2026)
     }
 
+    func testUnattemptedSeedIgnoresTrumpSuitWhenPreferredModeIsSun() {
+        let attempts = [
+            attempt(seed: 2026, difficulty: .medium, focusKind: .openingLead, gameMode: .sun),
+            attempt(seed: 2027, difficulty: .medium, focusKind: .openingLead, gameMode: .hokum, trumpSuit: .spades)
+        ]
+
+        let seed = WhatToPlayScenarioLoader.unattemptedSeed(
+            startingAt: 2026,
+            difficulty: .medium,
+            preferredFocus: .openingLead,
+            preferredMode: .sun,
+            preferredTrumpSuit: .spades,
+            attempts: attempts
+        )
+
+        XCTAssertEqual(seed, 2027)
+    }
+
     func testLoaderGeneratesScenarioWithRequestedSeedAndDifficulty() async throws {
         let scenario = try await WhatToPlayScenarioLoader.generate(seed: 2026, difficulty: .medium)
         let repeated = try await WhatToPlayScenarioLoader.generate(seed: 2026, difficulty: .medium)

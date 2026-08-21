@@ -149,6 +149,22 @@ struct WhatToPlayTrainerTests {
         }
     }
 
+    @Test("طلب صن مع لون حكم عالق يتجاهل اللون ولا يعطل التوليد")
+    func generationIgnoresTrumpSuitWhenSunIsRequested() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(
+            seed: 2_026,
+            difficulty: .easy,
+            preferredMode: .sun,
+            preferredTrumpSuit: .spades
+        )
+
+        #expect(scenario.state.mode == .sun)
+        #expect(scenario.state.trumpSuit == nil)
+        #expect(scenario.context.mode == .sun)
+        #expect(scenario.context.trumpSuit == nil)
+        #expect(!scenario.options.isEmpty)
+    }
+
     @Test("طلب لون حكم محدد يولد موقف حكم مطابقًا بشكل حتمي")
     func generationHonorsPreferredTrumpSuitDeterministically() throws {
         for suit in Suit.allCases {

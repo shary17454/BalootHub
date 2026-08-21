@@ -258,8 +258,9 @@ public enum WhatToPlayTrainer {
         rules: BalootRulesConfiguration = .standard
     ) throws -> WhatToPlayScenario {
         let agent = ExpertBalootAgent(samples: difficulty.expertSamples)
+        let requestedTrumpSuit = preferredMode == .sun ? nil : preferredTrumpSuit
 
-        let hasPreference = preferredFocus != nil || preferredMode != nil || preferredTrumpSuit != nil
+        let hasPreference = preferredFocus != nil || preferredMode != nil || requestedTrumpSuit != nil
         let searchLimit = hasPreference ? 1_200 : 40
         for offset in 0..<searchLimit {
             let initialState = GameState.newLocalMatch(rules: rules)
@@ -280,7 +281,7 @@ public enum WhatToPlayTrainer {
                     let context = scenarioContext(state: state, options: options, playerID: humanID)
                     let matchesFocus = preferredFocus == nil || context.focusKind == preferredFocus
                     let matchesMode = preferredMode == nil || state.mode == preferredMode
-                    let matchesTrumpSuit = preferredTrumpSuit == nil || (state.mode == .hokum && state.trumpSuit == preferredTrumpSuit)
+                    let matchesTrumpSuit = requestedTrumpSuit == nil || (state.mode == .hokum && state.trumpSuit == requestedTrumpSuit)
                     if matchesFocus && matchesMode && matchesTrumpSuit {
                         return WhatToPlayScenario(
                             seed: seed &+ UInt64(offset),

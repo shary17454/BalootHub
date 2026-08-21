@@ -14,11 +14,12 @@ enum WhatToPlayScenarioLoader {
         preferredTrumpSuit: Suit? = nil,
         attempts: [WhatToPlayAttempt]
     ) -> UInt64 {
+        let normalizedTrumpSuit = preferredMode == .sun ? nil : preferredTrumpSuit
         let attemptedSeeds = attemptedScenarioSeeds(
             difficulty: difficulty,
             preferredFocus: preferredFocus,
             preferredMode: preferredMode,
-            preferredTrumpSuit: preferredTrumpSuit,
+            preferredTrumpSuit: normalizedTrumpSuit,
             attempts: attempts
         )
 
@@ -81,13 +82,14 @@ enum WhatToPlayScenarioLoader {
         preferredMode: GameMode? = nil,
         preferredTrumpSuit: Suit? = nil
     ) async throws -> WhatToPlayScenario {
-        try await Task.detached(priority: .userInitiated) {
+        let normalizedTrumpSuit = preferredMode == .sun ? nil : preferredTrumpSuit
+        return try await Task.detached(priority: .userInitiated) {
             try WhatToPlayTrainer.generateScenario(
                 seed: seed,
                 difficulty: difficulty,
                 preferredFocus: preferredFocus,
                 preferredMode: preferredMode,
-                preferredTrumpSuit: preferredTrumpSuit
+                preferredTrumpSuit: normalizedTrumpSuit
             )
         }.value
     }
