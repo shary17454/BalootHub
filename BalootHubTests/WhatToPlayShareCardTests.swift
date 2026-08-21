@@ -181,6 +181,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         let selected = try XCTUnwrap(scenario.options.last)
         let best = try XCTUnwrap(scenario.bestOption)
         let secondBest = try XCTUnwrap(scenario.secondBestOption)
+        let bestSimulation = try XCTUnwrap(WhatToPlayOptionComparison.bestSimulationOption(scenario.options))
         let text = WhatToPlayShareCard.text(for: scenario, selectedOption: selected)
 
         XCTAssertTrue(text.contains("مراجعة القرار".localized))
@@ -191,11 +192,11 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("أثر ثاني أفضل".localized): \(secondBest.expectedImpact >= 0 ? "+\(secondBest.expectedImpact)" : "\(secondBest.expectedImpact)")"))
         XCTAssertTrue(text.contains("\("ترتيب اختياري".localized): \(selected.rank)"))
         XCTAssertTrue(text.contains("\("نقاط متوقعة ضائعة".localized): \(max(0, best.expectedImpact - selected.expectedImpact))"))
-        XCTAssertTrue(text.contains("\("نقاط محاكاة ضائعة".localized): \(max(0, best.projectedTeamPoints - selected.projectedTeamPoints))"))
+        XCTAssertTrue(text.contains("\("نقاط محاكاة ضائعة".localized): \(max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints))"))
         let severity = WhatToPlayStatsAnalyzer.valueLossSeverity(
             for: max(
                 max(0, best.expectedImpact - selected.expectedImpact),
-                max(0, best.projectedTeamPoints - selected.projectedTeamPoints)
+                max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints)
             )
         )
         XCTAssertTrue(text.contains("\("شدة خسارة القيمة".localized): \(WhatToPlayStatsAnalyzer.valueLossTitle(for: severity))"))
@@ -314,13 +315,14 @@ final class WhatToPlayShareCardTests: XCTestCase {
     func testShareDecisionQualityUsesProjectedLossWhenLarger() throws {
         let (scenario, selected) = try simulationLossShareSelection()
         let best = try XCTUnwrap(scenario.bestOption)
+        let bestSimulation = try XCTUnwrap(WhatToPlayOptionComparison.bestSimulationOption(scenario.options))
 
         let content = WhatToPlayShareCard.content(for: scenario, selectedOption: selected)
         let text = WhatToPlayShareCard.text(for: scenario, selectedOption: selected)
 
         XCTAssertLessThanOrEqual(max(0, best.expectedImpact - selected.expectedImpact), 2)
-        XCTAssertGreaterThanOrEqual(max(0, best.projectedTeamPoints - selected.projectedTeamPoints), 9)
-        XCTAssertEqual(content.lostProjectedTeamPoints, max(0, best.projectedTeamPoints - selected.projectedTeamPoints))
+        XCTAssertGreaterThanOrEqual(max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints), 9)
+        XCTAssertEqual(content.lostProjectedTeamPoints, max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints))
         XCTAssertEqual(content.decisionQualityTitle, "قرار مكلف".localized)
         XCTAssertEqual(content.decisionQualityDetail, WhatToPlayDecisionQuality.costly.detail)
         XCTAssertEqual(content.valueLossTitle, "خسارة قيمة عالية".localized)
@@ -507,11 +509,13 @@ final class WhatToPlayShareCardTests: XCTestCase {
     private func simulationLossShareSelection() throws -> (WhatToPlayScenario, WhatToPlayOption) {
         for seed in 1...300 {
             let scenario = try WhatToPlayTrainer.generateScenario(seed: UInt64(seed), difficulty: .hard)
-            guard let best = scenario.bestOption else { continue }
+            guard let best = scenario.bestOption,
+                  let bestSimulation = WhatToPlayOptionComparison.bestSimulationOption(scenario.options)
+            else { continue }
             if let option = scenario.options.first(where: {
                 $0.card != best.card
                     && max(0, best.expectedImpact - $0.expectedImpact) <= 2
-                    && max(0, best.projectedTeamPoints - $0.projectedTeamPoints) >= 9
+                    && max(0, bestSimulation.projectedTeamPoints - $0.projectedTeamPoints) >= 9
             }) {
                 return (scenario, option)
             }

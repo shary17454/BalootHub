@@ -76,11 +76,12 @@ enum WhatToPlayShareCard {
         let mode = modeText(state)
         let best = selectedOption == nil ? nil : scenario.bestOption
         let secondBest = selectedOption == nil ? nil : scenario.secondBestOption
+        let bestSimulation = selectedOption == nil ? nil : WhatToPlayOptionComparison.bestSimulationOption(scenario.options)
         let lost = selectedOption.flatMap { selected in
             best.map { max(0, $0.expectedImpact - selected.expectedImpact) }
         }
         let projectedLost = selectedOption.flatMap { selected in
-            best.map { max(0, $0.projectedTeamPoints - selected.projectedTeamPoints) }
+            bestSimulation.map { max(0, $0.projectedTeamPoints - selected.projectedTeamPoints) }
         }
         let lostAgainstSecondBest = selectedOption.flatMap { selected in
             secondBest.map { max(0, $0.expectedImpact - selected.expectedImpact) }
