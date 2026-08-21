@@ -14,6 +14,7 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         let second = try XCTUnwrap(sorted.dropFirst().first)
         let projectedOptions = WhatToPlayTrainer.projectedOptions(in: scenario.options)
         let bestSimulation = try XCTUnwrap(projectedOptions.first)
+        let secondBestSimulation = try XCTUnwrap(projectedOptions.dropFirst().first)
 
         let summary = WhatToPlayOptionComparison.summary(for: scenario)
 
@@ -27,6 +28,9 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertEqual(summary.bestSimulationCard, bestSimulation.card)
         XCTAssertEqual(summary.bestSimulationExpectedImpact, bestSimulation.expectedImpact)
         XCTAssertEqual(summary.bestSimulationProjectedTeamPoints, bestSimulation.projectedTeamPoints)
+        XCTAssertEqual(summary.secondBestSimulationCard, secondBestSimulation.card)
+        XCTAssertEqual(summary.secondBestSimulationExpectedImpact, secondBestSimulation.expectedImpact)
+        XCTAssertEqual(summary.secondBestSimulationProjectedTeamPoints, secondBestSimulation.projectedTeamPoints)
         XCTAssertEqual(summary.bestSimulationCard, scenario.bestProjectedOption?.card)
         XCTAssertEqual(summary.expertToBestSimulationGap, max(0, bestSimulation.projectedTeamPoints - best.projectedTeamPoints))
         XCTAssertNil(summary.selectedCard)
@@ -231,6 +235,22 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertEqual(summary.selectedLostProjectedTeamPoints, max(0, bestSimulation.projectedTeamPoints - expert.projectedTeamPoints))
         XCTAssertTrue(rows.first { $0.card == bestSimulation.card }?.isBestSimulationResult ?? false)
         XCTAssertEqual(rows.filter(\.isBestSimulationResult).count, 1)
+    }
+
+    func testSummaryTracksSecondBestSimulationResultIndependently() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let projected = WhatToPlayTrainer.projectedOptions(in: scenario.options)
+        let secondBestSimulation = try XCTUnwrap(projected.dropFirst().first)
+        let expertSecond = scenario.secondBestOption
+
+        let summary = WhatToPlayOptionComparison.summary(for: scenario, selectedCard: scenario.bestOption?.card)
+
+        XCTAssertEqual(summary.secondBestSimulationCard, secondBestSimulation.card)
+        XCTAssertEqual(summary.secondBestSimulationExpectedImpact, secondBestSimulation.expectedImpact)
+        XCTAssertEqual(summary.secondBestSimulationProjectedTeamPoints, secondBestSimulation.projectedTeamPoints)
+        if expertSecond?.card != secondBestSimulation.card {
+            XCTAssertNotEqual(summary.secondBestCard, summary.secondBestSimulationCard)
+        }
     }
 
     func testAttemptFactoryPersistsBestSimulationProjection() throws {

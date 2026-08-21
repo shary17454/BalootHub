@@ -3217,6 +3217,14 @@ struct WhatToPlayTrainerView: View {
                 projectedTeamPoints: summary.secondBestProjectedTeamPoints
             )
         )
+        miniPlanMetric(
+            title: "ثاني محاكاة".localized,
+            value: optionSummaryCardText(
+                card: summary.secondBestSimulationCard,
+                impact: summary.secondBestSimulationExpectedImpact,
+                projectedTeamPoints: summary.secondBestSimulationProjectedTeamPoints
+            )
+        )
     }
 
     private func optionComparisonRow(_ row: WhatToPlayOptionComparisonRow) -> some View {
