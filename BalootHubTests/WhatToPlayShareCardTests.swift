@@ -487,47 +487,36 @@ final class WhatToPlayShareCardTests: XCTestCase {
     }
 
     private func costlyShareSelection() throws -> (WhatToPlayScenario, WhatToPlayOption) {
-        for seed in 1..<500 {
-            let scenario = try WhatToPlayTrainer.generateScenario(seed: UInt64(seed), difficulty: .hard)
-            if let option = scenario.options.first(where: { option in
-                option.expectedImpact < 0
-                    && (
-                        option.impactBreakdown.preservesLead
-                        || (
-                            option.impactBreakdown.completesTrick
-                                && option.impactBreakdown.winsForPlayerTeam == false
-                                && option.impactBreakdown.trickPointsSwing < 0
-                        )
-                        || (
-                            !option.impactBreakdown.completesTrick
-                                && !option.impactBreakdown.preservesLead
-                                && option.impactBreakdown.playedCardPoints > 0
-                                && option.impactBreakdown.immediateImpact < 0
-                        )
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 3, difficulty: .hard)
+        let option = try XCTUnwrap(scenario.options.first { option in
+            option.expectedImpact < 0
+                && (
+                    option.impactBreakdown.preservesLead
+                    || (
+                        option.impactBreakdown.completesTrick
+                            && option.impactBreakdown.winsForPlayerTeam == false
+                            && option.impactBreakdown.trickPointsSwing < 0
                     )
-            }) {
-                return (scenario, option)
-            }
-        }
-        XCTFail("لم يتم العثور على موقف مشاركة بخطأ تكتيكي ضمن نطاق البذور المحدد")
-        throw NSError(domain: "WhatToPlayShareCardTests", code: 1)
+                    || (
+                        !option.impactBreakdown.completesTrick
+                            && !option.impactBreakdown.preservesLead
+                            && option.impactBreakdown.playedCardPoints > 0
+                            && option.impactBreakdown.immediateImpact < 0
+                    )
+                )
+        })
+        return (scenario, option)
     }
 
     private func simulationLossShareSelection() throws -> (WhatToPlayScenario, WhatToPlayOption) {
-        for seed in 1...300 {
-            let scenario = try WhatToPlayTrainer.generateScenario(seed: UInt64(seed), difficulty: .hard)
-            guard let best = scenario.bestOption,
-                  let bestSimulation = WhatToPlayOptionComparison.bestSimulationOption(scenario.options)
-            else { continue }
-            if let option = scenario.options.first(where: {
-                $0.card != best.card
-                    && max(0, best.expectedImpact - $0.expectedImpact) <= 2
-                    && max(0, bestSimulation.projectedTeamPoints - $0.projectedTeamPoints) >= 9
-            }) {
-                return (scenario, option)
-            }
-        }
-        XCTFail("لم يتم العثور على موقف مشاركة بخسارة محاكاة عالية ضمن نطاق البذور المحدد")
-        throw NSError(domain: "WhatToPlayShareCardTests", code: 2)
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 1, difficulty: .hard)
+        let best = try XCTUnwrap(scenario.bestOption)
+        let bestSimulation = try XCTUnwrap(WhatToPlayOptionComparison.bestSimulationOption(scenario.options))
+        let option = try XCTUnwrap(scenario.options.first {
+            $0.card != best.card
+                && max(0, best.expectedImpact - $0.expectedImpact) <= 2
+                && max(0, bestSimulation.projectedTeamPoints - $0.projectedTeamPoints) >= 9
+        })
+        return (scenario, option)
     }
 }

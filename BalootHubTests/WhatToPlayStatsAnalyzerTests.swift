@@ -1822,26 +1822,11 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
     }
 
     func testScenarioDecisionActionRecommendsBestSimulationCardWhenExpertPickLeaksRoundValue() throws {
-        var matchingScenario: WhatToPlayScenario?
-        var matchingExpert: WhatToPlayOption?
-        var matchingBestSimulation: WhatToPlayOption?
-
-        for seed in 1...1_000 {
-            let scenario = try WhatToPlayTrainer.generateScenario(seed: UInt64(seed), difficulty: .hard)
-            guard let expert = scenario.bestOption,
-                  let bestSimulation = WhatToPlayOptionComparison.bestSimulationOption(scenario.options),
-                  bestSimulation.card != expert.card,
-                  max(0, bestSimulation.projectedTeamPoints - expert.projectedTeamPoints) >= 9
-            else { continue }
-            matchingScenario = scenario
-            matchingExpert = expert
-            matchingBestSimulation = bestSimulation
-            break
-        }
-
-        let scenario = try XCTUnwrap(matchingScenario)
-        let expert = try XCTUnwrap(matchingExpert)
-        let bestSimulation = try XCTUnwrap(matchingBestSimulation)
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 1, difficulty: .hard)
+        let expert = try XCTUnwrap(scenario.bestOption)
+        let bestSimulation = try XCTUnwrap(WhatToPlayOptionComparison.bestSimulationOption(scenario.options))
+        XCTAssertNotEqual(bestSimulation.card, expert.card)
+        XCTAssertGreaterThanOrEqual(max(0, bestSimulation.projectedTeamPoints - expert.projectedTeamPoints), 9)
 
         let insight = try XCTUnwrap(WhatToPlayStatsAnalyzer.decisionInsight(for: expert, in: scenario))
         let action = try XCTUnwrap(WhatToPlayStatsAnalyzer.nextDecisionAction(for: expert, in: scenario))
@@ -3965,16 +3950,11 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
     }
 
     private func scenarioWithTacticalLeakingChoice() throws -> (WhatToPlayScenario, WhatToPlayOption) {
-        for seed in 1...1_000 {
-            guard let scenario = try? WhatToPlayTrainer.generateScenario(seed: UInt64(seed), difficulty: .hard),
-                  let selected = scenario.options.first(where: { option in
-                      option.expectedImpact < 0 && tacticalReasonTitle(for: option.impactBreakdown) != nil
-                  })
-            else { continue }
-            return (scenario, selected)
-        }
-
-        throw NSError(domain: "WhatToPlayStatsAnalyzerTests", code: 1)
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 3, difficulty: .hard)
+        let selected = try XCTUnwrap(scenario.options.first { option in
+            option.expectedImpact < 0 && tacticalReasonTitle(for: option.impactBreakdown) != nil
+        })
+        return (scenario, selected)
     }
 
     private func expectedTacticalReasonTitle(for breakdown: WhatToPlayOptionImpactBreakdown) -> String {

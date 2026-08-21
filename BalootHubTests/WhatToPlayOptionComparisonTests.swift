@@ -128,32 +128,16 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
     }
 
     func testSummaryPrioritizesSimulationReviewWhenProjectedLossIsLarger() throws {
-        var matchingScenario: WhatToPlayScenario?
-        var selectedOption: WhatToPlayOption?
-        var matchingBestSimulation: WhatToPlayOption?
-
-        for seed in 1...1_000 {
-            let scenario = try WhatToPlayTrainer.generateScenario(seed: UInt64(seed), difficulty: .hard)
-            guard let best = scenario.bestOption,
-                  let bestSimulation = WhatToPlayOptionComparison.bestSimulationOption(scenario.options),
-                  bestSimulation.card != best.card
-            else { continue }
-            if let selected = scenario.options.first(where: {
-                $0.card != best.card
-                    && $0.card != bestSimulation.card
-                    && max(0, best.expectedImpact - $0.expectedImpact) <= 2
-                    && max(0, bestSimulation.projectedTeamPoints - $0.projectedTeamPoints) >= 9
-            }) {
-                matchingScenario = scenario
-                selectedOption = selected
-                matchingBestSimulation = bestSimulation
-                break
-            }
-        }
-
-        let scenario = try XCTUnwrap(matchingScenario)
-        let selected = try XCTUnwrap(selectedOption)
-        let bestSimulation = try XCTUnwrap(matchingBestSimulation)
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 1, difficulty: .hard)
+        let best = try XCTUnwrap(scenario.bestOption)
+        let bestSimulation = try XCTUnwrap(WhatToPlayOptionComparison.bestSimulationOption(scenario.options))
+        XCTAssertNotEqual(bestSimulation.card, best.card)
+        let selected = try XCTUnwrap(scenario.options.first {
+            $0.card != best.card
+                && $0.card != bestSimulation.card
+                && max(0, best.expectedImpact - $0.expectedImpact) <= 2
+                && max(0, bestSimulation.projectedTeamPoints - $0.projectedTeamPoints) >= 9
+        })
         let summary = WhatToPlayOptionComparison.summary(for: scenario, selectedCard: selected.card)
 
         XCTAssertEqual(summary.decisionQuality, .costly)
@@ -165,26 +149,11 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
     }
 
     func testSummaryFlagsExpertPickWhenFullSimulationStronglyDisagrees() throws {
-        var matchingScenario: WhatToPlayScenario?
-        var matchingExpert: WhatToPlayOption?
-        var matchingBestSimulation: WhatToPlayOption?
-
-        for seed in 1...1_000 {
-            let scenario = try WhatToPlayTrainer.generateScenario(seed: UInt64(seed), difficulty: .hard)
-            guard let expert = scenario.bestOption,
-                  let bestSimulation = WhatToPlayOptionComparison.bestSimulationOption(scenario.options),
-                  bestSimulation.card != expert.card,
-                  max(0, bestSimulation.projectedTeamPoints - expert.projectedTeamPoints) >= 9
-            else { continue }
-            matchingScenario = scenario
-            matchingExpert = expert
-            matchingBestSimulation = bestSimulation
-            break
-        }
-
-        let scenario = try XCTUnwrap(matchingScenario)
-        let expert = try XCTUnwrap(matchingExpert)
-        let bestSimulation = try XCTUnwrap(matchingBestSimulation)
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 1, difficulty: .hard)
+        let expert = try XCTUnwrap(scenario.bestOption)
+        let bestSimulation = try XCTUnwrap(WhatToPlayOptionComparison.bestSimulationOption(scenario.options))
+        XCTAssertNotEqual(bestSimulation.card, expert.card)
+        XCTAssertGreaterThanOrEqual(max(0, bestSimulation.projectedTeamPoints - expert.projectedTeamPoints), 9)
 
         let summary = WhatToPlayOptionComparison.summary(for: scenario, selectedCard: expert.card)
 
@@ -469,25 +438,13 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
     }
 
     func testRowsTagProjectedRoundLossAsCostly() throws {
-        var matchingScenario: WhatToPlayScenario?
-        var selectedOption: WhatToPlayOption?
-
-        for seed in 1...300 {
-            let scenario = try WhatToPlayTrainer.generateScenario(seed: UInt64(seed), difficulty: .hard)
-            guard let best = scenario.bestOption else { continue }
-            if let option = scenario.options.first(where: {
-                $0.card != best.card
-                    && max(0, best.expectedImpact - $0.expectedImpact) <= 2
-                    && max(0, best.projectedTeamPoints - $0.projectedTeamPoints) >= 9
-            }) {
-                matchingScenario = scenario
-                selectedOption = option
-                break
-            }
-        }
-
-        let scenario = try XCTUnwrap(matchingScenario)
-        let selected = try XCTUnwrap(selectedOption)
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2, difficulty: .hard)
+        let best = try XCTUnwrap(scenario.bestOption)
+        let selected = try XCTUnwrap(scenario.options.first {
+            $0.card != best.card
+                && max(0, best.expectedImpact - $0.expectedImpact) <= 2
+                && max(0, best.projectedTeamPoints - $0.projectedTeamPoints) >= 9
+        })
         let rows = WhatToPlayOptionComparison.rows(for: scenario, selectedCard: selected.card)
         let selectedRow = try XCTUnwrap(rows.first { $0.card == selected.card })
 
