@@ -1808,37 +1808,17 @@ enum WhatToPlayStatsAnalyzer {
         plan: WhatToPlayTrainingSessionPlan
     ) -> UInt64 {
         let matchingAttempts = uniqueMatchingTrainingAttempts(for: attempts, plan: plan)
-        if let seedBase = plan.seedBase {
-            let attemptedSeeds = Set(matchingAttempts.map(\.replaySeed))
-            var candidate = seedBase
-            while attemptedSeeds.contains(candidate) {
-                candidate &+= 1
-            }
-            return candidate
-        }
-
-        let difficultyComponent = UInt64(difficultyOrder(plan.difficulty)) * 1_000_000
-        let focusComponent = UInt64(plan.focusKind.map(scenarioFocusOrder) ?? 0) * 100_000
-        let modeComponent = UInt64(plan.gameMode.map(gameModeOrder) ?? 0) * 10_000
-        let trumpSuitComponent = UInt64(plan.trumpSuit.map { $0.ordinal + 1 } ?? 0) * 100
-        let countComponent = UInt64(max(1, plan.scenarioCount)) * 1_000
-        let accuracyComponent = UInt64(max(0, plan.targetAccuracyPercent)) * 10
-        let impactComponent = UInt64(max(0, plan.targetAverageExpectedImpact))
-
-        var candidate = 9_000_000
-            + difficultyComponent
-            + focusComponent
-            + modeComponent
-            + trumpSuitComponent
-            + countComponent
-            + accuracyComponent
-            + impactComponent
-            + UInt64(matchingAttempts.count)
-        let attemptedSeeds = Set(matchingAttempts.map(\.replaySeed))
-        while attemptedSeeds.contains(candidate) {
-            candidate &+= 1
-        }
-        return candidate
+        return WhatToPlayTrainingSessionSeedMetrics(
+            seedBase: plan.seedBase,
+            difficultyOrder: difficultyOrder(plan.difficulty),
+            focusOrder: plan.focusKind.map(scenarioFocusOrder),
+            gameModeOrder: plan.gameMode.map(gameModeOrder),
+            trumpSuitOrdinal: plan.trumpSuit?.ordinal,
+            scenarioCount: plan.scenarioCount,
+            targetAccuracyPercent: plan.targetAccuracyPercent,
+            targetAverageExpectedImpact: plan.targetAverageExpectedImpact,
+            matchingAttemptSeeds: matchingAttempts.map(\.replaySeed)
+        ).nextSeed
     }
 
     static func trainingSessionProgress(

@@ -392,6 +392,40 @@ struct WhatToPlayTrainerTests {
         #expect(metrics.bestStreak == 1)
     }
 
+    @Test("بذرة جلسة تدريب وش تلعب تستخدم seedBase وتتجاوز المواقف المجابة")
+    func trainingSessionSeedMetricsRespectSeedBase() {
+        let metrics = WhatToPlayTrainingSessionSeedMetrics(
+            seedBase: 9_010_000,
+            difficultyOrder: 3,
+            focusOrder: 2,
+            gameModeOrder: 1,
+            trumpSuitOrdinal: 0,
+            scenarioCount: 4,
+            targetAccuracyPercent: 75,
+            targetAverageExpectedImpact: 1,
+            matchingAttemptSeeds: [9_010_000, 9_010_001]
+        )
+
+        #expect(metrics.nextSeed == 9_010_002)
+    }
+
+    @Test("بذرة جلسة تدريب وش تلعب تشتق من أوامر ثابتة لا من hashValue")
+    func trainingSessionSeedMetricsDeriveStableSeed() {
+        let metrics = WhatToPlayTrainingSessionSeedMetrics(
+            seedBase: nil,
+            difficultyOrder: 2,
+            focusOrder: 4,
+            gameModeOrder: 1,
+            trumpSuitOrdinal: 3,
+            scenarioCount: 4,
+            targetAccuracyPercent: 75,
+            targetAverageExpectedImpact: 1,
+            matchingAttemptSeeds: [11_415_151]
+        )
+
+        #expect(metrics.nextSeed == 11_415_152)
+    }
+
     @Test("ملخص نتائج قرارات وش تلعب يأتي من المحرك")
     func outcomeSummaryMetricsClassifyOutcomes() {
         #expect(WhatToPlayOutcomeSummaryMetrics.summarize(outcomes: []) == .empty)

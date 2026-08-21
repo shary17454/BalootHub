@@ -872,6 +872,80 @@ public struct WhatToPlayStatsSummaryMetrics: Sendable, Equatable {
     }
 }
 
+/// مدخلات توليد بذرة جلسة تدريب «وش تلعب؟» دون اعتماد على طبقة التطبيق.
+public struct WhatToPlayTrainingSessionSeedMetrics: Sendable, Equatable {
+    public let seedBase: UInt64?
+    public let difficultyOrder: Int
+    public let focusOrder: Int?
+    public let gameModeOrder: Int?
+    public let trumpSuitOrdinal: Int?
+    public let scenarioCount: Int
+    public let targetAccuracyPercent: Int
+    public let targetAverageExpectedImpact: Int
+    public let matchingAttemptSeeds: [UInt64]
+
+    public init(
+        seedBase: UInt64?,
+        difficultyOrder: Int,
+        focusOrder: Int?,
+        gameModeOrder: Int?,
+        trumpSuitOrdinal: Int?,
+        scenarioCount: Int,
+        targetAccuracyPercent: Int,
+        targetAverageExpectedImpact: Int,
+        matchingAttemptSeeds: [UInt64]
+    ) {
+        self.seedBase = seedBase
+        self.difficultyOrder = difficultyOrder
+        self.focusOrder = focusOrder
+        self.gameModeOrder = gameModeOrder
+        self.trumpSuitOrdinal = trumpSuitOrdinal
+        self.scenarioCount = scenarioCount
+        self.targetAccuracyPercent = targetAccuracyPercent
+        self.targetAverageExpectedImpact = targetAverageExpectedImpact
+        self.matchingAttemptSeeds = matchingAttemptSeeds
+    }
+
+    public var nextSeed: UInt64 {
+        Self.nextSeed(from: self)
+    }
+
+    public static func nextSeed(from metrics: WhatToPlayTrainingSessionSeedMetrics) -> UInt64 {
+        let attemptedSeeds = Set(metrics.matchingAttemptSeeds)
+        if let seedBase = metrics.seedBase {
+            return firstUnattemptedSeed(startingAt: seedBase, attemptedSeeds: attemptedSeeds)
+        }
+
+        let difficultyComponent = UInt64(max(0, metrics.difficultyOrder)) * 1_000_000
+        let focusComponent = UInt64(max(0, metrics.focusOrder ?? 0)) * 100_000
+        let modeComponent = UInt64(max(0, metrics.gameModeOrder ?? 0)) * 10_000
+        let trumpSuitComponent = UInt64(max(0, (metrics.trumpSuitOrdinal ?? -1) + 1)) * 100
+        let countComponent = UInt64(max(1, metrics.scenarioCount)) * 1_000
+        let accuracyComponent = UInt64(max(0, metrics.targetAccuracyPercent)) * 10
+        let impactComponent = UInt64(max(0, metrics.targetAverageExpectedImpact))
+
+        let firstCandidate = 9_000_000
+            + difficultyComponent
+            + focusComponent
+            + modeComponent
+            + trumpSuitComponent
+            + countComponent
+            + accuracyComponent
+            + impactComponent
+            + UInt64(metrics.matchingAttemptSeeds.count)
+
+        return firstUnattemptedSeed(startingAt: firstCandidate, attemptedSeeds: attemptedSeeds)
+    }
+
+    private static func firstUnattemptedSeed(startingAt seed: UInt64, attemptedSeeds: Set<UInt64>) -> UInt64 {
+        var candidate = seed
+        while attemptedSeeds.contains(candidate) {
+            candidate &+= 1
+        }
+        return candidate
+    }
+}
+
 /// ملخص نتائج قرارات «وش تلعب؟» حسب نتيجة الأكلة دون نصوص واجهة.
 public struct WhatToPlayOutcomeSummaryMetrics: Sendable, Equatable {
     public let trackedAttempts: Int
