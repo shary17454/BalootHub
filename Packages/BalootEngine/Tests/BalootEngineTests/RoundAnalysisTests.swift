@@ -93,6 +93,9 @@ struct RoundAnalysisTests {
             estimatedLostPoints: 10,
             estimatedImmediateLostPoints: 10,
             estimatedProjectedLostPoints: 0,
+            focusKind: .narrowChoice,
+            gameMode: nil,
+            trumpSuit: nil,
             explanation: "اختبار"
         )
         let biddingDecision = RoundBiddingDecisionAnalysis(
@@ -223,6 +226,9 @@ struct RoundAnalysisTests {
             estimatedLostPoints: 14,
             estimatedImmediateLostPoints: 14,
             estimatedProjectedLostPoints: 0,
+            focusKind: .narrowChoice,
+            gameMode: nil,
+            trumpSuit: nil,
             explanation: "اختبار"
         )
         let report = RoundAnalysisReport(
@@ -286,6 +292,9 @@ struct RoundAnalysisTests {
             estimatedLostPoints: 14,
             estimatedImmediateLostPoints: 14,
             estimatedProjectedLostPoints: 0,
+            focusKind: .narrowChoice,
+            gameMode: nil,
+            trumpSuit: nil,
             explanation: "اختبار"
         )
         let secondDecision = RoundDecisionAnalysis(
@@ -302,6 +311,9 @@ struct RoundAnalysisTests {
             estimatedLostPoints: 14,
             estimatedImmediateLostPoints: 14,
             estimatedProjectedLostPoints: 0,
+            focusKind: .narrowChoice,
+            gameMode: nil,
+            trumpSuit: nil,
             explanation: "اختبار"
         )
         let firstReport = roundAnalysisReport(
@@ -471,6 +483,9 @@ struct RoundAnalysisTests {
         #expect(decision.estimatedProjectedLostPoints == max(0, bestProjected.projectedTeamPoints - chosen.projectedTeamPoints))
         #expect(decision.estimatedLostPoints == max(decision.estimatedImmediateLostPoints, decision.estimatedProjectedLostPoints))
         #expect(decision.recommendedCard == bestProjected.card)
+        #expect(report.practiceRecommendation?.focusKind == decision.focusKind)
+        #expect(report.practiceRecommendation?.gameMode == decision.gameMode)
+        #expect(report.practiceRecommendation?.trumpSuit == decision.trumpSuit)
     }
 
     @Test("اختيار الخبير يدخل مراجعة اللعب إذا خسر في محاكاة الجولة")

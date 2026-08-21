@@ -15,6 +15,9 @@ public struct RoundDecisionAnalysis: Identifiable, Sendable, Equatable {
     public let estimatedLostPoints: Int
     public let estimatedImmediateLostPoints: Int
     public let estimatedProjectedLostPoints: Int
+    public let focusKind: WhatToPlayScenarioFocusKind?
+    public let gameMode: GameMode?
+    public let trumpSuit: Suit?
     public let explanation: String
 
     public var id: String {
@@ -289,9 +292,9 @@ public struct RoundAnalysisReport: Sendable, Equatable {
             difficulty: difficulty,
             scenarioSeed: deterministicPracticeSeed(for: focus),
             suggestedScenarioCount: recommendedScenarioCount(for: focus),
-            focusKind: recommendedPracticeFocusKind(for: focus.priority),
-            gameMode: recommendedPracticeGameMode(for: focus.priority),
-            trumpSuit: recommendedPracticeTrumpSuit(for: focus.priority),
+            focusKind: recommendedPracticeFocusKind(for: focus),
+            gameMode: recommendedPracticeGameMode(for: focus),
+            trumpSuit: recommendedPracticeTrumpSuit(for: focus),
             title: practiceTitle(for: focus.priority),
             detail: practiceDetail(for: focus, difficulty: difficulty)
         )
@@ -316,8 +319,8 @@ public struct RoundAnalysisReport: Sendable, Equatable {
         min(10, max(3, focus.mistakeCount * 2 + focus.estimatedLostPoints / 8))
     }
 
-    private func recommendedPracticeFocusKind(for priority: RoundReviewPriority) -> WhatToPlayScenarioFocusKind? {
-        switch priority {
+    private func recommendedPracticeFocusKind(for focus: RoundReviewFocus) -> WhatToPlayScenarioFocusKind? {
+        switch focus.priority {
         case .bidding:
             .trumpPressure
         case .projects:
@@ -325,23 +328,25 @@ public struct RoundAnalysisReport: Sendable, Equatable {
         case .multipliers:
             .trumpPressure
         case .play:
-            .narrowChoice
+            worstDecision?.focusKind ?? .narrowChoice
         case .none:
             nil
         }
     }
 
-    private func recommendedPracticeGameMode(for priority: RoundReviewPriority) -> GameMode? {
-        switch priority {
+    private func recommendedPracticeGameMode(for focus: RoundReviewFocus) -> GameMode? {
+        switch focus.priority {
         case .bidding, .multipliers:
             .hokum
-        case .projects, .play, .none:
+        case .play:
+            worstDecision?.gameMode
+        case .projects, .none:
             nil
         }
     }
 
-    private func recommendedPracticeTrumpSuit(for priority: RoundReviewPriority) -> Suit? {
-        switch priority {
+    private func recommendedPracticeTrumpSuit(for focus: RoundReviewFocus) -> Suit? {
+        switch focus.priority {
         case .bidding:
             return biddingDecisions
                 .first { !$0.matchedRecommendation }
@@ -350,7 +355,9 @@ public struct RoundAnalysisReport: Sendable, Equatable {
             return biddingDecisions
                 .first
                 .flatMap { trumpSuit(from: $0.recommendedBid) ?? trumpSuit(from: $0.bid) }
-        case .projects, .play, .none:
+        case .play:
+            return worstDecision?.trumpSuit
+        case .projects, .none:
             return nil
         }
     }
@@ -375,6 +382,9 @@ public struct RoundAnalysisReport: Sendable, Equatable {
             seed = seed &* 31 &+ UInt64(decision.recommendedCard.rank.ordinal)
             seed = seed &* 31 &+ UInt64(max(0, decision.estimatedImmediateLostPoints))
             seed = seed &* 31 &+ UInt64(max(0, decision.estimatedProjectedLostPoints))
+            seed = seed &* 31 &+ UInt64(decision.focusKind?.ordinal ?? 0)
+            seed = seed &* 31 &+ UInt64(decision.gameMode?.ordinal ?? 0)
+            seed = seed &* 31 &+ UInt64(decision.trumpSuit?.ordinal ?? 0)
         }
         return seed == 0 ? 1 : seed
     }
@@ -427,6 +437,32 @@ private extension RoundReviewPriority {
         case .play:
             3
         case .none:
+            4
+        }
+    }
+}
+
+private extension GameMode {
+    var ordinal: Int {
+        switch self {
+        case .sun:
+            1
+        case .hokum:
+            2
+        }
+    }
+}
+
+private extension WhatToPlayScenarioFocusKind {
+    var ordinal: Int {
+        switch self {
+        case .openingLead:
+            1
+        case .followSuit:
+            2
+        case .trumpPressure:
+            3
+        case .narrowChoice:
             4
         }
     }
@@ -600,6 +636,7 @@ public enum RoundAnalyzer {
         else { return nil }
 
         let bestProjected = WhatToPlayTrainer.bestProjectedOption(in: options) ?? best
+        let context = WhatToPlayTrainer.scenarioContext(state: state, options: options)
         let immediateLost = max(0, best.expectedImpact - selected.expectedImpact)
         let projectedLost = max(0, bestProjected.projectedTeamPoints - selected.projectedTeamPoints)
         let lost = max(immediateLost, projectedLost)
@@ -617,6 +654,9 @@ public enum RoundAnalyzer {
             estimatedLostPoints: lost,
             estimatedImmediateLostPoints: immediateLost,
             estimatedProjectedLostPoints: projectedLost,
+            focusKind: context.focusKind,
+            gameMode: state.mode,
+            trumpSuit: state.trumpSuit,
             explanation: selected.explanation
         )
     }
