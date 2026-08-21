@@ -44,7 +44,7 @@ enum RoundReplayDecisionAdvisor {
               let best = options.first(where: { $0.rank == 1 })
         else { return nil }
 
-        let bestSimulation = WhatToPlayOptionComparison.bestSimulationOption(options) ?? best
+        let bestSimulation = WhatToPlayTrainer.bestProjectedOption(in: options) ?? best
         let immediateLost = max(0, best.expectedImpact - selected.expectedImpact)
         let projectedLost = max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints)
 

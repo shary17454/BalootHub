@@ -2917,7 +2917,7 @@ enum WhatToPlayStatsAnalyzer {
 
     static func decisionInsight(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayDecisionInsight? {
         guard let best = scenario.bestOption else { return nil }
-        let bestSimulation = WhatToPlayOptionComparison.bestSimulationOption(scenario.options)
+        let bestSimulation = WhatToPlayTrainer.bestProjectedOption(in: scenario.options)
         return decisionInsight(
             selectedRank: selected.rank,
             selectedImpact: selected.expectedImpact,

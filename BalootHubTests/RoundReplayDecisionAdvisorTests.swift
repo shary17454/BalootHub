@@ -24,11 +24,19 @@ final class RoundReplayDecisionAdvisorTests: XCTestCase {
         ))
         let beforePlay = try GameEngine.replay(initialState: replay.initial, actions: replay.actions, upTo: playStep - 1)
         let legal = GameEngine.legalCards(for: hint.playerID, state: beforePlay)
+        let options = try WhatToPlayTrainer.analyzeOptions(
+            state: beforePlay,
+            playerID: hint.playerID,
+            difficulty: .medium
+        )
+        let selected = try XCTUnwrap(options.first { $0.card == hint.playedCard })
+        let bestProjected = try XCTUnwrap(WhatToPlayTrainer.bestProjectedOption(in: options))
 
         XCTAssertEqual(hint.stepIndex, playStep - 1)
         XCTAssertEqual(hint.trickNumber, beforePlay.completedTricks.count + 1)
         XCTAssertTrue(legal.contains(hint.playedCard))
         XCTAssertTrue(legal.contains(hint.bestCard))
+        XCTAssertEqual(hint.estimatedProjectedLostPoints, max(0, bestProjected.projectedTeamPoints - selected.projectedTeamPoints))
         XCTAssertGreaterThanOrEqual(hint.selectedRank, 1)
         XCTAssertGreaterThanOrEqual(hint.estimatedImmediateLostPoints, 0)
         XCTAssertGreaterThanOrEqual(hint.estimatedProjectedLostPoints, 0)
