@@ -2105,12 +2105,15 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
         let selected = try XCTUnwrap(scenario.bestOption)
         let bestSimulation = try XCTUnwrap(WhatToPlayTrainer.bestProjectedOption(in: scenario.options))
+        let secondBestSimulation = try XCTUnwrap(WhatToPlayTrainer.secondBestProjectedOption(in: scenario.options))
 
         let context = WhatToPlayStatsAnalyzer.replayContext(for: selected, in: scenario)
         let expectedLoss = max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints)
+        let expectedSecondLoss = max(0, secondBestSimulation.projectedTeamPoints - selected.projectedTeamPoints)
 
         XCTAssertTrue(context.isExpertChoice)
         XCTAssertEqual(context.lostProjectedTeamPoints, expectedLoss)
+        XCTAssertEqual(context.lostProjectedAgainstSecondBestPoints, expectedSecondLoss)
         XCTAssertTrue(context.text.contains("\("الورقة".localized): \(selected.card.accessibilityName)"))
         XCTAssertTrue(context.text.contains("\("نقاط فريقك بعد المحاكاة".localized): \(selected.projectedTeamPoints)") && context.text.contains(expectedLoss == 0 ? "اختيار الخبير".localized : "\("نقاط محاكاة ضائعة".localized): \(expectedLoss)"))
     }
@@ -2119,11 +2122,16 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
         let selected = try XCTUnwrap(scenario.options.last)
         let bestSimulation = try XCTUnwrap(WhatToPlayTrainer.bestProjectedOption(in: scenario.options))
+        let secondBestSimulation = try XCTUnwrap(WhatToPlayTrainer.secondBestProjectedOption(in: scenario.options))
 
         let context = WhatToPlayStatsAnalyzer.replayContext(for: selected, in: scenario)
 
         XCTAssertFalse(context.isExpertChoice)
         XCTAssertEqual(context.lostProjectedTeamPoints, max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints))
+        XCTAssertEqual(
+            context.lostProjectedAgainstSecondBestPoints,
+            max(0, secondBestSimulation.projectedTeamPoints - selected.projectedTeamPoints)
+        )
         XCTAssertTrue(context.text.contains("\("نقاط محاكاة ضائعة".localized): \(context.lostProjectedTeamPoints)") && context.text.contains("\("الأثر المتوقع".localized): \(selected.expectedImpact >= 0 ? "+\(selected.expectedImpact)" : "\(selected.expectedImpact)")"))
     }
 

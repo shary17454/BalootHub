@@ -578,6 +578,7 @@ struct WhatToPlayDecisionReview: Equatable {
 struct WhatToPlayReplayContext: Equatable {
     let text: String
     let lostProjectedTeamPoints: Int
+    let lostProjectedAgainstSecondBestPoints: Int
     let isExpertChoice: Bool
 }
 
@@ -3066,7 +3067,12 @@ enum WhatToPlayStatsAnalyzer {
 
         switch metrics?.contextCategory {
         case .projectedLoss:
-            parts.append("\("نقاط محاكاة ضائعة".localized): \(metrics?.lostProjectedTeamPoints ?? 0)")
+            parts.append(
+                simulationLossText(
+                    projectedLost: metrics?.lostProjectedTeamPoints ?? 0,
+                    secondProjectedLost: metrics?.lostProjectedAgainstSecondBestPoints ?? 0
+                )
+            )
         case .expertChoice:
             parts.append("اختيار الخبير".localized)
         case .selectedChoice:
@@ -3080,6 +3086,7 @@ enum WhatToPlayStatsAnalyzer {
         return WhatToPlayReplayContext(
             text: parts.joined(separator: " · "),
             lostProjectedTeamPoints: metrics?.lostProjectedTeamPoints ?? 0,
+            lostProjectedAgainstSecondBestPoints: metrics?.lostProjectedAgainstSecondBestPoints ?? 0,
             isExpertChoice: metrics?.isExpertChoice ?? selected.isExpertChoice
         )
     }

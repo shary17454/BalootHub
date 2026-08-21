@@ -3091,6 +3091,7 @@ public struct WhatToPlayOptionReview: Identifiable, Sendable, Equatable {
     public let option: WhatToPlayOption
     public let lostExpectedPoints: Int
     public let lostProjectedTeamPoints: Int
+    public let lostProjectedAgainstSecondBestPoints: Int
     public let tacticalTag: WhatToPlayOptionTacticalTag
     public let tacticalSummaryMetrics: WhatToPlayOptionTacticalSummaryMetrics
     public let isBestProjectedResult: Bool
@@ -3101,6 +3102,7 @@ public struct WhatToPlayOptionReview: Identifiable, Sendable, Equatable {
         option: WhatToPlayOption,
         lostExpectedPoints: Int,
         lostProjectedTeamPoints: Int,
+        lostProjectedAgainstSecondBestPoints: Int = 0,
         tacticalTag: WhatToPlayOptionTacticalTag,
         tacticalSummaryMetrics: WhatToPlayOptionTacticalSummaryMetrics,
         isBestProjectedResult: Bool
@@ -3108,6 +3110,7 @@ public struct WhatToPlayOptionReview: Identifiable, Sendable, Equatable {
         self.option = option
         self.lostExpectedPoints = lostExpectedPoints
         self.lostProjectedTeamPoints = lostProjectedTeamPoints
+        self.lostProjectedAgainstSecondBestPoints = lostProjectedAgainstSecondBestPoints
         self.tacticalTag = tacticalTag
         self.tacticalSummaryMetrics = tacticalSummaryMetrics
         self.isBestProjectedResult = isBestProjectedResult
@@ -3416,20 +3419,23 @@ public enum WhatToPlayReplayContextCategory: String, Sendable, Codable, Equatabl
 public struct WhatToPlayReplayMetrics: Sendable, Equatable {
     public let selectedOption: WhatToPlayOption
     public let lostProjectedTeamPoints: Int
+    public let lostProjectedAgainstSecondBestPoints: Int
     public let isExpertChoice: Bool
 
     public init(
         selectedOption: WhatToPlayOption,
         lostProjectedTeamPoints: Int,
+        lostProjectedAgainstSecondBestPoints: Int = 0,
         isExpertChoice: Bool
     ) {
         self.selectedOption = selectedOption
         self.lostProjectedTeamPoints = lostProjectedTeamPoints
+        self.lostProjectedAgainstSecondBestPoints = lostProjectedAgainstSecondBestPoints
         self.isExpertChoice = isExpertChoice
     }
 
     public var contextCategory: WhatToPlayReplayContextCategory {
-        if lostProjectedTeamPoints > 0 {
+        if lostProjectedTeamPoints > 0 || lostProjectedAgainstSecondBestPoints > 0 {
             return .projectedLoss
         }
 
@@ -3707,14 +3713,20 @@ public enum WhatToPlayTrainer {
         let bestProjectedTeamPoints = bestProjected?.projectedTeamPoints
             ?? scenario.options.map(\.projectedTeamPoints).max()
             ?? 0
+        let secondBestProjected = secondBestProjectedOption(in: scenario.options)
+        let secondBestProjectedTeamPoints = secondBestProjected?.projectedTeamPoints
 
         return sorted.map { option in
             let lostExpectedPoints = max(0, bestExpectedImpact - option.expectedImpact)
             let lostProjectedTeamPoints = max(0, bestProjectedTeamPoints - option.projectedTeamPoints)
+            let lostProjectedAgainstSecondBestPoints = secondBestProjectedTeamPoints.map {
+                max(0, $0 - option.projectedTeamPoints)
+            } ?? 0
             return WhatToPlayOptionReview(
                 option: option,
                 lostExpectedPoints: lostExpectedPoints,
                 lostProjectedTeamPoints: lostProjectedTeamPoints,
+                lostProjectedAgainstSecondBestPoints: lostProjectedAgainstSecondBestPoints,
                 tacticalTag: WhatToPlayOptionTacticalTag.classify(
                     option: option,
                     bestExpectedImpact: bestExpectedImpact,
@@ -3848,6 +3860,7 @@ public enum WhatToPlayTrainer {
                 WhatToPlayReplayMetrics(
                     selectedOption: $0.option,
                     lostProjectedTeamPoints: $0.lostProjectedTeamPoints,
+                    lostProjectedAgainstSecondBestPoints: $0.lostProjectedAgainstSecondBestPoints,
                     isExpertChoice: $0.option.isExpertChoice
                 )
             }

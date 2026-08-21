@@ -1630,6 +1630,7 @@ struct WhatToPlayTrainerTests {
         let reviews = WhatToPlayTrainer.optionReviews(in: scenario)
         let best = try #require(scenario.bestOption)
         let bestProjected = try #require(scenario.bestProjectedOption)
+        let secondBestProjected = try #require(scenario.secondBestProjectedOption)
 
         #expect(reviews.map(\.option.card) == scenario.options.sorted { lhs, rhs in
             if lhs.rank != rhs.rank { return lhs.rank < rhs.rank }
@@ -1644,6 +1645,10 @@ struct WhatToPlayTrainerTests {
         for review in reviews {
             #expect(review.lostExpectedPoints == max(0, best.expectedImpact - review.option.expectedImpact))
             #expect(review.lostProjectedTeamPoints == max(0, bestProjected.projectedTeamPoints - review.option.projectedTeamPoints))
+            #expect(
+                review.lostProjectedAgainstSecondBestPoints
+                    == max(0, secondBestProjected.projectedTeamPoints - review.option.projectedTeamPoints)
+            )
             #expect(
                 review.tacticalTag == WhatToPlayOptionTacticalTag.classify(
                     option: review.option,
@@ -1733,10 +1738,13 @@ struct WhatToPlayTrainerTests {
 
         #expect(metrics.selectedOption.card == selected.card)
         #expect(metrics.lostProjectedTeamPoints == optionReview.lostProjectedTeamPoints)
+        #expect(metrics.lostProjectedAgainstSecondBestPoints == optionReview.lostProjectedAgainstSecondBestPoints)
         #expect(metrics.isExpertChoice == selected.isExpertChoice)
         #expect(
             metrics.contextCategory
-                == (metrics.lostProjectedTeamPoints > 0 ? .projectedLoss : .selectedChoice)
+                == (max(metrics.lostProjectedTeamPoints, metrics.lostProjectedAgainstSecondBestPoints) > 0
+                    ? .projectedLoss
+                    : .selectedChoice)
         )
 
         let expertScenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
