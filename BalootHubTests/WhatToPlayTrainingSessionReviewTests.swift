@@ -28,6 +28,9 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
 
         XCTAssertEqual(review.action, .replayMistake)
         XCTAssertEqual(review.replaySeed, 10)
+        XCTAssertTrue(review.detail.contains("\("الأكلة".localized): 4"))
+        XCTAssertTrue(review.detail.contains("\("اللون المطلوب".localized): \(Suit.hearts.spokenName)"))
+        XCTAssertTrue(review.detail.contains("\("حكم".localized): \(Suit.spades.spokenName)"))
         XCTAssertTrue(review.detail.contains("\("اختيارك".localized): \(selected.accessibilityName)"))
         XCTAssertTrue(review.detail.contains("\("أثر القرار".localized): -4"))
         XCTAssertTrue(review.detail.contains("\("أفضل ورقة".localized): \(best.accessibilityName)"))
@@ -60,7 +63,25 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
             projectedTeamPoints: 50,
             bestProjectedTeamPoints: second == nil ? 55 : 62,
             focusKind: .followSuit,
-            gameMode: .hokum
+            gameMode: .hokum,
+            scenarioContext: scenarioContext
+        )
+    }
+
+    private var scenarioContext: WhatToPlayScenarioContext {
+        WhatToPlayScenarioContext(
+            trickNumber: 4,
+            isLeading: false,
+            requiredSuit: .hearts,
+            playedCardCount: 2,
+            legalOptionCount: 3,
+            mode: .hokum,
+            trumpSuit: .spades,
+            hasTrumpInCurrentTrick: true,
+            playerTeamTrickPoints: 36,
+            opponentTeamTrickPoints: 42,
+            playerTeamPointMargin: -6,
+            focusKind: .followSuit
         )
     }
 }

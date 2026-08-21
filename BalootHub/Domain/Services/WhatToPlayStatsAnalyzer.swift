@@ -2177,6 +2177,15 @@ enum WhatToPlayStatsAnalyzer {
             "\("ابدأ بإعادة موقف".localized) \(item.seed)",
             "قبل تكرار الجلسة؛ هذا يربط التدريب بسبب الخسارة لا بعدد المحاولات فقط.".localized
         ]
+        if let trickNumber = item.contextTrickNumber {
+            parts.append("\("الأكلة".localized): \(trickNumber)")
+        }
+        if let requiredSuit = item.contextRequiredSuit {
+            parts.append("\("اللون المطلوب".localized): \(requiredSuit.spokenName)")
+        }
+        if let trumpSuit = item.contextTrumpSuit {
+            parts.append("\("حكم".localized): \(trumpSuit.spokenName)")
+        }
         if let selectedCard = item.selectedCard {
             parts.append("\("اختيارك".localized): \(selectedCard.accessibilityName)")
             parts.append("\("أثر القرار".localized): \(impactTextValue(item.expectedImpact))")
