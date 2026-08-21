@@ -1261,8 +1261,11 @@ enum WhatToPlayStatsAnalyzer {
                 .prefix(limit)
         )
         .map { attempt in
-            let isCostly = attempt.expectedImpact < 0
-            let isMissedOpportunity = !isCostly && attempt.lostExpectedPoints >= missedOpportunityThreshold
+            let reviewCardMetrics = WhatToPlayReviewCardMetrics.classify(
+                expectedImpact: attempt.expectedImpact,
+                lostExpectedPoints: attempt.lostExpectedPoints,
+                missedOpportunityThreshold: missedOpportunityThreshold
+            )
             let severity = valueLossSeverity(for: attempt.lostExpectedPoints)
             let tacticalReason = tacticalReviewReason(for: attempt)
             let simulationDisplay = WhatToPlaySimulationFormatter.display(for: attempt)
@@ -1286,13 +1289,12 @@ enum WhatToPlayStatsAnalyzer {
                 valueLossTitle: valueLossTitle(for: severity),
                 secondBestExpectedImpact: attempt.secondBestExpectedImpact,
                 createdAt: attempt.createdAt,
-                title: reviewTitle(isCostly: isCostly, isMissedOpportunity: isMissedOpportunity),
+                title: reviewTitle(category: reviewCardMetrics.category),
                 detail: reviewDetail(
                     for: attempt,
-                    isCostly: isCostly,
-                    isMissedOpportunity: isMissedOpportunity
+                    category: reviewCardMetrics.category
                 ),
-                iconName: reviewIconName(isCostly: isCostly, isMissedOpportunity: isMissedOpportunity),
+                iconName: reviewIconName(category: reviewCardMetrics.category),
                 tacticalReasonTitle: tacticalReason?.title,
                 tacticalReasonDetail: tacticalReason?.detail,
                 tacticalReasonIconName: tacticalReason?.iconName,
@@ -1405,32 +1407,42 @@ enum WhatToPlayStatsAnalyzer {
         return nil
     }
 
-    private static func reviewTitle(isCostly: Bool, isMissedOpportunity: Bool) -> String {
-        if isCostly { return "راجع اختيارًا مكلفًا".localized }
-        if isMissedOpportunity { return "راجع فرصة ضائعة".localized }
-        return "قارن الاختيار القريب".localized
+    private static func reviewTitle(category: WhatToPlayReviewCardCategory) -> String {
+        switch category {
+        case .costlyChoice:
+            return "راجع اختيارًا مكلفًا".localized
+        case .missedOpportunity:
+            return "راجع فرصة ضائعة".localized
+        case .closeComparison:
+            return "قارن الاختيار القريب".localized
+        }
     }
 
     private static func reviewDetail(
         for attempt: WhatToPlayAttempt,
-        isCostly: Bool,
-        isMissedOpportunity: Bool
+        category: WhatToPlayReviewCardCategory
     ) -> String {
-        if isCostly {
+        switch category {
+        case .costlyChoice:
             return "\("هذا القرار خسر أثرًا متوقعًا في مستوى".localized) \(difficultyTitle(attempt.difficulty)). \("ابدأ بمقارنة اختيارك مع أفضل ورقة.".localized)"
-        }
 
-        if isMissedOpportunity {
+        case .missedOpportunity:
             return "\("قرارك لم يكن خاسرًا مباشرة، لكنه ضيّع نقاطًا متوقعة عن اختيار الخبير".localized): \(attempt.lostExpectedPoints). \("راجع لماذا كانت الورقة الأفضل أعلى قيمة.".localized)"
-        }
 
-        return "\("الاختيار لم يكن الأفضل لكنه ليس نزيفًا واضحًا؛ ركز على سبب ترجيح ورقة الخبير.".localized)"
+        case .closeComparison:
+            return "\("الاختيار لم يكن الأفضل لكنه ليس نزيفًا واضحًا؛ ركز على سبب ترجيح ورقة الخبير.".localized)"
+        }
     }
 
-    private static func reviewIconName(isCostly: Bool, isMissedOpportunity: Bool) -> String {
-        if isCostly { return "exclamationmark.triangle.fill" }
-        if isMissedOpportunity { return "arrow.up.right.circle.fill" }
-        return "2.circle.fill"
+    private static func reviewIconName(category: WhatToPlayReviewCardCategory) -> String {
+        switch category {
+        case .costlyChoice:
+            return "exclamationmark.triangle.fill"
+        case .missedOpportunity:
+            return "arrow.up.right.circle.fill"
+        case .closeComparison:
+            return "2.circle.fill"
+        }
     }
 
     static func reviewPriority(for item: WhatToPlayReviewItem) -> WhatToPlayReviewPriority {

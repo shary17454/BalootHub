@@ -980,6 +980,38 @@ public struct WhatToPlayReviewQueueRankMetrics: Sendable, Equatable {
     }
 }
 
+/// نوع بطاقة مراجعة «وش تلعب؟» دون نصوص واجهة.
+public enum WhatToPlayReviewCardCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case costlyChoice
+    case missedOpportunity
+    case closeComparison
+}
+
+/// تصنيف خام لبطاقة مراجعة «وش تلعب؟» من أثر الاختيار وفاقد القيمة.
+public struct WhatToPlayReviewCardMetrics: Sendable, Equatable {
+    public let category: WhatToPlayReviewCardCategory
+
+    public init(category: WhatToPlayReviewCardCategory) {
+        self.category = category
+    }
+
+    public static func classify(
+        expectedImpact: Int,
+        lostExpectedPoints: Int,
+        missedOpportunityThreshold: Int = 6
+    ) -> WhatToPlayReviewCardMetrics {
+        if expectedImpact < 0 {
+            return WhatToPlayReviewCardMetrics(category: .costlyChoice)
+        }
+
+        if lostExpectedPoints >= missedOpportunityThreshold {
+            return WhatToPlayReviewCardMetrics(category: .missedOpportunity)
+        }
+
+        return WhatToPlayReviewCardMetrics(category: .closeComparison)
+    }
+}
+
 /// عينة أداء مختصرة من محاولة «وش تلعب؟» تكفي لحساب ملخص التدريب.
 public struct WhatToPlayStatsSample: Sendable, Equatable {
     public let isCorrect: Bool

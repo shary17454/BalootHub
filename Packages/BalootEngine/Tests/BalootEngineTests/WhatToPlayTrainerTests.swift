@@ -517,6 +517,28 @@ struct WhatToPlayTrainerTests {
         #expect(WhatToPlayReviewQueueRankMetrics.ranksBefore(tacticalLoss, olderTie))
     }
 
+    @Test("تصنيف بطاقة مراجعة وش تلعب يأتي من المحرك")
+    func reviewCardMetricsClassifyCardType() {
+        #expect(
+            WhatToPlayReviewCardMetrics.classify(
+                expectedImpact: -1,
+                lostExpectedPoints: 10
+            ).category == .costlyChoice
+        )
+        #expect(
+            WhatToPlayReviewCardMetrics.classify(
+                expectedImpact: 0,
+                lostExpectedPoints: 6
+            ).category == .missedOpportunity
+        )
+        #expect(
+            WhatToPlayReviewCardMetrics.classify(
+                expectedImpact: 2,
+                lostExpectedPoints: 5
+            ).category == .closeComparison
+        )
+    }
+
     @Test("ملخص أداء وش تلعب يأتي من المحرك ويحافظ على السلاسل وفاقد القيمة")
     func statsSummaryMetricsCalculateTrainingPerformance() {
         let metrics = WhatToPlayStatsSummaryMetrics.summarize(chronologicalSamples: [
