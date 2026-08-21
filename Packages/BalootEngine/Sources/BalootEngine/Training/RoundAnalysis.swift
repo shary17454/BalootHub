@@ -137,6 +137,7 @@ public struct RoundPracticeRecommendation: Sendable, Codable, Equatable {
     public let suggestedScenarioCount: Int
     public let focusKind: WhatToPlayScenarioFocusKind?
     public let gameMode: GameMode?
+    public let trumpSuit: Suit?
     public let title: String
     public let detail: String
 
@@ -147,6 +148,7 @@ public struct RoundPracticeRecommendation: Sendable, Codable, Equatable {
         suggestedScenarioCount: Int,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
         gameMode: GameMode? = nil,
+        trumpSuit: Suit? = nil,
         title: String,
         detail: String
     ) {
@@ -156,6 +158,7 @@ public struct RoundPracticeRecommendation: Sendable, Codable, Equatable {
         self.suggestedScenarioCount = suggestedScenarioCount
         self.focusKind = focusKind
         self.gameMode = gameMode
+        self.trumpSuit = trumpSuit
         self.title = title
         self.detail = detail
     }

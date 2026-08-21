@@ -141,6 +141,7 @@ struct DailyChallengesView: View {
                let difficulty = challenge.whatToPlayDifficulty,
                let focusKind = challenge.whatToPlayFocusKind,
                let gameMode = challenge.whatToPlayGameMode {
+                let trumpSuit = challenge.whatToPlayTrumpSuit
                 let nextSeed = whatToPlayProgress?.nextSeed ?? seed
                 LazyVGrid(columns: [
                     GridItem(.flexible(), spacing: AppSpacing.xs),
@@ -150,6 +151,9 @@ struct DailyChallengesView: View {
                     scoreBox(title: "المستوى".localized, value: difficultyTitle(difficulty))
                     scoreBox(title: "تركيز التدريب".localized, value: focusTitle(focusKind))
                     scoreBox(title: "النمط".localized, value: modeTitle(gameMode))
+                    if let trumpSuit {
+                        scoreBox(title: "حكم".localized, value: trumpSuit.spokenName)
+                    }
                 }
 
                 Button {
@@ -160,6 +164,7 @@ struct DailyChallengesView: View {
                             difficulty: difficulty,
                             focusKind: focusKind,
                             gameMode: gameMode,
+                            trumpSuit: trumpSuit,
                             targetCount: challenge.targetCount
                         ),
                         tab: appEnvironment.selectedTab

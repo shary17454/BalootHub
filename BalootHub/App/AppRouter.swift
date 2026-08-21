@@ -47,6 +47,7 @@ enum AppRoute: Hashable {
         difficulty: WhatToPlayDifficulty? = nil,
         focusKind: WhatToPlayScenarioFocusKind? = nil,
         gameMode: GameMode? = nil,
+        trumpSuit: Suit? = nil,
         targetCount: Int? = nil
     )
     case scoringQuiz

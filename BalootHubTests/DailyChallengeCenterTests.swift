@@ -66,9 +66,15 @@ final class DailyChallengeCenterTests: XCTestCase {
                 for: date,
                 difficulty: difficulty,
                 focusKind: focusKind,
-                gameMode: gameMode
+                gameMode: gameMode,
+                trumpSuit: tactics.whatToPlayTrumpSuit
             )
         )
+        if gameMode == .hokum {
+            XCTAssertNotNil(tactics.whatToPlayTrumpSuit)
+        } else {
+            XCTAssertNil(tactics.whatToPlayTrumpSuit)
+        }
         XCTAssertEqual(DailyChallengeCenter.whatToPlaySeedSeries(for: tactics).count, tactics.targetCount)
     }
 
@@ -79,13 +85,14 @@ final class DailyChallengeCenterTests: XCTestCase {
         let difficulty = try XCTUnwrap(challenge.whatToPlayDifficulty)
         let focusKind = try XCTUnwrap(challenge.whatToPlayFocusKind)
         let gameMode = try XCTUnwrap(challenge.whatToPlayGameMode)
+        let trumpSuit = challenge.whatToPlayTrumpSuit
         let seed = try XCTUnwrap(challenge.whatToPlaySeed)
         let weekStart = try XCTUnwrap(calendar.dateInterval(of: .weekOfYear, for: date)?.start)
         let attempts = [
-            attempt(at: weekStart.addingTimeInterval(60), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, seed: seed),
-            attempt(at: weekStart.addingTimeInterval(120), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, seed: seed &+ 1),
-            attempt(at: weekStart.addingTimeInterval(-60), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, seed: seed &+ 2),
-            attempt(at: weekStart.addingTimeInterval(180), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, seed: seed &+ 2, isCorrect: false)
+            attempt(at: weekStart.addingTimeInterval(60), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, trumpSuit: trumpSuit, seed: seed),
+            attempt(at: weekStart.addingTimeInterval(120), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, trumpSuit: trumpSuit, seed: seed &+ 1),
+            attempt(at: weekStart.addingTimeInterval(-60), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, trumpSuit: trumpSuit, seed: seed &+ 2),
+            attempt(at: weekStart.addingTimeInterval(180), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, trumpSuit: trumpSuit, seed: seed &+ 2, isCorrect: false)
         ]
 
         let progress = try XCTUnwrap(DailyChallengeCenter.progress(
@@ -134,9 +141,15 @@ final class DailyChallengeCenterTests: XCTestCase {
                 for: date,
                 difficulty: difficulty,
                 focusKind: focusKind,
-                gameMode: gameMode
+                gameMode: gameMode,
+                trumpSuit: tactics.whatToPlayTrumpSuit
             )
         )
+        if gameMode == .hokum {
+            XCTAssertNotNil(tactics.whatToPlayTrumpSuit)
+        } else {
+            XCTAssertNil(tactics.whatToPlayTrumpSuit)
+        }
     }
 
     func testDailyWhatToPlaySeedChangesByTrainingFocus() {
@@ -157,6 +170,26 @@ final class DailyChallengeCenterTests: XCTestCase {
         XCTAssertNotEqual(openingSeed, followSuitSeed)
     }
 
+    func testDailyWhatToPlaySeedChangesByTrumpSuitForHokum() {
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let heartsSeed = DailyChallengeCenter.dailyWhatToPlaySeed(
+            for: date,
+            difficulty: .medium,
+            focusKind: .trumpPressure,
+            gameMode: .hokum,
+            trumpSuit: .hearts
+        )
+        let spadesSeed = DailyChallengeCenter.dailyWhatToPlaySeed(
+            for: date,
+            difficulty: .medium,
+            focusKind: .trumpPressure,
+            gameMode: .hokum,
+            trumpSuit: .spades
+        )
+
+        XCTAssertNotEqual(heartsSeed, spadesSeed)
+    }
+
     func testDailyWhatToPlayScenarioRequestIsCompleteForTrainerNavigation() throws {
         let date = Date(timeIntervalSince1970: 1_785_888_000)
         let challenge = try XCTUnwrap(DailyChallengeCenter.dailyChallenges(for: date).first { $0.category == .tactics })
@@ -167,6 +200,11 @@ final class DailyChallengeCenterTests: XCTestCase {
         XCTAssertGreaterThan(seed, 0)
         XCTAssertTrue(WhatToPlayDifficulty.allCases.contains(difficulty))
         XCTAssertTrue(WhatToPlayScenarioFocusKind.allCases.contains(focusKind))
+        if challenge.whatToPlayGameMode == .hokum {
+            XCTAssertNotNil(challenge.whatToPlayTrumpSuit)
+        } else {
+            XCTAssertNil(challenge.whatToPlayTrumpSuit)
+        }
     }
 
     func testWhatToPlayChallengeSeedSeriesMatchesTargetCount() throws {
@@ -188,18 +226,19 @@ final class DailyChallengeCenterTests: XCTestCase {
         let difficulty = try XCTUnwrap(challenge.whatToPlayDifficulty)
         let focusKind = try XCTUnwrap(challenge.whatToPlayFocusKind)
         let gameMode = try XCTUnwrap(challenge.whatToPlayGameMode)
+        let trumpSuit = challenge.whatToPlayTrumpSuit
         let seed = try XCTUnwrap(challenge.whatToPlaySeed)
         let otherDifficulty = WhatToPlayDifficulty.allCases.first { $0 != difficulty } ?? .easy
         let otherFocus = WhatToPlayScenarioFocusKind.allCases.first { $0 != focusKind } ?? .openingLead
         let dayStart = calendar.startOfDay(for: date)
         let attempts = [
-            attempt(at: dayStart.addingTimeInterval(60), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, seed: seed),
-            attempt(at: dayStart.addingTimeInterval(120), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, seed: seed &+ 1),
-            attempt(at: dayStart.addingTimeInterval(150), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, seed: seed &+ 2, isCorrect: false),
-            attempt(at: dayStart.addingTimeInterval(-60), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, seed: seed),
-            attempt(at: dayStart.addingTimeInterval(180), difficulty: otherDifficulty, focusKind: focusKind, gameMode: gameMode, seed: seed &+ 2),
-            attempt(at: dayStart.addingTimeInterval(240), difficulty: difficulty, focusKind: otherFocus, gameMode: gameMode, seed: seed &+ 2),
-            attempt(at: dayStart.addingTimeInterval(300), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, seed: seed &+ UInt64(challenge.targetCount + 5))
+            attempt(at: dayStart.addingTimeInterval(60), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, trumpSuit: trumpSuit, seed: seed),
+            attempt(at: dayStart.addingTimeInterval(120), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, trumpSuit: trumpSuit, seed: seed &+ 1),
+            attempt(at: dayStart.addingTimeInterval(150), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, trumpSuit: trumpSuit, seed: seed &+ 2, isCorrect: false),
+            attempt(at: dayStart.addingTimeInterval(-60), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, trumpSuit: trumpSuit, seed: seed),
+            attempt(at: dayStart.addingTimeInterval(180), difficulty: otherDifficulty, focusKind: focusKind, gameMode: gameMode, trumpSuit: trumpSuit, seed: seed &+ 2),
+            attempt(at: dayStart.addingTimeInterval(240), difficulty: difficulty, focusKind: otherFocus, gameMode: gameMode, trumpSuit: trumpSuit, seed: seed &+ 2),
+            attempt(at: dayStart.addingTimeInterval(300), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, trumpSuit: trumpSuit, seed: seed &+ UInt64(challenge.targetCount + 5))
         ]
 
         let progress = try XCTUnwrap(DailyChallengeCenter.progress(
@@ -607,6 +646,7 @@ final class DailyChallengeCenterTests: XCTestCase {
         let difficulty = try XCTUnwrap(challenge.whatToPlayDifficulty)
         let focusKind = try XCTUnwrap(challenge.whatToPlayFocusKind)
         let gameMode = try XCTUnwrap(challenge.whatToPlayGameMode)
+        let trumpSuit = challenge.whatToPlayTrumpSuit
         let seed = try XCTUnwrap(challenge.whatToPlaySeed)
         let dayStart = calendar.startOfDay(for: date)
         let attempts = (0..<(challenge.targetCount + 3)).map {
@@ -615,6 +655,7 @@ final class DailyChallengeCenterTests: XCTestCase {
                 difficulty: difficulty,
                 focusKind: focusKind,
                 gameMode: gameMode,
+                trumpSuit: trumpSuit,
                 seed: seed &+ UInt64($0)
             )
         }
@@ -637,13 +678,14 @@ final class DailyChallengeCenterTests: XCTestCase {
         let difficulty = try XCTUnwrap(challenge.whatToPlayDifficulty)
         let focusKind = try XCTUnwrap(challenge.whatToPlayFocusKind)
         let gameMode = try XCTUnwrap(challenge.whatToPlayGameMode)
+        let trumpSuit = challenge.whatToPlayTrumpSuit
         let seed = try XCTUnwrap(challenge.whatToPlaySeed)
         let laterSeed = seed &+ UInt64(min(1, challenge.targetCount - 1))
         let dayStart = calendar.startOfDay(for: date)
         let attempts = [
-            attempt(at: dayStart.addingTimeInterval(60), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, seed: seed),
-            attempt(at: dayStart.addingTimeInterval(120), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, seed: seed),
-            attempt(at: dayStart.addingTimeInterval(180), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, seed: laterSeed)
+            attempt(at: dayStart.addingTimeInterval(60), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, trumpSuit: trumpSuit, seed: seed),
+            attempt(at: dayStart.addingTimeInterval(120), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, trumpSuit: trumpSuit, seed: seed),
+            attempt(at: dayStart.addingTimeInterval(180), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, trumpSuit: trumpSuit, seed: laterSeed)
         ]
 
         let progress = try XCTUnwrap(DailyChallengeCenter.progress(
@@ -663,12 +705,13 @@ final class DailyChallengeCenterTests: XCTestCase {
         let difficulty = try XCTUnwrap(challenge.whatToPlayDifficulty)
         let focusKind = try XCTUnwrap(challenge.whatToPlayFocusKind)
         let gameMode = try XCTUnwrap(challenge.whatToPlayGameMode)
+        let trumpSuit = challenge.whatToPlayTrumpSuit
         let seed = try XCTUnwrap(challenge.whatToPlaySeed)
         let skippedSeed = seed &+ 2
         let dayStart = calendar.startOfDay(for: date)
         let attempts = [
-            attempt(at: dayStart.addingTimeInterval(60), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, seed: seed),
-            attempt(at: dayStart.addingTimeInterval(120), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, seed: skippedSeed)
+            attempt(at: dayStart.addingTimeInterval(60), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, trumpSuit: trumpSuit, seed: seed),
+            attempt(at: dayStart.addingTimeInterval(120), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, trumpSuit: trumpSuit, seed: skippedSeed)
         ]
 
         let progress = try XCTUnwrap(DailyChallengeCenter.whatToPlayProgress(
@@ -692,11 +735,12 @@ final class DailyChallengeCenterTests: XCTestCase {
         let difficulty = try XCTUnwrap(challenge.whatToPlayDifficulty)
         let focusKind = try XCTUnwrap(challenge.whatToPlayFocusKind)
         let gameMode = try XCTUnwrap(challenge.whatToPlayGameMode)
+        let trumpSuit = challenge.whatToPlayTrumpSuit
         let seed = try XCTUnwrap(challenge.whatToPlaySeed)
         let dayStart = calendar.startOfDay(for: date)
         let attempts = [
-            attempt(at: dayStart.addingTimeInterval(60), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, seed: seed &+ UInt64(challenge.targetCount + 10)),
-            attempt(at: dayStart.addingTimeInterval(120), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, seed: seed &- 1)
+            attempt(at: dayStart.addingTimeInterval(60), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, trumpSuit: trumpSuit, seed: seed &+ UInt64(challenge.targetCount + 10)),
+            attempt(at: dayStart.addingTimeInterval(120), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, trumpSuit: trumpSuit, seed: seed &- 1)
         ]
 
         let progress = try XCTUnwrap(DailyChallengeCenter.progress(
@@ -707,6 +751,54 @@ final class DailyChallengeCenterTests: XCTestCase {
         ))
 
         XCTAssertEqual(progress.completedCount, 0)
+        XCTAssertFalse(progress.isComplete)
+    }
+
+    func testWhatToPlayProgressRequiresConfiguredTrumpSuit() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = BalootChallenge(
+            id: "test-hokum-hearts",
+            cadence: .daily,
+            category: .tactics,
+            title: "وش تلعب؟",
+            detail: "اختبار",
+            targetCount: 2,
+            rewardTitle: "اختبار",
+            whatToPlaySeed: 9_000_000,
+            whatToPlayDifficulty: .medium,
+            whatToPlayFocusKind: .trumpPressure,
+            whatToPlayGameMode: .hokum,
+            whatToPlayTrumpSuit: .hearts
+        )
+        let dayStart = calendar.startOfDay(for: date)
+        let attempts = [
+            attempt(
+                at: dayStart.addingTimeInterval(60),
+                difficulty: .medium,
+                focusKind: .trumpPressure,
+                gameMode: .hokum,
+                trumpSuit: .spades,
+                seed: 9_000_000
+            ),
+            attempt(
+                at: dayStart.addingTimeInterval(120),
+                difficulty: .medium,
+                focusKind: .trumpPressure,
+                gameMode: .hokum,
+                trumpSuit: .hearts,
+                seed: 9_000_001
+            )
+        ]
+
+        let progress = try XCTUnwrap(DailyChallengeCenter.progress(
+            for: challenge,
+            attempts: attempts,
+            now: date,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(progress.completedCount, 1)
         XCTAssertFalse(progress.isComplete)
     }
 
@@ -722,10 +814,24 @@ final class DailyChallengeCenterTests: XCTestCase {
         difficulty: WhatToPlayDifficulty,
         focusKind: WhatToPlayScenarioFocusKind,
         gameMode: GameMode,
+        trumpSuit: Suit? = nil,
         seed: UInt64 = 1,
         isCorrect: Bool = true
     ) -> WhatToPlayAttempt {
-        WhatToPlayAttempt(
+        let scenarioContext = trumpSuit.map {
+            WhatToPlayScenarioContext(
+                trickNumber: 1,
+                isLeading: false,
+                requiredSuit: nil,
+                playedCardCount: 1,
+                legalOptionCount: 2,
+                mode: gameMode,
+                trumpSuit: $0,
+                hasTrumpInCurrentTrick: false,
+                focusKind: focusKind
+            )
+        }
+        return WhatToPlayAttempt(
             createdAt: date,
             difficulty: difficulty,
             seed: seed,
@@ -737,7 +843,8 @@ final class DailyChallengeCenterTests: XCTestCase {
             bestExpectedImpact: 1,
             focusKind: focusKind,
             gameMode: gameMode,
-            outcome: isCorrect ? .winsTrick : .losesTrick
+            outcome: isCorrect ? .winsTrick : .losesTrick,
+            scenarioContext: scenarioContext
         )
     }
 
@@ -753,7 +860,8 @@ final class DailyChallengeCenterTests: XCTestCase {
             whatToPlaySeed: 9_000_000,
             whatToPlayDifficulty: .medium,
             whatToPlayFocusKind: .openingLead,
-            whatToPlayGameMode: .hokum
+            whatToPlayGameMode: .hokum,
+            whatToPlayTrumpSuit: .hearts
         )
     }
 

@@ -46,6 +46,7 @@ struct BalootChallenge: Identifiable, Equatable {
     let whatToPlayDifficulty: WhatToPlayDifficulty?
     let whatToPlayFocusKind: WhatToPlayScenarioFocusKind?
     let whatToPlayGameMode: GameMode?
+    let whatToPlayTrumpSuit: Suit?
 
     init(
         id: String,
@@ -59,7 +60,8 @@ struct BalootChallenge: Identifiable, Equatable {
         whatToPlaySeed: UInt64? = nil,
         whatToPlayDifficulty: WhatToPlayDifficulty? = nil,
         whatToPlayFocusKind: WhatToPlayScenarioFocusKind? = nil,
-        whatToPlayGameMode: GameMode? = nil
+        whatToPlayGameMode: GameMode? = nil,
+        whatToPlayTrumpSuit: Suit? = nil
     ) {
         self.id = id
         self.cadence = cadence
@@ -73,6 +75,7 @@ struct BalootChallenge: Identifiable, Equatable {
         self.whatToPlayDifficulty = whatToPlayDifficulty
         self.whatToPlayFocusKind = whatToPlayFocusKind
         self.whatToPlayGameMode = whatToPlayGameMode
+        self.whatToPlayTrumpSuit = whatToPlayTrumpSuit
     }
 }
 
@@ -129,12 +132,16 @@ enum DailyChallengeCenter {
         let tacticsDifficulty = WhatToPlayDifficulty.allCases[generator.nextInt(in: 0...(WhatToPlayDifficulty.allCases.count - 1))]
         let tacticsFocus = WhatToPlayScenarioFocusKind.allCases[generator.nextInt(in: 0...(WhatToPlayScenarioFocusKind.allCases.count - 1))]
         let tacticsMode = GameMode.allCases[generator.nextInt(in: 0...(GameMode.allCases.count - 1))]
+        let tacticsTrumpSuit = tacticsMode == .hokum
+            ? Suit.allCases[generator.nextInt(in: 0...(Suit.allCases.count - 1))]
+            : nil
         let tacticsSeed = dailyWhatToPlaySeed(
             for: date,
             calendar: calendar,
             difficulty: tacticsDifficulty,
             focusKind: tacticsFocus,
-            gameMode: tacticsMode
+            gameMode: tacticsMode,
+            trumpSuit: tacticsTrumpSuit
         )
         return [
             makeChallenge(
@@ -167,7 +174,8 @@ enum DailyChallengeCenter {
                 whatToPlaySeed: tacticsSeed,
                 whatToPlayDifficulty: tacticsDifficulty,
                 whatToPlayFocusKind: tacticsFocus,
-                whatToPlayGameMode: tacticsMode
+                whatToPlayGameMode: tacticsMode,
+                whatToPlayTrumpSuit: tacticsTrumpSuit
             )
         ]
     }
@@ -186,12 +194,16 @@ enum DailyChallengeCenter {
         let tacticsDifficulty = WhatToPlayDifficulty.allCases[generator.nextInt(in: 0...(WhatToPlayDifficulty.allCases.count - 1))]
         let tacticsFocus = WhatToPlayScenarioFocusKind.allCases[generator.nextInt(in: 0...(WhatToPlayScenarioFocusKind.allCases.count - 1))]
         let tacticsMode = GameMode.allCases[generator.nextInt(in: 0...(GameMode.allCases.count - 1))]
+        let tacticsTrumpSuit = tacticsMode == .hokum
+            ? Suit.allCases[generator.nextInt(in: 0...(Suit.allCases.count - 1))]
+            : nil
         let tacticsSeed = weeklyWhatToPlaySeed(
             for: date,
             calendar: calendar,
             difficulty: tacticsDifficulty,
             focusKind: tacticsFocus,
-            gameMode: tacticsMode
+            gameMode: tacticsMode,
+            trumpSuit: tacticsTrumpSuit
         )
         return [
             makeChallenge(
@@ -233,7 +245,8 @@ enum DailyChallengeCenter {
                 whatToPlaySeed: tacticsSeed,
                 whatToPlayDifficulty: tacticsDifficulty,
                 whatToPlayFocusKind: tacticsFocus,
-                whatToPlayGameMode: tacticsMode
+                whatToPlayGameMode: tacticsMode,
+                whatToPlayTrumpSuit: tacticsTrumpSuit
             )
         ]
     }
@@ -250,7 +263,8 @@ enum DailyChallengeCenter {
         whatToPlaySeed: UInt64? = nil,
         whatToPlayDifficulty: WhatToPlayDifficulty? = nil,
         whatToPlayFocusKind: WhatToPlayScenarioFocusKind? = nil,
-        whatToPlayGameMode: GameMode? = nil
+        whatToPlayGameMode: GameMode? = nil,
+        whatToPlayTrumpSuit: Suit? = nil
     ) -> BalootChallenge {
         BalootChallenge(
             id: id,
@@ -264,7 +278,8 @@ enum DailyChallengeCenter {
             whatToPlaySeed: whatToPlaySeed,
             whatToPlayDifficulty: whatToPlayDifficulty,
             whatToPlayFocusKind: whatToPlayFocusKind,
-            whatToPlayGameMode: whatToPlayGameMode
+            whatToPlayGameMode: whatToPlayGameMode,
+            whatToPlayTrumpSuit: whatToPlayTrumpSuit
         )
     }
 
@@ -273,12 +288,19 @@ enum DailyChallengeCenter {
         calendar: Calendar = Calendar(identifier: .gregorian),
         difficulty: WhatToPlayDifficulty,
         focusKind: WhatToPlayScenarioFocusKind,
-        gameMode: GameMode
+        gameMode: GameMode,
+        trumpSuit: Suit? = nil
     ) -> UInt64 {
         let difficultyComponent = UInt64(WhatToPlayDifficulty.allCases.firstIndex(of: difficulty) ?? 0) * 1_000_000
         let focusComponent = UInt64(WhatToPlayScenarioFocusKind.allCases.firstIndex(of: focusKind) ?? 0) * 100_000
         let modeComponent = UInt64(GameMode.allCases.firstIndex(of: gameMode) ?? 0) * 10_000
-        return 7_000_000 + dailySeed(for: date, calendar: calendar) + difficultyComponent + focusComponent + modeComponent
+        let trumpSuitComponent = UInt64(trumpSuit.map { $0.ordinal + 1 } ?? 0) * 100
+        return 7_000_000
+            + dailySeed(for: date, calendar: calendar)
+            + difficultyComponent
+            + focusComponent
+            + modeComponent
+            + trumpSuitComponent
     }
 
     static func weeklyWhatToPlaySeed(
@@ -286,12 +308,19 @@ enum DailyChallengeCenter {
         calendar: Calendar = Calendar(identifier: .gregorian),
         difficulty: WhatToPlayDifficulty,
         focusKind: WhatToPlayScenarioFocusKind,
-        gameMode: GameMode
+        gameMode: GameMode,
+        trumpSuit: Suit? = nil
     ) -> UInt64 {
         let difficultyComponent = UInt64(WhatToPlayDifficulty.allCases.firstIndex(of: difficulty) ?? 0) * 1_000_000
         let focusComponent = UInt64(WhatToPlayScenarioFocusKind.allCases.firstIndex(of: focusKind) ?? 0) * 100_000
         let modeComponent = UInt64(GameMode.allCases.firstIndex(of: gameMode) ?? 0) * 10_000
-        return 8_000_000 + weeklySeed(for: date, calendar: calendar) + difficultyComponent + focusComponent + modeComponent
+        let trumpSuitComponent = UInt64(trumpSuit.map { $0.ordinal + 1 } ?? 0) * 100
+        return 8_000_000
+            + weeklySeed(for: date, calendar: calendar)
+            + difficultyComponent
+            + focusComponent
+            + modeComponent
+            + trumpSuitComponent
     }
 
     static func whatToPlaySeedSeries(for challenge: BalootChallenge) -> [UInt64] {
@@ -370,6 +399,7 @@ enum DailyChallengeCenter {
             difficulty: difficulty,
             focusKind: focusKind,
             gameMode: gameMode,
+            trumpSuit: challenge.whatToPlayTrumpSuit,
             challengeSeeds: Set(whatToPlaySeedSeries(for: challenge))
         )
 
@@ -399,6 +429,7 @@ enum DailyChallengeCenter {
             difficulty: difficulty,
             focusKind: focusKind,
             gameMode: gameMode,
+            trumpSuit: challenge.whatToPlayTrumpSuit,
             challengeSeeds: Set(seedSeries)
         )
         let base = BalootChallengeProgress(
@@ -476,6 +507,7 @@ enum DailyChallengeCenter {
         difficulty: WhatToPlayDifficulty,
         focusKind: WhatToPlayScenarioFocusKind,
         gameMode: GameMode,
+        trumpSuit: Suit?,
         challengeSeeds: Set<UInt64>
     ) -> Set<UInt64> {
         Set(attempts.compactMap { attempt -> UInt64? in
@@ -484,6 +516,7 @@ enum DailyChallengeCenter {
                   attempt.difficulty == difficulty,
                   attempt.focusKind == focusKind,
                   attempt.gameMode == gameMode,
+                  trumpSuit == nil || attempt.contextTrumpSuit == trumpSuit,
                   attempt.isCorrect,
                   challengeSeeds.contains(attempt.replaySeed)
             else { return nil }

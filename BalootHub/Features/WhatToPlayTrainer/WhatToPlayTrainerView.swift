@@ -60,6 +60,7 @@ struct WhatToPlayTrainerView: View {
         difficulty: WhatToPlayDifficulty? = nil,
         preferredFocus: WhatToPlayScenarioFocusKind? = nil,
         preferredMode: GameMode? = nil,
+        preferredTrumpSuit: Suit? = nil,
         targetCount: Int? = nil
     ) {
         self.routeSeed = seed
@@ -69,6 +70,7 @@ struct WhatToPlayTrainerView: View {
         _difficulty = State(initialValue: difficulty ?? storedPreferences.difficulty)
         _preferredFocusRaw = State(initialValue: (preferredFocus ?? storedPreferences.preferredFocus)?.rawValue ?? "auto")
         _preferredModeRaw = State(initialValue: (preferredMode ?? storedPreferences.preferredMode)?.rawValue ?? "auto")
+        _preferredTrumpSuit = State(initialValue: preferredTrumpSuit)
         _seed = State(initialValue: seed ?? 2026)
     }
 

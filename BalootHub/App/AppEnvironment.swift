@@ -38,6 +38,7 @@ final class AppEnvironment {
                 difficulty: recommendation.difficulty,
                 focusKind: recommendation.focusKind,
                 gameMode: recommendation.gameMode,
+                trumpSuit: recommendation.trumpSuit,
                 targetCount: recommendation.suggestedScenarioCount
             ),
             tab: tab

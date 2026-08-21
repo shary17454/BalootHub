@@ -75,13 +75,14 @@ struct RootTabView: View {
             BalootAcademyView(initialLessonID: lessonID)
         case .handAnalyzer:
             HandAnalyzerView()
-        case .whatToPlayTrainer(let seed, let seedBase, let difficulty, let focusKind, let gameMode, let targetCount):
+        case .whatToPlayTrainer(let seed, let seedBase, let difficulty, let focusKind, let gameMode, let trumpSuit, let targetCount):
             WhatToPlayTrainerView(
                 seed: seed,
                 seedBase: seedBase,
                 difficulty: difficulty,
                 preferredFocus: focusKind,
                 preferredMode: gameMode,
+                preferredTrumpSuit: trumpSuit,
                 targetCount: targetCount
             )
         case .scoringQuiz:

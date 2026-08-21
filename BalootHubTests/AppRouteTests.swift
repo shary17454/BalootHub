@@ -25,7 +25,38 @@ final class AppRouteTests: XCTestCase {
                 seedBase: nil,
                 difficulty: .medium,
                 focusKind: .openingLead,
-                gameMode: .sun
+                gameMode: .sun,
+                trumpSuit: nil
+            )
+        )
+    }
+
+    func testWhatToPlayTrainerRouteCarriesTrumpSuit() {
+        let heartsRoute = AppRoute.whatToPlayTrainer(
+            seed: 123,
+            difficulty: .hard,
+            focusKind: .trumpPressure,
+            gameMode: .hokum,
+            trumpSuit: .hearts
+        )
+        let spadesRoute = AppRoute.whatToPlayTrainer(
+            seed: 123,
+            difficulty: .hard,
+            focusKind: .trumpPressure,
+            gameMode: .hokum,
+            trumpSuit: .spades
+        )
+
+        XCTAssertNotEqual(heartsRoute, spadesRoute)
+        XCTAssertEqual(
+            heartsRoute,
+            .whatToPlayTrainer(
+                seed: 123,
+                seedBase: nil,
+                difficulty: .hard,
+                focusKind: .trumpPressure,
+                gameMode: .hokum,
+                trumpSuit: .hearts
             )
         )
     }
@@ -57,6 +88,7 @@ final class AppRouteTests: XCTestCase {
                 difficulty: .medium,
                 focusKind: .openingLead,
                 gameMode: .sun,
+                trumpSuit: nil,
                 targetCount: 5
             )
         )
@@ -72,6 +104,7 @@ final class AppRouteTests: XCTestCase {
             suggestedScenarioCount: 5,
             focusKind: .narrowChoice,
             gameMode: .sun,
+            trumpSuit: .spades,
             title: "تدرب على وش تلعب؟",
             detail: "اختبار"
         )
@@ -86,6 +119,7 @@ final class AppRouteTests: XCTestCase {
                 difficulty: .expert,
                 focusKind: .narrowChoice,
                 gameMode: .sun,
+                trumpSuit: .spades,
                 targetCount: 5
             )
         ])
