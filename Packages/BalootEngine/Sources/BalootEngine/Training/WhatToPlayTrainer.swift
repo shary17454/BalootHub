@@ -1303,17 +1303,20 @@ public struct WhatToPlayReviewPriorityMetrics: Sendable, Equatable {
 public struct WhatToPlayReviewQueueRankMetrics: Sendable, Equatable {
     public let lostExpectedPoints: Int
     public let lostProjectedTeamPoints: Int
+    public let lostProjectedAgainstSecondBestPoints: Int
     public let expectedImpact: Int
     public let createdAt: Date
 
     public init(
         lostExpectedPoints: Int,
         lostProjectedTeamPoints: Int,
+        lostProjectedAgainstSecondBestPoints: Int = 0,
         expectedImpact: Int,
         createdAt: Date
     ) {
         self.lostExpectedPoints = lostExpectedPoints
         self.lostProjectedTeamPoints = lostProjectedTeamPoints
+        self.lostProjectedAgainstSecondBestPoints = lostProjectedAgainstSecondBestPoints
         self.expectedImpact = expectedImpact
         self.createdAt = createdAt
     }
@@ -1328,12 +1331,22 @@ public struct WhatToPlayReviewQueueRankMetrics: Sendable, Equatable {
             }
         }
 
+        if lhs.lostProjectedAgainstSecondBestPoints >= 6 || rhs.lostProjectedAgainstSecondBestPoints >= 6 {
+            if lhs.lostProjectedAgainstSecondBestPoints != rhs.lostProjectedAgainstSecondBestPoints {
+                return lhs.lostProjectedAgainstSecondBestPoints > rhs.lostProjectedAgainstSecondBestPoints
+            }
+        }
+
         if lhs.lostExpectedPoints != rhs.lostExpectedPoints {
             return lhs.lostExpectedPoints > rhs.lostExpectedPoints
         }
 
         if lhs.lostProjectedTeamPoints != rhs.lostProjectedTeamPoints {
             return lhs.lostProjectedTeamPoints > rhs.lostProjectedTeamPoints
+        }
+
+        if lhs.lostProjectedAgainstSecondBestPoints != rhs.lostProjectedAgainstSecondBestPoints {
+            return lhs.lostProjectedAgainstSecondBestPoints > rhs.lostProjectedAgainstSecondBestPoints
         }
 
         if lhs.expectedImpact != rhs.expectedImpact {

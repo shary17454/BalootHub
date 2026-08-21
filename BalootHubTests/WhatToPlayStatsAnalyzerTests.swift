@@ -840,6 +840,37 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(item?.valueLossTitle, "خسارة قيمة عالية".localized)
     }
 
+    func testReviewQueueUsesSecondSimulationLossAsTieBreaker() {
+        let farFromSecondSimulation = attempt(
+            daysAgo: 2,
+            correct: false,
+            impact: 3,
+            bestImpact: 4,
+            projectedTeamPoints: 70,
+            bestProjectedTeamPoints: 80,
+            secondBestProjectedTeamPoints: 78
+        )
+        let closeToSecondSimulation = attempt(
+            daysAgo: 1,
+            correct: false,
+            impact: -2,
+            bestImpact: 5,
+            projectedTeamPoints: 70,
+            bestProjectedTeamPoints: 80,
+            secondBestProjectedTeamPoints: 71
+        )
+
+        let queue = WhatToPlayStatsAnalyzer.reviewQueue(
+            for: [closeToSecondSimulation, farFromSecondSimulation],
+            limit: 2
+        )
+
+        XCTAssertEqual(queue.first?.seed, farFromSecondSimulation.replaySeed)
+        XCTAssertEqual(queue.first?.lostProjectedTeamPoints, 10)
+        XCTAssertEqual(queue.first?.lostProjectedAgainstSecondBestPoints, 8)
+        XCTAssertEqual(queue.last?.lostProjectedAgainstSecondBestPoints, 1)
+    }
+
     func testAttemptStoresScenarioContextForReplayableReview() {
         let context = WhatToPlayScenarioContext(
             trickNumber: 4,

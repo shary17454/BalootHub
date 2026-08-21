@@ -1330,6 +1330,7 @@ enum WhatToPlayStatsAnalyzer {
         WhatToPlayReviewQueueRankMetrics(
             lostExpectedPoints: attempt.lostExpectedPoints,
             lostProjectedTeamPoints: attempt.lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: attempt.lostProjectedAgainstSecondBestPoints,
             expectedImpact: attempt.expectedImpact,
             createdAt: attempt.createdAt
         )

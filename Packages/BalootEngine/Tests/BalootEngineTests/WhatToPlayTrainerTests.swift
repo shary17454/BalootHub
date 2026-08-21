@@ -662,6 +662,26 @@ struct WhatToPlayTrainerTests {
         #expect(WhatToPlayReviewQueueRankMetrics.ranksBefore(tacticalLoss, olderTie))
     }
 
+    @Test("فاقد ثاني المحاكاة يرفع أولوية مراجعة وش تلعب")
+    func reviewQueueRankMetricsPrioritizesSecondSimulationLoss() {
+        let now = Date(timeIntervalSince1970: 1_000)
+        let secondSimulationLoss = reviewQueueRank(
+            lostExpectedPoints: 2,
+            lostProjectedTeamPoints: 2,
+            lostProjectedAgainstSecondBestPoints: 9,
+            expectedImpact: 4,
+            createdAt: now
+        )
+        let valueLoss = reviewQueueRank(
+            lostExpectedPoints: 7,
+            lostProjectedTeamPoints: 0,
+            expectedImpact: -1,
+            createdAt: now.addingTimeInterval(10)
+        )
+
+        #expect(WhatToPlayReviewQueueRankMetrics.ranksBefore(secondSimulationLoss, valueLoss))
+    }
+
     @Test("تصنيف بطاقة مراجعة وش تلعب يأتي من المحرك")
     func reviewCardMetricsClassifyCardType() {
         #expect(
@@ -2685,12 +2705,14 @@ private func decisionPatternSample(
 private func reviewQueueRank(
     lostExpectedPoints: Int,
     lostProjectedTeamPoints: Int,
+    lostProjectedAgainstSecondBestPoints: Int = 0,
     expectedImpact: Int,
     createdAt: Date
 ) -> WhatToPlayReviewQueueRankMetrics {
     WhatToPlayReviewQueueRankMetrics(
         lostExpectedPoints: lostExpectedPoints,
         lostProjectedTeamPoints: lostProjectedTeamPoints,
+        lostProjectedAgainstSecondBestPoints: lostProjectedAgainstSecondBestPoints,
         expectedImpact: expectedImpact,
         createdAt: createdAt
     )
