@@ -2113,6 +2113,38 @@ struct WhatToPlayTrainerTests {
         }
     }
 
+    @Test("تصنيف تفصيل أثر خيار وش تلعب يأتي من المحرك")
+    func optionImpactDetailMetricsClassifyBreakdown() {
+        let completed = WhatToPlayOptionImpactBreakdown(
+            playedCardPoints: 10,
+            immediateImpact: 0,
+            trickPointsSwing: 18,
+            completesTrick: true,
+            winsForPlayerTeam: true,
+            preservesLead: true
+        )
+        let preservedLead = WhatToPlayOptionImpactBreakdown(
+            playedCardPoints: 4,
+            immediateImpact: 2,
+            trickPointsSwing: 0,
+            completesTrick: false,
+            winsForPlayerTeam: nil,
+            preservesLead: true
+        )
+        let open = WhatToPlayOptionImpactBreakdown(
+            playedCardPoints: 3,
+            immediateImpact: -3,
+            trickPointsSwing: 0,
+            completesTrick: false,
+            winsForPlayerTeam: nil,
+            preservesLead: false
+        )
+
+        #expect(WhatToPlayOptionImpactDetailMetrics.classify(breakdown: completed).category == .completedTrick)
+        #expect(WhatToPlayOptionImpactDetailMetrics.classify(breakdown: preservedLead).category == .preservedLead)
+        #expect(WhatToPlayOptionImpactDetailMetrics.classify(breakdown: open).category == .openTrick)
+    }
+
     @Test("توقع نقاط الفريق لكل خيار حتمي مع نفس البذرة")
     func optionProjectedTeamPointsAreDeterministic() throws {
         let first = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)

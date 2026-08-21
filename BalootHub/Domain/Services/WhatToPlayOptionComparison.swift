@@ -342,13 +342,16 @@ enum WhatToPlayImpactFormatter {
     }
 
     static func detail(for breakdown: WhatToPlayOptionImpactBreakdown) -> String {
-        if breakdown.completesTrick {
+        let metrics = WhatToPlayOptionImpactDetailMetrics.classify(breakdown: breakdown)
+
+        switch metrics.category {
+        case .completedTrick:
             let owner = (breakdown.winsForPlayerTeam ?? false) ? "لفريقك".localized : "للخصم".localized
             return "\("نقاط الأكلة".localized): \(abs(breakdown.trickPointsSwing)) · \(owner)"
-        }
-        if breakdown.preservesLead {
+        case .preservedLead:
             return "\("نقاط الورقة".localized): \(breakdown.playedCardPoints) · \("أثر افتتاحي".localized): \(breakdown.immediateImpact)"
+        case .openTrick:
+            return "\("نقاط الورقة".localized): \(breakdown.playedCardPoints) · \("لا تحسم الأكلة الآن".localized)"
         }
-        return "\("نقاط الورقة".localized): \(breakdown.playedCardPoints) · \("لا تحسم الأكلة الآن".localized)"
     }
 }

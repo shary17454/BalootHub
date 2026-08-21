@@ -2758,6 +2758,36 @@ public struct WhatToPlayOptionImpactBreakdown: Sendable, Codable, Equatable {
     }
 }
 
+/// نوع شرح أثر خيار «وش تلعب؟» دون نصوص واجهة.
+public enum WhatToPlayOptionImpactDetailCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case completedTrick
+    case preservedLead
+    case openTrick
+}
+
+/// تصنيف أثر خيار «وش تلعب؟» من تفكيك المحرك.
+public struct WhatToPlayOptionImpactDetailMetrics: Sendable, Equatable {
+    public let category: WhatToPlayOptionImpactDetailCategory
+
+    public init(category: WhatToPlayOptionImpactDetailCategory) {
+        self.category = category
+    }
+
+    public static func classify(
+        breakdown: WhatToPlayOptionImpactBreakdown
+    ) -> WhatToPlayOptionImpactDetailMetrics {
+        if breakdown.completesTrick {
+            return WhatToPlayOptionImpactDetailMetrics(category: .completedTrick)
+        }
+
+        if breakdown.preservesLead {
+            return WhatToPlayOptionImpactDetailMetrics(category: .preservedLead)
+        }
+
+        return WhatToPlayOptionImpactDetailMetrics(category: .openTrick)
+    }
+}
+
 /// محاكاة مختصرة لما يحدث مباشرة إذا لعب المستخدم هذه الورقة.
 ///
 /// تحفظ نتيجة تطبيق فعل اللعب على المحرك نفسه، لا على تقدير واجهة المستخدم. هذا يجعل
