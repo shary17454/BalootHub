@@ -1520,6 +1520,40 @@ struct WhatToPlayTrainerTests {
         #expect(WhatToPlayOptionTacticalTag.classify(option: holds, bestExpectedImpact: 10, bestProjectedTeamPoints: 40) == .holdsPosition)
     }
 
+    @Test("ملخص خيار وش تلعب التكتيكي يصنف من المحرك")
+    func tacticalSummaryMetricsClassifyOptionReview() {
+        let expert = projectedOption(
+            card: PlayingCard(suit: .spades, rank: .ace),
+            rank: 1,
+            isExpertChoice: true,
+            expectedImpact: 10
+        )
+        let projectedLoss = projectedOption(card: PlayingCard(suit: .hearts, rank: .ace), rank: 2, expectedImpact: 9)
+        let noLoss = projectedOption(card: PlayingCard(suit: .clubs, rank: .ace), rank: 3, expectedImpact: 10)
+        let smallLoss = projectedOption(card: PlayingCard(suit: .diamonds, rank: .ace), rank: 4, expectedImpact: 8)
+        let negative = projectedOption(card: PlayingCard(suit: .clubs, rank: .seven), rank: 5, expectedImpact: -1)
+        let wins = projectedOption(
+            card: PlayingCard(suit: .diamonds, rank: .king),
+            rank: 6,
+            expectedImpact: 6,
+            outcome: .winsTrick
+        )
+        let open = projectedOption(
+            card: PlayingCard(suit: .diamonds, rank: .queen),
+            rank: 7,
+            expectedImpact: 6,
+            outcome: .developsTrick
+        )
+
+        #expect(summaryCategory(expert, lost: 0, projected: 0) == .expertPick)
+        #expect(summaryCategory(projectedLoss, lost: 1, projected: 5) == .projectedLoss)
+        #expect(summaryCategory(noLoss, lost: 0, projected: 0) == .noLossCloseAlternative)
+        #expect(summaryCategory(smallLoss, lost: 2, projected: 0) == .smallLossAlternative)
+        #expect(summaryCategory(negative, lost: 11, projected: 0) == .negativeExpectedImpact)
+        #expect(summaryCategory(wins, lost: 4, projected: 0) == .winsNowWithLowerValue)
+        #expect(summaryCategory(open, lost: 4, projected: 0) == .openTrickLoss)
+    }
+
     @Test("مراجعات خيارات وش تلعب ترتب الصفوف وتحسب الفاقد من المحرك")
     func optionReviewsCalculateRowsFromEngine() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2, difficulty: .hard)
@@ -1546,6 +1580,14 @@ struct WhatToPlayTrainerTests {
                     bestExpectedImpact: best.expectedImpact,
                     bestProjectedTeamPoints: bestProjected.projectedTeamPoints
                 )
+            )
+            #expect(
+                review.tacticalSummaryMetrics
+                    == WhatToPlayOptionTacticalSummaryMetrics.classify(
+                        option: review.option,
+                        lostExpectedPoints: review.lostExpectedPoints,
+                        lostProjectedTeamPoints: review.lostProjectedTeamPoints
+                    )
             )
         }
     }
@@ -2554,6 +2596,18 @@ private func projectedOption(
         outcomeReason: "",
         explanation: ""
     )
+}
+
+private func summaryCategory(
+    _ option: WhatToPlayOption,
+    lost: Int,
+    projected: Int
+) -> WhatToPlayOptionTacticalSummaryCategory {
+    WhatToPlayOptionTacticalSummaryMetrics.classify(
+        option: option,
+        lostExpectedPoints: lost,
+        lostProjectedTeamPoints: projected
+    ).category
 }
 
 private func decisionPatternSample(

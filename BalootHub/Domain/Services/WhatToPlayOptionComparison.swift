@@ -228,8 +228,7 @@ enum WhatToPlayOptionComparison {
                     tacticalTag: review.tacticalTag,
                     tacticalSummary: tacticalSummary(
                         for: option,
-                        lostExpectedPoints: review.lostExpectedPoints,
-                        lostProjectedTeamPoints: review.lostProjectedTeamPoints
+                        metrics: review.tacticalSummaryMetrics
                     ),
                     coachingSummary: coachingSummary(
                         for: option,
@@ -296,29 +295,24 @@ enum WhatToPlayOptionComparison {
 
     private static func tacticalSummary(
         for option: WhatToPlayOption,
-        lostExpectedPoints lost: Int,
-        lostProjectedTeamPoints projectedLost: Int
+        metrics: WhatToPlayOptionTacticalSummaryMetrics
     ) -> String {
-        let decisiveLoss = max(lost, projectedLost)
-        if option.isExpertChoice {
+        switch metrics.category {
+        case .expertPick:
             return "هذه أعلى ورقة حسب تحليل الخبير لهذا الموقف.".localized
-        }
-        if projectedLost > lost {
-            return "\("هذا الخيار يخسر بعد استكمال الجولة".localized): \(projectedLost). \("راجع Replay قبل اعتباره بديلًا قريبًا.".localized)"
-        }
-        if decisiveLoss == 0 {
+        case .projectedLoss:
+            return "\("هذا الخيار يخسر بعد استكمال الجولة".localized): \(metrics.decisiveLoss). \("راجع Replay قبل اعتباره بديلًا قريبًا.".localized)"
+        case .noLossCloseAlternative:
             return "قريب جدًا من اختيار الخبير ولا يخسر أثرًا متوقعًا.".localized
-        }
-        if decisiveLoss <= 2 {
-            return "\("فرق بسيط عن الأفضل".localized): \(lost). \("مقبول إذا كان هدفك تقليل المخاطرة.".localized)"
-        }
-        if option.expectedImpact < 0 {
+        case .smallLossAlternative:
+            return "\("فرق بسيط عن الأفضل".localized): \(metrics.decisiveLoss). \("مقبول إذا كان هدفك تقليل المخاطرة.".localized)"
+        case .negativeExpectedImpact:
             return "\("هذا الخيار قد يكلّف فريقك نقاطًا متوقعة".localized): \(abs(option.expectedImpact))."
+        case .winsNowWithLowerValue:
+            return "\("يربح الأكلة غالبًا، لكنه أقل من أفضل خيار بفارق".localized) \(metrics.decisiveLoss)."
+        case .openTrickLoss:
+            return "\("يبقي الأكلة مفتوحة ويخسر عن الأفضل".localized): \(metrics.decisiveLoss)."
         }
-        if option.outcome == .winsTrick {
-            return "\("يربح الأكلة غالبًا، لكنه أقل من أفضل خيار بفارق".localized) \(lost)."
-        }
-        return "\("يبقي الأكلة مفتوحة ويخسر عن الأفضل".localized): \(lost)."
     }
 
     private static func coachingSummary(

@@ -2648,6 +2648,83 @@ public struct WhatToPlayOption: Identifiable, Sendable, Equatable {
     public var id: PlayingCard { card }
 }
 
+/// نوع الملخص التكتيكي لخيار ورقة في «وش تلعب؟» دون نصوص واجهة.
+public enum WhatToPlayOptionTacticalSummaryCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case expertPick
+    case projectedLoss
+    case noLossCloseAlternative
+    case smallLossAlternative
+    case negativeExpectedImpact
+    case winsNowWithLowerValue
+    case openTrickLoss
+}
+
+/// تصنيف الملخص التكتيكي لخيار ورقة من أرقام مراجعة المحرك.
+public struct WhatToPlayOptionTacticalSummaryMetrics: Sendable, Equatable {
+    public let category: WhatToPlayOptionTacticalSummaryCategory
+    public let decisiveLoss: Int
+
+    public init(category: WhatToPlayOptionTacticalSummaryCategory, decisiveLoss: Int) {
+        self.category = category
+        self.decisiveLoss = decisiveLoss
+    }
+
+    public static func classify(
+        option: WhatToPlayOption,
+        lostExpectedPoints: Int,
+        lostProjectedTeamPoints: Int
+    ) -> WhatToPlayOptionTacticalSummaryMetrics {
+        let decisiveLoss = max(lostExpectedPoints, lostProjectedTeamPoints)
+
+        if option.isExpertChoice {
+            return WhatToPlayOptionTacticalSummaryMetrics(
+                category: .expertPick,
+                decisiveLoss: decisiveLoss
+            )
+        }
+
+        if lostProjectedTeamPoints > lostExpectedPoints {
+            return WhatToPlayOptionTacticalSummaryMetrics(
+                category: .projectedLoss,
+                decisiveLoss: decisiveLoss
+            )
+        }
+
+        if decisiveLoss == 0 {
+            return WhatToPlayOptionTacticalSummaryMetrics(
+                category: .noLossCloseAlternative,
+                decisiveLoss: decisiveLoss
+            )
+        }
+
+        if decisiveLoss <= 2 {
+            return WhatToPlayOptionTacticalSummaryMetrics(
+                category: .smallLossAlternative,
+                decisiveLoss: decisiveLoss
+            )
+        }
+
+        if option.expectedImpact < 0 {
+            return WhatToPlayOptionTacticalSummaryMetrics(
+                category: .negativeExpectedImpact,
+                decisiveLoss: decisiveLoss
+            )
+        }
+
+        if option.outcome == .winsTrick {
+            return WhatToPlayOptionTacticalSummaryMetrics(
+                category: .winsNowWithLowerValue,
+                decisiveLoss: decisiveLoss
+            )
+        }
+
+        return WhatToPlayOptionTacticalSummaryMetrics(
+            category: .openTrickLoss,
+            decisiveLoss: decisiveLoss
+        )
+    }
+}
+
 /// تفكيك أثر لعب ورقة معيّنة في موقف «وش تلعب؟».
 ///
 /// هذا لا يحاول توقّع الجولة كاملة؛ بل يشرح الأثر المباشر القابل للإعادة من حالة
@@ -2911,6 +2988,7 @@ public struct WhatToPlayOptionReview: Identifiable, Sendable, Equatable {
     public let lostExpectedPoints: Int
     public let lostProjectedTeamPoints: Int
     public let tacticalTag: WhatToPlayOptionTacticalTag
+    public let tacticalSummaryMetrics: WhatToPlayOptionTacticalSummaryMetrics
     public let isBestProjectedResult: Bool
 
     public var id: PlayingCard { option.card }
@@ -2920,12 +2998,14 @@ public struct WhatToPlayOptionReview: Identifiable, Sendable, Equatable {
         lostExpectedPoints: Int,
         lostProjectedTeamPoints: Int,
         tacticalTag: WhatToPlayOptionTacticalTag,
+        tacticalSummaryMetrics: WhatToPlayOptionTacticalSummaryMetrics,
         isBestProjectedResult: Bool
     ) {
         self.option = option
         self.lostExpectedPoints = lostExpectedPoints
         self.lostProjectedTeamPoints = lostProjectedTeamPoints
         self.tacticalTag = tacticalTag
+        self.tacticalSummaryMetrics = tacticalSummaryMetrics
         self.isBestProjectedResult = isBestProjectedResult
     }
 }
@@ -3488,6 +3568,11 @@ public enum WhatToPlayTrainer {
                     option: option,
                     bestExpectedImpact: bestExpectedImpact,
                     bestProjectedTeamPoints: bestProjectedTeamPoints
+                ),
+                tacticalSummaryMetrics: WhatToPlayOptionTacticalSummaryMetrics.classify(
+                    option: option,
+                    lostExpectedPoints: lostExpectedPoints,
+                    lostProjectedTeamPoints: lostProjectedTeamPoints
                 ),
                 isBestProjectedResult: option.card == bestProjected?.card
             )
