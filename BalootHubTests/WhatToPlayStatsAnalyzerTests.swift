@@ -2242,6 +2242,43 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(coverage.title, "تغطية الصن والحكم متوازنة".localized)
     }
 
+    func testTrumpSuitCoverageReportsMissingHokumSuitsOnly() {
+        let attempts = [
+            attempt(daysAgo: 6, correct: true, impact: 2, gameMode: .sun, scenarioContext: hokumContext(trumpSuit: .hearts)),
+            attempt(daysAgo: 5, correct: true, impact: 2, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .hearts)),
+            attempt(daysAgo: 4, correct: false, impact: -2, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .hearts)),
+            attempt(daysAgo: 3, correct: true, impact: 2, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .clubs))
+        ]
+
+        let coverage = WhatToPlayStatsAnalyzer.trumpSuitCoverage(for: attempts)
+
+        XCTAssertFalse(coverage.isBalanced)
+        XCTAssertEqual(coverage.sampledSuits, 1)
+        XCTAssertEqual(coverage.totalSuits, 4)
+        XCTAssertEqual(coverage.missingSuits, [.diamonds, .clubs, .spades])
+        XCTAssertEqual(coverage.title, "وازن ألوان الحكم".localized)
+    }
+
+    func testTrumpSuitCoverageReportsBalancedSuits() {
+        let attempts = [
+            attempt(daysAgo: 8, correct: true, impact: 2, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .hearts)),
+            attempt(daysAgo: 7, correct: false, impact: -2, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .hearts)),
+            attempt(daysAgo: 6, correct: true, impact: 2, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .diamonds)),
+            attempt(daysAgo: 5, correct: false, impact: -2, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .diamonds)),
+            attempt(daysAgo: 4, correct: true, impact: 2, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .clubs)),
+            attempt(daysAgo: 3, correct: false, impact: -2, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .clubs)),
+            attempt(daysAgo: 2, correct: true, impact: 2, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .spades)),
+            attempt(daysAgo: 1, correct: false, impact: -2, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .spades))
+        ]
+
+        let coverage = WhatToPlayStatsAnalyzer.trumpSuitCoverage(for: attempts)
+
+        XCTAssertTrue(coverage.isBalanced)
+        XCTAssertEqual(coverage.sampledSuits, 4)
+        XCTAssertTrue(coverage.missingSuits.isEmpty)
+        XCTAssertEqual(coverage.title, "تغطية ألوان الحكم متوازنة".localized)
+    }
+
     func testFocusTrainingPriorityUsesLargestLostPointsByFocus() {
         let attempts = [
             attempt(daysAgo: 6, correct: false, impact: -1, bestImpact: 1, focusKind: .openingLead),
@@ -2522,6 +2559,28 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(drill.gameMode, .hokum)
         XCTAssertEqual(drill.seed, 11_010_010)
         XCTAssertNotNil(drill.difficulty)
+        XCTAssertNil(drill.focusKind)
+    }
+
+    func testMicroDrillTargetsMissingTrumpSuitAfterModeCoverage() {
+        let attempts = [
+            attempt(daysAgo: 8, difficulty: .easy, correct: true, impact: 1, focusKind: .openingLead, gameMode: .sun),
+            attempt(daysAgo: 7, difficulty: .easy, correct: true, impact: 1, focusKind: .followSuit, gameMode: .sun),
+            attempt(daysAgo: 6, difficulty: .medium, correct: true, impact: 1, focusKind: .trumpPressure, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .spades)),
+            attempt(daysAgo: 5, difficulty: .medium, correct: true, impact: 1, focusKind: .narrowChoice, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .spades)),
+            attempt(daysAgo: 4, difficulty: .hard, correct: true, impact: 1, focusKind: .openingLead, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .spades)),
+            attempt(daysAgo: 3, difficulty: .hard, correct: true, impact: 1, focusKind: .followSuit, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .spades)),
+            attempt(daysAgo: 2, difficulty: .easy, correct: true, impact: 1, focusKind: .trumpPressure, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .spades)),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 1, focusKind: .narrowChoice, gameMode: .hokum, scenarioContext: hokumContext(trumpSuit: .spades))
+        ] + expertCoverageAttempts(gameMode: .hokum)
+
+        let drill = WhatToPlayStatsAnalyzer.microDrill(for: attempts)
+
+        XCTAssertEqual(drill.title, "خطة ألوان الحكم".localized)
+        XCTAssertEqual(drill.steps.first, "\("استهدف حكم".localized): \(Suit.hearts.spokenName)")
+        XCTAssertEqual(drill.gameMode, .hokum)
+        XCTAssertEqual(drill.trumpSuit, .hearts)
+        XCTAssertNotNil(drill.seed)
         XCTAssertNil(drill.focusKind)
     }
 

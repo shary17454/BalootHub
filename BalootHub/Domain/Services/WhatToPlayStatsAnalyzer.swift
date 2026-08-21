@@ -616,6 +616,19 @@ struct WhatToPlayGameModeCoverage: Equatable {
     }
 }
 
+struct WhatToPlayTrumpSuitCoverage: Equatable {
+    let sampledSuits: Int
+    let totalSuits: Int
+    let missingSuits: [Suit]
+    let title: String
+    let detail: String
+    let iconName: String
+
+    var isBalanced: Bool {
+        missingSuits.isEmpty
+    }
+}
+
 enum WhatToPlaySessionState: Equatable {
     case noData
     case warmingUp
@@ -3218,6 +3231,39 @@ enum WhatToPlayStatsAnalyzer {
         )
     }
 
+    static func trumpSuitCoverage(
+        for attempts: [WhatToPlayAttempt],
+        minimumAttemptsPerSuit: Int = 2
+    ) -> WhatToPlayTrumpSuitCoverage {
+        let missing = Suit.allCases.filter { suit in
+            attempts.filter {
+                $0.gameMode == .hokum && $0.contextTrumpSuit == suit
+            }.count < minimumAttemptsPerSuit
+        }
+        let sampled = Suit.allCases.count - missing.count
+
+        if missing.isEmpty {
+            return WhatToPlayTrumpSuitCoverage(
+                sampledSuits: sampled,
+                totalSuits: Suit.allCases.count,
+                missingSuits: [],
+                title: "تغطية ألوان الحكم متوازنة".localized,
+                detail: "لديك عينات كافية من كل ألوان الحكم، لذلك تصبح توصيات الحكم أدق.".localized,
+                iconName: "checkmark.seal.fill"
+            )
+        }
+
+        let names = missing.map(\.spokenName).joined(separator: "، ")
+        return WhatToPlayTrumpSuitCoverage(
+            sampledSuits: sampled,
+            totalSuits: Suit.allCases.count,
+            missingSuits: missing,
+            title: "وازن ألوان الحكم".localized,
+            detail: "\("درّب ألوان الحكم هذه أكثر".localized): \(names).",
+            iconName: "suit.spade.fill"
+        )
+    }
+
     static func sessionPulse(for attempts: [WhatToPlayAttempt], window: Int = 3) -> WhatToPlaySessionPulse {
         guard attempts.count >= window, window > 0 else {
             return WhatToPlaySessionPulse(
@@ -3438,6 +3484,28 @@ enum WhatToPlayStatsAnalyzer {
                 focusKind: nil,
                 gameMode: targetMode,
                 trumpSuit: nil
+            )
+        }
+
+        let trumpCoverage = trumpSuitCoverage(for: attempts)
+        if !trumpCoverage.isBalanced && !summariesByTrumpSuit(attempts).isEmpty {
+            let targetSuit = trumpCoverage.missingSuits.first ?? .hearts
+            let targetDifficulty = nextScenarioRecommendation(for: attempts).difficulty
+            return WhatToPlayMicroDrill(
+                title: "خطة ألوان الحكم".localized,
+                detail: "الحكم في البلوت يتغير كثيرًا حسب اللون؛ درّب كل لون حتى لا تنحاز لقراءة لون واحد.".localized,
+                iconName: trumpSuitTrainingIcon(for: targetSuit),
+                steps: [
+                    "\("استهدف حكم".localized): \(targetSuit.spokenName)",
+                    "حل موقفين من نفس لون الحكم".localized,
+                    "قارن هل القطع أو حفظ الحكم تغيّر بسبب اللون".localized
+                ],
+                reviewItem: nil,
+                seed: microDrillSeed(attempts: attempts, difficulty: targetDifficulty, focusKind: nil, gameMode: .hokum, trumpSuit: targetSuit),
+                difficulty: targetDifficulty,
+                focusKind: nil,
+                gameMode: .hokum,
+                trumpSuit: targetSuit
             )
         }
 
