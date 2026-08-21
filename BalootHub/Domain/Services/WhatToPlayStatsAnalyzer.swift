@@ -2978,10 +2978,17 @@ enum WhatToPlayStatsAnalyzer {
             "\("نقاط فريقك بعد المحاكاة".localized): \(selected.projectedTeamPoints)"
         ]
 
-        if let metrics, metrics.lostProjectedTeamPoints > 0 {
-            parts.append("\("نقاط محاكاة ضائعة".localized): \(metrics.lostProjectedTeamPoints)")
-        } else if metrics?.isExpertChoice ?? selected.isExpertChoice {
+        switch metrics?.contextCategory {
+        case .projectedLoss:
+            parts.append("\("نقاط محاكاة ضائعة".localized): \(metrics?.lostProjectedTeamPoints ?? 0)")
+        case .expertChoice:
             parts.append("اختيار الخبير".localized)
+        case .selectedChoice:
+            break
+        case nil:
+            if selected.isExpertChoice {
+                parts.append("اختيار الخبير".localized)
+            }
         }
 
         return WhatToPlayReplayContext(

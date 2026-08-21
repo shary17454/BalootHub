@@ -1595,6 +1595,17 @@ struct WhatToPlayTrainerTests {
         #expect(metrics.selectedOption.card == selected.card)
         #expect(metrics.lostProjectedTeamPoints == optionReview.lostProjectedTeamPoints)
         #expect(metrics.isExpertChoice == selected.isExpertChoice)
+        #expect(
+            metrics.contextCategory
+                == (metrics.lostProjectedTeamPoints > 0 ? .projectedLoss : .selectedChoice)
+        )
+
+        let expertScenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
+        let expert = try #require(expertScenario.bestOption)
+        let expertMetrics = try #require(WhatToPlayTrainer.replayMetrics(in: expertScenario, selectedCard: expert.card))
+        if expertMetrics.lostProjectedTeamPoints == 0 {
+            #expect(expertMetrics.contextCategory == .expertChoice)
+        }
     }
 
     @Test("تصنيف رؤية قرار وش تلعب الخام يأتي من المحرك")

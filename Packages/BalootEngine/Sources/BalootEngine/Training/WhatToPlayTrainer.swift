@@ -3085,6 +3085,13 @@ public struct WhatToPlayTrainingPriorityRankMetrics: Sendable, Equatable {
     }
 }
 
+/// تصنيف سياق Replay لقرار تدريب «وش تلعب؟» دون نصوص واجهة.
+public enum WhatToPlayReplayContextCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case projectedLoss
+    case expertChoice
+    case selectedChoice
+}
+
 /// أرقام موجزة تستخدم عند فتح Replay لقرار تدريب «وش تلعب؟».
 public struct WhatToPlayReplayMetrics: Sendable, Equatable {
     public let selectedOption: WhatToPlayOption
@@ -3099,6 +3106,18 @@ public struct WhatToPlayReplayMetrics: Sendable, Equatable {
         self.selectedOption = selectedOption
         self.lostProjectedTeamPoints = lostProjectedTeamPoints
         self.isExpertChoice = isExpertChoice
+    }
+
+    public var contextCategory: WhatToPlayReplayContextCategory {
+        if lostProjectedTeamPoints > 0 {
+            return .projectedLoss
+        }
+
+        if isExpertChoice {
+            return .expertChoice
+        }
+
+        return .selectedChoice
     }
 }
 
