@@ -3848,108 +3848,56 @@ enum WhatToPlayStatsAnalyzer {
 
     static func decisionPattern(for attempts: [WhatToPlayAttempt], limit: Int = 8) -> WhatToPlayDecisionPattern {
         let recent = recentAttempts(attempts, limit: limit)
-        guard !recent.isEmpty else {
+        let metrics = WhatToPlayDecisionPatternMetrics.classify(
+            samples: recent.map(decisionPatternSample)
+        )
+
+        switch metrics.category {
+        case .noData:
             return WhatToPlayDecisionPattern(
                 kind: .noData,
-                inspectedAttempts: 0,
-                affectedAttempts: 0,
+                inspectedAttempts: metrics.inspectedAttempts,
+                affectedAttempts: metrics.affectedAttempts,
                 title: "نمط قراراتك غير معروف".localized,
                 detail: "حل مواقف أكثر حتى يحدد المدرب هل أخطاؤك قريبة من الأفضل أم تخسر نقاطًا واضحة.".localized,
                 iconName: "questionmark.circle.fill"
             )
-        }
 
-        let mistakes = recent.filter { !$0.isCorrect }
-        guard !mistakes.isEmpty else {
+        case .clean:
             return WhatToPlayDecisionPattern(
                 kind: .clean,
-                inspectedAttempts: recent.count,
-                affectedAttempts: 0,
+                inspectedAttempts: metrics.inspectedAttempts,
+                affectedAttempts: metrics.affectedAttempts,
                 title: "قراراتك الأخيرة نظيفة".localized,
                 detail: "آخر محاولاتك تطابق أفضل قرار؛ جرّب صعوبة أعلى أو ركز على تفسير سبب التفوق.".localized,
                 iconName: "checkmark.seal.fill"
             )
-        }
 
-        if let impactPattern = impactAwareDecisionPattern(recent: recent, mistakes: mistakes) {
-            return impactPattern
-        }
-
-        let farRankChoices = mistakes.filter { ($0.selectedRank ?? 1) > 2 }
-        if farRankChoices.count >= 2 && farRankChoices.count >= mistakes.count - farRankChoices.count {
+        case .farRankChoices:
             return WhatToPlayDecisionPattern(
                 kind: .farRankChoices,
-                inspectedAttempts: recent.count,
-                affectedAttempts: farRankChoices.count,
+                inspectedAttempts: metrics.inspectedAttempts,
+                affectedAttempts: metrics.affectedAttempts,
                 title: "تبتعد عن أفضل خيارين".localized,
                 detail: "الأخطاء الأخيرة ليست حول ثاني أفضل ورقة فقط؛ أكثر من اختيار جاء خارج أول خيارين. قبل اللعب، احذف الخيارات الضعيفة أولًا ثم قارن الأفضل والثاني.".localized,
                 iconName: "list.bullet.clipboard.fill"
             )
-        }
 
-        let pointLeaks = mistakes.filter { $0.expectedImpact < 0 }
-        let usefulAlternatives = mistakes.count - pointLeaks.count
-        if pointLeaks.count >= usefulAlternatives {
+        case .pointLeaks:
             return WhatToPlayDecisionPattern(
                 kind: .pointLeaks,
-                inspectedAttempts: recent.count,
-                affectedAttempts: pointLeaks.count,
+                inspectedAttempts: metrics.inspectedAttempts,
+                affectedAttempts: metrics.affectedAttempts,
                 title: "أخطاء مكلفة".localized,
                 detail: "معظم الأخطاء الأخيرة خفضت الأثر المتوقع؛ توقف قبل اللعب واسأل: هل أحمي النقاط أم أرمي ورقة رابحة؟".localized,
                 iconName: "exclamationmark.triangle.fill"
             )
-        }
 
-        return WhatToPlayDecisionPattern(
-            kind: .usefulAlternatives,
-            inspectedAttempts: recent.count,
-            affectedAttempts: usefulAlternatives,
-            title: "اختيارات قريبة من الأفضل".localized,
-            detail: "أغلب أخطائك ليست مدمرة، لكنها تفوّت أفضلية صغيرة. ركز على الفرق بين أفضل وثاني أفضل ورقة.".localized,
-            iconName: "2.circle.fill"
-        )
-    }
-
-    private static func impactAwareDecisionPattern(
-        recent: [WhatToPlayAttempt],
-        mistakes: [WhatToPlayAttempt]
-    ) -> WhatToPlayDecisionPattern? {
-        let trackedMistakes = mistakes.compactMap { attempt -> WhatToPlayOptionImpactBreakdown? in
-            guard attempt.expectedImpact < 0 else { return nil }
-            return attempt.impactBreakdown
-        }
-        guard trackedMistakes.count >= 2 else { return nil }
-
-        let opponentClosures = trackedMistakes.filter {
-            $0.completesTrick && $0.winsForPlayerTeam == false && $0.trickPointsSwing < 0
-        }.count
-        let unprotectedDumps = trackedMistakes.filter {
-            !$0.completesTrick && !$0.preservesLead && $0.playedCardPoints > 0 && $0.immediateImpact < 0
-        }.count
-        let costlyLeads = trackedMistakes.filter {
-            $0.preservesLead && $0.immediateImpact < 0
-        }.count
-
-        let candidates: [(kind: WhatToPlayDecisionPatternKind, count: Int)] = [
-            (.opponentTrickClosure, opponentClosures),
-            (.unprotectedPointDump, unprotectedDumps),
-            (.costlyOpeningLead, costlyLeads)
-        ]
-        let best = candidates.max { lhs, rhs in
-            if lhs.count == rhs.count {
-                return decisionPatternPriority(lhs.kind) < decisionPatternPriority(rhs.kind)
-            }
-            return lhs.count < rhs.count
-        }
-
-        guard let best, best.count >= 2 else { return nil }
-
-        switch best.kind {
         case .opponentTrickClosure:
             return WhatToPlayDecisionPattern(
                 kind: .opponentTrickClosure,
-                inspectedAttempts: recent.count,
-                affectedAttempts: best.count,
+                inspectedAttempts: metrics.inspectedAttempts,
+                affectedAttempts: metrics.affectedAttempts,
                 title: "تغلق الأكلة للخصم".localized,
                 detail: "أكثر من خطأ حديث أعطى الأكلة المكتملة للفريق الخصم. قبل الرمي، احسب من يربح الأكلة بعد ورقتك وهل تستحق النقاط التي ستضيفها.".localized,
                 iconName: "flag.slash.fill"
@@ -3957,8 +3905,8 @@ enum WhatToPlayStatsAnalyzer {
         case .unprotectedPointDump:
             return WhatToPlayDecisionPattern(
                 kind: .unprotectedPointDump,
-                inspectedAttempts: recent.count,
-                affectedAttempts: best.count,
+                inspectedAttempts: metrics.inspectedAttempts,
+                affectedAttempts: metrics.affectedAttempts,
                 title: "ترمي نقاطًا بلا حماية".localized,
                 detail: "تكرر رمي أوراق عليها نقاط قبل أن تُحسم الأكلة. لا تضف العشرة أو الآس إلا إذا كنت تكسب الأكلة أو شريكك غالبًا سيحميها.".localized,
                 iconName: "drop.triangle.fill"
@@ -3966,28 +3914,32 @@ enum WhatToPlayStatsAnalyzer {
         case .costlyOpeningLead:
             return WhatToPlayDecisionPattern(
                 kind: .costlyOpeningLead,
-                inspectedAttempts: recent.count,
-                affectedAttempts: best.count,
+                inspectedAttempts: metrics.inspectedAttempts,
+                affectedAttempts: metrics.affectedAttempts,
                 title: "افتتاحاتك مكلفة".localized,
                 detail: "بعض أخطائك جاءت من بداية الأكلة بورقة تخفض الأثر المتوقع. عند الافتتاح، اختر ورقة تكشف أقل قدر من قوتك أو تسحب الحكم لغرض واضح.".localized,
                 iconName: "arrow.up.forward.circle.fill"
             )
-        case .noData, .clean, .usefulAlternatives, .farRankChoices, .pointLeaks:
-            return nil
+
+        case .usefulAlternatives:
+            return WhatToPlayDecisionPattern(
+                kind: .usefulAlternatives,
+                inspectedAttempts: metrics.inspectedAttempts,
+                affectedAttempts: metrics.affectedAttempts,
+                title: "اختيارات قريبة من الأفضل".localized,
+                detail: "أغلب أخطائك ليست مدمرة، لكنها تفوّت أفضلية صغيرة. ركز على الفرق بين أفضل وثاني أفضل ورقة.".localized,
+                iconName: "2.circle.fill"
+            )
         }
     }
 
-    private static func decisionPatternPriority(_ kind: WhatToPlayDecisionPatternKind) -> Int {
-        switch kind {
-        case .opponentTrickClosure:
-            return 3
-        case .unprotectedPointDump:
-            return 2
-        case .costlyOpeningLead:
-            return 1
-        case .noData, .clean, .usefulAlternatives, .farRankChoices, .pointLeaks:
-            return 0
-        }
+    private static func decisionPatternSample(_ attempt: WhatToPlayAttempt) -> WhatToPlayDecisionPatternSample {
+        WhatToPlayDecisionPatternSample(
+            isCorrect: attempt.isCorrect,
+            selectedRank: attempt.selectedRank,
+            expectedImpact: attempt.expectedImpact,
+            impactBreakdown: attempt.impactBreakdown
+        )
     }
 
     static func coachingTip(for attempts: [WhatToPlayAttempt]) -> WhatToPlayCoachingTip {

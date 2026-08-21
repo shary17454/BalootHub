@@ -417,6 +417,157 @@ public struct WhatToPlayPlayStyleMetrics: Sendable, Equatable {
     }
 }
 
+/// تصنيف نمط أخطاء اللاعب في مدرب «وش تلعب؟» دون نصوص واجهة.
+public enum WhatToPlayDecisionPatternCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case noData
+    case clean
+    case usefulAlternatives
+    case farRankChoices
+    case pointLeaks
+    case opponentTrickClosure
+    case unprotectedPointDump
+    case costlyOpeningLead
+}
+
+/// عينة قرار مختصرة تكفي لتصنيف نمط قرارات «وش تلعب؟».
+public struct WhatToPlayDecisionPatternSample: Sendable, Equatable {
+    public let isCorrect: Bool
+    public let selectedRank: Int?
+    public let expectedImpact: Int
+    public let impactBreakdown: WhatToPlayOptionImpactBreakdown?
+
+    public init(
+        isCorrect: Bool,
+        selectedRank: Int?,
+        expectedImpact: Int,
+        impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil
+    ) {
+        self.isCorrect = isCorrect
+        self.selectedRank = selectedRank
+        self.expectedImpact = expectedImpact
+        self.impactBreakdown = impactBreakdown
+    }
+}
+
+/// قياس نمط قرارات اللاعب من آخر عينات مدرب «وش تلعب؟».
+public struct WhatToPlayDecisionPatternMetrics: Sendable, Equatable {
+    public let category: WhatToPlayDecisionPatternCategory
+    public let inspectedAttempts: Int
+    public let affectedAttempts: Int
+
+    public init(
+        category: WhatToPlayDecisionPatternCategory,
+        inspectedAttempts: Int,
+        affectedAttempts: Int
+    ) {
+        self.category = category
+        self.inspectedAttempts = inspectedAttempts
+        self.affectedAttempts = affectedAttempts
+    }
+
+    public static func classify(samples: [WhatToPlayDecisionPatternSample]) -> WhatToPlayDecisionPatternMetrics {
+        guard !samples.isEmpty else {
+            return WhatToPlayDecisionPatternMetrics(
+                category: .noData,
+                inspectedAttempts: 0,
+                affectedAttempts: 0
+            )
+        }
+
+        let mistakes = samples.filter { !$0.isCorrect }
+        guard !mistakes.isEmpty else {
+            return WhatToPlayDecisionPatternMetrics(
+                category: .clean,
+                inspectedAttempts: samples.count,
+                affectedAttempts: 0
+            )
+        }
+
+        if let impactPattern = impactAwareDecisionPattern(samples: samples, mistakes: mistakes) {
+            return impactPattern
+        }
+
+        let farRankChoices = mistakes.filter { ($0.selectedRank ?? 1) > 2 }
+        if farRankChoices.count >= 2 && farRankChoices.count >= mistakes.count - farRankChoices.count {
+            return WhatToPlayDecisionPatternMetrics(
+                category: .farRankChoices,
+                inspectedAttempts: samples.count,
+                affectedAttempts: farRankChoices.count
+            )
+        }
+
+        let pointLeaks = mistakes.filter { $0.expectedImpact < 0 }
+        let usefulAlternatives = mistakes.count - pointLeaks.count
+        if pointLeaks.count >= usefulAlternatives {
+            return WhatToPlayDecisionPatternMetrics(
+                category: .pointLeaks,
+                inspectedAttempts: samples.count,
+                affectedAttempts: pointLeaks.count
+            )
+        }
+
+        return WhatToPlayDecisionPatternMetrics(
+            category: .usefulAlternatives,
+            inspectedAttempts: samples.count,
+            affectedAttempts: usefulAlternatives
+        )
+    }
+
+    private static func impactAwareDecisionPattern(
+        samples: [WhatToPlayDecisionPatternSample],
+        mistakes: [WhatToPlayDecisionPatternSample]
+    ) -> WhatToPlayDecisionPatternMetrics? {
+        let trackedMistakes = mistakes.compactMap { sample -> WhatToPlayOptionImpactBreakdown? in
+            guard sample.expectedImpact < 0 else { return nil }
+            return sample.impactBreakdown
+        }
+        guard trackedMistakes.count >= 2 else { return nil }
+
+        let opponentClosures = trackedMistakes.filter {
+            $0.completesTrick && $0.winsForPlayerTeam == false && $0.trickPointsSwing < 0
+        }.count
+        let unprotectedDumps = trackedMistakes.filter {
+            !$0.completesTrick && !$0.preservesLead && $0.playedCardPoints > 0 && $0.immediateImpact < 0
+        }.count
+        let costlyLeads = trackedMistakes.filter {
+            $0.preservesLead && $0.immediateImpact < 0
+        }.count
+
+        let candidates: [(category: WhatToPlayDecisionPatternCategory, count: Int)] = [
+            (.opponentTrickClosure, opponentClosures),
+            (.unprotectedPointDump, unprotectedDumps),
+            (.costlyOpeningLead, costlyLeads)
+        ]
+        let best = candidates.max { lhs, rhs in
+            if lhs.count == rhs.count {
+                return priority(lhs.category) < priority(rhs.category)
+            }
+            return lhs.count < rhs.count
+        }
+
+        guard let best, best.count >= 2 else { return nil }
+
+        return WhatToPlayDecisionPatternMetrics(
+            category: best.category,
+            inspectedAttempts: samples.count,
+            affectedAttempts: best.count
+        )
+    }
+
+    private static func priority(_ category: WhatToPlayDecisionPatternCategory) -> Int {
+        switch category {
+        case .opponentTrickClosure:
+            return 3
+        case .unprotectedPointDump:
+            return 2
+        case .costlyOpeningLead:
+            return 1
+        case .noData, .clean, .usefulAlternatives, .farRankChoices, .pointLeaks:
+            return 0
+        }
+    }
+}
+
 /// درجة وضوح أفضل ورقة في موقف «وش تلعب؟» مقارنة بثاني أفضل خيار.
 public enum WhatToPlayBestMoveConfidence: String, Sendable, Codable, Equatable, CaseIterable {
     case tied

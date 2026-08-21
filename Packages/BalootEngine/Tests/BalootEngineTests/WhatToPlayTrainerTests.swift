@@ -193,6 +193,70 @@ struct WhatToPlayTrainerTests {
         #expect(inconsistent.category == .inconsistent)
     }
 
+    @Test("تصنيف نمط قرارات وش تلعب يأتي من المحرك")
+    func decisionPatternMetricsClassifyRecentSamples() {
+        #expect(WhatToPlayDecisionPatternMetrics.classify(samples: []).category == .noData)
+
+        let clean = WhatToPlayDecisionPatternMetrics.classify(samples: [
+            decisionPatternSample(correct: true, impact: 3),
+            decisionPatternSample(correct: true, impact: 1)
+        ])
+        #expect(clean.category == .clean)
+        #expect(clean.inspectedAttempts == 2)
+        #expect(clean.affectedAttempts == 0)
+
+        let usefulAlternatives = WhatToPlayDecisionPatternMetrics.classify(samples: [
+            decisionPatternSample(correct: false, impact: 2),
+            decisionPatternSample(correct: false, impact: 0),
+            decisionPatternSample(correct: false, impact: -1)
+        ])
+        #expect(usefulAlternatives.category == .usefulAlternatives)
+        #expect(usefulAlternatives.affectedAttempts == 2)
+
+        let pointLeaks = WhatToPlayDecisionPatternMetrics.classify(samples: [
+            decisionPatternSample(correct: false, impact: -5),
+            decisionPatternSample(correct: false, impact: -2),
+            decisionPatternSample(correct: false, impact: 1)
+        ])
+        #expect(pointLeaks.category == .pointLeaks)
+        #expect(pointLeaks.affectedAttempts == 2)
+
+        let farRank = WhatToPlayDecisionPatternMetrics.classify(samples: [
+            decisionPatternSample(correct: false, impact: 1, rank: 4),
+            decisionPatternSample(correct: false, impact: 0, rank: 3),
+            decisionPatternSample(correct: false, impact: 2, rank: 2)
+        ])
+        #expect(farRank.category == .farRankChoices)
+        #expect(farRank.affectedAttempts == 2)
+    }
+
+    @Test("تصنيف نمط قرارات وش تلعب يلتقط الأخطاء التكتيكية من تفكيك الأثر")
+    func decisionPatternMetricsClassifyImpactBreakdowns() {
+        let opponentClosure = WhatToPlayDecisionPatternMetrics.classify(samples: [
+            decisionPatternSample(correct: false, impact: -8, breakdown: .opponentTrickClosure(points: 18)),
+            decisionPatternSample(correct: false, impact: -3, breakdown: .unprotectedPointDump(points: 10)),
+            decisionPatternSample(correct: false, impact: -6, breakdown: .opponentTrickClosure(points: 14))
+        ])
+        #expect(opponentClosure.category == .opponentTrickClosure)
+        #expect(opponentClosure.affectedAttempts == 2)
+
+        let unprotectedDump = WhatToPlayDecisionPatternMetrics.classify(samples: [
+            decisionPatternSample(correct: false, impact: -4, breakdown: .unprotectedPointDump(points: 10)),
+            decisionPatternSample(correct: false, impact: -5, breakdown: .unprotectedPointDump(points: 11)),
+            decisionPatternSample(correct: false, impact: -2, breakdown: .costlyOpeningLead(points: 0))
+        ])
+        #expect(unprotectedDump.category == .unprotectedPointDump)
+        #expect(unprotectedDump.affectedAttempts == 2)
+
+        let openingLead = WhatToPlayDecisionPatternMetrics.classify(samples: [
+            decisionPatternSample(correct: false, impact: -4, breakdown: .costlyOpeningLead(points: 4)),
+            decisionPatternSample(correct: false, impact: -3, breakdown: .costlyOpeningLead(points: 0)),
+            decisionPatternSample(correct: false, impact: -2, breakdown: .unprotectedPointDump(points: 10))
+        ])
+        #expect(openingLead.category == .costlyOpeningLead)
+        #expect(openingLead.affectedAttempts == 2)
+    }
+
     @Test("مراجعة اختيار وش تلعب تحسب الفوارق وجودة القرار من المحرك")
     func choiceReviewCalculatesLossesAndQuality() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2, difficulty: .hard)
@@ -1104,4 +1168,53 @@ private func projectedOption(
         outcomeReason: "",
         explanation: ""
     )
+}
+
+private func decisionPatternSample(
+    correct: Bool,
+    impact: Int,
+    rank: Int? = nil,
+    breakdown: WhatToPlayOptionImpactBreakdown? = nil
+) -> WhatToPlayDecisionPatternSample {
+    WhatToPlayDecisionPatternSample(
+        isCorrect: correct,
+        selectedRank: rank,
+        expectedImpact: impact,
+        impactBreakdown: breakdown
+    )
+}
+
+private extension WhatToPlayOptionImpactBreakdown {
+    static func opponentTrickClosure(points: Int) -> WhatToPlayOptionImpactBreakdown {
+        WhatToPlayOptionImpactBreakdown(
+            playedCardPoints: points,
+            immediateImpact: -points,
+            trickPointsSwing: -points,
+            completesTrick: true,
+            winsForPlayerTeam: false,
+            preservesLead: false
+        )
+    }
+
+    static func unprotectedPointDump(points: Int) -> WhatToPlayOptionImpactBreakdown {
+        WhatToPlayOptionImpactBreakdown(
+            playedCardPoints: points,
+            immediateImpact: -points,
+            trickPointsSwing: 0,
+            completesTrick: false,
+            winsForPlayerTeam: nil,
+            preservesLead: false
+        )
+    }
+
+    static func costlyOpeningLead(points: Int) -> WhatToPlayOptionImpactBreakdown {
+        WhatToPlayOptionImpactBreakdown(
+            playedCardPoints: points,
+            immediateImpact: -max(1, points),
+            trickPointsSwing: 0,
+            completesTrick: false,
+            winsForPlayerTeam: nil,
+            preservesLead: true
+        )
+    }
 }
