@@ -20,6 +20,8 @@ struct PlayerStatsSummary: Equatable {
     let trainingAccuracyPercent: Int
     let costlyTrainingDecisions: Int
     let averageTrainingLostPoints: Int
+    let projectedSecondBestComparisonAttempts: Int
+    let averageProjectedSecondBestGap: Int
     let trainingValueCapturePercent: Int
     let trainingStyleTitle: String
     let trainingStyleDetail: String
@@ -138,6 +140,8 @@ enum PlayerStatsAnalyzer {
             trainingAccuracyPercent: trainingSummary.accuracyPercent,
             costlyTrainingDecisions: qualitySummary.costlyDecisions,
             averageTrainingLostPoints: trainingSummary.averageLostExpectedPoints,
+            projectedSecondBestComparisonAttempts: trainingSummary.projectedSecondBestComparisonAttempts,
+            averageProjectedSecondBestGap: trainingSummary.averageProjectedSecondBestGap,
             trainingValueCapturePercent: trainingSummary.valueCapturePercent,
             trainingStyleTitle: trainingStyle.title,
             trainingStyleDetail: trainingStyle.detail,

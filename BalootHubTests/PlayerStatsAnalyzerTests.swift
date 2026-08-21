@@ -65,6 +65,24 @@ final class PlayerStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.decisionPatternInspectedAttempts, 8)
     }
 
+    func testIncludesSecondSimulationLossInPlayerStats() {
+        let attempts = [
+            makeTrainingAttempt(seed: 1, isCorrect: false, projectedTeamPoints: 84, secondBestProjectedTeamPoints: 96),
+            makeTrainingAttempt(seed: 2, isCorrect: false, projectedTeamPoints: 90, secondBestProjectedTeamPoints: 99),
+            makeTrainingAttempt(seed: 3, isCorrect: true, projectedTeamPoints: 120, secondBestProjectedTeamPoints: 114),
+            makeTrainingAttempt(seed: 4, isCorrect: true, projectedTeamPoints: nil, secondBestProjectedTeamPoints: nil)
+        ]
+
+        let summary = PlayerStatsAnalyzer.summarize(
+            sessions: [],
+            whatToPlayAttempts: attempts,
+            rules: .standard
+        )
+
+        XCTAssertEqual(summary.projectedSecondBestComparisonAttempts, 3)
+        XCTAssertEqual(summary.averageProjectedSecondBestGap, 7)
+    }
+
     func testTrainingPerformanceCanShapePlayerStyleWithoutFinishedMatches() {
         let attempts = (0..<8).map { index in
             makeTrainingAttempt(seed: UInt64(index), isCorrect: true)
@@ -120,7 +138,12 @@ final class PlayerStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.scoringWeakestCategoryTitle, ScoringQuizQuestionCategory.multipliers.title)
     }
 
-    private func makeTrainingAttempt(seed: UInt64, isCorrect: Bool) -> WhatToPlayAttempt {
+    private func makeTrainingAttempt(
+        seed: UInt64,
+        isCorrect: Bool,
+        projectedTeamPoints: Int? = nil,
+        secondBestProjectedTeamPoints: Int? = nil
+    ) -> WhatToPlayAttempt {
         let selected = isCorrect
             ? PlayingCard(suit: .spades, rank: .ace)
             : PlayingCard(suit: .clubs, rank: .seven)
@@ -133,7 +156,10 @@ final class PlayerStatsAnalyzerTests: XCTestCase {
             isCorrect: isCorrect,
             selectedRank: isCorrect ? 1 : 4,
             expectedImpact: isCorrect ? 10 : 0,
-            bestExpectedImpact: isCorrect ? 10 : 12
+            bestExpectedImpact: isCorrect ? 10 : 12,
+            projectedTeamPoints: projectedTeamPoints,
+            bestProjectedTeamPoints: projectedTeamPoints.map { max($0, secondBestProjectedTeamPoints ?? $0) },
+            secondBestProjectedTeamPoints: secondBestProjectedTeamPoints
         )
     }
 

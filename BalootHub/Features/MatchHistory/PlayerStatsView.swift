@@ -145,6 +145,8 @@ struct PlayerStatsView: View {
             metric("مطابقة الخبير".localized, "\(summary.trainingCorrectDecisions)", "checkmark.seal.fill")
             metric("قرارات مكلفة".localized, "\(summary.costlyTrainingDecisions)", "exclamationmark.triangle.fill")
             metric("متوسط الفاقد".localized, "\(summary.averageTrainingLostPoints)", "minus.circle.fill")
+            metric("متوسط فاقد ثاني محاكاة".localized, "\(summary.averageProjectedSecondBestGap)", "chart.line.downtrend.xyaxis")
+            metric("محاولات ثاني محاكاة".localized, "\(summary.projectedSecondBestComparisonAttempts)", "scope")
             metric("التقاط القيمة".localized, "\(summary.trainingValueCapturePercent)%", "gauge.with.dots.needle.67percent")
         }
         .padding(AppSpacing.md)
