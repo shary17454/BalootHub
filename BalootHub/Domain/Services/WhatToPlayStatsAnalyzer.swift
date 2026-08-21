@@ -2220,6 +2220,9 @@ enum WhatToPlayStatsAnalyzer {
             parts.append("\("نقاط فريقك بعد المحاكاة".localized): \(projectedTeamPoints)")
             parts.append("\("أفضل نتيجة محاكاة".localized): \(projectedTeamPoints + item.lostProjectedTeamPoints)")
         }
+        if let bestSimulationCard = item.bestSimulationCard {
+            parts.append("\("أفضل محاكاة".localized): \(bestSimulationCard.accessibilityName)")
+        }
         if item.lostExpectedPoints > 0 {
             parts.append("\("الفاقد".localized): \(item.lostExpectedPoints)")
         }

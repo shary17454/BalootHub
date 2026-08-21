@@ -7,6 +7,7 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
         let selected = PlayingCard(suit: .clubs, rank: .seven)
         let best = PlayingCard(suit: .hearts, rank: .ace)
         let second = PlayingCard(suit: .spades, rank: .king)
+        let bestSimulation = PlayingCard(suit: .diamonds, rank: .ace)
         let plan = WhatToPlayTrainingSessionPlan(
             difficulty: .medium,
             focusKind: .followSuit,
@@ -44,6 +45,7 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
         XCTAssertTrue(review.detail.contains("\("أثر ثاني أفضل".localized): +5"))
         XCTAssertTrue(review.detail.contains("\("نقاط فريقك بعد المحاكاة".localized): 50"))
         XCTAssertTrue(review.detail.contains("\("أفضل نتيجة محاكاة".localized): 62"))
+        XCTAssertTrue(review.detail.contains("\("أفضل محاكاة".localized): \(bestSimulation.accessibilityName)"))
         XCTAssertTrue(review.detail.contains("\("نقاط محاكاة ضائعة".localized): 12"))
     }
 
@@ -60,6 +62,7 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
             selectedCard: selected,
             bestCard: best,
             secondBestCard: second,
+            bestSimulationCard: second == nil ? nil : PlayingCard(suit: .diamonds, rank: .ace),
             isCorrect: false,
             selectedRank: second == nil ? 3 : 4,
             expectedImpact: -4,
