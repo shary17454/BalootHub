@@ -2223,6 +2223,15 @@ enum WhatToPlayStatsAnalyzer {
         if let bestSimulationCard = item.bestSimulationCard {
             parts.append("\("أفضل محاكاة".localized): \(bestSimulationCard.accessibilityName)")
         }
+        if let simulationSummary = item.simulationSummary {
+            parts.append(simulationSummary)
+        }
+        if let simulationTeamResult = item.simulationTeamResult {
+            parts.append("\("نتيجة المحاكاة".localized): \(simulationTeamResult)")
+        }
+        if let simulationTrickPoints = item.simulationTrickPoints {
+            parts.append("\("نقاط الأكلة".localized): \(simulationTrickPoints)")
+        }
         if item.valueLossSeverity != .none {
             parts.append(item.valueLossTitle)
         }

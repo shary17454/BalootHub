@@ -46,6 +46,9 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
         XCTAssertTrue(review.detail.contains("\("نقاط فريقك بعد المحاكاة".localized): 50"))
         XCTAssertTrue(review.detail.contains("\("أفضل نتيجة محاكاة".localized): 62"))
         XCTAssertTrue(review.detail.contains("\("أفضل محاكاة".localized): \(bestSimulation.accessibilityName)"))
+        XCTAssertTrue(review.detail.contains("تكتمل الأكلة وتنتقل للفائز.".localized))
+        XCTAssertTrue(review.detail.contains("\("نتيجة المحاكاة".localized): \("للخصم".localized)"))
+        XCTAssertTrue(review.detail.contains("\("نقاط الأكلة".localized): 18"))
         XCTAssertTrue(review.detail.contains(WhatToPlayStatsAnalyzer.valueLossTitle(for: .high)))
         XCTAssertTrue(review.detail.contains("\("نقاط محاكاة ضائعة".localized): 12"))
     }
@@ -73,7 +76,23 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
             bestProjectedTeamPoints: second == nil ? 55 : 62,
             focusKind: .followSuit,
             gameMode: .hokum,
+            simulation: second == nil ? nil : completedOpponentSimulation,
             scenarioContext: scenarioContext
+        )
+    }
+
+    private var completedOpponentSimulation: WhatToPlayOptionSimulation {
+        let winnerID = UUID(uuidString: "11111111-1111-1111-1111-111111111111") ?? UUID()
+        return WhatToPlayOptionSimulation(
+            phaseAfterPlay: .playing,
+            currentTrickCardCount: 0,
+            completedTrickWinnerID: winnerID,
+            completedTrickWinnerTeamID: UUID(uuidString: "22222222-2222-2222-2222-222222222222") ?? UUID(),
+            completedTrickWonByPlayerTeam: false,
+            completedTrickPoints: 18,
+            nextTurnPlayerID: winnerID,
+            playerRemainingCards: 4,
+            actionHistoryCount: 12
         )
     }
 
