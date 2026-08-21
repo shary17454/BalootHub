@@ -2191,6 +2191,7 @@ enum WhatToPlayStatsAnalyzer {
         if let playerPoints = item.contextPlayerTeamTrickPoints,
            let opponentPoints = item.contextOpponentTeamTrickPoints {
             parts.append("\("نقاط فريقك".localized): \(playerPoints) · \("للخصم".localized): \(opponentPoints)")
+            parts.append("\("الفارق".localized): \(impactTextValue(playerPoints - opponentPoints))")
         }
         if let legalOptionCount = item.contextLegalOptionCount {
             parts.append("\("الأوراق القانونية".localized): \(legalOptionCount)")
