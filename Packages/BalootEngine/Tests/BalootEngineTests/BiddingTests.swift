@@ -31,6 +31,17 @@ struct BiddingCycleTests {
         #expect(Bid.hokum(suit: .spades).arabicName == "حكم سباتي")
     }
 
+    @Test("ملخص سجل المزايدة ثابت للـReplay")
+    func bidRecordSummaryIsStable() {
+        let record = BidRecord(
+            playerID: Player(name: "سالم", kind: .human, seat: .south, teamID: Team(name: "أ").id).id,
+            bid: .hokum(suit: .hearts),
+            round: 2
+        )
+
+        #expect(record.summary(playerName: "سالم") == "الجولة 2: سالم - حكم هارت")
+    }
+
     @Test("التوزيع الافتتاحي يعطي خمس أوراق لكل لاعب وورقة مكشوفة وأحد عشر مؤجلة")
     func openingDealMatchesFullBiddingStyle() throws {
         var state = GameState.newLocalMatch(rules: .standard)

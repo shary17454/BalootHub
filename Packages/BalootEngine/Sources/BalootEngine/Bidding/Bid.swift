@@ -66,4 +66,9 @@ public struct BidRecord: Codable, Sendable, Equatable, Hashable {
         self.bid = bid
         self.round = round
     }
+
+    /// ملخص مقروء لسطر مزايدة واحد في Replay والتحليل.
+    public func summary(playerName: String) -> String {
+        "الجولة \(round): \(playerName) - \(bid.arabicName)"
+    }
 }
