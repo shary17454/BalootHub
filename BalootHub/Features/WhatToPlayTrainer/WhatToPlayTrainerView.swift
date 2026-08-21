@@ -4023,9 +4023,8 @@ struct WhatToPlayShareCardPreview: View {
 
 enum WhatToPlayShareCardImageRenderer {
     static func fileName(for scenario: WhatToPlayScenario, selectedOption: WhatToPlayOption?) -> String {
-        let selectedCard = selectedOption.map { "\($0.card.suit.ordinal)-\($0.card.rank.ordinal)" } ?? "prompt"
-        let focus = scenario.context.focusKind.rawValue
-        return "baloothub-what-to-play-\(scenario.seed)-\(scenario.difficulty.rawValue)-\(focus)-\(selectedCard).png"
+        let scenarioCode = WhatToPlayScenarioCode.make(for: scenario, selectedOption: selectedOption)
+        return "baloothub-what-to-play-\(scenarioCode).png"
     }
 
     @MainActor

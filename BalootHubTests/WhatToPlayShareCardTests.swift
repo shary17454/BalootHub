@@ -324,18 +324,25 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("شدة خسارة القيمة".localized): \("خسارة قيمة عالية".localized)"))
     }
 
-    func testShareCardImageFileNameIncludesFocusAndSelectedCard() throws {
-        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
+    func testShareCardImageFileNameUsesFullScenarioCode() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(
+            seed: 2026,
+            difficulty: .easy,
+            preferredFocus: .trumpPressure,
+            preferredMode: .hokum,
+            preferredTrumpSuit: .spades
+        )
         let selected = try XCTUnwrap(scenario.options.last)
 
         let promptFileName = WhatToPlayShareCardImageRenderer.fileName(for: scenario, selectedOption: nil)
         let reviewedFileName = WhatToPlayShareCardImageRenderer.fileName(for: scenario, selectedOption: selected)
+        let promptCode = WhatToPlayShareCard.content(for: scenario).scenarioCode
+        let reviewedCode = WhatToPlayShareCard.content(for: scenario, selectedOption: selected).scenarioCode
 
-        XCTAssertTrue(promptFileName.contains("\(scenario.seed)"))
-        XCTAssertTrue(promptFileName.contains(scenario.difficulty.rawValue))
-        XCTAssertTrue(promptFileName.contains(scenario.context.focusKind.rawValue))
-        XCTAssertTrue(promptFileName.hasSuffix("-prompt.png"))
-        XCTAssertTrue(reviewedFileName.contains("\(selected.card.suit.ordinal)-\(selected.card.rank.ordinal)"))
+        XCTAssertEqual(promptFileName, "baloothub-what-to-play-\(promptCode).png")
+        XCTAssertEqual(reviewedFileName, "baloothub-what-to-play-\(reviewedCode).png")
+        XCTAssertTrue(promptFileName.contains("-hokum.\(Suit.spades.ordinal)-P"))
+        XCTAssertTrue(reviewedFileName.contains("-hokum.\(Suit.spades.ordinal)-C\(selected.card.suit.ordinal)\(selected.card.rank.ordinal)"))
         XCTAssertNotEqual(promptFileName, reviewedFileName)
     }
 
