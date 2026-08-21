@@ -94,8 +94,12 @@ enum WhatToPlayShareCard {
             review?.secondBestOption.map { max(0, $0.expectedImpact - selected.expectedImpact) }
         }
         let valueLossTitle = lost.map { lostExpectedPoints in
-            let decisiveLoss = max(lostExpectedPoints, projectedLost ?? 0)
-            return WhatToPlayStatsAnalyzer.valueLossTitle(for: WhatToPlayStatsAnalyzer.valueLossSeverity(for: decisiveLoss))
+            let severity = WhatToPlayStatsAnalyzer.valueLossSeverity(
+                lostExpectedPoints: lostExpectedPoints,
+                lostProjectedTeamPoints: projectedLost ?? 0,
+                lostProjectedAgainstSecondBestPoints: lostProjectedAgainstSecondBest ?? 0
+            )
+            return WhatToPlayStatsAnalyzer.valueLossTitle(for: severity)
         }
         let decisionQualityTitle = review?.decisionQuality?.title
         let comparisonSummary = selectedOption.map {

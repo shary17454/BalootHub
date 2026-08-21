@@ -205,10 +205,9 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("نقاط متوقعة ضائعة".localized): \(max(0, best.expectedImpact - selected.expectedImpact))"))
         XCTAssertTrue(text.contains("\("نقاط محاكاة ضائعة".localized): \(max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints))"))
         let severity = WhatToPlayStatsAnalyzer.valueLossSeverity(
-            for: max(
-                max(0, best.expectedImpact - selected.expectedImpact),
-                max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints)
-            )
+            lostExpectedPoints: max(0, best.expectedImpact - selected.expectedImpact),
+            lostProjectedTeamPoints: max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints),
+            lostProjectedAgainstSecondBestPoints: max(0, secondBestSimulation.projectedTeamPoints - selected.projectedTeamPoints)
         )
         XCTAssertTrue(text.contains("\("شدة خسارة القيمة".localized): \(WhatToPlayStatsAnalyzer.valueLossTitle(for: severity))"))
         let confidence = try XCTUnwrap(
