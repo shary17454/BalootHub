@@ -4487,6 +4487,12 @@ enum WhatToPlayStatsAnalyzer {
                 detail: "اختياراتك الأخيرة تخسر نقاطًا متوقعة؛ جرّب حفظ الورق العالي عندما لا تستطيع الفوز بالأكلة.".localized,
                 iconName: "shield.lefthalf.filled"
             )
+        case .secondSimulationReview:
+            return WhatToPlayCoachingTip(
+                title: "راجع المحاكاة".localized,
+                detail: "\("متوسط فاقد ثاني محاكاة".localized): \(metrics.averageProjectedSecondBestGap). \("راجع ثاني أفضل محاكاة قبل اعتماد قرار يبدو صحيحًا.".localized)",
+                iconName: "chart.bar.xaxis"
+            )
         case .narrowChoices:
             return WhatToPlayCoachingTip(
                 title: "صفِّ الخيارات أولًا".localized,

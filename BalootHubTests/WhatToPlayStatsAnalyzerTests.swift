@@ -4316,6 +4316,20 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(tip.iconName, "line.3.horizontal.decrease.circle.fill")
     }
 
+    func testCoachingTipForSecondSimulationLossReviewsSimulation() {
+        let attempts = [
+            attempt(daysAgo: 3, correct: true, impact: 3, selectedRank: 1, projectedTeamPoints: 42, secondBestProjectedTeamPoints: 50),
+            attempt(daysAgo: 2, correct: true, impact: 2, selectedRank: 1, projectedTeamPoints: 44, secondBestProjectedTeamPoints: 52),
+            attempt(daysAgo: 1, correct: true, impact: 4, selectedRank: 1, projectedTeamPoints: 46, secondBestProjectedTeamPoints: 54)
+        ]
+
+        let tip = WhatToPlayStatsAnalyzer.coachingTip(for: attempts)
+
+        XCTAssertEqual(tip.title, "راجع المحاكاة".localized)
+        XCTAssertEqual(tip.iconName, "chart.bar.xaxis")
+        XCTAssertTrue(tip.detail.contains("\("متوسط فاقد ثاني محاكاة".localized): 8"))
+    }
+
     func testCoachingTipForCurrentStreakEncouragesHarderPractice() {
         let attempts = [
             attempt(daysAgo: 3, correct: true, impact: 4),

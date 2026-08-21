@@ -1403,6 +1403,21 @@ struct WhatToPlayTrainerTests {
         )
         #expect(pointLeak.category == .reducePointLeak)
 
+        let secondSimulation = WhatToPlayCoachingTipMetrics.classify(
+            summary: coachingSummary(
+                attempts: 5,
+                accuracyPercent: 80,
+                averageExpectedImpact: 2,
+                currentStreak: 3,
+                projectedSecondBestComparisonAttempts: 3,
+                lostProjectedAgainstSecondBestPoints: 24,
+                averageProjectedSecondBestGap: 8
+            ),
+            choiceRankSummary: WhatToPlayChoiceRankSummaryMetrics(trackedAttempts: 5, expertPicks: 4, secondBestPicks: 1, farPicks: 0)
+        )
+        #expect(secondSimulation.category == .secondSimulationReview)
+        #expect(secondSimulation.averageProjectedSecondBestGap == 8)
+
         let narrowChoices = WhatToPlayCoachingTipMetrics.classify(
             summary: coachingSummary(attempts: 5, accuracyPercent: 80, averageExpectedImpact: 1, currentStreak: 4),
             choiceRankSummary: WhatToPlayChoiceRankSummaryMetrics(trackedAttempts: 5, expertPicks: 2, secondBestPicks: 1, farPicks: 2)
@@ -3054,7 +3069,10 @@ private func coachingSummary(
     attempts: Int,
     accuracyPercent: Int = 0,
     averageExpectedImpact: Int = 0,
-    currentStreak: Int = 0
+    currentStreak: Int = 0,
+    projectedSecondBestComparisonAttempts: Int = 0,
+    lostProjectedAgainstSecondBestPoints: Int = 0,
+    averageProjectedSecondBestGap: Int = 0
 ) -> WhatToPlayStatsSummaryMetrics {
     WhatToPlayStatsSummaryMetrics(
         attempts: attempts,
@@ -3074,9 +3092,9 @@ private func coachingSummary(
         averageProjectedTeamPoints: 0,
         lostProjectedTeamPoints: 0,
         averageLostProjectedTeamPoints: 0,
-        projectedSecondBestComparisonAttempts: 0,
-        lostProjectedAgainstSecondBestPoints: 0,
-        averageProjectedSecondBestGap: 0
+        projectedSecondBestComparisonAttempts: projectedSecondBestComparisonAttempts,
+        lostProjectedAgainstSecondBestPoints: lostProjectedAgainstSecondBestPoints,
+        averageProjectedSecondBestGap: averageProjectedSecondBestGap
     )
 }
 

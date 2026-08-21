@@ -2437,6 +2437,7 @@ public enum WhatToPlayCoachingTipCategory: String, Sendable, Codable, Equatable,
     case startMeasuring
     case slowDown
     case reducePointLeak
+    case secondSimulationReview
     case narrowChoices
     case strongStreak
     case compareChoices
@@ -2451,6 +2452,9 @@ public struct WhatToPlayCoachingTipMetrics: Sendable, Equatable {
     public let currentStreak: Int
     public let trackedChoiceRanks: Int
     public let farPickPercent: Int
+    public let projectedSecondBestComparisonAttempts: Int
+    public let lostProjectedAgainstSecondBestPoints: Int
+    public let averageProjectedSecondBestGap: Int
 
     public init(
         category: WhatToPlayCoachingTipCategory,
@@ -2459,7 +2463,10 @@ public struct WhatToPlayCoachingTipMetrics: Sendable, Equatable {
         averageExpectedImpact: Int,
         currentStreak: Int,
         trackedChoiceRanks: Int,
-        farPickPercent: Int
+        farPickPercent: Int,
+        projectedSecondBestComparisonAttempts: Int,
+        lostProjectedAgainstSecondBestPoints: Int,
+        averageProjectedSecondBestGap: Int
     ) {
         self.category = category
         self.attempts = attempts
@@ -2468,12 +2475,17 @@ public struct WhatToPlayCoachingTipMetrics: Sendable, Equatable {
         self.currentStreak = currentStreak
         self.trackedChoiceRanks = trackedChoiceRanks
         self.farPickPercent = farPickPercent
+        self.projectedSecondBestComparisonAttempts = projectedSecondBestComparisonAttempts
+        self.lostProjectedAgainstSecondBestPoints = lostProjectedAgainstSecondBestPoints
+        self.averageProjectedSecondBestGap = averageProjectedSecondBestGap
     }
 
     public static func classify(
         summary: WhatToPlayStatsSummaryMetrics,
         choiceRankSummary: WhatToPlayChoiceRankSummaryMetrics,
-        minimumTrackedChoiceRanks: Int = 3
+        minimumTrackedChoiceRanks: Int = 3,
+        minimumProjectedSecondBestAttempts: Int = 3,
+        minimumAverageProjectedSecondBestGap: Int = 6
     ) -> WhatToPlayCoachingTipMetrics {
         let category: WhatToPlayCoachingTipCategory
         if summary.attempts == 0 {
@@ -2482,6 +2494,9 @@ public struct WhatToPlayCoachingTipMetrics: Sendable, Equatable {
             category = .slowDown
         } else if summary.averageExpectedImpact < 0 {
             category = .reducePointLeak
+        } else if summary.projectedSecondBestComparisonAttempts >= minimumProjectedSecondBestAttempts,
+                  summary.averageProjectedSecondBestGap >= minimumAverageProjectedSecondBestGap {
+            category = .secondSimulationReview
         } else if choiceRankSummary.trackedAttempts >= minimumTrackedChoiceRanks,
                   choiceRankSummary.farPickPercent >= 40 {
             category = .narrowChoices
@@ -2498,7 +2513,10 @@ public struct WhatToPlayCoachingTipMetrics: Sendable, Equatable {
             averageExpectedImpact: summary.averageExpectedImpact,
             currentStreak: summary.currentStreak,
             trackedChoiceRanks: choiceRankSummary.trackedAttempts,
-            farPickPercent: choiceRankSummary.farPickPercent
+            farPickPercent: choiceRankSummary.farPickPercent,
+            projectedSecondBestComparisonAttempts: summary.projectedSecondBestComparisonAttempts,
+            lostProjectedAgainstSecondBestPoints: summary.lostProjectedAgainstSecondBestPoints,
+            averageProjectedSecondBestGap: summary.averageProjectedSecondBestGap
         )
     }
 }
