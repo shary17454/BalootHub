@@ -16,7 +16,8 @@ enum WhatToPlayOptionDisclosure {
         projectedTeamPoints: Int? = nil,
         isSelected: Bool = false,
         isExpertChoice: Bool = false,
-        isBestSimulationResult: Bool = false
+        isBestSimulationResult: Bool = false,
+        isSecondBestSimulationResult: Bool = false
     ) -> String {
         guard isRevealed else {
             return "\("ورقة".localized) \(cardName)"
@@ -33,6 +34,8 @@ enum WhatToPlayOptionDisclosure {
         }
         if isBestSimulationResult {
             parts.append("أفضل نتيجة محاكاة".localized)
+        } else if isSecondBestSimulationResult {
+            parts.append("ثاني نتيجة محاكاة".localized)
         }
         if let expectedImpact {
             parts.append("\("أثر القرار".localized) \(WhatToPlayImpactFormatter.accessibilityValue(expectedImpact))")

@@ -82,6 +82,17 @@ final class WhatToPlayOptionDisclosureTests: XCTestCase {
         XCTAssertTrue(label.contains("أفضل نتيجة محاكاة".localized))
     }
 
+    func testAccessibilityIdentifiesSecondBestSimulationResultAfterChoice() {
+        let label = WhatToPlayOptionDisclosure.accessibilityLabel(
+            cardName: "عشرة هاص",
+            rank: 2,
+            isRevealed: true,
+            isSecondBestSimulationResult: true
+        )
+
+        XCTAssertTrue(label.contains("ثاني نتيجة محاكاة".localized))
+    }
+
     func testAccessibilityDoesNotRevealSelectedOrExpertBeforeChoice() {
         let label = WhatToPlayOptionDisclosure.accessibilityLabel(
             cardName: "إكة سباتي",
@@ -89,11 +100,13 @@ final class WhatToPlayOptionDisclosureTests: XCTestCase {
             isRevealed: false,
             isSelected: true,
             isExpertChoice: true,
-            isBestSimulationResult: true
+            isBestSimulationResult: true,
+            isSecondBestSimulationResult: true
         )
 
         XCTAssertFalse(label.contains("اختيارك".localized))
         XCTAssertFalse(label.contains("الأفضل".localized))
         XCTAssertFalse(label.contains("أفضل نتيجة محاكاة".localized))
+        XCTAssertFalse(label.contains("ثاني نتيجة محاكاة".localized))
     }
 }

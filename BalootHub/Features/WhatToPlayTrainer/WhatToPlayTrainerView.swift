@@ -2753,6 +2753,7 @@ struct WhatToPlayTrainerView: View {
 
     private func optionAccessibilityLabel(_ option: WhatToPlayOption) -> String {
         let bestSimulationCard = scenario.flatMap { WhatToPlayTrainer.bestProjectedOption(in: $0.options)?.card }
+        let secondBestSimulationCard = scenario.flatMap { WhatToPlayTrainer.secondBestProjectedOption(in: $0.options)?.card }
         return WhatToPlayOptionDisclosure.accessibilityLabel(
             cardName: option.card.accessibilityName,
             rank: option.rank,
@@ -2761,7 +2762,8 @@ struct WhatToPlayTrainerView: View {
             projectedTeamPoints: option.projectedTeamPoints,
             isSelected: selectedOption?.card == option.card,
             isExpertChoice: option.isExpertChoice,
-            isBestSimulationResult: option.card == bestSimulationCard
+            isBestSimulationResult: option.card == bestSimulationCard,
+            isSecondBestSimulationResult: option.card == secondBestSimulationCard
         )
     }
 
