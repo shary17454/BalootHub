@@ -1,4 +1,5 @@
 import XCTest
+import BalootEngine
 @testable import BalootHub
 
 final class WhatToPlayAttemptFactoryTests: XCTestCase {
@@ -9,6 +10,7 @@ final class WhatToPlayAttemptFactoryTests: XCTestCase {
             preferredFocus: .followSuit
         )
         let selected = try XCTUnwrap(scenario.options.last)
+        let bestProjected = try XCTUnwrap(WhatToPlayTrainer.bestProjectedOption(in: scenario.options))
         let code = WhatToPlayShareCard.content(for: scenario, selectedOption: selected).scenarioCode
 
         let attempt = try await WhatToPlayAttemptFactory.makeAttempt(code: code)
@@ -19,8 +21,10 @@ final class WhatToPlayAttemptFactoryTests: XCTestCase {
         XCTAssertEqual(attempt.selectedCard, selected.card)
         XCTAssertEqual(attempt.bestCard, scenario.bestOption?.card)
         XCTAssertEqual(attempt.secondBestCard, scenario.secondBestOption?.card)
+        XCTAssertEqual(attempt.bestSimulationCard, bestProjected.card)
         XCTAssertEqual(attempt.expectedImpact, selected.expectedImpact)
         XCTAssertEqual(attempt.projectedTeamPoints, selected.projectedTeamPoints)
+        XCTAssertEqual(attempt.bestProjectedTeamPoints, bestProjected.projectedTeamPoints)
         XCTAssertEqual(attempt.scenarioCode, code)
     }
 

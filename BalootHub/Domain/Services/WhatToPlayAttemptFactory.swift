@@ -13,7 +13,7 @@ enum WhatToPlayAttemptFactory {
         evaluated option: WhatToPlayOption
     ) -> WhatToPlayAttempt? {
         guard let bestCard = scenario.bestOption?.card else { return nil }
-        let bestSimulationOption = WhatToPlayOptionComparison.bestSimulationOption(scenario.options)
+        let bestSimulationOption = WhatToPlayTrainer.bestProjectedOption(in: scenario.options)
 
         return WhatToPlayAttempt(
             difficulty: scenario.difficulty,
