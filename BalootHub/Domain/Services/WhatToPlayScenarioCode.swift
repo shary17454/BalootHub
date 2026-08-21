@@ -141,7 +141,7 @@ enum WhatToPlayScenarioCode {
 
     private static func codeCandidates(in text: String) -> [String] {
         let terminators = CharacterSet.whitespacesAndNewlines
-            .union(CharacterSet(charactersIn: "،,:;؟!?()[]{}<>\"'"))
+            .union(CharacterSet(charactersIn: "،,:;؟!?()[]{}<>\"'&=#"))
         var candidates: [String] = []
         var searchRange = text.startIndex..<text.endIndex
 

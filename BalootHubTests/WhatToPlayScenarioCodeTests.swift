@@ -87,6 +87,15 @@ final class WhatToPlayScenarioCodeTests: XCTestCase {
         )
     }
 
+    func testScenarioCodeExtractionStopsBeforeURLQueryParameters() {
+        let text = "https://baloothub.local/what-to-play?code=WTP-2026-hard-trumpPressure-hokum.3-C37&source=share"
+
+        XCTAssertEqual(
+            WhatToPlayScenarioCode.extractCode(from: text),
+            "WTP-2026-hard-trumpPressure-hokum.3-C37"
+        )
+    }
+
     func testScenarioCodeExtractionRejectsTextWithoutValidCode() {
         XCTAssertNil(WhatToPlayScenarioCode.extractCode(from: "رمز الموقف: WTP-bad"))
         XCTAssertNil(WhatToPlayScenarioCode.extractCode(from: "لا يوجد رمز هنا"))
