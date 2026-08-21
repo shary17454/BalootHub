@@ -448,6 +448,111 @@ struct WhatToPlayTrainerTests {
         #expect(metrics.costlyPercent == 40)
     }
 
+    @Test("رؤى جودة قرارات وش تلعب تأتي من المحرك")
+    func decisionQualityInsightMetricsClassifySummaries() {
+        let tooSmall = WhatToPlayDecisionQualitySummaryMetrics(
+            trackedAttempts: 2,
+            expertMatches: 2,
+            closeDecisions: 0,
+            acceptableDecisions: 0,
+            costlyDecisions: 0
+        )
+        #expect(WhatToPlayDecisionQualityInsightMetrics.classify(summary: tooSmall) == nil)
+
+        let costly = WhatToPlayDecisionQualitySummaryMetrics(
+            trackedAttempts: 4,
+            expertMatches: 1,
+            closeDecisions: 0,
+            acceptableDecisions: 1,
+            costlyDecisions: 2
+        )
+        #expect(WhatToPlayDecisionQualityInsightMetrics.classify(summary: costly)?.category == .costly)
+
+        let strong = WhatToPlayDecisionQualitySummaryMetrics(
+            trackedAttempts: 4,
+            expertMatches: 2,
+            closeDecisions: 1,
+            acceptableDecisions: 1,
+            costlyDecisions: 0
+        )
+        #expect(WhatToPlayDecisionQualityInsightMetrics.classify(summary: strong)?.category == .strong)
+
+        let mixed = WhatToPlayDecisionQualitySummaryMetrics(
+            trackedAttempts: 4,
+            expertMatches: 1,
+            closeDecisions: 1,
+            acceptableDecisions: 2,
+            costlyDecisions: 0
+        )
+        #expect(WhatToPlayDecisionQualityInsightMetrics.classify(summary: mixed)?.category == .mixed)
+    }
+
+    @Test("رؤى رتبة اختيارات وش تلعب تأتي من المحرك")
+    func choiceRankInsightMetricsClassifySummaries() {
+        #expect(WhatToPlayChoiceRankInsightMetrics.classify(summary: .empty) == nil)
+
+        let aligned = WhatToPlayChoiceRankSummaryMetrics(
+            trackedAttempts: 4,
+            expertPicks: 3,
+            secondBestPicks: 0,
+            farPicks: 1
+        )
+        #expect(WhatToPlayChoiceRankInsightMetrics.classify(summary: aligned)?.category == .expertAligned)
+
+        let far = WhatToPlayChoiceRankSummaryMetrics(
+            trackedAttempts: 5,
+            expertPicks: 1,
+            secondBestPicks: 1,
+            farPicks: 3
+        )
+        #expect(WhatToPlayChoiceRankInsightMetrics.classify(summary: far)?.category == .farChoices)
+
+        let near = WhatToPlayChoiceRankSummaryMetrics(
+            trackedAttempts: 5,
+            expertPicks: 2,
+            secondBestPicks: 2,
+            farPicks: 1
+        )
+        #expect(WhatToPlayChoiceRankInsightMetrics.classify(summary: near)?.category == .nearMisses)
+    }
+
+    @Test("رؤى نتيجة قرارات وش تلعب تأتي من المحرك")
+    func outcomeInsightMetricsClassifySummaries() {
+        #expect(WhatToPlayOutcomeInsightMetrics.classify(summary: .empty) == nil)
+
+        let losing = WhatToPlayOutcomeSummaryMetrics(
+            trackedAttempts: 4,
+            winningTrickAttempts: 1,
+            losingTrickAttempts: 2,
+            openTrickAttempts: 1
+        )
+        #expect(WhatToPlayOutcomeInsightMetrics.classify(summary: losing)?.category == .losingOften)
+
+        let winning = WhatToPlayOutcomeSummaryMetrics(
+            trackedAttempts: 4,
+            winningTrickAttempts: 2,
+            losingTrickAttempts: 1,
+            openTrickAttempts: 1
+        )
+        #expect(WhatToPlayOutcomeInsightMetrics.classify(summary: winning)?.category == .winningOften)
+
+        let open = WhatToPlayOutcomeSummaryMetrics(
+            trackedAttempts: 5,
+            winningTrickAttempts: 1,
+            losingTrickAttempts: 1,
+            openTrickAttempts: 3
+        )
+        #expect(WhatToPlayOutcomeInsightMetrics.classify(summary: open)?.category == .openTrickPattern)
+
+        let balanced = WhatToPlayOutcomeSummaryMetrics(
+            trackedAttempts: 5,
+            winningTrickAttempts: 2,
+            losingTrickAttempts: 1,
+            openTrickAttempts: 2
+        )
+        #expect(WhatToPlayOutcomeInsightMetrics.classify(summary: balanced)?.category == .balanced)
+    }
+
     @Test("مراجعة اختيار وش تلعب تحسب الفوارق وجودة القرار من المحرك")
     func choiceReviewCalculatesLossesAndQuality() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2, difficulty: .hard)

@@ -803,98 +803,121 @@ enum WhatToPlayStatsAnalyzer {
         for summary: WhatToPlayDecisionQualitySummary,
         minimumTrackedAttempts: Int = 3
     ) -> WhatToPlayDecisionQualityInsight? {
-        guard summary.trackedAttempts >= minimumTrackedAttempts else { return nil }
+        let metrics = WhatToPlayDecisionQualityInsightMetrics.classify(
+            summary: WhatToPlayDecisionQualitySummaryMetrics(
+                trackedAttempts: summary.trackedAttempts,
+                expertMatches: summary.expertMatches,
+                closeDecisions: summary.closeDecisions,
+                acceptableDecisions: summary.acceptableDecisions,
+                costlyDecisions: summary.costlyDecisions
+            ),
+            minimumTrackedAttempts: minimumTrackedAttempts
+        )
+        guard let metrics else { return nil }
 
-        if summary.costlyPercent >= 30 {
+        switch metrics.category {
+        case .costly:
             return WhatToPlayDecisionQualityInsight(
                 kind: .costly,
                 title: "قرارات مكلفة متكررة".localized,
                 detail: "نسبة القرارات التي تخسر أثرًا كبيرًا مرتفعة. قبل لعب الورقة، قارنها بأفضل قرار واسأل: هل سأخسر أكلة أو أرمي نقاطًا بلا مقابل؟".localized,
                 iconName: "exclamationmark.triangle.fill"
             )
-        }
-
-        if summary.strongPercent >= 70 {
+        case .strong:
             return WhatToPlayDecisionQualityInsight(
                 kind: .strong,
                 title: "قراراتك قوية".localized,
                 detail: "معظم اختياراتك مطابقة أو قريبة من تحليل الخبير. الخطوة التالية هي رفع الصعوبة أو مراجعة الفوارق الصغيرة بين أفضل وثاني أفضل قرار.".localized,
                 iconName: "checkmark.seal.fill"
             )
+        case .mixed:
+            return WhatToPlayDecisionQualityInsight(
+                kind: .mixed,
+                title: "قراراتك متوسطة الجودة".localized,
+                detail: "لديك قرارات جيدة وأخرى تخسر قيمة. ركّز في التدريب القادم على تقليل الفاقد المتوقع لا على مطابقة ورقة الخبير فقط.".localized,
+                iconName: "gauge.with.dots.needle.50percent"
+            )
         }
-
-        return WhatToPlayDecisionQualityInsight(
-            kind: .mixed,
-            title: "قراراتك متوسطة الجودة".localized,
-            detail: "لديك قرارات جيدة وأخرى تخسر قيمة. ركّز في التدريب القادم على تقليل الفاقد المتوقع لا على مطابقة ورقة الخبير فقط.".localized,
-            iconName: "gauge.with.dots.needle.50percent"
-        )
     }
 
     static func choiceRankInsight(
         for summary: WhatToPlayChoiceRankSummary,
         minimumTrackedAttempts: Int = 3
     ) -> WhatToPlayChoiceRankInsight? {
-        guard summary.trackedAttempts >= minimumTrackedAttempts else { return nil }
+        let metrics = WhatToPlayChoiceRankInsightMetrics.classify(
+            summary: WhatToPlayChoiceRankSummaryMetrics(
+                trackedAttempts: summary.trackedAttempts,
+                expertPicks: summary.expertPicks,
+                secondBestPicks: summary.secondBestPicks,
+                farPicks: summary.farPicks
+            ),
+            minimumTrackedAttempts: minimumTrackedAttempts
+        )
+        guard let metrics else { return nil }
 
-        if summary.expertPickPercent >= 70 {
+        switch metrics.category {
+        case .expertAligned:
             return WhatToPlayChoiceRankInsight(
                 kind: .expertAligned,
                 title: "اختياراتك قريبة من الخبير".localized,
                 detail: "أغلب قراراتك تطابق أفضل خيار؛ الخطوة القادمة هي رفع الصعوبة أو تفسير سبب تفوق الورقة قبل لعبها.".localized,
                 iconName: "checkmark.seal.fill"
             )
-        }
-
-        if summary.farPicks > summary.expertPicks + summary.secondBestPicks {
+        case .farChoices:
             return WhatToPlayChoiceRankInsight(
                 kind: .farChoices,
                 title: "اختياراتك بعيدة عن التحليل".localized,
                 detail: "عدد الاختيارات خارج أفضل خيارين مرتفع؛ توقف قبل اللعب واقرأ اللون المطلوب والحكم والنقاط الموجودة على الطاولة.".localized,
                 iconName: "exclamationmark.triangle.fill"
             )
+        case .nearMisses:
+            return WhatToPlayChoiceRankInsight(
+                kind: .nearMisses,
+                title: "أخطاؤك قريبة وقابلة للتصحيح".localized,
+                detail: "كثير من اختياراتك حول ثاني أفضل ورقة؛ ركز على الفرق الصغير بين كسب الأكلة وحفظ ورقة قوية لاحقًا.".localized,
+                iconName: "2.circle.fill"
+            )
         }
-
-        return WhatToPlayChoiceRankInsight(
-            kind: .nearMisses,
-            title: "أخطاؤك قريبة وقابلة للتصحيح".localized,
-            detail: "كثير من اختياراتك حول ثاني أفضل ورقة؛ ركز على الفرق الصغير بين كسب الأكلة وحفظ ورقة قوية لاحقًا.".localized,
-            iconName: "2.circle.fill"
-        )
     }
 
     static func outcomeInsight(for summary: WhatToPlayOutcomeSummary, minimumTrackedAttempts: Int = 3) -> WhatToPlayOutcomeInsight? {
-        guard summary.trackedAttempts >= minimumTrackedAttempts else { return nil }
+        let metrics = WhatToPlayOutcomeInsightMetrics.classify(
+            summary: WhatToPlayOutcomeSummaryMetrics(
+                trackedAttempts: summary.trackedAttempts,
+                winningTrickAttempts: summary.winningTrickAttempts,
+                losingTrickAttempts: summary.losingTrickAttempts,
+                openTrickAttempts: summary.openTrickAttempts
+            ),
+            minimumTrackedAttempts: minimumTrackedAttempts
+        )
+        guard let metrics else { return nil }
 
-        if summary.losingPercent >= 50 {
+        switch metrics.category {
+        case .losingOften:
             return WhatToPlayOutcomeInsight(
                 title: "خسارة الأكلة متكررة".localized,
                 detail: "نصف قراراتك المفحوصة أو أكثر تنهي الأكلة للخصم. راجع اللون المطلوب والحكم قبل رمي ورقة عالية.".localized,
                 iconName: "exclamationmark.triangle.fill"
             )
-        }
-
-        if summary.winningPercent >= 50 {
+        case .winningOften:
             return WhatToPlayOutcomeInsight(
                 title: "تحسم الأكلات بثبات".localized,
                 detail: "نصف قراراتك المفحوصة أو أكثر تكسب الأكلة لفريقك. ركز الآن على تقليل النقاط المتوقعة الضائعة عند البدائل القريبة.".localized,
                 iconName: "checkmark.seal.fill"
             )
-        }
-
-        if summary.openTrickAttempts > summary.winningTrickAttempts + summary.losingTrickAttempts {
+        case .openTrickPattern:
             return WhatToPlayOutcomeInsight(
                 title: "قراراتك تترك الأكلة مفتوحة".localized,
                 detail: "أغلب قراراتك لا تحسم الأكلة فورًا؛ تابع قراءة ردود الخصوم بعد ورقتك ولا تعتمد على أثر الورقة وحدها.".localized,
                 iconName: "ellipsis.circle.fill"
             )
+        case .balanced:
+            return WhatToPlayOutcomeInsight(
+                title: "نتائج قراراتك متوازنة".localized,
+                detail: "لا يظهر ميل واضح لكسب أو خسارة الأكلة. استخدم مقارنة أفضل وثاني أفضل لتقليل الفوارق الصغيرة.".localized,
+                iconName: "scale.3d"
+            )
         }
-
-        return WhatToPlayOutcomeInsight(
-            title: "نتائج قراراتك متوازنة".localized,
-            detail: "لا يظهر ميل واضح لكسب أو خسارة الأكلة. استخدم مقارنة أفضل وثاني أفضل لتقليل الفوارق الصغيرة.".localized,
-            iconName: "scale.3d"
-        )
     }
 
     static func recentAttempts(_ attempts: [WhatToPlayAttempt], limit: Int = 5) -> [WhatToPlayAttempt] {

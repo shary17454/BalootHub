@@ -1028,6 +1028,163 @@ public struct WhatToPlayDecisionQualitySummaryMetrics: Sendable, Equatable {
     }
 }
 
+/// التصنيف الخام لرؤية جودة قرارات «وش تلعب؟».
+public enum WhatToPlayDecisionQualityInsightCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case strong
+    case costly
+    case mixed
+}
+
+/// رؤية رقمية لجودة قرارات «وش تلعب؟» دون نصوص واجهة.
+public struct WhatToPlayDecisionQualityInsightMetrics: Sendable, Equatable {
+    public let category: WhatToPlayDecisionQualityInsightCategory
+    public let trackedAttempts: Int
+    public let strongPercent: Int
+    public let costlyPercent: Int
+
+    public init(
+        category: WhatToPlayDecisionQualityInsightCategory,
+        trackedAttempts: Int,
+        strongPercent: Int,
+        costlyPercent: Int
+    ) {
+        self.category = category
+        self.trackedAttempts = trackedAttempts
+        self.strongPercent = strongPercent
+        self.costlyPercent = costlyPercent
+    }
+
+    public static func classify(
+        summary: WhatToPlayDecisionQualitySummaryMetrics,
+        minimumTrackedAttempts: Int = 3
+    ) -> WhatToPlayDecisionQualityInsightMetrics? {
+        guard summary.trackedAttempts >= minimumTrackedAttempts else { return nil }
+
+        let category: WhatToPlayDecisionQualityInsightCategory
+        if summary.costlyPercent >= 30 {
+            category = .costly
+        } else if summary.strongPercent >= 70 {
+            category = .strong
+        } else {
+            category = .mixed
+        }
+
+        return WhatToPlayDecisionQualityInsightMetrics(
+            category: category,
+            trackedAttempts: summary.trackedAttempts,
+            strongPercent: summary.strongPercent,
+            costlyPercent: summary.costlyPercent
+        )
+    }
+}
+
+/// التصنيف الخام لرؤية رتبة اختيارات «وش تلعب؟».
+public enum WhatToPlayChoiceRankInsightCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case expertAligned
+    case nearMisses
+    case farChoices
+}
+
+/// رؤية رقمية لرتبة اختيارات اللاعب دون نصوص واجهة.
+public struct WhatToPlayChoiceRankInsightMetrics: Sendable, Equatable {
+    public let category: WhatToPlayChoiceRankInsightCategory
+    public let trackedAttempts: Int
+    public let expertPickPercent: Int
+    public let nearMissPercent: Int
+    public let farPickPercent: Int
+
+    public init(
+        category: WhatToPlayChoiceRankInsightCategory,
+        trackedAttempts: Int,
+        expertPickPercent: Int,
+        nearMissPercent: Int,
+        farPickPercent: Int
+    ) {
+        self.category = category
+        self.trackedAttempts = trackedAttempts
+        self.expertPickPercent = expertPickPercent
+        self.nearMissPercent = nearMissPercent
+        self.farPickPercent = farPickPercent
+    }
+
+    public static func classify(
+        summary: WhatToPlayChoiceRankSummaryMetrics,
+        minimumTrackedAttempts: Int = 3
+    ) -> WhatToPlayChoiceRankInsightMetrics? {
+        guard summary.trackedAttempts >= minimumTrackedAttempts else { return nil }
+
+        let category: WhatToPlayChoiceRankInsightCategory
+        if summary.expertPickPercent >= 70 {
+            category = .expertAligned
+        } else if summary.farPicks > summary.expertPicks + summary.secondBestPicks {
+            category = .farChoices
+        } else {
+            category = .nearMisses
+        }
+
+        return WhatToPlayChoiceRankInsightMetrics(
+            category: category,
+            trackedAttempts: summary.trackedAttempts,
+            expertPickPercent: summary.expertPickPercent,
+            nearMissPercent: summary.nearMissPercent,
+            farPickPercent: summary.farPickPercent
+        )
+    }
+}
+
+/// التصنيف الخام لرؤية نتيجة قرارات «وش تلعب؟».
+public enum WhatToPlayOutcomeInsightCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case losingOften
+    case winningOften
+    case openTrickPattern
+    case balanced
+}
+
+/// رؤية رقمية لنتيجة القرار دون نصوص واجهة.
+public struct WhatToPlayOutcomeInsightMetrics: Sendable, Equatable {
+    public let category: WhatToPlayOutcomeInsightCategory
+    public let trackedAttempts: Int
+    public let winningPercent: Int
+    public let losingPercent: Int
+
+    public init(
+        category: WhatToPlayOutcomeInsightCategory,
+        trackedAttempts: Int,
+        winningPercent: Int,
+        losingPercent: Int
+    ) {
+        self.category = category
+        self.trackedAttempts = trackedAttempts
+        self.winningPercent = winningPercent
+        self.losingPercent = losingPercent
+    }
+
+    public static func classify(
+        summary: WhatToPlayOutcomeSummaryMetrics,
+        minimumTrackedAttempts: Int = 3
+    ) -> WhatToPlayOutcomeInsightMetrics? {
+        guard summary.trackedAttempts >= minimumTrackedAttempts else { return nil }
+
+        let category: WhatToPlayOutcomeInsightCategory
+        if summary.losingPercent >= 50 {
+            category = .losingOften
+        } else if summary.winningPercent >= 50 {
+            category = .winningOften
+        } else if summary.openTrickAttempts > summary.winningTrickAttempts + summary.losingTrickAttempts {
+            category = .openTrickPattern
+        } else {
+            category = .balanced
+        }
+
+        return WhatToPlayOutcomeInsightMetrics(
+            category: category,
+            trackedAttempts: summary.trackedAttempts,
+            winningPercent: summary.winningPercent,
+            losingPercent: summary.losingPercent
+        )
+    }
+}
+
 /// درجة وضوح أفضل ورقة في موقف «وش تلعب؟» مقارنة بثاني أفضل خيار.
 public enum WhatToPlayBestMoveConfidence: String, Sendable, Codable, Equatable, CaseIterable {
     case tied
