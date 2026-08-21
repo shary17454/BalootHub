@@ -440,6 +440,11 @@ enum WhatToPlayOptionComparison {
 }
 
 enum WhatToPlayImpactFormatter {
+    static func accessibilityValue(_ value: Int) -> String {
+        if value > 0 { return "+\(value)" }
+        return "\(value)"
+    }
+
     static func detail(for breakdown: WhatToPlayOptionImpactBreakdown) -> String {
         if breakdown.completesTrick {
             let owner = (breakdown.winsForPlayerTeam ?? false) ? "لفريقك".localized : "للخصم".localized

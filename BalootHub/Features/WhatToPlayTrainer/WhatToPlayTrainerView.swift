@@ -2650,6 +2650,8 @@ struct WhatToPlayTrainerView: View {
             cardName: option.card.accessibilityName,
             rank: option.rank,
             isRevealed: selectedOption != nil,
+            expectedImpact: option.expectedImpact,
+            projectedTeamPoints: option.projectedTeamPoints,
             isSelected: selectedOption?.card == option.card,
             isExpertChoice: option.isExpertChoice
         )

@@ -14,11 +14,19 @@ final class WhatToPlayOptionDisclosureTests: XCTestCase {
     }
 
     func testAccessibilityDoesNotRevealRankBeforeChoice() {
-        let label = WhatToPlayOptionDisclosure.accessibilityLabel(cardName: "إكة سباتي", rank: 1, isRevealed: false)
+        let label = WhatToPlayOptionDisclosure.accessibilityLabel(
+            cardName: "إكة سباتي",
+            rank: 1,
+            isRevealed: false,
+            expectedImpact: 8,
+            projectedTeamPoints: 42
+        )
 
         XCTAssertTrue(label.contains("إكة سباتي"))
         XCTAssertFalse(label.contains("1"))
         XCTAssertFalse(label.contains("الترتيب".localized))
+        XCTAssertFalse(label.contains("أثر القرار".localized))
+        XCTAssertFalse(label.contains("نقاط فريقك بعد المحاكاة".localized))
     }
 
     func testAccessibilityRevealsRankAfterChoice() {
@@ -46,6 +54,21 @@ final class WhatToPlayOptionDisclosureTests: XCTestCase {
 
         XCTAssertTrue(label.contains("اختيارك".localized))
         XCTAssertTrue(label.contains("الأفضل".localized))
+    }
+
+    func testAccessibilityIncludesImpactAndSimulationAfterChoice() {
+        let label = WhatToPlayOptionDisclosure.accessibilityLabel(
+            cardName: "إكة سباتي",
+            rank: 1,
+            isRevealed: true,
+            expectedImpact: 8,
+            projectedTeamPoints: 42
+        )
+
+        XCTAssertTrue(label.contains("أثر القرار".localized))
+        XCTAssertTrue(label.contains("+8"))
+        XCTAssertTrue(label.contains("نقاط فريقك بعد المحاكاة".localized))
+        XCTAssertTrue(label.contains("42"))
     }
 
     func testAccessibilityDoesNotRevealSelectedOrExpertBeforeChoice() {
