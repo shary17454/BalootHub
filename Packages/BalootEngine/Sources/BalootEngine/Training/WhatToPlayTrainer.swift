@@ -2316,6 +2316,75 @@ public struct WhatToPlayWorstDecisionHighlightRankMetrics: Sendable, Equatable {
     }
 }
 
+/// نمط ترتيب أولويات تدريب «وش تلعب؟» دون نصوص واجهة.
+public enum WhatToPlayTrainingPriorityRankMode: String, Sendable, Codable, Equatable, CaseIterable {
+    case projectedLossFirst
+    case expectedLossFirst
+}
+
+/// مفاتيح ترتيب أولوية تدريب «وش تلعب؟» بين بعدين تدريبيين مثل النمط أو الحكم أو نوع الموقف.
+public struct WhatToPlayTrainingPriorityRankMetrics: Sendable, Equatable {
+    public let lostExpectedPoints: Int
+    public let lostProjectedTeamPoints: Int
+    public let accuracyPercent: Int
+    public let averageExpectedImpact: Int
+    public let stableOrder: Int
+
+    public init(
+        lostExpectedPoints: Int,
+        lostProjectedTeamPoints: Int,
+        accuracyPercent: Int,
+        averageExpectedImpact: Int,
+        stableOrder: Int
+    ) {
+        self.lostExpectedPoints = lostExpectedPoints
+        self.lostProjectedTeamPoints = lostProjectedTeamPoints
+        self.accuracyPercent = accuracyPercent
+        self.averageExpectedImpact = averageExpectedImpact
+        self.stableOrder = stableOrder
+    }
+
+    public var needsTraining: Bool {
+        lostExpectedPoints > 0 || lostProjectedTeamPoints > 0 || accuracyPercent < 100
+    }
+
+    public static func ranksBefore(
+        _ lhs: WhatToPlayTrainingPriorityRankMetrics,
+        _ rhs: WhatToPlayTrainingPriorityRankMetrics,
+        mode: WhatToPlayTrainingPriorityRankMode
+    ) -> Bool {
+        switch mode {
+        case .projectedLossFirst:
+            if lhs.lostProjectedTeamPoints != rhs.lostProjectedTeamPoints {
+                return lhs.lostProjectedTeamPoints > rhs.lostProjectedTeamPoints
+            }
+
+            if lhs.lostExpectedPoints != rhs.lostExpectedPoints {
+                return lhs.lostExpectedPoints > rhs.lostExpectedPoints
+            }
+
+        case .expectedLossFirst:
+            if lhs.lostExpectedPoints != rhs.lostExpectedPoints {
+                return lhs.lostExpectedPoints > rhs.lostExpectedPoints
+            }
+
+            if lhs.lostProjectedTeamPoints != rhs.lostProjectedTeamPoints {
+                return lhs.lostProjectedTeamPoints > rhs.lostProjectedTeamPoints
+            }
+        }
+
+        if lhs.accuracyPercent != rhs.accuracyPercent {
+            return lhs.accuracyPercent < rhs.accuracyPercent
+        }
+
+        if lhs.averageExpectedImpact != rhs.averageExpectedImpact {
+            return lhs.averageExpectedImpact < rhs.averageExpectedImpact
+        }
+
+        return lhs.stableOrder < rhs.stableOrder
+    }
+}
+
 /// أرقام موجزة تستخدم عند فتح Replay لقرار تدريب «وش تلعب؟».
 public struct WhatToPlayReplayMetrics: Sendable, Equatable {
     public let selectedOption: WhatToPlayOption

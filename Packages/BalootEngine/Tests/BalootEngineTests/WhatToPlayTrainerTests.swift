@@ -642,6 +642,58 @@ struct WhatToPlayTrainerTests {
         #expect(WhatToPlayWorstDecisionHighlightRankMetrics.ranksBefore(laterWorstTie, lowerImpactTie))
     }
 
+    @Test("ترتيب أولويات تدريب وش تلعب يأتي من المحرك")
+    func trainingPriorityRankMetricsSortPriorities() {
+        let projectedLoss = trainingPriorityRank(
+            lostExpectedPoints: 2,
+            lostProjectedTeamPoints: 9,
+            accuracyPercent: 90,
+            averageExpectedImpact: 1,
+            stableOrder: 2
+        )
+        let expectedLoss = trainingPriorityRank(
+            lostExpectedPoints: 7,
+            lostProjectedTeamPoints: 1,
+            accuracyPercent: 90,
+            averageExpectedImpact: 1,
+            stableOrder: 1
+        )
+        let lowerAccuracy = trainingPriorityRank(
+            lostExpectedPoints: 2,
+            lostProjectedTeamPoints: 1,
+            accuracyPercent: 60,
+            averageExpectedImpact: 1,
+            stableOrder: 1
+        )
+        let lowerImpact = trainingPriorityRank(
+            lostExpectedPoints: 2,
+            lostProjectedTeamPoints: 1,
+            accuracyPercent: 60,
+            averageExpectedImpact: -1,
+            stableOrder: 2
+        )
+        let clean = trainingPriorityRank(
+            lostExpectedPoints: 0,
+            lostProjectedTeamPoints: 0,
+            accuracyPercent: 100,
+            averageExpectedImpact: 4,
+            stableOrder: 0
+        )
+
+        #expect(projectedLoss.needsTraining)
+        #expect(clean.needsTraining == false)
+        #expect(WhatToPlayTrainingPriorityRankMetrics.ranksBefore(projectedLoss, expectedLoss, mode: .projectedLossFirst))
+        #expect(WhatToPlayTrainingPriorityRankMetrics.ranksBefore(expectedLoss, projectedLoss, mode: .expectedLossFirst))
+        #expect(WhatToPlayTrainingPriorityRankMetrics.ranksBefore(lowerAccuracy, .init(
+            lostExpectedPoints: 2,
+            lostProjectedTeamPoints: 1,
+            accuracyPercent: 80,
+            averageExpectedImpact: 1,
+            stableOrder: 0
+        ), mode: .projectedLossFirst))
+        #expect(WhatToPlayTrainingPriorityRankMetrics.ranksBefore(lowerImpact, lowerAccuracy, mode: .projectedLossFirst))
+    }
+
     @Test("ملخص أداء وش تلعب يأتي من المحرك ويحافظ على السلاسل وفاقد القيمة")
     func statsSummaryMetricsCalculateTrainingPerformance() {
         let metrics = WhatToPlayStatsSummaryMetrics.summarize(chronologicalSamples: [
@@ -1949,6 +2001,22 @@ private func reviewQueueRank(
         lostProjectedTeamPoints: lostProjectedTeamPoints,
         expectedImpact: expectedImpact,
         createdAt: createdAt
+    )
+}
+
+private func trainingPriorityRank(
+    lostExpectedPoints: Int,
+    lostProjectedTeamPoints: Int,
+    accuracyPercent: Int,
+    averageExpectedImpact: Int,
+    stableOrder: Int
+) -> WhatToPlayTrainingPriorityRankMetrics {
+    WhatToPlayTrainingPriorityRankMetrics(
+        lostExpectedPoints: lostExpectedPoints,
+        lostProjectedTeamPoints: lostProjectedTeamPoints,
+        accuracyPercent: accuracyPercent,
+        averageExpectedImpact: averageExpectedImpact,
+        stableOrder: stableOrder
     )
 }
 

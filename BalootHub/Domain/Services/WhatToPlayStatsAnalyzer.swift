@@ -1008,28 +1008,17 @@ enum WhatToPlayStatsAnalyzer {
         let candidate = summariesByGameMode(attempts)
             .filter { $0.summary.attempts >= minimumAttempts }
             .filter {
-                $0.summary.lostExpectedPoints > 0
-                    || $0.summary.lostProjectedTeamPoints > 0
-                    || $0.summary.accuracyPercent < 100
+                trainingPriorityRankMetrics(
+                    summary: $0.summary,
+                    stableOrder: gameModeOrder($0.mode)
+                ).needsTraining
             }
             .sorted { lhs, rhs in
-                if lhs.summary.lostProjectedTeamPoints != rhs.summary.lostProjectedTeamPoints {
-                    return lhs.summary.lostProjectedTeamPoints > rhs.summary.lostProjectedTeamPoints
-                }
-
-                if lhs.summary.lostExpectedPoints != rhs.summary.lostExpectedPoints {
-                    return lhs.summary.lostExpectedPoints > rhs.summary.lostExpectedPoints
-                }
-
-                if lhs.summary.accuracyPercent != rhs.summary.accuracyPercent {
-                    return lhs.summary.accuracyPercent < rhs.summary.accuracyPercent
-                }
-
-                if lhs.summary.averageExpectedImpact != rhs.summary.averageExpectedImpact {
-                    return lhs.summary.averageExpectedImpact < rhs.summary.averageExpectedImpact
-                }
-
-                return gameModeOrder(lhs.mode) < gameModeOrder(rhs.mode)
+                WhatToPlayTrainingPriorityRankMetrics.ranksBefore(
+                    trainingPriorityRankMetrics(summary: lhs.summary, stableOrder: gameModeOrder(lhs.mode)),
+                    trainingPriorityRankMetrics(summary: rhs.summary, stableOrder: gameModeOrder(rhs.mode)),
+                    mode: .projectedLossFirst
+                )
             }
             .first
 
@@ -1051,28 +1040,17 @@ enum WhatToPlayStatsAnalyzer {
         let candidate = summariesByTrumpSuit(attempts)
             .filter { $0.summary.attempts >= minimumAttempts }
             .filter {
-                $0.summary.lostExpectedPoints > 0
-                    || $0.summary.lostProjectedTeamPoints > 0
-                    || $0.summary.accuracyPercent < 100
+                trainingPriorityRankMetrics(
+                    summary: $0.summary,
+                    stableOrder: $0.suit.ordinal
+                ).needsTraining
             }
             .sorted { lhs, rhs in
-                if lhs.summary.lostProjectedTeamPoints != rhs.summary.lostProjectedTeamPoints {
-                    return lhs.summary.lostProjectedTeamPoints > rhs.summary.lostProjectedTeamPoints
-                }
-
-                if lhs.summary.lostExpectedPoints != rhs.summary.lostExpectedPoints {
-                    return lhs.summary.lostExpectedPoints > rhs.summary.lostExpectedPoints
-                }
-
-                if lhs.summary.accuracyPercent != rhs.summary.accuracyPercent {
-                    return lhs.summary.accuracyPercent < rhs.summary.accuracyPercent
-                }
-
-                if lhs.summary.averageExpectedImpact != rhs.summary.averageExpectedImpact {
-                    return lhs.summary.averageExpectedImpact < rhs.summary.averageExpectedImpact
-                }
-
-                return lhs.suit.ordinal < rhs.suit.ordinal
+                WhatToPlayTrainingPriorityRankMetrics.ranksBefore(
+                    trainingPriorityRankMetrics(summary: lhs.summary, stableOrder: lhs.suit.ordinal),
+                    trainingPriorityRankMetrics(summary: rhs.summary, stableOrder: rhs.suit.ordinal),
+                    mode: .projectedLossFirst
+                )
             }
             .first
 
@@ -1094,28 +1072,17 @@ enum WhatToPlayStatsAnalyzer {
         let candidate = summariesByScenarioFocus(attempts)
             .filter { $0.summary.attempts >= minimumAttempts }
             .filter {
-                $0.summary.lostExpectedPoints > 0
-                    || $0.summary.lostProjectedTeamPoints > 0
-                    || $0.summary.accuracyPercent < 100
+                trainingPriorityRankMetrics(
+                    summary: $0.summary,
+                    stableOrder: scenarioFocusOrder($0.focusKind)
+                ).needsTraining
             }
             .sorted { lhs, rhs in
-                if lhs.summary.lostExpectedPoints != rhs.summary.lostExpectedPoints {
-                    return lhs.summary.lostExpectedPoints > rhs.summary.lostExpectedPoints
-                }
-
-                if lhs.summary.lostProjectedTeamPoints != rhs.summary.lostProjectedTeamPoints {
-                    return lhs.summary.lostProjectedTeamPoints > rhs.summary.lostProjectedTeamPoints
-                }
-
-                if lhs.summary.accuracyPercent != rhs.summary.accuracyPercent {
-                    return lhs.summary.accuracyPercent < rhs.summary.accuracyPercent
-                }
-
-                if lhs.summary.averageExpectedImpact != rhs.summary.averageExpectedImpact {
-                    return lhs.summary.averageExpectedImpact < rhs.summary.averageExpectedImpact
-                }
-
-                return scenarioFocusOrder(lhs.focusKind) < scenarioFocusOrder(rhs.focusKind)
+                WhatToPlayTrainingPriorityRankMetrics.ranksBefore(
+                    trainingPriorityRankMetrics(summary: lhs.summary, stableOrder: scenarioFocusOrder(lhs.focusKind)),
+                    trainingPriorityRankMetrics(summary: rhs.summary, stableOrder: scenarioFocusOrder(rhs.focusKind)),
+                    mode: .expectedLossFirst
+                )
             }
             .first
 
@@ -1127,6 +1094,19 @@ enum WhatToPlayStatsAnalyzer {
             title: "\("أولوية التدريب".localized): \(scenarioFocusTitle(candidate.focusKind))",
             detail: focusTrainingDetail(for: candidate.focusKind, summary: candidate.summary),
             iconName: focusTrainingIcon(for: candidate.focusKind)
+        )
+    }
+
+    private static func trainingPriorityRankMetrics(
+        summary: WhatToPlayStatsSummary,
+        stableOrder: Int
+    ) -> WhatToPlayTrainingPriorityRankMetrics {
+        WhatToPlayTrainingPriorityRankMetrics(
+            lostExpectedPoints: summary.lostExpectedPoints,
+            lostProjectedTeamPoints: summary.lostProjectedTeamPoints,
+            accuracyPercent: summary.accuracyPercent,
+            averageExpectedImpact: summary.averageExpectedImpact,
+            stableOrder: stableOrder
         )
     }
 
