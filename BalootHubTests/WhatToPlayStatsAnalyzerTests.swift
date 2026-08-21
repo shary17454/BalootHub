@@ -843,6 +843,30 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(item?.valueLossTitle, "خسارة قيمة عالية".localized)
     }
 
+    func testReviewQueueSeverityUsesSecondSimulationLossWhenLarger() throws {
+        let item = try XCTUnwrap(
+            WhatToPlayStatsAnalyzer.reviewQueue(
+                for: [
+                    attempt(
+                        daysAgo: 1,
+                        correct: false,
+                        impact: 3,
+                        bestImpact: 4,
+                        projectedTeamPoints: 70,
+                        bestProjectedTeamPoints: 72,
+                        secondBestProjectedTeamPoints: 82
+                    )
+                ]
+            ).first
+        )
+
+        XCTAssertEqual(item.lostExpectedPoints, 1)
+        XCTAssertEqual(item.lostProjectedTeamPoints, 2)
+        XCTAssertEqual(item.lostProjectedAgainstSecondBestPoints, 12)
+        XCTAssertEqual(item.valueLossSeverity, .high)
+        XCTAssertEqual(item.valueLossTitle, "خسارة قيمة عالية".localized)
+    }
+
     func testReviewQueueUsesSecondSimulationLossAsTieBreaker() {
         let farFromSecondSimulation = attempt(
             daysAgo: 2,
@@ -1836,6 +1860,16 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(WhatToPlayStatsAnalyzer.valueLossSeverity(for: 3), .medium)
         XCTAssertEqual(WhatToPlayStatsAnalyzer.valueLossSeverity(for: 5), .medium)
         XCTAssertEqual(WhatToPlayStatsAnalyzer.valueLossSeverity(for: 6), .high)
+    }
+
+    func testValueLossSeverityUsesSecondProjectedLossWhenLarger() {
+        let severity = WhatToPlayStatsAnalyzer.valueLossSeverity(
+            lostExpectedPoints: 1,
+            lostProjectedTeamPoints: 2,
+            lostProjectedAgainstSecondBestPoints: 9
+        )
+
+        XCTAssertEqual(severity, .high)
     }
 
     func testDecisionInsightKeepsSecondBestGapNilWhenUnavailable() {

@@ -1279,7 +1279,8 @@ enum WhatToPlayStatsAnalyzer {
             )
             let severity = valueLossSeverity(
                 lostExpectedPoints: attempt.lostExpectedPoints,
-                lostProjectedTeamPoints: attempt.lostProjectedTeamPoints
+                lostProjectedTeamPoints: attempt.lostProjectedTeamPoints,
+                lostProjectedAgainstSecondBestPoints: attempt.lostProjectedAgainstSecondBestPoints
             )
             let tacticalReason = tacticalReviewReason(for: attempt)
             let simulationDisplay = WhatToPlaySimulationFormatter.display(for: attempt)
@@ -2959,11 +2960,16 @@ enum WhatToPlayStatsAnalyzer {
 
     static func valueLossSeverity(
         lostExpectedPoints: Int,
-        lostProjectedTeamPoints: Int
+        lostProjectedTeamPoints: Int,
+        lostProjectedAgainstSecondBestPoints: Int = 0
     ) -> WhatToPlayValueLossSeverity {
         valueLossSeverity(
             for: WhatToPlayValueLossSeverityCategory.classify(
-                decisiveLoss: max(lostExpectedPoints, lostProjectedTeamPoints)
+                decisiveLoss: max(
+                    lostExpectedPoints,
+                    lostProjectedTeamPoints,
+                    lostProjectedAgainstSecondBestPoints
+                )
             )
         )
     }
