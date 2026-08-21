@@ -37,6 +37,48 @@ struct WhatToPlayTrainerTests {
         #expect(WhatToPlayBestMoveConfidence.classify(bestToSecondGap: 9) == .decisive)
     }
 
+    @Test("مراجعة اختيار وش تلعب تحسب الفوارق وجودة القرار من المحرك")
+    func choiceReviewCalculatesLossesAndQuality() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2, difficulty: .hard)
+        let best = try #require(scenario.bestOption)
+        let bestProjected = try #require(scenario.bestProjectedOption)
+        let selected = try #require(scenario.options.first {
+            $0.projectedTeamPoints < bestProjected.projectedTeamPoints
+        })
+
+        let review = WhatToPlayTrainer.choiceReview(in: scenario, selectedCard: selected.card)
+
+        #expect(review.bestOption?.card == best.card)
+        #expect(review.secondBestOption?.card == scenario.secondBestOption?.card)
+        #expect(review.bestProjectedOption?.card == bestProjected.card)
+        #expect(review.selectedOption?.card == selected.card)
+        #expect(review.selectedLostExpectedPoints == max(0, best.expectedImpact - selected.expectedImpact))
+        #expect(review.selectedLostProjectedTeamPoints == max(0, bestProjected.projectedTeamPoints - selected.projectedTeamPoints))
+        #expect(
+            review.decisionQuality == WhatToPlayDecisionQuality.classify(
+                isExpertChoice: selected.isExpertChoice,
+                lostExpectedPoints: review.selectedLostExpectedPoints ?? 0,
+                lostProjectedTeamPoints: review.selectedLostProjectedTeamPoints ?? 0
+            )
+        )
+        #expect(review.bestMoveConfidence == WhatToPlayBestMoveConfidence.classify(bestToSecondGap: review.bestToSecondExpectedImpactGap))
+    }
+
+    @Test("مراجعة وش تلعب بدون اختيار تعرض أفضلية الموقف ولا تصطنع جودة قرار")
+    func choiceReviewWithoutSelectionKeepsDecisionEmpty() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
+        let review = WhatToPlayTrainer.choiceReview(in: scenario)
+
+        #expect(review.bestOption?.card == scenario.bestOption?.card)
+        #expect(review.secondBestOption?.card == scenario.secondBestOption?.card)
+        #expect(review.bestProjectedOption?.card == scenario.bestProjectedOption?.card)
+        #expect(review.selectedOption == nil)
+        #expect(review.selectedLostExpectedPoints == nil)
+        #expect(review.selectedLostProjectedTeamPoints == nil)
+        #expect(review.decisionQuality == nil)
+        #expect(review.bestMoveConfidence != nil)
+    }
+
     @Test("مستوى الخبير يولد موقفًا حقيقيًا قابلًا للتقييم")
     func expertDifficultyGeneratesPlayableScenario() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .expert)

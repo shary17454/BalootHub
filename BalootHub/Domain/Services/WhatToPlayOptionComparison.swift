@@ -185,62 +185,36 @@ enum WhatToPlayOptionComparison {
     }
 
     static func summary(for scenario: WhatToPlayScenario, selectedCard: PlayingCard?) -> WhatToPlayOptionComparisonSummary {
-        let sorted = sortedOptions(scenario.options)
-        let best = sorted.first
-        let second = sorted.dropFirst().first
-        let bestSimulation = bestSimulationOption(scenario.options)
-        let gap = best.flatMap { bestOption in
-            second.map { max(0, bestOption.expectedImpact - $0.expectedImpact) }
-        }
-        let simulationGap = best.flatMap { bestOption in
-            bestSimulation.map { max(0, $0.projectedTeamPoints - bestOption.projectedTeamPoints) }
-        }
-        let selected = selectedCard.flatMap { card in
-            sorted.first { $0.card == card }
-        }
-        let lost = selected.flatMap { selectedOption in
-            best.map { max(0, $0.expectedImpact - selectedOption.expectedImpact) }
-        }
-        let projectedLost = selected.flatMap { selectedOption in
-            bestSimulation.map { max(0, $0.projectedTeamPoints - selectedOption.projectedTeamPoints) }
-        }
+        let review = WhatToPlayTrainer.choiceReview(in: scenario, selectedCard: selectedCard)
         let action = nextAction(
-            selected: selected,
-            best: best,
-            bestSimulation: bestSimulation,
-            second: second,
-            lostExpectedPoints: lost,
-            lostProjectedTeamPoints: projectedLost
+            selected: review.selectedOption,
+            best: review.bestOption,
+            bestSimulation: review.bestProjectedOption,
+            second: review.secondBestOption,
+            lostExpectedPoints: review.selectedLostExpectedPoints,
+            lostProjectedTeamPoints: review.selectedLostProjectedTeamPoints
         )
 
         return WhatToPlayOptionComparisonSummary(
-            bestCard: best?.card,
-            bestExpectedImpact: best?.expectedImpact,
-            bestProjectedTeamPoints: best?.projectedTeamPoints,
-            secondBestCard: second?.card,
-            secondBestExpectedImpact: second?.expectedImpact,
-            secondBestProjectedTeamPoints: second?.projectedTeamPoints,
-            bestToSecondGap: gap,
-            bestSimulationCard: bestSimulation?.card,
-            bestSimulationExpectedImpact: bestSimulation?.expectedImpact,
-            bestSimulationProjectedTeamPoints: bestSimulation?.projectedTeamPoints,
-            expertToBestSimulationGap: simulationGap,
-            selectedCard: selected?.card,
-            selectedExpectedImpact: selected?.expectedImpact,
-            selectedProjectedTeamPoints: selected?.projectedTeamPoints,
-            selectedLostExpectedPoints: lost,
-            selectedLostProjectedTeamPoints: projectedLost,
-            decisionQuality: decisionQuality(
-                selected: selected,
-                lostExpectedPoints: lost,
-                lostProjectedTeamPoints: projectedLost
-            ),
-            decisionQualityDetail: decisionQuality(
-                selected: selected,
-                lostExpectedPoints: lost,
-                lostProjectedTeamPoints: projectedLost
-            )?.detail,
-            bestMoveConfidence: WhatToPlayBestMoveConfidence.classify(bestToSecondGap: gap),
+            bestCard: review.bestOption?.card,
+            bestExpectedImpact: review.bestOption?.expectedImpact,
+            bestProjectedTeamPoints: review.bestOption?.projectedTeamPoints,
+            secondBestCard: review.secondBestOption?.card,
+            secondBestExpectedImpact: review.secondBestOption?.expectedImpact,
+            secondBestProjectedTeamPoints: review.secondBestOption?.projectedTeamPoints,
+            bestToSecondGap: review.bestToSecondExpectedImpactGap,
+            bestSimulationCard: review.bestProjectedOption?.card,
+            bestSimulationExpectedImpact: review.bestProjectedOption?.expectedImpact,
+            bestSimulationProjectedTeamPoints: review.bestProjectedOption?.projectedTeamPoints,
+            expertToBestSimulationGap: review.expertToBestProjectedTeamPointsGap,
+            selectedCard: review.selectedOption?.card,
+            selectedExpectedImpact: review.selectedOption?.expectedImpact,
+            selectedProjectedTeamPoints: review.selectedOption?.projectedTeamPoints,
+            selectedLostExpectedPoints: review.selectedLostExpectedPoints,
+            selectedLostProjectedTeamPoints: review.selectedLostProjectedTeamPoints,
+            decisionQuality: review.decisionQuality,
+            decisionQualityDetail: review.decisionQuality?.detail,
+            bestMoveConfidence: review.bestMoveConfidence,
             nextActionTitle: action.title,
             nextActionDetail: action.detail
         )
@@ -300,19 +274,6 @@ enum WhatToPlayOptionComparison {
 
     static func bestSimulationOption(_ options: [WhatToPlayOption]) -> WhatToPlayOption? {
         WhatToPlayTrainer.projectedOptions(in: options).first
-    }
-
-    private static func decisionQuality(
-        selected: WhatToPlayOption?,
-        lostExpectedPoints: Int?,
-        lostProjectedTeamPoints: Int?
-    ) -> WhatToPlayDecisionQuality? {
-        guard let selected, let lostExpectedPoints else { return nil }
-        return WhatToPlayDecisionQuality.classify(
-            isExpertChoice: selected.isExpertChoice,
-            lostExpectedPoints: lostExpectedPoints,
-            lostProjectedTeamPoints: lostProjectedTeamPoints ?? 0
-        )
     }
 
     private static func nextAction(

@@ -295,6 +295,47 @@ public struct WhatToPlayDecisionReplay: Sendable {
     }
 }
 
+/// مراجعة رقمية لاختيار اللاعب في موقف «وش تلعب؟».
+///
+/// لا تحتوي هذه البنية على نصوص واجهة؛ هدفها أن تكون مصدر الحقيقة للفوارق
+/// وجودة القرار بين التدريب والReplay وSandbox.
+public struct WhatToPlayChoiceReview: Sendable, Equatable {
+    public let bestOption: WhatToPlayOption?
+    public let secondBestOption: WhatToPlayOption?
+    public let bestProjectedOption: WhatToPlayOption?
+    public let selectedOption: WhatToPlayOption?
+    public let bestToSecondExpectedImpactGap: Int?
+    public let expertToBestProjectedTeamPointsGap: Int?
+    public let selectedLostExpectedPoints: Int?
+    public let selectedLostProjectedTeamPoints: Int?
+    public let decisionQuality: WhatToPlayDecisionQuality?
+    public let bestMoveConfidence: WhatToPlayBestMoveConfidence?
+
+    public init(
+        bestOption: WhatToPlayOption?,
+        secondBestOption: WhatToPlayOption?,
+        bestProjectedOption: WhatToPlayOption?,
+        selectedOption: WhatToPlayOption?,
+        bestToSecondExpectedImpactGap: Int?,
+        expertToBestProjectedTeamPointsGap: Int?,
+        selectedLostExpectedPoints: Int?,
+        selectedLostProjectedTeamPoints: Int?,
+        decisionQuality: WhatToPlayDecisionQuality?,
+        bestMoveConfidence: WhatToPlayBestMoveConfidence?
+    ) {
+        self.bestOption = bestOption
+        self.secondBestOption = secondBestOption
+        self.bestProjectedOption = bestProjectedOption
+        self.selectedOption = selectedOption
+        self.bestToSecondExpectedImpactGap = bestToSecondExpectedImpactGap
+        self.expertToBestProjectedTeamPointsGap = expertToBestProjectedTeamPointsGap
+        self.selectedLostExpectedPoints = selectedLostExpectedPoints
+        self.selectedLostProjectedTeamPoints = selectedLostProjectedTeamPoints
+        self.decisionQuality = decisionQuality
+        self.bestMoveConfidence = bestMoveConfidence
+    }
+}
+
 /// مولّد ومحلّل مواقف «وش تلعب؟».
 public enum WhatToPlayTrainer {
     public enum ScenarioError: Error, Sendable, Equatable {
@@ -494,6 +535,54 @@ public enum WhatToPlayTrainer {
     /// يقيّم اختيار المستخدم مقارنة باختيار الخبير.
     public static func evaluateChoice(card: PlayingCard, in scenario: WhatToPlayScenario) -> WhatToPlayOption? {
         scenario.options.first { $0.card == card }
+    }
+
+    /// يراجع اختيار اللاعب رقميًا من المحرك بدل حساب الفوارق في الواجهة.
+    public static func choiceReview(
+        in scenario: WhatToPlayScenario,
+        selectedCard: PlayingCard? = nil
+    ) -> WhatToPlayChoiceReview {
+        let sorted = rankedOptions(scenario.options)
+        let best = sorted.first
+        let second = sorted.dropFirst().first
+        let bestProjected = bestProjectedOption(in: scenario.options)
+        let selected = selectedCard.flatMap { card in
+            sorted.first { $0.card == card }
+        }
+        let bestToSecondGap = best.flatMap { bestOption in
+            second.map { max(0, bestOption.expectedImpact - $0.expectedImpact) }
+        }
+        let expertToBestProjectedGap = best.flatMap { bestOption in
+            bestProjected.map { max(0, $0.projectedTeamPoints - bestOption.projectedTeamPoints) }
+        }
+        let selectedLostExpected = selected.flatMap { selectedOption in
+            best.map { max(0, $0.expectedImpact - selectedOption.expectedImpact) }
+        }
+        let selectedLostProjected = selected.flatMap { selectedOption in
+            bestProjected.map { max(0, $0.projectedTeamPoints - selectedOption.projectedTeamPoints) }
+        }
+        let decisionQuality = selected.flatMap { selectedOption in
+            selectedLostExpected.map {
+                WhatToPlayDecisionQuality.classify(
+                    isExpertChoice: selectedOption.isExpertChoice,
+                    lostExpectedPoints: $0,
+                    lostProjectedTeamPoints: selectedLostProjected ?? 0
+                )
+            }
+        }
+
+        return WhatToPlayChoiceReview(
+            bestOption: best,
+            secondBestOption: second,
+            bestProjectedOption: bestProjected,
+            selectedOption: selected,
+            bestToSecondExpectedImpactGap: bestToSecondGap,
+            expertToBestProjectedTeamPointsGap: expertToBestProjectedGap,
+            selectedLostExpectedPoints: selectedLostExpected,
+            selectedLostProjectedTeamPoints: selectedLostProjected,
+            decisionQuality: decisionQuality,
+            bestMoveConfidence: WhatToPlayBestMoveConfidence.classify(bestToSecondGap: bestToSecondGap)
+        )
     }
 
     /// يعيد أفضل خيار حسب نقاط فريق اللاعب المتوقعة بعد استكمال الجولة.
@@ -885,6 +974,16 @@ public enum WhatToPlayTrainer {
             if lhs.rank != rhs.rank {
                 return lhs.rank < rhs.rank
             }
+            if lhs.card.suit.ordinal != rhs.card.suit.ordinal {
+                return lhs.card.suit.ordinal < rhs.card.suit.ordinal
+            }
+            return lhs.card.rank.ordinal < rhs.card.rank.ordinal
+        }
+    }
+
+    private static func rankedOptions(_ options: [WhatToPlayOption]) -> [WhatToPlayOption] {
+        options.sorted { lhs, rhs in
+            if lhs.rank != rhs.rank { return lhs.rank < rhs.rank }
             if lhs.card.suit.ordinal != rhs.card.suit.ordinal {
                 return lhs.card.suit.ordinal < rhs.card.suit.ordinal
             }
