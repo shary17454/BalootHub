@@ -1253,25 +1253,10 @@ enum WhatToPlayStatsAnalyzer {
             attempts
                 .filter { !$0.isCorrect }
                 .sorted { lhs, rhs in
-                    if lhs.lostProjectedTeamPoints >= 6 || rhs.lostProjectedTeamPoints >= 6 {
-                        if lhs.lostProjectedTeamPoints != rhs.lostProjectedTeamPoints {
-                            return lhs.lostProjectedTeamPoints > rhs.lostProjectedTeamPoints
-                        }
-                    }
-
-                    if lhs.lostExpectedPoints != rhs.lostExpectedPoints {
-                        return lhs.lostExpectedPoints > rhs.lostExpectedPoints
-                    }
-
-                    if lhs.lostProjectedTeamPoints != rhs.lostProjectedTeamPoints {
-                        return lhs.lostProjectedTeamPoints > rhs.lostProjectedTeamPoints
-                    }
-
-                    if lhs.expectedImpact != rhs.expectedImpact {
-                        return lhs.expectedImpact < rhs.expectedImpact
-                    }
-
-                    return lhs.createdAt > rhs.createdAt
+                    WhatToPlayReviewQueueRankMetrics.ranksBefore(
+                        reviewQueueRankMetrics(for: lhs),
+                        reviewQueueRankMetrics(for: rhs)
+                    )
                 }
                 .prefix(limit)
         )
@@ -1325,6 +1310,15 @@ enum WhatToPlayStatsAnalyzer {
                 contextOpponentTeamTrickPoints: attempt.contextOpponentTeamTrickPoints
             )
         }
+    }
+
+    private static func reviewQueueRankMetrics(for attempt: WhatToPlayAttempt) -> WhatToPlayReviewQueueRankMetrics {
+        WhatToPlayReviewQueueRankMetrics(
+            lostExpectedPoints: attempt.lostExpectedPoints,
+            lostProjectedTeamPoints: attempt.lostProjectedTeamPoints,
+            expectedImpact: attempt.expectedImpact,
+            createdAt: attempt.createdAt
+        )
     }
 
     static func bestDecisionHighlight(for attempts: [WhatToPlayAttempt]) -> WhatToPlayDecisionHighlight? {

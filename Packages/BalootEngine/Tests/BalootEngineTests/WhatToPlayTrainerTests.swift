@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 @testable import BalootEngine
 
@@ -481,6 +482,39 @@ struct WhatToPlayTrainerTests {
                 lostProjectedTeamPoints: 0
             ).category == .closeTacticalGap
         )
+    }
+
+    @Test("ترتيب قائمة مراجعة وش تلعب يأتي من المحرك")
+    func reviewQueueRankMetricsSortsReviewItems() {
+        let now = Date(timeIntervalSince1970: 1_000)
+        let projectedLoss = reviewQueueRank(
+            lostExpectedPoints: 4,
+            lostProjectedTeamPoints: 8,
+            expectedImpact: 1,
+            createdAt: now
+        )
+        let valueLoss = reviewQueueRank(
+            lostExpectedPoints: 7,
+            lostProjectedTeamPoints: 0,
+            expectedImpact: 0,
+            createdAt: now.addingTimeInterval(10)
+        )
+        let tacticalLoss = reviewQueueRank(
+            lostExpectedPoints: 4,
+            lostProjectedTeamPoints: 0,
+            expectedImpact: -3,
+            createdAt: now.addingTimeInterval(20)
+        )
+        let olderTie = reviewQueueRank(
+            lostExpectedPoints: 4,
+            lostProjectedTeamPoints: 0,
+            expectedImpact: -3,
+            createdAt: now
+        )
+
+        #expect(WhatToPlayReviewQueueRankMetrics.ranksBefore(projectedLoss, valueLoss))
+        #expect(WhatToPlayReviewQueueRankMetrics.ranksBefore(valueLoss, tacticalLoss))
+        #expect(WhatToPlayReviewQueueRankMetrics.ranksBefore(tacticalLoss, olderTie))
     }
 
     @Test("ملخص أداء وش تلعب يأتي من المحرك ويحافظ على السلاسل وفاقد القيمة")
@@ -1776,6 +1810,20 @@ private func decisionPatternSample(
         selectedRank: rank,
         expectedImpact: impact,
         impactBreakdown: breakdown
+    )
+}
+
+private func reviewQueueRank(
+    lostExpectedPoints: Int,
+    lostProjectedTeamPoints: Int,
+    expectedImpact: Int,
+    createdAt: Date
+) -> WhatToPlayReviewQueueRankMetrics {
+    WhatToPlayReviewQueueRankMetrics(
+        lostExpectedPoints: lostExpectedPoints,
+        lostProjectedTeamPoints: lostProjectedTeamPoints,
+        expectedImpact: expectedImpact,
+        createdAt: createdAt
     )
 }
 

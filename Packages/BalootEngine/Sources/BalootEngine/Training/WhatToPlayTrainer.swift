@@ -935,6 +935,51 @@ public struct WhatToPlayReviewPriorityMetrics: Sendable, Equatable {
     }
 }
 
+/// مفاتيح ترتيب قائمة مراجعة «وش تلعب؟» دون نصوص واجهة.
+public struct WhatToPlayReviewQueueRankMetrics: Sendable, Equatable {
+    public let lostExpectedPoints: Int
+    public let lostProjectedTeamPoints: Int
+    public let expectedImpact: Int
+    public let createdAt: Date
+
+    public init(
+        lostExpectedPoints: Int,
+        lostProjectedTeamPoints: Int,
+        expectedImpact: Int,
+        createdAt: Date
+    ) {
+        self.lostExpectedPoints = lostExpectedPoints
+        self.lostProjectedTeamPoints = lostProjectedTeamPoints
+        self.expectedImpact = expectedImpact
+        self.createdAt = createdAt
+    }
+
+    public static func ranksBefore(
+        _ lhs: WhatToPlayReviewQueueRankMetrics,
+        _ rhs: WhatToPlayReviewQueueRankMetrics
+    ) -> Bool {
+        if lhs.lostProjectedTeamPoints >= 6 || rhs.lostProjectedTeamPoints >= 6 {
+            if lhs.lostProjectedTeamPoints != rhs.lostProjectedTeamPoints {
+                return lhs.lostProjectedTeamPoints > rhs.lostProjectedTeamPoints
+            }
+        }
+
+        if lhs.lostExpectedPoints != rhs.lostExpectedPoints {
+            return lhs.lostExpectedPoints > rhs.lostExpectedPoints
+        }
+
+        if lhs.lostProjectedTeamPoints != rhs.lostProjectedTeamPoints {
+            return lhs.lostProjectedTeamPoints > rhs.lostProjectedTeamPoints
+        }
+
+        if lhs.expectedImpact != rhs.expectedImpact {
+            return lhs.expectedImpact < rhs.expectedImpact
+        }
+
+        return lhs.createdAt > rhs.createdAt
+    }
+}
+
 /// عينة أداء مختصرة من محاولة «وش تلعب؟» تكفي لحساب ملخص التدريب.
 public struct WhatToPlayStatsSample: Sendable, Equatable {
     public let isCorrect: Bool
