@@ -228,6 +228,7 @@ struct WhatToPlayReviewItem: Equatable, Identifiable {
     let bestCard: PlayingCard?
     let secondBestCard: PlayingCard?
     let bestSimulationCard: PlayingCard?
+    let secondBestSimulationCard: PlayingCard?
     let selectedRank: Int?
     let expectedImpact: Int
     let lostExpectedPoints: Int
@@ -1295,6 +1296,7 @@ enum WhatToPlayStatsAnalyzer {
                 bestCard: attempt.bestCard,
                 secondBestCard: attempt.secondBestCard,
                 bestSimulationCard: attempt.bestSimulationCard,
+                secondBestSimulationCard: attempt.secondBestSimulationCard,
                 selectedRank: attempt.selectedRank,
                 expectedImpact: attempt.expectedImpact,
                 lostExpectedPoints: attempt.lostExpectedPoints,

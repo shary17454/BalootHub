@@ -327,6 +327,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             selectedCard: selected,
             bestCard: best,
             secondBestCard: secondBest,
+            bestSimulationCard: best,
+            secondBestSimulationCard: secondBest,
             isCorrect: false,
             selectedRank: 3,
             expectedImpact: -6,
@@ -354,6 +356,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(saved.selectedCard, selected)
         XCTAssertEqual(saved.bestCard, best)
         XCTAssertEqual(saved.secondBestCard, secondBest)
+        XCTAssertEqual(saved.bestSimulationCard, best)
+        XCTAssertEqual(saved.secondBestSimulationCard, secondBest)
         XCTAssertFalse(saved.isCorrect)
         XCTAssertEqual(saved.selectedRank, 3)
         XCTAssertEqual(saved.expectedImpact, -6)
@@ -523,6 +527,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertNil(attempt.simulationNextTurnPlayerIDRaw)
         XCTAssertNil(attempt.simulationPlayerRemainingCards)
         XCTAssertNil(attempt.simulationActionHistoryCount)
+        XCTAssertNil(attempt.secondBestSimulationCard)
     }
 
     func testAttemptWithoutScenarioContextKeepsBackwardCompatibleNilContext() {
@@ -842,12 +847,14 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
     }
 
     func testReviewQueueCarriesProjectedPointLoss() {
+        let secondBestSimulationCard = PlayingCard(suit: .diamonds, rank: .jack)
         let attempts = [
             attempt(
                 daysAgo: 1,
                 correct: false,
                 impact: 2,
                 bestImpact: 4,
+                secondBestSimulationCard: secondBestSimulationCard,
                 projectedTeamPoints: 61,
                 bestProjectedTeamPoints: 74,
                 secondBestProjectedTeamPoints: 68
@@ -858,6 +865,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(item?.projectedTeamPoints, 61)
         XCTAssertEqual(item?.lostProjectedTeamPoints, 13)
+        XCTAssertEqual(item?.secondBestSimulationCard, secondBestSimulationCard)
         XCTAssertEqual(item?.secondBestProjectedTeamPoints, 68)
         XCTAssertEqual(item?.lostProjectedAgainstSecondBestPoints, 7)
         XCTAssertEqual(item?.valueLossSeverity, .high)
@@ -4249,6 +4257,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil,
         selectedCard: PlayingCard = PlayingCard(suit: .clubs, rank: .seven),
         bestSimulationCard: PlayingCard? = nil,
+        secondBestSimulationCard: PlayingCard? = nil,
         simulation: WhatToPlayOptionSimulation? = nil,
         projectedTeamPoints: Int? = nil,
         bestProjectedTeamPoints: Int? = nil,
@@ -4270,6 +4279,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             impactBreakdown: impactBreakdown,
             selectedCard: selectedCard,
             bestSimulationCard: bestSimulationCard,
+            secondBestSimulationCard: secondBestSimulationCard,
             simulation: simulation,
             projectedTeamPoints: projectedTeamPoints,
             bestProjectedTeamPoints: bestProjectedTeamPoints,
@@ -4298,6 +4308,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil,
         selectedCard: PlayingCard = PlayingCard(suit: .clubs, rank: .seven),
         bestSimulationCard: PlayingCard? = nil,
+        secondBestSimulationCard: PlayingCard? = nil,
         simulation: WhatToPlayOptionSimulation? = nil,
         projectedTeamPoints: Int? = nil,
         bestProjectedTeamPoints: Int? = nil,
@@ -4313,6 +4324,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             bestCard: PlayingCard(suit: .clubs, rank: .seven),
             secondBestCard: secondBestCard,
             bestSimulationCard: bestSimulationCard,
+            secondBestSimulationCard: secondBestSimulationCard,
             isCorrect: correct,
             selectedRank: selectedRank,
             expectedImpact: impact,

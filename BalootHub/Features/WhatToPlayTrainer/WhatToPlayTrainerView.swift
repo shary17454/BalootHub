@@ -2193,6 +2193,17 @@ struct WhatToPlayTrainerView: View {
                         .foregroundStyle(AppColor.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
+                if let secondBestSimulationCard = attempt.secondBestSimulationCard,
+                   let secondBestProjectedTeamPoints = attempt.secondBestProjectedTeamPoints {
+                    Text(secondSimulationReviewText(
+                        card: secondBestSimulationCard,
+                        projectedTeamPoints: secondBestProjectedTeamPoints,
+                        lostProjectedAgainstSecondBestPoints: attempt.lostProjectedAgainstSecondBestPoints
+                    ))
+                    .font(.caption2)
+                    .foregroundStyle(attempt.lostProjectedAgainstSecondBestPoints > 0 ? AppColor.warning : AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                }
             }
         }
     }
@@ -2284,6 +2295,7 @@ struct WhatToPlayTrainerView: View {
                 }
                 if let secondBestProjectedTeamPoints = item.secondBestProjectedTeamPoints {
                     Text(secondSimulationReviewText(
+                        card: item.secondBestSimulationCard,
                         projectedTeamPoints: secondBestProjectedTeamPoints,
                         lostProjectedAgainstSecondBestPoints: item.lostProjectedAgainstSecondBestPoints
                     ))
@@ -2415,10 +2427,14 @@ struct WhatToPlayTrainerView: View {
     }
 
     private func secondSimulationReviewText(
+        card: PlayingCard?,
         projectedTeamPoints: Int,
         lostProjectedAgainstSecondBestPoints: Int
     ) -> String {
         var text = "\("ثاني نتيجة محاكاة".localized): \(projectedTeamPoints)"
+        if let card {
+            text += " · \(cardName(card))"
+        }
         if lostProjectedAgainstSecondBestPoints > 0 {
             text += " · \("فاقد ثاني محاكاة".localized): \(lostProjectedAgainstSecondBestPoints)"
         }
