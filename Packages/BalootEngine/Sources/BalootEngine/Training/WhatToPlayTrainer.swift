@@ -41,6 +41,23 @@ public enum WhatToPlayDecisionQuality: String, Sendable, Codable, Equatable, Cas
     }
 }
 
+/// درجة وضوح أفضل ورقة في موقف «وش تلعب؟» مقارنة بثاني أفضل خيار.
+public enum WhatToPlayBestMoveConfidence: String, Sendable, Codable, Equatable, CaseIterable {
+    case tied
+    case narrow
+    case clear
+    case decisive
+
+    /// يصنف ثقة أفضل ورقة من فارق الأثر المتوقع بينها وبين ثاني أفضل خيار.
+    public static func classify(bestToSecondGap: Int?) -> WhatToPlayBestMoveConfidence? {
+        guard let bestToSecondGap else { return nil }
+        if bestToSecondGap == 0 { return .tied }
+        if bestToSecondGap <= 2 { return .narrow }
+        if bestToSecondGap <= 8 { return .clear }
+        return .decisive
+    }
+}
+
 /// خيار ورقة في موقف تدريبي.
 public struct WhatToPlayOption: Identifiable, Sendable, Equatable {
     public let card: PlayingCard

@@ -26,6 +26,17 @@ struct WhatToPlayTrainerTests {
         )
     }
 
+    @Test("تصنيف ثقة أفضل ورقة يأتي من المحرك بعتبات ثابتة")
+    func bestMoveConfidenceClassifiesGap() {
+        #expect(WhatToPlayBestMoveConfidence.classify(bestToSecondGap: nil) == nil)
+        #expect(WhatToPlayBestMoveConfidence.classify(bestToSecondGap: 0) == .tied)
+        #expect(WhatToPlayBestMoveConfidence.classify(bestToSecondGap: 1) == .narrow)
+        #expect(WhatToPlayBestMoveConfidence.classify(bestToSecondGap: 2) == .narrow)
+        #expect(WhatToPlayBestMoveConfidence.classify(bestToSecondGap: 3) == .clear)
+        #expect(WhatToPlayBestMoveConfidence.classify(bestToSecondGap: 8) == .clear)
+        #expect(WhatToPlayBestMoveConfidence.classify(bestToSecondGap: 9) == .decisive)
+    }
+
     @Test("مستوى الخبير يولد موقفًا حقيقيًا قابلًا للتقييم")
     func expertDifficultyGeneratesPlayableScenario() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .expert)

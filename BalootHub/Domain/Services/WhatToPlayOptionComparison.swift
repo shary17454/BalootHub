@@ -54,20 +54,7 @@ struct WhatToPlayOptionComparisonSummary: Equatable {
     }
 }
 
-enum WhatToPlayBestMoveConfidence: Equatable {
-    case tied
-    case narrow
-    case clear
-    case decisive
-
-    static func classify(bestToSecondGap: Int?) -> WhatToPlayBestMoveConfidence? {
-        guard let bestToSecondGap else { return nil }
-        if bestToSecondGap == 0 { return .tied }
-        if bestToSecondGap <= 2 { return .narrow }
-        if bestToSecondGap <= 8 { return .clear }
-        return .decisive
-    }
-
+extension WhatToPlayBestMoveConfidence {
     var title: String {
         switch self {
         case .tied:
