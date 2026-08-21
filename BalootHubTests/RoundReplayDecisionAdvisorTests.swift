@@ -31,18 +31,32 @@ final class RoundReplayDecisionAdvisorTests: XCTestCase {
         )
         let selected = try XCTUnwrap(options.first { $0.card == hint.playedCard })
         let bestProjected = try XCTUnwrap(WhatToPlayTrainer.bestProjectedOption(in: options))
+        let secondBestProjected = WhatToPlayTrainer.secondBestProjectedOption(in: options)
 
         XCTAssertEqual(hint.stepIndex, playStep - 1)
         XCTAssertEqual(hint.trickNumber, beforePlay.completedTricks.count + 1)
         XCTAssertTrue(legal.contains(hint.playedCard))
         XCTAssertTrue(legal.contains(hint.bestCard))
         XCTAssertEqual(hint.bestProjectedCard, bestProjected.card)
+        XCTAssertEqual(hint.secondBestProjectedCard, secondBestProjected?.card)
         XCTAssertEqual(hint.estimatedProjectedLostPoints, max(0, bestProjected.projectedTeamPoints - selected.projectedTeamPoints))
+        XCTAssertEqual(
+            hint.estimatedProjectedLostAgainstSecondBestPoints,
+            secondBestProjected.map { max(0, $0.projectedTeamPoints - selected.projectedTeamPoints) } ?? 0
+        )
         XCTAssertGreaterThanOrEqual(hint.selectedRank, 1)
         XCTAssertGreaterThanOrEqual(hint.estimatedImmediateLostPoints, 0)
         XCTAssertGreaterThanOrEqual(hint.estimatedProjectedLostPoints, 0)
+        XCTAssertGreaterThanOrEqual(hint.estimatedProjectedLostAgainstSecondBestPoints, 0)
         XCTAssertGreaterThanOrEqual(hint.estimatedLostPoints, 0)
-        XCTAssertEqual(hint.estimatedLostPoints, max(hint.estimatedImmediateLostPoints, hint.estimatedProjectedLostPoints))
+        XCTAssertEqual(
+            hint.estimatedLostPoints,
+            max(
+                hint.estimatedImmediateLostPoints,
+                hint.estimatedProjectedLostPoints,
+                hint.estimatedProjectedLostAgainstSecondBestPoints
+            )
+        )
         XCTAssertFalse(hint.explanation.isEmpty)
     }
 
@@ -63,6 +77,39 @@ final class RoundReplayDecisionAdvisorTests: XCTestCase {
         XCTAssertEqual(hint.bestProjectedCard, scenario.bestProjectedOption?.card)
         XCTAssertGreaterThan(hint.estimatedProjectedLostPoints, hint.estimatedImmediateLostPoints)
         XCTAssertEqual(hint.estimatedLostPoints, hint.estimatedProjectedLostPoints)
+    }
+
+    func testHintCarriesSecondProjectedRoundLossForWhatToPlayReplay() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let secondBestProjected = try XCTUnwrap(scenario.secondBestProjectedOption)
+        let selected = try XCTUnwrap(scenario.options.min { lhs, rhs in
+            lhs.projectedTeamPoints < rhs.projectedTeamPoints
+        })
+        let replay = try XCTUnwrap(WhatToPlayTrainer.decisionReplay(for: selected.card, in: scenario))
+
+        let hint = try XCTUnwrap(RoundReplayDecisionAdvisor.hint(
+            initialState: replay.initialState,
+            actions: replay.actions,
+            currentStep: replay.actions.count
+        ))
+        let expectedProjectedLoss = max(
+            0,
+            (scenario.bestProjectedOption?.projectedTeamPoints ?? selected.projectedTeamPoints) - selected.projectedTeamPoints
+        )
+        let expectedSecondProjectedLoss = max(0, secondBestProjected.projectedTeamPoints - selected.projectedTeamPoints)
+
+        XCTAssertEqual(hint.playedCard, selected.card)
+        XCTAssertEqual(hint.secondBestProjectedCard, secondBestProjected.card)
+        XCTAssertEqual(hint.estimatedProjectedLostPoints, expectedProjectedLoss)
+        XCTAssertEqual(hint.estimatedProjectedLostAgainstSecondBestPoints, expectedSecondProjectedLoss)
+        XCTAssertEqual(
+            hint.estimatedLostPoints,
+            max(
+                hint.estimatedImmediateLostPoints,
+                expectedProjectedLoss,
+                expectedSecondProjectedLoss
+            )
+        )
     }
 
     func testHintIsDeterministicForSameReplayStep() throws {

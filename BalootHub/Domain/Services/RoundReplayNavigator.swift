@@ -149,10 +149,18 @@ enum RoundReplayShareSummary {
             let projected = hint.bestProjectedCard != hint.bestCard || hint.estimatedProjectedLostPoints > hint.estimatedImmediateLostPoints
                 ? " · \("أفضل نتيجة محاكاة".localized): \(hint.bestProjectedCard.accessibilityName)"
                 : ""
+            let secondProjected: String
+            if let secondBestProjectedCard = hint.secondBestProjectedCard,
+               secondBestProjectedCard != hint.bestProjectedCard,
+               hint.estimatedProjectedLostAgainstSecondBestPoints > 0 {
+                secondProjected = " · \("ثاني نتيجة محاكاة".localized): \(secondBestProjectedCard.accessibilityName)"
+            } else {
+                secondProjected = ""
+            }
             lines.append(
                 "- \("الأكلة".localized) \(hint.trickNumber) · \(playerName(hint.playerID, in: finalState)): " +
                 "\("لعب".localized) \(hint.playedCard.accessibilityName) · " +
-                "\("أفضل قرار".localized): \(hint.bestCard.accessibilityName)\(second)\(projected) · " +
+                "\("أفضل قرار".localized): \(hint.bestCard.accessibilityName)\(second)\(projected)\(secondProjected) · " +
                 "\("الفاقد المتوقع".localized) \(hint.estimatedLostPoints)"
             )
         }

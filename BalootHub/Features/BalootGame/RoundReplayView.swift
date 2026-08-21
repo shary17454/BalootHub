@@ -207,10 +207,18 @@ struct RoundReplayView: View {
             if hint.bestProjectedCard != hint.bestCard || hint.estimatedProjectedLostPoints > hint.estimatedImmediateLostPoints {
                 detailRow("أفضل نتيجة محاكاة".localized, hint.bestProjectedCard.accessibilityName)
             }
+            if let secondBestProjectedCard = hint.secondBestProjectedCard,
+               secondBestProjectedCard != hint.bestProjectedCard,
+               hint.estimatedProjectedLostAgainstSecondBestPoints > 0 {
+                detailRow("ثاني نتيجة محاكاة".localized, secondBestProjectedCard.accessibilityName)
+            }
             if hint.estimatedLostPoints > 0 {
                 detailRow("فاقد متوقع".localized, "\(hint.estimatedLostPoints)")
                 if hint.estimatedProjectedLostPoints > hint.estimatedImmediateLostPoints {
                     detailRow("فاقد المحاكاة".localized, "\(hint.estimatedProjectedLostPoints)")
+                }
+                if hint.estimatedProjectedLostAgainstSecondBestPoints > hint.estimatedProjectedLostPoints {
+                    detailRow("فاقد ثاني محاكاة".localized, "\(hint.estimatedProjectedLostAgainstSecondBestPoints)")
                 }
             }
 

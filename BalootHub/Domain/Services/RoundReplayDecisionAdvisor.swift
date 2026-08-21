@@ -8,9 +8,11 @@ struct RoundReplayDecisionHint: Equatable {
     let bestCard: PlayingCard
     let secondBestCard: PlayingCard?
     let bestProjectedCard: PlayingCard
+    let secondBestProjectedCard: PlayingCard?
     let selectedRank: Int
     let estimatedImmediateLostPoints: Int
     let estimatedProjectedLostPoints: Int
+    let estimatedProjectedLostAgainstSecondBestPoints: Int
     let explanation: String
 
     var matchedExpert: Bool {
@@ -18,7 +20,11 @@ struct RoundReplayDecisionHint: Equatable {
     }
 
     var estimatedLostPoints: Int {
-        max(estimatedImmediateLostPoints, estimatedProjectedLostPoints)
+        max(
+            estimatedImmediateLostPoints,
+            estimatedProjectedLostPoints,
+            estimatedProjectedLostAgainstSecondBestPoints
+        )
     }
 }
 
@@ -46,8 +52,12 @@ enum RoundReplayDecisionAdvisor {
         else { return nil }
 
         let bestSimulation = WhatToPlayTrainer.bestProjectedOption(in: options) ?? best
+        let secondBestSimulation = WhatToPlayTrainer.secondBestProjectedOption(in: options)
         let immediateLost = max(0, best.expectedImpact - selected.expectedImpact)
         let projectedLost = max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints)
+        let projectedLostAgainstSecondBest = secondBestSimulation.map {
+            max(0, $0.projectedTeamPoints - selected.projectedTeamPoints)
+        } ?? 0
 
         return RoundReplayDecisionHint(
             stepIndex: step - 1,
@@ -57,9 +67,11 @@ enum RoundReplayDecisionAdvisor {
             bestCard: best.card,
             secondBestCard: options.first(where: { $0.rank == 2 })?.card,
             bestProjectedCard: bestSimulation.card,
+            secondBestProjectedCard: secondBestSimulation?.card,
             selectedRank: selected.rank,
             estimatedImmediateLostPoints: immediateLost,
             estimatedProjectedLostPoints: projectedLost,
+            estimatedProjectedLostAgainstSecondBestPoints: projectedLostAgainstSecondBest,
             explanation: selected.explanation
         )
     }

@@ -107,6 +107,16 @@ final class RoundReplayNavigatorTests: XCTestCase {
         XCTAssertTrue(summary.contains(replay.hint.bestProjectedCard.accessibilityName))
     }
 
+    func testReplayShareSummaryIncludesSecondProjectedCardWhenItAddsLossContext() throws {
+        let replay = try makeReplayWithSecondProjectedDecision()
+        let summary = RoundReplayShareSummary.text(initialState: replay.initial, actions: replay.actions)
+        let secondBestProjectedCard = try XCTUnwrap(replay.hint.secondBestProjectedCard)
+
+        XCTAssertTrue(summary.contains("ثاني نتيجة محاكاة".localized))
+        XCTAssertTrue(summary.contains(secondBestProjectedCard.accessibilityName))
+        XCTAssertGreaterThan(replay.hint.estimatedProjectedLostAgainstSecondBestPoints, 0)
+    }
+
     private func makeCompletedReplay(seed: UInt64) throws -> (initial: GameState, actions: [GameAction]) {
         let initial = makeAIMatch()
         var state = try GameEngine.apply(.dealCards(seed: seed), to: initial)
@@ -155,6 +165,24 @@ final class RoundReplayNavigatorTests: XCTestCase {
         }
         XCTFail("لم يتم العثور على Replay يحتوي أفضل نتيجة محاكاة مختلفة")
         throw NSError(domain: "RoundReplayNavigatorTests", code: 2)
+    }
+
+    private func makeReplayWithSecondProjectedDecision() throws -> (initial: GameState, actions: [GameAction], hint: RoundReplayDecisionHint) {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let secondBestProjected = try XCTUnwrap(scenario.secondBestProjectedOption)
+        let option = try XCTUnwrap(scenario.options.min { lhs, rhs in
+            lhs.projectedTeamPoints < rhs.projectedTeamPoints
+        })
+        let replay = try XCTUnwrap(WhatToPlayTrainer.decisionReplay(for: option.card, in: scenario))
+        let hint = try XCTUnwrap(RoundReplayDecisionAdvisor.hint(
+            initialState: replay.initialState,
+            actions: replay.actions,
+            currentStep: replay.actions.count
+        ))
+
+        XCTAssertEqual(hint.secondBestProjectedCard, secondBestProjected.card)
+        XCTAssertGreaterThan(hint.estimatedProjectedLostAgainstSecondBestPoints, 0)
+        return (replay.initialState, replay.actions, hint)
     }
 
     private func makeAIMatch() -> GameState {
