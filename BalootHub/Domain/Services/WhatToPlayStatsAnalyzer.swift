@@ -1839,7 +1839,12 @@ enum WhatToPlayStatsAnalyzer {
 
     static func nextScenarioRecommendation(for attempts: [WhatToPlayAttempt]) -> WhatToPlayNextScenarioRecommendation {
         let plan = trainingSessionPlan(for: attempts)
-        if let focusPriority = focusTrainingPriority(for: attempts) {
+        let focusPriority = focusTrainingPriority(for: attempts)
+        let metrics = WhatToPlayNextScenarioRecommendationMetrics.classify(
+            hasFocusPriority: focusPriority != nil
+        )
+
+        if metrics.source == .focusPriority, let focusPriority {
             return WhatToPlayNextScenarioRecommendation(
                 difficulty: plan.difficulty,
                 focusKind: focusPriority.focusKind,

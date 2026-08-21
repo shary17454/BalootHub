@@ -958,6 +958,27 @@ public enum WhatToPlayTrainingSessionPlanCategory: String, Sendable, Codable, Eq
     case stabilizeReading
 }
 
+/// مصدر اختيار الموقف القادم في تدريب «وش تلعب؟» دون نصوص واجهة.
+public enum WhatToPlayNextScenarioRecommendationSource: String, Sendable, Codable, Equatable, CaseIterable {
+    case focusPriority
+    case sessionPlan
+}
+
+/// قرار خام يحدد هل الموقف القادم يتبع أولوية تدريب محددة أو خطة الجلسة العامة.
+public struct WhatToPlayNextScenarioRecommendationMetrics: Sendable, Equatable {
+    public let source: WhatToPlayNextScenarioRecommendationSource
+
+    public init(source: WhatToPlayNextScenarioRecommendationSource) {
+        self.source = source
+    }
+
+    public static func classify(hasFocusPriority: Bool) -> WhatToPlayNextScenarioRecommendationMetrics {
+        WhatToPlayNextScenarioRecommendationMetrics(
+            source: hasFocusPriority ? .focusPriority : .sessionPlan
+        )
+    }
+}
+
 /// مدخلات اختيار خطة جلسة تدريب «وش تلعب؟» من أرقام وتحليلات خام.
 public struct WhatToPlayTrainingSessionPlanMetrics: Sendable, Equatable {
     public let category: WhatToPlayTrainingSessionPlanCategory

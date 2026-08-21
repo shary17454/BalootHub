@@ -487,6 +487,18 @@ struct WhatToPlayTrainerTests {
         #expect(stabilize.targetAverageExpectedImpact == 1)
     }
 
+    @Test("توصية الموقف القادم تختار مصدرها من المحرك")
+    func nextScenarioRecommendationMetricsSelectSource() {
+        #expect(
+            WhatToPlayNextScenarioRecommendationMetrics.classify(hasFocusPriority: true).source
+                == .focusPriority
+        )
+        #expect(
+            WhatToPlayNextScenarioRecommendationMetrics.classify(hasFocusPriority: false).source
+                == .sessionPlan
+        )
+    }
+
     @Test("ملخص نتائج قرارات وش تلعب يأتي من المحرك")
     func outcomeSummaryMetricsClassifyOutcomes() {
         #expect(WhatToPlayOutcomeSummaryMetrics.summarize(outcomes: []) == .empty)
