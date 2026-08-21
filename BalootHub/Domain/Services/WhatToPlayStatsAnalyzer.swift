@@ -3360,7 +3360,8 @@ enum WhatToPlayStatsAnalyzer {
     }
 
     private static func focusSuccessAction(for focusKind: WhatToPlayScenarioFocusKind) -> String {
-        switch focusKind {
+        let metrics = WhatToPlayFocusSuccessActionMetrics.classify(focusKind: focusKind)
+        switch metrics.category {
         case .openingLead:
             return "احتفظ بنفس منطق الافتتاح: لا تكشف قوتك إلا عندما يعطيك ذلك سيطرة واضحة.".localized
         case .followSuit:

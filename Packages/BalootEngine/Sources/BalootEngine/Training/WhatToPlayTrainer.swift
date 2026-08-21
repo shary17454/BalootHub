@@ -212,6 +212,38 @@ public struct WhatToPlayDecisionReviewInsightStepMetrics: Sendable, Equatable {
     }
 }
 
+/// نوع رسالة تثبيت القراءة بعد اختيار صحيح في «وش تلعب؟».
+public enum WhatToPlayFocusSuccessActionCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case openingLead
+    case followSuit
+    case trumpPressure
+    case narrowChoice
+}
+
+/// تصنيف رسالة تثبيت القراءة حسب محور الموقف دون نصوص واجهة.
+public struct WhatToPlayFocusSuccessActionMetrics: Sendable, Equatable {
+    public let category: WhatToPlayFocusSuccessActionCategory
+
+    public init(category: WhatToPlayFocusSuccessActionCategory) {
+        self.category = category
+    }
+
+    public static func classify(
+        focusKind: WhatToPlayScenarioFocusKind
+    ) -> WhatToPlayFocusSuccessActionMetrics {
+        switch focusKind {
+        case .openingLead:
+            WhatToPlayFocusSuccessActionMetrics(category: .openingLead)
+        case .followSuit:
+            WhatToPlayFocusSuccessActionMetrics(category: .followSuit)
+        case .trumpPressure:
+            WhatToPlayFocusSuccessActionMetrics(category: .trumpPressure)
+        case .narrowChoice:
+            WhatToPlayFocusSuccessActionMetrics(category: .narrowChoice)
+        }
+    }
+}
+
 /// مستوى إتقان اللاعب الخام في مدرب «وش تلعب؟».
 public enum WhatToPlayMasteryCategory: String, Sendable, Codable, Equatable, CaseIterable {
     case starting
