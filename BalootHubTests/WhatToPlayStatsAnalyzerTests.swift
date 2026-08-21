@@ -368,6 +368,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(saved.contextLegalOptionCount, 2)
         XCTAssertEqual(saved.contextPlayerTeamTrickPoints, 44)
         XCTAssertEqual(saved.contextOpponentTeamTrickPoints, 39)
+        XCTAssertEqual(saved.scenarioContext, scenarioContext)
     }
 
     func testAttemptStoresFullUInt64SeedForExactReplay() {
@@ -499,6 +500,20 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertNil(attempt.simulationNextTurnPlayerIDRaw)
         XCTAssertNil(attempt.simulationPlayerRemainingCards)
         XCTAssertNil(attempt.simulationActionHistoryCount)
+    }
+
+    func testAttemptWithoutScenarioContextKeepsBackwardCompatibleNilContext() {
+        let attempt = WhatToPlayAttempt(
+            difficulty: .medium,
+            seed: 99,
+            selectedCard: PlayingCard(suit: .clubs, rank: .seven),
+            bestCard: PlayingCard(suit: .clubs, rank: .ace),
+            isCorrect: false,
+            expectedImpact: -4
+        )
+
+        XCTAssertFalse(attempt.hasScenarioContext)
+        XCTAssertNil(attempt.scenarioContext)
     }
 
     func testChoiceRankSummaryCountsExpertSecondBestAndFarChoices() {

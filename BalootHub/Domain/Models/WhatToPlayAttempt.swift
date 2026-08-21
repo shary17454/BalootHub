@@ -274,4 +274,32 @@ final class WhatToPlayAttempt {
             || contextPlayerTeamTrickPoints != nil
             || contextOpponentTeamTrickPoints != nil
     }
+
+    var scenarioContext: WhatToPlayScenarioContext? {
+        guard hasScenarioContext,
+              let trickNumber = contextTrickNumber,
+              let isLeading = contextIsLeading,
+              let playedCardCount = contextPlayedCardCount,
+              let legalOptionCount = contextLegalOptionCount,
+              let hasTrumpInCurrentTrick = contextHasTrumpInCurrentTrick,
+              let playerTeamTrickPoints = contextPlayerTeamTrickPoints,
+              let opponentTeamTrickPoints = contextOpponentTeamTrickPoints,
+              let focusKind
+        else { return nil }
+
+        return WhatToPlayScenarioContext(
+            trickNumber: trickNumber,
+            isLeading: isLeading,
+            requiredSuit: contextRequiredSuit,
+            playedCardCount: playedCardCount,
+            legalOptionCount: legalOptionCount,
+            mode: gameMode,
+            trumpSuit: contextTrumpSuit,
+            hasTrumpInCurrentTrick: hasTrumpInCurrentTrick,
+            playerTeamTrickPoints: playerTeamTrickPoints,
+            opponentTeamTrickPoints: opponentTeamTrickPoints,
+            playerTeamPointMargin: playerTeamTrickPoints - opponentTeamTrickPoints,
+            focusKind: focusKind
+        )
+    }
 }
