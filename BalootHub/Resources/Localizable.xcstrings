@@ -2,13 +2,34 @@
   "sourceLanguage" : "ar",
   "strings" : {
     "فاقد ثاني محاكاة" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Second simulation loss"
+          }
+        }
+      }
     },
     "متوسط فاقد ثاني محاكاة" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Average second simulation loss"
+          }
+        }
+      }
     },
     "محاولات ثاني محاكاة" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Second simulation attempts"
+          }
+        }
+      }
     },
     "أساسيات" : {
 
