@@ -39,6 +39,30 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.statusMessage, "تم تحميل مراجعة القرار وإضافتها للإحصاءات.".localized)
     }
 
+    func testImporterLoadsReviewedHokumDecisionWithTrumpSuit() async throws {
+        let scenario = try await WhatToPlayScenarioLoader.generate(
+            seed: 2026,
+            difficulty: .easy,
+            preferredFocus: .trumpPressure,
+            preferredMode: .hokum,
+            preferredTrumpSuit: .spades
+        )
+        let selected = try XCTUnwrap(scenario.options.last)
+        let code = WhatToPlayShareCard.content(for: scenario, selectedOption: selected).scenarioCode
+
+        let result = try await WhatToPlayShareCodeImporter.import(code: code, existingScenarioCodes: [])
+
+        XCTAssertEqual(result.kind, .reviewedDecision(isDuplicate: false))
+        XCTAssertEqual(result.parsed.gameMode, .hokum)
+        XCTAssertEqual(result.parsed.trumpSuit, .spades)
+        XCTAssertEqual(result.scenario.state.mode, .hokum)
+        XCTAssertEqual(result.scenario.state.trumpSuit, .spades)
+        XCTAssertEqual(result.selectedOption?.card, selected.card)
+        XCTAssertEqual(result.attempt?.gameMode, .hokum)
+        XCTAssertEqual(result.attempt?.contextTrumpSuit, .spades)
+        XCTAssertEqual(result.attempt?.scenarioCode, code)
+    }
+
     func testImporterLoadsFullSharedText() async throws {
         let scenario = try await WhatToPlayScenarioLoader.generate(
             seed: 2026,

@@ -24,6 +24,27 @@ final class WhatToPlayAttemptFactoryTests: XCTestCase {
         XCTAssertEqual(attempt.scenarioCode, code)
     }
 
+    func testFactoryBuildsReviewedHokumAttemptFromShareCodeWithTrumpSuit() async throws {
+        let scenario = try await WhatToPlayScenarioLoader.generate(
+            seed: 2026,
+            difficulty: .easy,
+            preferredFocus: .trumpPressure,
+            preferredMode: .hokum,
+            preferredTrumpSuit: .spades
+        )
+        let selected = try XCTUnwrap(scenario.options.last)
+        let code = WhatToPlayShareCard.content(for: scenario, selectedOption: selected).scenarioCode
+
+        let attempt = try await WhatToPlayAttemptFactory.makeAttempt(code: code)
+
+        XCTAssertEqual(attempt.replaySeed, scenario.seed)
+        XCTAssertEqual(attempt.gameMode, .hokum)
+        XCTAssertEqual(attempt.contextTrumpSuit, .spades)
+        XCTAssertEqual(attempt.focusKind, .trumpPressure)
+        XCTAssertEqual(attempt.selectedCard, selected.card)
+        XCTAssertEqual(attempt.scenarioCode, code)
+    }
+
     func testFactoryRejectsPromptCodeWithoutReviewedSelection() async throws {
         let scenario = try await WhatToPlayScenarioLoader.generate(
             seed: 2026,
