@@ -981,6 +981,46 @@ struct WhatToPlayTrainerTests {
         #expect(WhatToPlayChoiceRankInsightMetrics.classify(summary: near)?.category == .nearMisses)
     }
 
+    @Test("نصيحة تدريب وش تلعب تختار السبب من المحرك")
+    func coachingTipMetricsClassifyTrainingNeeds() {
+        let noData = WhatToPlayCoachingTipMetrics.classify(
+            summary: coachingSummary(attempts: 0),
+            choiceRankSummary: .empty
+        )
+        #expect(noData.category == .startMeasuring)
+
+        let lowAccuracy = WhatToPlayCoachingTipMetrics.classify(
+            summary: coachingSummary(attempts: 4, accuracyPercent: 49, averageExpectedImpact: -3, currentStreak: 4),
+            choiceRankSummary: WhatToPlayChoiceRankSummaryMetrics(trackedAttempts: 4, expertPicks: 0, secondBestPicks: 0, farPicks: 4)
+        )
+        #expect(lowAccuracy.category == .slowDown)
+
+        let pointLeak = WhatToPlayCoachingTipMetrics.classify(
+            summary: coachingSummary(attempts: 4, accuracyPercent: 80, averageExpectedImpact: -1, currentStreak: 4),
+            choiceRankSummary: WhatToPlayChoiceRankSummaryMetrics(trackedAttempts: 4, expertPicks: 0, secondBestPicks: 0, farPicks: 4)
+        )
+        #expect(pointLeak.category == .reducePointLeak)
+
+        let narrowChoices = WhatToPlayCoachingTipMetrics.classify(
+            summary: coachingSummary(attempts: 5, accuracyPercent: 80, averageExpectedImpact: 1, currentStreak: 4),
+            choiceRankSummary: WhatToPlayChoiceRankSummaryMetrics(trackedAttempts: 5, expertPicks: 2, secondBestPicks: 1, farPicks: 2)
+        )
+        #expect(narrowChoices.category == .narrowChoices)
+        #expect(narrowChoices.farPickPercent == 40)
+
+        let strongStreak = WhatToPlayCoachingTipMetrics.classify(
+            summary: coachingSummary(attempts: 5, accuracyPercent: 80, averageExpectedImpact: 1, currentStreak: 3),
+            choiceRankSummary: WhatToPlayChoiceRankSummaryMetrics(trackedAttempts: 5, expertPicks: 4, secondBestPicks: 1, farPicks: 0)
+        )
+        #expect(strongStreak.category == .strongStreak)
+
+        let compare = WhatToPlayCoachingTipMetrics.classify(
+            summary: coachingSummary(attempts: 5, accuracyPercent: 80, averageExpectedImpact: 1, currentStreak: 1),
+            choiceRankSummary: WhatToPlayChoiceRankSummaryMetrics(trackedAttempts: 5, expertPicks: 3, secondBestPicks: 1, farPicks: 1)
+        )
+        #expect(compare.category == .compareChoices)
+    }
+
     @Test("رؤى نتيجة قرارات وش تلعب تأتي من المحرك")
     func outcomeInsightMetricsClassifySummaries() {
         #expect(WhatToPlayOutcomeInsightMetrics.classify(summary: .empty) == nil)
@@ -2017,6 +2057,33 @@ private func trainingPriorityRank(
         accuracyPercent: accuracyPercent,
         averageExpectedImpact: averageExpectedImpact,
         stableOrder: stableOrder
+    )
+}
+
+private func coachingSummary(
+    attempts: Int,
+    accuracyPercent: Int = 0,
+    averageExpectedImpact: Int = 0,
+    currentStreak: Int = 0
+) -> WhatToPlayStatsSummaryMetrics {
+    WhatToPlayStatsSummaryMetrics(
+        attempts: attempts,
+        correct: 0,
+        accuracyPercent: accuracyPercent,
+        currentStreak: currentStreak,
+        bestStreak: currentStreak,
+        averageExpectedImpact: averageExpectedImpact,
+        lostExpectedPoints: 0,
+        averageLostExpectedPoints: 0,
+        lostAgainstSecondBestPoints: 0,
+        secondBestComparisonAttempts: 0,
+        averageSecondBestGap: 0,
+        valueCapturePercent: 0,
+        valueCaptureAttempts: 0,
+        projectedTeamPointAttempts: 0,
+        averageProjectedTeamPoints: 0,
+        lostProjectedTeamPoints: 0,
+        averageLostProjectedTeamPoints: 0
     )
 }
 

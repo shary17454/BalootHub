@@ -3987,52 +3987,73 @@ enum WhatToPlayStatsAnalyzer {
 
     static func coachingTip(for attempts: [WhatToPlayAttempt]) -> WhatToPlayCoachingTip {
         let summary = summarize(attempts: attempts)
-        guard summary.attempts > 0 else {
+        let rankSummary = choiceRankSummary(for: attempts)
+        let metrics = WhatToPlayCoachingTipMetrics.classify(
+            summary: WhatToPlayStatsSummaryMetrics(
+                attempts: summary.attempts,
+                correct: summary.correct,
+                accuracyPercent: summary.accuracyPercent,
+                currentStreak: summary.currentStreak,
+                bestStreak: summary.bestStreak,
+                averageExpectedImpact: summary.averageExpectedImpact,
+                lostExpectedPoints: summary.lostExpectedPoints,
+                averageLostExpectedPoints: summary.averageLostExpectedPoints,
+                lostAgainstSecondBestPoints: summary.lostAgainstSecondBestPoints,
+                secondBestComparisonAttempts: summary.secondBestComparisonAttempts,
+                averageSecondBestGap: summary.averageSecondBestGap,
+                valueCapturePercent: summary.valueCapturePercent,
+                valueCaptureAttempts: summary.valueCaptureAttempts,
+                projectedTeamPointAttempts: summary.projectedTeamPointAttempts,
+                averageProjectedTeamPoints: summary.averageProjectedTeamPoints,
+                lostProjectedTeamPoints: summary.lostProjectedTeamPoints,
+                averageLostProjectedTeamPoints: summary.averageLostProjectedTeamPoints
+            ),
+            choiceRankSummary: WhatToPlayChoiceRankSummaryMetrics(
+                trackedAttempts: rankSummary.trackedAttempts,
+                expertPicks: rankSummary.expertPicks,
+                secondBestPicks: rankSummary.secondBestPicks,
+                farPicks: rankSummary.farPicks
+            )
+        )
+
+        switch metrics.category {
+        case .startMeasuring:
             return WhatToPlayCoachingTip(
                 title: "ابدأ القياس".localized,
                 detail: "حل عدة مواقف من كل مستوى حتى يعطيك المدرب قراءة أدق لأسلوبك.".localized,
                 iconName: "target"
             )
-        }
-
-        if summary.accuracyPercent < 50 {
+        case .slowDown:
             return WhatToPlayCoachingTip(
                 title: "خفف السرعة".localized,
                 detail: "قبل اختيار الورقة، راجع اللون المطلوب والحكم الموجود ثم قارن هل تستطيع ربح الأكلة أو تقليل خسارتها.".localized,
                 iconName: "pause.circle.fill"
             )
-        }
-
-        if summary.averageExpectedImpact < 0 {
+        case .reducePointLeak:
             return WhatToPlayCoachingTip(
                 title: "قلل نزيف النقاط".localized,
                 detail: "اختياراتك الأخيرة تخسر نقاطًا متوقعة؛ جرّب حفظ الورق العالي عندما لا تستطيع الفوز بالأكلة.".localized,
                 iconName: "shield.lefthalf.filled"
             )
-        }
-
-        let rankSummary = choiceRankSummary(for: attempts)
-        if rankSummary.trackedAttempts >= 3 && rankSummary.farPickPercent >= 40 {
+        case .narrowChoices:
             return WhatToPlayCoachingTip(
                 title: "صفِّ الخيارات أولًا".localized,
                 detail: "نسبة الاختيارات خارج أفضل خيارين مرتفعة. قبل المقارنة النهائية، استبعد الورق الذي لا يكسب الأكلة ولا يقلل الخسارة.".localized,
                 iconName: "line.3.horizontal.decrease.circle.fill"
             )
-        }
-
-        if summary.currentStreak >= 3 {
+        case .strongStreak:
             return WhatToPlayCoachingTip(
                 title: "سلسلة ممتازة".localized,
                 detail: "أنت تكرر قرارات قريبة من الخبير. ارفع الصعوبة أو ركز على مواقف الحكم لاختبار قراءة أقوى.".localized,
                 iconName: "flame.fill"
             )
+        case .compareChoices:
+            return WhatToPlayCoachingTip(
+                title: "استمر بالمقارنة".localized,
+                detail: "بعد كل إجابة راجع بطاقة أثر كل قرار؛ الفرق بين اختيارك والخيار الثاني يعلمك متى تكون المخاطرة مقبولة.".localized,
+                iconName: "lightbulb.fill"
+            )
         }
-
-        return WhatToPlayCoachingTip(
-            title: "استمر بالمقارنة".localized,
-            detail: "بعد كل إجابة راجع بطاقة أثر كل قرار؛ الفرق بين اختيارك والخيار الثاني يعلمك متى تكون المخاطرة مقبولة.".localized,
-            iconName: "lightbulb.fill"
-        )
     }
 
     private static func difficultyOrder(_ difficulty: WhatToPlayDifficulty) -> Int {

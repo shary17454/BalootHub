@@ -1743,6 +1743,77 @@ public struct WhatToPlayChoiceRankInsightMetrics: Sendable, Equatable {
     }
 }
 
+/// التصنيف الخام لنصيحة تدريب «وش تلعب؟» دون نصوص واجهة.
+public enum WhatToPlayCoachingTipCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case startMeasuring
+    case slowDown
+    case reducePointLeak
+    case narrowChoices
+    case strongStreak
+    case compareChoices
+}
+
+/// نتيجة اختيار نصيحة تدريب «وش تلعب؟» من مقاييس المحرك.
+public struct WhatToPlayCoachingTipMetrics: Sendable, Equatable {
+    public let category: WhatToPlayCoachingTipCategory
+    public let attempts: Int
+    public let accuracyPercent: Int
+    public let averageExpectedImpact: Int
+    public let currentStreak: Int
+    public let trackedChoiceRanks: Int
+    public let farPickPercent: Int
+
+    public init(
+        category: WhatToPlayCoachingTipCategory,
+        attempts: Int,
+        accuracyPercent: Int,
+        averageExpectedImpact: Int,
+        currentStreak: Int,
+        trackedChoiceRanks: Int,
+        farPickPercent: Int
+    ) {
+        self.category = category
+        self.attempts = attempts
+        self.accuracyPercent = accuracyPercent
+        self.averageExpectedImpact = averageExpectedImpact
+        self.currentStreak = currentStreak
+        self.trackedChoiceRanks = trackedChoiceRanks
+        self.farPickPercent = farPickPercent
+    }
+
+    public static func classify(
+        summary: WhatToPlayStatsSummaryMetrics,
+        choiceRankSummary: WhatToPlayChoiceRankSummaryMetrics,
+        minimumTrackedChoiceRanks: Int = 3
+    ) -> WhatToPlayCoachingTipMetrics {
+        let category: WhatToPlayCoachingTipCategory
+        if summary.attempts == 0 {
+            category = .startMeasuring
+        } else if summary.accuracyPercent < 50 {
+            category = .slowDown
+        } else if summary.averageExpectedImpact < 0 {
+            category = .reducePointLeak
+        } else if choiceRankSummary.trackedAttempts >= minimumTrackedChoiceRanks,
+                  choiceRankSummary.farPickPercent >= 40 {
+            category = .narrowChoices
+        } else if summary.currentStreak >= 3 {
+            category = .strongStreak
+        } else {
+            category = .compareChoices
+        }
+
+        return WhatToPlayCoachingTipMetrics(
+            category: category,
+            attempts: summary.attempts,
+            accuracyPercent: summary.accuracyPercent,
+            averageExpectedImpact: summary.averageExpectedImpact,
+            currentStreak: summary.currentStreak,
+            trackedChoiceRanks: choiceRankSummary.trackedAttempts,
+            farPickPercent: choiceRankSummary.farPickPercent
+        )
+    }
+}
+
 /// التصنيف الخام لرؤية نتيجة قرارات «وش تلعب؟».
 public enum WhatToPlayOutcomeInsightCategory: String, Sendable, Codable, Equatable, CaseIterable {
     case losingOften
