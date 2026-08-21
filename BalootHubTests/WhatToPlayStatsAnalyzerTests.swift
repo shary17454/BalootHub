@@ -3653,6 +3653,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             "\("المستوى".localized): \("سهل".localized) · \("تركيز التدريب".localized): \("افتتاح الأكلة".localized) · \("النمط".localized): \("صن".localized)"
         )
         XCTAssertNil(review.replaySeed)
+        XCTAssertNil(review.recommendedCard)
+        XCTAssertEqual(review.expectedImprovement, 0)
     }
 
     func testTrainingSessionReviewReplaysWorstMistakeBeforeRepeating() {
@@ -3674,6 +3676,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(review.difficulty, .medium)
         XCTAssertEqual(review.focusKind, .followSuit)
         XCTAssertEqual(review.gameMode, .hokum)
+        XCTAssertEqual(review.recommendedCard, PlayingCard(suit: .clubs, rank: .seven))
+        XCTAssertEqual(review.expectedImprovement, 9)
         XCTAssertTrue(["\("ابدأ بإعادة موقف".localized) 202", "\("اختيارك".localized): \(PlayingCard(suit: .clubs, rank: .seven).accessibilityName)", "\("أفضل ورقة".localized): \(PlayingCard(suit: .clubs, rank: .seven).accessibilityName)", "\("الفاقد".localized): 9"].allSatisfy { review.detail.contains($0) })
         XCTAssertEqual(
             review.contextLine,

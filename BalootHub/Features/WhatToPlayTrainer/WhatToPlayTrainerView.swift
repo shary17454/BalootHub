@@ -945,6 +945,20 @@ struct WhatToPlayTrainerView: View {
                     .foregroundStyle(AppColor.accent)
                     .lineLimit(2)
                     .minimumScaleFactor(0.85)
+                if let recommendedCard = review.recommendedCard {
+                    Text("\("ورقة المراجعة".localized): \(recommendedCard.accessibilityName)")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(AppColor.textPrimary)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.85)
+                }
+                if review.expectedImprovement > 0 {
+                    Text("\("تحسن متوقع".localized): +\(review.expectedImprovement)")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(AppColor.success)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.85)
+                }
             }
         } icon: {
             Image(systemName: review.iconName)

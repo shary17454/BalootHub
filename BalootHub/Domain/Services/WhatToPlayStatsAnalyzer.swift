@@ -514,6 +514,8 @@ struct WhatToPlayTrainingSessionReview: Equatable {
     let focusKind: WhatToPlayScenarioFocusKind?
     let gameMode: GameMode?
     let trumpSuit: Suit?
+    let recommendedCard: PlayingCard?
+    let expectedImprovement: Int
 }
 
 enum WhatToPlayDecisionInsightKind: Equatable {
@@ -2185,7 +2187,9 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: plan.difficulty,
                 focusKind: plan.focusKind,
                 gameMode: plan.gameMode,
-                trumpSuit: plan.trumpSuit
+                trumpSuit: plan.trumpSuit,
+                recommendedCard: nil,
+                expectedImprovement: 0
             )
         case .inProgress:
             return WhatToPlayTrainingSessionReview(
@@ -2199,7 +2203,9 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: plan.difficulty,
                 focusKind: plan.focusKind,
                 gameMode: plan.gameMode,
-                trumpSuit: plan.trumpSuit
+                trumpSuit: plan.trumpSuit,
+                recommendedCard: nil,
+                expectedImprovement: 0
             )
         case .achieved:
             let recommendation = nextScenarioRecommendation(for: attempts)
@@ -2228,7 +2234,9 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: recommendation.difficulty,
                 focusKind: recommendation.focusKind,
                 gameMode: recommendation.gameMode,
-                trumpSuit: recommendation.trumpSuit
+                trumpSuit: recommendation.trumpSuit,
+                recommendedCard: nil,
+                expectedImprovement: 0
             )
         case .needsRepeat:
             if let reviewItem = progress.reviewItem {
@@ -2243,7 +2251,9 @@ enum WhatToPlayStatsAnalyzer {
                     difficulty: reviewItem.difficulty,
                     focusKind: reviewItem.focusKind,
                     gameMode: reviewItem.gameMode,
-                    trumpSuit: reviewItem.contextTrumpSuit
+                    trumpSuit: reviewItem.contextTrumpSuit,
+                    recommendedCard: reviewItem.bestCard,
+                    expectedImprovement: microDrillExpectedImprovement(for: reviewItem)
                 )
             }
             return WhatToPlayTrainingSessionReview(
@@ -2257,7 +2267,9 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: plan.difficulty,
                 focusKind: plan.focusKind,
                 gameMode: plan.gameMode,
-                trumpSuit: plan.trumpSuit
+                trumpSuit: plan.trumpSuit,
+                recommendedCard: nil,
+                expectedImprovement: 0
             )
         }
     }
