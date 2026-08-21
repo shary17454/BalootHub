@@ -116,6 +116,50 @@ struct ReplayDeterminismTests {
         }
     }
 
+    @Test("المشاريع المعلنة تُعاد وتُحتسب في Replay جولة كاملة")
+    func declaredProjectsReplayThroughScoring() throws {
+        var selectedInitial: GameState?
+        var selectedPlayed: GameState?
+
+        for seed in 1...250 {
+            let initial = makeAIMatch()
+            var state = try GameEngine.apply(.dealCards(seed: UInt64(seed)), to: initial)
+            guard let buyerID = state.currentTurnPlayerID else { continue }
+            state = try GameEngine.apply(.placeBid(playerID: buyerID, bid: .sun), to: state)
+            while state.phase == .bidding, state.bidding.stage == .doubling {
+                guard let playerID = state.currentTurnPlayerID else { break }
+                state = try GameEngine.apply(.passMultiplier(playerID: playerID), to: state)
+            }
+            guard state.phase == .declaring else { continue }
+
+            var declaredAtLeastOneProject = false
+            while state.phase == .declaring {
+                guard let playerID = state.currentTurnPlayerID else { break }
+                let available = GameEngine.declarableProjects(for: playerID, state: state)
+                declaredAtLeastOneProject = declaredAtLeastOneProject || !available.isEmpty
+                state = try GameEngine.apply(.declareProjects(playerID: playerID, projects: available), to: state)
+            }
+            guard declaredAtLeastOneProject else { continue }
+
+            state = try finishRoundFromPlay(state)
+            selectedInitial = initial
+            selectedPlayed = state
+            break
+        }
+
+        let initial = try #require(selectedInitial)
+        let played = try #require(selectedPlayed)
+        let replayed = try GameEngine.replay(initialState: initial, actions: played.actionHistory)
+
+        #expect(played.phase == .finished)
+        #expect(!played.declaredProjects.isEmpty)
+        #expect(!played.awardedProjects.isEmpty)
+        #expect(replayed.declaredProjects == played.declaredProjects)
+        #expect(replayed.awardedProjects == played.awardedProjects)
+        #expect(replayed.lastRoundResult?.projectPoints == played.lastRoundResult?.projectPoints)
+        #expect(replayed.lastRoundResult == played.lastRoundResult)
+    }
+
     @Test("إعادة التشغيل حتى خطوة محددة تُنتج حالة وسيطة صحيحة")
     func partialReplayStopsAtStep() throws {
         let initial = makeAIMatch()
@@ -148,6 +192,38 @@ struct ReplayDeterminismTests {
         }
         #expect(!bidActions.isEmpty)
         #expect(state.bidding.bids.count == bidActions.count)
+    }
+
+    private func finishRoundFromPlay(_ initialState: GameState) throws -> GameState {
+        var state = initialState
+        let player = SimpleBalootAgent()
+
+        while state.phase != .finished {
+            if state.phase == .scoring {
+                state = try GameEngine.apply(.finishRound, to: state)
+                continue
+            }
+
+            guard state.phase == .playing,
+                  let playerID = state.currentTurnPlayerID,
+                  let hand = state.hands[playerID],
+                  let mode = state.mode
+            else {
+                break
+            }
+
+            let legal = LegalMoveValidator.legalCards(
+                hand: hand,
+                trick: state.currentTrick,
+                mode: mode,
+                trumpSuit: state.trumpSuit,
+                rules: state.rules
+            )
+            let card = player.chooseCard(hand: hand, legalCards: legal, state: state)
+            state = try GameEngine.apply(.playCard(playerID: playerID, card: card), to: state)
+        }
+
+        return state
     }
 }
 
