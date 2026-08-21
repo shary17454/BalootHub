@@ -282,6 +282,7 @@ public struct RoundAnalysisReport: Sendable, Equatable {
             suggestedScenarioCount: recommendedScenarioCount(for: focus),
             focusKind: recommendedPracticeFocusKind(for: focus.priority),
             gameMode: recommendedPracticeGameMode(for: focus.priority),
+            trumpSuit: recommendedPracticeTrumpSuit(for: focus.priority),
             title: practiceTitle(for: focus.priority),
             detail: practiceDetail(for: focus, difficulty: difficulty)
         )
@@ -328,6 +329,26 @@ public struct RoundAnalysisReport: Sendable, Equatable {
         case .projects, .play, .none:
             nil
         }
+    }
+
+    private func recommendedPracticeTrumpSuit(for priority: RoundReviewPriority) -> Suit? {
+        switch priority {
+        case .bidding:
+            return biddingDecisions
+                .first { !$0.matchedRecommendation }
+                .flatMap { trumpSuit(from: $0.recommendedBid) ?? trumpSuit(from: $0.bid) }
+        case .multipliers:
+            return biddingDecisions
+                .first
+                .flatMap { trumpSuit(from: $0.recommendedBid) ?? trumpSuit(from: $0.bid) }
+        case .projects, .play, .none:
+            return nil
+        }
+    }
+
+    private func trumpSuit(from bid: Bid) -> Suit? {
+        if case .hokum(let suit) = bid { return suit }
+        return nil
     }
 
     private func deterministicPracticeSeed(for focus: RoundReviewFocus) -> UInt64 {

@@ -220,6 +220,7 @@ struct WhatToPlayTrainerView: View {
             difficulty: difficulty,
             focusKind: preferredFocus,
             gameMode: preferredMode,
+            trumpSuit: preferredTrumpSuit,
             seedBase: routeSeedBase ?? seed,
             scenarioCount: targetCount,
             targetAccuracyPercent: 70,

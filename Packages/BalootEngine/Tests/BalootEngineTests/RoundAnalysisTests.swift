@@ -299,6 +299,75 @@ struct RoundAnalysisTests {
         #expect(report.practiceRecommendation?.title == "تدرب على قراءة المزايدة")
     }
 
+    @Test("توصية تدريب المزايدة تحمل لون الحكم عند التوصية بحكم")
+    func practiceRecommendationCarriesRecommendedTrumpSuitForBidding() {
+        let team = Team(name: "أ")
+        let player = Player(name: "لاعب", kind: .human, seat: .south, teamID: team.id)
+        let biddingDecision = RoundBiddingDecisionAnalysis(
+            stepIndex: 1,
+            playerID: player.id,
+            bid: .pass,
+            recommendedBid: .hokum(suit: .spades),
+            legalBids: [.pass, .sun, .hokum(suit: .spades)],
+            handStrengthScore: 55,
+            estimatedLostPoints: 12,
+            explanation: "اختبار"
+        )
+        let report = RoundAnalysisReport(
+            playerID: player.id,
+            scoreOutOf100: 62,
+            decisions: [],
+            biddingDecisions: [biddingDecision],
+            projectOpportunities: [],
+            multiplierDecisions: [],
+            bestDecision: nil,
+            worstDecision: nil,
+            totalEstimatedLostPoints: 12,
+            tacticalMistakes: [],
+            strengths: [],
+            weaknesses: [],
+            tips: []
+        )
+
+        #expect(report.practiceRecommendation?.priority == .bidding)
+        #expect(report.practiceRecommendation?.gameMode == .hokum)
+        #expect(report.practiceRecommendation?.trumpSuit == .spades)
+    }
+
+    @Test("توصية تدريب الصن لا تحمل لون حكم")
+    func practiceRecommendationLeavesTrumpSuitEmptyForSunBidding() {
+        let team = Team(name: "أ")
+        let player = Player(name: "لاعب", kind: .human, seat: .south, teamID: team.id)
+        let biddingDecision = RoundBiddingDecisionAnalysis(
+            stepIndex: 1,
+            playerID: player.id,
+            bid: .pass,
+            recommendedBid: .sun,
+            legalBids: [.pass, .sun],
+            handStrengthScore: 47,
+            estimatedLostPoints: 10,
+            explanation: "اختبار"
+        )
+        let report = RoundAnalysisReport(
+            playerID: player.id,
+            scoreOutOf100: 66,
+            decisions: [],
+            biddingDecisions: [biddingDecision],
+            projectOpportunities: [],
+            multiplierDecisions: [],
+            bestDecision: nil,
+            worstDecision: nil,
+            totalEstimatedLostPoints: 10,
+            tacticalMistakes: [],
+            strengths: [],
+            weaknesses: [],
+            tips: []
+        )
+
+        #expect(report.practiceRecommendation?.priority == .bidding)
+        #expect(report.practiceRecommendation?.trumpSuit == nil)
+    }
+
     @Test("اختيار غير الأفضل يظهر في أسوأ قرار")
     func nonExpertChoiceCanBeReportedAsWorstDecision() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
