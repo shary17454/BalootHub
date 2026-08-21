@@ -946,6 +946,67 @@ public struct WhatToPlayTrainingSessionSeedMetrics: Sendable, Equatable {
     }
 }
 
+/// نوع خطة جلسة تدريب «وش تلعب؟» الخام دون نصوص واجهة.
+public enum WhatToPlayTrainingSessionPlanCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case foundation
+    case focusedReview
+    case reduceCostlyDecisions
+    case simulationReview
+    case valueReview
+    case levelUp
+    case reducePointLeak
+    case stabilizeReading
+}
+
+/// مدخلات اختيار خطة جلسة تدريب «وش تلعب؟» من أرقام وتحليلات خام.
+public struct WhatToPlayTrainingSessionPlanMetrics: Sendable, Equatable {
+    public let category: WhatToPlayTrainingSessionPlanCategory
+
+    public init(category: WhatToPlayTrainingSessionPlanCategory) {
+        self.category = category
+    }
+
+    public static func classify(
+        styleCategory: WhatToPlayPlayStyleCategory,
+        pulseState: WhatToPlaySessionPulseState,
+        summary: WhatToPlayStatsSummaryMetrics,
+        decisionQualitySummary: WhatToPlayDecisionQualitySummaryMetrics
+    ) -> WhatToPlayTrainingSessionPlanMetrics {
+        if styleCategory == .measuring {
+            return WhatToPlayTrainingSessionPlanMetrics(category: .foundation)
+        }
+
+        if pulseState == .reviewNeeded {
+            return WhatToPlayTrainingSessionPlanMetrics(category: .focusedReview)
+        }
+
+        if decisionQualitySummary.trackedAttempts >= 3,
+           decisionQualitySummary.costlyPercent >= 30 {
+            return WhatToPlayTrainingSessionPlanMetrics(category: .reduceCostlyDecisions)
+        }
+
+        if summary.projectedTeamPointAttempts >= 3,
+           summary.averageLostProjectedTeamPoints >= 6 {
+            return WhatToPlayTrainingSessionPlanMetrics(category: .simulationReview)
+        }
+
+        if summary.attempts >= 3,
+           summary.averageLostExpectedPoints >= 4 {
+            return WhatToPlayTrainingSessionPlanMetrics(category: .valueReview)
+        }
+
+        if styleCategory == .expertAligned || summary.currentStreak >= 3 {
+            return WhatToPlayTrainingSessionPlanMetrics(category: .levelUp)
+        }
+
+        if styleCategory == .cautious || summary.averageExpectedImpact < 0 {
+            return WhatToPlayTrainingSessionPlanMetrics(category: .reducePointLeak)
+        }
+
+        return WhatToPlayTrainingSessionPlanMetrics(category: .stabilizeReading)
+    }
+}
+
 /// ملخص نتائج قرارات «وش تلعب؟» حسب نتيجة الأكلة دون نصوص واجهة.
 public struct WhatToPlayOutcomeSummaryMetrics: Sendable, Equatable {
     public let trackedAttempts: Int

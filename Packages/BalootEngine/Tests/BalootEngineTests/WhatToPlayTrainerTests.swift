@@ -426,6 +426,42 @@ struct WhatToPlayTrainerTests {
         #expect(metrics.nextSeed == 11_415_152)
     }
 
+    @Test("تصنيف خطة جلسة وش تلعب يأتي من المحرك بترتيب أولويات ثابت")
+    func trainingSessionPlanMetricsClassifySessionPriority() {
+        #expect(
+            trainingSessionPlanCategory(style: .measuring, pulse: .reviewNeeded, costlyPercent: 80)
+                == .foundation
+        )
+        #expect(
+            trainingSessionPlanCategory(style: .inconsistent, pulse: .reviewNeeded, costlyPercent: 80)
+                == .focusedReview
+        )
+        #expect(
+            trainingSessionPlanCategory(style: .inconsistent, averageLostProjectedTeamPoints: 10, costlyPercent: 40)
+                == .reduceCostlyDecisions
+        )
+        #expect(
+            trainingSessionPlanCategory(style: .inconsistent, averageLostProjectedTeamPoints: 8)
+                == .simulationReview
+        )
+        #expect(
+            trainingSessionPlanCategory(style: .inconsistent, averageLostExpectedPoints: 5)
+                == .valueReview
+        )
+        #expect(
+            trainingSessionPlanCategory(style: .expertAligned)
+                == .levelUp
+        )
+        #expect(
+            trainingSessionPlanCategory(style: .cautious)
+                == .reducePointLeak
+        )
+        #expect(
+            trainingSessionPlanCategory(style: .inconsistent)
+                == .stabilizeReading
+        )
+    }
+
     @Test("ملخص نتائج قرارات وش تلعب يأتي من المحرك")
     func outcomeSummaryMetricsClassifyOutcomes() {
         #expect(WhatToPlayOutcomeSummaryMetrics.summarize(outcomes: []) == .empty)
@@ -1458,6 +1494,51 @@ struct WhatToPlayTrainerTests {
             ?? current.teamTrickPoints[player.teamID]
             ?? 0
     }
+}
+
+private func trainingSessionPlanCategory(
+    style: WhatToPlayPlayStyleCategory,
+    pulse: WhatToPlaySessionPulseState = .focused,
+    attempts: Int = 4,
+    currentStreak: Int = 0,
+    averageExpectedImpact: Int = 1,
+    averageLostExpectedPoints: Int = 0,
+    projectedAttempts: Int = 3,
+    averageLostProjectedTeamPoints: Int = 0,
+    costlyPercent: Int = 0
+) -> WhatToPlayTrainingSessionPlanCategory {
+    let costlyDecisions = costlyPercent >= 30 ? 2 : 0
+    let qualityAttempts = costlyPercent >= 30 ? 5 : 0
+    return WhatToPlayTrainingSessionPlanMetrics.classify(
+        styleCategory: style,
+        pulseState: pulse,
+        summary: WhatToPlayStatsSummaryMetrics(
+            attempts: attempts,
+            correct: 2,
+            accuracyPercent: 50,
+            currentStreak: currentStreak,
+            bestStreak: 2,
+            averageExpectedImpact: averageExpectedImpact,
+            lostExpectedPoints: averageLostExpectedPoints * max(1, attempts),
+            averageLostExpectedPoints: averageLostExpectedPoints,
+            lostAgainstSecondBestPoints: 0,
+            secondBestComparisonAttempts: 0,
+            averageSecondBestGap: 0,
+            valueCapturePercent: 50,
+            valueCaptureAttempts: attempts,
+            projectedTeamPointAttempts: projectedAttempts,
+            averageProjectedTeamPoints: 70,
+            lostProjectedTeamPoints: averageLostProjectedTeamPoints * max(1, projectedAttempts),
+            averageLostProjectedTeamPoints: averageLostProjectedTeamPoints
+        ),
+        decisionQualitySummary: WhatToPlayDecisionQualitySummaryMetrics(
+            trackedAttempts: qualityAttempts,
+            expertMatches: qualityAttempts - costlyDecisions,
+            closeDecisions: 0,
+            acceptableDecisions: 0,
+            costlyDecisions: costlyDecisions
+        )
+    ).category
 }
 
 private func projectedOption(

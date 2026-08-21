@@ -1607,6 +1607,7 @@ enum WhatToPlayStatsAnalyzer {
         let summary = summarize(attempts: attempts)
         let style = playStyle(for: attempts)
         let pulse = sessionPulse(for: attempts)
+        let qualitySummary = decisionQualitySummary(for: attempts)
         let focusPriority = focusTrainingPriority(for: attempts)
         let gameModePriority = gameModeTrainingPriority(for: attempts)
         let focusKind = focusPriority?.focusKind ?? focusScenarioKind(attempts)?.focusKind
@@ -1623,8 +1624,39 @@ enum WhatToPlayStatsAnalyzer {
             focusKind: focusKind,
             gameMode: gameMode
         )
+        let planCategory = WhatToPlayTrainingSessionPlanMetrics.classify(
+            styleCategory: trainingPlanStyleCategory(style.kind),
+            pulseState: trainingPlanPulseState(pulse.state),
+            summary: WhatToPlayStatsSummaryMetrics(
+                attempts: summary.attempts,
+                correct: summary.correct,
+                accuracyPercent: summary.accuracyPercent,
+                currentStreak: summary.currentStreak,
+                bestStreak: summary.bestStreak,
+                averageExpectedImpact: summary.averageExpectedImpact,
+                lostExpectedPoints: summary.lostExpectedPoints,
+                averageLostExpectedPoints: summary.averageLostExpectedPoints,
+                lostAgainstSecondBestPoints: summary.lostAgainstSecondBestPoints,
+                secondBestComparisonAttempts: summary.secondBestComparisonAttempts,
+                averageSecondBestGap: summary.averageSecondBestGap,
+                valueCapturePercent: summary.valueCapturePercent,
+                valueCaptureAttempts: summary.valueCaptureAttempts,
+                projectedTeamPointAttempts: summary.projectedTeamPointAttempts,
+                averageProjectedTeamPoints: summary.averageProjectedTeamPoints,
+                lostProjectedTeamPoints: summary.lostProjectedTeamPoints,
+                averageLostProjectedTeamPoints: summary.averageLostProjectedTeamPoints
+            ),
+            decisionQualitySummary: WhatToPlayDecisionQualitySummaryMetrics(
+                trackedAttempts: qualitySummary.trackedAttempts,
+                expertMatches: qualitySummary.expertMatches,
+                closeDecisions: qualitySummary.closeDecisions,
+                acceptableDecisions: qualitySummary.acceptableDecisions,
+                costlyDecisions: qualitySummary.costlyDecisions
+            )
+        ).category
 
-        if style.kind == .measuring {
+        switch planCategory {
+        case .foundation:
             return WhatToPlayTrainingSessionPlan(
                 difficulty: .easy,
                 gameMode: gameMode,
@@ -1640,9 +1672,8 @@ enum WhatToPlayStatsAnalyzer {
                 rationaleIconName: rationale.iconName,
                 iconName: "play.rectangle.fill"
             )
-        }
 
-        if pulse.state == .reviewNeeded {
+        case .focusedReview:
             return WhatToPlayTrainingSessionPlan(
                 difficulty: recommendation.difficulty,
                 focusKind: focusKind,
@@ -1659,10 +1690,8 @@ enum WhatToPlayStatsAnalyzer {
                 rationaleIconName: rationale.iconName,
                 iconName: "magnifyingglass.circle.fill"
             )
-        }
 
-        let qualitySummary = decisionQualitySummary(for: attempts)
-        if qualitySummary.trackedAttempts >= 3, qualitySummary.costlyPercent >= 30 {
+        case .reduceCostlyDecisions:
             return WhatToPlayTrainingSessionPlan(
                 difficulty: recommendation.difficulty,
                 focusKind: focusKind,
@@ -1680,9 +1709,8 @@ enum WhatToPlayStatsAnalyzer {
                 rationaleIconName: rationale.iconName,
                 iconName: "exclamationmark.triangle.fill"
             )
-        }
 
-        if summary.projectedTeamPointAttempts >= 3 && summary.averageLostProjectedTeamPoints >= 6 {
+        case .simulationReview:
             return WhatToPlayTrainingSessionPlan(
                 difficulty: recommendation.difficulty,
                 focusKind: focusKind,
@@ -1699,9 +1727,8 @@ enum WhatToPlayStatsAnalyzer {
                 rationaleIconName: rationale.iconName,
                 iconName: "chart.bar.xaxis"
             )
-        }
 
-        if summary.attempts >= 3 && summary.averageLostExpectedPoints >= 4 {
+        case .valueReview:
             return WhatToPlayTrainingSessionPlan(
                 difficulty: recommendation.difficulty,
                 focusKind: focusKind,
@@ -1718,9 +1745,8 @@ enum WhatToPlayStatsAnalyzer {
                 rationaleIconName: rationale.iconName,
                 iconName: "chart.bar.doc.horizontal.fill"
             )
-        }
 
-        if style.kind == .expertAligned || summary.currentStreak >= 3 {
+        case .levelUp:
             return WhatToPlayTrainingSessionPlan(
                 difficulty: nextDifficulty(after: recommendation.difficulty),
                 focusKind: focusKind,
@@ -1737,9 +1763,8 @@ enum WhatToPlayStatsAnalyzer {
                 rationaleIconName: rationale.iconName,
                 iconName: "arrow.up.circle.fill"
             )
-        }
 
-        if style.kind == .cautious || summary.averageExpectedImpact < 0 {
+        case .reducePointLeak:
             return WhatToPlayTrainingSessionPlan(
                 difficulty: recommendation.difficulty,
                 focusKind: focusKind,
@@ -1756,24 +1781,53 @@ enum WhatToPlayStatsAnalyzer {
                 rationaleIconName: rationale.iconName,
                 iconName: "shield.lefthalf.filled"
             )
-        }
 
-        return WhatToPlayTrainingSessionPlan(
-            difficulty: recommendation.difficulty,
-            focusKind: focusKind,
-            gameMode: gameMode,
-            trumpSuit: trumpSuit,
-            scenarioCount: 4,
-            targetAccuracyPercent: 70,
-            targetAverageExpectedImpact: 1,
-            title: "جلسة تثبيت القراءة".localized,
-            detail: "درّب نفس المستوى في دفعة قصيرة حتى تصبح قراراتك أكثر ثباتًا.".localized,
-            successMetric: "هدف الجلسة: 3 إجابات صحيحة من 4.".localized,
-            rationaleTitle: rationale.title,
-            rationaleDetail: rationale.detail,
-            rationaleIconName: rationale.iconName,
-            iconName: "target"
-        )
+        case .stabilizeReading:
+            return WhatToPlayTrainingSessionPlan(
+                difficulty: recommendation.difficulty,
+                focusKind: focusKind,
+                gameMode: gameMode,
+                trumpSuit: trumpSuit,
+                scenarioCount: 4,
+                targetAccuracyPercent: 70,
+                targetAverageExpectedImpact: 1,
+                title: "جلسة تثبيت القراءة".localized,
+                detail: "درّب نفس المستوى في دفعة قصيرة حتى تصبح قراراتك أكثر ثباتًا.".localized,
+                successMetric: "هدف الجلسة: 3 إجابات صحيحة من 4.".localized,
+                rationaleTitle: rationale.title,
+                rationaleDetail: rationale.detail,
+                rationaleIconName: rationale.iconName,
+                iconName: "target"
+            )
+        }
+    }
+
+    private static func trainingPlanStyleCategory(_ kind: WhatToPlayStyleKind) -> WhatToPlayPlayStyleCategory {
+        switch kind {
+        case .measuring:
+            .measuring
+        case .foundational:
+            .foundational
+        case .cautious:
+            .cautious
+        case .inconsistent:
+            .inconsistent
+        case .expertAligned:
+            .expertAligned
+        }
+    }
+
+    private static func trainingPlanPulseState(_ state: WhatToPlaySessionState) -> WhatToPlaySessionPulseState {
+        switch state {
+        case .noData:
+            .noData
+        case .warmingUp:
+            .warmingUp
+        case .focused:
+            .focused
+        case .reviewNeeded:
+            .reviewNeeded
+        }
     }
 
     static func nextScenarioRecommendation(for attempts: [WhatToPlayAttempt]) -> WhatToPlayNextScenarioRecommendation {
