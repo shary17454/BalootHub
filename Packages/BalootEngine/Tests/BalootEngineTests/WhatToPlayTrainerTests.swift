@@ -1579,6 +1579,14 @@ struct WhatToPlayTrainerTests {
             card: PlayingCard(suit: .diamonds, rank: .queen),
             rank: 6,
             expectedImpact: 4,
+            projectedTeamPoints: 40,
+            outcome: .losesTrick
+        )
+        let secondProjectedLoss = projectedOption(
+            card: PlayingCard(suit: .clubs, rank: .eight),
+            rank: 7,
+            expectedImpact: 4,
+            projectedTeamPoints: 30,
             outcome: .losesTrick
         )
 
@@ -1588,6 +1596,14 @@ struct WhatToPlayTrainerTests {
         #expect(WhatToPlayOptionTacticalTag.classify(option: wins, bestExpectedImpact: 10, bestProjectedTeamPoints: 40) == .winsNow)
         #expect(WhatToPlayOptionTacticalTag.classify(option: opens, bestExpectedImpact: 10, bestProjectedTeamPoints: 40) == .opensRisk)
         #expect(WhatToPlayOptionTacticalTag.classify(option: holds, bestExpectedImpact: 10, bestProjectedTeamPoints: 40) == .holdsPosition)
+        #expect(
+            WhatToPlayOptionTacticalTag.classify(
+                option: secondProjectedLoss,
+                bestExpectedImpact: 10,
+                bestProjectedTeamPoints: 31,
+                secondBestProjectedTeamPoints: 40
+            ) == .costly
+        )
     }
 
     @Test("ملخص خيار وش تلعب التكتيكي يصنف من المحرك")
@@ -1617,6 +1633,7 @@ struct WhatToPlayTrainerTests {
 
         #expect(summaryCategory(expert, lost: 0, projected: 0) == .expertPick)
         #expect(summaryCategory(projectedLoss, lost: 1, projected: 5) == .projectedLoss)
+        #expect(summaryCategory(projectedLoss, lost: 1, projected: 0, secondProjected: 5) == .projectedLoss)
         #expect(summaryCategory(noLoss, lost: 0, projected: 0) == .noLossCloseAlternative)
         #expect(summaryCategory(smallLoss, lost: 2, projected: 0) == .smallLossAlternative)
         #expect(summaryCategory(negative, lost: 11, projected: 0) == .negativeExpectedImpact)
@@ -1653,7 +1670,8 @@ struct WhatToPlayTrainerTests {
                 review.tacticalTag == WhatToPlayOptionTacticalTag.classify(
                     option: review.option,
                     bestExpectedImpact: best.expectedImpact,
-                    bestProjectedTeamPoints: bestProjected.projectedTeamPoints
+                    bestProjectedTeamPoints: bestProjected.projectedTeamPoints,
+                    secondBestProjectedTeamPoints: secondBestProjected.projectedTeamPoints
                 )
             )
             #expect(
@@ -1661,7 +1679,8 @@ struct WhatToPlayTrainerTests {
                     == WhatToPlayOptionTacticalSummaryMetrics.classify(
                         option: review.option,
                         lostExpectedPoints: review.lostExpectedPoints,
-                        lostProjectedTeamPoints: review.lostProjectedTeamPoints
+                        lostProjectedTeamPoints: review.lostProjectedTeamPoints,
+                        lostProjectedAgainstSecondBestPoints: review.lostProjectedAgainstSecondBestPoints
                     )
             )
         }
@@ -2822,12 +2841,14 @@ private func projectedOption(
 private func summaryCategory(
     _ option: WhatToPlayOption,
     lost: Int,
-    projected: Int
+    projected: Int,
+    secondProjected: Int = 0
 ) -> WhatToPlayOptionTacticalSummaryCategory {
     WhatToPlayOptionTacticalSummaryMetrics.classify(
         option: option,
         lostExpectedPoints: lost,
-        lostProjectedTeamPoints: projected
+        lostProjectedTeamPoints: projected,
+        lostProjectedAgainstSecondBestPoints: secondProjected
     ).category
 }
 

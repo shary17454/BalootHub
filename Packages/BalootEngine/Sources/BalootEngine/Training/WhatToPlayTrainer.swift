@@ -2680,11 +2680,15 @@ public enum WhatToPlayOptionTacticalTag: String, Sendable, Codable, Equatable, C
     public static func classify(
         option: WhatToPlayOption,
         bestExpectedImpact: Int,
-        bestProjectedTeamPoints: Int
+        bestProjectedTeamPoints: Int,
+        secondBestProjectedTeamPoints: Int? = nil
     ) -> WhatToPlayOptionTacticalTag {
         let lostExpectedPoints = max(0, bestExpectedImpact - option.expectedImpact)
         let lostProjectedTeamPoints = max(0, bestProjectedTeamPoints - option.projectedTeamPoints)
-        let decisiveLoss = max(lostExpectedPoints, lostProjectedTeamPoints)
+        let lostProjectedAgainstSecondBestPoints = secondBestProjectedTeamPoints.map {
+            max(0, $0 - option.projectedTeamPoints)
+        } ?? 0
+        let decisiveLoss = max(lostExpectedPoints, lostProjectedTeamPoints, lostProjectedAgainstSecondBestPoints)
 
         if option.isExpertChoice { return .expertPick }
         if decisiveLoss <= 2 { return .closeAlternative }
@@ -2740,9 +2744,10 @@ public struct WhatToPlayOptionTacticalSummaryMetrics: Sendable, Equatable {
     public static func classify(
         option: WhatToPlayOption,
         lostExpectedPoints: Int,
-        lostProjectedTeamPoints: Int
+        lostProjectedTeamPoints: Int,
+        lostProjectedAgainstSecondBestPoints: Int = 0
     ) -> WhatToPlayOptionTacticalSummaryMetrics {
-        let decisiveLoss = max(lostExpectedPoints, lostProjectedTeamPoints)
+        let decisiveLoss = max(lostExpectedPoints, lostProjectedTeamPoints, lostProjectedAgainstSecondBestPoints)
 
         if option.isExpertChoice {
             return WhatToPlayOptionTacticalSummaryMetrics(
@@ -2751,7 +2756,7 @@ public struct WhatToPlayOptionTacticalSummaryMetrics: Sendable, Equatable {
             )
         }
 
-        if lostProjectedTeamPoints > lostExpectedPoints {
+        if max(lostProjectedTeamPoints, lostProjectedAgainstSecondBestPoints) > lostExpectedPoints {
             return WhatToPlayOptionTacticalSummaryMetrics(
                 category: .projectedLoss,
                 decisiveLoss: decisiveLoss
@@ -3730,12 +3735,14 @@ public enum WhatToPlayTrainer {
                 tacticalTag: WhatToPlayOptionTacticalTag.classify(
                     option: option,
                     bestExpectedImpact: bestExpectedImpact,
-                    bestProjectedTeamPoints: bestProjectedTeamPoints
+                    bestProjectedTeamPoints: bestProjectedTeamPoints,
+                    secondBestProjectedTeamPoints: secondBestProjectedTeamPoints
                 ),
                 tacticalSummaryMetrics: WhatToPlayOptionTacticalSummaryMetrics.classify(
                     option: option,
                     lostExpectedPoints: lostExpectedPoints,
-                    lostProjectedTeamPoints: lostProjectedTeamPoints
+                    lostProjectedTeamPoints: lostProjectedTeamPoints,
+                    lostProjectedAgainstSecondBestPoints: lostProjectedAgainstSecondBestPoints
                 ),
                 isBestProjectedResult: option.card == bestProjected?.card
             )
