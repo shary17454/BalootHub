@@ -3291,17 +3291,10 @@ enum WhatToPlayStatsAnalyzer {
         let focusStep = WhatToPlayDecisionReviewFocusStepMetrics.classify(focusKind: focusKind)
         let firstStep = decisionReviewFocusStepText(focusStep.category)
 
-        let secondStep: String
-        switch insight.kind {
-        case .expertMatch:
-            secondStep = "اكتب سبب نجاح القرار في ذهنك وكرر نفس القراءة في موقف مشابه.".localized
-        case .closeAlternative:
-            secondStep = "قارن الفرق بين اختيارك وأفضل ورقة؛ هذا النوع من الفوارق الصغيرة يتراكم.".localized
-        case .missedWinningChance:
-            secondStep = "ابحث عن الورقة التي كانت ستحوّل الأكلة من خسارة إلى ربح.".localized
-        case .pointLeak:
-            secondStep = "حدد هل خسرت النقاط لأنك رميت ورقة ثمينة أو تركت ورقة أقل ضررًا.".localized
-        }
+        let insightStep = WhatToPlayDecisionReviewInsightStepMetrics.classify(
+            insightCategory: decisionInsightCategory(insight.kind)
+        )
+        let secondStep = decisionReviewInsightStepText(insightStep.category)
 
         var steps = [
             firstStep,
@@ -3321,6 +3314,21 @@ enum WhatToPlayStatsAnalyzer {
         )
     }
 
+    private static func decisionInsightCategory(
+        _ kind: WhatToPlayDecisionInsightKind
+    ) -> WhatToPlayDecisionInsightCategory {
+        switch kind {
+        case .expertMatch:
+            return .expertMatch
+        case .closeAlternative:
+            return .closeAlternative
+        case .missedWinningChance:
+            return .missedWinningChance
+        case .pointLeak:
+            return .pointLeak
+        }
+    }
+
     private static func decisionReviewFocusStepText(
         _ category: WhatToPlayDecisionReviewFocusStepCategory
     ) -> String {
@@ -3333,6 +3341,21 @@ enum WhatToPlayStatsAnalyzer {
             return "افحص الحكم الموجود على الطاولة قبل رمي ورقة عالية أو حكم أعلى.".localized
         case .narrowChoice:
             return "عندما تكون الخيارات قليلة، رتّبها حسب أقل خسارة لا حسب أعلى ورقة.".localized
+        }
+    }
+
+    private static func decisionReviewInsightStepText(
+        _ category: WhatToPlayDecisionReviewInsightStepCategory
+    ) -> String {
+        switch category {
+        case .reinforceSuccess:
+            return "اكتب سبب نجاح القرار في ذهنك وكرر نفس القراءة في موقف مشابه.".localized
+        case .compareAlternative:
+            return "قارن الفرق بين اختيارك وأفضل ورقة؛ هذا النوع من الفوارق الصغيرة يتراكم.".localized
+        case .findWinningCard:
+            return "ابحث عن الورقة التي كانت ستحوّل الأكلة من خسارة إلى ربح.".localized
+        case .identifyPointLeak:
+            return "حدد هل خسرت النقاط لأنك رميت ورقة ثمينة أو تركت ورقة أقل ضررًا.".localized
         }
     }
 

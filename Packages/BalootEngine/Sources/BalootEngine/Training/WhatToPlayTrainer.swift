@@ -180,6 +180,38 @@ public struct WhatToPlayDecisionReviewFocusStepMetrics: Sendable, Equatable {
     }
 }
 
+/// نوع ثاني خطوة في مراجعة قرار «وش تلعب؟» حسب نتيجة تحليل القرار.
+public enum WhatToPlayDecisionReviewInsightStepCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case reinforceSuccess
+    case compareAlternative
+    case findWinningCard
+    case identifyPointLeak
+}
+
+/// تصنيف خطوة مراجعة القرار المرتبطة بنتيجة تحليل الاختيار دون نصوص واجهة.
+public struct WhatToPlayDecisionReviewInsightStepMetrics: Sendable, Equatable {
+    public let category: WhatToPlayDecisionReviewInsightStepCategory
+
+    public init(category: WhatToPlayDecisionReviewInsightStepCategory) {
+        self.category = category
+    }
+
+    public static func classify(
+        insightCategory: WhatToPlayDecisionInsightCategory
+    ) -> WhatToPlayDecisionReviewInsightStepMetrics {
+        switch insightCategory {
+        case .expertMatch:
+            WhatToPlayDecisionReviewInsightStepMetrics(category: .reinforceSuccess)
+        case .closeAlternative:
+            WhatToPlayDecisionReviewInsightStepMetrics(category: .compareAlternative)
+        case .missedWinningChance:
+            WhatToPlayDecisionReviewInsightStepMetrics(category: .findWinningCard)
+        case .pointLeak:
+            WhatToPlayDecisionReviewInsightStepMetrics(category: .identifyPointLeak)
+        }
+    }
+}
+
 /// مستوى إتقان اللاعب الخام في مدرب «وش تلعب؟».
 public enum WhatToPlayMasteryCategory: String, Sendable, Codable, Equatable, CaseIterable {
     case starting

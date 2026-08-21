@@ -1659,6 +1659,14 @@ struct WhatToPlayTrainerTests {
         #expect(reviewFocus(.narrowChoice).category == .narrowChoice)
     }
 
+    @Test("خطوة مراجعة قرار وش تلعب حسب نتيجة التحليل تأتي من المحرك")
+    func decisionReviewInsightStepMetricsClassifyInsight() {
+        #expect(reviewInsight(.expertMatch).category == .reinforceSuccess)
+        #expect(reviewInsight(.closeAlternative).category == .compareAlternative)
+        #expect(reviewInsight(.missedWinningChance).category == .findWinningCard)
+        #expect(reviewInsight(.pointLeak).category == .identifyPointLeak)
+    }
+
     @Test("توصية إعادة موقف وش تلعب تأتي من المحرك")
     func retryRecommendationComesFromEngine() throws {
         let expertScenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
@@ -2649,6 +2657,12 @@ private func reviewFocus(
     _ focus: WhatToPlayScenarioFocusKind
 ) -> WhatToPlayDecisionReviewFocusStepMetrics {
     WhatToPlayDecisionReviewFocusStepMetrics.classify(focusKind: focus)
+}
+
+private func reviewInsight(
+    _ insight: WhatToPlayDecisionInsightCategory
+) -> WhatToPlayDecisionReviewInsightStepMetrics {
+    WhatToPlayDecisionReviewInsightStepMetrics.classify(insightCategory: insight)
 }
 
 private func performanceTrendSamples(
