@@ -22928,6 +22928,16 @@
         }
       }
     },
+    "تدرّب بدون كشف" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Practice hidden"
+          }
+        }
+      }
+    },
     "إعادة أهم خطأ" : {
       "localizations" : {
         "en" : {

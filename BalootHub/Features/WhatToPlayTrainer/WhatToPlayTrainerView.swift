@@ -2182,15 +2182,27 @@ struct WhatToPlayTrainerView: View {
                 .padding(AppSpacing.xs)
                 .background(AppColor.background.opacity(0.7), in: RoundedRectangle(cornerRadius: AppRadius.small))
 
-                Button {
-                    replayReviewItem(item)
-                } label: {
-                    Label("إعادة الموقف".localized, systemImage: "arrow.clockwise")
-                        .frame(maxWidth: .infinity)
+                HStack(spacing: AppSpacing.xs) {
+                    Button {
+                        replayReviewItem(item)
+                    } label: {
+                        Label("إعادة الموقف".localized, systemImage: "arrow.clockwise")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(AppColor.primary)
+                    .disabled(isGeneratingScenario)
+
+                    Button {
+                        practiceReviewItem(item)
+                    } label: {
+                        Label("تدرّب بدون كشف".localized, systemImage: "eye.slash.fill")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(AppColor.accent)
+                    .disabled(isGeneratingScenario)
                 }
-                .buttonStyle(.bordered)
-                .tint(AppColor.primary)
-                .disabled(isGeneratingScenario)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -3211,6 +3223,21 @@ struct WhatToPlayTrainerView: View {
         preferredTrumpSuit = item.contextTrumpSuit
         selectedOption = nil
         pendingReviewSelection = item.selectedCard
+        isRetryingCurrentScenario = false
+        if difficulty == item.difficulty {
+            generateScenario()
+        } else {
+            difficulty = item.difficulty
+        }
+    }
+
+    private func practiceReviewItem(_ item: WhatToPlayReviewItem) {
+        seed = item.seed
+        preferredFocusRaw = item.focusKind?.rawValue ?? "auto"
+        preferredModeRaw = item.gameMode?.rawValue ?? "auto"
+        preferredTrumpSuit = item.contextTrumpSuit
+        selectedOption = nil
+        pendingReviewSelection = nil
         isRetryingCurrentScenario = false
         if difficulty == item.difficulty {
             generateScenario()
