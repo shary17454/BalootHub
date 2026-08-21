@@ -1481,30 +1481,43 @@ struct WhatToPlayTrainerView: View {
     }
 
     private func coachingTipView(_ tip: WhatToPlayCoachingTip) -> some View {
-        Label {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(tip.title)
-                    .font(AppTypography.subheadline.weight(.semibold))
-                    .foregroundStyle(AppColor.textPrimary)
-                Text(tip.detail)
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColor.textSecondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                if let targetLine = tip.targetLine {
-                    Text(targetLine)
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(AppColor.accent)
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Label {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(tip.title)
+                        .font(AppTypography.subheadline.weight(.semibold))
+                        .foregroundStyle(AppColor.textPrimary)
+                    Text(tip.detail)
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColor.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
+                    if let targetLine = tip.targetLine {
+                        Text(targetLine)
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(AppColor.accent)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                 }
+            } icon: {
+                Image(systemName: tip.iconName)
+                    .foregroundStyle(AppColor.accent)
             }
-        } icon: {
-            Image(systemName: tip.iconName)
-                .foregroundStyle(AppColor.accent)
+            .accessibilityElement(children: .combine)
+
+            if tip.hasActionableTarget {
+                Button {
+                    startCoachingTipTarget(tip)
+                } label: {
+                    Label("ابدأ".localized, systemImage: "play.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .disabled(isGeneratingScenario)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
-        .accessibilityElement(children: .combine)
     }
 
     private func decisionPatternView(_ pattern: WhatToPlayDecisionPattern) -> some View {
@@ -3595,6 +3608,39 @@ struct WhatToPlayTrainerView: View {
             preferredFocusRaw = targetFocusRaw
             preferredModeRaw = targetModeRaw
             setPreferredTrumpSuitWithoutRegeneration(targetTrumpSuit)
+            generateScenario()
+        }
+    }
+
+    private func startCoachingTipTarget(_ tip: WhatToPlayCoachingTip) {
+        guard tip.hasActionableTarget else { return }
+
+        let targetDifficulty = tip.targetDifficulty ?? difficulty
+        let targetFocus = tip.targetFocusKind
+        let targetMode = tip.targetGameMode
+        let targetFocusRaw = targetFocus?.rawValue ?? "auto"
+        let targetModeRaw = targetMode?.rawValue ?? "auto"
+        let targetSeed = WhatToPlayScenarioLoader.nextUnattemptedSeed(
+            after: seed,
+            difficulty: targetDifficulty,
+            preferredFocus: targetFocus,
+            preferredMode: targetMode,
+            preferredTrumpSuit: nil,
+            attempts: attempts
+        )
+
+        seed = targetSeed
+        isRetryingCurrentScenario = false
+        if difficulty == targetDifficulty,
+           preferredFocusRaw == targetFocusRaw,
+           preferredModeRaw == targetModeRaw,
+           preferredTrumpSuit == nil {
+            generateScenario()
+        } else {
+            difficulty = targetDifficulty
+            preferredFocusRaw = targetFocusRaw
+            preferredModeRaw = targetModeRaw
+            setPreferredTrumpSuitWithoutRegeneration(nil)
             generateScenario()
         }
     }

@@ -186,12 +186,30 @@ struct WhatToPlayCoachingTip: Equatable {
     let detail: String
     let iconName: String
     let targetLine: String?
+    let targetDifficulty: WhatToPlayDifficulty?
+    let targetFocusKind: WhatToPlayScenarioFocusKind?
+    let targetGameMode: GameMode?
 
-    init(title: String, detail: String, iconName: String, targetLine: String? = nil) {
+    init(
+        title: String,
+        detail: String,
+        iconName: String,
+        targetLine: String? = nil,
+        targetDifficulty: WhatToPlayDifficulty? = nil,
+        targetFocusKind: WhatToPlayScenarioFocusKind? = nil,
+        targetGameMode: GameMode? = nil
+    ) {
         self.title = title
         self.detail = detail
         self.iconName = iconName
         self.targetLine = targetLine
+        self.targetDifficulty = targetDifficulty
+        self.targetFocusKind = targetFocusKind
+        self.targetGameMode = targetGameMode
+    }
+
+    var hasActionableTarget: Bool {
+        targetDifficulty != nil || targetFocusKind != nil || targetGameMode != nil
     }
 }
 
@@ -4482,49 +4500,62 @@ enum WhatToPlayStatsAnalyzer {
                 title: "ابدأ القياس".localized,
                 detail: "حل عدة مواقف من كل مستوى حتى يعطيك المدرب قراءة أدق لأسلوبك.".localized,
                 iconName: "target",
-                targetLine: coachingTargetLine(difficulty: .easy, focusKind: nil, gameMode: nil)
+                targetLine: coachingTargetLine(difficulty: .easy, focusKind: nil, gameMode: nil),
+                targetDifficulty: .easy
             )
         case .slowDown:
             return WhatToPlayCoachingTip(
                 title: "خفف السرعة".localized,
                 detail: "قبل اختيار الورقة، راجع اللون المطلوب والحكم الموجود ثم قارن هل تستطيع ربح الأكلة أو تقليل خسارتها.".localized,
                 iconName: "pause.circle.fill",
-                targetLine: coachingTargetLine(difficulty: .easy, focusKind: .followSuit, gameMode: nil)
+                targetLine: coachingTargetLine(difficulty: .easy, focusKind: .followSuit, gameMode: nil),
+                targetDifficulty: .easy,
+                targetFocusKind: .followSuit
             )
         case .reducePointLeak:
             return WhatToPlayCoachingTip(
                 title: "قلل نزيف النقاط".localized,
                 detail: "اختياراتك الأخيرة تخسر نقاطًا متوقعة؛ جرّب حفظ الورق العالي عندما لا تستطيع الفوز بالأكلة.".localized,
                 iconName: "shield.lefthalf.filled",
-                targetLine: coachingTargetLine(difficulty: .medium, focusKind: .narrowChoice, gameMode: nil)
+                targetLine: coachingTargetLine(difficulty: .medium, focusKind: .narrowChoice, gameMode: nil),
+                targetDifficulty: .medium,
+                targetFocusKind: .narrowChoice
             )
         case .secondSimulationReview:
             return WhatToPlayCoachingTip(
                 title: "راجع المحاكاة".localized,
                 detail: "\("متوسط فاقد ثاني محاكاة".localized): \(metrics.averageProjectedSecondBestGap). \("راجع ثاني أفضل محاكاة قبل اعتماد قرار يبدو صحيحًا.".localized)",
                 iconName: "chart.bar.xaxis",
-                targetLine: coachingTargetLine(difficulty: .hard, focusKind: .trumpPressure, gameMode: nil)
+                targetLine: coachingTargetLine(difficulty: .hard, focusKind: .trumpPressure, gameMode: nil),
+                targetDifficulty: .hard,
+                targetFocusKind: .trumpPressure
             )
         case .narrowChoices:
             return WhatToPlayCoachingTip(
                 title: "صفِّ الخيارات أولًا".localized,
                 detail: "نسبة الاختيارات خارج أفضل خيارين مرتفعة. قبل المقارنة النهائية، استبعد الورق الذي لا يكسب الأكلة ولا يقلل الخسارة.".localized,
                 iconName: "line.3.horizontal.decrease.circle.fill",
-                targetLine: coachingTargetLine(difficulty: .medium, focusKind: .narrowChoice, gameMode: nil)
+                targetLine: coachingTargetLine(difficulty: .medium, focusKind: .narrowChoice, gameMode: nil),
+                targetDifficulty: .medium,
+                targetFocusKind: .narrowChoice
             )
         case .strongStreak:
             return WhatToPlayCoachingTip(
                 title: "سلسلة ممتازة".localized,
                 detail: "أنت تكرر قرارات قريبة من الخبير. ارفع الصعوبة أو ركز على مواقف الحكم لاختبار قراءة أقوى.".localized,
                 iconName: "flame.fill",
-                targetLine: coachingTargetLine(difficulty: .hard, focusKind: .trumpPressure, gameMode: .hokum)
+                targetLine: coachingTargetLine(difficulty: .hard, focusKind: .trumpPressure, gameMode: .hokum),
+                targetDifficulty: .hard,
+                targetFocusKind: .trumpPressure,
+                targetGameMode: .hokum
             )
         case .compareChoices:
             return WhatToPlayCoachingTip(
                 title: "استمر بالمقارنة".localized,
                 detail: "بعد كل إجابة راجع بطاقة أثر كل قرار؛ الفرق بين اختيارك والخيار الثاني يعلمك متى تكون المخاطرة مقبولة.".localized,
                 iconName: "lightbulb.fill",
-                targetLine: coachingTargetLine(difficulty: .medium, focusKind: nil, gameMode: nil)
+                targetLine: coachingTargetLine(difficulty: .medium, focusKind: nil, gameMode: nil),
+                targetDifficulty: .medium
             )
         }
     }

@@ -4277,6 +4277,10 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(tip.title, "ابدأ القياس".localized)
         XCTAssertEqual(tip.iconName, "target")
         XCTAssertEqual(tip.targetLine, "\("المستوى".localized): \("سهل".localized)")
+        XCTAssertTrue(tip.hasActionableTarget)
+        XCTAssertEqual(tip.targetDifficulty, .easy)
+        XCTAssertNil(tip.targetFocusKind)
+        XCTAssertNil(tip.targetGameMode)
     }
 
     func testCoachingTipForLowAccuracyFocusesOnSlowingDown() {
@@ -4293,6 +4297,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             tip.targetLine,
             "\("المستوى".localized): \("سهل".localized) · \("تركيز التدريب".localized): \("اتباع اللون".localized)"
         )
+        XCTAssertEqual(tip.targetDifficulty, .easy)
+        XCTAssertEqual(tip.targetFocusKind, .followSuit)
+        XCTAssertNil(tip.targetGameMode)
     }
 
     func testCoachingTipForNegativeImpactFocusesOnPointLoss() {
@@ -4309,6 +4316,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             tip.targetLine,
             "\("المستوى".localized): \("متوسط".localized) · \("تركيز التدريب".localized): \("خيارات محدودة".localized)"
         )
+        XCTAssertEqual(tip.targetDifficulty, .medium)
+        XCTAssertEqual(tip.targetFocusKind, .narrowChoice)
     }
 
     func testCoachingTipForFarChoiceRateFocusesOnFilteringOptions() {
@@ -4341,6 +4350,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             tip.targetLine,
             "\("المستوى".localized): \("صعب".localized) · \("تركيز التدريب".localized): \("ضغط الحكم".localized)"
         )
+        XCTAssertEqual(tip.targetDifficulty, .hard)
+        XCTAssertEqual(tip.targetFocusKind, .trumpPressure)
+        XCTAssertNil(tip.targetGameMode)
     }
 
     func testCoachingTipForCurrentStreakEncouragesHarderPractice() {
@@ -4357,6 +4369,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             tip.targetLine,
             "\("المستوى".localized): \("صعب".localized) · \("تركيز التدريب".localized): \("ضغط الحكم".localized) · \("النمط".localized): \("حكم".localized)"
         )
+        XCTAssertEqual(tip.targetDifficulty, .hard)
+        XCTAssertEqual(tip.targetFocusKind, .trumpPressure)
+        XCTAssertEqual(tip.targetGameMode, .hokum)
     }
 
     private func sessionPlan(
