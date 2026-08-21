@@ -259,6 +259,21 @@ final class CatalogIntegrityTests: XCTestCase {
         XCTAssertEqual(viewModel.selectedAIProfileModePreferenceText, "\("الميل".localized): \("حكم".localized)")
     }
 
+    /// أي رسالة خطأ جديدة في واجهات التدريب يجب أن تدخل كتالوج النصوص، حتى لا تظهر
+    /// بالعربية فقط في اللغات الأخرى.
+    func testShareCodeStatsSaveFailureMessageIsLocalized() throws {
+        let localizations = try Self.localizations(
+            for: "تم تحميل مراجعة القرار، لكن تعذّر حفظها في الإحصاءات."
+        )
+
+        XCTAssertTrue(localizations.keys.contains("ar"), "الرسالة تحتاج قيمة عربية في كتالوج النصوص")
+        XCTAssertTrue(localizations.keys.contains("en"), "الرسالة تحتاج قيمة إنجليزية في كتالوج النصوص")
+        XCTAssertEqual(
+            localizations["en"],
+            "The decision review was loaded, but it could not be saved to statistics."
+        )
+    }
+
     /// الرتب والأيقونات يجب أن تكون فريدة/مرتبة حتى لا تتكرر البطاقات أو تختل الترتيب.
     func testSlugsAreUniqueAndSortOrdersAreDistinct() throws {
         let items = try allItems()
@@ -267,5 +282,38 @@ final class CatalogIntegrityTests: XCTestCase {
 
         let orders = items.map(\.sortOrder)
         XCTAssertEqual(Set(orders).count, orders.count, "توجد قيم sortOrder مكررة")
+    }
+
+    private static func localizations(for key: String) throws -> [String: String] {
+        let catalogURL = try projectRoot()
+            .appendingPathComponent("BalootHub")
+            .appendingPathComponent("Resources")
+            .appendingPathComponent("Localizable.xcstrings")
+        let data = try Data(contentsOf: catalogURL)
+        let root = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        let strings = try XCTUnwrap(root["strings"] as? [String: Any])
+        let entry = try XCTUnwrap(strings[key] as? [String: Any], "مفتاح الترجمة مفقود: \(key)")
+        let localizationEntries = try XCTUnwrap(entry["localizations"] as? [String: Any])
+
+        return localizationEntries.reduce(into: [:]) { result, pair in
+            guard
+                let localization = pair.value as? [String: Any],
+                let stringUnit = localization["stringUnit"] as? [String: Any],
+                let value = stringUnit["value"] as? String
+            else { return }
+            result[pair.key] = value
+        }
+    }
+
+    private static func projectRoot() throws -> URL {
+        var url = URL(fileURLWithPath: #filePath)
+        while url.lastPathComponent != "BalootHubTests" {
+            let next = url.deletingLastPathComponent()
+            if next.path == url.path {
+                throw NSError(domain: "CatalogIntegrityTests", code: 1)
+            }
+            url = next
+        }
+        return url.deletingLastPathComponent()
     }
 }

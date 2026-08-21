@@ -81,7 +81,18 @@ extension WhatToPlayTrainerView {
                 selectedOption = imported.selectedOption
                 if let attempt = imported.attempt {
                     modelContext.insert(attempt)
-                    try? modelContext.save()
+                    do {
+                        try modelContext.save()
+                    } catch {
+                        modelContext.rollback()
+                        shareCodeMessage = "تم تحميل مراجعة القرار، لكن تعذّر حفظها في الإحصاءات.".localized
+                        saveTrainerPreferences()
+                        Task { @MainActor in
+                            isApplyingImportedShareCode = false
+                        }
+                        isGeneratingScenario = false
+                        return
+                    }
                 }
                 shareCodeMessage = imported.statusMessage
                 saveTrainerPreferences()

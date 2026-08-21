@@ -24532,6 +24532,20 @@
         }
       }
     },
+    "تم تحميل مراجعة القرار، لكن تعذّر حفظها في الإحصاءات." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die Entscheidungsprüfung wurde geladen, konnte aber nicht in den Statistiken gespeichert werden." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The decision review was loaded, but it could not be saved to statistics." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "La revisión de la decisión se cargó, pero no se pudo guardar en las estadísticas." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "La revue de décision a été chargée, mais elle n'a pas pu être enregistrée dans les statistiques." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "निर्णय समीक्षा लोड हो गई, लेकिन उसे आँकड़ों में सहेजा नहीं जा सका." } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tinjauan keputusan dimuat, tetapi tidak dapat disimpan ke statistik." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Обзор решения загружен, но его не удалось сохранить в статистике." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Karar incelemesi yüklendi, ancak istatistiklere kaydedilemedi." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "فیصلے کا جائزہ لوڈ ہو گیا، مگر اسے اعدادوشمار میں محفوظ نہیں کیا جا سکا۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "决策复盘已加载，但无法保存到统计中。" } }
+      }
+    },
     "اخترت ثاني مسار محاكاة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Du hast den zweiten Simulationspfad gewählt" } },
