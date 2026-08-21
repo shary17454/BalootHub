@@ -1900,6 +1900,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(prompt?.title, "أعد نفس الموقف".localized)
         XCTAssertTrue(prompt?.detail.contains("لن تُحسب الإعادة".localized) == true)
         XCTAssertEqual(prompt?.iconName, "arrow.counterclockwise.circle.fill")
+        XCTAssertNil(prompt?.recommendedCard)
+        XCTAssertEqual(prompt?.expectedImprovement, 10)
     }
 
     func testRetryPromptExplainsSmallGapPractice() {
@@ -1914,6 +1916,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(prompt?.title, "أعد نفس الموقف".localized)
         XCTAssertTrue(prompt?.detail.contains("الفرق بسيط".localized) == true)
+        XCTAssertEqual(prompt?.expectedImprovement, 2)
     }
 
     func testRetryPromptUsesProjectedLossWhenItIsLarger() {
@@ -1931,6 +1934,22 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(prompt?.title, "أعد نفس الموقف".localized)
         XCTAssertTrue(prompt?.detail.contains("لن تُحسب الإعادة".localized) == true)
         XCTAssertFalse(prompt?.detail.contains("الفرق بسيط".localized) == true)
+        XCTAssertEqual(prompt?.expectedImprovement, 16)
+    }
+
+    func testRetryPromptForScenarioCarriesBestCardAndExpectedImprovement() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let best = try XCTUnwrap(scenario.bestOption)
+        let selected = try XCTUnwrap(scenario.options.first { $0.card != best.card })
+
+        let prompt = try XCTUnwrap(WhatToPlayStatsAnalyzer.retryPrompt(for: selected, in: scenario))
+        let expectedImprovement = max(
+            max(0, best.expectedImpact - selected.expectedImpact),
+            max(0, best.projectedTeamPoints - selected.projectedTeamPoints)
+        )
+
+        XCTAssertEqual(prompt.recommendedCard, best.card)
+        XCTAssertEqual(prompt.expectedImprovement, expectedImprovement)
     }
 
     func testReplayContextExplainsExpertChoice() throws {

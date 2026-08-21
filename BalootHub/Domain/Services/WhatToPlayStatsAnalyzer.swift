@@ -567,6 +567,8 @@ struct WhatToPlayRetryPrompt: Equatable {
     let title: String
     let detail: String
     let iconName: String
+    let recommendedCard: PlayingCard?
+    let expectedImprovement: Int
 }
 
 struct WhatToPlayScenarioBrief: Equatable {
@@ -2848,7 +2850,7 @@ enum WhatToPlayStatsAnalyzer {
 
     static func retryPrompt(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayRetryPrompt? {
         guard let insight = decisionInsight(for: selected, in: scenario) else { return nil }
-        return retryPrompt(insight: insight)
+        return retryPrompt(insight: insight, bestCard: scenario.bestOption?.card)
     }
 
     static func replayContext(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayReplayContext {
@@ -2875,20 +2877,32 @@ enum WhatToPlayStatsAnalyzer {
     }
 
     static func retryPrompt(insight: WhatToPlayDecisionInsight) -> WhatToPlayRetryPrompt? {
-        guard insight.kind != .expertMatch else { return nil }
+        retryPrompt(insight: insight, bestCard: nil)
+    }
 
-        if decisiveLoss(for: insight) <= 2 {
+    private static func retryPrompt(
+        insight: WhatToPlayDecisionInsight,
+        bestCard: PlayingCard?
+    ) -> WhatToPlayRetryPrompt? {
+        guard insight.kind != .expertMatch else { return nil }
+        let expectedImprovement = decisiveLoss(for: insight)
+
+        if expectedImprovement <= 2 {
             return WhatToPlayRetryPrompt(
                 title: "أعد نفس الموقف".localized,
                 detail: "الفرق بسيط؛ أعد الموقف مرة واحدة وحاول تمييز سبب ترجيح الخبير للورقة الأفضل.".localized,
-                iconName: "arrow.counterclockwise.circle.fill"
+                iconName: "arrow.counterclockwise.circle.fill",
+                recommendedCard: bestCard,
+                expectedImprovement: expectedImprovement
             )
         }
 
         return WhatToPlayRetryPrompt(
             title: "أعد نفس الموقف".localized,
             detail: "لن تُحسب الإعادة كمحاولة جديدة. ركّز على الورقة الأفضل قبل الانتقال للموقف التالي.".localized,
-            iconName: "arrow.counterclockwise.circle.fill"
+            iconName: "arrow.counterclockwise.circle.fill",
+            recommendedCard: bestCard,
+            expectedImprovement: expectedImprovement
         )
     }
 

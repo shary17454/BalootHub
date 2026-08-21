@@ -2870,6 +2870,18 @@ struct WhatToPlayTrainerView: View {
                 .foregroundStyle(AppColor.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
 
+            if let recommendedCard = prompt.recommendedCard {
+                Text("\("جرّب الورقة".localized): \(recommendedCard.accessibilityName)")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(AppColor.primary)
+            }
+
+            if prompt.expectedImprovement > 0 {
+                Text("\("تحسن متوقع".localized): +\(prompt.expectedImprovement)")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(AppColor.success)
+            }
+
             Button {
                 retryCurrentScenario()
             } label: {

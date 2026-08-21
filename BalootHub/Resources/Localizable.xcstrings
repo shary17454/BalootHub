@@ -7475,6 +7475,20 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "决策损失" } }
       }
     },
+    "جرّب الورقة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Probiere die Karte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Try the card" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Prueba la carta" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Essaie la carte" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "यह पत्ता आज़माएँ" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Coba kartu ini" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Попробуй карту" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Kartı dene" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "یہ پتہ آزمائیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "试试这张牌" } }
+      }
+    },
     "أثر القرار" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Entscheidungsauswirkung" } },
