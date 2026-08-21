@@ -331,9 +331,10 @@ struct WhatToPlayDecisionHighlight: Equatable {
     let expectedImpact: Int
     let lostExpectedPoints: Int
     let lostProjectedTeamPoints: Int
+    let lostProjectedAgainstSecondBestPoints: Int
 
     var totalLoss: Int {
-        max(lostExpectedPoints, lostProjectedTeamPoints)
+        max(lostExpectedPoints, lostProjectedTeamPoints, lostProjectedAgainstSecondBestPoints)
     }
 }
 
@@ -1374,6 +1375,7 @@ enum WhatToPlayStatsAnalyzer {
         WhatToPlayWorstDecisionHighlightRankMetrics(
             lostExpectedPoints: attempt.lostExpectedPoints,
             lostProjectedTeamPoints: attempt.lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: attempt.lostProjectedAgainstSecondBestPoints,
             expectedImpact: attempt.expectedImpact,
             createdAt: attempt.createdAt
         )
@@ -1384,7 +1386,8 @@ enum WhatToPlayStatsAnalyzer {
             selectedCard: attempt.selectedCard,
             expectedImpact: attempt.expectedImpact,
             lostExpectedPoints: attempt.lostExpectedPoints,
-            lostProjectedTeamPoints: attempt.lostProjectedTeamPoints
+            lostProjectedTeamPoints: attempt.lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: attempt.lostProjectedAgainstSecondBestPoints
         )
     }
 

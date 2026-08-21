@@ -1270,10 +1270,20 @@ struct WhatToPlayTrainerView: View {
         let cardName = highlight.selectedCard?.accessibilityName ?? "غير محدد".localized
         let loss = highlight.totalLoss
         let detail = loss > 0
-            ? "\("فاقد القرار".localized): \(loss)"
+            ? "\("فاقد القرار".localized): \(loss) · \(decisionHighlightLossSource(highlight))"
             : "\("أثر القرار".localized): \(impactText(highlight.expectedImpact))"
         return InfoRow(icon: icon, title: title, value: "\(cardName) · \(detail)")
             .foregroundStyle(tint)
+    }
+
+    private func decisionHighlightLossSource(_ highlight: WhatToPlayDecisionHighlight) -> String {
+        if highlight.lostProjectedTeamPoints == highlight.totalLoss {
+            return "محاكاة الجولة".localized
+        }
+        if highlight.lostProjectedAgainstSecondBestPoints == highlight.totalLoss {
+            return "ثاني محاكاة".localized
+        }
+        return "القيمة المتوقعة".localized
     }
 
     private func outcomeSummaryView(_ summary: WhatToPlayOutcomeSummary, insight: WhatToPlayOutcomeInsight?) -> some View {

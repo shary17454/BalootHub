@@ -3260,23 +3260,26 @@ public struct WhatToPlayBestDecisionHighlightRankMetrics: Sendable, Equatable {
 public struct WhatToPlayWorstDecisionHighlightRankMetrics: Sendable, Equatable {
     public let lostExpectedPoints: Int
     public let lostProjectedTeamPoints: Int
+    public let lostProjectedAgainstSecondBestPoints: Int
     public let expectedImpact: Int
     public let createdAt: Date
 
     public init(
         lostExpectedPoints: Int,
         lostProjectedTeamPoints: Int,
+        lostProjectedAgainstSecondBestPoints: Int = 0,
         expectedImpact: Int,
         createdAt: Date
     ) {
         self.lostExpectedPoints = lostExpectedPoints
         self.lostProjectedTeamPoints = lostProjectedTeamPoints
+        self.lostProjectedAgainstSecondBestPoints = lostProjectedAgainstSecondBestPoints
         self.expectedImpact = expectedImpact
         self.createdAt = createdAt
     }
 
     public var decisiveLoss: Int {
-        max(lostExpectedPoints, lostProjectedTeamPoints)
+        max(lostExpectedPoints, lostProjectedTeamPoints, lostProjectedAgainstSecondBestPoints)
     }
 
     public static func ranksBefore(

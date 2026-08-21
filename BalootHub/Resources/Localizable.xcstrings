@@ -19005,6 +19005,26 @@
         }
       }
     },
+    "القيمة المتوقعة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expected value"
+          }
+        }
+      }
+    },
+    "محاكاة الجولة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Round simulation"
+          }
+        }
+      }
+    },
     "ثاني نتيجة محاكاة" : {
       "localizations" : {
         "en" : {

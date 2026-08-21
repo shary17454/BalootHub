@@ -816,6 +816,13 @@ struct WhatToPlayTrainerTests {
             expectedImpact: -1,
             createdAt: now
         )
+        let secondSimulationLoss = WhatToPlayWorstDecisionHighlightRankMetrics(
+            lostExpectedPoints: 1,
+            lostProjectedTeamPoints: 2,
+            lostProjectedAgainstSecondBestPoints: 10,
+            expectedImpact: 2,
+            createdAt: now
+        )
         let lowerImpactTie = WhatToPlayWorstDecisionHighlightRankMetrics(
             lostExpectedPoints: 7,
             lostProjectedTeamPoints: 0,
@@ -829,6 +836,7 @@ struct WhatToPlayTrainerTests {
             createdAt: now.addingTimeInterval(10)
         )
         #expect(WhatToPlayWorstDecisionHighlightRankMetrics.ranksBefore(projectedLoss, expectedLoss))
+        #expect(WhatToPlayWorstDecisionHighlightRankMetrics.ranksBefore(secondSimulationLoss, projectedLoss))
         #expect(WhatToPlayWorstDecisionHighlightRankMetrics.ranksBefore(lowerImpactTie, expectedLoss))
         #expect(WhatToPlayWorstDecisionHighlightRankMetrics.ranksBefore(laterWorstTie, lowerImpactTie))
     }
