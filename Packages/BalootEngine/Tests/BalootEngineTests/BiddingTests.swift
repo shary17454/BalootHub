@@ -590,18 +590,31 @@ struct MultiplierTests {
         var rules = BalootRulesConfiguration.standard
         rules.declarerMustWinMajority = false
         rules.projectsEnabled = false
+        rules.kabootEnabled = false
+
+        var trick = Trick(leaderSeat: .south)
+        trick.playedCards = [
+            PlayedCard(playerID: players[0].id, card: PlayingCard(suit: .spades, rank: .ace)),
+            PlayedCard(playerID: players[1].id, card: PlayingCard(suit: .hearts, rank: .ace)),
+            PlayedCard(playerID: players[2].id, card: PlayingCard(suit: .clubs, rank: .ten)),
+            PlayedCard(playerID: players[3].id, card: PlayingCard(suit: .diamonds, rank: .king))
+        ]
+        trick.winnerPlayerID = players[0].id
 
         let single = ScoreCalculator.finalRoundScore(
-            completedTricks: [], originalHands: [:], players: players, teams: [teamA, teamB],
+            completedTricks: [trick], originalHands: [:], players: players, teams: [teamA, teamB],
             mode: .hokum, trumpSuit: .spades, rules: rules, multiplier: .none, declaredProjects: []
         )
         let tripled = ScoreCalculator.finalRoundScore(
-            completedTricks: [], originalHands: [:], players: players, teams: [teamA, teamB],
+            completedTricks: [trick], originalHands: [:], players: players, teams: [teamA, teamB],
             mode: .hokum, trumpSuit: .spades, rules: rules, multiplier: .triple, declaredProjects: []
         )
 
         #expect(single.multiplier == .none)
         #expect(tripled.multiplier == .triple)
         #expect(Multiplier.triple.factor(rules: rules) == rules.tripleFactor)
+        #expect((single.teamPoints[teamA.id] ?? 0) > 0)
+        #expect(tripled.teamPoints[teamA.id] == (single.teamPoints[teamA.id] ?? 0) * rules.tripleFactor)
+        #expect(tripled.teamPoints[teamB.id] == (single.teamPoints[teamB.id] ?? 0) * rules.tripleFactor)
     }
 }
