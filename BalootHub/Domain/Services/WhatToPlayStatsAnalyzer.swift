@@ -1373,38 +1373,36 @@ enum WhatToPlayStatsAnalyzer {
         expectedImpact: Int,
         impactBreakdown: WhatToPlayOptionImpactBreakdown?
     ) -> WhatToPlayReviewPriority? {
-        guard expectedImpact < 0, let breakdown = impactBreakdown else { return nil }
+        let metrics = WhatToPlayTacticalReviewReasonMetrics.classify(
+            expectedImpact: expectedImpact,
+            impactBreakdown: impactBreakdown
+        )
 
-        if breakdown.completesTrick,
-           breakdown.winsForPlayerTeam == false,
-           breakdown.trickPointsSwing < 0 {
+        switch metrics.category {
+        case .opponentTrickClosure:
             return WhatToPlayReviewPriority(
                 title: "تغلق الأكلة للخصم".localized,
                 detail: "اختيارك أضاف نقاطًا لأكلة انتهت للفريق الخصم. راجع هل كان يمكن تقليل الخسارة بدل تغذية الأكلة.".localized,
                 iconName: "flag.slash.fill"
             )
-        }
 
-        if !breakdown.completesTrick,
-           !breakdown.preservesLead,
-           breakdown.playedCardPoints > 0,
-           breakdown.immediateImpact < 0 {
+        case .unprotectedPointDump:
             return WhatToPlayReviewPriority(
                 title: "ترمي نقاطًا بلا حماية".localized,
                 detail: "الورقة تحمل نقاطًا والأكلة لم تُحسم بعد. اسأل هل شريكك يحميها أو هل الأفضل التخلص من ورقة أرخص.".localized,
                 iconName: "drop.triangle.fill"
             )
-        }
 
-        if breakdown.preservesLead, breakdown.immediateImpact < 0 {
+        case .costlyOpeningLead:
             return WhatToPlayReviewPriority(
                 title: "افتتاح مكلف".localized,
                 detail: "بدأت الأكلة بورقة تخفض الأثر المتوقع. جرّب افتتاحًا يحفظ القوة أو يسحب الحكم بسبب واضح.".localized,
                 iconName: "arrow.up.forward.circle.fill"
             )
-        }
 
-        return nil
+        case nil:
+            return nil
+        }
     }
 
     private static func reviewTitle(category: WhatToPlayReviewCardCategory) -> String {

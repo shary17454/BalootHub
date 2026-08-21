@@ -539,6 +539,34 @@ struct WhatToPlayTrainerTests {
         )
     }
 
+    @Test("سبب مراجعة وش تلعب التكتيكي يأتي من المحرك")
+    func tacticalReviewReasonMetricsClassifyReason() {
+        #expect(
+            WhatToPlayTacticalReviewReasonMetrics.classify(
+                expectedImpact: -4,
+                impactBreakdown: .opponentTrickClosure(points: 12)
+            ).category == .opponentTrickClosure
+        )
+        #expect(
+            WhatToPlayTacticalReviewReasonMetrics.classify(
+                expectedImpact: -3,
+                impactBreakdown: .unprotectedPointDump(points: 10)
+            ).category == .unprotectedPointDump
+        )
+        #expect(
+            WhatToPlayTacticalReviewReasonMetrics.classify(
+                expectedImpact: -2,
+                impactBreakdown: .costlyOpeningLead(points: 4)
+            ).category == .costlyOpeningLead
+        )
+        #expect(
+            WhatToPlayTacticalReviewReasonMetrics.classify(
+                expectedImpact: 1,
+                impactBreakdown: .costlyOpeningLead(points: 4)
+            ).category == nil
+        )
+    }
+
     @Test("ملخص أداء وش تلعب يأتي من المحرك ويحافظ على السلاسل وفاقد القيمة")
     func statsSummaryMetricsCalculateTrainingPerformance() {
         let metrics = WhatToPlayStatsSummaryMetrics.summarize(chronologicalSamples: [

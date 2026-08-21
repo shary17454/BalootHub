@@ -1012,6 +1012,51 @@ public struct WhatToPlayReviewCardMetrics: Sendable, Equatable {
     }
 }
 
+/// السبب التكتيكي الخام لمراجعة اختيار «وش تلعب؟» دون نصوص واجهة.
+public enum WhatToPlayTacticalReviewReasonCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case opponentTrickClosure
+    case unprotectedPointDump
+    case costlyOpeningLead
+}
+
+/// تصنيف السبب التكتيكي لمراجعة اختيار «وش تلعب؟» من تفكيك أثر الخيار.
+public struct WhatToPlayTacticalReviewReasonMetrics: Sendable, Equatable {
+    public let category: WhatToPlayTacticalReviewReasonCategory?
+
+    public init(category: WhatToPlayTacticalReviewReasonCategory?) {
+        self.category = category
+    }
+
+    public static func classify(
+        expectedImpact: Int,
+        impactBreakdown: WhatToPlayOptionImpactBreakdown?
+    ) -> WhatToPlayTacticalReviewReasonMetrics {
+        guard expectedImpact < 0, let impactBreakdown else {
+            return WhatToPlayTacticalReviewReasonMetrics(category: nil)
+        }
+
+        if impactBreakdown.completesTrick,
+           impactBreakdown.winsForPlayerTeam == false,
+           impactBreakdown.trickPointsSwing < 0 {
+            return WhatToPlayTacticalReviewReasonMetrics(category: .opponentTrickClosure)
+        }
+
+        if !impactBreakdown.completesTrick,
+           !impactBreakdown.preservesLead,
+           impactBreakdown.playedCardPoints > 0,
+           impactBreakdown.immediateImpact < 0 {
+            return WhatToPlayTacticalReviewReasonMetrics(category: .unprotectedPointDump)
+        }
+
+        if impactBreakdown.preservesLead,
+           impactBreakdown.immediateImpact < 0 {
+            return WhatToPlayTacticalReviewReasonMetrics(category: .costlyOpeningLead)
+        }
+
+        return WhatToPlayTacticalReviewReasonMetrics(category: nil)
+    }
+}
+
 /// عينة أداء مختصرة من محاولة «وش تلعب؟» تكفي لحساب ملخص التدريب.
 public struct WhatToPlayStatsSample: Sendable, Equatable {
     public let isCorrect: Bool
