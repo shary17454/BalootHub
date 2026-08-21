@@ -146,6 +146,35 @@ struct WhatToPlayTrainerTests {
         }
     }
 
+    @Test("توصية الإجراء التالي بعد وش تلعب تأتي من المحرك")
+    func nextActionRecommendationClassifiesDecision() throws {
+        let expertScenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
+        let expert = try #require(expertScenario.bestOption)
+        let expertRecommendation = try #require(
+            WhatToPlayTrainer.nextActionRecommendation(in: expertScenario, selectedCard: expert.card)
+        )
+        let expectedExpertKind: WhatToPlayNextActionKind = expertRecommendation.lostProjectedTeamPoints >= 9
+            ? .reviewExpertSimulation
+            : .reinforceRead
+        #expect(expertRecommendation.kind == expectedExpertKind)
+        #expect(expertRecommendation.selectedOption.card == expert.card)
+
+        let simulationScenario = try WhatToPlayTrainer.generateScenario(seed: 2, difficulty: .hard)
+        let best = try #require(simulationScenario.bestOption)
+        let bestProjected = try #require(simulationScenario.bestProjectedOption)
+        let simulationLoss = try #require(simulationScenario.options.first {
+            !$0.isExpertChoice
+                && max(0, bestProjected.projectedTeamPoints - $0.projectedTeamPoints) > max(0, best.expectedImpact - $0.expectedImpact)
+        })
+        let simulationRecommendation = try #require(
+            WhatToPlayTrainer.nextActionRecommendation(in: simulationScenario, selectedCard: simulationLoss.card)
+        )
+
+        #expect(simulationRecommendation.kind == .reviewSimulation)
+        #expect(simulationRecommendation.bestProjectedOption.card == bestProjected.card)
+        #expect(simulationRecommendation.lostProjectedTeamPoints > simulationRecommendation.lostExpectedPoints)
+    }
+
     @Test("مستوى الخبير يولد موقفًا حقيقيًا قابلًا للتقييم")
     func expertDifficultyGeneratesPlayableScenario() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .expert)

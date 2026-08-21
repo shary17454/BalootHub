@@ -389,6 +389,45 @@ public struct WhatToPlayOptionReview: Identifiable, Sendable, Equatable {
     }
 }
 
+/// نوع الإجراء التدريبي التالي بعد اختيار اللاعب في «وش تلعب؟».
+public enum WhatToPlayNextActionKind: String, Sendable, Codable, Equatable, CaseIterable {
+    case reviewExpertSimulation
+    case reinforceRead
+    case reviewSimulation
+    case reviewSmallGap
+    case compareBeforePlay
+    case replayScenario
+}
+
+/// توصية الإجراء التالي بعد اختيار ورقة في موقف «وش تلعب؟».
+public struct WhatToPlayNextActionRecommendation: Sendable, Equatable {
+    public let kind: WhatToPlayNextActionKind
+    public let selectedOption: WhatToPlayOption
+    public let bestOption: WhatToPlayOption
+    public let bestProjectedOption: WhatToPlayOption
+    public let secondBestOption: WhatToPlayOption?
+    public let lostExpectedPoints: Int
+    public let lostProjectedTeamPoints: Int
+
+    public init(
+        kind: WhatToPlayNextActionKind,
+        selectedOption: WhatToPlayOption,
+        bestOption: WhatToPlayOption,
+        bestProjectedOption: WhatToPlayOption,
+        secondBestOption: WhatToPlayOption?,
+        lostExpectedPoints: Int,
+        lostProjectedTeamPoints: Int
+    ) {
+        self.kind = kind
+        self.selectedOption = selectedOption
+        self.bestOption = bestOption
+        self.bestProjectedOption = bestProjectedOption
+        self.secondBestOption = secondBestOption
+        self.lostExpectedPoints = lostExpectedPoints
+        self.lostProjectedTeamPoints = lostProjectedTeamPoints
+    }
+}
+
 /// مولّد ومحلّل مواقف «وش تلعب؟».
 public enum WhatToPlayTrainer {
     public enum ScenarioError: Error, Sendable, Equatable {
@@ -664,6 +703,53 @@ public enum WhatToPlayTrainer {
                 isBestProjectedResult: option.card == bestProjected?.card
             )
         }
+    }
+
+    /// يقرر الإجراء التدريبي التالي بعد اختيار اللاعب، مع ترك النصوص للواجهة.
+    public static func nextActionRecommendation(
+        in scenario: WhatToPlayScenario,
+        selectedCard: PlayingCard?
+    ) -> WhatToPlayNextActionRecommendation? {
+        nextActionRecommendation(from: choiceReview(in: scenario, selectedCard: selectedCard))
+    }
+
+    /// يقرر الإجراء التدريبي التالي من مراجعة اختيار جاهزة.
+    public static func nextActionRecommendation(
+        from review: WhatToPlayChoiceReview
+    ) -> WhatToPlayNextActionRecommendation? {
+        guard let selected = review.selectedOption,
+              let best = review.bestOption,
+              let lostExpectedPoints = review.selectedLostExpectedPoints
+        else { return nil }
+
+        let bestProjected = review.bestProjectedOption ?? best
+        let lostProjectedTeamPoints = review.selectedLostProjectedTeamPoints ?? 0
+        let decisiveLoss = max(lostExpectedPoints, lostProjectedTeamPoints)
+        let kind: WhatToPlayNextActionKind
+
+        if selected.isExpertChoice && lostProjectedTeamPoints >= 9 {
+            kind = .reviewExpertSimulation
+        } else if selected.isExpertChoice || decisiveLoss == 0 {
+            kind = .reinforceRead
+        } else if lostProjectedTeamPoints > lostExpectedPoints {
+            kind = .reviewSimulation
+        } else if decisiveLoss <= 2 {
+            kind = .reviewSmallGap
+        } else if decisiveLoss <= 8 {
+            kind = .compareBeforePlay
+        } else {
+            kind = .replayScenario
+        }
+
+        return WhatToPlayNextActionRecommendation(
+            kind: kind,
+            selectedOption: selected,
+            bestOption: best,
+            bestProjectedOption: bestProjected,
+            secondBestOption: review.secondBestOption,
+            lostExpectedPoints: lostExpectedPoints,
+            lostProjectedTeamPoints: lostProjectedTeamPoints
+        )
     }
 
     /// يعيد أفضل خيار حسب نقاط فريق اللاعب المتوقعة بعد استكمال الجولة.

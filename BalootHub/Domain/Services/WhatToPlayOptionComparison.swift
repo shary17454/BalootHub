@@ -179,14 +179,7 @@ enum WhatToPlayOptionComparison {
 
     static func summary(for scenario: WhatToPlayScenario, selectedCard: PlayingCard?) -> WhatToPlayOptionComparisonSummary {
         let review = WhatToPlayTrainer.choiceReview(in: scenario, selectedCard: selectedCard)
-        let action = nextAction(
-            selected: review.selectedOption,
-            best: review.bestOption,
-            bestSimulation: review.bestProjectedOption,
-            second: review.secondBestOption,
-            lostExpectedPoints: review.selectedLostExpectedPoints,
-            lostProjectedTeamPoints: review.selectedLostProjectedTeamPoints
-        )
+        let action = WhatToPlayTrainer.nextActionRecommendation(from: review).map(nextAction)
 
         return WhatToPlayOptionComparisonSummary(
             bestCard: review.bestOption?.card,
@@ -208,8 +201,8 @@ enum WhatToPlayOptionComparison {
             decisionQuality: review.decisionQuality,
             decisionQualityDetail: review.decisionQuality?.detail,
             bestMoveConfidence: review.bestMoveConfidence,
-            nextActionTitle: action.title,
-            nextActionDetail: action.detail
+            nextActionTitle: action?.title,
+            nextActionDetail: action?.detail
         )
     }
 
@@ -264,53 +257,41 @@ enum WhatToPlayOptionComparison {
     }
 
     private static func nextAction(
-        selected: WhatToPlayOption?,
-        best: WhatToPlayOption?,
-        bestSimulation: WhatToPlayOption?,
-        second: WhatToPlayOption?,
-        lostExpectedPoints: Int?,
-        lostProjectedTeamPoints: Int?
-    ) -> (title: String?, detail: String?) {
-        guard let selected, let best, let lostExpectedPoints else { return (nil, nil) }
-        let lostProjectedTeamPoints = lostProjectedTeamPoints ?? 0
-        let decisiveLoss = max(lostExpectedPoints, lostProjectedTeamPoints)
-        if selected.isExpertChoice && lostProjectedTeamPoints >= 9 {
-            let simulationCard = bestSimulation ?? best
+        recommendation: WhatToPlayNextActionRecommendation
+    ) -> (title: String, detail: String) {
+        switch recommendation.kind {
+        case .reviewExpertSimulation:
             return (
                 "راجع المحاكاة".localized,
-                "\("اختيارك يطابق الخبير في الأكلة الحالية، لكن المحاكاة الكاملة تفضّل مراجعة مسار الجولة.".localized) \("نقاط محاكاة ضائعة".localized): \(lostProjectedTeamPoints). \("أفضل نتيجة محاكاة".localized): \(simulationCard.card.accessibilityName)."
+                "\("اختيارك يطابق الخبير في الأكلة الحالية، لكن المحاكاة الكاملة تفضّل مراجعة مسار الجولة.".localized) \("نقاط محاكاة ضائعة".localized): \(recommendation.lostProjectedTeamPoints). \("أفضل نتيجة محاكاة".localized): \(recommendation.bestProjectedOption.card.accessibilityName)."
             )
-        }
-        if selected.isExpertChoice || decisiveLoss == 0 {
+        case .reinforceRead:
             return (
                 "ثبّت القراءة".localized,
-                "\("اختيارك يطابق أعلى تحليل؛ ركز على تثبيت سبب القرار قبل الموقف التالي.".localized) \("أفضل ورقة".localized): \(selected.card.accessibilityName)."
+                "\("اختيارك يطابق أعلى تحليل؛ ركز على تثبيت سبب القرار قبل الموقف التالي.".localized) \("أفضل ورقة".localized): \(recommendation.selectedOption.card.accessibilityName)."
             )
-        }
-        if lostProjectedTeamPoints > lostExpectedPoints {
-            let simulationCard = bestSimulation ?? best
+        case .reviewSimulation:
             return (
                 "راجع المحاكاة".localized,
-                "\("قرارك يخسر بعد استكمال الجولة؛ راجع Replay كامل قبل لعب موقف جديد.".localized) \("نقاط محاكاة ضائعة".localized): \(lostProjectedTeamPoints). \("أفضل نتيجة محاكاة".localized): \(simulationCard.card.accessibilityName)."
+                "\("قرارك يخسر بعد استكمال الجولة؛ راجع Replay كامل قبل لعب موقف جديد.".localized) \("نقاط محاكاة ضائعة".localized): \(recommendation.lostProjectedTeamPoints). \("أفضل نتيجة محاكاة".localized): \(recommendation.bestProjectedOption.card.accessibilityName)."
             )
-        }
-        if decisiveLoss <= 2 {
-            let secondText = second.map { " \("ثاني أفضل".localized): \($0.card.accessibilityName)." } ?? ""
+        case .reviewSmallGap:
+            let secondText = recommendation.secondBestOption.map { " \("ثاني أفضل".localized): \($0.card.accessibilityName)." } ?? ""
             return (
                 "راجع الفرق الصغير".localized,
-                "\("قارن الفرق بين اختيارك وأفضل ورقة؛ هذا النوع من الفوارق الصغيرة يتراكم.".localized) \("الفارق عن اختيار الخبير".localized): \(lostExpectedPoints). \("أفضل ورقة".localized): \(best.card.accessibilityName).\(secondText)"
+                "\("قارن الفرق بين اختيارك وأفضل ورقة؛ هذا النوع من الفوارق الصغيرة يتراكم.".localized) \("الفارق عن اختيار الخبير".localized): \(recommendation.lostExpectedPoints). \("أفضل ورقة".localized): \(recommendation.bestOption.card.accessibilityName).\(secondText)"
             )
-        }
-        if decisiveLoss <= 8 {
+        case .compareBeforePlay:
             return (
                 "قارن قبل اللعب".localized,
-                "\("قبل الموقف التالي، احذف الخيارات الضعيفة ثم قارن اختيارك بأفضل ورقة وثاني أفضل ورقة.".localized) \("النقاط الضائعة".localized): \(lostExpectedPoints). \("أفضل ورقة".localized): \(best.card.accessibilityName)."
+                "\("قبل الموقف التالي، احذف الخيارات الضعيفة ثم قارن اختيارك بأفضل ورقة وثاني أفضل ورقة.".localized) \("النقاط الضائعة".localized): \(recommendation.lostExpectedPoints). \("أفضل ورقة".localized): \(recommendation.bestOption.card.accessibilityName)."
+            )
+        case .replayScenario:
+            return (
+                "أعد الموقف".localized,
+                "\(WhatToPlayDecisionQuality.costly.detail) \("النقاط الضائعة".localized): \(recommendation.lostExpectedPoints). \("أفضل ورقة".localized): \(recommendation.bestOption.card.accessibilityName)."
             )
         }
-        return (
-            "أعد الموقف".localized,
-            "\(WhatToPlayDecisionQuality.costly.detail) \("النقاط الضائعة".localized): \(lostExpectedPoints). \("أفضل ورقة".localized): \(best.card.accessibilityName)."
-        )
     }
 
     private static func tacticalSummary(
