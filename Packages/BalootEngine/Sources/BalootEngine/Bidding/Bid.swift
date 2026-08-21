@@ -37,6 +37,18 @@ public enum Bid: Codable, Sendable, Equatable, Hashable {
         case .pass, .sun: nil
         }
     }
+
+    /// اسم المزايدة كما يُعرض في Replay والتحليل والواجهات.
+    public var arabicName: String {
+        switch self {
+        case .pass:
+            "بس"
+        case .sun:
+            "صن"
+        case .hokum(let suit):
+            "حكم \(suit.arabicName)"
+        }
+    }
 }
 
 /// سجل مزايدة واحدة: من زايد، وبماذا، وفي أي جولة مزايدة.

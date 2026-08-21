@@ -24,6 +24,13 @@ private let referenceAgent = ProfiledBalootAgent(profile: AIProfile(
 @Suite("دورة المزايدة الكاملة")
 struct BiddingCycleTests {
 
+    @Test("أسماء المزايدات عربية ومستقرة للـReplay والتحليل")
+    func bidArabicNamesAreStable() {
+        #expect(Bid.pass.arabicName == "بس")
+        #expect(Bid.sun.arabicName == "صن")
+        #expect(Bid.hokum(suit: .spades).arabicName == "حكم سباتي")
+    }
+
     @Test("التوزيع الافتتاحي يعطي خمس أوراق لكل لاعب وورقة مكشوفة وأحد عشر مؤجلة")
     func openingDealMatchesFullBiddingStyle() throws {
         var state = GameState.newLocalMatch(rules: .standard)

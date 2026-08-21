@@ -948,14 +948,7 @@ public enum RoundAnalyzer {
     }
 
     private static func bidLabel(_ bid: Bid) -> String {
-        switch bid {
-        case .pass:
-            return "بس"
-        case .sun:
-            return "صن"
-        case .hokum(let suit):
-            return "حكم \(suit.arabicName)"
-        }
+        bid.arabicName
     }
 
     private static func multiplierActionLabel(_ action: LegalMultiplierAction) -> String {
