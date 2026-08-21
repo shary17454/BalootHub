@@ -730,74 +730,38 @@ struct WhatToPlayDecisionPattern: Equatable {
 
 enum WhatToPlayStatsAnalyzer {
     static func summarize(attempts: [WhatToPlayAttempt]) -> WhatToPlayStatsSummary {
-        guard !attempts.isEmpty else { return .empty }
-
         let chronological = attempts.sorted { $0.createdAt < $1.createdAt }
-        let correct = chronological.filter(\.isCorrect).count
-        let accuracy = Int((Double(correct) / Double(chronological.count) * 100).rounded())
-        let impact = chronological.reduce(0) { $0 + $1.expectedImpact }
-        let averageImpact = Int((Double(impact) / Double(chronological.count)).rounded())
-        let lostExpectedPoints = chronological.reduce(0) { $0 + $1.lostExpectedPoints }
-        let averageLostExpectedPoints = Int((Double(lostExpectedPoints) / Double(chronological.count)).rounded())
-        let secondBestComparisons = chronological.filter { $0.secondBestExpectedImpact != nil }
-        let lostAgainstSecondBestPoints = secondBestComparisons.reduce(0) { $0 + $1.lostAgainstSecondBestPoints }
-        let averageSecondBestGap = secondBestComparisons.isEmpty
-            ? 0
-            : Int((Double(lostAgainstSecondBestPoints) / Double(secondBestComparisons.count)).rounded())
-        let valueAttempts = chronological.compactMap { attempt -> (selected: Int, best: Int)? in
-            guard let best = attempt.bestExpectedImpact, best > 0 else { return nil }
-            return (selected: max(0, min(attempt.expectedImpact, best)), best: best)
-        }
-        let totalBestValue = valueAttempts.reduce(0) { $0 + $1.best }
-        let capturedValue = valueAttempts.reduce(0) { $0 + $1.selected }
-        let valueCapturePercent = totalBestValue > 0
-            ? Int((Double(capturedValue) / Double(totalBestValue) * 100).rounded())
-            : 0
-        let projectedAttempts = chronological.compactMap(\.projectedTeamPoints)
-        let averageProjectedTeamPoints = projectedAttempts.isEmpty
-            ? 0
-            : Int((Double(projectedAttempts.reduce(0, +)) / Double(projectedAttempts.count)).rounded())
-        let projectedComparisons = chronological.filter { $0.projectedTeamPoints != nil && $0.bestProjectedTeamPoints != nil }
-        let lostProjectedTeamPoints = projectedComparisons.reduce(0) { $0 + $1.lostProjectedTeamPoints }
-        let averageLostProjectedTeamPoints = projectedComparisons.isEmpty
-            ? 0
-            : Int((Double(lostProjectedTeamPoints) / Double(projectedComparisons.count)).rounded())
-
-        var bestStreak = 0
-        var running = 0
-        for attempt in chronological {
-            if attempt.isCorrect {
-                running += 1
-                bestStreak = max(bestStreak, running)
-            } else {
-                running = 0
+        let metrics = WhatToPlayStatsSummaryMetrics.summarize(
+            chronologicalSamples: chronological.map { attempt in
+                WhatToPlayStatsSample(
+                    isCorrect: attempt.isCorrect,
+                    expectedImpact: attempt.expectedImpact,
+                    bestExpectedImpact: attempt.bestExpectedImpact,
+                    secondBestExpectedImpact: attempt.secondBestExpectedImpact,
+                    projectedTeamPoints: attempt.projectedTeamPoints,
+                    bestProjectedTeamPoints: attempt.bestProjectedTeamPoints
+                )
             }
-        }
-
-        var currentStreak = 0
-        for attempt in chronological.reversed() {
-            guard attempt.isCorrect else { break }
-            currentStreak += 1
-        }
+        )
 
         return WhatToPlayStatsSummary(
-            attempts: chronological.count,
-            correct: correct,
-            accuracyPercent: accuracy,
-            currentStreak: currentStreak,
-            bestStreak: bestStreak,
-            averageExpectedImpact: averageImpact,
-            lostExpectedPoints: lostExpectedPoints,
-            averageLostExpectedPoints: averageLostExpectedPoints,
-            lostAgainstSecondBestPoints: lostAgainstSecondBestPoints,
-            secondBestComparisonAttempts: secondBestComparisons.count,
-            averageSecondBestGap: averageSecondBestGap,
-            valueCapturePercent: valueCapturePercent,
-            valueCaptureAttempts: valueAttempts.count,
-            projectedTeamPointAttempts: projectedAttempts.count,
-            averageProjectedTeamPoints: averageProjectedTeamPoints,
-            lostProjectedTeamPoints: lostProjectedTeamPoints,
-            averageLostProjectedTeamPoints: averageLostProjectedTeamPoints
+            attempts: metrics.attempts,
+            correct: metrics.correct,
+            accuracyPercent: metrics.accuracyPercent,
+            currentStreak: metrics.currentStreak,
+            bestStreak: metrics.bestStreak,
+            averageExpectedImpact: metrics.averageExpectedImpact,
+            lostExpectedPoints: metrics.lostExpectedPoints,
+            averageLostExpectedPoints: metrics.averageLostExpectedPoints,
+            lostAgainstSecondBestPoints: metrics.lostAgainstSecondBestPoints,
+            secondBestComparisonAttempts: metrics.secondBestComparisonAttempts,
+            averageSecondBestGap: metrics.averageSecondBestGap,
+            valueCapturePercent: metrics.valueCapturePercent,
+            valueCaptureAttempts: metrics.valueCaptureAttempts,
+            projectedTeamPointAttempts: metrics.projectedTeamPointAttempts,
+            averageProjectedTeamPoints: metrics.averageProjectedTeamPoints,
+            lostProjectedTeamPoints: metrics.lostProjectedTeamPoints,
+            averageLostProjectedTeamPoints: metrics.averageLostProjectedTeamPoints
         )
     }
 

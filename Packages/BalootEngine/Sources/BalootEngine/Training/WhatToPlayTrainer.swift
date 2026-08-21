@@ -678,6 +678,200 @@ public struct WhatToPlayTrainingSessionGradeMetrics: Sendable, Equatable {
     }
 }
 
+/// عينة أداء مختصرة من محاولة «وش تلعب؟» تكفي لحساب ملخص التدريب.
+public struct WhatToPlayStatsSample: Sendable, Equatable {
+    public let isCorrect: Bool
+    public let expectedImpact: Int
+    public let bestExpectedImpact: Int?
+    public let secondBestExpectedImpact: Int?
+    public let projectedTeamPoints: Int?
+    public let bestProjectedTeamPoints: Int?
+
+    public init(
+        isCorrect: Bool,
+        expectedImpact: Int,
+        bestExpectedImpact: Int? = nil,
+        secondBestExpectedImpact: Int? = nil,
+        projectedTeamPoints: Int? = nil,
+        bestProjectedTeamPoints: Int? = nil
+    ) {
+        self.isCorrect = isCorrect
+        self.expectedImpact = expectedImpact
+        self.bestExpectedImpact = bestExpectedImpact
+        self.secondBestExpectedImpact = secondBestExpectedImpact
+        self.projectedTeamPoints = projectedTeamPoints
+        self.bestProjectedTeamPoints = bestProjectedTeamPoints
+    }
+
+    public var lostExpectedPoints: Int {
+        guard let bestExpectedImpact else { return 0 }
+        return max(0, bestExpectedImpact - expectedImpact)
+    }
+
+    public var lostAgainstSecondBestPoints: Int {
+        guard let secondBestExpectedImpact else { return 0 }
+        return max(0, secondBestExpectedImpact - expectedImpact)
+    }
+
+    public var lostProjectedTeamPoints: Int {
+        guard let bestProjectedTeamPoints, let projectedTeamPoints else { return 0 }
+        return max(0, bestProjectedTeamPoints - projectedTeamPoints)
+    }
+}
+
+/// ملخص أداء «وش تلعب؟» الرقمي دون اعتماد على SwiftData أو نصوص الواجهة.
+public struct WhatToPlayStatsSummaryMetrics: Sendable, Equatable {
+    public let attempts: Int
+    public let correct: Int
+    public let accuracyPercent: Int
+    public let currentStreak: Int
+    public let bestStreak: Int
+    public let averageExpectedImpact: Int
+    public let lostExpectedPoints: Int
+    public let averageLostExpectedPoints: Int
+    public let lostAgainstSecondBestPoints: Int
+    public let secondBestComparisonAttempts: Int
+    public let averageSecondBestGap: Int
+    public let valueCapturePercent: Int
+    public let valueCaptureAttempts: Int
+    public let projectedTeamPointAttempts: Int
+    public let averageProjectedTeamPoints: Int
+    public let lostProjectedTeamPoints: Int
+    public let averageLostProjectedTeamPoints: Int
+
+    public static let empty = WhatToPlayStatsSummaryMetrics(
+        attempts: 0,
+        correct: 0,
+        accuracyPercent: 0,
+        currentStreak: 0,
+        bestStreak: 0,
+        averageExpectedImpact: 0,
+        lostExpectedPoints: 0,
+        averageLostExpectedPoints: 0,
+        lostAgainstSecondBestPoints: 0,
+        secondBestComparisonAttempts: 0,
+        averageSecondBestGap: 0,
+        valueCapturePercent: 0,
+        valueCaptureAttempts: 0,
+        projectedTeamPointAttempts: 0,
+        averageProjectedTeamPoints: 0,
+        lostProjectedTeamPoints: 0,
+        averageLostProjectedTeamPoints: 0
+    )
+
+    public init(
+        attempts: Int,
+        correct: Int,
+        accuracyPercent: Int,
+        currentStreak: Int,
+        bestStreak: Int,
+        averageExpectedImpact: Int,
+        lostExpectedPoints: Int,
+        averageLostExpectedPoints: Int,
+        lostAgainstSecondBestPoints: Int,
+        secondBestComparisonAttempts: Int,
+        averageSecondBestGap: Int,
+        valueCapturePercent: Int,
+        valueCaptureAttempts: Int,
+        projectedTeamPointAttempts: Int,
+        averageProjectedTeamPoints: Int,
+        lostProjectedTeamPoints: Int,
+        averageLostProjectedTeamPoints: Int
+    ) {
+        self.attempts = attempts
+        self.correct = correct
+        self.accuracyPercent = accuracyPercent
+        self.currentStreak = currentStreak
+        self.bestStreak = bestStreak
+        self.averageExpectedImpact = averageExpectedImpact
+        self.lostExpectedPoints = lostExpectedPoints
+        self.averageLostExpectedPoints = averageLostExpectedPoints
+        self.lostAgainstSecondBestPoints = lostAgainstSecondBestPoints
+        self.secondBestComparisonAttempts = secondBestComparisonAttempts
+        self.averageSecondBestGap = averageSecondBestGap
+        self.valueCapturePercent = valueCapturePercent
+        self.valueCaptureAttempts = valueCaptureAttempts
+        self.projectedTeamPointAttempts = projectedTeamPointAttempts
+        self.averageProjectedTeamPoints = averageProjectedTeamPoints
+        self.lostProjectedTeamPoints = lostProjectedTeamPoints
+        self.averageLostProjectedTeamPoints = averageLostProjectedTeamPoints
+    }
+
+    public static func summarize(chronologicalSamples samples: [WhatToPlayStatsSample]) -> WhatToPlayStatsSummaryMetrics {
+        guard !samples.isEmpty else { return .empty }
+
+        let correct = samples.filter(\.isCorrect).count
+        let attempts = samples.count
+        let accuracy = Int((Double(correct) / Double(attempts) * 100).rounded())
+        let totalImpact = samples.reduce(0) { $0 + $1.expectedImpact }
+        let averageImpact = Int((Double(totalImpact) / Double(attempts)).rounded())
+        let lostExpectedPoints = samples.reduce(0) { $0 + $1.lostExpectedPoints }
+        let averageLostExpectedPoints = Int((Double(lostExpectedPoints) / Double(attempts)).rounded())
+        let secondBestComparisons = samples.filter { $0.secondBestExpectedImpact != nil }
+        let lostAgainstSecondBestPoints = secondBestComparisons.reduce(0) { $0 + $1.lostAgainstSecondBestPoints }
+        let averageSecondBestGap = secondBestComparisons.isEmpty
+            ? 0
+            : Int((Double(lostAgainstSecondBestPoints) / Double(secondBestComparisons.count)).rounded())
+        let valueAttempts = samples.compactMap { sample -> (selected: Int, best: Int)? in
+            guard let best = sample.bestExpectedImpact, best > 0 else { return nil }
+            return (selected: max(0, min(sample.expectedImpact, best)), best: best)
+        }
+        let totalBestValue = valueAttempts.reduce(0) { $0 + $1.best }
+        let capturedValue = valueAttempts.reduce(0) { $0 + $1.selected }
+        let valueCapturePercent = totalBestValue > 0
+            ? Int((Double(capturedValue) / Double(totalBestValue) * 100).rounded())
+            : 0
+        let projectedAttempts = samples.compactMap(\.projectedTeamPoints)
+        let averageProjectedTeamPoints = projectedAttempts.isEmpty
+            ? 0
+            : Int((Double(projectedAttempts.reduce(0, +)) / Double(projectedAttempts.count)).rounded())
+        let projectedComparisons = samples.filter {
+            $0.projectedTeamPoints != nil && $0.bestProjectedTeamPoints != nil
+        }
+        let lostProjectedTeamPoints = projectedComparisons.reduce(0) { $0 + $1.lostProjectedTeamPoints }
+        let averageLostProjectedTeamPoints = projectedComparisons.isEmpty
+            ? 0
+            : Int((Double(lostProjectedTeamPoints) / Double(projectedComparisons.count)).rounded())
+
+        var bestStreak = 0
+        var runningStreak = 0
+        for sample in samples {
+            if sample.isCorrect {
+                runningStreak += 1
+                bestStreak = max(bestStreak, runningStreak)
+            } else {
+                runningStreak = 0
+            }
+        }
+
+        var currentStreak = 0
+        for sample in samples.reversed() {
+            guard sample.isCorrect else { break }
+            currentStreak += 1
+        }
+
+        return WhatToPlayStatsSummaryMetrics(
+            attempts: attempts,
+            correct: correct,
+            accuracyPercent: accuracy,
+            currentStreak: currentStreak,
+            bestStreak: bestStreak,
+            averageExpectedImpact: averageImpact,
+            lostExpectedPoints: lostExpectedPoints,
+            averageLostExpectedPoints: averageLostExpectedPoints,
+            lostAgainstSecondBestPoints: lostAgainstSecondBestPoints,
+            secondBestComparisonAttempts: secondBestComparisons.count,
+            averageSecondBestGap: averageSecondBestGap,
+            valueCapturePercent: valueCapturePercent,
+            valueCaptureAttempts: valueAttempts.count,
+            projectedTeamPointAttempts: projectedAttempts.count,
+            averageProjectedTeamPoints: averageProjectedTeamPoints,
+            lostProjectedTeamPoints: lostProjectedTeamPoints,
+            averageLostProjectedTeamPoints: averageLostProjectedTeamPoints
+        )
+    }
+}
+
 /// درجة وضوح أفضل ورقة في موقف «وش تلعب؟» مقارنة بثاني أفضل خيار.
 public enum WhatToPlayBestMoveConfidence: String, Sendable, Codable, Equatable, CaseIterable {
     case tied

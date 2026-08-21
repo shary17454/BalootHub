@@ -336,6 +336,62 @@ struct WhatToPlayTrainerTests {
         #expect(metrics.reasonCategory == .accuracyWeakness)
     }
 
+    @Test("ملخص أداء وش تلعب يأتي من المحرك ويحافظ على السلاسل وفاقد القيمة")
+    func statsSummaryMetricsCalculateTrainingPerformance() {
+        let metrics = WhatToPlayStatsSummaryMetrics.summarize(chronologicalSamples: [
+            WhatToPlayStatsSample(isCorrect: true, expectedImpact: 4, bestExpectedImpact: 4),
+            WhatToPlayStatsSample(
+                isCorrect: true,
+                expectedImpact: 6,
+                bestExpectedImpact: 8,
+                secondBestExpectedImpact: 6,
+                projectedTeamPoints: 82,
+                bestProjectedTeamPoints: 82
+            ),
+            WhatToPlayStatsSample(
+                isCorrect: false,
+                expectedImpact: -3,
+                bestExpectedImpact: 5,
+                secondBestExpectedImpact: 3,
+                projectedTeamPoints: 64,
+                bestProjectedTeamPoints: 76
+            ),
+            WhatToPlayStatsSample(isCorrect: true, expectedImpact: 2, bestExpectedImpact: 6, projectedTeamPoints: 70)
+        ])
+
+        #expect(metrics.attempts == 4)
+        #expect(metrics.correct == 3)
+        #expect(metrics.accuracyPercent == 75)
+        #expect(metrics.currentStreak == 1)
+        #expect(metrics.bestStreak == 2)
+        #expect(metrics.averageExpectedImpact == 2)
+        #expect(metrics.lostExpectedPoints == 14)
+        #expect(metrics.averageLostExpectedPoints == 4)
+        #expect(metrics.lostAgainstSecondBestPoints == 6)
+        #expect(metrics.secondBestComparisonAttempts == 2)
+        #expect(metrics.averageSecondBestGap == 3)
+        #expect(metrics.valueCaptureAttempts == 4)
+        #expect(metrics.valueCapturePercent == 52)
+        #expect(metrics.projectedTeamPointAttempts == 3)
+        #expect(metrics.averageProjectedTeamPoints == 72)
+        #expect(metrics.lostProjectedTeamPoints == 12)
+        #expect(metrics.averageLostProjectedTeamPoints == 6)
+    }
+
+    @Test("ملخص أداء وش تلعب يتجاهل أفضلية غير موجبة في نسبة التقاط القيمة")
+    func statsSummaryMetricsClampValueCapture() {
+        let metrics = WhatToPlayStatsSummaryMetrics.summarize(chronologicalSamples: [
+            WhatToPlayStatsSample(isCorrect: true, expectedImpact: 10, bestExpectedImpact: 6),
+            WhatToPlayStatsSample(isCorrect: false, expectedImpact: 3, bestExpectedImpact: 0),
+            WhatToPlayStatsSample(isCorrect: false, expectedImpact: -4, bestExpectedImpact: 4)
+        ])
+
+        #expect(metrics.valueCaptureAttempts == 2)
+        #expect(metrics.valueCapturePercent == 60)
+        #expect(metrics.currentStreak == 0)
+        #expect(metrics.bestStreak == 1)
+    }
+
     @Test("مراجعة اختيار وش تلعب تحسب الفوارق وجودة القرار من المحرك")
     func choiceReviewCalculatesLossesAndQuality() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2, difficulty: .hard)
