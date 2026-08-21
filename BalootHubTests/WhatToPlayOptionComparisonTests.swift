@@ -390,6 +390,29 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         }
     }
 
+    func testRowsBuildCoachingSummaryFromEngineOutcomeImpactAndSimulation() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let selected = try XCTUnwrap(scenario.bestOption)
+
+        let rows = WhatToPlayOptionComparison.rows(for: scenario, selectedCard: selected.card)
+        let selectedRow = try XCTUnwrap(rows.first { $0.card == selected.card })
+
+        XCTAssertTrue(selectedRow.coachingSummary.contains("السبب التكتيكي".localized))
+        XCTAssertTrue(selectedRow.coachingSummary.contains(selected.outcomeReason.localized))
+        XCTAssertTrue(selectedRow.coachingSummary.contains("أثر القرار".localized))
+        XCTAssertTrue(selectedRow.coachingSummary.contains(selectedRow.impactDetail))
+        XCTAssertTrue(selectedRow.coachingSummary.contains("نتيجة المحاكاة".localized))
+        XCTAssertTrue(selectedRow.coachingSummary.contains(selectedRow.simulationSummary))
+        if let teamResult = selectedRow.simulationTeamResult {
+            XCTAssertTrue(selectedRow.coachingSummary.contains("اتجاه الأكلة".localized))
+            XCTAssertTrue(selectedRow.coachingSummary.contains(teamResult))
+        }
+        if let trickPoints = selectedRow.simulationTrickPoints {
+            XCTAssertTrue(selectedRow.coachingSummary.contains("نقاط الأكلة".localized))
+            XCTAssertTrue(selectedRow.coachingSummary.contains("\(trickPoints)"))
+        }
+    }
+
     func testRowsTagExpertChoiceAsExpertPick() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
         let selected = try XCTUnwrap(scenario.bestOption)

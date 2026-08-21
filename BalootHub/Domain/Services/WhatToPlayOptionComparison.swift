@@ -17,6 +17,7 @@ struct WhatToPlayOptionComparisonRow: Identifiable, Equatable {
     let simulationTrickPoints: Int?
     let tacticalTag: WhatToPlayOptionTacticalTag
     let tacticalSummary: String
+    let coachingSummary: String
     let rationale: String
     let isSelected: Bool
     let isExpertChoice: Bool
@@ -305,6 +306,11 @@ enum WhatToPlayOptionComparison {
                         bestImpact: bestImpact,
                         bestProjectedTeamPoints: bestProjectedTeamPoints
                     ),
+                    coachingSummary: coachingSummary(
+                        for: option,
+                        impactDetail: WhatToPlayImpactFormatter.detail(for: option.impactBreakdown),
+                        simulationDisplay: simulationDisplay
+                    ),
                     rationale: option.explanation,
                     isSelected: option.card == selectedCard,
                     isExpertChoice: option.isExpertChoice,
@@ -436,6 +442,25 @@ enum WhatToPlayOptionComparison {
             return "\("يربح الأكلة غالبًا، لكنه أقل من أفضل خيار بفارق".localized) \(lost)."
         }
         return "\("يبقي الأكلة مفتوحة ويخسر عن الأفضل".localized): \(lost)."
+    }
+
+    private static func coachingSummary(
+        for option: WhatToPlayOption,
+        impactDetail: String,
+        simulationDisplay: WhatToPlaySimulationDisplay
+    ) -> String {
+        var parts = [
+            "\("السبب التكتيكي".localized): \(option.outcomeReason.localized)",
+            "\("أثر القرار".localized): \(impactDetail)",
+            "\("نتيجة المحاكاة".localized): \(simulationDisplay.summary)"
+        ]
+        if let teamResult = simulationDisplay.teamResult {
+            parts.append("\("اتجاه الأكلة".localized): \(teamResult)")
+        }
+        if let trickPoints = simulationDisplay.trickPoints {
+            parts.append("\("نقاط الأكلة".localized): \(trickPoints)")
+        }
+        return parts.joined(separator: " · ")
     }
 }
 
