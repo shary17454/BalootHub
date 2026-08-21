@@ -85,6 +85,8 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
         XCTAssertTrue(review.detail.contains("\("نقاط فريقك بعد المحاكاة".localized): 50"))
         XCTAssertTrue(review.detail.contains("\("أفضل نتيجة محاكاة".localized): 62"))
         XCTAssertTrue(review.detail.contains("\("أفضل محاكاة".localized): \(bestSimulation.accessibilityName)"))
+        XCTAssertTrue(review.detail.contains("\("ثاني نتيجة محاكاة".localized): 58"))
+        XCTAssertTrue(review.detail.contains("\("فاقد ثاني محاكاة".localized): 8"))
         XCTAssertTrue(review.detail.contains("تكتمل الأكلة وتنتقل للفائز.".localized))
         XCTAssertTrue(review.detail.contains("\("نتيجة المحاكاة".localized): \("للخصم".localized)"))
         XCTAssertTrue(review.detail.contains("\("نقاط الأكلة".localized): 18"))
@@ -189,6 +191,7 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
             secondBestExpectedImpact: second == nil ? nil : 5,
             projectedTeamPoints: 50,
             bestProjectedTeamPoints: second == nil ? 55 : 62,
+            secondBestProjectedTeamPoints: second == nil ? nil : 58,
             focusKind: .followSuit,
             gameMode: .hokum,
             impactBreakdown: second == nil ? nil : opponentTrickClosureBreakdown,
