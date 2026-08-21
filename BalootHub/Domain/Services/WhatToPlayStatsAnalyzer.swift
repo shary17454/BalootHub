@@ -2326,7 +2326,7 @@ enum WhatToPlayStatsAnalyzer {
                     focusKind: reviewItem.focusKind,
                     gameMode: reviewItem.gameMode,
                     trumpSuit: reviewItem.contextTrumpSuit,
-                    recommendedCard: reviewItem.bestCard,
+                    recommendedCard: recommendedReviewCard(for: reviewItem),
                     expectedImprovement: microDrillExpectedImprovement(for: reviewItem)
                 )
             }
@@ -3718,7 +3718,7 @@ enum WhatToPlayStatsAnalyzer {
                 focusKind: reviewItem?.focusKind,
                 gameMode: reviewItem?.gameMode,
                 trumpSuit: reviewItem?.contextTrumpSuit,
-                recommendedCard: reviewItem?.bestCard,
+                recommendedCard: reviewItem.flatMap(recommendedReviewCard),
                 expectedImprovement: reviewItem.map { microDrillExpectedImprovement(for: $0) } ?? 0
             )
 
@@ -3741,7 +3741,7 @@ enum WhatToPlayStatsAnalyzer {
                 focusKind: simulatedReview.focusKind,
                 gameMode: simulatedReview.gameMode,
                 trumpSuit: simulatedReview.contextTrumpSuit,
-                recommendedCard: simulatedReview.bestCard,
+                recommendedCard: recommendedReviewCard(for: simulatedReview),
                 expectedImprovement: microDrillExpectedImprovement(for: simulatedReview)
             )
 
@@ -3754,7 +3754,7 @@ enum WhatToPlayStatsAnalyzer {
                 detail: "الأولوية الآن ليست كثرة المواقف، بل فهم سبب الخطأ الأخير.".localized,
                 iconName: "drop.fill",
                 steps: [
-                    "\("خسارة قيمة عالية".localized): \(highValueReview.lostExpectedPoints)",
+                    "\("خسارة قيمة عالية".localized): \(microDrillExpectedImprovement(for: highValueReview))",
                     "\("أعد موقف".localized) \(difficultyTitle(highValueReview.difficulty))",
                     "قارن أفضل وثاني أفضل".localized
                 ],
@@ -3764,7 +3764,7 @@ enum WhatToPlayStatsAnalyzer {
                 focusKind: highValueReview.focusKind,
                 gameMode: highValueReview.gameMode,
                 trumpSuit: highValueReview.contextTrumpSuit,
-                recommendedCard: highValueReview.bestCard,
+                recommendedCard: recommendedReviewCard(for: highValueReview),
                 expectedImprovement: microDrillExpectedImprovement(for: highValueReview)
             )
 
@@ -3940,6 +3940,14 @@ enum WhatToPlayStatsAnalyzer {
             lostExpectedPoints: reviewItem.lostExpectedPoints,
             lostProjectedTeamPoints: reviewItem.lostProjectedTeamPoints
         ).points
+    }
+
+    private static func recommendedReviewCard(for reviewItem: WhatToPlayReviewItem) -> PlayingCard? {
+        if reviewItem.lostProjectedTeamPoints > reviewItem.lostExpectedPoints,
+           let bestSimulationCard = reviewItem.bestSimulationCard {
+            return bestSimulationCard
+        }
+        return reviewItem.bestCard
     }
 
     private static func reviewStepTitle(for reviewItem: WhatToPlayReviewItem) -> String {

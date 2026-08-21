@@ -92,6 +92,37 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
         XCTAssertTrue(review.detail.contains("\("نقاط محاكاة ضائعة".localized): 12"))
     }
 
+    func testReplayMistakeRecommendsBestSimulationCardWhenProjectedLossDominates() throws {
+        let selected = PlayingCard(suit: .clubs, rank: .seven)
+        let best = PlayingCard(suit: .hearts, rank: .ace)
+        let second = PlayingCard(suit: .spades, rank: .king)
+        let bestSimulation = PlayingCard(suit: .diamonds, rank: .ace)
+        let plan = WhatToPlayTrainingSessionPlan(
+            difficulty: .medium,
+            focusKind: .followSuit,
+            gameMode: .hokum,
+            scenarioCount: 1,
+            targetAccuracyPercent: 100,
+            targetAverageExpectedImpact: 5,
+            title: "خطة".localized,
+            detail: "تفصيل".localized,
+            successMetric: "هدف".localized,
+            iconName: "target"
+        )
+        let attempts = [
+            attempt(seed: 30, selected: selected, best: best, second: second, impact: 7)
+        ]
+
+        let review = WhatToPlayStatsAnalyzer.trainingSessionReview(for: attempts, plan: plan)
+        let drill = WhatToPlayStatsAnalyzer.microDrill(for: attempts)
+
+        XCTAssertEqual(review.action, .replayMistake)
+        XCTAssertEqual(review.recommendedCard, bestSimulation)
+        XCTAssertEqual(review.expectedImprovement, 12)
+        XCTAssertEqual(drill.recommendedCard, bestSimulation)
+        XCTAssertEqual(drill.expectedImprovement, 12)
+    }
+
     func testReviewScenarioTargetReplaysPreviousSelection() throws {
         let selected = PlayingCard(suit: .hearts, rank: .ace)
         let stored = attempt(
