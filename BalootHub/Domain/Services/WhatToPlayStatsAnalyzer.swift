@@ -2191,6 +2191,10 @@ enum WhatToPlayStatsAnalyzer {
         if let secondBestExpectedImpact = item.secondBestExpectedImpact {
             parts.append("\("أثر ثاني أفضل".localized): \(impactTextValue(secondBestExpectedImpact))")
         }
+        if let projectedTeamPoints = item.projectedTeamPoints {
+            parts.append("\("نقاط فريقك بعد المحاكاة".localized): \(projectedTeamPoints)")
+            parts.append("\("أفضل نتيجة محاكاة".localized): \(projectedTeamPoints + item.lostProjectedTeamPoints)")
+        }
         if item.lostExpectedPoints > 0 {
             parts.append("\("الفاقد".localized): \(item.lostExpectedPoints)")
         }

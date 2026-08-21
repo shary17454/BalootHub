@@ -34,6 +34,8 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
         XCTAssertTrue(review.detail.contains("\("الأثر المتوقع".localized): +8"))
         XCTAssertTrue(review.detail.contains("\("ثاني أفضل".localized): \(second.accessibilityName)"))
         XCTAssertTrue(review.detail.contains("\("أثر ثاني أفضل".localized): +5"))
+        XCTAssertTrue(review.detail.contains("\("نقاط فريقك بعد المحاكاة".localized): 50"))
+        XCTAssertTrue(review.detail.contains("\("أفضل نتيجة محاكاة".localized): 62"))
         XCTAssertTrue(review.detail.contains("\("نقاط محاكاة ضائعة".localized): 12"))
     }
 
