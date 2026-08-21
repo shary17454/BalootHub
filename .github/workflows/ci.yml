@@ -26,6 +26,7 @@ jobs:
   app-build-and-test:
     name: بناء واختبار تطبيق BalootHub
     runs-on: macos-15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - name: عرض إصدار Xcode
@@ -49,6 +50,7 @@ jobs:
           xcodebuild test
           -scheme BalootHub
           -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.name }}"
+          -destination-timeout 120
           -testLanguage ar
           -testRegion SA
           -resultBundlePath TestResults.xcresult
@@ -63,6 +65,7 @@ jobs:
           -scheme BalootHub
           -configuration Release
           -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.name }}"
+          -destination-timeout 120
           -skipMacroValidation
           CODE_SIGNING_ALLOWED=NO
 

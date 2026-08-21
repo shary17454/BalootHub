@@ -2263,36 +2263,7 @@ enum WhatToPlayStatsAnalyzer {
             "\("ابدأ بإعادة موقف".localized) \(item.seed)",
             "قبل تكرار الجلسة؛ هذا يربط التدريب بسبب الخسارة لا بعدد المحاولات فقط.".localized
         ]
-        if let trickNumber = item.contextTrickNumber {
-            parts.append("\("الأكلة".localized): \(trickNumber)")
-        }
-        if let isLeading = item.contextIsLeading {
-            if isLeading {
-                parts.append("أنت تفتتح الأكلة".localized)
-            } else if let playedCardCount = item.contextPlayedCardCount {
-                parts.append("\("أنت ترد بعد".localized) \(playedCardCount) \("ورقة".localized)")
-            }
-        }
-        if let requiredSuit = item.contextRequiredSuit {
-            parts.append("\("اللون المطلوب".localized): \(requiredSuit.spokenName)")
-        }
-        if let trumpSuit = item.contextTrumpSuit {
-            parts.append("\("حكم".localized): \(trumpSuit.spokenName)")
-            if item.contextHasTrumpInCurrentTrick == true {
-                parts.append("الحكم على الطاولة".localized)
-            }
-        }
-        if let playerPoints = item.contextPlayerTeamTrickPoints,
-           let opponentPoints = item.contextOpponentTeamTrickPoints {
-            parts.append("\("نقاط فريقك".localized): \(playerPoints) · \("للخصم".localized): \(opponentPoints)")
-            parts.append("\("الفارق".localized): \(impactTextValue(playerPoints - opponentPoints))")
-        }
-        if let legalOptionCount = item.contextLegalOptionCount {
-            parts.append("\("الأوراق القانونية".localized): \(legalOptionCount)")
-        }
-        if let playedCardCount = item.contextPlayedCardCount {
-            parts.append("\("أوراق".localized): \(playedCardCount)/4")
-        }
+        parts.append(contentsOf: trainingSessionReviewMistakeContextParts(for: item))
         if let tacticalReasonTitle = item.tacticalReasonTitle {
             parts.append("\("السبب التكتيكي".localized): \(tacticalReasonTitle)")
         }
@@ -2342,6 +2313,70 @@ enum WhatToPlayStatsAnalyzer {
             parts.append("\("نقاط محاكاة ضائعة".localized): \(item.lostProjectedTeamPoints)")
         }
         return parts.joined(separator: " · ")
+    }
+
+    private static func trainingSessionReviewMistakeContextParts(for item: WhatToPlayReviewItem) -> [String] {
+        if let context = item.scenarioContext {
+            return trainingSessionReviewMistakeContextParts(for: context)
+        }
+
+        var parts: [String] = []
+        if let trickNumber = item.contextTrickNumber {
+            parts.append("\("الأكلة".localized): \(trickNumber)")
+        }
+        if let isLeading = item.contextIsLeading {
+            if isLeading {
+                parts.append("أنت تفتتح الأكلة".localized)
+            } else if let playedCardCount = item.contextPlayedCardCount {
+                parts.append("\("أنت ترد بعد".localized) \(playedCardCount) \("ورقة".localized)")
+            }
+        }
+        if let requiredSuit = item.contextRequiredSuit {
+            parts.append("\("اللون المطلوب".localized): \(requiredSuit.spokenName)")
+        }
+        if let trumpSuit = item.contextTrumpSuit {
+            parts.append("\("حكم".localized): \(trumpSuit.spokenName)")
+            if item.contextHasTrumpInCurrentTrick == true {
+                parts.append("الحكم على الطاولة".localized)
+            }
+        }
+        if let playerPoints = item.contextPlayerTeamTrickPoints,
+           let opponentPoints = item.contextOpponentTeamTrickPoints {
+            parts.append("\("نقاط فريقك".localized): \(playerPoints) · \("للخصم".localized): \(opponentPoints)")
+            parts.append("\("الفارق".localized): \(impactTextValue(playerPoints - opponentPoints))")
+        }
+        if let legalOptionCount = item.contextLegalOptionCount {
+            parts.append("\("الأوراق القانونية".localized): \(legalOptionCount)")
+        }
+        if let playedCardCount = item.contextPlayedCardCount {
+            parts.append("\("أوراق".localized): \(playedCardCount)/4")
+        }
+        return parts
+    }
+
+    private static func trainingSessionReviewMistakeContextParts(for context: WhatToPlayScenarioContext) -> [String] {
+        var parts = [
+            "\("الأكلة".localized): \(context.trickNumber)"
+        ]
+        if context.isLeading {
+            parts.append("أنت تفتتح الأكلة".localized)
+        } else {
+            parts.append("\("أنت ترد بعد".localized) \(context.playedCardCount) \("ورقة".localized)")
+        }
+        if let requiredSuit = context.requiredSuit {
+            parts.append("\("اللون المطلوب".localized): \(requiredSuit.spokenName)")
+        }
+        if let trumpSuit = context.trumpSuit {
+            parts.append("\("حكم".localized): \(trumpSuit.spokenName)")
+            if context.hasTrumpInCurrentTrick {
+                parts.append("الحكم على الطاولة".localized)
+            }
+        }
+        parts.append("\("نقاط فريقك".localized): \(context.playerTeamTrickPoints) · \("للخصم".localized): \(context.opponentTeamTrickPoints)")
+        parts.append("\("الفارق".localized): \(impactTextValue(context.playerTeamPointMargin))")
+        parts.append("\("الأوراق القانونية".localized): \(context.legalOptionCount)")
+        parts.append("\("أوراق".localized): \(context.playedCardCount)/4")
+        return parts
     }
 
     private static func trainingSessionReviewContext(

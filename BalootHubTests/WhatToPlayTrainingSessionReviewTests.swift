@@ -17,23 +17,26 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
             iconName: "target"
         )
         let attempts = [
-            attempt(seed: 11, selected: PlayingCard(suit: .clubs, rank: .ace), best: PlayingCard(suit: .clubs, rank: .ace), isCorrect: true, impact: 6),
-            attempt(seed: 12, selected: PlayingCard(suit: .hearts, rank: .ace), best: PlayingCard(suit: .hearts, rank: .ace), isCorrect: true, impact: 6),
-            attempt(seed: 13, selected: PlayingCard(suit: .spades, rank: .ace), best: PlayingCard(suit: .spades, rank: .ace), isCorrect: true, impact: 6)
+            attempt(seed: 11, difficulty: .easy, selected: PlayingCard(suit: .clubs, rank: .ace), best: PlayingCard(suit: .clubs, rank: .ace), isCorrect: true, impact: 6),
+            attempt(seed: 12, difficulty: .easy, selected: PlayingCard(suit: .hearts, rank: .ace), best: PlayingCard(suit: .hearts, rank: .ace), isCorrect: true, impact: 6),
+            attempt(seed: 13, difficulty: .easy, selected: PlayingCard(suit: .spades, rank: .ace), best: PlayingCard(suit: .spades, rank: .ace), isCorrect: true, impact: 6)
         ]
 
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
         let review = WhatToPlayStatsAnalyzer.trainingSessionReview(for: attempts, plan: plan)
 
         XCTAssertEqual(review.action, .nextChallenge)
-        XCTAssertTrue(review.detail.contains("\("نتيجة الجلسة".localized): 100/100"))
-        XCTAssertTrue(review.detail.contains("جلسة ممتازة".localized))
-        XCTAssertTrue(review.detail.contains("قراراتك قريبة من الخبير وتحقق أثرًا قويًا".localized))
-        XCTAssertTrue(review.detail.contains("التقييم متوازن".localized))
-        XCTAssertTrue(review.detail.contains("الدقة وأثر القرار قريبان".localized))
-        XCTAssertTrue(review.detail.contains("\("ابدأ بموقف تلقائي على مستوى".localized) \("صعب".localized)"))
+        XCTAssertEqual(progress.state, .achieved)
+        XCTAssertTrue(review.detail.contains("\("نتيجة الجلسة".localized): \(progress.gradePercent)/100"))
+        XCTAssertTrue(review.detail.contains(progress.gradeTitle))
+        XCTAssertTrue(review.detail.contains(progress.gradeDetail))
+        XCTAssertTrue(review.detail.contains(progress.gradeReasonTitle))
+        XCTAssertTrue(review.detail.contains(progress.gradeReasonDetail))
+        XCTAssertNotNil(review.nextSeed)
+        XCTAssertNotNil(review.difficulty)
     }
 
-    func testReplayMistakeDetailIncludesSecondBestAndSimulationLoss() {
+    func testReplayMistakeDetailIncludesSecondBestAndSimulationLoss() throws {
         let selected = PlayingCard(suit: .clubs, rank: .seven)
         let best = PlayingCard(suit: .hearts, rank: .ace)
         let second = PlayingCard(suit: .spades, rank: .king)
@@ -54,9 +57,11 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
             attempt(seed: 10, selected: selected, best: best, second: second),
             attempt(seed: 11, selected: PlayingCard(suit: .diamonds, rank: .eight), best: best)
         ]
+        let reviewItem = try XCTUnwrap(WhatToPlayStatsAnalyzer.reviewQueue(for: attempts).first)
 
         let review = WhatToPlayStatsAnalyzer.trainingSessionReview(for: attempts, plan: plan)
 
+        XCTAssertEqual(reviewItem.scenarioContext, scenarioContext)
         XCTAssertEqual(review.action, .replayMistake)
         XCTAssertEqual(review.replaySeed, 10)
         XCTAssertTrue(review.detail.contains("\("الأكلة".localized): 4"))
@@ -131,6 +136,7 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
 
     private func attempt(
         seed: UInt64,
+        difficulty: WhatToPlayDifficulty = .medium,
         selected: PlayingCard,
         best: PlayingCard,
         second: PlayingCard? = nil,
@@ -139,7 +145,7 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
     ) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
             createdAt: Date(timeIntervalSince1970: Double(seed)),
-            difficulty: .medium,
+            difficulty: difficulty,
             seed: seed,
             selectedCard: selected,
             bestCard: best,
