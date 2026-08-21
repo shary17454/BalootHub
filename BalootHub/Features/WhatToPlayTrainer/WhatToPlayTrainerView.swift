@@ -67,10 +67,12 @@ struct WhatToPlayTrainerView: View {
         self.routeSeedBase = seedBase ?? seed
         self.targetCount = targetCount
         let storedPreferences = WhatToPlayTrainerPreferences.load()
+        let initialMode = preferredMode ?? storedPreferences.preferredMode
+        let initialTrumpSuit = initialMode == .hokum ? (preferredTrumpSuit ?? storedPreferences.preferredTrumpSuit) : nil
         _difficulty = State(initialValue: difficulty ?? storedPreferences.difficulty)
         _preferredFocusRaw = State(initialValue: (preferredFocus ?? storedPreferences.preferredFocus)?.rawValue ?? "auto")
-        _preferredModeRaw = State(initialValue: (preferredMode ?? storedPreferences.preferredMode)?.rawValue ?? "auto")
-        _preferredTrumpSuit = State(initialValue: preferredTrumpSuit)
+        _preferredModeRaw = State(initialValue: initialMode?.rawValue ?? "auto")
+        _preferredTrumpSuit = State(initialValue: initialTrumpSuit)
         _seed = State(initialValue: seed ?? 2026)
     }
 
@@ -264,7 +266,8 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayTrainerPreferences.save(
             difficulty: difficulty,
             preferredFocus: preferredFocus,
-            preferredMode: preferredMode
+            preferredMode: preferredMode,
+            preferredTrumpSuit: preferredTrumpSuit
         )
     }
 
