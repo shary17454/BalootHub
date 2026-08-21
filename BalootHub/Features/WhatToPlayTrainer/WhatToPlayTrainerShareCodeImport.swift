@@ -75,8 +75,8 @@ extension WhatToPlayTrainerView {
                 seed = parsed.seed
                 difficulty = parsed.difficulty
                 preferredFocusRaw = parsed.focusKind?.rawValue ?? "auto"
-                preferredModeRaw = "auto"
-                preferredTrumpSuit = nil
+                preferredModeRaw = (parsed.gameMode ?? imported.scenario.state.mode)?.rawValue ?? "auto"
+                preferredTrumpSuit = parsed.trumpSuit ?? imported.scenario.state.trumpSuit
                 scenario = imported.scenario
                 selectedOption = imported.selectedOption
                 if let attempt = imported.attempt {

@@ -40,15 +40,16 @@ final class WhatToPlayShareCardTests: XCTestCase {
         let promptContent = WhatToPlayShareCard.content(for: scenario)
         let repeatedPromptContent = WhatToPlayShareCard.content(for: scenario)
         let reviewedContent = WhatToPlayShareCard.content(for: scenario, selectedOption: selected)
+        let modeToken = scenarioModeToken(for: scenario)
 
         XCTAssertEqual(promptContent.scenarioCode, repeatedPromptContent.scenarioCode)
         XCTAssertEqual(
             promptContent.scenarioCode,
-            "WTP-\(scenario.seed)-\(scenario.difficulty.rawValue)-\(scenario.context.focusKind.rawValue)-P"
+            "WTP-\(scenario.seed)-\(scenario.difficulty.rawValue)-\(scenario.context.focusKind.rawValue)-\(modeToken)-P"
         )
         XCTAssertEqual(
             reviewedContent.scenarioCode,
-            "WTP-\(scenario.seed)-\(scenario.difficulty.rawValue)-\(scenario.context.focusKind.rawValue)-C\(selected.card.suit.ordinal)\(selected.card.rank.ordinal)"
+            "WTP-\(scenario.seed)-\(scenario.difficulty.rawValue)-\(scenario.context.focusKind.rawValue)-\(modeToken)-C\(selected.card.suit.ordinal)\(selected.card.rank.ordinal)"
         )
         XCTAssertNotEqual(promptContent.scenarioCode, reviewedContent.scenarioCode)
         XCTAssertTrue(WhatToPlayShareCard.text(for: scenario).contains(promptContent.scenarioCode))
@@ -79,6 +80,23 @@ final class WhatToPlayShareCardTests: XCTestCase {
         let checklist = WhatToPlayStatsAnalyzer.preDecisionChecklist(for: scenario)
         XCTAssertEqual(content.checklistTitle, checklist.title)
         XCTAssertEqual(content.checklistItems, checklist.items)
+    }
+
+    func testShareCardScenarioCodeCarriesHokumTrumpSuit() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(
+            seed: 2026,
+            difficulty: .easy,
+            preferredFocus: .trumpPressure,
+            preferredMode: .hokum,
+            preferredTrumpSuit: .spades
+        )
+
+        let content = WhatToPlayShareCard.content(for: scenario)
+        let parsed = WhatToPlayScenarioCode.parse(content.scenarioCode)
+
+        XCTAssertEqual(parsed?.gameMode, .hokum)
+        XCTAssertEqual(parsed?.trumpSuit, .spades)
+        XCTAssertTrue(content.scenarioCode.contains("-hokum.\(Suit.spades.ordinal)-"))
     }
 
     func testShareTextIncludesPreDecisionChecklistWithoutRevealingAnswer() throws {
@@ -401,6 +419,20 @@ final class WhatToPlayShareCardTests: XCTestCase {
 
     private func contentMode(for scenario: WhatToPlayScenario) -> String {
         WhatToPlayShareCard.content(for: scenario).mode
+    }
+
+    private func scenarioModeToken(for scenario: WhatToPlayScenario) -> String {
+        guard let mode = scenario.state.mode else { return "auto" }
+        switch mode {
+        case .sun:
+            return "sun"
+        case .hokum:
+            if let trumpSuit = scenario.state.trumpSuit {
+                return "hokum.\(trumpSuit.ordinal)"
+            } else {
+                return "hokum"
+            }
+        }
     }
 
     private func shareScoreText(for scenario: WhatToPlayScenario) -> String {

@@ -102,7 +102,9 @@ enum WhatToPlayScenarioLoader {
         return try await generate(
             seed: parsed.seed,
             difficulty: parsed.difficulty,
-            preferredFocus: parsed.focusKind
+            preferredFocus: parsed.focusKind,
+            preferredMode: parsed.gameMode,
+            preferredTrumpSuit: parsed.trumpSuit
         )
     }
 }

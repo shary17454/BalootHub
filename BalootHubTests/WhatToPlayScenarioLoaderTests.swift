@@ -199,6 +199,26 @@ final class WhatToPlayScenarioLoaderTests: XCTestCase {
         XCTAssertEqual(replayed.bestOption?.card, original.bestOption?.card)
     }
 
+    func testLoaderGeneratesScenarioFromShareCodeWithRequestedModeAndTrumpSuit() async throws {
+        let original = try await WhatToPlayScenarioLoader.generate(
+            seed: 2026,
+            difficulty: .easy,
+            preferredFocus: .trumpPressure,
+            preferredMode: .hokum,
+            preferredTrumpSuit: .spades
+        )
+        let code = WhatToPlayShareCard.content(for: original).scenarioCode
+
+        let replayed = try await WhatToPlayScenarioLoader.generate(code: code)
+
+        XCTAssertEqual(replayed.seed, original.seed)
+        XCTAssertEqual(replayed.state.mode, .hokum)
+        XCTAssertEqual(replayed.state.trumpSuit, .spades)
+        XCTAssertEqual(replayed.context.focusKind, original.context.focusKind)
+        XCTAssertEqual(replayed.options.map(\.card), original.options.map(\.card))
+        XCTAssertEqual(replayed.bestOption?.card, original.bestOption?.card)
+    }
+
     func testLoaderRejectsMalformedScenarioCode() async {
         do {
             _ = try await WhatToPlayScenarioLoader.generate(code: "WTP-invalid")

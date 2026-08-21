@@ -15,7 +15,7 @@ final class WhatToPlayScenarioCodeTests: XCTestCase {
         )
 
         XCTAssertEqual(attempt.replaySeed, UInt64.max)
-        XCTAssertEqual(attempt.scenarioCode, "WTP-\(UInt64.max)-hard-trumpPressure-C37")
+        XCTAssertEqual(attempt.scenarioCode, "WTP-\(UInt64.max)-hard-trumpPressure-auto-C37")
     }
 
     func testReviewQueueCarriesScenarioCodeForReplayAndSharing() {
@@ -33,45 +33,57 @@ final class WhatToPlayScenarioCodeTests: XCTestCase {
 
         let item = WhatToPlayStatsAnalyzer.reviewQueue(for: [attempt]).first
 
-        XCTAssertEqual(item?.scenarioCode, "WTP-2026-medium-followSuit-C07")
+        XCTAssertEqual(item?.scenarioCode, "WTP-2026-medium-followSuit-auto-C07")
     }
 
     func testScenarioCodeParsesPromptAndReviewedDecision() {
         let prompt = WhatToPlayScenarioCode.parse("WTP-2026-medium-openingLead-P")
-        let reviewed = WhatToPlayScenarioCode.parse("WTP-2026-hard-trumpPressure-C37")
+        let reviewed = WhatToPlayScenarioCode.parse("WTP-2026-hard-trumpPressure-hokum.3-C37")
 
         XCTAssertEqual(prompt?.seed, 2_026)
         XCTAssertEqual(prompt?.difficulty, .medium)
         XCTAssertEqual(prompt?.focusKind, .openingLead)
+        XCTAssertNil(prompt?.gameMode)
+        XCTAssertNil(prompt?.trumpSuit)
         XCTAssertNil(prompt?.selectedCard)
         XCTAssertEqual(reviewed?.seed, 2_026)
         XCTAssertEqual(reviewed?.difficulty, .hard)
         XCTAssertEqual(reviewed?.focusKind, .trumpPressure)
+        XCTAssertEqual(reviewed?.gameMode, .hokum)
+        XCTAssertEqual(reviewed?.trumpSuit, .spades)
         XCTAssertEqual(reviewed?.selectedCard, PlayingCard(suit: .spades, rank: .ace))
+    }
+
+    func testScenarioCodeParsesSunModeWithoutTrumpSuit() {
+        let parsed = WhatToPlayScenarioCode.parse("WTP-2026-medium-openingLead-sun-P")
+
+        XCTAssertEqual(parsed?.gameMode, .sun)
+        XCTAssertNil(parsed?.trumpSuit)
+        XCTAssertNil(parsed?.selectedCard)
     }
 
     func testScenarioCodeExtractsCodeFromSharedText() {
         let text = """
         وش تلعب؟
-        رمز الموقف: WTP-2026-medium-followSuit-C07
+        رمز الموقف: WTP-2026-medium-followSuit-sun-C07
         النمط: صن
         """
 
         XCTAssertEqual(
             WhatToPlayScenarioCode.extractCode(from: text),
-            "WTP-2026-medium-followSuit-C07"
+            "WTP-2026-medium-followSuit-sun-C07"
         )
     }
 
     func testScenarioCodeExtractionSkipsInvalidCandidateBeforeValidCode() {
         let text = """
         نسخة قديمة: WTP-bad
-        رمز الموقف: WTP-2026-hard-trumpPressure-C37
+        رمز الموقف: WTP-2026-hard-trumpPressure-hokum.3-C37
         """
 
         XCTAssertEqual(
             WhatToPlayScenarioCode.extractCode(from: text),
-            "WTP-2026-hard-trumpPressure-C37"
+            "WTP-2026-hard-trumpPressure-hokum.3-C37"
         )
     }
 
@@ -87,5 +99,7 @@ final class WhatToPlayScenarioCodeTests: XCTestCase {
         XCTAssertNil(WhatToPlayScenarioCode.parse("WTP-2026-impossible-openingLead-P"))
         XCTAssertNil(WhatToPlayScenarioCode.parse("WTP-2026-medium-unknownFocus-P"))
         XCTAssertNil(WhatToPlayScenarioCode.parse("WTP-2026-medium-openingLead-C99"))
+        XCTAssertNil(WhatToPlayScenarioCode.parse("WTP-2026-medium-openingLead-unknown-P"))
+        XCTAssertNil(WhatToPlayScenarioCode.parse("WTP-2026-medium-openingLead-hokum.9-P"))
     }
 }

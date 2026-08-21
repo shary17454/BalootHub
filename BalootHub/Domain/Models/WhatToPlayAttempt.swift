@@ -148,6 +148,8 @@ final class WhatToPlayAttempt {
             seed: replaySeed,
             difficulty: difficulty,
             focusKindRaw: focusKindRaw,
+            gameMode: gameMode,
+            trumpSuit: contextTrumpSuit,
             selectedCard: selectedCard
         )
     }
