@@ -2979,6 +2979,7 @@ public struct WhatToPlayChoiceReview: Sendable, Equatable {
     public let bestOption: WhatToPlayOption?
     public let secondBestOption: WhatToPlayOption?
     public let bestProjectedOption: WhatToPlayOption?
+    public let secondBestProjectedOption: WhatToPlayOption?
     public let selectedOption: WhatToPlayOption?
     public let bestToSecondExpectedImpactGap: Int?
     public let expertToBestProjectedTeamPointsGap: Int?
@@ -2991,6 +2992,7 @@ public struct WhatToPlayChoiceReview: Sendable, Equatable {
         bestOption: WhatToPlayOption?,
         secondBestOption: WhatToPlayOption?,
         bestProjectedOption: WhatToPlayOption?,
+        secondBestProjectedOption: WhatToPlayOption?,
         selectedOption: WhatToPlayOption?,
         bestToSecondExpectedImpactGap: Int?,
         expertToBestProjectedTeamPointsGap: Int?,
@@ -3002,6 +3004,7 @@ public struct WhatToPlayChoiceReview: Sendable, Equatable {
         self.bestOption = bestOption
         self.secondBestOption = secondBestOption
         self.bestProjectedOption = bestProjectedOption
+        self.secondBestProjectedOption = secondBestProjectedOption
         self.selectedOption = selectedOption
         self.bestToSecondExpectedImpactGap = bestToSecondExpectedImpactGap
         self.expertToBestProjectedTeamPointsGap = expertToBestProjectedTeamPointsGap
@@ -3542,6 +3545,7 @@ public enum WhatToPlayTrainer {
         let best = sorted.first
         let second = sorted.dropFirst().first
         let bestProjected = bestProjectedOption(in: scenario.options)
+        let secondBestProjected = secondBestProjectedOption(in: scenario.options)
         let selected = selectedCard.flatMap { card in
             sorted.first { $0.card == card }
         }
@@ -3571,6 +3575,7 @@ public enum WhatToPlayTrainer {
             bestOption: best,
             secondBestOption: second,
             bestProjectedOption: bestProjected,
+            secondBestProjectedOption: secondBestProjected,
             selectedOption: selected,
             bestToSecondExpectedImpactGap: bestToSecondGap,
             expertToBestProjectedTeamPointsGap: expertToBestProjectedGap,

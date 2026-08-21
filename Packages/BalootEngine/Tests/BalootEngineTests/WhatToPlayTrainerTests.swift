@@ -1446,6 +1446,7 @@ struct WhatToPlayTrainerTests {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2, difficulty: .hard)
         let best = try #require(scenario.bestOption)
         let bestProjected = try #require(scenario.bestProjectedOption)
+        let secondBestProjected = try #require(scenario.secondBestProjectedOption)
         let selected = try #require(scenario.options.first {
             $0.projectedTeamPoints < bestProjected.projectedTeamPoints
         })
@@ -1455,6 +1456,7 @@ struct WhatToPlayTrainerTests {
         #expect(review.bestOption?.card == best.card)
         #expect(review.secondBestOption?.card == scenario.secondBestOption?.card)
         #expect(review.bestProjectedOption?.card == bestProjected.card)
+        #expect(review.secondBestProjectedOption?.card == secondBestProjected.card)
         #expect(review.selectedOption?.card == selected.card)
         #expect(review.selectedLostExpectedPoints == max(0, best.expectedImpact - selected.expectedImpact))
         #expect(review.selectedLostProjectedTeamPoints == max(0, bestProjected.projectedTeamPoints - selected.projectedTeamPoints))
@@ -1476,6 +1478,7 @@ struct WhatToPlayTrainerTests {
         #expect(review.bestOption?.card == scenario.bestOption?.card)
         #expect(review.secondBestOption?.card == scenario.secondBestOption?.card)
         #expect(review.bestProjectedOption?.card == scenario.bestProjectedOption?.card)
+        #expect(review.secondBestProjectedOption?.card == scenario.secondBestProjectedOption?.card)
         #expect(review.selectedOption == nil)
         #expect(review.selectedLostExpectedPoints == nil)
         #expect(review.selectedLostProjectedTeamPoints == nil)

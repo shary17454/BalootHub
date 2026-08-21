@@ -183,7 +183,6 @@ enum WhatToPlayOptionComparison {
     static func summary(for scenario: WhatToPlayScenario, selectedCard: PlayingCard?) -> WhatToPlayOptionComparisonSummary {
         let review = WhatToPlayTrainer.choiceReview(in: scenario, selectedCard: selectedCard)
         let action = WhatToPlayTrainer.nextActionRecommendation(from: review).map(nextAction)
-        let secondBestProjectedOption = WhatToPlayTrainer.secondBestProjectedOption(in: scenario.options)
 
         return WhatToPlayOptionComparisonSummary(
             bestCard: review.bestOption?.card,
@@ -196,9 +195,9 @@ enum WhatToPlayOptionComparison {
             bestSimulationCard: review.bestProjectedOption?.card,
             bestSimulationExpectedImpact: review.bestProjectedOption?.expectedImpact,
             bestSimulationProjectedTeamPoints: review.bestProjectedOption?.projectedTeamPoints,
-            secondBestSimulationCard: secondBestProjectedOption?.card,
-            secondBestSimulationExpectedImpact: secondBestProjectedOption?.expectedImpact,
-            secondBestSimulationProjectedTeamPoints: secondBestProjectedOption?.projectedTeamPoints,
+            secondBestSimulationCard: review.secondBestProjectedOption?.card,
+            secondBestSimulationExpectedImpact: review.secondBestProjectedOption?.expectedImpact,
+            secondBestSimulationProjectedTeamPoints: review.secondBestProjectedOption?.projectedTeamPoints,
             expertToBestSimulationGap: review.expertToBestProjectedTeamPointsGap,
             selectedCard: review.selectedOption?.card,
             selectedExpectedImpact: review.selectedOption?.expectedImpact,
