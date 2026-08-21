@@ -1837,6 +1837,21 @@ enum WhatToPlayStatsAnalyzer {
         }
     }
 
+    private static func trainingSessionProgressState(
+        _ category: WhatToPlayTrainingSessionProgressCategory
+    ) -> WhatToPlayTrainingSessionProgressState {
+        switch category {
+        case .notStarted:
+            .notStarted
+        case .inProgress:
+            .inProgress
+        case .achieved:
+            .achieved
+        case .needsRepeat:
+            .needsRepeat
+        }
+    }
+
     static func nextScenarioRecommendation(for attempts: [WhatToPlayAttempt]) -> WhatToPlayNextScenarioRecommendation {
         let plan = trainingSessionPlan(for: attempts)
         let focusPriority = focusTrainingPriority(for: attempts)
@@ -1893,80 +1908,57 @@ enum WhatToPlayStatsAnalyzer {
     ) -> WhatToPlayTrainingSessionProgress {
         let target = max(1, plan.scenarioCount)
         let sessionAttempts = Array(uniqueMatchingTrainingAttempts(for: attempts, plan: plan).prefix(target))
-        let completed = sessionAttempts.count
         let sessionSummary = summarize(attempts: sessionAttempts)
-        let correct = sessionAttempts.filter(\.isCorrect).count
-        let accuracy = completed > 0
-            ? Int((Double(correct) / Double(completed) * 100).rounded())
-            : 0
         let totalImpact = sessionAttempts.reduce(0) { $0 + $1.expectedImpact }
-        let averageImpact = completed > 0
-            ? Int((Double(totalImpact) / Double(completed)).rounded())
-            : 0
         let bestImpact = sessionAttempts.map(\.expectedImpact).max()
         let worstImpact = sessionAttempts.map(\.expectedImpact).min()
         let bestImpactAttempt = sessionImpactExtreme(in: sessionAttempts, preferHighest: true)
         let worstImpactAttempt = sessionImpactExtreme(in: sessionAttempts, preferHighest: false)
-        let accuracyTargetMet = completed > 0 && accuracy >= plan.targetAccuracyPercent
-        let requiredCorrect = requiredCorrectAttempts(
-            targetAttempts: target,
-            targetAccuracyPercent: plan.targetAccuracyPercent
-        )
-        let correctNeeded = max(0, requiredCorrect - correct)
-        let remaining = max(0, target - completed)
-        let bestPossibleCorrect = min(target, correct + remaining)
-        let bestPossibleAccuracy = Int((Double(bestPossibleCorrect) / Double(target) * 100).rounded())
-        let accuracyTargetReachable = bestPossibleCorrect >= requiredCorrect
-        let targetTotalImpact = target * plan.targetAverageExpectedImpact
-        let impactNeeded = max(0, targetTotalImpact - totalImpact)
-        let impactTargetMet = completed > 0 && impactNeeded == 0
         let qualitySummary = decisionQualitySummary(for: sessionAttempts)
-        let costlyDecisions = qualitySummary.costlyDecisions
-        let costlyDecisionTargetMet = plan.maxCostlyDecisions.map { costlyDecisions <= $0 } ?? true
-        let impactNeededPerRemaining = remaining > 0
-            ? Int((Double(impactNeeded) / Double(remaining)).rounded(.up))
-            : 0
-        let highPressureThreshold = max(
-            plan.targetAverageExpectedImpact * 2,
-            plan.targetAverageExpectedImpact + 1
+        let progressMetrics = WhatToPlayTrainingSessionProgressMetrics.classify(
+            completedAttempts: sessionAttempts.count,
+            correctAttempts: sessionAttempts.filter(\.isCorrect).count,
+            targetAttempts: target,
+            targetAccuracyPercent: plan.targetAccuracyPercent,
+            totalExpectedImpact: totalImpact,
+            targetAverageExpectedImpact: plan.targetAverageExpectedImpact,
+            costlyDecisions: qualitySummary.costlyDecisions,
+            maxCostlyDecisions: plan.maxCostlyDecisions
         )
-        let impactRecoveryHighPressure = remaining > 0
-            && impactNeeded > 0
-            && impactNeededPerRemaining > highPressureThreshold
-        let impactGap = max(0, plan.targetAverageExpectedImpact - averageImpact)
+        let progressState = trainingSessionProgressState(progressMetrics.category)
         let impactReading = trainingSessionImpactReading(
-            completedAttempts: completed,
-            averageExpectedImpact: averageImpact
+            completedAttempts: progressMetrics.completedAttempts,
+            averageExpectedImpact: progressMetrics.averageExpectedImpact
         )
         let reviewItem = reviewQueue(for: sessionAttempts, limit: 1).first
         let nextStep = trainingSessionNextStep(
-            state: completed == 0 ? .notStarted : (completed < target ? .inProgress : (accuracyTargetMet && impactTargetMet && costlyDecisionTargetMet ? .achieved : .needsRepeat)),
-            remainingAttempts: remaining,
-            correctAttemptsNeededForTarget: correctNeeded,
-            accuracyTargetMet: accuracyTargetMet,
-            impactTargetMet: impactTargetMet,
-            costlyDecisionTargetMet: costlyDecisionTargetMet,
+            state: progressState,
+            remainingAttempts: progressMetrics.remainingAttempts,
+            correctAttemptsNeededForTarget: progressMetrics.correctAttemptsNeededForTarget,
+            accuracyTargetMet: progressMetrics.accuracyTargetMet,
+            impactTargetMet: progressMetrics.impactTargetMet,
+            costlyDecisionTargetMet: progressMetrics.costlyDecisionTargetMet,
             averageLostExpectedPoints: sessionSummary.averageLostExpectedPoints
         )
         let grade = trainingSessionGrade(
-            completedAttempts: completed,
-            accuracyPercent: accuracy,
-            averageExpectedImpact: averageImpact,
+            completedAttempts: progressMetrics.completedAttempts,
+            accuracyPercent: progressMetrics.accuracyPercent,
+            averageExpectedImpact: progressMetrics.averageExpectedImpact,
             targetAverageExpectedImpact: plan.targetAverageExpectedImpact,
             averageLostProjectedTeamPoints: sessionSummary.averageLostProjectedTeamPoints
         )
 
-        if completed == 0 {
+        if progressMetrics.category == .notStarted {
             return WhatToPlayTrainingSessionProgress(
                 state: .notStarted,
                 completedAttempts: 0,
-                targetAttempts: target,
+                targetAttempts: progressMetrics.targetAttempts,
                 correctAttempts: 0,
                 accuracyPercent: 0,
                 accuracyTargetMet: false,
-                correctAttemptsNeededForTarget: requiredCorrect,
-                bestPossibleAccuracyPercent: 100,
-                accuracyTargetReachable: true,
+                correctAttemptsNeededForTarget: progressMetrics.correctAttemptsNeededForTarget,
+                bestPossibleAccuracyPercent: progressMetrics.bestPossibleAccuracyPercent,
+                accuracyTargetReachable: progressMetrics.accuracyTargetReachable,
                 totalExpectedImpact: 0,
                 averageExpectedImpact: 0,
                 bestExpectedImpact: nil,
@@ -1976,12 +1968,12 @@ enum WhatToPlayStatsAnalyzer {
                 worstExpectedImpactCard: nil,
                 worstExpectedImpactSeed: nil,
                 impactTargetMet: false,
-                maxCostlyDecisions: plan.maxCostlyDecisions,
+                maxCostlyDecisions: progressMetrics.maxCostlyDecisions,
                 costlyDecisions: 0,
-                costlyDecisionTargetMet: plan.maxCostlyDecisions == nil,
-                averageExpectedImpactGap: plan.targetAverageExpectedImpact,
-                expectedImpactNeededForTarget: max(0, targetTotalImpact),
-                expectedImpactNeededPerRemainingAttempt: max(0, plan.targetAverageExpectedImpact),
+                costlyDecisionTargetMet: progressMetrics.costlyDecisionTargetMet,
+                averageExpectedImpactGap: progressMetrics.averageExpectedImpactGap,
+                expectedImpactNeededForTarget: progressMetrics.expectedImpactNeededForTarget,
+                expectedImpactNeededPerRemainingAttempt: progressMetrics.expectedImpactNeededPerRemainingAttempt,
                 impactRecoveryHighPressure: false,
                 lostExpectedPoints: 0,
                 averageLostExpectedPoints: 0,
@@ -1994,7 +1986,7 @@ enum WhatToPlayStatsAnalyzer {
                 impactDetail: impactReading.detail,
                 impactIconName: impactReading.iconName,
                 reviewItem: nil,
-                remainingAttempts: target,
+                remainingAttempts: progressMetrics.remainingAttempts,
                 title: "ابدأ الجلسة".localized,
                 detail: "لم تبدأ هذه الجلسة بعد؛ اضغط زر البدء لتوليد أول موقف.".localized,
                 iconName: "play.circle.fill",
@@ -2012,33 +2004,33 @@ enum WhatToPlayStatsAnalyzer {
             )
         }
 
-        if completed < target {
+        if progressMetrics.category == .inProgress {
             return WhatToPlayTrainingSessionProgress(
                 state: .inProgress,
-                completedAttempts: completed,
-                targetAttempts: target,
-                correctAttempts: correct,
-                accuracyPercent: accuracy,
-                accuracyTargetMet: accuracyTargetMet,
-                correctAttemptsNeededForTarget: correctNeeded,
-                bestPossibleAccuracyPercent: bestPossibleAccuracy,
-                accuracyTargetReachable: accuracyTargetReachable,
-                totalExpectedImpact: totalImpact,
-                averageExpectedImpact: averageImpact,
+                completedAttempts: progressMetrics.completedAttempts,
+                targetAttempts: progressMetrics.targetAttempts,
+                correctAttempts: progressMetrics.correctAttempts,
+                accuracyPercent: progressMetrics.accuracyPercent,
+                accuracyTargetMet: progressMetrics.accuracyTargetMet,
+                correctAttemptsNeededForTarget: progressMetrics.correctAttemptsNeededForTarget,
+                bestPossibleAccuracyPercent: progressMetrics.bestPossibleAccuracyPercent,
+                accuracyTargetReachable: progressMetrics.accuracyTargetReachable,
+                totalExpectedImpact: progressMetrics.totalExpectedImpact,
+                averageExpectedImpact: progressMetrics.averageExpectedImpact,
                 bestExpectedImpact: bestImpact,
                 bestExpectedImpactCard: bestImpactAttempt?.selectedCard,
                 bestExpectedImpactSeed: bestImpactAttempt.map(\.replaySeed),
                 worstExpectedImpact: worstImpact,
                 worstExpectedImpactCard: worstImpactAttempt?.selectedCard,
                 worstExpectedImpactSeed: worstImpactAttempt.map(\.replaySeed),
-                impactTargetMet: impactTargetMet,
-                maxCostlyDecisions: plan.maxCostlyDecisions,
-                costlyDecisions: costlyDecisions,
-                costlyDecisionTargetMet: costlyDecisionTargetMet,
-                averageExpectedImpactGap: impactGap,
-                expectedImpactNeededForTarget: impactNeeded,
-                expectedImpactNeededPerRemainingAttempt: impactNeededPerRemaining,
-                impactRecoveryHighPressure: impactRecoveryHighPressure,
+                impactTargetMet: progressMetrics.impactTargetMet,
+                maxCostlyDecisions: progressMetrics.maxCostlyDecisions,
+                costlyDecisions: progressMetrics.costlyDecisions,
+                costlyDecisionTargetMet: progressMetrics.costlyDecisionTargetMet,
+                averageExpectedImpactGap: progressMetrics.averageExpectedImpactGap,
+                expectedImpactNeededForTarget: progressMetrics.expectedImpactNeededForTarget,
+                expectedImpactNeededPerRemainingAttempt: progressMetrics.expectedImpactNeededPerRemainingAttempt,
+                impactRecoveryHighPressure: progressMetrics.impactRecoveryHighPressure,
                 lostExpectedPoints: sessionSummary.lostExpectedPoints,
                 averageLostExpectedPoints: sessionSummary.averageLostExpectedPoints,
                 lostProjectedTeamPoints: sessionSummary.lostProjectedTeamPoints,
@@ -2050,7 +2042,7 @@ enum WhatToPlayStatsAnalyzer {
                 impactDetail: impactReading.detail,
                 impactIconName: impactReading.iconName,
                 reviewItem: reviewItem,
-                remainingAttempts: remaining,
+                remainingAttempts: progressMetrics.remainingAttempts,
                 title: "الجلسة قيد التنفيذ".localized,
                 detail: "أكمل بقية المواقف قبل الحكم على هدف الجلسة.".localized,
                 iconName: "timer.circle.fill",
@@ -2068,33 +2060,33 @@ enum WhatToPlayStatsAnalyzer {
             )
         }
 
-        if accuracyTargetMet && impactTargetMet && costlyDecisionTargetMet {
+        if progressMetrics.category == .achieved {
             return WhatToPlayTrainingSessionProgress(
                 state: .achieved,
-                completedAttempts: completed,
-                targetAttempts: target,
-                correctAttempts: correct,
-                accuracyPercent: accuracy,
-                accuracyTargetMet: true,
-                correctAttemptsNeededForTarget: 0,
-                bestPossibleAccuracyPercent: accuracy,
-                accuracyTargetReachable: true,
-                totalExpectedImpact: totalImpact,
-                averageExpectedImpact: averageImpact,
+                completedAttempts: progressMetrics.completedAttempts,
+                targetAttempts: progressMetrics.targetAttempts,
+                correctAttempts: progressMetrics.correctAttempts,
+                accuracyPercent: progressMetrics.accuracyPercent,
+                accuracyTargetMet: progressMetrics.accuracyTargetMet,
+                correctAttemptsNeededForTarget: progressMetrics.correctAttemptsNeededForTarget,
+                bestPossibleAccuracyPercent: progressMetrics.bestPossibleAccuracyPercent,
+                accuracyTargetReachable: progressMetrics.accuracyTargetReachable,
+                totalExpectedImpact: progressMetrics.totalExpectedImpact,
+                averageExpectedImpact: progressMetrics.averageExpectedImpact,
                 bestExpectedImpact: bestImpact,
                 bestExpectedImpactCard: bestImpactAttempt?.selectedCard,
                 bestExpectedImpactSeed: bestImpactAttempt.map(\.replaySeed),
                 worstExpectedImpact: worstImpact,
                 worstExpectedImpactCard: worstImpactAttempt?.selectedCard,
                 worstExpectedImpactSeed: worstImpactAttempt.map(\.replaySeed),
-                impactTargetMet: true,
-                maxCostlyDecisions: plan.maxCostlyDecisions,
-                costlyDecisions: costlyDecisions,
-                costlyDecisionTargetMet: true,
-                averageExpectedImpactGap: 0,
-                expectedImpactNeededForTarget: 0,
-                expectedImpactNeededPerRemainingAttempt: 0,
-                impactRecoveryHighPressure: false,
+                impactTargetMet: progressMetrics.impactTargetMet,
+                maxCostlyDecisions: progressMetrics.maxCostlyDecisions,
+                costlyDecisions: progressMetrics.costlyDecisions,
+                costlyDecisionTargetMet: progressMetrics.costlyDecisionTargetMet,
+                averageExpectedImpactGap: progressMetrics.averageExpectedImpactGap,
+                expectedImpactNeededForTarget: progressMetrics.expectedImpactNeededForTarget,
+                expectedImpactNeededPerRemainingAttempt: progressMetrics.expectedImpactNeededPerRemainingAttempt,
+                impactRecoveryHighPressure: progressMetrics.impactRecoveryHighPressure,
                 lostExpectedPoints: sessionSummary.lostExpectedPoints,
                 averageLostExpectedPoints: sessionSummary.averageLostExpectedPoints,
                 lostProjectedTeamPoints: sessionSummary.lostProjectedTeamPoints,
@@ -2106,7 +2098,7 @@ enum WhatToPlayStatsAnalyzer {
                 impactDetail: impactReading.detail,
                 impactIconName: impactReading.iconName,
                 reviewItem: reviewItem,
-                remainingAttempts: 0,
+                remainingAttempts: progressMetrics.remainingAttempts,
                 title: "هدف الجلسة تحقق".localized,
                 detail: "أداؤك في هذه الدفعة وصل إلى هدف الخطة.".localized,
                 iconName: "checkmark.seal.fill",
@@ -2126,30 +2118,30 @@ enum WhatToPlayStatsAnalyzer {
 
         return WhatToPlayTrainingSessionProgress(
             state: .needsRepeat,
-            completedAttempts: completed,
-            targetAttempts: target,
-            correctAttempts: correct,
-            accuracyPercent: accuracy,
-            accuracyTargetMet: accuracyTargetMet,
-            correctAttemptsNeededForTarget: correctNeeded,
-            bestPossibleAccuracyPercent: accuracy,
-            accuracyTargetReachable: accuracyTargetMet,
-            totalExpectedImpact: totalImpact,
-            averageExpectedImpact: averageImpact,
+            completedAttempts: progressMetrics.completedAttempts,
+            targetAttempts: progressMetrics.targetAttempts,
+            correctAttempts: progressMetrics.correctAttempts,
+            accuracyPercent: progressMetrics.accuracyPercent,
+            accuracyTargetMet: progressMetrics.accuracyTargetMet,
+            correctAttemptsNeededForTarget: progressMetrics.correctAttemptsNeededForTarget,
+            bestPossibleAccuracyPercent: progressMetrics.bestPossibleAccuracyPercent,
+            accuracyTargetReachable: progressMetrics.accuracyTargetReachable,
+            totalExpectedImpact: progressMetrics.totalExpectedImpact,
+            averageExpectedImpact: progressMetrics.averageExpectedImpact,
             bestExpectedImpact: bestImpact,
             bestExpectedImpactCard: bestImpactAttempt?.selectedCard,
             bestExpectedImpactSeed: bestImpactAttempt.map(\.replaySeed),
             worstExpectedImpact: worstImpact,
             worstExpectedImpactCard: worstImpactAttempt?.selectedCard,
             worstExpectedImpactSeed: worstImpactAttempt.map(\.replaySeed),
-            impactTargetMet: impactTargetMet,
-            maxCostlyDecisions: plan.maxCostlyDecisions,
-            costlyDecisions: costlyDecisions,
-            costlyDecisionTargetMet: costlyDecisionTargetMet,
-            averageExpectedImpactGap: impactGap,
-            expectedImpactNeededForTarget: impactNeeded,
-            expectedImpactNeededPerRemainingAttempt: 0,
-            impactRecoveryHighPressure: false,
+            impactTargetMet: progressMetrics.impactTargetMet,
+            maxCostlyDecisions: progressMetrics.maxCostlyDecisions,
+            costlyDecisions: progressMetrics.costlyDecisions,
+            costlyDecisionTargetMet: progressMetrics.costlyDecisionTargetMet,
+            averageExpectedImpactGap: progressMetrics.averageExpectedImpactGap,
+            expectedImpactNeededForTarget: progressMetrics.expectedImpactNeededForTarget,
+            expectedImpactNeededPerRemainingAttempt: progressMetrics.expectedImpactNeededPerRemainingAttempt,
+            impactRecoveryHighPressure: progressMetrics.impactRecoveryHighPressure,
             lostExpectedPoints: sessionSummary.lostExpectedPoints,
             averageLostExpectedPoints: sessionSummary.averageLostExpectedPoints,
             lostProjectedTeamPoints: sessionSummary.lostProjectedTeamPoints,
@@ -2161,12 +2153,12 @@ enum WhatToPlayStatsAnalyzer {
             impactDetail: impactReading.detail,
             impactIconName: impactReading.iconName,
             reviewItem: reviewItem,
-            remainingAttempts: 0,
+            remainingAttempts: progressMetrics.remainingAttempts,
             title: "أعد الجلسة".localized,
             detail: trainingSessionRepeatDetail(
-                accuracyTargetMet: accuracyTargetMet,
-                impactTargetMet: impactTargetMet,
-                costlyDecisionTargetMet: costlyDecisionTargetMet
+                accuracyTargetMet: progressMetrics.accuracyTargetMet,
+                impactTargetMet: progressMetrics.impactTargetMet,
+                costlyDecisionTargetMet: progressMetrics.costlyDecisionTargetMet
             ),
             iconName: "arrow.counterclockwise.circle.fill",
             nextStepTitle: nextStep.title,
@@ -2670,20 +2662,6 @@ enum WhatToPlayStatsAnalyzer {
                 "arrow.counterclockwise.circle.fill"
             )
         }
-    }
-
-    private static func requiredCorrectAttempts(
-        targetAttempts: Int,
-        targetAccuracyPercent: Int
-    ) -> Int {
-        let target = max(1, targetAttempts)
-        for correct in 0...target {
-            let accuracy = Int((Double(correct) / Double(target) * 100).rounded())
-            if accuracy >= targetAccuracyPercent {
-                return correct
-            }
-        }
-        return target
     }
 
     private static func trainingSessionRepeatDetail(

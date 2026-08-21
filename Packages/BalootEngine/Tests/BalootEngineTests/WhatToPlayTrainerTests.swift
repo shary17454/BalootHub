@@ -336,6 +336,87 @@ struct WhatToPlayTrainerTests {
         #expect(metrics.reasonCategory == .accuracyWeakness)
     }
 
+    @Test("تقدم جلسة وش تلعب يحسب الأهداف والحالة داخل المحرك")
+    func trainingSessionProgressMetricsClassifyTargets() {
+        let notStarted = WhatToPlayTrainingSessionProgressMetrics.classify(
+            completedAttempts: 0,
+            correctAttempts: 0,
+            targetAttempts: 3,
+            targetAccuracyPercent: 67,
+            totalExpectedImpact: 0,
+            targetAverageExpectedImpact: 1,
+            costlyDecisions: 0,
+            maxCostlyDecisions: nil
+        )
+        #expect(notStarted.category == .notStarted)
+        #expect(notStarted.requiredCorrectAttempts == 2)
+        #expect(notStarted.correctAttemptsNeededForTarget == 2)
+        #expect(notStarted.bestPossibleAccuracyPercent == 100)
+        #expect(notStarted.expectedImpactNeededForTarget == 3)
+        #expect(notStarted.expectedImpactNeededPerRemainingAttempt == 1)
+
+        let notStartedWithCostlyLimit = WhatToPlayTrainingSessionProgressMetrics.classify(
+            completedAttempts: 0,
+            correctAttempts: 0,
+            targetAttempts: 3,
+            targetAccuracyPercent: 67,
+            totalExpectedImpact: 5,
+            targetAverageExpectedImpact: 1,
+            costlyDecisions: 0,
+            maxCostlyDecisions: 1
+        )
+        #expect(notStartedWithCostlyLimit.totalExpectedImpact == 0)
+        #expect(notStartedWithCostlyLimit.costlyDecisionTargetMet == false)
+
+        let inProgress = WhatToPlayTrainingSessionProgressMetrics.classify(
+            completedAttempts: 2,
+            correctAttempts: 0,
+            targetAttempts: 3,
+            targetAccuracyPercent: 67,
+            totalExpectedImpact: -2,
+            targetAverageExpectedImpact: 1,
+            costlyDecisions: 1,
+            maxCostlyDecisions: 1
+        )
+        #expect(inProgress.category == .inProgress)
+        #expect(inProgress.accuracyTargetReachable == false)
+        #expect(inProgress.bestPossibleAccuracyPercent == 33)
+        #expect(inProgress.expectedImpactNeededForTarget == 5)
+        #expect(inProgress.expectedImpactNeededPerRemainingAttempt == 5)
+        #expect(inProgress.impactRecoveryHighPressure)
+
+        let achieved = WhatToPlayTrainingSessionProgressMetrics.classify(
+            completedAttempts: 3,
+            correctAttempts: 2,
+            targetAttempts: 3,
+            targetAccuracyPercent: 67,
+            totalExpectedImpact: 4,
+            targetAverageExpectedImpact: 1,
+            costlyDecisions: 0,
+            maxCostlyDecisions: 1
+        )
+        #expect(achieved.category == .achieved)
+        #expect(achieved.accuracyPercent == 67)
+        #expect(achieved.correctAttemptsNeededForTarget == 0)
+        #expect(achieved.expectedImpactNeededForTarget == 0)
+        #expect(achieved.averageExpectedImpactGap == 0)
+
+        let needsRepeat = WhatToPlayTrainingSessionProgressMetrics.classify(
+            completedAttempts: 3,
+            correctAttempts: 3,
+            targetAttempts: 3,
+            targetAccuracyPercent: 67,
+            totalExpectedImpact: 5,
+            targetAverageExpectedImpact: 1,
+            costlyDecisions: 2,
+            maxCostlyDecisions: 1
+        )
+        #expect(needsRepeat.category == .needsRepeat)
+        #expect(needsRepeat.accuracyTargetMet)
+        #expect(needsRepeat.impactTargetMet)
+        #expect(needsRepeat.costlyDecisionTargetMet == false)
+    }
+
     @Test("ملخص أداء وش تلعب يأتي من المحرك ويحافظ على السلاسل وفاقد القيمة")
     func statsSummaryMetricsCalculateTrainingPerformance() {
         let metrics = WhatToPlayStatsSummaryMetrics.summarize(chronologicalSamples: [

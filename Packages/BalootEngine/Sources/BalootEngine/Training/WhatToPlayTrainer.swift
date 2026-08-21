@@ -678,6 +678,189 @@ public struct WhatToPlayTrainingSessionGradeMetrics: Sendable, Equatable {
     }
 }
 
+/// حالة تقدم جلسة تدريب «وش تلعب؟» دون نصوص واجهة.
+public enum WhatToPlayTrainingSessionProgressCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case notStarted
+    case inProgress
+    case achieved
+    case needsRepeat
+}
+
+/// قياسات تقدم جلسة تدريب «وش تلعب؟» من أهداف الخطة ومحاولات الجلسة.
+public struct WhatToPlayTrainingSessionProgressMetrics: Sendable, Equatable {
+    public let category: WhatToPlayTrainingSessionProgressCategory
+    public let completedAttempts: Int
+    public let targetAttempts: Int
+    public let correctAttempts: Int
+    public let accuracyPercent: Int
+    public let accuracyTargetMet: Bool
+    public let requiredCorrectAttempts: Int
+    public let correctAttemptsNeededForTarget: Int
+    public let bestPossibleAccuracyPercent: Int
+    public let accuracyTargetReachable: Bool
+    public let totalExpectedImpact: Int
+    public let averageExpectedImpact: Int
+    public let impactTargetMet: Bool
+    public let averageExpectedImpactGap: Int
+    public let expectedImpactNeededForTarget: Int
+    public let expectedImpactNeededPerRemainingAttempt: Int
+    public let impactRecoveryHighPressure: Bool
+    public let remainingAttempts: Int
+    public let maxCostlyDecisions: Int?
+    public let costlyDecisions: Int
+    public let costlyDecisionTargetMet: Bool
+
+    public init(
+        category: WhatToPlayTrainingSessionProgressCategory,
+        completedAttempts: Int,
+        targetAttempts: Int,
+        correctAttempts: Int,
+        accuracyPercent: Int,
+        accuracyTargetMet: Bool,
+        requiredCorrectAttempts: Int,
+        correctAttemptsNeededForTarget: Int,
+        bestPossibleAccuracyPercent: Int,
+        accuracyTargetReachable: Bool,
+        totalExpectedImpact: Int,
+        averageExpectedImpact: Int,
+        impactTargetMet: Bool,
+        averageExpectedImpactGap: Int,
+        expectedImpactNeededForTarget: Int,
+        expectedImpactNeededPerRemainingAttempt: Int,
+        impactRecoveryHighPressure: Bool,
+        remainingAttempts: Int,
+        maxCostlyDecisions: Int?,
+        costlyDecisions: Int,
+        costlyDecisionTargetMet: Bool
+    ) {
+        self.category = category
+        self.completedAttempts = completedAttempts
+        self.targetAttempts = targetAttempts
+        self.correctAttempts = correctAttempts
+        self.accuracyPercent = accuracyPercent
+        self.accuracyTargetMet = accuracyTargetMet
+        self.requiredCorrectAttempts = requiredCorrectAttempts
+        self.correctAttemptsNeededForTarget = correctAttemptsNeededForTarget
+        self.bestPossibleAccuracyPercent = bestPossibleAccuracyPercent
+        self.accuracyTargetReachable = accuracyTargetReachable
+        self.totalExpectedImpact = totalExpectedImpact
+        self.averageExpectedImpact = averageExpectedImpact
+        self.impactTargetMet = impactTargetMet
+        self.averageExpectedImpactGap = averageExpectedImpactGap
+        self.expectedImpactNeededForTarget = expectedImpactNeededForTarget
+        self.expectedImpactNeededPerRemainingAttempt = expectedImpactNeededPerRemainingAttempt
+        self.impactRecoveryHighPressure = impactRecoveryHighPressure
+        self.remainingAttempts = remainingAttempts
+        self.maxCostlyDecisions = maxCostlyDecisions
+        self.costlyDecisions = costlyDecisions
+        self.costlyDecisionTargetMet = costlyDecisionTargetMet
+    }
+
+    public static func classify(
+        completedAttempts: Int,
+        correctAttempts: Int,
+        targetAttempts: Int,
+        targetAccuracyPercent: Int,
+        totalExpectedImpact: Int,
+        targetAverageExpectedImpact: Int,
+        costlyDecisions: Int,
+        maxCostlyDecisions: Int?
+    ) -> WhatToPlayTrainingSessionProgressMetrics {
+        let target = max(1, targetAttempts)
+        let completed = max(0, min(completedAttempts, target))
+        let correct = max(0, min(correctAttempts, completed))
+        let remaining = max(0, target - completed)
+        let effectiveTotalImpact = completed > 0 ? totalExpectedImpact : 0
+        let accuracy = completed > 0
+            ? Int((Double(correct) / Double(completed) * 100).rounded())
+            : 0
+        let averageImpact = completed > 0
+            ? Int((Double(effectiveTotalImpact) / Double(completed)).rounded())
+            : 0
+        let requiredCorrect = requiredCorrectAttempts(
+            targetAttempts: target,
+            targetAccuracyPercent: targetAccuracyPercent
+        )
+        let correctNeeded = max(0, requiredCorrect - correct)
+        let accuracyTargetMet = completed > 0 && accuracy >= targetAccuracyPercent
+        let bestPossibleCorrect = min(target, correct + remaining)
+        let bestPossibleAccuracy = completed == 0
+            ? 100
+            : Int((Double(bestPossibleCorrect) / Double(target) * 100).rounded())
+        let accuracyTargetReachable = completed >= target
+            ? accuracyTargetMet
+            : bestPossibleCorrect >= requiredCorrect
+        let targetTotalImpact = target * targetAverageExpectedImpact
+        let impactNeeded = max(0, targetTotalImpact - effectiveTotalImpact)
+        let impactTargetMet = completed > 0 && impactNeeded == 0
+        let costlyTargetMet = maxCostlyDecisions.map { costlyDecisions <= $0 } ?? true
+        let impactNeededPerRemaining = remaining > 0
+            ? Int((Double(impactNeeded) / Double(remaining)).rounded(.up))
+            : 0
+        let highPressureThreshold = max(
+            targetAverageExpectedImpact * 2,
+            targetAverageExpectedImpact + 1
+        )
+        let highPressure = remaining > 0
+            && impactNeeded > 0
+            && impactNeededPerRemaining > highPressureThreshold
+        let impactGap = max(0, targetAverageExpectedImpact - averageImpact)
+
+        let category: WhatToPlayTrainingSessionProgressCategory
+        if completed == 0 {
+            category = .notStarted
+        } else if completed < target {
+            category = .inProgress
+        } else if accuracyTargetMet && impactTargetMet && costlyTargetMet {
+            category = .achieved
+        } else {
+            category = .needsRepeat
+        }
+
+        return WhatToPlayTrainingSessionProgressMetrics(
+            category: category,
+            completedAttempts: completed,
+            targetAttempts: target,
+            correctAttempts: correct,
+            accuracyPercent: accuracy,
+            accuracyTargetMet: accuracyTargetMet,
+            requiredCorrectAttempts: requiredCorrect,
+            correctAttemptsNeededForTarget: category == .achieved ? 0 : correctNeeded,
+            bestPossibleAccuracyPercent: category == .achieved || category == .needsRepeat
+                ? accuracy
+                : bestPossibleAccuracy,
+            accuracyTargetReachable: category == .notStarted ? true : accuracyTargetReachable,
+            totalExpectedImpact: effectiveTotalImpact,
+            averageExpectedImpact: averageImpact,
+            impactTargetMet: impactTargetMet,
+            averageExpectedImpactGap: category == .achieved ? 0 : impactGap,
+            expectedImpactNeededForTarget: category == .achieved ? 0 : impactNeeded,
+            expectedImpactNeededPerRemainingAttempt: category == .needsRepeat ? 0 : impactNeededPerRemaining,
+            impactRecoveryHighPressure: category == .inProgress ? highPressure : false,
+            remainingAttempts: remaining,
+            maxCostlyDecisions: maxCostlyDecisions,
+            costlyDecisions: max(0, costlyDecisions),
+            costlyDecisionTargetMet: category == .notStarted
+                ? maxCostlyDecisions == nil
+                : (category == .achieved ? true : costlyTargetMet)
+        )
+    }
+
+    private static func requiredCorrectAttempts(
+        targetAttempts: Int,
+        targetAccuracyPercent: Int
+    ) -> Int {
+        let target = max(1, targetAttempts)
+        for correct in 0...target {
+            let accuracy = Int((Double(correct) / Double(target) * 100).rounded())
+            if accuracy >= targetAccuracyPercent {
+                return correct
+            }
+        }
+        return target
+    }
+}
+
 /// عينة أداء مختصرة من محاولة «وش تلعب؟» تكفي لحساب ملخص التدريب.
 public struct WhatToPlayStatsSample: Sendable, Equatable {
     public let isCorrect: Bool
