@@ -132,29 +132,38 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
     func testSummaryPrioritizesSimulationReviewWhenProjectedLossIsLarger() throws {
         var matchingScenario: WhatToPlayScenario?
         var selectedOption: WhatToPlayOption?
+        var matchingBestSimulation: WhatToPlayOption?
 
-        for seed in 1...300 {
+        for seed in 1...1_000 {
             let scenario = try WhatToPlayTrainer.generateScenario(seed: UInt64(seed), difficulty: .hard)
-            guard let best = scenario.bestOption else { continue }
+            guard let best = scenario.bestOption,
+                  let bestSimulation = WhatToPlayOptionComparison.bestSimulationOption(scenario.options),
+                  bestSimulation.card != best.card
+            else { continue }
             if let selected = scenario.options.first(where: {
                 $0.card != best.card
+                    && $0.card != bestSimulation.card
                     && max(0, best.expectedImpact - $0.expectedImpact) <= 2
-                    && max(0, best.projectedTeamPoints - $0.projectedTeamPoints) >= 9
+                    && max(0, bestSimulation.projectedTeamPoints - $0.projectedTeamPoints) >= 9
             }) {
                 matchingScenario = scenario
                 selectedOption = selected
+                matchingBestSimulation = bestSimulation
                 break
             }
         }
 
         let scenario = try XCTUnwrap(matchingScenario)
         let selected = try XCTUnwrap(selectedOption)
+        let bestSimulation = try XCTUnwrap(matchingBestSimulation)
         let summary = WhatToPlayOptionComparison.summary(for: scenario, selectedCard: selected.card)
 
         XCTAssertEqual(summary.decisionQuality, .costly)
         XCTAssertEqual(summary.decisionQualityDetail, WhatToPlayDecisionQuality.costly.detail)
         XCTAssertEqual(summary.nextActionTitle, "راجع المحاكاة".localized)
         XCTAssertTrue(summary.nextActionDetail?.contains("بعد استكمال الجولة".localized) ?? false)
+        XCTAssertTrue(summary.nextActionDetail?.contains("أفضل نتيجة محاكاة".localized) ?? false)
+        XCTAssertTrue(summary.nextActionDetail?.contains(bestSimulation.card.accessibilityName) ?? false)
     }
 
     func testRowsAreSortedByExpertRankAndMarkSelectedCard() throws {
@@ -198,14 +207,14 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
     func testRowsCalculateProjectedPointLossForEveryOption() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
         let selected = try XCTUnwrap(scenario.bestOption)
-        let bestProjected = try XCTUnwrap(scenario.options.map(\.projectedTeamPoints).max())
+        let bestSimulation = try XCTUnwrap(WhatToPlayOptionComparison.bestSimulationOption(scenario.options))
 
         let rows = WhatToPlayOptionComparison.rows(for: scenario, selectedCard: selected.card)
 
         XCTAssertEqual(rows.count, scenario.options.count)
         for row in rows {
             let option = try XCTUnwrap(scenario.options.first { $0.card == row.card })
-            XCTAssertEqual(row.lostProjectedTeamPoints, max(0, bestProjected - option.projectedTeamPoints))
+            XCTAssertEqual(row.lostProjectedTeamPoints, max(0, bestSimulation.projectedTeamPoints - option.projectedTeamPoints))
         }
     }
 

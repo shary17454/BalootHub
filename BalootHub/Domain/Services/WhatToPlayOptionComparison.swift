@@ -237,6 +237,7 @@ enum WhatToPlayOptionComparison {
         let action = nextAction(
             selected: selected,
             best: best,
+            bestSimulation: bestSimulation,
             second: second,
             lostExpectedPoints: lost,
             lostProjectedTeamPoints: projectedLost
@@ -361,6 +362,7 @@ enum WhatToPlayOptionComparison {
     private static func nextAction(
         selected: WhatToPlayOption?,
         best: WhatToPlayOption?,
+        bestSimulation: WhatToPlayOption?,
         second: WhatToPlayOption?,
         lostExpectedPoints: Int?,
         lostProjectedTeamPoints: Int?
@@ -375,9 +377,10 @@ enum WhatToPlayOptionComparison {
             )
         }
         if lostProjectedTeamPoints > lostExpectedPoints {
+            let simulationCard = bestSimulation ?? best
             return (
                 "راجع المحاكاة".localized,
-                "\("قرارك يخسر بعد استكمال الجولة؛ راجع Replay كامل قبل لعب موقف جديد.".localized) \("نقاط محاكاة ضائعة".localized): \(lostProjectedTeamPoints). \("أفضل ورقة".localized): \(best.card.accessibilityName)."
+                "\("قرارك يخسر بعد استكمال الجولة؛ راجع Replay كامل قبل لعب موقف جديد.".localized) \("نقاط محاكاة ضائعة".localized): \(lostProjectedTeamPoints). \("أفضل نتيجة محاكاة".localized): \(simulationCard.card.accessibilityName)."
             )
         }
         if decisiveLoss <= 2 {
