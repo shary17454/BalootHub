@@ -562,6 +562,7 @@ struct WhatToPlayDecisionInsight: Equatable {
     let iconName: String
     let lostExpectedPoints: Int
     let lostProjectedTeamPoints: Int
+    let lostProjectedAgainstSecondBestPoints: Int
     let secondBestGap: Int?
     let valueLossSeverity: WhatToPlayValueLossSeverity
     let valueLossTitle: String
@@ -2856,7 +2857,8 @@ enum WhatToPlayStatsAnalyzer {
         bestImpact: Int,
         secondBestImpact: Int?,
         selectedProjectedTeamPoints: Int? = nil,
-        bestProjectedTeamPoints: Int? = nil
+        bestProjectedTeamPoints: Int? = nil,
+        secondBestProjectedTeamPoints: Int? = nil
     ) -> WhatToPlayDecisionInsight {
         let metrics = WhatToPlayDecisionInsightMetrics.classify(
             selectedRank: selectedRank,
@@ -2864,18 +2866,21 @@ enum WhatToPlayStatsAnalyzer {
             bestImpact: bestImpact,
             secondBestImpact: secondBestImpact,
             selectedProjectedTeamPoints: selectedProjectedTeamPoints,
-            bestProjectedTeamPoints: bestProjectedTeamPoints
+            bestProjectedTeamPoints: bestProjectedTeamPoints,
+            secondBestProjectedTeamPoints: secondBestProjectedTeamPoints
         )
         let lost = metrics.lostExpectedPoints
         let projectedLost = metrics.lostProjectedTeamPoints
+        let secondProjectedLost = metrics.lostProjectedAgainstSecondBestPoints
+        let simulationLost = max(projectedLost, secondProjectedLost)
         let secondBestGap = metrics.secondBestGap
         let severity = valueLossSeverity(for: metrics.valueLossSeverity)
         let severityTitle = valueLossTitle(for: severity)
 
         switch metrics.category {
         case .expertMatch:
-            let expertDetail = metrics.lostProjectedTeamPoints >= 9
-                ? "\("قرارك يطابق أفضل خيار في الأكلة الحالية، لكن محاكاة بقية الجولة تستحق المراجعة قبل تثبيت النمط.".localized) \("نقاط محاكاة ضائعة".localized): \(projectedLost)."
+            let expertDetail = simulationLost >= 9
+                ? "\("قرارك يطابق أفضل خيار في الأكلة الحالية، لكن محاكاة بقية الجولة تستحق المراجعة قبل تثبيت النمط.".localized) \(simulationLossText(projectedLost: projectedLost, secondProjectedLost: secondProjectedLost))."
                 : "قرارك يطابق أفضل خيار في هذا الموقف، لذلك ركز على تذكر سبب نجاحه للمواقف المشابهة.".localized
             return WhatToPlayDecisionInsight(
                 kind: .expertMatch,
@@ -2884,18 +2889,20 @@ enum WhatToPlayStatsAnalyzer {
                 iconName: "checkmark.seal.fill",
                 lostExpectedPoints: 0,
                 lostProjectedTeamPoints: projectedLost,
+                lostProjectedAgainstSecondBestPoints: secondProjectedLost,
                 secondBestGap: secondBestGap,
-                valueLossSeverity: metrics.lostProjectedTeamPoints > 0 ? severity : .none,
-                valueLossTitle: metrics.lostProjectedTeamPoints > 0 ? severityTitle : valueLossTitle(for: .none)
+                valueLossSeverity: simulationLost > 0 ? severity : .none,
+                valueLossTitle: simulationLost > 0 ? severityTitle : valueLossTitle(for: .none)
             )
-        case .pointLeak where metrics.lostProjectedTeamPoints > metrics.lostExpectedPoints:
+        case .pointLeak where max(metrics.lostProjectedTeamPoints, metrics.lostProjectedAgainstSecondBestPoints) > metrics.lostExpectedPoints:
             return WhatToPlayDecisionInsight(
                 kind: .pointLeak,
                 title: "المحاكاة ترجّح المراجعة".localized,
-                detail: "\("قرارك يخسر بعد استكمال الجولة؛ راجع Replay كامل قبل لعب موقف جديد.".localized) \("نقاط محاكاة ضائعة".localized): \(projectedLost).",
+                detail: "\("قرارك يخسر بعد استكمال الجولة؛ راجع Replay كامل قبل لعب موقف جديد.".localized) \(simulationLossText(projectedLost: projectedLost, secondProjectedLost: secondProjectedLost)).",
                 iconName: "chart.bar.xaxis",
                 lostExpectedPoints: lost,
                 lostProjectedTeamPoints: projectedLost,
+                lostProjectedAgainstSecondBestPoints: secondProjectedLost,
                 secondBestGap: secondBestGap,
                 valueLossSeverity: severity,
                 valueLossTitle: severityTitle
@@ -2908,6 +2915,7 @@ enum WhatToPlayStatsAnalyzer {
                 iconName: "2.circle.fill",
                 lostExpectedPoints: lost,
                 lostProjectedTeamPoints: projectedLost,
+                lostProjectedAgainstSecondBestPoints: secondProjectedLost,
                 secondBestGap: secondBestGap,
                 valueLossSeverity: severity,
                 valueLossTitle: severityTitle
@@ -2920,6 +2928,7 @@ enum WhatToPlayStatsAnalyzer {
                 iconName: "exclamationmark.triangle.fill",
                 lostExpectedPoints: lost,
                 lostProjectedTeamPoints: projectedLost,
+                lostProjectedAgainstSecondBestPoints: secondProjectedLost,
                 secondBestGap: secondBestGap,
                 valueLossSeverity: severity,
                 valueLossTitle: severityTitle
@@ -2932,6 +2941,7 @@ enum WhatToPlayStatsAnalyzer {
                 iconName: "drop.fill",
                 lostExpectedPoints: lost,
                 lostProjectedTeamPoints: projectedLost,
+                lostProjectedAgainstSecondBestPoints: secondProjectedLost,
                 secondBestGap: secondBestGap,
                 valueLossSeverity: severity,
                 valueLossTitle: severityTitle
@@ -2987,14 +2997,23 @@ enum WhatToPlayStatsAnalyzer {
     static func decisionInsight(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayDecisionInsight? {
         guard let best = scenario.bestOption else { return nil }
         let bestSimulation = WhatToPlayTrainer.bestProjectedOption(in: scenario.options)
+        let secondBestSimulation = WhatToPlayTrainer.secondBestProjectedOption(in: scenario.options)
         return decisionInsight(
             selectedRank: selected.rank,
             selectedImpact: selected.expectedImpact,
             bestImpact: best.expectedImpact,
             secondBestImpact: scenario.secondBestOption?.expectedImpact,
             selectedProjectedTeamPoints: selected.projectedTeamPoints,
-            bestProjectedTeamPoints: bestSimulation?.projectedTeamPoints ?? best.projectedTeamPoints
+            bestProjectedTeamPoints: bestSimulation?.projectedTeamPoints ?? best.projectedTeamPoints,
+            secondBestProjectedTeamPoints: secondBestSimulation?.projectedTeamPoints
         )
+    }
+
+    private static func simulationLossText(projectedLost: Int, secondProjectedLost: Int) -> String {
+        if secondProjectedLost > projectedLost {
+            return "\("فاقد ثاني محاكاة".localized): \(secondProjectedLost)"
+        }
+        return "\("نقاط محاكاة ضائعة".localized): \(projectedLost)"
     }
 
     static func decisionReview(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayDecisionReview? {
@@ -3202,13 +3221,13 @@ enum WhatToPlayStatsAnalyzer {
     ) -> WhatToPlayNextDecisionAction {
         switch insight.kind {
         case .expertMatch:
-            if insight.lostProjectedTeamPoints >= 9 {
+            if simulationLoss(for: insight) >= 9 {
                 return WhatToPlayNextDecisionAction(
                     title: "راجع المحاكاة".localized,
-                    detail: "\("اختيارك صحيح في الأكلة الحالية، لكن نتيجة الجولة الكاملة تشير إلى مسار أقوى.".localized) \("نقاط محاكاة ضائعة".localized): \(insight.lostProjectedTeamPoints).",
+                    detail: "\("اختيارك صحيح في الأكلة الحالية، لكن نتيجة الجولة الكاملة تشير إلى مسار أقوى.".localized) \(simulationLossText(projectedLost: insight.lostProjectedTeamPoints, secondProjectedLost: insight.lostProjectedAgainstSecondBestPoints)).",
                     iconName: "chart.line.uptrend.xyaxis",
                     recommendedCard: bestCard,
-                    expectedImprovement: insight.lostProjectedTeamPoints
+                    expectedImprovement: simulationLoss(for: insight)
                 )
             }
             return WhatToPlayNextDecisionAction(
@@ -3254,7 +3273,7 @@ enum WhatToPlayStatsAnalyzer {
         case .reviewExpertSimulation:
             return WhatToPlayNextDecisionAction(
                 title: "راجع المحاكاة".localized,
-                detail: "\("اختيارك صحيح في الأكلة الحالية، لكن نتيجة الجولة الكاملة تشير إلى مسار أقوى.".localized) \("نقاط محاكاة ضائعة".localized): \(recommendation.lostProjectedTeamPoints).",
+                detail: "\("اختيارك صحيح في الأكلة الحالية، لكن نتيجة الجولة الكاملة تشير إلى مسار أقوى.".localized) \(simulationLossText(projectedLost: recommendation.lostProjectedTeamPoints, secondProjectedLost: recommendation.lostProjectedAgainstSecondBestPoints)).",
                 iconName: "chart.line.uptrend.xyaxis",
                 recommendedCard: bestCard,
                 expectedImprovement: recommendation.expectedImprovement
@@ -3270,7 +3289,7 @@ enum WhatToPlayStatsAnalyzer {
         case .reviewSimulation:
             return WhatToPlayNextDecisionAction(
                 title: "راجع أثر الجولة".localized,
-                detail: "\("قرارك بدا قريبًا في الأكلة، لكنه خسر بعد استكمال الجولة".localized): \(recommendation.lostProjectedTeamPoints). \("شاهد Replay وقارن مسار أفضل ورقة.".localized)",
+                detail: "\("قرارك بدا قريبًا في الأكلة، لكنه خسر بعد استكمال الجولة".localized): \(max(recommendation.lostProjectedTeamPoints, recommendation.lostProjectedAgainstSecondBestPoints)). \("شاهد Replay وقارن مسار أفضل ورقة.".localized)",
                 iconName: "drop.fill",
                 recommendedCard: bestCard,
                 expectedImprovement: recommendation.expectedImprovement
@@ -3313,29 +3332,33 @@ enum WhatToPlayStatsAnalyzer {
             return "أعد قراءة نفس النوع من المواقف وركّز على سبب تفوق ورقة واحدة بنقطة أو نقطتين متوقعتين.".localized
         }
 
-        if insight.lostProjectedTeamPoints > insight.lostExpectedPoints {
-            return "\("خسارة المحاكاة".localized): \(insight.lostProjectedTeamPoints). \("راجع لماذا تغيّر أثر القرار بعد استكمال الجولة لا بعد الأكلة فقط.".localized)"
+        if simulationLoss(for: insight) > insight.lostExpectedPoints {
+            return "\(simulationLossText(projectedLost: insight.lostProjectedTeamPoints, secondProjectedLost: insight.lostProjectedAgainstSecondBestPoints)). \("راجع لماذا تغيّر أثر القرار بعد استكمال الجولة لا بعد الأكلة فقط.".localized)"
         }
 
         return "\("الفارق عن اختيار الخبير".localized): \(insight.lostExpectedPoints). \("راجع سبب ارتفاع قيمة أفضل ورقة.".localized)"
     }
 
     private static func pointLeakActionTitle(insight: WhatToPlayDecisionInsight) -> String {
-        insight.lostProjectedTeamPoints > insight.lostExpectedPoints
+        simulationLoss(for: insight) > insight.lostExpectedPoints
             ? "راجع أثر الجولة".localized
             : "قلل النزيف القادم".localized
     }
 
     private static func pointLeakActionDetail(insight: WhatToPlayDecisionInsight) -> String {
-        if insight.lostProjectedTeamPoints > insight.lostExpectedPoints {
-            return "\("قرارك بدا قريبًا في الأكلة، لكنه خسر بعد استكمال الجولة".localized): \(insight.lostProjectedTeamPoints). \("شاهد Replay وقارن مسار أفضل ورقة.".localized)"
+        if simulationLoss(for: insight) > insight.lostExpectedPoints {
+            return "\("قرارك بدا قريبًا في الأكلة، لكنه خسر بعد استكمال الجولة".localized): \(simulationLoss(for: insight)). \("شاهد Replay وقارن مسار أفضل ورقة.".localized)"
         }
 
         return "في الموقف القادم ابدأ بسؤال واحد: ما أقل ورقة تخسر أقل نقاط متوقعة إذا كانت الأكلة للخصم؟".localized
     }
 
     private static func decisiveLoss(for insight: WhatToPlayDecisionInsight) -> Int {
-        max(insight.lostExpectedPoints, insight.lostProjectedTeamPoints)
+        max(insight.lostExpectedPoints, insight.lostProjectedTeamPoints, insight.lostProjectedAgainstSecondBestPoints)
+    }
+
+    private static func simulationLoss(for insight: WhatToPlayDecisionInsight) -> Int {
+        max(insight.lostProjectedTeamPoints, insight.lostProjectedAgainstSecondBestPoints)
     }
 
     static func decisionReview(

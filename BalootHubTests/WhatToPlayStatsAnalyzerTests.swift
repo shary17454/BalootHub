@@ -1747,6 +1747,26 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertTrue(insight.detail.contains("نقاط محاكاة ضائعة".localized))
     }
 
+    func testDecisionInsightPrioritizesSecondProjectedLossWhenLarger() {
+        let insight = WhatToPlayStatsAnalyzer.decisionInsight(
+            selectedRank: 2,
+            selectedImpact: 7,
+            bestImpact: 8,
+            secondBestImpact: 7,
+            selectedProjectedTeamPoints: 52,
+            bestProjectedTeamPoints: 54,
+            secondBestProjectedTeamPoints: 68
+        )
+
+        XCTAssertEqual(insight.kind, .pointLeak)
+        XCTAssertEqual(insight.title, "المحاكاة ترجّح المراجعة".localized)
+        XCTAssertEqual(insight.lostExpectedPoints, 1)
+        XCTAssertEqual(insight.lostProjectedTeamPoints, 2)
+        XCTAssertEqual(insight.lostProjectedAgainstSecondBestPoints, 16)
+        XCTAssertEqual(insight.valueLossSeverity, .high)
+        XCTAssertTrue(insight.detail.contains("فاقد ثاني محاكاة".localized))
+    }
+
     func testDecisionInsightRecognizesMissedWinningChance() {
         let insight = WhatToPlayStatsAnalyzer.decisionInsight(
             selectedRank: 4,

@@ -1686,6 +1686,33 @@ struct WhatToPlayTrainerTests {
             simulationRecommendation.expectedImprovement
                 == max(simulationRecommendation.lostExpectedPoints, simulationRecommendation.lostProjectedTeamPoints)
         )
+
+        let selectedOption = projectedOption(card: .init(suit: .clubs, rank: .seven), rank: 2, expectedImpact: 7, projectedTeamPoints: 52)
+        let bestOption = projectedOption(card: .init(suit: .hearts, rank: .ace), rank: 1, expectedImpact: 8, projectedTeamPoints: 54)
+        let bestProjectedOption = projectedOption(card: .init(suit: .spades, rank: .ace), rank: 3, expectedImpact: 6, projectedTeamPoints: 70)
+        let secondProjectionReview = WhatToPlayChoiceReview(
+            bestOption: bestOption,
+            secondBestOption: selectedOption,
+            bestProjectedOption: bestProjectedOption,
+            secondBestProjectedOption: projectedOption(card: .init(suit: .diamonds, rank: .jack), rank: 4, expectedImpact: 5, projectedTeamPoints: 68),
+            selectedOption: selectedOption,
+            bestToSecondExpectedImpactGap: 1,
+            expertToBestProjectedTeamPointsGap: 16,
+            selectedLostExpectedPoints: 1,
+            selectedLostProjectedTeamPoints: 2,
+            selectedLostProjectedAgainstSecondBestPoints: 16,
+            decisionQuality: .costly,
+            bestMoveConfidence: .narrow
+        )
+        let secondProjectionRecommendation: WhatToPlayNextActionRecommendation = try #require(
+            WhatToPlayTrainer.nextActionRecommendation(from: secondProjectionReview)
+        )
+
+        #expect(secondProjectionRecommendation.kind == WhatToPlayNextActionKind.reviewSimulation)
+        #expect(secondProjectionRecommendation.lostProjectedTeamPoints == 2)
+        #expect(secondProjectionRecommendation.lostProjectedAgainstSecondBestPoints == 16)
+        #expect(secondProjectionRecommendation.expectedImprovement == 16)
+        #expect(secondProjectionRecommendation.recommendedCard == bestProjectedOption.card)
     }
 
     @Test("أرقام Replay لقرار وش تلعب تأتي من مراجعة خيارات المحرك")
@@ -1744,6 +1771,20 @@ struct WhatToPlayTrainerTests {
         #expect(projectedLeak.category == .pointLeak)
         #expect(projectedLeak.lostProjectedTeamPoints == 16)
         #expect(projectedLeak.valueLossSeverity == .high)
+
+        let secondProjectedLeak = WhatToPlayDecisionInsightMetrics.classify(
+            selectedRank: 2,
+            selectedImpact: 7,
+            bestImpact: 8,
+            secondBestImpact: 7,
+            selectedProjectedTeamPoints: 52,
+            bestProjectedTeamPoints: 54,
+            secondBestProjectedTeamPoints: 68
+        )
+        #expect(secondProjectedLeak.category == .pointLeak)
+        #expect(secondProjectedLeak.lostProjectedTeamPoints == 2)
+        #expect(secondProjectedLeak.lostProjectedAgainstSecondBestPoints == 16)
+        #expect(secondProjectedLeak.valueLossSeverity == .high)
 
         let missedWin = WhatToPlayDecisionInsightMetrics.classify(
             selectedRank: 4,

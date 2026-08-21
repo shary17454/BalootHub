@@ -3020,7 +3020,9 @@ struct WhatToPlayTrainerView: View {
     }
 
     private func decisionInsightView(_ insight: WhatToPlayDecisionInsight) -> some View {
-        let hasValueLoss = insight.lostExpectedPoints > 0 || insight.lostProjectedTeamPoints > 0
+        let hasValueLoss = insight.lostExpectedPoints > 0
+            || insight.lostProjectedTeamPoints > 0
+            || insight.lostProjectedAgainstSecondBestPoints > 0
         return Label {
             VStack(alignment: .leading, spacing: 2) {
                 Text(insight.title)
@@ -3037,6 +3039,11 @@ struct WhatToPlayTrainerView: View {
                 }
                 if insight.lostProjectedTeamPoints > 0 {
                     Text("\("نقاط محاكاة ضائعة".localized): \(insight.lostProjectedTeamPoints)")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(AppColor.danger)
+                }
+                if insight.lostProjectedAgainstSecondBestPoints > 0 {
+                    Text("\("فاقد ثاني محاكاة".localized): \(insight.lostProjectedAgainstSecondBestPoints)")
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(AppColor.danger)
                 }

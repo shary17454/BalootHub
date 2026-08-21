@@ -44,9 +44,10 @@ public enum WhatToPlayDecisionQuality: String, Sendable, Codable, Equatable, Cas
     public static func classify(
         isExpertChoice: Bool,
         lostExpectedPoints: Int,
-        lostProjectedTeamPoints: Int = 0
+        lostProjectedTeamPoints: Int = 0,
+        lostProjectedAgainstSecondBestPoints: Int = 0
     ) -> WhatToPlayDecisionQuality {
-        let decisiveLoss = max(lostExpectedPoints, lostProjectedTeamPoints)
+        let decisiveLoss = max(lostExpectedPoints, lostProjectedTeamPoints, lostProjectedAgainstSecondBestPoints)
         if isExpertChoice || decisiveLoss == 0 { return .expertMatch }
         if decisiveLoss <= 2 { return .close }
         if decisiveLoss <= 8 { return .acceptable }
@@ -88,6 +89,7 @@ public struct WhatToPlayDecisionInsightMetrics: Sendable, Equatable {
     public let category: WhatToPlayDecisionInsightCategory
     public let lostExpectedPoints: Int
     public let lostProjectedTeamPoints: Int
+    public let lostProjectedAgainstSecondBestPoints: Int
     public let secondBestGap: Int?
     public let valueLossSeverity: WhatToPlayValueLossSeverityCategory
 
@@ -95,12 +97,14 @@ public struct WhatToPlayDecisionInsightMetrics: Sendable, Equatable {
         category: WhatToPlayDecisionInsightCategory,
         lostExpectedPoints: Int,
         lostProjectedTeamPoints: Int,
+        lostProjectedAgainstSecondBestPoints: Int = 0,
         secondBestGap: Int?,
         valueLossSeverity: WhatToPlayValueLossSeverityCategory
     ) {
         self.category = category
         self.lostExpectedPoints = lostExpectedPoints
         self.lostProjectedTeamPoints = lostProjectedTeamPoints
+        self.lostProjectedAgainstSecondBestPoints = lostProjectedAgainstSecondBestPoints
         self.secondBestGap = secondBestGap
         self.valueLossSeverity = valueLossSeverity
     }
@@ -111,7 +115,8 @@ public struct WhatToPlayDecisionInsightMetrics: Sendable, Equatable {
         bestImpact: Int,
         secondBestImpact: Int?,
         selectedProjectedTeamPoints: Int? = nil,
-        bestProjectedTeamPoints: Int? = nil
+        bestProjectedTeamPoints: Int? = nil,
+        secondBestProjectedTeamPoints: Int? = nil
     ) -> WhatToPlayDecisionInsightMetrics {
         let lostExpectedPoints = max(0, bestImpact - selectedImpact)
         let lostProjectedTeamPoints: Int
@@ -120,15 +125,21 @@ public struct WhatToPlayDecisionInsightMetrics: Sendable, Equatable {
         } else {
             lostProjectedTeamPoints = 0
         }
+        let lostProjectedAgainstSecondBestPoints: Int
+        if let selectedProjectedTeamPoints, let secondBestProjectedTeamPoints {
+            lostProjectedAgainstSecondBestPoints = max(0, secondBestProjectedTeamPoints - selectedProjectedTeamPoints)
+        } else {
+            lostProjectedAgainstSecondBestPoints = 0
+        }
 
-        let decisiveLoss = max(lostExpectedPoints, lostProjectedTeamPoints)
+        let decisiveLoss = max(lostExpectedPoints, lostProjectedTeamPoints, lostProjectedAgainstSecondBestPoints)
         let secondBestGap = secondBestImpact.map { max(0, $0 - selectedImpact) }
         let severity = WhatToPlayValueLossSeverityCategory.classify(decisiveLoss: decisiveLoss)
 
         let category: WhatToPlayDecisionInsightCategory
         if selectedRank == 1 || decisiveLoss == 0 {
             category = .expertMatch
-        } else if lostProjectedTeamPoints > lostExpectedPoints {
+        } else if max(lostProjectedTeamPoints, lostProjectedAgainstSecondBestPoints) > lostExpectedPoints {
             category = .pointLeak
         } else if selectedRank == 2 || decisiveLoss <= 2 || secondBestImpact == selectedImpact {
             category = .closeAlternative
@@ -142,6 +153,7 @@ public struct WhatToPlayDecisionInsightMetrics: Sendable, Equatable {
             category: category,
             lostExpectedPoints: lostExpectedPoints,
             lostProjectedTeamPoints: lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: lostProjectedAgainstSecondBestPoints,
             secondBestGap: secondBestGap,
             valueLossSeverity: severity
         )
@@ -3041,6 +3053,7 @@ public struct WhatToPlayChoiceReview: Sendable, Equatable {
     public let expertToBestProjectedTeamPointsGap: Int?
     public let selectedLostExpectedPoints: Int?
     public let selectedLostProjectedTeamPoints: Int?
+    public let selectedLostProjectedAgainstSecondBestPoints: Int?
     public let decisionQuality: WhatToPlayDecisionQuality?
     public let bestMoveConfidence: WhatToPlayBestMoveConfidence?
 
@@ -3054,6 +3067,7 @@ public struct WhatToPlayChoiceReview: Sendable, Equatable {
         expertToBestProjectedTeamPointsGap: Int?,
         selectedLostExpectedPoints: Int?,
         selectedLostProjectedTeamPoints: Int?,
+        selectedLostProjectedAgainstSecondBestPoints: Int? = nil,
         decisionQuality: WhatToPlayDecisionQuality?,
         bestMoveConfidence: WhatToPlayBestMoveConfidence?
     ) {
@@ -3066,6 +3080,7 @@ public struct WhatToPlayChoiceReview: Sendable, Equatable {
         self.expertToBestProjectedTeamPointsGap = expertToBestProjectedTeamPointsGap
         self.selectedLostExpectedPoints = selectedLostExpectedPoints
         self.selectedLostProjectedTeamPoints = selectedLostProjectedTeamPoints
+        self.selectedLostProjectedAgainstSecondBestPoints = selectedLostProjectedAgainstSecondBestPoints
         self.decisionQuality = decisionQuality
         self.bestMoveConfidence = bestMoveConfidence
     }
@@ -3118,6 +3133,7 @@ public struct WhatToPlayNextActionRecommendation: Sendable, Equatable {
     public let secondBestOption: WhatToPlayOption?
     public let lostExpectedPoints: Int
     public let lostProjectedTeamPoints: Int
+    public let lostProjectedAgainstSecondBestPoints: Int
 
     public init(
         kind: WhatToPlayNextActionKind,
@@ -3126,7 +3142,8 @@ public struct WhatToPlayNextActionRecommendation: Sendable, Equatable {
         bestProjectedOption: WhatToPlayOption,
         secondBestOption: WhatToPlayOption?,
         lostExpectedPoints: Int,
-        lostProjectedTeamPoints: Int
+        lostProjectedTeamPoints: Int,
+        lostProjectedAgainstSecondBestPoints: Int = 0
     ) {
         self.kind = kind
         self.selectedOption = selectedOption
@@ -3135,16 +3152,17 @@ public struct WhatToPlayNextActionRecommendation: Sendable, Equatable {
         self.secondBestOption = secondBestOption
         self.lostExpectedPoints = lostExpectedPoints
         self.lostProjectedTeamPoints = lostProjectedTeamPoints
+        self.lostProjectedAgainstSecondBestPoints = lostProjectedAgainstSecondBestPoints
     }
 
     public var recommendedCard: PlayingCard {
-        lostProjectedTeamPoints > lostExpectedPoints
+        max(lostProjectedTeamPoints, lostProjectedAgainstSecondBestPoints) > lostExpectedPoints
             ? bestProjectedOption.card
             : bestOption.card
     }
 
     public var expectedImprovement: Int {
-        max(lostExpectedPoints, lostProjectedTeamPoints)
+        max(lostExpectedPoints, lostProjectedTeamPoints, lostProjectedAgainstSecondBestPoints)
     }
 }
 
@@ -3629,12 +3647,16 @@ public enum WhatToPlayTrainer {
         let selectedLostProjected = selected.flatMap { selectedOption in
             bestProjected.map { max(0, $0.projectedTeamPoints - selectedOption.projectedTeamPoints) }
         }
+        let selectedLostProjectedAgainstSecondBest = selected.flatMap { selectedOption in
+            secondBestProjected.map { max(0, $0.projectedTeamPoints - selectedOption.projectedTeamPoints) }
+        }
         let decisionQuality = selected.flatMap { selectedOption in
             selectedLostExpected.map {
                 WhatToPlayDecisionQuality.classify(
                     isExpertChoice: selectedOption.isExpertChoice,
                     lostExpectedPoints: $0,
-                    lostProjectedTeamPoints: selectedLostProjected ?? 0
+                    lostProjectedTeamPoints: selectedLostProjected ?? 0,
+                    lostProjectedAgainstSecondBestPoints: selectedLostProjectedAgainstSecondBest ?? 0
                 )
             }
         }
@@ -3649,6 +3671,7 @@ public enum WhatToPlayTrainer {
             expertToBestProjectedTeamPointsGap: expertToBestProjectedGap,
             selectedLostExpectedPoints: selectedLostExpected,
             selectedLostProjectedTeamPoints: selectedLostProjected,
+            selectedLostProjectedAgainstSecondBestPoints: selectedLostProjectedAgainstSecondBest,
             decisionQuality: decisionQuality,
             bestMoveConfidence: WhatToPlayBestMoveConfidence.classify(bestToSecondGap: bestToSecondGap)
         )
@@ -3706,14 +3729,16 @@ public enum WhatToPlayTrainer {
 
         let bestProjected = review.bestProjectedOption ?? best
         let lostProjectedTeamPoints = review.selectedLostProjectedTeamPoints ?? 0
-        let decisiveLoss = max(lostExpectedPoints, lostProjectedTeamPoints)
+        let lostProjectedAgainstSecondBestPoints = review.selectedLostProjectedAgainstSecondBestPoints ?? 0
+        let decisiveLoss = max(lostExpectedPoints, lostProjectedTeamPoints, lostProjectedAgainstSecondBestPoints)
+        let simulationLoss = max(lostProjectedTeamPoints, lostProjectedAgainstSecondBestPoints)
         let kind: WhatToPlayNextActionKind
 
-        if selected.isExpertChoice && lostProjectedTeamPoints >= 9 {
+        if selected.isExpertChoice && simulationLoss >= 9 {
             kind = .reviewExpertSimulation
         } else if selected.isExpertChoice || decisiveLoss == 0 {
             kind = .reinforceRead
-        } else if lostProjectedTeamPoints > lostExpectedPoints {
+        } else if simulationLoss > lostExpectedPoints {
             kind = .reviewSimulation
         } else if decisiveLoss <= 2 {
             kind = .reviewSmallGap
@@ -3730,7 +3755,8 @@ public enum WhatToPlayTrainer {
             bestProjectedOption: bestProjected,
             secondBestOption: review.secondBestOption,
             lostExpectedPoints: lostExpectedPoints,
-            lostProjectedTeamPoints: lostProjectedTeamPoints
+            lostProjectedTeamPoints: lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: lostProjectedAgainstSecondBestPoints
         )
     }
 
