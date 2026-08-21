@@ -88,10 +88,16 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertEqual(bestSummary.decisionQuality?.title, "مطابق للخبير".localized)
         XCTAssertEqual(bestSummary.decisionQualityDetail, WhatToPlayDecisionQuality.expertMatch.detail)
         XCTAssertFalse(bestSummary.decisionQuality?.systemImage.isEmpty ?? true)
-        XCTAssertEqual(bestSummary.nextActionTitle, "ثبّت القراءة".localized)
-        XCTAssertTrue(bestSummary.nextActionDetail?.contains(best.card.accessibilityName) ?? false)
-        XCTAssertTrue(bestSummary.nextActionDetail?.contains("اختيارك يطابق أعلى تحليل؛ ركز على تثبيت سبب القرار قبل الموقف التالي.".localized) ?? false)
-        XCTAssertTrue(bestSummary.nextActionDetail?.contains("أفضل ورقة".localized) ?? false)
+        if (bestSummary.selectedLostProjectedTeamPoints ?? 0) >= 9 {
+            XCTAssertEqual(bestSummary.nextActionTitle, "راجع المحاكاة".localized)
+            XCTAssertTrue(bestSummary.nextActionDetail?.contains("اختيارك يطابق الخبير في الأكلة الحالية".localized) ?? false)
+            XCTAssertTrue(bestSummary.nextActionDetail?.contains("أفضل نتيجة محاكاة".localized) ?? false)
+        } else {
+            XCTAssertEqual(bestSummary.nextActionTitle, "ثبّت القراءة".localized)
+            XCTAssertTrue(bestSummary.nextActionDetail?.contains(best.card.accessibilityName) ?? false)
+            XCTAssertTrue(bestSummary.nextActionDetail?.contains("اختيارك يطابق أعلى تحليل؛ ركز على تثبيت سبب القرار قبل الموقف التالي.".localized) ?? false)
+            XCTAssertTrue(bestSummary.nextActionDetail?.contains("أفضل ورقة".localized) ?? false)
+        }
 
         let expectedLost = max(0, best.expectedImpact - costly.expectedImpact)
         XCTAssertEqual(costlySummary.selectedCard, costly.card)
@@ -163,6 +169,37 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertEqual(summary.nextActionTitle, "راجع المحاكاة".localized)
         XCTAssertTrue(summary.nextActionDetail?.contains("بعد استكمال الجولة".localized) ?? false)
         XCTAssertTrue(summary.nextActionDetail?.contains("أفضل نتيجة محاكاة".localized) ?? false)
+        XCTAssertTrue(summary.nextActionDetail?.contains(bestSimulation.card.accessibilityName) ?? false)
+    }
+
+    func testSummaryFlagsExpertPickWhenFullSimulationStronglyDisagrees() throws {
+        var matchingScenario: WhatToPlayScenario?
+        var matchingExpert: WhatToPlayOption?
+        var matchingBestSimulation: WhatToPlayOption?
+
+        for seed in 1...1_000 {
+            let scenario = try WhatToPlayTrainer.generateScenario(seed: UInt64(seed), difficulty: .hard)
+            guard let expert = scenario.bestOption,
+                  let bestSimulation = WhatToPlayOptionComparison.bestSimulationOption(scenario.options),
+                  bestSimulation.card != expert.card,
+                  max(0, bestSimulation.projectedTeamPoints - expert.projectedTeamPoints) >= 9
+            else { continue }
+            matchingScenario = scenario
+            matchingExpert = expert
+            matchingBestSimulation = bestSimulation
+            break
+        }
+
+        let scenario = try XCTUnwrap(matchingScenario)
+        let expert = try XCTUnwrap(matchingExpert)
+        let bestSimulation = try XCTUnwrap(matchingBestSimulation)
+
+        let summary = WhatToPlayOptionComparison.summary(for: scenario, selectedCard: expert.card)
+
+        XCTAssertEqual(summary.decisionQuality, .expertMatch)
+        XCTAssertEqual(summary.nextActionTitle, "راجع المحاكاة".localized)
+        XCTAssertTrue(summary.nextActionDetail?.contains("اختيارك يطابق الخبير في الأكلة الحالية".localized) ?? false)
+        XCTAssertTrue(summary.nextActionDetail?.contains("نقاط محاكاة ضائعة".localized) ?? false)
         XCTAssertTrue(summary.nextActionDetail?.contains(bestSimulation.card.accessibilityName) ?? false)
     }
 

@@ -370,6 +370,13 @@ enum WhatToPlayOptionComparison {
         guard let selected, let best, let lostExpectedPoints else { return (nil, nil) }
         let lostProjectedTeamPoints = lostProjectedTeamPoints ?? 0
         let decisiveLoss = max(lostExpectedPoints, lostProjectedTeamPoints)
+        if selected.isExpertChoice && lostProjectedTeamPoints >= 9 {
+            let simulationCard = bestSimulation ?? best
+            return (
+                "راجع المحاكاة".localized,
+                "\("اختيارك يطابق الخبير في الأكلة الحالية، لكن المحاكاة الكاملة تفضّل مراجعة مسار الجولة.".localized) \("نقاط محاكاة ضائعة".localized): \(lostProjectedTeamPoints). \("أفضل نتيجة محاكاة".localized): \(simulationCard.card.accessibilityName)."
+            )
+        }
         if selected.isExpertChoice || decisiveLoss == 0 {
             return (
                 "ثبّت القراءة".localized,
