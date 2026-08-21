@@ -35,6 +35,8 @@ struct WhatToPlayShareCardContent: Equatable {
     let bestExpectedImpact: Int?
     let secondBestCardName: String?
     let secondBestExpectedImpact: Int?
+    let bestSimulationCardName: String?
+    let bestProjectedTeamPoints: Int?
     let lostExpectedPoints: Int?
     let lostProjectedTeamPoints: Int?
     let lostAgainstSecondBestPoints: Int?
@@ -79,6 +81,7 @@ enum WhatToPlayShareCard {
         }
         let best = review?.bestOption
         let secondBest = review?.secondBestOption
+        let bestProjected = review?.bestProjectedOption
         let lost = review?.selectedLostExpectedPoints
         let projectedLost = review?.selectedLostProjectedTeamPoints
         let lostAgainstSecondBest = selectedOption.flatMap { selected in
@@ -134,6 +137,8 @@ enum WhatToPlayShareCard {
             bestExpectedImpact: best?.expectedImpact,
             secondBestCardName: secondBest?.card.accessibilityName,
             secondBestExpectedImpact: secondBest?.expectedImpact,
+            bestSimulationCardName: bestProjected?.card.accessibilityName,
+            bestProjectedTeamPoints: bestProjected?.projectedTeamPoints,
             lostExpectedPoints: lost,
             lostProjectedTeamPoints: projectedLost,
             lostAgainstSecondBestPoints: lostAgainstSecondBest,
@@ -220,6 +225,12 @@ enum WhatToPlayShareCard {
             }
             if let secondBestExpectedImpact = content.secondBestExpectedImpact {
                 lines.append("\("أثر ثاني أفضل".localized): \(impactText(secondBestExpectedImpact))")
+            }
+            if let bestSimulationCardName = content.bestSimulationCardName {
+                lines.append("\("أفضل محاكاة".localized): \(bestSimulationCardName)")
+            }
+            if let bestProjectedTeamPoints = content.bestProjectedTeamPoints {
+                lines.append("\("أفضل نتيجة محاكاة".localized): \(bestProjectedTeamPoints)")
             }
             if let selectedRank = content.selectedRank {
                 lines.append("\("ترتيب اختياري".localized): \(selectedRank)")
