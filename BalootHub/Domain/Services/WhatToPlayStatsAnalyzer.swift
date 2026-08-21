@@ -3084,7 +3084,8 @@ enum WhatToPlayStatsAnalyzer {
     }
 
     static func scenarioBrief(context: WhatToPlayScenarioContext) -> WhatToPlayScenarioBrief {
-        switch context.focusKind {
+        let metrics = WhatToPlayScenarioBriefMetrics.classify(context: context)
+        switch metrics.category {
         case .openingLead:
             return WhatToPlayScenarioBrief(
                 title: "اقرأ بداية الأكلة".localized,
@@ -3092,26 +3093,30 @@ enum WhatToPlayStatsAnalyzer {
                 iconName: "arrowshape.turn.up.forward.fill"
             )
         case .followSuit:
-            if let requiredSuit = context.requiredSuit {
-                return WhatToPlayScenarioBrief(
-                    title: "التزم باللون المطلوب".localized,
-                    detail: "\("اللون المطلوب".localized): \(requiredSuit.spokenName). \("قارن هل تستطيع كسب الأكلة أم تقلل خسارة النقاط.".localized)",
-                    iconName: "suit.club.fill"
-                )
-            }
+            let requiredSuit = context.requiredSuit
+            return WhatToPlayScenarioBrief(
+                title: "التزم باللون المطلوب".localized,
+                detail: "\("اللون المطلوب".localized): \(requiredSuit?.spokenName ?? "اللون المطلوب".localized). \("قارن هل تستطيع كسب الأكلة أم تقلل خسارة النقاط.".localized)",
+                iconName: "suit.club.fill"
+            )
+        case .followSuitMissingRequiredSuit:
             return WhatToPlayScenarioBrief(
                 title: "راجع اللون المطلوب".localized,
                 detail: "ابدأ بمعرفة اللون المطلوب ثم قرر هل الفوز بالأكلة ممكن أو الأفضل تقليل الخسارة.".localized,
                 iconName: "suit.club.fill"
             )
-        case .trumpPressure:
+        case .trumpPressureWithTrumpOnTable:
             let trumpText = context.trumpSuit?.spokenName ?? "غير محدد".localized
-            let tableText = context.hasTrumpInCurrentTrick
-                ? "يوجد حكم على الطاولة؛ لا تصرف حكمًا أعلى إلا إذا كان العائد يستحق.".localized
-                : "لا يوجد حكم على الطاولة؛ اسأل هل القطع الآن يحسم الأكلة أو يكشف قوتك مبكرًا.".localized
             return WhatToPlayScenarioBrief(
                 title: "\("ضغط الحكم".localized): \(trumpText)",
-                detail: tableText,
+                detail: "يوجد حكم على الطاولة؛ لا تصرف حكمًا أعلى إلا إذا كان العائد يستحق.".localized,
+                iconName: "crown.fill"
+            )
+        case .trumpPressureWithoutTrumpOnTable:
+            let trumpText = context.trumpSuit?.spokenName ?? "غير محدد".localized
+            return WhatToPlayScenarioBrief(
+                title: "\("ضغط الحكم".localized): \(trumpText)",
+                detail: "لا يوجد حكم على الطاولة؛ اسأل هل القطع الآن يحسم الأكلة أو يكشف قوتك مبكرًا.".localized,
                 iconName: "crown.fill"
             )
         case .narrowChoice:

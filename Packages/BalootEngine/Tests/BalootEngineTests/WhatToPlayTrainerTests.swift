@@ -2177,6 +2177,32 @@ struct WhatToPlayTrainerTests {
         ])
     }
 
+    @Test("موجز موقف وش تلعب يصنف من المحرك")
+    func scenarioBriefMetricsClassifyContext() {
+        #expect(scenarioBrief(focus: .openingLead).category == .openingLead)
+        #expect(
+            scenarioBrief(focus: .followSuit, requiredSuit: .clubs).category == .followSuit
+        )
+        #expect(
+            scenarioBrief(focus: .followSuit).category == .followSuitMissingRequiredSuit
+        )
+        #expect(
+            scenarioBrief(
+                focus: .trumpPressure,
+                trumpSuit: .hearts,
+                hasTrumpInCurrentTrick: true
+            ).category == .trumpPressureWithTrumpOnTable
+        )
+        #expect(
+            scenarioBrief(
+                focus: .trumpPressure,
+                trumpSuit: .hearts,
+                hasTrumpInCurrentTrick: false
+            ).category == .trumpPressureWithoutTrumpOnTable
+        )
+        #expect(scenarioBrief(focus: .narrowChoice, legalOptionCount: 2).category == .narrowChoice)
+    }
+
     @Test("عوامل القرار تفرق بين افتتاح الصن والحكم المحفوظ")
     func decisionFactorsSeparateSunOpeningFromAvailableTrump() {
         let sunContext = WhatToPlayScenarioContext(
@@ -2494,6 +2520,28 @@ private func microDrill(
         hasTrumpSuitSamples: hasTrumpSuitSamples,
         isTrumpSuitCoverageBalanced: isTrumpSuitCoverageBalanced,
         isMasterySharp: isMasterySharp
+    )
+}
+
+private func scenarioBrief(
+    focus: WhatToPlayScenarioFocusKind,
+    requiredSuit: Suit? = nil,
+    trumpSuit: Suit? = nil,
+    hasTrumpInCurrentTrick: Bool = false,
+    legalOptionCount: Int = 4
+) -> WhatToPlayScenarioBriefMetrics {
+    WhatToPlayScenarioBriefMetrics.classify(
+        context: WhatToPlayScenarioContext(
+            trickNumber: 1,
+            isLeading: focus == .openingLead,
+            requiredSuit: requiredSuit,
+            playedCardCount: requiredSuit == nil ? 0 : 1,
+            legalOptionCount: legalOptionCount,
+            mode: trumpSuit == nil ? .sun : .hokum,
+            trumpSuit: trumpSuit,
+            hasTrumpInCurrentTrick: hasTrumpInCurrentTrick,
+            focusKind: focus
+        )
     )
 }
 

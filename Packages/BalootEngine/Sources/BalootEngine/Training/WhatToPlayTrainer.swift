@@ -464,6 +464,44 @@ public struct WhatToPlayMicroDrillMetrics: Sendable, Equatable {
     }
 }
 
+/// نوع موجز موقف «وش تلعب؟» قبل اختيار الورقة دون نصوص واجهة.
+public enum WhatToPlayScenarioBriefCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case openingLead
+    case followSuit
+    case followSuitMissingRequiredSuit
+    case trumpPressureWithTrumpOnTable
+    case trumpPressureWithoutTrumpOnTable
+    case narrowChoice
+}
+
+/// تصنيف موجز موقف «وش تلعب؟» من سياق المحرك.
+public struct WhatToPlayScenarioBriefMetrics: Sendable, Equatable {
+    public let category: WhatToPlayScenarioBriefCategory
+
+    public init(category: WhatToPlayScenarioBriefCategory) {
+        self.category = category
+    }
+
+    public static func classify(context: WhatToPlayScenarioContext) -> WhatToPlayScenarioBriefMetrics {
+        switch context.focusKind {
+        case .openingLead:
+            return WhatToPlayScenarioBriefMetrics(category: .openingLead)
+        case .followSuit:
+            return WhatToPlayScenarioBriefMetrics(
+                category: context.requiredSuit == nil ? .followSuitMissingRequiredSuit : .followSuit
+            )
+        case .trumpPressure:
+            return WhatToPlayScenarioBriefMetrics(
+                category: context.hasTrumpInCurrentTrick
+                    ? .trumpPressureWithTrumpOnTable
+                    : .trumpPressureWithoutTrumpOnTable
+            )
+        case .narrowChoice:
+            return WhatToPlayScenarioBriefMetrics(category: .narrowChoice)
+        }
+    }
+}
+
 /// تصنيف أسلوب اللاعب الخام في مدرب «وش تلعب؟» دون نصوص واجهة.
 public enum WhatToPlayPlayStyleCategory: String, Sendable, Codable, Equatable, CaseIterable {
     case measuring
