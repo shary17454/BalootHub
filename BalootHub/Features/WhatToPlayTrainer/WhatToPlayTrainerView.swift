@@ -2678,14 +2678,16 @@ struct WhatToPlayTrainerView: View {
     }
 
     private func optionAccessibilityLabel(_ option: WhatToPlayOption) -> String {
-        WhatToPlayOptionDisclosure.accessibilityLabel(
+        let bestSimulationCard = scenario.flatMap { WhatToPlayOptionComparison.bestSimulationOption($0.options)?.card }
+        return WhatToPlayOptionDisclosure.accessibilityLabel(
             cardName: option.card.accessibilityName,
             rank: option.rank,
             isRevealed: selectedOption != nil,
             expectedImpact: option.expectedImpact,
             projectedTeamPoints: option.projectedTeamPoints,
             isSelected: selectedOption?.card == option.card,
-            isExpertChoice: option.isExpertChoice
+            isExpertChoice: option.isExpertChoice,
+            isBestSimulationResult: option.card == bestSimulationCard
         )
     }
 
