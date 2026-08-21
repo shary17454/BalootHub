@@ -1740,11 +1740,12 @@ struct WhatToPlayTrainerTests {
         let selectedOption = projectedOption(card: .init(suit: .clubs, rank: .seven), rank: 2, expectedImpact: 7, projectedTeamPoints: 52)
         let bestOption = projectedOption(card: .init(suit: .hearts, rank: .ace), rank: 1, expectedImpact: 8, projectedTeamPoints: 54)
         let bestProjectedOption = projectedOption(card: .init(suit: .spades, rank: .ace), rank: 3, expectedImpact: 6, projectedTeamPoints: 70)
+        let secondBestProjectedOption = projectedOption(card: .init(suit: .diamonds, rank: .jack), rank: 4, expectedImpact: 5, projectedTeamPoints: 68)
         let secondProjectionReview = WhatToPlayChoiceReview(
             bestOption: bestOption,
             secondBestOption: selectedOption,
             bestProjectedOption: bestProjectedOption,
-            secondBestProjectedOption: projectedOption(card: .init(suit: .diamonds, rank: .jack), rank: 4, expectedImpact: 5, projectedTeamPoints: 68),
+            secondBestProjectedOption: secondBestProjectedOption,
             selectedOption: selectedOption,
             bestToSecondExpectedImpactGap: 1,
             expertToBestProjectedTeamPointsGap: 16,
@@ -1759,6 +1760,7 @@ struct WhatToPlayTrainerTests {
         )
 
         #expect(secondProjectionRecommendation.kind == WhatToPlayNextActionKind.reviewSimulation)
+        #expect(secondProjectionRecommendation.secondBestProjectedOption?.card == secondBestProjectedOption.card)
         #expect(secondProjectionRecommendation.lostProjectedTeamPoints == 2)
         #expect(secondProjectionRecommendation.lostProjectedAgainstSecondBestPoints == 16)
         #expect(secondProjectionRecommendation.expectedImprovement == 16)

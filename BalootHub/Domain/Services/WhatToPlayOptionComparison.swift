@@ -253,14 +253,15 @@ enum WhatToPlayOptionComparison {
             }
     }
 
-    private static func nextAction(
+    static func nextAction(
         recommendation: WhatToPlayNextActionRecommendation
     ) -> (title: String, detail: String) {
         switch recommendation.kind {
         case .reviewExpertSimulation:
+            let secondSimulationText = secondSimulationText(for: recommendation)
             return (
                 "راجع المحاكاة".localized,
-                "\("اختيارك يطابق الخبير في الأكلة الحالية، لكن المحاكاة الكاملة تفضّل مراجعة مسار الجولة.".localized) \(simulationLossText(for: recommendation)). \("أفضل نتيجة محاكاة".localized): \(recommendation.bestProjectedOption.card.accessibilityName)."
+                "\("اختيارك يطابق الخبير في الأكلة الحالية، لكن المحاكاة الكاملة تفضّل مراجعة مسار الجولة.".localized) \(simulationLossText(for: recommendation)). \("أفضل نتيجة محاكاة".localized): \(recommendation.bestProjectedOption.card.accessibilityName).\(secondSimulationText)"
             )
         case .reinforceRead:
             return (
@@ -268,9 +269,10 @@ enum WhatToPlayOptionComparison {
                 "\("اختيارك يطابق أعلى تحليل؛ ركز على تثبيت سبب القرار قبل الموقف التالي.".localized) \("أفضل ورقة".localized): \(recommendation.selectedOption.card.accessibilityName)."
             )
         case .reviewSimulation:
+            let secondSimulationText = secondSimulationText(for: recommendation)
             return (
                 "راجع المحاكاة".localized,
-                "\("قرارك يخسر بعد استكمال الجولة؛ راجع Replay كامل قبل لعب موقف جديد.".localized) \(simulationLossText(for: recommendation)). \("أفضل نتيجة محاكاة".localized): \(recommendation.bestProjectedOption.card.accessibilityName)."
+                "\("قرارك يخسر بعد استكمال الجولة؛ راجع Replay كامل قبل لعب موقف جديد.".localized) \(simulationLossText(for: recommendation)). \("أفضل نتيجة محاكاة".localized): \(recommendation.bestProjectedOption.card.accessibilityName).\(secondSimulationText)"
             )
         case .reviewSmallGap:
             let secondText = recommendation.secondBestOption.map { " \("ثاني أفضل".localized): \($0.card.accessibilityName)." } ?? ""
@@ -296,6 +298,15 @@ enum WhatToPlayOptionComparison {
             return "\("فاقد ثاني محاكاة".localized): \(recommendation.lostProjectedAgainstSecondBestPoints)"
         }
         return "\("نقاط محاكاة ضائعة".localized): \(recommendation.lostProjectedTeamPoints)"
+    }
+
+    private static func secondSimulationText(for recommendation: WhatToPlayNextActionRecommendation) -> String {
+        guard recommendation.lostProjectedAgainstSecondBestPoints > 0,
+              let secondBestProjectedOption = recommendation.secondBestProjectedOption,
+              secondBestProjectedOption.card != recommendation.bestProjectedOption.card
+        else { return "" }
+
+        return " \("ثاني نتيجة محاكاة".localized): \(secondBestProjectedOption.card.accessibilityName)."
     }
 
     private static func tacticalSummary(

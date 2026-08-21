@@ -152,6 +152,25 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertTrue(summary.nextActionDetail?.contains(bestSimulation.card.accessibilityName) ?? false)
     }
 
+    func testSummaryNamesSecondSimulationCardWhenItAddsContext() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let secondBestSimulation = try XCTUnwrap(WhatToPlayTrainer.secondBestProjectedOption(in: scenario.options))
+        let selected = try XCTUnwrap(scenario.options.filter {
+            $0.card != secondBestSimulation.card
+        }.min {
+            $0.projectedTeamPoints < $1.projectedTeamPoints
+        })
+
+        let summary = WhatToPlayOptionComparison.summary(for: scenario, selectedCard: selected.card)
+
+        XCTAssertTrue(summary.nextActionDetail?.contains("ثاني نتيجة محاكاة".localized) ?? false)
+        XCTAssertTrue(summary.nextActionDetail?.contains(secondBestSimulation.card.accessibilityName) ?? false)
+        XCTAssertEqual(
+            summary.selectedLostProjectedAgainstSecondBestPoints,
+            max(0, secondBestSimulation.projectedTeamPoints - selected.projectedTeamPoints)
+        )
+    }
+
     func testSummaryFlagsExpertPickWhenFullSimulationStronglyDisagrees() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 1, difficulty: .hard)
         let expert = try XCTUnwrap(scenario.bestOption)

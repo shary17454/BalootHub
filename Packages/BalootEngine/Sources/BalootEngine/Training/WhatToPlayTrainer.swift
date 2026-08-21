@@ -3140,6 +3140,7 @@ public struct WhatToPlayNextActionRecommendation: Sendable, Equatable {
     public let bestOption: WhatToPlayOption
     public let bestProjectedOption: WhatToPlayOption
     public let secondBestOption: WhatToPlayOption?
+    public let secondBestProjectedOption: WhatToPlayOption?
     public let lostExpectedPoints: Int
     public let lostProjectedTeamPoints: Int
     public let lostProjectedAgainstSecondBestPoints: Int
@@ -3150,6 +3151,7 @@ public struct WhatToPlayNextActionRecommendation: Sendable, Equatable {
         bestOption: WhatToPlayOption,
         bestProjectedOption: WhatToPlayOption,
         secondBestOption: WhatToPlayOption?,
+        secondBestProjectedOption: WhatToPlayOption? = nil,
         lostExpectedPoints: Int,
         lostProjectedTeamPoints: Int,
         lostProjectedAgainstSecondBestPoints: Int = 0
@@ -3159,6 +3161,7 @@ public struct WhatToPlayNextActionRecommendation: Sendable, Equatable {
         self.bestOption = bestOption
         self.bestProjectedOption = bestProjectedOption
         self.secondBestOption = secondBestOption
+        self.secondBestProjectedOption = secondBestProjectedOption
         self.lostExpectedPoints = lostExpectedPoints
         self.lostProjectedTeamPoints = lostProjectedTeamPoints
         self.lostProjectedAgainstSecondBestPoints = lostProjectedAgainstSecondBestPoints
@@ -3801,6 +3804,7 @@ public enum WhatToPlayTrainer {
             bestOption: best,
             bestProjectedOption: bestProjected,
             secondBestOption: review.secondBestOption,
+            secondBestProjectedOption: review.secondBestProjectedOption,
             lostExpectedPoints: lostExpectedPoints,
             lostProjectedTeamPoints: lostProjectedTeamPoints,
             lostProjectedAgainstSecondBestPoints: lostProjectedAgainstSecondBestPoints
