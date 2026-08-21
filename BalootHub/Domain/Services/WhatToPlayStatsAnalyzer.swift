@@ -3711,7 +3711,9 @@ enum WhatToPlayStatsAnalyzer {
         let hasTrumpSuitSamples = !summariesByTrumpSuit(attempts).isEmpty
         let category = WhatToPlayMicroDrillMetrics.classify(
             pulseState: trainingPlanPulseState(pulse.state),
-            hasSimulationReview: reviewItem.map { $0.lostProjectedTeamPoints >= 6 } ?? false,
+            hasSimulationReview: reviewItem.map {
+                $0.lostProjectedTeamPoints >= 6 || $0.lostProjectedAgainstSecondBestPoints >= 6
+            } ?? false,
             hasHighValueReview: reviewItem.map { $0.valueLossSeverity == .high } ?? false,
             trackedDecisionQualityAttempts: qualitySummary.trackedAttempts,
             costlyDecisionPercent: qualitySummary.costlyPercent,
@@ -3984,12 +3986,18 @@ enum WhatToPlayStatsAnalyzer {
     private static func microDrillExpectedImprovement(for reviewItem: WhatToPlayReviewItem) -> Int {
         WhatToPlayExpectedImprovementMetrics.calculate(
             lostExpectedPoints: reviewItem.lostExpectedPoints,
-            lostProjectedTeamPoints: reviewItem.lostProjectedTeamPoints
+            lostProjectedTeamPoints: reviewItem.lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: reviewItem.lostProjectedAgainstSecondBestPoints
         ).points
     }
 
     private static func recommendedReviewCard(for reviewItem: WhatToPlayReviewItem) -> PlayingCard? {
-        if reviewItem.lostProjectedTeamPoints > reviewItem.lostExpectedPoints,
+        let improvement = WhatToPlayExpectedImprovementMetrics.calculate(
+            lostExpectedPoints: reviewItem.lostExpectedPoints,
+            lostProjectedTeamPoints: reviewItem.lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: reviewItem.lostProjectedAgainstSecondBestPoints
+        )
+        if improvement.source != .expectedPoints,
            let bestSimulationCard = reviewItem.bestSimulationCard {
             return bestSimulationCard
         }
@@ -3999,6 +4007,9 @@ enum WhatToPlayStatsAnalyzer {
     private static func reviewStepTitle(for reviewItem: WhatToPlayReviewItem) -> String {
         if reviewItem.lostProjectedTeamPoints > reviewItem.lostExpectedPoints {
             return "\("أعد موقف".localized) \(difficultyTitle(reviewItem.difficulty)) · \("نقاط محاكاة ضائعة".localized): \(reviewItem.lostProjectedTeamPoints)"
+        }
+        if reviewItem.lostProjectedAgainstSecondBestPoints > reviewItem.lostExpectedPoints {
+            return "\("أعد موقف".localized) \(difficultyTitle(reviewItem.difficulty)) · \("فاقد ثاني محاكاة".localized): \(reviewItem.lostProjectedAgainstSecondBestPoints)"
         }
         return "\("أعد موقف".localized) \(difficultyTitle(reviewItem.difficulty)) · \("نقاط متوقعة ضائعة".localized): \(reviewItem.lostExpectedPoints)"
     }

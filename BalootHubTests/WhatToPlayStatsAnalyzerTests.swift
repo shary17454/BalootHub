@@ -2615,6 +2615,39 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(drill.expectedImprovement, 15)
     }
 
+    func testMicroDrillUsesSecondSimulationLossWhenItExplainsReview() {
+        let simulationCard = PlayingCard(suit: .hearts, rank: .ace)
+        let attempts = [
+            attempt(
+                daysAgo: 5,
+                difficulty: .easy,
+                correct: false,
+                impact: 2,
+                bestImpact: 4,
+                focusKind: .followSuit,
+                bestSimulationCard: simulationCard,
+                projectedTeamPoints: 55,
+                secondBestProjectedTeamPoints: 64,
+                seed: 45
+            ),
+            attempt(daysAgo: 4, difficulty: .easy, correct: true, impact: 3, projectedTeamPoints: 63, bestProjectedTeamPoints: 63),
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 3, projectedTeamPoints: 66, bestProjectedTeamPoints: 66),
+            attempt(daysAgo: 2, difficulty: .hard, correct: true, impact: 3, projectedTeamPoints: 68, bestProjectedTeamPoints: 68),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 3, projectedTeamPoints: 69, bestProjectedTeamPoints: 69)
+        ]
+
+        let drill = WhatToPlayStatsAnalyzer.microDrill(for: attempts)
+
+        XCTAssertEqual(drill.title, "خطة محاكاة القرار".localized)
+        XCTAssertEqual(drill.steps.first, "\("أعد موقف".localized) \("سهل".localized) · \("فاقد ثاني محاكاة".localized): 9")
+        XCTAssertEqual(drill.reviewItem?.lostExpectedPoints, 2)
+        XCTAssertEqual(drill.reviewItem?.lostProjectedTeamPoints, 0)
+        XCTAssertEqual(drill.reviewItem?.lostProjectedAgainstSecondBestPoints, 9)
+        XCTAssertEqual(drill.seed, 45)
+        XCTAssertEqual(drill.recommendedCard, simulationCard)
+        XCTAssertEqual(drill.expectedImprovement, 9)
+    }
+
     func testMicroDrillTargetsCostlyDecisionPatternBeforeCoverage() {
         let attempts = [
             attempt(daysAgo: 5, difficulty: .easy, correct: true, impact: 10, bestImpact: 10, focusKind: .openingLead),
@@ -3938,6 +3971,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         outcome: WhatToPlayOptionOutcome? = nil,
         impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil,
         selectedCard: PlayingCard = PlayingCard(suit: .clubs, rank: .seven),
+        bestSimulationCard: PlayingCard? = nil,
         simulation: WhatToPlayOptionSimulation? = nil,
         projectedTeamPoints: Int? = nil,
         bestProjectedTeamPoints: Int? = nil,
@@ -3958,6 +3992,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             outcome: outcome,
             impactBreakdown: impactBreakdown,
             selectedCard: selectedCard,
+            bestSimulationCard: bestSimulationCard,
             simulation: simulation,
             projectedTeamPoints: projectedTeamPoints,
             bestProjectedTeamPoints: bestProjectedTeamPoints,
@@ -3985,6 +4020,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         outcome: WhatToPlayOptionOutcome? = nil,
         impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil,
         selectedCard: PlayingCard = PlayingCard(suit: .clubs, rank: .seven),
+        bestSimulationCard: PlayingCard? = nil,
         simulation: WhatToPlayOptionSimulation? = nil,
         projectedTeamPoints: Int? = nil,
         bestProjectedTeamPoints: Int? = nil,
@@ -3999,6 +4035,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
             selectedCard: selectedCard,
             bestCard: PlayingCard(suit: .clubs, rank: .seven),
             secondBestCard: secondBestCard,
+            bestSimulationCard: bestSimulationCard,
             isCorrect: correct,
             selectedRank: selectedRank,
             expectedImpact: impact,

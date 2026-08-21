@@ -3177,6 +3177,7 @@ public struct WhatToPlayRetryRecommendation: Sendable, Equatable {
 /// مصدر التحسن المتوقع عند إعادة موقف «وش تلعب؟».
 public enum WhatToPlayExpectedImprovementSource: String, Sendable, Codable, Equatable, CaseIterable {
     case projectedTeamPoints
+    case projectedSecondBestPoints
     case expectedPoints
 }
 
@@ -3192,12 +3193,20 @@ public struct WhatToPlayExpectedImprovementMetrics: Sendable, Equatable {
 
     public static func calculate(
         lostExpectedPoints: Int,
-        lostProjectedTeamPoints: Int
+        lostProjectedTeamPoints: Int,
+        lostProjectedAgainstSecondBestPoints: Int = 0
     ) -> WhatToPlayExpectedImprovementMetrics {
         if lostProjectedTeamPoints > lostExpectedPoints {
             return WhatToPlayExpectedImprovementMetrics(
                 source: .projectedTeamPoints,
                 points: max(0, lostProjectedTeamPoints)
+            )
+        }
+
+        if lostProjectedAgainstSecondBestPoints > lostExpectedPoints {
+            return WhatToPlayExpectedImprovementMetrics(
+                source: .projectedSecondBestPoints,
+                points: max(0, lostProjectedAgainstSecondBestPoints)
             )
         }
 

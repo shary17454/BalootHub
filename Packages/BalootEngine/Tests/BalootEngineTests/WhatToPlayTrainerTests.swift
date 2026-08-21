@@ -748,6 +748,14 @@ struct WhatToPlayTrainerTests {
         #expect(expected.source == .expectedPoints)
         #expect(expected.points == 6)
 
+        let secondSimulation = WhatToPlayExpectedImprovementMetrics.calculate(
+            lostExpectedPoints: 4,
+            lostProjectedTeamPoints: 2,
+            lostProjectedAgainstSecondBestPoints: 8
+        )
+        #expect(secondSimulation.source == .projectedSecondBestPoints)
+        #expect(secondSimulation.points == 8)
+
         let none = WhatToPlayExpectedImprovementMetrics.calculate(
             lostExpectedPoints: -2,
             lostProjectedTeamPoints: -1
