@@ -3552,7 +3552,29 @@ enum WhatToPlayStatsAnalyzer {
 
     static func microDrill(for attempts: [WhatToPlayAttempt]) -> WhatToPlayMicroDrill {
         let pulse = sessionPulse(for: attempts)
-        if pulse.state == .noData {
+        let reviewItem = reviewQueue(for: attempts, limit: 1).first
+        let qualitySummary = decisionQualitySummary(for: attempts)
+        let coverage = practiceCoverage(for: attempts)
+        let focusCoverage = scenarioFocusCoverage(for: attempts)
+        let modeCoverage = gameModeCoverage(for: attempts)
+        let trumpCoverage = trumpSuitCoverage(for: attempts)
+        let hasTrumpSuitSamples = !summariesByTrumpSuit(attempts).isEmpty
+        let category = WhatToPlayMicroDrillMetrics.classify(
+            pulseState: trainingPlanPulseState(pulse.state),
+            hasSimulationReview: reviewItem.map { $0.lostProjectedTeamPoints >= 6 } ?? false,
+            hasHighValueReview: reviewItem.map { $0.valueLossSeverity == .high } ?? false,
+            trackedDecisionQualityAttempts: qualitySummary.trackedAttempts,
+            costlyDecisionPercent: qualitySummary.costlyPercent,
+            isDifficultyCoverageBalanced: coverage.isBalanced,
+            isFocusCoverageBalanced: focusCoverage.isBalanced,
+            isGameModeCoverageBalanced: modeCoverage.isBalanced,
+            hasTrumpSuitSamples: hasTrumpSuitSamples,
+            isTrumpSuitCoverageBalanced: trumpCoverage.isBalanced,
+            isMasterySharp: mastery(for: attempts).level == .sharp
+        ).category
+
+        switch category {
+        case .start:
             return WhatToPlayMicroDrill(
                 title: "خطة البداية".localized,
                 detail: "ابدأ بخطوات قصيرة حتى تتكون بيانات كافية عن قراراتك.".localized,
@@ -3571,10 +3593,8 @@ enum WhatToPlayStatsAnalyzer {
                 recommendedCard: nil,
                 expectedImprovement: 0
             )
-        }
 
-        if pulse.state == .reviewNeeded {
-            let reviewItem = reviewQueue(for: attempts, limit: 1).first
+        case .reviewMistake:
             let firstStep = reviewItem.map {
                 reviewStepTitle(for: $0)
             } ?? "أعد قراءة بطاقة تحليل اختيارك".localized
@@ -3597,10 +3617,11 @@ enum WhatToPlayStatsAnalyzer {
                 recommendedCard: reviewItem?.bestCard,
                 expectedImprovement: reviewItem.map { microDrillExpectedImprovement(for: $0) } ?? 0
             )
-        }
 
-        if let simulatedReview = reviewQueue(for: attempts, limit: 1).first,
-           simulatedReview.lostProjectedTeamPoints >= 6 {
+        case .simulationReview:
+            guard let simulatedReview = reviewItem else {
+                return fallbackMicroDrill(for: attempts)
+            }
             return WhatToPlayMicroDrill(
                 title: "خطة محاكاة القرار".localized,
                 detail: "راجع قرارًا تغيّرت قيمته بعد استكمال الجولة، لا الأكلة الحالية فقط.".localized,
@@ -3619,10 +3640,11 @@ enum WhatToPlayStatsAnalyzer {
                 recommendedCard: simulatedReview.bestCard,
                 expectedImprovement: microDrillExpectedImprovement(for: simulatedReview)
             )
-        }
 
-        if let highValueReview = reviewQueue(for: attempts, limit: 1).first,
-           highValueReview.valueLossSeverity == .high {
+        case .highValueReview:
+            guard let highValueReview = reviewItem else {
+                return fallbackMicroDrill(for: attempts)
+            }
             return WhatToPlayMicroDrill(
                 title: "خطة المراجعة".localized,
                 detail: "الأولوية الآن ليست كثرة المواقف، بل فهم سبب الخطأ الأخير.".localized,
@@ -3641,10 +3663,8 @@ enum WhatToPlayStatsAnalyzer {
                 recommendedCard: highValueReview.bestCard,
                 expectedImprovement: microDrillExpectedImprovement(for: highValueReview)
             )
-        }
 
-        let qualitySummary = decisionQualitySummary(for: attempts)
-        if qualitySummary.trackedAttempts >= 3, qualitySummary.costlyPercent >= 30 {
+        case .costlyDecisionReduction:
             let recommendation = nextScenarioRecommendation(for: attempts)
             return WhatToPlayMicroDrill(
                 title: "خطة تقليل القرارات المكلفة".localized,
@@ -3670,10 +3690,8 @@ enum WhatToPlayStatsAnalyzer {
                 recommendedCard: nil,
                 expectedImprovement: 0
             )
-        }
 
-        let coverage = practiceCoverage(for: attempts)
-        if !coverage.isBalanced {
+        case .difficultyCoverage:
             let targetDifficulty = coverage.missingDifficulties.first ?? .easy
             return WhatToPlayMicroDrill(
                 title: "خطة التوازن".localized,
@@ -3693,10 +3711,8 @@ enum WhatToPlayStatsAnalyzer {
                 recommendedCard: nil,
                 expectedImprovement: 0
             )
-        }
 
-        let focusCoverage = scenarioFocusCoverage(for: attempts)
-        if !focusCoverage.isBalanced {
+        case .focusCoverage:
             let targetFocus = focusCoverage.missingFocusKinds.first ?? .openingLead
             let targetDifficulty = nextScenarioRecommendation(for: attempts).difficulty
             return WhatToPlayMicroDrill(
@@ -3717,10 +3733,8 @@ enum WhatToPlayStatsAnalyzer {
                 recommendedCard: nil,
                 expectedImprovement: 0
             )
-        }
 
-        let modeCoverage = gameModeCoverage(for: attempts)
-        if !modeCoverage.isBalanced {
+        case .gameModeCoverage:
             let targetMode = modeCoverage.missingModes.first ?? .sun
             let targetDifficulty = nextScenarioRecommendation(for: attempts).difficulty
             return WhatToPlayMicroDrill(
@@ -3741,10 +3755,8 @@ enum WhatToPlayStatsAnalyzer {
                 recommendedCard: nil,
                 expectedImprovement: 0
             )
-        }
 
-        let trumpCoverage = trumpSuitCoverage(for: attempts)
-        if !trumpCoverage.isBalanced && !summariesByTrumpSuit(attempts).isEmpty {
+        case .trumpSuitCoverage:
             let targetSuit = trumpCoverage.missingSuits.first ?? .hearts
             let targetDifficulty = nextScenarioRecommendation(for: attempts).difficulty
             return WhatToPlayMicroDrill(
@@ -3765,9 +3777,8 @@ enum WhatToPlayStatsAnalyzer {
                 recommendedCard: nil,
                 expectedImprovement: 0
             )
-        }
 
-        if mastery(for: attempts).level == .sharp {
+        case .challenge:
             return WhatToPlayMicroDrill(
                 title: "خطة التحدي".localized,
                 detail: "أداؤك قوي؛ اجعل التدريب القادم على المواقف التي تضغط قراءة الشريك والخصم.".localized,
@@ -3786,8 +3797,13 @@ enum WhatToPlayStatsAnalyzer {
                 recommendedCard: nil,
                 expectedImprovement: 0
             )
-        }
 
+        case .continuePractice:
+            return fallbackMicroDrill(for: attempts)
+        }
+    }
+
+    private static func fallbackMicroDrill(for attempts: [WhatToPlayAttempt]) -> WhatToPlayMicroDrill {
         let recommendation = nextScenarioRecommendation(for: attempts)
         return WhatToPlayMicroDrill(
             title: "خطة الاستمرار".localized,

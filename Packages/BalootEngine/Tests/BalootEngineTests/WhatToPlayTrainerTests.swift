@@ -168,6 +168,38 @@ struct WhatToPlayTrainerTests {
         #expect(reviewByImpact.state == .reviewNeeded)
     }
 
+    @Test("خطة الميكرو تدريب في وش تلعب تأتي من المحرك")
+    func microDrillMetricsClassifyPriorityOrder() {
+        #expect(microDrill(pulse: .noData).category == .start)
+        #expect(microDrill(pulse: .reviewNeeded).category == .reviewMistake)
+        #expect(microDrill(hasSimulationReview: true).category == .simulationReview)
+        #expect(microDrill(hasHighValueReview: true).category == .highValueReview)
+        #expect(
+            microDrill(
+                trackedDecisionQualityAttempts: 3,
+                costlyDecisionPercent: 30
+            ).category == .costlyDecisionReduction
+        )
+        #expect(microDrill(isDifficultyCoverageBalanced: false).category == .difficultyCoverage)
+        #expect(microDrill(isFocusCoverageBalanced: false).category == .focusCoverage)
+        #expect(microDrill(isGameModeCoverageBalanced: false).category == .gameModeCoverage)
+        #expect(
+            microDrill(
+                hasTrumpSuitSamples: true,
+                isTrumpSuitCoverageBalanced: false
+            ).category == .trumpSuitCoverage
+        )
+        #expect(microDrill(isMasterySharp: true).category == .challenge)
+        #expect(microDrill().category == .continuePractice)
+
+        let reviewBeatsSimulation = microDrill(
+            pulse: .reviewNeeded,
+            hasSimulationReview: true,
+            isDifficultyCoverageBalanced: false
+        )
+        #expect(reviewBeatsSimulation.category == .reviewMistake)
+    }
+
     @Test("تصنيف أسلوب لاعب وش تلعب يأتي من المحرك")
     func playStyleMetricsClassifyPerformance() {
         let measuring = WhatToPlayPlayStyleMetrics.classify(
@@ -2434,6 +2466,34 @@ private func nextStep(
         impactTargetMet: impactMet,
         costlyDecisionTargetMet: costlyMet,
         averageLostExpectedPoints: averageLostExpectedPoints
+    )
+}
+
+private func microDrill(
+    pulse: WhatToPlaySessionPulseState = .focused,
+    hasSimulationReview: Bool = false,
+    hasHighValueReview: Bool = false,
+    trackedDecisionQualityAttempts: Int = 0,
+    costlyDecisionPercent: Int = 0,
+    isDifficultyCoverageBalanced: Bool = true,
+    isFocusCoverageBalanced: Bool = true,
+    isGameModeCoverageBalanced: Bool = true,
+    hasTrumpSuitSamples: Bool = false,
+    isTrumpSuitCoverageBalanced: Bool = true,
+    isMasterySharp: Bool = false
+) -> WhatToPlayMicroDrillMetrics {
+    WhatToPlayMicroDrillMetrics.classify(
+        pulseState: pulse,
+        hasSimulationReview: hasSimulationReview,
+        hasHighValueReview: hasHighValueReview,
+        trackedDecisionQualityAttempts: trackedDecisionQualityAttempts,
+        costlyDecisionPercent: costlyDecisionPercent,
+        isDifficultyCoverageBalanced: isDifficultyCoverageBalanced,
+        isFocusCoverageBalanced: isFocusCoverageBalanced,
+        isGameModeCoverageBalanced: isGameModeCoverageBalanced,
+        hasTrumpSuitSamples: hasTrumpSuitSamples,
+        isTrumpSuitCoverageBalanced: isTrumpSuitCoverageBalanced,
+        isMasterySharp: isMasterySharp
     )
 }
 

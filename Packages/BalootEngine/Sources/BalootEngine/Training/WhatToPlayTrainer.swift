@@ -379,6 +379,91 @@ public struct WhatToPlaySessionPulseMetrics: Sendable, Equatable {
     }
 }
 
+/// نوع خطة الميكرو-تدريب التالية في «وش تلعب؟» دون نصوص واجهة أو اعتماد على SwiftData.
+public enum WhatToPlayMicroDrillCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case start
+    case reviewMistake
+    case simulationReview
+    case highValueReview
+    case costlyDecisionReduction
+    case difficultyCoverage
+    case focusCoverage
+    case gameModeCoverage
+    case trumpSuitCoverage
+    case challenge
+    case continuePractice
+}
+
+/// تصنيف خطة الميكرو-تدريب من نبض الجلسة وتغطية التدريب.
+public struct WhatToPlayMicroDrillMetrics: Sendable, Equatable {
+    public let category: WhatToPlayMicroDrillCategory
+
+    public init(category: WhatToPlayMicroDrillCategory) {
+        self.category = category
+    }
+
+    public static func classify(
+        pulseState: WhatToPlaySessionPulseState,
+        hasSimulationReview: Bool,
+        hasHighValueReview: Bool,
+        trackedDecisionQualityAttempts: Int,
+        costlyDecisionPercent: Int,
+        isDifficultyCoverageBalanced: Bool,
+        isFocusCoverageBalanced: Bool,
+        isGameModeCoverageBalanced: Bool,
+        hasTrumpSuitSamples: Bool,
+        isTrumpSuitCoverageBalanced: Bool,
+        isMasterySharp: Bool,
+        minimumDecisionQualityAttempts: Int = 3,
+        costlyDecisionPercentThreshold: Int = 30
+    ) -> WhatToPlayMicroDrillMetrics {
+        if pulseState == .noData {
+            return WhatToPlayMicroDrillMetrics(category: .start)
+        }
+
+        if pulseState == .reviewNeeded {
+            return WhatToPlayMicroDrillMetrics(category: .reviewMistake)
+        }
+
+        if hasSimulationReview {
+            return WhatToPlayMicroDrillMetrics(category: .simulationReview)
+        }
+
+        if hasHighValueReview {
+            return WhatToPlayMicroDrillMetrics(category: .highValueReview)
+        }
+
+        let trackedAttempts = max(0, trackedDecisionQualityAttempts)
+        let costlyPercent = max(0, min(100, costlyDecisionPercent))
+        if trackedAttempts >= max(1, minimumDecisionQualityAttempts),
+           costlyPercent >= max(0, min(100, costlyDecisionPercentThreshold)) {
+            return WhatToPlayMicroDrillMetrics(category: .costlyDecisionReduction)
+        }
+
+        if !isDifficultyCoverageBalanced {
+            return WhatToPlayMicroDrillMetrics(category: .difficultyCoverage)
+        }
+
+        if !isFocusCoverageBalanced {
+            return WhatToPlayMicroDrillMetrics(category: .focusCoverage)
+        }
+
+        if !isGameModeCoverageBalanced {
+            return WhatToPlayMicroDrillMetrics(category: .gameModeCoverage)
+        }
+
+        if hasTrumpSuitSamples && !isTrumpSuitCoverageBalanced {
+            return WhatToPlayMicroDrillMetrics(category: .trumpSuitCoverage)
+        }
+
+        if isMasterySharp {
+            return WhatToPlayMicroDrillMetrics(category: .challenge)
+        }
+
+        return WhatToPlayMicroDrillMetrics(category: .continuePractice)
+    }
+}
+
 /// تصنيف أسلوب اللاعب الخام في مدرب «وش تلعب؟» دون نصوص واجهة.
 public enum WhatToPlayPlayStyleCategory: String, Sendable, Codable, Equatable, CaseIterable {
     case measuring
