@@ -874,6 +874,91 @@ public struct WhatToPlayTrainingSessionProgressMetrics: Sendable, Equatable {
     }
 }
 
+/// نوع الخطوة التالية داخل جلسة تدريب «وش تلعب؟» دون نصوص واجهة.
+public enum WhatToPlayTrainingSessionNextStepCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case start
+    case accuracyUnreachable
+    case reduceLostValue
+    case continueBatch
+    case nextChallenge
+    case reduceCostlyDecisions
+    case reviewLostValue
+    case reviewDecisionQuality
+    case stabilizeAccuracy
+    case repeatPlan
+}
+
+/// تصنيف الخطوة التالية من حالة تقدم الجلسة وأهدافها.
+public struct WhatToPlayTrainingSessionNextStepMetrics: Sendable, Equatable {
+    public let category: WhatToPlayTrainingSessionNextStepCategory
+    public let remainingAttempts: Int
+    public let correctAttemptsNeededForTarget: Int
+    public let averageLostExpectedPoints: Int
+
+    public init(
+        category: WhatToPlayTrainingSessionNextStepCategory,
+        remainingAttempts: Int,
+        correctAttemptsNeededForTarget: Int,
+        averageLostExpectedPoints: Int
+    ) {
+        self.category = category
+        self.remainingAttempts = remainingAttempts
+        self.correctAttemptsNeededForTarget = correctAttemptsNeededForTarget
+        self.averageLostExpectedPoints = averageLostExpectedPoints
+    }
+
+    public static func classify(
+        progressCategory: WhatToPlayTrainingSessionProgressCategory,
+        remainingAttempts: Int,
+        correctAttemptsNeededForTarget: Int,
+        accuracyTargetMet: Bool,
+        impactTargetMet: Bool,
+        costlyDecisionTargetMet: Bool,
+        averageLostExpectedPoints: Int,
+        lostValueThreshold: Int = 4
+    ) -> WhatToPlayTrainingSessionNextStepMetrics {
+        let remaining = max(0, remainingAttempts)
+        let neededCorrect = max(0, correctAttemptsNeededForTarget)
+        let lostValue = max(0, averageLostExpectedPoints)
+        let threshold = max(0, lostValueThreshold)
+
+        let category: WhatToPlayTrainingSessionNextStepCategory
+        switch progressCategory {
+        case .notStarted:
+            category = .start
+        case .inProgress:
+            if neededCorrect > remaining {
+                category = .accuracyUnreachable
+            } else if lostValue >= threshold {
+                category = .reduceLostValue
+            } else {
+                category = .continueBatch
+            }
+        case .achieved:
+            category = .nextChallenge
+        case .needsRepeat:
+            if !costlyDecisionTargetMet {
+                category = .reduceCostlyDecisions
+            } else if lostValue >= threshold {
+                category = .reviewLostValue
+            } else if accuracyTargetMet && !impactTargetMet {
+                category = .reviewDecisionQuality
+            } else if !accuracyTargetMet && impactTargetMet {
+                category = .stabilizeAccuracy
+            } else {
+                category = .repeatPlan
+            }
+        }
+
+        return WhatToPlayTrainingSessionNextStepMetrics(
+            category: category,
+            remainingAttempts: remaining,
+            correctAttemptsNeededForTarget: neededCorrect,
+            averageLostExpectedPoints: lostValue
+        )
+    }
+}
+
 /// إجراء مراجعة جلسة تدريب «وش تلعب؟» دون نصوص واجهة.
 public enum WhatToPlayTrainingSessionReviewActionCategory: String, Sendable, Codable, Equatable, CaseIterable {
     case start

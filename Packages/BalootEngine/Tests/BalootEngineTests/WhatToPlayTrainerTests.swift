@@ -431,6 +431,72 @@ struct WhatToPlayTrainerTests {
         #expect(needsRepeat.costlyDecisionTargetMet == false)
     }
 
+    @Test("الخطوة التالية في جلسة وش تلعب تأتي من المحرك")
+    func trainingSessionNextStepMetricsClassifyProgressGuidance() {
+        #expect(
+            nextStep(progress: .notStarted).category == .start
+        )
+        #expect(
+            nextStep(
+                progress: .inProgress,
+                remainingAttempts: 1,
+                correctNeeded: 2
+            ).category == .accuracyUnreachable
+        )
+        #expect(
+            nextStep(
+                progress: .inProgress,
+                remainingAttempts: 2,
+                correctNeeded: 1,
+                averageLostExpectedPoints: 4
+            ).category == .reduceLostValue
+        )
+        #expect(
+            nextStep(
+                progress: .inProgress,
+                remainingAttempts: 2,
+                correctNeeded: 1,
+                averageLostExpectedPoints: 3
+            ).category == .continueBatch
+        )
+        #expect(
+            nextStep(progress: .achieved).category == .nextChallenge
+        )
+        #expect(
+            nextStep(
+                progress: .needsRepeat,
+                accuracyMet: true,
+                impactMet: true,
+                costlyMet: false
+            ).category == .reduceCostlyDecisions
+        )
+        #expect(
+            nextStep(
+                progress: .needsRepeat,
+                accuracyMet: true,
+                impactMet: true,
+                averageLostExpectedPoints: 4
+            ).category == .reviewLostValue
+        )
+        #expect(
+            nextStep(
+                progress: .needsRepeat,
+                accuracyMet: true,
+                impactMet: false
+            ).category == .reviewDecisionQuality
+        )
+        #expect(
+            nextStep(
+                progress: .needsRepeat,
+                accuracyMet: false,
+                impactMet: true
+            ).category == .stabilizeAccuracy
+        )
+        #expect(
+            nextStep(progress: .needsRepeat).category == .repeatPlan
+        )
+    }
+
     @Test("إجراء مراجعة جلسة وش تلعب يأتي من المحرك")
     func trainingSessionReviewMetricsClassifyAction() {
         #expect(
@@ -2348,6 +2414,26 @@ private func trainingPriorityRank(
         accuracyPercent: accuracyPercent,
         averageExpectedImpact: averageExpectedImpact,
         stableOrder: stableOrder
+    )
+}
+
+private func nextStep(
+    progress: WhatToPlayTrainingSessionProgressCategory,
+    remainingAttempts: Int = 0,
+    correctNeeded: Int = 0,
+    accuracyMet: Bool = false,
+    impactMet: Bool = false,
+    costlyMet: Bool = true,
+    averageLostExpectedPoints: Int = 0
+) -> WhatToPlayTrainingSessionNextStepMetrics {
+    WhatToPlayTrainingSessionNextStepMetrics.classify(
+        progressCategory: progress,
+        remainingAttempts: remainingAttempts,
+        correctAttemptsNeededForTarget: correctNeeded,
+        accuracyTargetMet: accuracyMet,
+        impactTargetMet: impactMet,
+        costlyDecisionTargetMet: costlyMet,
+        averageLostExpectedPoints: averageLostExpectedPoints
     )
 }
 

@@ -2666,69 +2666,72 @@ enum WhatToPlayStatsAnalyzer {
         costlyDecisionTargetMet: Bool,
         averageLostExpectedPoints: Int
     ) -> (title: String, detail: String, iconName: String) {
-        switch state {
-        case .notStarted:
+        let metrics = WhatToPlayTrainingSessionNextStepMetrics.classify(
+            progressCategory: trainingSessionProgressCategory(state),
+            remainingAttempts: remainingAttempts,
+            correctAttemptsNeededForTarget: correctAttemptsNeededForTarget,
+            accuracyTargetMet: accuracyTargetMet,
+            impactTargetMet: impactTargetMet,
+            costlyDecisionTargetMet: costlyDecisionTargetMet,
+            averageLostExpectedPoints: averageLostExpectedPoints
+        )
+
+        switch metrics.category {
+        case .start:
             return (
                 "الخطوة التالية".localized,
                 "ابدأ أول موقف واحسب قرارك قبل كشف تحليل الخبير.".localized,
                 "play.circle.fill"
             )
-        case .inProgress:
-            let neededCorrect = correctAttemptsNeededForTarget
-            if neededCorrect > remainingAttempts {
-                return (
-                    "هدف الدقة تعثر".localized,
-                    "\("باقي".localized) \(remainingAttempts) \("مواقف؛ حتى لو أجبتها كلها صح ستحتاج إعادة الجلسة لتحقق هدف الدقة.".localized)",
-                    "exclamationmark.triangle.fill"
-                )
-            }
-            if averageLostExpectedPoints >= 4 {
-                return (
-                    "قلل النقاط الضائعة".localized,
-                    "\("متوسط الضياع".localized): \(averageLostExpectedPoints). \("قبل الموقف التالي، احذف الخيارات الضعيفة ثم قارن اختيارك بأفضل ورقة وثاني أفضل ورقة.".localized)",
-                    "chart.bar.doc.horizontal.fill"
-                )
-            }
+        case .accuracyUnreachable:
+            return (
+                "هدف الدقة تعثر".localized,
+                "\("باقي".localized) \(metrics.remainingAttempts) \("مواقف؛ حتى لو أجبتها كلها صح ستحتاج إعادة الجلسة لتحقق هدف الدقة.".localized)",
+                "exclamationmark.triangle.fill"
+            )
+        case .reduceLostValue:
+            return (
+                "قلل النقاط الضائعة".localized,
+                "\("متوسط الضياع".localized): \(metrics.averageLostExpectedPoints). \("قبل الموقف التالي، احذف الخيارات الضعيفة ثم قارن اختيارك بأفضل ورقة وثاني أفضل ورقة.".localized)",
+                "chart.bar.doc.horizontal.fill"
+            )
+        case .continueBatch:
             return (
                 "أكمل الدفعة".localized,
-                "\("باقي".localized) \(remainingAttempts) \("مواقف، وتحتاج".localized) \(neededCorrect) \("إجابات صحيحة إضافية للوصول لهدف الدقة.".localized)",
+                "\("باقي".localized) \(metrics.remainingAttempts) \("مواقف، وتحتاج".localized) \(metrics.correctAttemptsNeededForTarget) \("إجابات صحيحة إضافية للوصول لهدف الدقة.".localized)",
                 "timer.circle.fill"
             )
-        case .achieved:
+        case .nextChallenge:
             return (
                 "انتقل للتحدي التالي".localized,
                 "حققت الدقة والأثر المطلوبين؛ ارفع الصعوبة أو ركز على نوع موقف أضعف.".localized,
                 "arrow.up.circle.fill"
             )
-        case .needsRepeat:
-            if !costlyDecisionTargetMet {
-                return (
-                    "قلل القرارات المكلفة".localized,
-                    "الدقة والأثر قد يبدوان مقبولين، لكن عدد القرارات المكلفة تجاوز هدف الجلسة؛ أعدها وراجع Replay أفضل قرار بعد كل موقف.".localized,
-                    "exclamationmark.triangle.fill"
-                )
-            }
-            if averageLostExpectedPoints >= 4 {
-                return (
-                    "راجع القيمة الضائعة".localized,
-                    "\("متوسط الضياع".localized): \(averageLostExpectedPoints). \("أعد الجلسة وركّز على تقليل الفارق عن اختيار الخبير قبل رفع الصعوبة.".localized)",
-                    "drop.fill"
-                )
-            }
-            if accuracyTargetMet && !impactTargetMet {
-                return (
-                    "راجع جودة القرار".localized,
-                    "الدقة كافية لكن الأثر ضعيف؛ قارن اختيارك بثاني أفضل ورقة قبل بدء جلسة جديدة.".localized,
-                    "chart.line.downtrend.xyaxis"
-                )
-            }
-            if !accuracyTargetMet && impactTargetMet {
-                return (
-                    "ثبّت الأساس".localized,
-                    "أثرك مقبول لكن الدقة لم تصل؛ كرر نفس الخطة وراجع سبب كل رفض قانوني أو تكتيكي.".localized,
-                    "target"
-                )
-            }
+        case .reduceCostlyDecisions:
+            return (
+                "قلل القرارات المكلفة".localized,
+                "الدقة والأثر قد يبدوان مقبولين، لكن عدد القرارات المكلفة تجاوز هدف الجلسة؛ أعدها وراجع Replay أفضل قرار بعد كل موقف.".localized,
+                "exclamationmark.triangle.fill"
+            )
+        case .reviewLostValue:
+            return (
+                "راجع القيمة الضائعة".localized,
+                "\("متوسط الضياع".localized): \(metrics.averageLostExpectedPoints). \("أعد الجلسة وركّز على تقليل الفارق عن اختيار الخبير قبل رفع الصعوبة.".localized)",
+                "drop.fill"
+            )
+        case .reviewDecisionQuality:
+            return (
+                "راجع جودة القرار".localized,
+                "الدقة كافية لكن الأثر ضعيف؛ قارن اختيارك بثاني أفضل ورقة قبل بدء جلسة جديدة.".localized,
+                "chart.line.downtrend.xyaxis"
+            )
+        case .stabilizeAccuracy:
+            return (
+                "ثبّت الأساس".localized,
+                "أثرك مقبول لكن الدقة لم تصل؛ كرر نفس الخطة وراجع سبب كل رفض قانوني أو تكتيكي.".localized,
+                "target"
+            )
+        case .repeatPlan:
             return (
                 "أعد نفس الخطة".localized,
                 "الدقة والأثر لم يصلا للهدف؛ ابدأ من نفس المستوى ولا ترفع الصعوبة بعد.".localized,
