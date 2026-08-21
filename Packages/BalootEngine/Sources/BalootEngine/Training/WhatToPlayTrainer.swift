@@ -2871,6 +2871,16 @@ public struct WhatToPlayNextActionRecommendation: Sendable, Equatable {
         self.lostExpectedPoints = lostExpectedPoints
         self.lostProjectedTeamPoints = lostProjectedTeamPoints
     }
+
+    public var recommendedCard: PlayingCard {
+        lostProjectedTeamPoints > lostExpectedPoints
+            ? bestProjectedOption.card
+            : bestOption.card
+    }
+
+    public var expectedImprovement: Int {
+        max(lostExpectedPoints, lostProjectedTeamPoints)
+    }
 }
 
 /// نوع توصية إعادة موقف «وش تلعب؟».

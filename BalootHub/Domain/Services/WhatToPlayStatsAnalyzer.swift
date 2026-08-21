@@ -2948,15 +2948,13 @@ enum WhatToPlayStatsAnalyzer {
     }
 
     static func nextDecisionAction(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayNextDecisionAction? {
-        guard let insight = decisionInsight(for: selected, in: scenario) else { return nil }
-        let bestSimulation = WhatToPlayOptionComparison.bestSimulationOption(scenario.options)
-        let recommendedCard = insight.lostProjectedTeamPoints > insight.lostExpectedPoints
-            ? bestSimulation?.card
-            : scenario.bestOption?.card
+        guard let recommendation = WhatToPlayTrainer.nextActionRecommendation(in: scenario, selectedCard: selected.card) else {
+            return nil
+        }
         return nextDecisionAction(
-            insight: insight,
+            recommendation: recommendation,
             focusKind: scenario.context.focusKind,
-            bestCard: recommendedCard
+            bestCard: recommendation.recommendedCard
         )
     }
 
@@ -3174,6 +3172,63 @@ enum WhatToPlayStatsAnalyzer {
                 iconName: "drop.fill",
                 recommendedCard: bestCard,
                 expectedImprovement: decisiveLoss(for: insight)
+            )
+        }
+    }
+
+    private static func nextDecisionAction(
+        recommendation: WhatToPlayNextActionRecommendation,
+        focusKind: WhatToPlayScenarioFocusKind,
+        bestCard: PlayingCard?
+    ) -> WhatToPlayNextDecisionAction {
+        switch recommendation.kind {
+        case .reviewExpertSimulation:
+            return WhatToPlayNextDecisionAction(
+                title: "راجع المحاكاة".localized,
+                detail: "\("اختيارك صحيح في الأكلة الحالية، لكن نتيجة الجولة الكاملة تشير إلى مسار أقوى.".localized) \("نقاط محاكاة ضائعة".localized): \(recommendation.lostProjectedTeamPoints).",
+                iconName: "chart.line.uptrend.xyaxis",
+                recommendedCard: bestCard,
+                expectedImprovement: recommendation.expectedImprovement
+            )
+        case .reinforceRead:
+            return WhatToPlayNextDecisionAction(
+                title: "ثبّت القراءة".localized,
+                detail: focusSuccessAction(for: focusKind),
+                iconName: "checkmark.seal.fill",
+                recommendedCard: bestCard,
+                expectedImprovement: 0
+            )
+        case .reviewSimulation:
+            return WhatToPlayNextDecisionAction(
+                title: "راجع أثر الجولة".localized,
+                detail: "\("قرارك بدا قريبًا في الأكلة، لكنه خسر بعد استكمال الجولة".localized): \(recommendation.lostProjectedTeamPoints). \("شاهد Replay وقارن مسار أفضل ورقة.".localized)",
+                iconName: "drop.fill",
+                recommendedCard: bestCard,
+                expectedImprovement: recommendation.expectedImprovement
+            )
+        case .reviewSmallGap:
+            return WhatToPlayNextDecisionAction(
+                title: "درّب الفارق الصغير".localized,
+                detail: "أعد قراءة نفس النوع من المواقف وركّز على سبب تفوق ورقة واحدة بنقطة أو نقطتين متوقعتين.".localized,
+                iconName: "equal.circle.fill",
+                recommendedCard: bestCard,
+                expectedImprovement: recommendation.expectedImprovement
+            )
+        case .compareBeforePlay:
+            return WhatToPlayNextDecisionAction(
+                title: "راجع القيمة الضائعة".localized,
+                detail: "\("الفارق عن اختيار الخبير".localized): \(recommendation.lostExpectedPoints). \("راجع سبب ارتفاع قيمة أفضل ورقة.".localized)",
+                iconName: "equal.circle.fill",
+                recommendedCard: bestCard,
+                expectedImprovement: recommendation.expectedImprovement
+            )
+        case .replayScenario:
+            return WhatToPlayNextDecisionAction(
+                title: "ابحث عن الورقة الرابحة".localized,
+                detail: "قبل اللعب، احسب هل عندك ورقة تنقل الأكلة لفريقك بدل الاكتفاء برمي ورقة قليلة الضرر.".localized,
+                iconName: "exclamationmark.triangle.fill",
+                recommendedCard: bestCard,
+                expectedImprovement: recommendation.expectedImprovement
             )
         }
     }

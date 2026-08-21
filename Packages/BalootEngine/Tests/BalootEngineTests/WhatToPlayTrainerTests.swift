@@ -1577,6 +1577,11 @@ struct WhatToPlayTrainerTests {
         #expect(simulationRecommendation.kind == .reviewSimulation)
         #expect(simulationRecommendation.bestProjectedOption.card == bestProjected.card)
         #expect(simulationRecommendation.lostProjectedTeamPoints > simulationRecommendation.lostExpectedPoints)
+        #expect(simulationRecommendation.recommendedCard == bestProjected.card)
+        #expect(
+            simulationRecommendation.expectedImprovement
+                == max(simulationRecommendation.lostExpectedPoints, simulationRecommendation.lostProjectedTeamPoints)
+        )
     }
 
     @Test("أرقام Replay لقرار وش تلعب تأتي من مراجعة خيارات المحرك")
