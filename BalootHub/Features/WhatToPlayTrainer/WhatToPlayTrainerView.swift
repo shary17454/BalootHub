@@ -3333,6 +3333,9 @@ struct WhatToPlayTrainerView: View {
                     if row.isBestSimulationResult && !row.isExpertChoice {
                         StatusBadge("أفضل محاكاة".localized, systemImage: "chart.line.uptrend.xyaxis", tint: AppColor.accent)
                     }
+                    if row.isSecondBestSimulationResult && !row.isBestSimulationResult {
+                        StatusBadge("ثاني محاكاة".localized, systemImage: "chart.bar.fill", tint: AppColor.warning)
+                    }
                 }
                 Text("\("الترتيب".localized) \(row.rank)")
                     .font(AppTypography.caption)
