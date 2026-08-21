@@ -1492,50 +1492,53 @@ enum WhatToPlayStatsAnalyzer {
         recentWindow: Int = 5,
         minimumWindow: Int = 3
     ) -> WhatToPlayPerformanceTrend? {
-        guard recentWindow >= minimumWindow, attempts.count >= minimumWindow * 2 else { return nil }
+        let metrics = WhatToPlayPerformanceTrendMetrics.classify(
+            chronologicalSamples: attempts
+                .sorted { $0.createdAt < $1.createdAt }
+                .map { attempt in
+                    WhatToPlayStatsSample(
+                        isCorrect: attempt.isCorrect,
+                        expectedImpact: attempt.expectedImpact,
+                        bestExpectedImpact: attempt.bestExpectedImpact,
+                        secondBestExpectedImpact: attempt.secondBestExpectedImpact,
+                        projectedTeamPoints: attempt.projectedTeamPoints,
+                        bestProjectedTeamPoints: attempt.bestProjectedTeamPoints
+                    )
+                },
+            recentWindow: recentWindow,
+            minimumWindow: minimumWindow
+        )
+        guard let metrics else { return nil }
 
-        let chronological = attempts.sorted { $0.createdAt < $1.createdAt }
-        let recent = Array(chronological.suffix(recentWindow))
-        let previousPool = chronological.dropLast(recent.count)
-        let previous = Array(previousPool.suffix(recent.count))
-
-        guard recent.count >= minimumWindow, previous.count >= minimumWindow else { return nil }
-
-        let recentSummary = summarize(attempts: recent)
-        let previousSummary = summarize(attempts: previous)
-        let accuracyDelta = recentSummary.accuracyPercent - previousSummary.accuracyPercent
-        let impactDelta = recentSummary.averageExpectedImpact - previousSummary.averageExpectedImpact
-
-        if accuracyDelta >= 15 || (accuracyDelta >= 0 && impactDelta >= 5) {
+        switch metrics.direction {
+        case .improving:
             return WhatToPlayPerformanceTrend(
                 direction: .improving,
                 title: "اتجاهك يتحسن".localized,
                 detail: "آخر محاولاتك أفضل من السابق؛ استمر على نفس الصعوبة أو ارفعها إذا ثبتت الدقة.".localized,
                 iconName: "arrow.up.right.circle.fill",
-                recentAccuracyPercent: recentSummary.accuracyPercent,
-                previousAccuracyPercent: previousSummary.accuracyPercent
+                recentAccuracyPercent: metrics.recentAccuracyPercent,
+                previousAccuracyPercent: metrics.previousAccuracyPercent
             )
-        }
-
-        if accuracyDelta <= -15 || (accuracyDelta <= 0 && impactDelta <= -5) {
+        case .declining:
             return WhatToPlayPerformanceTrend(
                 direction: .declining,
                 title: "راجع قراراتك الأخيرة".localized,
                 detail: "أداؤك الأخير انخفض؛ خذ وقتك في قراءة اللون المطلوب والحكم قبل اختيار الورقة.".localized,
                 iconName: "arrow.down.right.circle.fill",
-                recentAccuracyPercent: recentSummary.accuracyPercent,
-                previousAccuracyPercent: previousSummary.accuracyPercent
+                recentAccuracyPercent: metrics.recentAccuracyPercent,
+                previousAccuracyPercent: metrics.previousAccuracyPercent
+            )
+        case .stable:
+            return WhatToPlayPerformanceTrend(
+                direction: .stable,
+                title: "أداؤك مستقر".localized,
+                detail: "نتائجك متقاربة بين المحاولات السابقة والأخيرة؛ ركز على تقليل خسارة النقاط في الخيارات الثانية.".localized,
+                iconName: "equal.circle.fill",
+                recentAccuracyPercent: metrics.recentAccuracyPercent,
+                previousAccuracyPercent: metrics.previousAccuracyPercent
             )
         }
-
-        return WhatToPlayPerformanceTrend(
-            direction: .stable,
-            title: "أداؤك مستقر".localized,
-            detail: "نتائجك متقاربة بين المحاولات السابقة والأخيرة؛ ركز على تقليل خسارة النقاط في الخيارات الثانية.".localized,
-            iconName: "equal.circle.fill",
-            recentAccuracyPercent: recentSummary.accuracyPercent,
-            previousAccuracyPercent: previousSummary.accuracyPercent
-        )
     }
 
     static func practiceRecommendation(for attempts: [WhatToPlayAttempt]) -> WhatToPlayPracticeRecommendation {

@@ -1019,6 +1019,44 @@ struct WhatToPlayTrainerTests {
         #expect(WhatToPlayDifficultyImpactRankMetrics.ranksBefore(harderTie, easierTie))
     }
 
+    @Test("اتجاه أداء وش تلعب يأتي من المحرك")
+    func performanceTrendMetricsClassifyRecentWindow() {
+        #expect(
+            WhatToPlayPerformanceTrendMetrics.classify(
+                chronologicalSamples: performanceTrendSamples(previousCorrect: 0, recentCorrect: 3),
+                recentWindow: 3,
+                minimumWindow: 4
+            ) == nil
+        )
+
+        let improving = WhatToPlayPerformanceTrendMetrics.classify(
+            chronologicalSamples: performanceTrendSamples(previousCorrect: 0, recentCorrect: 3),
+            recentWindow: 3,
+            minimumWindow: 3
+        )
+        #expect(improving?.direction == .improving)
+        #expect(improving?.previousAccuracyPercent == 0)
+        #expect(improving?.recentAccuracyPercent == 100)
+        #expect(improving?.accuracyDelta == 100)
+
+        let declining = WhatToPlayPerformanceTrendMetrics.classify(
+            chronologicalSamples: performanceTrendSamples(previousCorrect: 3, recentCorrect: 0),
+            recentWindow: 3,
+            minimumWindow: 3
+        )
+        #expect(declining?.direction == .declining)
+        #expect(declining?.accuracyDelta == -100)
+
+        let stable = WhatToPlayPerformanceTrendMetrics.classify(
+            chronologicalSamples: performanceTrendSamples(previousCorrect: 2, recentCorrect: 2),
+            recentWindow: 3,
+            minimumWindow: 3
+        )
+        #expect(stable?.direction == .stable)
+        #expect(stable?.previousAccuracyPercent == 67)
+        #expect(stable?.recentAccuracyPercent == 67)
+    }
+
     @Test("ملخص جودة قرارات وش تلعب يأتي من المحرك")
     func decisionQualitySummaryMetricsClassifyQualities() {
         #expect(WhatToPlayDecisionQualitySummaryMetrics.summarize(qualities: []) == .empty)
@@ -2311,6 +2349,25 @@ private func trainingPriorityRank(
         averageExpectedImpact: averageExpectedImpact,
         stableOrder: stableOrder
     )
+}
+
+private func performanceTrendSamples(
+    previousCorrect: Int,
+    recentCorrect: Int
+) -> [WhatToPlayStatsSample] {
+    let previous = (0..<3).map { index in
+        WhatToPlayStatsSample(
+            isCorrect: index < previousCorrect,
+            expectedImpact: index < previousCorrect ? 3 : -3
+        )
+    }
+    let recent = (0..<3).map { index in
+        WhatToPlayStatsSample(
+            isCorrect: index < recentCorrect,
+            expectedImpact: index < recentCorrect ? 3 : -3
+        )
+    }
+    return previous + recent
 }
 
 private func coachingSummary(

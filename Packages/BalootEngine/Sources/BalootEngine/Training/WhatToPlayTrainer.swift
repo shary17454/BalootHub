@@ -1264,6 +1264,73 @@ public struct WhatToPlayStatsSummaryMetrics: Sendable, Equatable {
     }
 }
 
+/// نتيجة تتبع اتجاه أداء «وش تلعب؟» بين نافذة حديثة وسابقة دون نصوص واجهة.
+public struct WhatToPlayPerformanceTrendMetrics: Sendable, Equatable {
+    public let direction: WhatToPlayTrendDirectionCategory
+    public let recentAccuracyPercent: Int
+    public let previousAccuracyPercent: Int
+    public let accuracyDelta: Int
+    public let impactDelta: Int
+    public let inspectedRecentAttempts: Int
+    public let inspectedPreviousAttempts: Int
+
+    public init(
+        direction: WhatToPlayTrendDirectionCategory,
+        recentAccuracyPercent: Int,
+        previousAccuracyPercent: Int,
+        accuracyDelta: Int,
+        impactDelta: Int,
+        inspectedRecentAttempts: Int,
+        inspectedPreviousAttempts: Int
+    ) {
+        self.direction = direction
+        self.recentAccuracyPercent = recentAccuracyPercent
+        self.previousAccuracyPercent = previousAccuracyPercent
+        self.accuracyDelta = accuracyDelta
+        self.impactDelta = impactDelta
+        self.inspectedRecentAttempts = inspectedRecentAttempts
+        self.inspectedPreviousAttempts = inspectedPreviousAttempts
+    }
+
+    public static func classify(
+        chronologicalSamples samples: [WhatToPlayStatsSample],
+        recentWindow: Int = 5,
+        minimumWindow: Int = 3
+    ) -> WhatToPlayPerformanceTrendMetrics? {
+        guard recentWindow >= minimumWindow, samples.count >= minimumWindow * 2 else { return nil }
+
+        let recent = Array(samples.suffix(recentWindow))
+        let previousPool = samples.dropLast(recent.count)
+        let previous = Array(previousPool.suffix(recent.count))
+
+        guard recent.count >= minimumWindow, previous.count >= minimumWindow else { return nil }
+
+        let recentSummary = WhatToPlayStatsSummaryMetrics.summarize(chronologicalSamples: recent)
+        let previousSummary = WhatToPlayStatsSummaryMetrics.summarize(chronologicalSamples: previous)
+        let accuracyDelta = recentSummary.accuracyPercent - previousSummary.accuracyPercent
+        let impactDelta = recentSummary.averageExpectedImpact - previousSummary.averageExpectedImpact
+
+        let direction: WhatToPlayTrendDirectionCategory
+        if accuracyDelta >= 15 || (accuracyDelta >= 0 && impactDelta >= 5) {
+            direction = .improving
+        } else if accuracyDelta <= -15 || (accuracyDelta <= 0 && impactDelta <= -5) {
+            direction = .declining
+        } else {
+            direction = .stable
+        }
+
+        return WhatToPlayPerformanceTrendMetrics(
+            direction: direction,
+            recentAccuracyPercent: recentSummary.accuracyPercent,
+            previousAccuracyPercent: previousSummary.accuracyPercent,
+            accuracyDelta: accuracyDelta,
+            impactDelta: impactDelta,
+            inspectedRecentAttempts: recent.count,
+            inspectedPreviousAttempts: previous.count
+        )
+    }
+}
+
 /// نتيجة تتبع تطور التقاط قيمة قرارات «وش تلعب؟» دون نصوص واجهة.
 public struct WhatToPlayValueProgressMetrics: Sendable, Equatable {
     public let direction: WhatToPlayTrendDirectionCategory
