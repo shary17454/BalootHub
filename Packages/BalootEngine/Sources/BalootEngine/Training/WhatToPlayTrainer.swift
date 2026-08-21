@@ -568,6 +568,116 @@ public struct WhatToPlayDecisionPatternMetrics: Sendable, Equatable {
     }
 }
 
+/// تصنيف درجة جلسة تدريب «وش تلعب؟» دون نصوص واجهة.
+public enum WhatToPlayTrainingSessionGradeCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case excellent
+    case good
+    case stabilizing
+    case repeatNeeded
+}
+
+/// السبب الخام المؤثر على درجة جلسة تدريب «وش تلعب؟».
+public enum WhatToPlayTrainingSessionGradeReasonCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case projectedLossPenalty
+    case impactWeakness
+    case accuracyWeakness
+    case balanced
+}
+
+/// قياس درجة جلسة تدريب «وش تلعب؟» من الدقة وأثر القرار وفاقد المحاكاة.
+public struct WhatToPlayTrainingSessionGradeMetrics: Sendable, Equatable {
+    public let category: WhatToPlayTrainingSessionGradeCategory
+    public let percent: Int
+    public let accuracyComponent: Int
+    public let impactComponent: Int
+    public let reasonCategory: WhatToPlayTrainingSessionGradeReasonCategory
+
+    public init(
+        category: WhatToPlayTrainingSessionGradeCategory,
+        percent: Int,
+        accuracyComponent: Int,
+        impactComponent: Int,
+        reasonCategory: WhatToPlayTrainingSessionGradeReasonCategory
+    ) {
+        self.category = category
+        self.percent = percent
+        self.accuracyComponent = accuracyComponent
+        self.impactComponent = impactComponent
+        self.reasonCategory = reasonCategory
+    }
+
+    public static func classify(
+        completedAttempts: Int,
+        accuracyPercent: Int,
+        averageExpectedImpact: Int,
+        targetAverageExpectedImpact: Int,
+        averageLostProjectedTeamPoints: Int
+    ) -> WhatToPlayTrainingSessionGradeMetrics {
+        guard completedAttempts > 0 else {
+            return WhatToPlayTrainingSessionGradeMetrics(
+                category: .repeatNeeded,
+                percent: 0,
+                accuracyComponent: 0,
+                impactComponent: 0,
+                reasonCategory: .balanced
+            )
+        }
+
+        let boundedAccuracy = max(0, min(100, accuracyPercent))
+        let baseImpact = min(100, max(0, 50 + ((averageExpectedImpact - targetAverageExpectedImpact) * 10)))
+        let projectedLossPenalty = min(40, max(0, averageLostProjectedTeamPoints * 4))
+        let normalizedImpact = max(0, baseImpact - projectedLossPenalty)
+        let percent = min(100, max(0, Int((Double(boundedAccuracy + normalizedImpact) / 2.0).rounded())))
+
+        let category: WhatToPlayTrainingSessionGradeCategory
+        switch percent {
+        case 85...100:
+            category = .excellent
+        case 70..<85:
+            category = .good
+        case 50..<70:
+            category = .stabilizing
+        default:
+            category = .repeatNeeded
+        }
+
+        let reasonCategory = reason(
+            accuracyComponent: boundedAccuracy,
+            impactComponent: normalizedImpact,
+            averageLostProjectedTeamPoints: averageLostProjectedTeamPoints
+        )
+
+        return WhatToPlayTrainingSessionGradeMetrics(
+            category: category,
+            percent: percent,
+            accuracyComponent: boundedAccuracy,
+            impactComponent: normalizedImpact,
+            reasonCategory: reasonCategory
+        )
+    }
+
+    private static func reason(
+        accuracyComponent: Int,
+        impactComponent: Int,
+        averageLostProjectedTeamPoints: Int
+    ) -> WhatToPlayTrainingSessionGradeReasonCategory {
+        if averageLostProjectedTeamPoints >= 6 {
+            return .projectedLossPenalty
+        }
+
+        let gap = accuracyComponent - impactComponent
+        if gap >= 15 {
+            return .impactWeakness
+        }
+
+        if gap <= -15 {
+            return .accuracyWeakness
+        }
+
+        return .balanced
+    }
+}
+
 /// درجة وضوح أفضل ورقة في موقف «وش تلعب؟» مقارنة بثاني أفضل خيار.
 public enum WhatToPlayBestMoveConfidence: String, Sendable, Codable, Equatable, CaseIterable {
     case tied

@@ -2462,11 +2462,19 @@ enum WhatToPlayStatsAnalyzer {
         targetAverageExpectedImpact: Int,
         averageLostProjectedTeamPoints: Int
     ) -> (percent: Int, accuracyComponent: Int, impactComponent: Int, title: String, detail: String, iconName: String, reasonTitle: String, reasonDetail: String) {
+        let metrics = WhatToPlayTrainingSessionGradeMetrics.classify(
+            completedAttempts: completedAttempts,
+            accuracyPercent: accuracyPercent,
+            averageExpectedImpact: averageExpectedImpact,
+            targetAverageExpectedImpact: targetAverageExpectedImpact,
+            averageLostProjectedTeamPoints: averageLostProjectedTeamPoints
+        )
+
         guard completedAttempts > 0 else {
             return (
-                0,
-                0,
-                0,
+                metrics.percent,
+                metrics.accuracyComponent,
+                metrics.impactComponent,
                 "لا يوجد تقييم بعد".localized,
                 "ابدأ الجلسة حتى يظهر تقييم يجمع الدقة وأثر القرار.".localized,
                 "gauge.low",
@@ -2475,98 +2483,91 @@ enum WhatToPlayStatsAnalyzer {
             )
         }
 
-        let baseImpact = min(100, max(0, 50 + ((averageExpectedImpact - targetAverageExpectedImpact) * 10)))
-        let projectedLossPenalty = min(40, max(0, averageLostProjectedTeamPoints * 4))
-        let normalizedImpact = max(0, baseImpact - projectedLossPenalty)
-        let percent = min(100, max(0, Int((Double(accuracyPercent + normalizedImpact) / 2.0).rounded())))
         let reason = trainingSessionGradeReason(
-            accuracyComponent: accuracyPercent,
-            impactComponent: normalizedImpact,
+            category: metrics.reasonCategory,
             averageLostProjectedTeamPoints: averageLostProjectedTeamPoints
         )
 
-        if percent >= 85 {
+        switch metrics.category {
+        case .excellent:
             return (
-                percent,
-                accuracyPercent,
-                normalizedImpact,
+                metrics.percent,
+                metrics.accuracyComponent,
+                metrics.impactComponent,
                 "جلسة ممتازة".localized,
                 "قراراتك قريبة من الخبير وتحقق أثرًا قويًا؛ انتقل لتحدٍ أصعب.".localized,
                 "gauge.high",
                 reason.title,
                 reason.detail
             )
-        }
 
-        if percent >= 70 {
+        case .good:
             return (
-                percent,
-                accuracyPercent,
-                normalizedImpact,
+                metrics.percent,
+                metrics.accuracyComponent,
+                metrics.impactComponent,
                 "جلسة جيدة".localized,
                 "أداؤك ثابت، لكن راجع الفروق الصغيرة بين أفضل وثاني أفضل ورقة.".localized,
                 "gauge.medium",
                 reason.title,
                 reason.detail
             )
-        }
 
-        if percent >= 50 {
+        case .stabilizing:
             return (
-                percent,
-                accuracyPercent,
-                normalizedImpact,
+                metrics.percent,
+                metrics.accuracyComponent,
+                metrics.impactComponent,
                 "جلسة تحتاج تثبيت".localized,
                 "لديك أساس قابل للبناء، لكن القرار يحتاج قراءة أهدأ قبل اللعب.".localized,
                 "gauge.medium",
                 reason.title,
                 reason.detail
             )
-        }
 
-        return (
-            percent,
-            accuracyPercent,
-            normalizedImpact,
-            "جلسة تحتاج إعادة".localized,
-            "الدقة أو أثر القرار منخفض؛ أعد نفس الخطة ولا ترفع الصعوبة بعد.".localized,
-            "gauge.low",
-            reason.title,
-            reason.detail
-        )
+        case .repeatNeeded:
+            return (
+                metrics.percent,
+                metrics.accuracyComponent,
+                metrics.impactComponent,
+                "جلسة تحتاج إعادة".localized,
+                "الدقة أو أثر القرار منخفض؛ أعد نفس الخطة ولا ترفع الصعوبة بعد.".localized,
+                "gauge.low",
+                reason.title,
+                reason.detail
+            )
+        }
     }
 
     private static func trainingSessionGradeReason(
-        accuracyComponent: Int,
-        impactComponent: Int,
+        category: WhatToPlayTrainingSessionGradeReasonCategory,
         averageLostProjectedTeamPoints: Int
     ) -> (title: String, detail: String) {
-        if averageLostProjectedTeamPoints >= 6 {
+        switch category {
+        case .projectedLossPenalty:
             return (
                 "المحاكاة تخفض التقييم".localized,
                 "\("متوسط فاقد المحاكاة".localized): \(averageLostProjectedTeamPoints). \("راجع Replay للقرارات التي تبدو قريبة لكنها تخسر بعد اكتمال الجولة.".localized)"
             )
-        }
 
-        let gap = accuracyComponent - impactComponent
-        if gap >= 15 {
+        case .impactWeakness:
             return (
                 "الأثر يخفض التقييم".localized,
                 "دقتك أفضل من أثر قراراتك؛ ركز على اختيار الورقة الأعلى قيمة لا الورقة الصحيحة فقط.".localized
             )
-        }
 
-        if gap <= -15 {
+        case .accuracyWeakness:
             return (
                 "الدقة تخفض التقييم".localized,
                 "أثر اختياراتك جيد عندما تصيب، لكنك تحتاج تقليل الأخطاء المباشرة.".localized
             )
-        }
 
-        return (
-            "التقييم متوازن".localized,
-            "الدقة وأثر القرار قريبان؛ حسّن الاثنين معًا برفع جودة القراءة قبل اللعب.".localized
-        )
+        case .balanced:
+            return (
+                "التقييم متوازن".localized,
+                "الدقة وأثر القرار قريبان؛ حسّن الاثنين معًا برفع جودة القراءة قبل اللعب.".localized
+            )
+        }
     }
 
     private static func trainingSessionNextStep(

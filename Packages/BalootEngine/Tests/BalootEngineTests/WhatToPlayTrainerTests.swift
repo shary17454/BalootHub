@@ -257,6 +257,85 @@ struct WhatToPlayTrainerTests {
         #expect(openingLead.affectedAttempts == 2)
     }
 
+    @Test("درجة جلسة تدريب وش تلعب تأتي من المحرك")
+    func trainingSessionGradeMetricsClassifyPerformance() {
+        let empty = WhatToPlayTrainingSessionGradeMetrics.classify(
+            completedAttempts: 0,
+            accuracyPercent: 100,
+            averageExpectedImpact: 10,
+            targetAverageExpectedImpact: 0,
+            averageLostProjectedTeamPoints: 0
+        )
+        #expect(empty.category == .repeatNeeded)
+        #expect(empty.percent == 0)
+        #expect(empty.accuracyComponent == 0)
+        #expect(empty.impactComponent == 0)
+        #expect(empty.reasonCategory == .balanced)
+
+        let excellent = WhatToPlayTrainingSessionGradeMetrics.classify(
+            completedAttempts: 3,
+            accuracyPercent: 100,
+            averageExpectedImpact: 5,
+            targetAverageExpectedImpact: 0,
+            averageLostProjectedTeamPoints: 0
+        )
+        #expect(excellent.category == .excellent)
+        #expect(excellent.percent == 100)
+        #expect(excellent.accuracyComponent == 100)
+        #expect(excellent.impactComponent == 100)
+
+        let good = WhatToPlayTrainingSessionGradeMetrics.classify(
+            completedAttempts: 3,
+            accuracyPercent: 100,
+            averageExpectedImpact: 4,
+            targetAverageExpectedImpact: 0,
+            averageLostProjectedTeamPoints: 10
+        )
+        #expect(good.category == .good)
+        #expect(good.percent == 75)
+        #expect(good.impactComponent == 50)
+        #expect(good.reasonCategory == .projectedLossPenalty)
+
+        let stabilizing = WhatToPlayTrainingSessionGradeMetrics.classify(
+            completedAttempts: 3,
+            accuracyPercent: 67,
+            averageExpectedImpact: 1,
+            targetAverageExpectedImpact: 2,
+            averageLostProjectedTeamPoints: 0
+        )
+        #expect(stabilizing.category == .stabilizing)
+        #expect(stabilizing.percent == 54)
+        #expect(stabilizing.reasonCategory == .impactWeakness)
+
+        let repeatNeeded = WhatToPlayTrainingSessionGradeMetrics.classify(
+            completedAttempts: 4,
+            accuracyPercent: 50,
+            averageExpectedImpact: -1,
+            targetAverageExpectedImpact: 0,
+            averageLostProjectedTeamPoints: 0
+        )
+        #expect(repeatNeeded.category == .repeatNeeded)
+        #expect(repeatNeeded.percent == 45)
+        #expect(repeatNeeded.reasonCategory == .balanced)
+    }
+
+    @Test("سبب درجة جلسة تدريب وش تلعب يميز ضعف الدقة")
+    func trainingSessionGradeMetricsClassifyAccuracyWeakness() {
+        let metrics = WhatToPlayTrainingSessionGradeMetrics.classify(
+            completedAttempts: 4,
+            accuracyPercent: 25,
+            averageExpectedImpact: 5,
+            targetAverageExpectedImpact: 0,
+            averageLostProjectedTeamPoints: 0
+        )
+
+        #expect(metrics.category == .stabilizing)
+        #expect(metrics.percent == 63)
+        #expect(metrics.accuracyComponent == 25)
+        #expect(metrics.impactComponent == 100)
+        #expect(metrics.reasonCategory == .accuracyWeakness)
+    }
+
     @Test("مراجعة اختيار وش تلعب تحسب الفوارق وجودة القرار من المحرك")
     func choiceReviewCalculatesLossesAndQuality() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2, difficulty: .hard)
