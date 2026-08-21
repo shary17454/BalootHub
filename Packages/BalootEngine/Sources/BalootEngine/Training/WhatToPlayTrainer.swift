@@ -961,9 +961,23 @@ public enum WhatToPlayTrainingSessionPlanCategory: String, Sendable, Codable, Eq
 /// مدخلات اختيار خطة جلسة تدريب «وش تلعب؟» من أرقام وتحليلات خام.
 public struct WhatToPlayTrainingSessionPlanMetrics: Sendable, Equatable {
     public let category: WhatToPlayTrainingSessionPlanCategory
+    public let scenarioCount: Int
+    public let targetAccuracyPercent: Int
+    public let targetAverageExpectedImpact: Int
+    public let maxCostlyDecisions: Int?
 
-    public init(category: WhatToPlayTrainingSessionPlanCategory) {
+    public init(
+        category: WhatToPlayTrainingSessionPlanCategory,
+        scenarioCount: Int,
+        targetAccuracyPercent: Int,
+        targetAverageExpectedImpact: Int,
+        maxCostlyDecisions: Int? = nil
+    ) {
         self.category = category
+        self.scenarioCount = scenarioCount
+        self.targetAccuracyPercent = targetAccuracyPercent
+        self.targetAverageExpectedImpact = targetAverageExpectedImpact
+        self.maxCostlyDecisions = maxCostlyDecisions
     }
 
     public static func classify(
@@ -973,37 +987,99 @@ public struct WhatToPlayTrainingSessionPlanMetrics: Sendable, Equatable {
         decisionQualitySummary: WhatToPlayDecisionQualitySummaryMetrics
     ) -> WhatToPlayTrainingSessionPlanMetrics {
         if styleCategory == .measuring {
-            return WhatToPlayTrainingSessionPlanMetrics(category: .foundation)
+            return blueprint(for: .foundation)
         }
 
         if pulseState == .reviewNeeded {
-            return WhatToPlayTrainingSessionPlanMetrics(category: .focusedReview)
+            return blueprint(for: .focusedReview)
         }
 
         if decisionQualitySummary.trackedAttempts >= 3,
            decisionQualitySummary.costlyPercent >= 30 {
-            return WhatToPlayTrainingSessionPlanMetrics(category: .reduceCostlyDecisions)
+            return blueprint(for: .reduceCostlyDecisions)
         }
 
         if summary.projectedTeamPointAttempts >= 3,
            summary.averageLostProjectedTeamPoints >= 6 {
-            return WhatToPlayTrainingSessionPlanMetrics(category: .simulationReview)
+            return blueprint(for: .simulationReview)
         }
 
         if summary.attempts >= 3,
            summary.averageLostExpectedPoints >= 4 {
-            return WhatToPlayTrainingSessionPlanMetrics(category: .valueReview)
+            return blueprint(for: .valueReview)
         }
 
         if styleCategory == .expertAligned || summary.currentStreak >= 3 {
-            return WhatToPlayTrainingSessionPlanMetrics(category: .levelUp)
+            return blueprint(for: .levelUp)
         }
 
         if styleCategory == .cautious || summary.averageExpectedImpact < 0 {
-            return WhatToPlayTrainingSessionPlanMetrics(category: .reducePointLeak)
+            return blueprint(for: .reducePointLeak)
         }
 
-        return WhatToPlayTrainingSessionPlanMetrics(category: .stabilizeReading)
+        return blueprint(for: .stabilizeReading)
+    }
+
+    public static func blueprint(for category: WhatToPlayTrainingSessionPlanCategory) -> WhatToPlayTrainingSessionPlanMetrics {
+        switch category {
+        case .foundation:
+            return WhatToPlayTrainingSessionPlanMetrics(
+                category: .foundation,
+                scenarioCount: 3,
+                targetAccuracyPercent: 60,
+                targetAverageExpectedImpact: 0
+            )
+        case .focusedReview:
+            return WhatToPlayTrainingSessionPlanMetrics(
+                category: .focusedReview,
+                scenarioCount: 3,
+                targetAccuracyPercent: 67,
+                targetAverageExpectedImpact: 0
+            )
+        case .reduceCostlyDecisions:
+            return WhatToPlayTrainingSessionPlanMetrics(
+                category: .reduceCostlyDecisions,
+                scenarioCount: 3,
+                targetAccuracyPercent: 67,
+                targetAverageExpectedImpact: 1,
+                maxCostlyDecisions: 1
+            )
+        case .simulationReview:
+            return WhatToPlayTrainingSessionPlanMetrics(
+                category: .simulationReview,
+                scenarioCount: 4,
+                targetAccuracyPercent: 75,
+                targetAverageExpectedImpact: 1
+            )
+        case .valueReview:
+            return WhatToPlayTrainingSessionPlanMetrics(
+                category: .valueReview,
+                scenarioCount: 4,
+                targetAccuracyPercent: 75,
+                targetAverageExpectedImpact: 1
+            )
+        case .levelUp:
+            return WhatToPlayTrainingSessionPlanMetrics(
+                category: .levelUp,
+                scenarioCount: 5,
+                targetAccuracyPercent: 80,
+                targetAverageExpectedImpact: 2
+            )
+        case .reducePointLeak:
+            return WhatToPlayTrainingSessionPlanMetrics(
+                category: .reducePointLeak,
+                scenarioCount: 5,
+                targetAccuracyPercent: 70,
+                targetAverageExpectedImpact: 0
+            )
+        case .stabilizeReading:
+            return WhatToPlayTrainingSessionPlanMetrics(
+                category: .stabilizeReading,
+                scenarioCount: 4,
+                targetAccuracyPercent: 70,
+                targetAverageExpectedImpact: 1
+            )
+        }
     }
 }
 

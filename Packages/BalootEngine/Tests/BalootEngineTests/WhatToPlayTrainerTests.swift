@@ -462,6 +462,31 @@ struct WhatToPlayTrainerTests {
         )
     }
 
+    @Test("مخطط جلسة وش تلعب يثبت أهداف التدريب داخل المحرك")
+    func trainingSessionPlanMetricsExposeBlueprintTargets() {
+        let foundation = WhatToPlayTrainingSessionPlanMetrics.blueprint(for: .foundation)
+        #expect(foundation.scenarioCount == 3)
+        #expect(foundation.targetAccuracyPercent == 60)
+        #expect(foundation.targetAverageExpectedImpact == 0)
+        #expect(foundation.maxCostlyDecisions == nil)
+
+        let costly = WhatToPlayTrainingSessionPlanMetrics.blueprint(for: .reduceCostlyDecisions)
+        #expect(costly.scenarioCount == 3)
+        #expect(costly.targetAccuracyPercent == 67)
+        #expect(costly.targetAverageExpectedImpact == 1)
+        #expect(costly.maxCostlyDecisions == 1)
+
+        let levelUp = WhatToPlayTrainingSessionPlanMetrics.blueprint(for: .levelUp)
+        #expect(levelUp.scenarioCount == 5)
+        #expect(levelUp.targetAccuracyPercent == 80)
+        #expect(levelUp.targetAverageExpectedImpact == 2)
+
+        let stabilize = WhatToPlayTrainingSessionPlanMetrics.blueprint(for: .stabilizeReading)
+        #expect(stabilize.scenarioCount == 4)
+        #expect(stabilize.targetAccuracyPercent == 70)
+        #expect(stabilize.targetAverageExpectedImpact == 1)
+    }
+
     @Test("ملخص نتائج قرارات وش تلعب يأتي من المحرك")
     func outcomeSummaryMetricsClassifyOutcomes() {
         #expect(WhatToPlayOutcomeSummaryMetrics.summarize(outcomes: []) == .empty)
