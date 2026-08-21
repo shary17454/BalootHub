@@ -774,6 +774,14 @@ struct WhatToPlayTrainerTests {
         #expect(secondSimulation.source == .projectedSecondBestPoints)
         #expect(secondSimulation.points == 8)
 
+        let largerSecondSimulation = WhatToPlayExpectedImprovementMetrics.calculate(
+            lostExpectedPoints: 4,
+            lostProjectedTeamPoints: 9,
+            lostProjectedAgainstSecondBestPoints: 12
+        )
+        #expect(largerSecondSimulation.source == .projectedSecondBestPoints)
+        #expect(largerSecondSimulation.points == 12)
+
         let none = WhatToPlayExpectedImprovementMetrics.calculate(
             lostExpectedPoints: -2,
             lostProjectedTeamPoints: -1
@@ -1868,6 +1876,58 @@ struct WhatToPlayTrainerTests {
             max(0, best.expectedImpact - selected.expectedImpact),
             max(0, bestProjected.projectedTeamPoints - selected.projectedTeamPoints)
         ))
+    }
+
+    @Test("توصية الإعادة تستخدم فاقد ثاني محاكاة عند كونه الأعلى")
+    func retryRecommendationUsesSecondProjectedLossWhenItIsHighest() throws {
+        let selected = projectedOption(
+            card: PlayingCard(suit: .spades, rank: .seven),
+            rank: 4,
+            expectedImpact: 8,
+            projectedTeamPoints: 52
+        )
+        let best = projectedOption(
+            card: PlayingCard(suit: .hearts, rank: .ace),
+            rank: 1,
+            isExpertChoice: true,
+            expectedImpact: 10,
+            projectedTeamPoints: 54
+        )
+        let bestProjected = projectedOption(
+            card: PlayingCard(suit: .clubs, rank: .ace),
+            rank: 2,
+            expectedImpact: 9,
+            projectedTeamPoints: 55
+        )
+        let secondBestProjected = projectedOption(
+            card: PlayingCard(suit: .diamonds, rank: .ace),
+            rank: 3,
+            expectedImpact: 7,
+            projectedTeamPoints: 70
+        )
+        let review = WhatToPlayChoiceReview(
+            bestOption: best,
+            secondBestOption: bestProjected,
+            bestProjectedOption: bestProjected,
+            secondBestProjectedOption: secondBestProjected,
+            selectedOption: selected,
+            bestToSecondExpectedImpactGap: 1,
+            expertToBestProjectedTeamPointsGap: 1,
+            selectedLostExpectedPoints: 2,
+            selectedLostProjectedTeamPoints: 3,
+            selectedLostProjectedAgainstSecondBestPoints: 18,
+            decisionQuality: .costly,
+            bestMoveConfidence: .clear
+        )
+
+        let recommendation = try #require(WhatToPlayTrainer.retryRecommendation(from: review))
+
+        #expect(recommendation.improvementSource == WhatToPlayExpectedImprovementSource.projectedSecondBestPoints)
+        #expect(recommendation.lostExpectedPoints == 2)
+        #expect(recommendation.lostProjectedTeamPoints == 3)
+        #expect(recommendation.lostProjectedAgainstSecondBestPoints == 18)
+        #expect(recommendation.expectedImprovement == 18)
+        #expect(recommendation.recommendedCard == secondBestProjected.card)
     }
 
     @Test("مستوى الخبير يولد موقفًا حقيقيًا قابلًا للتقييم")

@@ -2059,6 +2059,25 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(prompt?.expectedImprovement, 16)
     }
 
+    func testRetryPromptUsesSecondProjectedLossWhenItIsLarger() {
+        let insight = WhatToPlayStatsAnalyzer.decisionInsight(
+            selectedRank: 2,
+            selectedImpact: 7,
+            bestImpact: 8,
+            secondBestImpact: 7,
+            selectedProjectedTeamPoints: 52,
+            bestProjectedTeamPoints: 54,
+            secondBestProjectedTeamPoints: 68
+        )
+
+        let prompt = WhatToPlayStatsAnalyzer.retryPrompt(insight: insight)
+
+        XCTAssertEqual(prompt?.title, "أعد نفس الموقف".localized)
+        XCTAssertTrue(prompt?.detail.contains("لن تُحسب الإعادة".localized) == true)
+        XCTAssertTrue(prompt?.detail.contains("فاقد ثاني محاكاة".localized) == true)
+        XCTAssertEqual(prompt?.expectedImprovement, 16)
+    }
+
     func testRetryPromptForScenarioCarriesBestCardAndExpectedImprovement() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
         let best = try XCTUnwrap(scenario.bestOption)

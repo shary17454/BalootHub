@@ -3183,7 +3183,12 @@ public struct WhatToPlayRetryRecommendation: Sendable, Equatable {
     public let selectedOption: WhatToPlayOption
     public let bestOption: WhatToPlayOption
     public let bestProjectedOption: WhatToPlayOption
+    public let secondBestProjectedOption: WhatToPlayOption?
     public let recommendedCard: PlayingCard
+    public let improvementSource: WhatToPlayExpectedImprovementSource
+    public let lostExpectedPoints: Int
+    public let lostProjectedTeamPoints: Int
+    public let lostProjectedAgainstSecondBestPoints: Int
     public let expectedImprovement: Int
 
     public init(
@@ -3191,14 +3196,24 @@ public struct WhatToPlayRetryRecommendation: Sendable, Equatable {
         selectedOption: WhatToPlayOption,
         bestOption: WhatToPlayOption,
         bestProjectedOption: WhatToPlayOption,
+        secondBestProjectedOption: WhatToPlayOption? = nil,
         recommendedCard: PlayingCard,
+        improvementSource: WhatToPlayExpectedImprovementSource,
+        lostExpectedPoints: Int,
+        lostProjectedTeamPoints: Int,
+        lostProjectedAgainstSecondBestPoints: Int = 0,
         expectedImprovement: Int
     ) {
         self.kind = kind
         self.selectedOption = selectedOption
         self.bestOption = bestOption
         self.bestProjectedOption = bestProjectedOption
+        self.secondBestProjectedOption = secondBestProjectedOption
         self.recommendedCard = recommendedCard
+        self.improvementSource = improvementSource
+        self.lostExpectedPoints = lostExpectedPoints
+        self.lostProjectedTeamPoints = lostProjectedTeamPoints
+        self.lostProjectedAgainstSecondBestPoints = lostProjectedAgainstSecondBestPoints
         self.expectedImprovement = expectedImprovement
     }
 }
@@ -3225,23 +3240,28 @@ public struct WhatToPlayExpectedImprovementMetrics: Sendable, Equatable {
         lostProjectedTeamPoints: Int,
         lostProjectedAgainstSecondBestPoints: Int = 0
     ) -> WhatToPlayExpectedImprovementMetrics {
-        if lostProjectedTeamPoints > lostExpectedPoints {
+        let expectedPoints = max(0, lostExpectedPoints)
+        let projectedPoints = max(0, lostProjectedTeamPoints)
+        let projectedSecondBestPoints = max(0, lostProjectedAgainstSecondBestPoints)
+
+        if projectedPoints >= expectedPoints
+            && projectedPoints >= projectedSecondBestPoints {
             return WhatToPlayExpectedImprovementMetrics(
                 source: .projectedTeamPoints,
-                points: max(0, lostProjectedTeamPoints)
+                points: projectedPoints
             )
         }
 
-        if lostProjectedAgainstSecondBestPoints > lostExpectedPoints {
+        if projectedSecondBestPoints >= expectedPoints {
             return WhatToPlayExpectedImprovementMetrics(
                 source: .projectedSecondBestPoints,
-                points: max(0, lostProjectedAgainstSecondBestPoints)
+                points: projectedSecondBestPoints
             )
         }
 
         return WhatToPlayExpectedImprovementMetrics(
             source: .expectedPoints,
-            points: max(0, lostExpectedPoints)
+            points: expectedPoints
         )
     }
 }
@@ -3780,15 +3800,24 @@ public enum WhatToPlayTrainer {
 
         let bestProjected = review.bestProjectedOption ?? best
         let lostProjectedTeamPoints = review.selectedLostProjectedTeamPoints ?? 0
-        let expectedImprovement = WhatToPlayExpectedImprovementMetrics.calculate(
+        let lostProjectedAgainstSecondBestPoints = review.selectedLostProjectedAgainstSecondBestPoints ?? 0
+        let metrics = WhatToPlayExpectedImprovementMetrics.calculate(
             lostExpectedPoints: lostExpectedPoints,
-            lostProjectedTeamPoints: lostProjectedTeamPoints
-        ).points
+            lostProjectedTeamPoints: lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: lostProjectedAgainstSecondBestPoints
+        )
+        let expectedImprovement = metrics.points
         guard expectedImprovement > 0 else { return nil }
 
-        let recommendedCard = lostProjectedTeamPoints > lostExpectedPoints
-            ? bestProjected.card
-            : best.card
+        let recommendedCard: PlayingCard
+        switch metrics.source {
+        case .projectedTeamPoints:
+            recommendedCard = bestProjected.card
+        case .projectedSecondBestPoints:
+            recommendedCard = review.secondBestProjectedOption?.card ?? bestProjected.card
+        case .expectedPoints:
+            recommendedCard = best.card
+        }
         guard let kind = WhatToPlayRetryRecommendationKind.classify(
             expectedImprovement: expectedImprovement
         ) else { return nil }
@@ -3798,7 +3827,12 @@ public enum WhatToPlayTrainer {
             selectedOption: selected,
             bestOption: best,
             bestProjectedOption: bestProjected,
+            secondBestProjectedOption: review.secondBestProjectedOption,
             recommendedCard: recommendedCard,
+            improvementSource: metrics.source,
+            lostExpectedPoints: lostExpectedPoints,
+            lostProjectedTeamPoints: lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: lostProjectedAgainstSecondBestPoints,
             expectedImprovement: expectedImprovement
         )
     }
