@@ -3354,6 +3354,7 @@ public enum WhatToPlayTrainingPriorityRankMode: String, Sendable, Codable, Equat
 public struct WhatToPlayTrainingPriorityRankMetrics: Sendable, Equatable {
     public let lostExpectedPoints: Int
     public let lostProjectedTeamPoints: Int
+    public let lostProjectedAgainstSecondBestPoints: Int
     public let accuracyPercent: Int
     public let averageExpectedImpact: Int
     public let stableOrder: Int
@@ -3361,19 +3362,25 @@ public struct WhatToPlayTrainingPriorityRankMetrics: Sendable, Equatable {
     public init(
         lostExpectedPoints: Int,
         lostProjectedTeamPoints: Int,
+        lostProjectedAgainstSecondBestPoints: Int = 0,
         accuracyPercent: Int,
         averageExpectedImpact: Int,
         stableOrder: Int
     ) {
         self.lostExpectedPoints = lostExpectedPoints
         self.lostProjectedTeamPoints = lostProjectedTeamPoints
+        self.lostProjectedAgainstSecondBestPoints = lostProjectedAgainstSecondBestPoints
         self.accuracyPercent = accuracyPercent
         self.averageExpectedImpact = averageExpectedImpact
         self.stableOrder = stableOrder
     }
 
+    public var simulationLoss: Int {
+        max(lostProjectedTeamPoints, lostProjectedAgainstSecondBestPoints)
+    }
+
     public var needsTraining: Bool {
-        lostExpectedPoints > 0 || lostProjectedTeamPoints > 0 || accuracyPercent < 100
+        lostExpectedPoints > 0 || simulationLoss > 0 || accuracyPercent < 100
     }
 
     public static func ranksBefore(
@@ -3383,8 +3390,8 @@ public struct WhatToPlayTrainingPriorityRankMetrics: Sendable, Equatable {
     ) -> Bool {
         switch mode {
         case .projectedLossFirst:
-            if lhs.lostProjectedTeamPoints != rhs.lostProjectedTeamPoints {
-                return lhs.lostProjectedTeamPoints > rhs.lostProjectedTeamPoints
+            if lhs.simulationLoss != rhs.simulationLoss {
+                return lhs.simulationLoss > rhs.simulationLoss
             }
 
             if lhs.lostExpectedPoints != rhs.lostExpectedPoints {
@@ -3396,8 +3403,8 @@ public struct WhatToPlayTrainingPriorityRankMetrics: Sendable, Equatable {
                 return lhs.lostExpectedPoints > rhs.lostExpectedPoints
             }
 
-            if lhs.lostProjectedTeamPoints != rhs.lostProjectedTeamPoints {
-                return lhs.lostProjectedTeamPoints > rhs.lostProjectedTeamPoints
+            if lhs.simulationLoss != rhs.simulationLoss {
+                return lhs.simulationLoss > rhs.simulationLoss
             }
         }
 

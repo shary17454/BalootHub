@@ -1115,6 +1115,7 @@ enum WhatToPlayStatsAnalyzer {
         WhatToPlayTrainingPriorityRankMetrics(
             lostExpectedPoints: summary.lostExpectedPoints,
             lostProjectedTeamPoints: summary.lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: summary.lostProjectedAgainstSecondBestPoints,
             accuracyPercent: summary.accuracyPercent,
             averageExpectedImpact: summary.averageExpectedImpact,
             stableOrder: stableOrder
@@ -4427,8 +4428,8 @@ enum WhatToPlayStatsAnalyzer {
             "في الخيارات المحدودة، قارن الأثر المتوقع لاختيارين فقط ولا ترم الورقة الأعلى تلقائيًا.".localized
         }
 
-        if summary.lostProjectedTeamPoints > summary.lostExpectedPoints {
-            return "\(base) \("سبب الترشيح من المحاكاة".localized): \(summary.lostProjectedTeamPoints) \("نقطة ضاعت بعد استكمال الجولة.".localized)"
+        if let simulationDetail = trainingSimulationDetail(for: summary) {
+            return "\(base) \(simulationDetail)"
         }
 
         return base
@@ -4458,8 +4459,8 @@ enum WhatToPlayStatsAnalyzer {
             "شرح نمط الحكم داخل لعبة البلوت الواحدة؛ يحدده اللاعب المشتري ولونه أثناء دورة المزايدة.".localized
         }
 
-        if summary.lostProjectedTeamPoints > summary.lostExpectedPoints {
-            return "\(base) \("سبب الترشيح من المحاكاة".localized): \(summary.lostProjectedTeamPoints) \("نقطة ضاعت بعد استكمال الجولة.".localized)"
+        if let simulationDetail = trainingSimulationDetail(for: summary) {
+            return "\(base) \(simulationDetail)"
         }
 
         if summary.averageLostExpectedPoints > 0 {
@@ -4484,8 +4485,8 @@ enum WhatToPlayStatsAnalyzer {
     ) -> String {
         let base = "\("شرح نمط الحكم داخل لعبة البلوت الواحدة؛ يحدده اللاعب المشتري ولونه أثناء دورة المزايدة.".localized) \("حكم".localized) \(suit.spokenName)."
 
-        if summary.lostProjectedTeamPoints > summary.lostExpectedPoints {
-            return "\(base) \("سبب الترشيح من المحاكاة".localized): \(summary.lostProjectedTeamPoints) \("نقطة ضاعت بعد استكمال الجولة.".localized)"
+        if let simulationDetail = trainingSimulationDetail(for: summary) {
+            return "\(base) \(simulationDetail)"
         }
 
         if summary.averageLostExpectedPoints > 0 {
@@ -4506,6 +4507,20 @@ enum WhatToPlayStatsAnalyzer {
         case .spades:
             return "suit.spade.fill"
         }
+    }
+
+    private static func trainingSimulationDetail(for summary: WhatToPlayStatsSummary) -> String? {
+        let simulationLoss = max(
+            summary.lostProjectedTeamPoints,
+            summary.lostProjectedAgainstSecondBestPoints
+        )
+        guard simulationLoss > summary.lostExpectedPoints else { return nil }
+
+        if summary.lostProjectedAgainstSecondBestPoints > summary.lostProjectedTeamPoints {
+            return "\("سبب الترشيح من المحاكاة".localized): \("فاقد ثاني محاكاة".localized): \(summary.lostProjectedAgainstSecondBestPoints)."
+        }
+
+        return "\("سبب الترشيح من المحاكاة".localized): \(summary.lostProjectedTeamPoints) \("نقطة ضاعت بعد استكمال الجولة.".localized)"
     }
 
     private static func trainingSessionPlanRationale(

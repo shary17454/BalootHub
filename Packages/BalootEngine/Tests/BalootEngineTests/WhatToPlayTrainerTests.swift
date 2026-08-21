@@ -858,6 +858,14 @@ struct WhatToPlayTrainerTests {
             averageExpectedImpact: 1,
             stableOrder: 2
         )
+        let secondSimulationLoss = trainingPriorityRank(
+            lostExpectedPoints: 1,
+            lostProjectedTeamPoints: 2,
+            lostProjectedAgainstSecondBestPoints: 12,
+            accuracyPercent: 90,
+            averageExpectedImpact: 1,
+            stableOrder: 2
+        )
         let expectedLoss = trainingPriorityRank(
             lostExpectedPoints: 7,
             lostProjectedTeamPoints: 1,
@@ -889,7 +897,9 @@ struct WhatToPlayTrainerTests {
 
         #expect(projectedLoss.needsTraining)
         #expect(clean.needsTraining == false)
+        #expect(WhatToPlayTrainingPriorityRankMetrics.ranksBefore(secondSimulationLoss, projectedLoss, mode: .projectedLossFirst))
         #expect(WhatToPlayTrainingPriorityRankMetrics.ranksBefore(projectedLoss, expectedLoss, mode: .projectedLossFirst))
+        #expect(WhatToPlayTrainingPriorityRankMetrics.ranksBefore(secondSimulationLoss, expectedLoss, mode: .expectedLossFirst) == false)
         #expect(WhatToPlayTrainingPriorityRankMetrics.ranksBefore(expectedLoss, projectedLoss, mode: .expectedLossFirst))
         #expect(WhatToPlayTrainingPriorityRankMetrics.ranksBefore(lowerAccuracy, .init(
             lostExpectedPoints: 2,
@@ -2885,6 +2895,7 @@ private func reviewQueueRank(
 private func trainingPriorityRank(
     lostExpectedPoints: Int,
     lostProjectedTeamPoints: Int,
+    lostProjectedAgainstSecondBestPoints: Int = 0,
     accuracyPercent: Int,
     averageExpectedImpact: Int,
     stableOrder: Int
@@ -2892,6 +2903,7 @@ private func trainingPriorityRank(
     WhatToPlayTrainingPriorityRankMetrics(
         lostExpectedPoints: lostExpectedPoints,
         lostProjectedTeamPoints: lostProjectedTeamPoints,
+        lostProjectedAgainstSecondBestPoints: lostProjectedAgainstSecondBestPoints,
         accuracyPercent: accuracyPercent,
         averageExpectedImpact: averageExpectedImpact,
         stableOrder: stableOrder
