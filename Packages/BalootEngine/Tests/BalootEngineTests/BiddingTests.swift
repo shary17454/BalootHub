@@ -472,6 +472,35 @@ struct MultiplierTests {
         #expect(GameEngine.legalMultiplierActions(for: doublerID, state: state) == [.lock])
     }
 
+    @Test("بلوغ سقف المضاعفة المخصص يُنهي التصعيد فورًا")
+    func reachingConfiguredMaximumMultiplierCompletesBidding() throws {
+        var rules = BalootRulesConfiguration.standard
+        rules.maximumMultiplier = .quadruple
+        var state = try stateInDoublingStage(seed: 17)
+        state.rules = rules
+
+        state = try GameEngine.apply(.raiseMultiplier(playerID: try #require(state.currentTurnPlayerID), level: .double), to: state)
+        state = try GameEngine.apply(.raiseMultiplier(playerID: try #require(state.currentTurnPlayerID), level: .triple), to: state)
+        state = try GameEngine.apply(.raiseMultiplier(playerID: try #require(state.currentTurnPlayerID), level: .quadruple), to: state)
+
+        #expect(state.bidding.stage == .completed)
+        #expect(state.bidding.multiplier == .quadruple)
+        #expect(state.phase == .declaring)
+        #expect(GameEngine.legalMultiplierActions(for: try #require(state.currentTurnPlayerID), state: state).isEmpty)
+    }
+
+    @Test("لا يمكن التصعيد بعد انتهاء جولة المضاعفة")
+    func cannotRaiseAfterMultiplierStageCompletes() throws {
+        var state = try stateInDoublingStage()
+        state = try GameEngine.apply(.raiseMultiplier(playerID: try #require(state.currentTurnPlayerID), level: .double), to: state)
+        let previousRaiser = try #require(state.bidding.multiplierRequesterTeamID)
+        state = try GameEngine.apply(.lockMultiplier(playerID: try #require(state.players.first { $0.teamID == previousRaiser }?.id)), to: state)
+
+        #expect(throws: GameEngineError.wrongPhase(expected: .bidding, actual: .declaring)) {
+            try GameEngine.apply(.raiseMultiplier(playerID: try #require(state.currentTurnPlayerID), level: .triple), to: state)
+        }
+    }
+
     @Test("قرار AI غير القانوني في المضاعفة يسقط إلى تمرير قانوني")
     func aiIllegalMultiplierDecisionFallsBackToLegalPass() throws {
         var state = try stateInDoublingStage()
