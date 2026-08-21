@@ -4029,6 +4029,7 @@ enum WhatToPlayStatsAnalyzer {
 
     static func playStyle(for attempts: [WhatToPlayAttempt]) -> WhatToPlayPlayStyle {
         let summary = summarize(attempts: attempts)
+        let secondSimulationAdvice = playStyleSecondSimulationAdvice(summary)
         let metrics = WhatToPlayPlayStyleMetrics.classify(
             attempts: summary.attempts,
             accuracyPercent: summary.accuracyPercent,
@@ -4043,7 +4044,10 @@ enum WhatToPlayStatsAnalyzer {
                 detail: "المدرب يحتاج عدة مواقف قبل أن يستنتج نمط قراراتك بثقة.".localized,
                 strength: "بدأت تجمع سجلًا قابلًا للتحليل.".localized,
                 weakness: "العينة الحالية قليلة ولا تكفي للحكم على أسلوبك.".localized,
-                advice: "حل 3 مواقف من نفس المستوى ثم راجع أول تقرير أسلوب.".localized,
+                advice: playStyleAdvice(
+                    "حل 3 مواقف من نفس المستوى ثم راجع أول تقرير أسلوب.".localized,
+                    secondSimulationAdvice
+                ),
                 iconName: "waveform.path.ecg"
             )
 
@@ -4054,7 +4058,10 @@ enum WhatToPlayStatsAnalyzer {
                 detail: "اختياراتك غالبًا تطابق أفضل قرار أو تحافظ على قيمة متوقعة جيدة.".localized,
                 strength: "تقرأ الأكلة وتختار الورقة الرابحة أو الأقل خسارة بثبات.".localized,
                 weakness: "الخطر القادم هو التعود على المواقف السهلة وعدم اختبار القراءة تحت ضغط.".localized,
-                advice: "ارفع الصعوبة وركز على مواقف الحكم وقراءة نية الشريك.".localized,
+                advice: playStyleAdvice(
+                    "ارفع الصعوبة وركز على مواقف الحكم وقراءة نية الشريك.".localized,
+                    secondSimulationAdvice
+                ),
                 iconName: "checkmark.seal.fill"
             )
 
@@ -4065,7 +4072,10 @@ enum WhatToPlayStatsAnalyzer {
                 detail: "قراراتك الحالية لا تزال بعيدة عن اختيار الخبير في أغلب المواقف.".localized,
                 strength: "لديك فرصة واضحة للتحسن السريع بمجرد ضبط التلزيم والقطع.".localized,
                 weakness: "أكبر نقطة ضعف هي اختيار الورقة قبل قراءة اللون المطلوب والحكم.".localized,
-                advice: "ابدأ بالسهل وكرر تفسير كل خطأ قبل طلب موقف جديد.".localized,
+                advice: playStyleAdvice(
+                    "ابدأ بالسهل وكرر تفسير كل خطأ قبل طلب موقف جديد.".localized,
+                    secondSimulationAdvice
+                ),
                 iconName: "target"
             )
 
@@ -4076,7 +4086,10 @@ enum WhatToPlayStatsAnalyzer {
                 detail: "تقترب من القرار الصحيح كثيرًا، لكن بعض الاختيارات تسرّب نقاطًا متوقعة.".localized,
                 strength: "غالبًا لا تبتعد كثيرًا عن أفضل خيار.".localized,
                 weakness: "تميل أحيانًا لحفظ الورقة أو التخلص الآمن عندما توجد فرصة أفضل.".localized,
-                advice: "راجع بطاقة أثر كل قرار وابحث عن الفرق بين الأفضل وثاني أفضل.".localized,
+                advice: playStyleAdvice(
+                    "راجع بطاقة أثر كل قرار وابحث عن الفرق بين الأفضل وثاني أفضل.".localized,
+                    secondSimulationAdvice
+                ),
                 iconName: "shield.lefthalf.filled"
             )
 
@@ -4087,10 +4100,27 @@ enum WhatToPlayStatsAnalyzer {
                 detail: "نتائجك بين قرارات قوية وأخطاء مؤثرة؛ تحتاج نمط تدريب أكثر ثباتًا.".localized,
                 strength: "عند قراءة الموقف جيدًا تصل لاختيارات قريبة من الخبير.".localized,
                 weakness: "التذبذب يظهر غالبًا عند وجود حكم أو أكثر من خيار قريب.".localized,
-                advice: "درّب المستوى المقترح في جلسات قصيرة حتى تستقر الدقة.".localized,
+                advice: playStyleAdvice(
+                    "درّب المستوى المقترح في جلسات قصيرة حتى تستقر الدقة.".localized,
+                    secondSimulationAdvice
+                ),
                 iconName: "chart.xyaxis.line"
             )
         }
+    }
+
+    private static func playStyleSecondSimulationAdvice(_ summary: WhatToPlayStatsSummary) -> String? {
+        guard summary.projectedSecondBestComparisonAttempts >= 3,
+              summary.averageProjectedSecondBestGap >= 6 else {
+            return nil
+        }
+
+        return "\("فاقد ثاني محاكاة".localized): \(summary.lostProjectedAgainstSecondBestPoints). \("راجع ثاني أفضل محاكاة قبل اعتماد قرار يبدو صحيحًا.".localized)"
+    }
+
+    private static func playStyleAdvice(_ base: String, _ secondSimulationAdvice: String?) -> String {
+        guard let secondSimulationAdvice else { return base }
+        return "\(base) \(secondSimulationAdvice)"
     }
 
     static func decisionPattern(for attempts: [WhatToPlayAttempt], limit: Int = 8) -> WhatToPlayDecisionPattern {

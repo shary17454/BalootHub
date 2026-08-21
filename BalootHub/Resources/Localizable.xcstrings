@@ -31,6 +31,16 @@
         }
       }
     },
+    "راجع ثاني أفضل محاكاة قبل اعتماد قرار يبدو صحيحًا." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review the second-best simulation before trusting a decision that looks correct."
+          }
+        }
+      }
+    },
     "أساسيات" : {
 
     },

@@ -2769,6 +2769,21 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(style.title, "قريب من الخبير".localized)
     }
 
+    func testPlayStyleAdviceHighlightsSecondSimulationLossWhenRepeated() {
+        let attempts = [
+            attempt(daysAgo: 4, correct: true, impact: 4, projectedTeamPoints: 52, bestProjectedTeamPoints: 74, secondBestProjectedTeamPoints: 70),
+            attempt(daysAgo: 3, correct: true, impact: 3, projectedTeamPoints: 58, bestProjectedTeamPoints: 76, secondBestProjectedTeamPoints: 72),
+            attempt(daysAgo: 2, correct: true, impact: 2, projectedTeamPoints: 60, bestProjectedTeamPoints: 78, secondBestProjectedTeamPoints: 70),
+            attempt(daysAgo: 1, correct: true, impact: 1, projectedTeamPoints: 62, bestProjectedTeamPoints: 80, secondBestProjectedTeamPoints: 72)
+        ]
+
+        let style = WhatToPlayStatsAnalyzer.playStyle(for: attempts)
+
+        XCTAssertEqual(style.kind, .expertAligned)
+        XCTAssertTrue(style.advice.contains("فاقد ثاني محاكاة".localized))
+        XCTAssertTrue(style.advice.contains("راجع ثاني أفضل محاكاة قبل اعتماد قرار يبدو صحيحًا.".localized))
+    }
+
     func testPlayStyleRecognizesFoundationalNeeds() {
         let attempts = [
             attempt(daysAgo: 4, correct: false, impact: -8),
