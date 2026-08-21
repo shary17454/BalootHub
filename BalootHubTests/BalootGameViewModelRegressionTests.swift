@@ -48,6 +48,19 @@ final class BalootGameViewModelRegressionTests: XCTestCase {
         }
     }
 
+    @MainActor
+    private func advanceBoughtRoundToDeclaration(_ viewModel: BalootGameViewModel) throws {
+        viewModel.revealLocalHumanHand()
+        viewModel.placeBid(.sun)
+
+        for _ in 0..<8 where viewModel.state.phase == .bidding {
+            viewModel.revealLocalHumanHand()
+            viewModel.passMultiplier()
+        }
+
+        XCTAssertEqual(viewModel.state.phase, .declaring)
+    }
+
     /// **يحرس الخلل الحرج**: كانت لقطة إعادة العرض الابتدائية تُبنى بدور الموزّع
     /// **قبل** دورانه، فتختلف الأوراق الموزَّعة عن اللعب الحي بدءًا من الجولة
     /// الثانية، ويفشل إعادة تطبيق أول فعل مزايدة مسجَّل. النتيجة عمليًا: شاشة
@@ -107,5 +120,66 @@ final class BalootGameViewModelRegressionTests: XCTestCase {
 
         XCTAssertTrue(viewModel.state.bidding.isLocked, "القفل لم يُطبَّق رغم توفر شرطه")
         XCTAssertFalse(viewModel.canLockMultiplier, "القفل انتهى، يجب ألا يبقى متاحًا")
+    }
+
+    @MainActor
+    func testInvalidBidIsIgnoredBeforeItReachesEngineMutation() throws {
+        let viewModel = BalootGameViewModel(tableMode: .localHumans, rules: .standard)
+        viewModel.deal(seed: 14)
+        viewModel.revealLocalHumanHand()
+
+        let upSuit = try XCTUnwrap(viewModel.upCard?.suit)
+        let unavailableSuit = try XCTUnwrap(Suit.allCases.first { $0 != upSuit })
+        let invalidBid = Bid.hokum(suit: unavailableSuit)
+        XCTAssertFalse(viewModel.legalBidsForHuman.contains(invalidBid))
+
+        let historyBefore = viewModel.state.actionHistory
+        viewModel.placeBid(invalidBid)
+
+        XCTAssertEqual(viewModel.state.actionHistory, historyBefore)
+        XCTAssertNil(viewModel.errorMessage)
+    }
+
+    @MainActor
+    func testInvalidMultiplierRaiseIsIgnoredBeforeItReachesEngineMutation() throws {
+        let viewModel = BalootGameViewModel(tableMode: .localHumans, rules: .standard)
+        viewModel.deal(seed: 9)
+        viewModel.revealLocalHumanHand()
+        viewModel.placeBid(.sun)
+        viewModel.revealLocalHumanHand()
+
+        XCTAssertEqual(viewModel.nextAvailableMultiplier, .double)
+        let historyBefore = viewModel.state.actionHistory
+        viewModel.raiseMultiplier(to: .triple)
+
+        XCTAssertEqual(viewModel.state.bidding.multiplier, .none)
+        XCTAssertEqual(viewModel.state.actionHistory, historyBefore)
+        XCTAssertNil(viewModel.errorMessage)
+    }
+
+    @MainActor
+    func testInvalidProjectDeclarationIsIgnoredBeforeItReachesEngineMutation() throws {
+        let viewModel = BalootGameViewModel(tableMode: .localHumans, rules: .standard)
+        viewModel.deal(seed: 9)
+        try advanceBoughtRoundToDeclaration(viewModel)
+        viewModel.revealLocalHumanHand()
+
+        let playerID = try XCTUnwrap(viewModel.state.currentTurnPlayerID)
+        let player = try XCTUnwrap(viewModel.state.player(id: playerID))
+        let unavailableProject = Project(
+            kind: .fourHundred,
+            teamID: player.teamID,
+            playerID: playerID,
+            cards: [],
+            points: 40
+        )
+        XCTAssertFalse(viewModel.declarableProjectsForHuman.contains(unavailableProject))
+
+        let historyBefore = viewModel.state.actionHistory
+        viewModel.declareProjects([unavailableProject])
+
+        XCTAssertEqual(viewModel.state.actionHistory, historyBefore)
+        XCTAssertTrue(viewModel.state.declaredProjects.isEmpty)
+        XCTAssertNil(viewModel.errorMessage)
     }
 }

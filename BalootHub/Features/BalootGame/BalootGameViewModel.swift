@@ -431,8 +431,15 @@ final class BalootGameViewModel {
     /// المزايدات المتاحة للاعب البشري الآن — مصدرها المحرك نفسه، فلا تعرض الواجهة
     /// خيارًا يرفضه المحرك بعد الضغط عليه.
     var legalBidsForHuman: [Bid] {
+        legalBidActionsForHuman.compactMap { action in
+            guard case .placeBid(_, let bid) = action else { return nil }
+            return bid
+        }
+    }
+
+    private var legalBidActionsForHuman: [GameAction] {
         guard usesFullBidding, canCurrentHumanAct, let activeHumanID else { return [] }
-        return GameEngine.legalBids(for: activeHumanID, state: state)
+        return GameEngine.legalBidActions(for: activeHumanID, state: state)
     }
 
     /// سجل المزايدات مقرونًا بأسماء أصحابها للعرض.
@@ -449,9 +456,17 @@ final class BalootGameViewModel {
     var currentMultiplier: Multiplier { state.bidding.multiplier }
 
     func placeBid(_ bid: Bid) {
-        guard canCurrentHumanAct, let activeHumanID else { return }
-        perform(.placeBid(playerID: activeHumanID, bid: bid))
+        guard let action = legalBidAction(for: bid) else { return }
+        perform(action)
         advanceAI()
+    }
+
+    private func legalBidAction(for bid: Bid) -> GameAction? {
+        guard let activeHumanID else { return nil }
+        return legalBidActionsForHuman.first { action in
+            guard case .placeBid(let playerID, let candidate) = action else { return false }
+            return playerID == activeHumanID && candidate == bid
+        }
     }
 
     // MARK: - المضاعفة
@@ -466,18 +481,25 @@ final class BalootGameViewModel {
 
     /// حركات المضاعفة القانونية للاعب البشري الآن، مصدرها المحرك نفسه.
     private var legalMultiplierActionsForHuman: [LegalMultiplierAction] {
+        legalMultiplierGameActionsForHuman.compactMap { Self.multiplierAction(from: $0) }
+    }
+
+    private var legalMultiplierGameActionsForHuman: [GameAction] {
         guard canCurrentHumanAct, let activeHumanID else { return [] }
-        return GameEngine.legalMultiplierActions(for: activeHumanID, state: state)
+        return GameEngine.legalMultiplierGameActions(for: activeHumanID, state: state)
     }
 
     /// حركات القفل القانونية لأي لاعب بشري يملك المضاعفة الحالية.
-    private var legalHumanLockActions: [(playerID: Player.ID, actions: [LegalMultiplierAction])] {
+    private var legalHumanLockActions: [GameAction] {
         state.players
             .filter { $0.kind == .human }
-            .map { player in
-                (player.id, GameEngine.legalMultiplierActions(for: player.id, state: state))
+            .flatMap { player in
+                GameEngine.legalMultiplierGameActions(for: player.id, state: state)
             }
-            .filter { $0.actions.contains(.lock) }
+            .filter { action in
+                guard case .lockMultiplier = action else { return false }
+                return true
+            }
     }
 
     /// درجة التصعيد التالية المتاحة، أو `nil` إن بلغت المضاعفة سقفها أو أُقفلت.
@@ -494,20 +516,21 @@ final class BalootGameViewModel {
     }
 
     private var humanMultiplierLockerID: Player.ID? {
-        legalHumanLockActions.first?.playerID
+        guard let action = legalHumanLockActions.first,
+              case .lockMultiplier(let playerID) = action
+        else { return nil }
+        return playerID
     }
 
     func raiseMultiplier(to level: Multiplier) {
-        guard canCurrentHumanAct, let activeHumanID else { return }
-        guard legalMultiplierActionsForHuman.contains(.raise(level)) else { return }
-        perform(.raiseMultiplier(playerID: activeHumanID, level: level))
+        guard let action = legalRaiseMultiplierAction(to: level) else { return }
+        perform(action)
         advanceAI()
     }
 
     func passMultiplier() {
-        guard canCurrentHumanAct, let activeHumanID else { return }
-        guard legalMultiplierActionsForHuman.contains(.pass) else { return }
-        perform(.passMultiplier(playerID: activeHumanID))
+        guard let action = legalPassMultiplierAction() else { return }
+        perform(action)
         advanceAI()
     }
 
@@ -519,9 +542,38 @@ final class BalootGameViewModel {
     /// بإخفاء/كشف اليد في وضع «أربعة أشخاص»: القفل قرار فريق بلا معلومة عن
     /// الأوراق (بخلاف المزايدة واللعب)، فلا حاجة تعرض يد أحد لاتخاذه.
     func lockMultiplier() {
-        guard let playerID = humanMultiplierLockerID else { return }
-        perform(.lockMultiplier(playerID: playerID))
+        guard let action = legalHumanLockActions.first else { return }
+        perform(action)
         advanceAI()
+    }
+
+    private func legalRaiseMultiplierAction(to level: Multiplier) -> GameAction? {
+        guard let activeHumanID else { return nil }
+        return legalMultiplierGameActionsForHuman.first { action in
+            guard case .raiseMultiplier(let playerID, let candidate) = action else { return false }
+            return playerID == activeHumanID && candidate == level
+        }
+    }
+
+    private func legalPassMultiplierAction() -> GameAction? {
+        guard let activeHumanID else { return nil }
+        return legalMultiplierGameActionsForHuman.first { action in
+            guard case .passMultiplier(let playerID) = action else { return false }
+            return playerID == activeHumanID
+        }
+    }
+
+    private static func multiplierAction(from action: GameAction) -> LegalMultiplierAction? {
+        switch action {
+        case .raiseMultiplier(_, let level):
+            return .raise(level)
+        case .passMultiplier:
+            return .pass
+        case .lockMultiplier:
+            return .lock
+        default:
+            return nil
+        }
     }
 
     // MARK: - إعلان المشاريع
@@ -536,6 +588,11 @@ final class BalootGameViewModel {
         return GameEngine.declarableProjects(for: activeHumanID, state: state)
     }
 
+    private var legalProjectDeclarationActionsForHuman: [GameAction] {
+        guard canCurrentHumanAct, let activeHumanID, state.phase == .declaring else { return [] }
+        return GameEngine.legalProjectDeclarationActions(for: activeHumanID, state: state)
+    }
+
     /// المشاريع المحتسَبة بعد المفاضلة، تُعرض في لوحة النتيجة.
     var awardedProjects: [Project] { state.awardedProjects }
 
@@ -548,13 +605,22 @@ final class BalootGameViewModel {
     }
 
     func declareProjects(_ projects: [Project]) {
-        guard canCurrentHumanAct, let activeHumanID else { return }
-        perform(.declareProjects(playerID: activeHumanID, projects: projects))
+        guard let action = legalProjectDeclarationAction(matching: projects) else { return }
+        perform(action)
         advanceAI()
     }
 
     func skipDeclaration() {
         declareProjects([])
+    }
+
+    private func legalProjectDeclarationAction(matching projects: [Project]) -> GameAction? {
+        guard let activeHumanID else { return nil }
+        let selectedProjectIDs = Set(projects.map(\.id))
+        return legalProjectDeclarationActionsForHuman.first { action in
+            guard case .declareProjects(let playerID, let candidateProjects) = action else { return false }
+            return playerID == activeHumanID && Set(candidateProjects.map(\.id)) == selectedProjectIDs
+        }
     }
 
     func play(_ card: PlayingCard) {
