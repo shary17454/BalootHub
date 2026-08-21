@@ -684,6 +684,8 @@ struct WhatToPlayMicroDrill: Equatable {
     let focusKind: WhatToPlayScenarioFocusKind?
     let gameMode: GameMode?
     let trumpSuit: Suit?
+    let recommendedCard: PlayingCard?
+    let expectedImprovement: Int
 }
 
 enum WhatToPlayStyleKind: Equatable {
@@ -3403,7 +3405,9 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: .easy,
                 focusKind: nil,
                 gameMode: nil,
-                trumpSuit: nil
+                trumpSuit: nil,
+                recommendedCard: nil,
+                expectedImprovement: 0
             )
         }
 
@@ -3427,7 +3431,9 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: reviewItem?.difficulty,
                 focusKind: reviewItem?.focusKind,
                 gameMode: reviewItem?.gameMode,
-                trumpSuit: reviewItem?.contextTrumpSuit
+                trumpSuit: reviewItem?.contextTrumpSuit,
+                recommendedCard: reviewItem?.bestCard,
+                expectedImprovement: reviewItem.map { microDrillExpectedImprovement(for: $0) } ?? 0
             )
         }
 
@@ -3447,7 +3453,9 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: simulatedReview.difficulty,
                 focusKind: simulatedReview.focusKind,
                 gameMode: simulatedReview.gameMode,
-                trumpSuit: simulatedReview.contextTrumpSuit
+                trumpSuit: simulatedReview.contextTrumpSuit,
+                recommendedCard: simulatedReview.bestCard,
+                expectedImprovement: microDrillExpectedImprovement(for: simulatedReview)
             )
         }
 
@@ -3467,7 +3475,9 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: highValueReview.difficulty,
                 focusKind: highValueReview.focusKind,
                 gameMode: highValueReview.gameMode,
-                trumpSuit: highValueReview.contextTrumpSuit
+                trumpSuit: highValueReview.contextTrumpSuit,
+                recommendedCard: highValueReview.bestCard,
+                expectedImprovement: microDrillExpectedImprovement(for: highValueReview)
             )
         }
 
@@ -3494,7 +3504,9 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: recommendation.difficulty,
                 focusKind: recommendation.focusKind,
                 gameMode: recommendation.gameMode,
-                trumpSuit: recommendation.trumpSuit
+                trumpSuit: recommendation.trumpSuit,
+                recommendedCard: nil,
+                expectedImprovement: 0
             )
         }
 
@@ -3515,7 +3527,9 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: targetDifficulty,
                 focusKind: nil,
                 gameMode: nil,
-                trumpSuit: nil
+                trumpSuit: nil,
+                recommendedCard: nil,
+                expectedImprovement: 0
             )
         }
 
@@ -3537,7 +3551,9 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: targetDifficulty,
                 focusKind: targetFocus,
                 gameMode: nil,
-                trumpSuit: nil
+                trumpSuit: nil,
+                recommendedCard: nil,
+                expectedImprovement: 0
             )
         }
 
@@ -3559,7 +3575,9 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: targetDifficulty,
                 focusKind: nil,
                 gameMode: targetMode,
-                trumpSuit: nil
+                trumpSuit: nil,
+                recommendedCard: nil,
+                expectedImprovement: 0
             )
         }
 
@@ -3581,7 +3599,9 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: targetDifficulty,
                 focusKind: nil,
                 gameMode: .hokum,
-                trumpSuit: targetSuit
+                trumpSuit: targetSuit,
+                recommendedCard: nil,
+                expectedImprovement: 0
             )
         }
 
@@ -3600,7 +3620,9 @@ enum WhatToPlayStatsAnalyzer {
                 difficulty: .expert,
                 focusKind: .trumpPressure,
                 gameMode: nil,
-                trumpSuit: nil
+                trumpSuit: nil,
+                recommendedCard: nil,
+                expectedImprovement: 0
             )
         }
 
@@ -3625,8 +3647,14 @@ enum WhatToPlayStatsAnalyzer {
             difficulty: recommendation.difficulty,
             focusKind: recommendation.focusKind,
             gameMode: recommendation.gameMode,
-            trumpSuit: recommendation.trumpSuit
+            trumpSuit: recommendation.trumpSuit,
+            recommendedCard: nil,
+            expectedImprovement: 0
         )
+    }
+
+    private static func microDrillExpectedImprovement(for reviewItem: WhatToPlayReviewItem) -> Int {
+        max(reviewItem.lostProjectedTeamPoints, reviewItem.lostExpectedPoints)
     }
 
     private static func reviewStepTitle(for reviewItem: WhatToPlayReviewItem) -> String {

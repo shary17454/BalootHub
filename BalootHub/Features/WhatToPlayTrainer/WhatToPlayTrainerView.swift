@@ -1046,6 +1046,24 @@ struct WhatToPlayTrainerView: View {
                 }
             }
 
+            if microDrill.recommendedCard != nil || microDrill.expectedImprovement > 0 {
+                HStack(spacing: AppSpacing.sm) {
+                    if let recommendedCard = microDrill.recommendedCard {
+                        miniPlanMetric(
+                            title: "أفضل ورقة".localized,
+                            value: recommendedCard.displayLabel
+                        )
+                    }
+                    if microDrill.expectedImprovement > 0 {
+                        miniPlanMetric(
+                            title: "تحسن متوقع".localized,
+                            value: "+\(microDrill.expectedImprovement)"
+                        )
+                    }
+                }
+                .accessibilityElement(children: .combine)
+            }
+
             if let reviewItem = microDrill.reviewItem {
                 Button {
                     replayReviewItem(reviewItem)

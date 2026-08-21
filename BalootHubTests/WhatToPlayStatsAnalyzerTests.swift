@@ -2451,6 +2451,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(drill.seed, 8_000_000)
         XCTAssertEqual(drill.difficulty, .easy)
         XCTAssertNil(drill.focusKind)
+        XCTAssertNil(drill.recommendedCard)
+        XCTAssertEqual(drill.expectedImprovement, 0)
     }
 
     func testMicroDrillPrioritizesReviewWhenSessionNeedsReview() {
@@ -2468,6 +2470,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(drill.reviewItem?.lostExpectedPoints, 11)
         XCTAssertEqual(drill.seed, 2)
         XCTAssertEqual(drill.difficulty, .hard)
+        XCTAssertEqual(drill.recommendedCard, PlayingCard(suit: .clubs, rank: .seven))
+        XCTAssertEqual(drill.expectedImprovement, 11)
     }
 
     func testMicroDrillPrioritizesHighValueReviewBeforeCoverage() {
@@ -2508,6 +2512,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(drill.seed, 44)
         XCTAssertEqual(drill.difficulty, .easy)
         XCTAssertEqual(drill.focusKind, .followSuit)
+        XCTAssertEqual(drill.recommendedCard, PlayingCard(suit: .clubs, rank: .seven))
+        XCTAssertEqual(drill.expectedImprovement, 15)
     }
 
     func testMicroDrillTargetsCostlyDecisionPatternBeforeCoverage() {
