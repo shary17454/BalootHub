@@ -130,7 +130,7 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
     func testSummaryPrioritizesSimulationReviewWhenProjectedLossIsLarger() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 1, difficulty: .hard)
         let best = try XCTUnwrap(scenario.bestOption)
-        let bestSimulation = try XCTUnwrap(WhatToPlayOptionComparison.bestSimulationOption(scenario.options))
+        let bestSimulation = try XCTUnwrap(WhatToPlayTrainer.bestProjectedOption(in: scenario.options))
         XCTAssertNotEqual(bestSimulation.card, best.card)
         let selected = try XCTUnwrap(scenario.options.first {
             $0.card != best.card
@@ -151,7 +151,7 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
     func testSummaryFlagsExpertPickWhenFullSimulationStronglyDisagrees() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 1, difficulty: .hard)
         let expert = try XCTUnwrap(scenario.bestOption)
-        let bestSimulation = try XCTUnwrap(WhatToPlayOptionComparison.bestSimulationOption(scenario.options))
+        let bestSimulation = try XCTUnwrap(WhatToPlayTrainer.bestProjectedOption(in: scenario.options))
         XCTAssertNotEqual(bestSimulation.card, expert.card)
         XCTAssertGreaterThanOrEqual(max(0, bestSimulation.projectedTeamPoints - expert.projectedTeamPoints), 9)
 
@@ -205,7 +205,7 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
     func testRowsCalculateProjectedPointLossForEveryOption() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
         let selected = try XCTUnwrap(scenario.bestOption)
-        let bestSimulation = try XCTUnwrap(WhatToPlayOptionComparison.bestSimulationOption(scenario.options))
+        let bestSimulation = try XCTUnwrap(WhatToPlayTrainer.bestProjectedOption(in: scenario.options))
 
         let rows = WhatToPlayOptionComparison.rows(for: scenario, selectedCard: selected.card)
 
@@ -236,7 +236,7 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
     func testAttemptFactoryPersistsBestSimulationProjection() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
         let selected = try XCTUnwrap(scenario.options.last)
-        let bestSimulation = try XCTUnwrap(WhatToPlayOptionComparison.bestSimulationOption(scenario.options))
+        let bestSimulation = try XCTUnwrap(WhatToPlayTrainer.bestProjectedOption(in: scenario.options))
 
         let attempt = try XCTUnwrap(WhatToPlayAttemptFactory.makeAttempt(scenario: scenario, evaluated: selected))
 

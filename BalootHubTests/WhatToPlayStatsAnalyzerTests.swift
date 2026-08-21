@@ -1824,7 +1824,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
     func testScenarioDecisionActionRecommendsBestSimulationCardWhenExpertPickLeaksRoundValue() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 1, difficulty: .hard)
         let expert = try XCTUnwrap(scenario.bestOption)
-        let bestSimulation = try XCTUnwrap(WhatToPlayOptionComparison.bestSimulationOption(scenario.options))
+        let bestSimulation = try XCTUnwrap(WhatToPlayTrainer.bestProjectedOption(in: scenario.options))
         XCTAssertNotEqual(bestSimulation.card, expert.card)
         XCTAssertGreaterThanOrEqual(max(0, bestSimulation.projectedTeamPoints - expert.projectedTeamPoints), 9)
 
@@ -1983,7 +1983,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
     func testRetryPromptForScenarioCarriesBestCardAndExpectedImprovement() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
         let best = try XCTUnwrap(scenario.bestOption)
-        let bestSimulation = try XCTUnwrap(WhatToPlayOptionComparison.bestSimulationOption(scenario.options))
+        let bestSimulation = try XCTUnwrap(WhatToPlayTrainer.bestProjectedOption(in: scenario.options))
         let selected = try XCTUnwrap(
             scenario.options.first {
                 $0.card != best.card
@@ -2006,7 +2006,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
     func testReplayContextExplainsExpertChoice() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
         let selected = try XCTUnwrap(scenario.bestOption)
-        let bestSimulation = try XCTUnwrap(WhatToPlayOptionComparison.bestSimulationOption(scenario.options))
+        let bestSimulation = try XCTUnwrap(WhatToPlayTrainer.bestProjectedOption(in: scenario.options))
 
         let context = WhatToPlayStatsAnalyzer.replayContext(for: selected, in: scenario)
         let expectedLoss = max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints)
@@ -2020,7 +2020,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
     func testReplayContextExplainsProjectedLoss() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
         let selected = try XCTUnwrap(scenario.options.last)
-        let bestSimulation = try XCTUnwrap(WhatToPlayOptionComparison.bestSimulationOption(scenario.options))
+        let bestSimulation = try XCTUnwrap(WhatToPlayTrainer.bestProjectedOption(in: scenario.options))
 
         let context = WhatToPlayStatsAnalyzer.replayContext(for: selected, in: scenario)
 

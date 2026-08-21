@@ -243,10 +243,6 @@ enum WhatToPlayOptionComparison {
             }
     }
 
-    static func bestSimulationOption(_ options: [WhatToPlayOption]) -> WhatToPlayOption? {
-        WhatToPlayTrainer.projectedOptions(in: options).first
-    }
-
     private static func nextAction(
         recommendation: WhatToPlayNextActionRecommendation
     ) -> (title: String, detail: String) {

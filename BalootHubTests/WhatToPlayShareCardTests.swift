@@ -181,7 +181,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         let selected = try XCTUnwrap(scenario.options.last)
         let best = try XCTUnwrap(scenario.bestOption)
         let secondBest = try XCTUnwrap(scenario.secondBestOption)
-        let bestSimulation = try XCTUnwrap(WhatToPlayOptionComparison.bestSimulationOption(scenario.options))
+        let bestSimulation = try XCTUnwrap(WhatToPlayTrainer.bestProjectedOption(in: scenario.options))
         let text = WhatToPlayShareCard.text(for: scenario, selectedOption: selected)
 
         XCTAssertTrue(text.contains("مراجعة القرار".localized))
@@ -507,7 +507,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
     private func simulationLossShareSelection() throws -> (WhatToPlayScenario, WhatToPlayOption) {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 1, difficulty: .hard)
         let best = try XCTUnwrap(scenario.bestOption)
-        let bestSimulation = try XCTUnwrap(WhatToPlayOptionComparison.bestSimulationOption(scenario.options))
+        let bestSimulation = try XCTUnwrap(WhatToPlayTrainer.bestProjectedOption(in: scenario.options))
         let option = try XCTUnwrap(scenario.options.first {
             $0.card != best.card
                 && max(0, best.expectedImpact - $0.expectedImpact) <= 2
