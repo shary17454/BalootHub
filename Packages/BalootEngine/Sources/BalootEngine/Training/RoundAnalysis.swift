@@ -366,6 +366,16 @@ public struct RoundAnalysisReport: Sendable, Equatable {
         seed = seed &* 31 &+ UInt64(max(0, scoreOutOf100))
         seed = seed &* 31 &+ UInt64(max(0, focus.estimatedLostPoints))
         seed = seed &* 31 &+ UInt64(max(0, focus.mistakeCount))
+        if focus.priority == .play, let decision = worstDecision {
+            seed = seed &* 31 &+ UInt64(max(0, decision.stepIndex))
+            seed = seed &* 31 &+ UInt64(max(0, decision.trickNumber))
+            seed = seed &* 31 &+ UInt64(decision.playedCard.suit.ordinal)
+            seed = seed &* 31 &+ UInt64(decision.playedCard.rank.ordinal)
+            seed = seed &* 31 &+ UInt64(decision.recommendedCard.suit.ordinal)
+            seed = seed &* 31 &+ UInt64(decision.recommendedCard.rank.ordinal)
+            seed = seed &* 31 &+ UInt64(max(0, decision.estimatedImmediateLostPoints))
+            seed = seed &* 31 &+ UInt64(max(0, decision.estimatedProjectedLostPoints))
+        }
         return seed == 0 ? 1 : seed
     }
 

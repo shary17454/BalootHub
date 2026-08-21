@@ -268,6 +268,59 @@ struct RoundAnalysisTests {
         #expect(recommendation?.scenarioSeed == repeatedReport.practiceRecommendation?.scenarioSeed)
     }
 
+    @Test("بذرة تدريب اللعب ترتبط بالقرار الفعلي لا بمجموع الفاقد فقط")
+    func playPracticeSeedChangesWithWorstDecisionIdentity() {
+        let team = Team(name: "أ")
+        let player = Player(name: "لاعب", kind: .human, seat: .south, teamID: team.id)
+        let firstDecision = RoundDecisionAnalysis(
+            stepIndex: 4,
+            trickNumber: 2,
+            playerID: player.id,
+            playedCard: PlayingCard(suit: .clubs, rank: .seven),
+            bestCard: PlayingCard(suit: .clubs, rank: .ace),
+            secondBestCard: nil,
+            bestProjectedCard: nil,
+            selectedRank: 3,
+            expectedImpact: -4,
+            bestExpectedImpact: 10,
+            estimatedLostPoints: 14,
+            estimatedImmediateLostPoints: 14,
+            estimatedProjectedLostPoints: 0,
+            explanation: "اختبار"
+        )
+        let secondDecision = RoundDecisionAnalysis(
+            stepIndex: 5,
+            trickNumber: 2,
+            playerID: player.id,
+            playedCard: PlayingCard(suit: .diamonds, rank: .seven),
+            bestCard: PlayingCard(suit: .diamonds, rank: .ace),
+            secondBestCard: nil,
+            bestProjectedCard: nil,
+            selectedRank: 3,
+            expectedImpact: -4,
+            bestExpectedImpact: 10,
+            estimatedLostPoints: 14,
+            estimatedImmediateLostPoints: 14,
+            estimatedProjectedLostPoints: 0,
+            explanation: "اختبار"
+        )
+        let firstReport = roundAnalysisReport(
+            playerID: player.id,
+            decisions: [firstDecision],
+            worstDecision: firstDecision,
+            totalEstimatedLostPoints: 14
+        )
+        let secondReport = roundAnalysisReport(
+            playerID: player.id,
+            decisions: [secondDecision],
+            worstDecision: secondDecision,
+            totalEstimatedLostPoints: 14
+        )
+
+        #expect(firstReport.primaryReviewFocus == secondReport.primaryReviewFocus)
+        #expect(firstReport.practiceRecommendation?.scenarioSeed != secondReport.practiceRecommendation?.scenarioSeed)
+    }
+
     @Test("خطة التدريب تخفض صعوبة المزايدة عند الفاقد الأقل")
     func practiceRecommendationUsesMediumDifficultyForLowerBiddingLoss() {
         let team = Team(name: "أ")
@@ -731,6 +784,29 @@ struct RoundAnalysisTests {
             personality: .balanced,
             avatarSystemName: "person"
         ))
+    }
+
+    private func roundAnalysisReport(
+        playerID: Player.ID,
+        decisions: [RoundDecisionAnalysis],
+        worstDecision: RoundDecisionAnalysis?,
+        totalEstimatedLostPoints: Int
+    ) -> RoundAnalysisReport {
+        RoundAnalysisReport(
+            playerID: playerID,
+            scoreOutOf100: 70,
+            decisions: decisions,
+            biddingDecisions: [],
+            projectOpportunities: [],
+            multiplierDecisions: [],
+            bestDecision: nil,
+            worstDecision: worstDecision,
+            totalEstimatedLostPoints: totalEstimatedLostPoints,
+            tacticalMistakes: [],
+            strengths: [],
+            weaknesses: [],
+            tips: []
+        )
     }
 
     private func firstPlayerWhoPlayed(in actions: [GameAction]) -> Player.ID? {
