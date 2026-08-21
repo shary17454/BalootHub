@@ -66,6 +66,44 @@ struct HandAnalysisTests {
         #expect(firstRoundAnalysis.tacticalAdvice.contains("تمرير"))
     }
 
+    @Test("تحليل موقف مزايدة فعلي يحترم شراء الشريك قبل مزايدة الصن فوقه")
+    func stateBasedBiddingAnalysisRespectsPartnerCurrentBid() throws {
+        var rules = BalootRulesConfiguration.standard
+        rules.multipliersEnabled = false
+        rules.projectsRequireDeclaration = false
+
+        var state = GameState.newLocalMatch(rules: rules)
+        state = try GameEngine.apply(.dealCards(seed: 81), to: state)
+        state.bidding.upCard = PlayingCard(suit: .hearts, rank: .seven)
+
+        let partnerID = try #require(state.currentTurnPlayerID)
+        state = try GameEngine.apply(.placeBid(playerID: partnerID, bid: .hokum(suit: .hearts)), to: state)
+        state = try GameEngine.apply(.placeBid(playerID: try #require(state.currentTurnPlayerID), bid: .pass), to: state)
+
+        let playerID = try #require(state.currentTurnPlayerID)
+        let hand = [
+            PlayingCard(suit: .spades, rank: .ace),
+            PlayingCard(suit: .diamonds, rank: .ace),
+            PlayingCard(suit: .clubs, rank: .ten),
+            PlayingCard(suit: .spades, rank: .king),
+            PlayingCard(suit: .clubs, rank: .seven)
+        ]
+        state.hands[playerID] = hand
+
+        let legal = GameEngine.legalBids(for: playerID, state: state)
+        let isolated = HandAnalyzer.analyze(
+            hand: BiddingPolicy.bidEvaluationHand(hand: hand, state: state),
+            rules: state.rules,
+            legalBids: legal
+        )
+        let contextual = try #require(HandAnalyzer.analyze(playerID: playerID, state: state))
+
+        #expect(legal == [.pass, .sun])
+        #expect(isolated.recommendedBid == .sun)
+        #expect(contextual.recommendedBid == .pass)
+        #expect(contextual.bidOptions.contains { $0.bid == .pass && $0.isRecommended })
+    }
+
     @Test("اليد الضعيفة تقترح بس")
     func weakHandRecommendsPass() {
         let hand = [

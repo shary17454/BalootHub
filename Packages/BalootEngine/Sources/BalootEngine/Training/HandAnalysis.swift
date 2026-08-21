@@ -119,10 +119,51 @@ public enum HandAnalyzer {
         policy: BiddingPolicy = .standard,
         legalBids: [Bid]? = nil
     ) -> HandAnalysis {
+        analyze(
+            hand: hand,
+            rules: rules,
+            policy: policy,
+            legalBids: legalBids,
+            contextualRecommendedBid: nil
+        )
+    }
+
+    /// يحلل يد لاعب في سياق مزايدة حقيقي.
+    ///
+    /// هذا المسار هو الأنسب لتحليل الجولة وReplay؛ لأنه يستخدم نفس ``BiddingPolicy``
+    /// مع ``GameState`` بدل تحليل اليد بمعزل عن الدور. بذلك تدخل في القرار عوامل مثل
+    /// الورقة المكشوفة التي سيأخذها المشتري، شراء الشريك الحالي، وخفض عتبة آخر فرصة
+    /// في جولة الأشكال.
+    public static func analyze(
+        playerID: Player.ID,
+        state: GameState,
+        policy: BiddingPolicy = .standard
+    ) -> HandAnalysis? {
+        guard let hand = state.hands[playerID] else { return nil }
+        let legal = GameEngine.legalBids(for: playerID, state: state)
+        guard !legal.isEmpty else { return nil }
+        let bidHand = BiddingPolicy.bidEvaluationHand(hand: hand, state: state)
+        let recommended = policy.chooseBid(hand: hand, legalBids: legal, state: state)
+        return analyze(
+            hand: bidHand,
+            rules: state.rules,
+            policy: policy,
+            legalBids: legal,
+            contextualRecommendedBid: recommended
+        )
+    }
+
+    private static func analyze(
+        hand: [PlayingCard],
+        rules: BalootRulesConfiguration,
+        policy: BiddingPolicy,
+        legalBids: [Bid]?,
+        contextualRecommendedBid: Bid?
+    ) -> HandAnalysis {
         let normalized = normalizedHand(hand)
         let evaluation = HandEvaluator.evaluate(hand: normalized)
         let options = normalizedBidOptions(legalBids)
-        let recommended = recommendation(
+        let recommended = contextualRecommendedBid ?? recommendation(
             for: normalized,
             evaluation: evaluation,
             policy: policy,
