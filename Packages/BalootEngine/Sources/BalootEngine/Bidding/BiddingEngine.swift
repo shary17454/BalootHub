@@ -287,6 +287,10 @@ enum BiddingEngine {
 
     static func passMultiplier(playerID: Player.ID, state: inout GameState) throws {
         try validateDoublingTurn(playerID: playerID, state: state)
+        guard let player = state.player(id: playerID),
+              player.teamID == eligibleRaisingTeamID(state: state) else {
+            throw GameEngineError.bidding(.notEligibleToRaise)
+        }
         state.bidding.doublingPasses += 1
 
         // مرّ لاعبا الفريق صاحب الحق ⇒ لا مضاعفة إضافية.

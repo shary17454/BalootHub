@@ -390,6 +390,17 @@ struct MultiplierTests {
         }
     }
 
+    @Test("تمرير المضاعفة يُرفض إن لم يكن اللاعب من الفريق صاحب حق التصعيد")
+    func passMultiplierRequiresEligibleRaisingTeam() throws {
+        var state = try stateInDoublingStage()
+        let declarer = try #require(state.declarer)
+        state.currentTurnPlayerID = declarer.id
+
+        #expect(throws: GameEngineError.bidding(.notEligibleToRaise)) {
+            try GameEngine.apply(.passMultiplier(playerID: declarer.id), to: state)
+        }
+    }
+
     @Test("التصعيد يجب أن يكون بالدرجة التالية تحديدًا")
     func multiplierMustEscalateOneStep() throws {
         let state = try stateInDoublingStage()
