@@ -30,8 +30,29 @@ final class RoundReplayDecisionAdvisorTests: XCTestCase {
         XCTAssertTrue(legal.contains(hint.playedCard))
         XCTAssertTrue(legal.contains(hint.bestCard))
         XCTAssertGreaterThanOrEqual(hint.selectedRank, 1)
+        XCTAssertGreaterThanOrEqual(hint.estimatedImmediateLostPoints, 0)
+        XCTAssertGreaterThanOrEqual(hint.estimatedProjectedLostPoints, 0)
         XCTAssertGreaterThanOrEqual(hint.estimatedLostPoints, 0)
+        XCTAssertEqual(hint.estimatedLostPoints, max(hint.estimatedImmediateLostPoints, hint.estimatedProjectedLostPoints))
         XCTAssertFalse(hint.explanation.isEmpty)
+    }
+
+    func testHintUsesProjectedRoundLossWhenItExceedsImmediateLoss() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2, difficulty: .hard)
+        let selected = try XCTUnwrap(scenario.options.first {
+            $0.card.suit == .diamonds && $0.card.rank == .queen
+        })
+        let replay = try XCTUnwrap(WhatToPlayTrainer.decisionReplay(for: selected.card, in: scenario))
+
+        let hint = try XCTUnwrap(RoundReplayDecisionAdvisor.hint(
+            initialState: replay.initialState,
+            actions: replay.actions,
+            currentStep: replay.actions.count
+        ))
+
+        XCTAssertEqual(hint.playedCard, selected.card)
+        XCTAssertGreaterThan(hint.estimatedProjectedLostPoints, hint.estimatedImmediateLostPoints)
+        XCTAssertEqual(hint.estimatedLostPoints, hint.estimatedProjectedLostPoints)
     }
 
     func testHintIsDeterministicForSameReplayStep() throws {

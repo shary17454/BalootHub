@@ -206,6 +206,9 @@ struct RoundReplayView: View {
             }
             if hint.estimatedLostPoints > 0 {
                 detailRow("فاقد متوقع".localized, "\(hint.estimatedLostPoints)")
+                if hint.estimatedProjectedLostPoints > hint.estimatedImmediateLostPoints {
+                    detailRow("فاقد المحاكاة".localized, "\(hint.estimatedProjectedLostPoints)")
+                }
             }
 
             Text(hint.explanation)

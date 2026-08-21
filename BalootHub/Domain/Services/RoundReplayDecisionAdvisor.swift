@@ -8,11 +8,16 @@ struct RoundReplayDecisionHint: Equatable {
     let bestCard: PlayingCard
     let secondBestCard: PlayingCard?
     let selectedRank: Int
-    let estimatedLostPoints: Int
+    let estimatedImmediateLostPoints: Int
+    let estimatedProjectedLostPoints: Int
     let explanation: String
 
     var matchedExpert: Bool {
         selectedRank == 1
+    }
+
+    var estimatedLostPoints: Int {
+        max(estimatedImmediateLostPoints, estimatedProjectedLostPoints)
     }
 }
 
@@ -39,6 +44,10 @@ enum RoundReplayDecisionAdvisor {
               let best = options.first(where: { $0.rank == 1 })
         else { return nil }
 
+        let bestSimulation = WhatToPlayOptionComparison.bestSimulationOption(options) ?? best
+        let immediateLost = max(0, best.expectedImpact - selected.expectedImpact)
+        let projectedLost = max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints)
+
         return RoundReplayDecisionHint(
             stepIndex: step - 1,
             trickNumber: beforePlay.completedTricks.count + 1,
@@ -47,7 +56,8 @@ enum RoundReplayDecisionAdvisor {
             bestCard: best.card,
             secondBestCard: options.first(where: { $0.rank == 2 })?.card,
             selectedRank: selected.rank,
-            estimatedLostPoints: max(0, best.expectedImpact - selected.expectedImpact),
+            estimatedImmediateLostPoints: immediateLost,
+            estimatedProjectedLostPoints: projectedLost,
             explanation: selected.explanation
         )
     }
