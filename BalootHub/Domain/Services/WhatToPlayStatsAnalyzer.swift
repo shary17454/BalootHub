@@ -3786,7 +3786,10 @@ enum WhatToPlayStatsAnalyzer {
     }
 
     private static func microDrillExpectedImprovement(for reviewItem: WhatToPlayReviewItem) -> Int {
-        max(reviewItem.lostProjectedTeamPoints, reviewItem.lostExpectedPoints)
+        WhatToPlayExpectedImprovementMetrics.calculate(
+            lostExpectedPoints: reviewItem.lostExpectedPoints,
+            lostProjectedTeamPoints: reviewItem.lostProjectedTeamPoints
+        ).points
     }
 
     private static func reviewStepTitle(for reviewItem: WhatToPlayReviewItem) -> String {

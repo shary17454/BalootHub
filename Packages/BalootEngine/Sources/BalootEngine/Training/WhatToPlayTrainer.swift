@@ -2215,6 +2215,40 @@ public struct WhatToPlayRetryRecommendation: Sendable, Equatable {
     }
 }
 
+/// مصدر التحسن المتوقع عند إعادة موقف «وش تلعب؟».
+public enum WhatToPlayExpectedImprovementSource: String, Sendable, Codable, Equatable, CaseIterable {
+    case projectedTeamPoints
+    case expectedPoints
+}
+
+/// قياس التحسن المتوقع من إعادة موقف «وش تلعب؟» دون نصوص واجهة.
+public struct WhatToPlayExpectedImprovementMetrics: Sendable, Equatable {
+    public let source: WhatToPlayExpectedImprovementSource
+    public let points: Int
+
+    public init(source: WhatToPlayExpectedImprovementSource, points: Int) {
+        self.source = source
+        self.points = points
+    }
+
+    public static func calculate(
+        lostExpectedPoints: Int,
+        lostProjectedTeamPoints: Int
+    ) -> WhatToPlayExpectedImprovementMetrics {
+        if lostProjectedTeamPoints > lostExpectedPoints {
+            return WhatToPlayExpectedImprovementMetrics(
+                source: .projectedTeamPoints,
+                points: max(0, lostProjectedTeamPoints)
+            )
+        }
+
+        return WhatToPlayExpectedImprovementMetrics(
+            source: .expectedPoints,
+            points: max(0, lostExpectedPoints)
+        )
+    }
+}
+
 /// أرقام موجزة تستخدم عند فتح Replay لقرار تدريب «وش تلعب؟».
 public struct WhatToPlayReplayMetrics: Sendable, Equatable {
     public let selectedOption: WhatToPlayOption
@@ -2576,7 +2610,10 @@ public enum WhatToPlayTrainer {
 
         let bestProjected = review.bestProjectedOption ?? best
         let lostProjectedTeamPoints = review.selectedLostProjectedTeamPoints ?? 0
-        let expectedImprovement = max(lostExpectedPoints, lostProjectedTeamPoints)
+        let expectedImprovement = WhatToPlayExpectedImprovementMetrics.calculate(
+            lostExpectedPoints: lostExpectedPoints,
+            lostProjectedTeamPoints: lostProjectedTeamPoints
+        ).points
         guard expectedImprovement > 0 else { return nil }
 
         let recommendedCard = lostProjectedTeamPoints > lostExpectedPoints

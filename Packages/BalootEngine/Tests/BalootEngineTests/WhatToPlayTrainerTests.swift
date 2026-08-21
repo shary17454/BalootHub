@@ -567,6 +567,30 @@ struct WhatToPlayTrainerTests {
         )
     }
 
+    @Test("قياس التحسن المتوقع في وش تلعب يأتي من المحرك")
+    func expectedImprovementMetricsSelectSource() {
+        let projected = WhatToPlayExpectedImprovementMetrics.calculate(
+            lostExpectedPoints: 4,
+            lostProjectedTeamPoints: 9
+        )
+        #expect(projected.source == .projectedTeamPoints)
+        #expect(projected.points == 9)
+
+        let expected = WhatToPlayExpectedImprovementMetrics.calculate(
+            lostExpectedPoints: 6,
+            lostProjectedTeamPoints: 2
+        )
+        #expect(expected.source == .expectedPoints)
+        #expect(expected.points == 6)
+
+        let none = WhatToPlayExpectedImprovementMetrics.calculate(
+            lostExpectedPoints: -2,
+            lostProjectedTeamPoints: -1
+        )
+        #expect(none.source == .projectedTeamPoints)
+        #expect(none.points == 0)
+    }
+
     @Test("ملخص أداء وش تلعب يأتي من المحرك ويحافظ على السلاسل وفاقد القيمة")
     func statsSummaryMetricsCalculateTrainingPerformance() {
         let metrics = WhatToPlayStatsSummaryMetrics.summarize(chronologicalSamples: [
