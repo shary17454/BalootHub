@@ -640,6 +640,14 @@ struct WhatToPlayTrainerTests {
         )
         #expect(
             WhatToPlayReviewPriorityMetrics.classify(
+                expectedImpact: 0,
+                lostExpectedPoints: 2,
+                lostProjectedTeamPoints: 0,
+                lostProjectedAgainstSecondBestPoints: 8
+            ).category == .simulationLoss
+        )
+        #expect(
+            WhatToPlayReviewPriorityMetrics.classify(
                 expectedImpact: 1,
                 lostExpectedPoints: 2,
                 lostProjectedTeamPoints: 0

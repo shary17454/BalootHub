@@ -1040,6 +1040,30 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(priority.iconName, "chart.bar.xaxis")
     }
 
+    func testReviewPriorityUsesSecondSimulationLossWhenExpectedGapIsSmall() throws {
+        let item = try XCTUnwrap(
+            WhatToPlayStatsAnalyzer.reviewQueue(
+                for: [
+                    attempt(
+                        daysAgo: 1,
+                        correct: false,
+                        impact: 2,
+                        bestImpact: 4,
+                        projectedTeamPoints: 60,
+                        secondBestProjectedTeamPoints: 72
+                    )
+                ]
+            ).first
+        )
+
+        let priority = WhatToPlayStatsAnalyzer.reviewPriority(for: item)
+
+        XCTAssertEqual(priority.title, "المحاكاة ترجّح المراجعة".localized)
+        XCTAssertTrue(priority.detail.contains("\("خسرت بعد استكمال الجولة".localized): 12"))
+        XCTAssertTrue(priority.detail.contains("\("فاقد ثاني محاكاة".localized): 12"))
+        XCTAssertEqual(priority.iconName, "chart.bar.xaxis")
+    }
+
     func testReviewQueueCarriesSecondBestForReplayReview() {
         let secondBest = PlayingCard(suit: .diamonds, rank: .ace)
         let attempts = [

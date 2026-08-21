@@ -1480,7 +1480,8 @@ enum WhatToPlayStatsAnalyzer {
         let metrics = WhatToPlayReviewPriorityMetrics.classify(
             expectedImpact: item.expectedImpact,
             lostExpectedPoints: item.lostExpectedPoints,
-            lostProjectedTeamPoints: item.lostProjectedTeamPoints
+            lostProjectedTeamPoints: item.lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: item.lostProjectedAgainstSecondBestPoints
         )
 
         switch metrics.category {
@@ -1501,7 +1502,7 @@ enum WhatToPlayStatsAnalyzer {
         case .simulationLoss:
             return WhatToPlayReviewPriority(
                 title: "المحاكاة ترجّح المراجعة".localized,
-                detail: "\("خسرت بعد استكمال الجولة".localized): \(item.lostProjectedTeamPoints). \("راجع كيف تغيّر القرار نتيجة الجولة لا الأكلة فقط.".localized)",
+                detail: "\("خسرت بعد استكمال الجولة".localized): \(max(item.lostProjectedTeamPoints, item.lostProjectedAgainstSecondBestPoints)). \(simulationLossText(projectedLost: item.lostProjectedTeamPoints, secondProjectedLost: item.lostProjectedAgainstSecondBestPoints)). \("راجع كيف تغيّر القرار نتيجة الجولة لا الأكلة فقط.".localized)",
                 iconName: "chart.bar.xaxis"
             )
 
@@ -4090,11 +4091,11 @@ enum WhatToPlayStatsAnalyzer {
     }
 
     private static func reviewStepTitle(for reviewItem: WhatToPlayReviewItem) -> String {
+        if reviewItem.lostProjectedAgainstSecondBestPoints > max(reviewItem.lostExpectedPoints, reviewItem.lostProjectedTeamPoints) {
+            return "\("أعد موقف".localized) \(difficultyTitle(reviewItem.difficulty)) · \("فاقد ثاني محاكاة".localized): \(reviewItem.lostProjectedAgainstSecondBestPoints)"
+        }
         if reviewItem.lostProjectedTeamPoints > reviewItem.lostExpectedPoints {
             return "\("أعد موقف".localized) \(difficultyTitle(reviewItem.difficulty)) · \("نقاط محاكاة ضائعة".localized): \(reviewItem.lostProjectedTeamPoints)"
-        }
-        if reviewItem.lostProjectedAgainstSecondBestPoints > reviewItem.lostExpectedPoints {
-            return "\("أعد موقف".localized) \(difficultyTitle(reviewItem.difficulty)) · \("فاقد ثاني محاكاة".localized): \(reviewItem.lostProjectedAgainstSecondBestPoints)"
         }
         return "\("أعد موقف".localized) \(difficultyTitle(reviewItem.difficulty)) · \("نقاط متوقعة ضائعة".localized): \(reviewItem.lostExpectedPoints)"
     }

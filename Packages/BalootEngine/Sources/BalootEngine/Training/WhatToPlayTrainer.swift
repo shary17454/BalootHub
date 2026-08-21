@@ -1304,7 +1304,8 @@ public struct WhatToPlayReviewPriorityMetrics: Sendable, Equatable {
     public static func classify(
         expectedImpact: Int,
         lostExpectedPoints: Int,
-        lostProjectedTeamPoints: Int
+        lostProjectedTeamPoints: Int,
+        lostProjectedAgainstSecondBestPoints: Int = 0
     ) -> WhatToPlayReviewPriorityMetrics {
         if expectedImpact < 0 {
             return WhatToPlayReviewPriorityMetrics(category: .negativeImpact)
@@ -1314,7 +1315,7 @@ public struct WhatToPlayReviewPriorityMetrics: Sendable, Equatable {
             return WhatToPlayReviewPriorityMetrics(category: .valueOpportunity)
         }
 
-        if lostProjectedTeamPoints >= 6 {
+        if max(lostProjectedTeamPoints, lostProjectedAgainstSecondBestPoints) >= 6 {
             return WhatToPlayReviewPriorityMetrics(category: .simulationLoss)
         }
 
