@@ -3478,7 +3478,7 @@ public enum WhatToPlayTrainer {
         rules: BalootRulesConfiguration = .standard
     ) throws -> WhatToPlayScenario {
         let agent = ExpertBalootAgent(samples: difficulty.expertSamples)
-        let requestedTrumpSuit = preferredMode == .sun ? nil : preferredTrumpSuit
+        let requestedTrumpSuit = preferredMode == .hokum ? preferredTrumpSuit : nil
 
         let hasPreference = preferredFocus != nil || preferredMode != nil || requestedTrumpSuit != nil
         let searchLimit = hasPreference ? 1_200 : 40

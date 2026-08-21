@@ -2160,6 +2160,25 @@ struct WhatToPlayTrainerTests {
         #expect(!scenario.options.isEmpty)
     }
 
+    @Test("الوضع التلقائي يتجاهل لون حكم عالق ولا يضيّق توليد الصن والحكم")
+    func generationIgnoresTrumpSuitWhenModeIsAutomatic() throws {
+        let automatic = try WhatToPlayTrainer.generateScenario(
+            seed: 2_026,
+            difficulty: .easy
+        )
+        let withStaleTrumpSuit = try WhatToPlayTrainer.generateScenario(
+            seed: 2_026,
+            difficulty: .easy,
+            preferredTrumpSuit: .spades
+        )
+
+        #expect(withStaleTrumpSuit.seed == automatic.seed)
+        #expect(withStaleTrumpSuit.state.mode == automatic.state.mode)
+        #expect(withStaleTrumpSuit.state.trumpSuit == automatic.state.trumpSuit)
+        #expect(withStaleTrumpSuit.options.map(\.card) == automatic.options.map(\.card))
+        #expect(withStaleTrumpSuit.bestOption?.card == automatic.bestOption?.card)
+    }
+
     @Test("طلب لون حكم محدد يولد موقف حكم مطابقًا بشكل حتمي")
     func generationHonorsPreferredTrumpSuitDeterministically() throws {
         for suit in Suit.allCases {
