@@ -108,6 +108,52 @@ struct WhatToPlayTrainerTests {
         #expect(trump.missingSuits == [.diamonds, .clubs, .spades])
     }
 
+    @Test("نبض جلسة وش تلعب يأتي من المحرك")
+    func sessionPulseMetricsClassifyRecentAttempts() {
+        let empty = WhatToPlaySessionPulseMetrics.classify(
+            totalAttempts: 0,
+            recentMistakes: 0,
+            recentAverageExpectedImpact: 0,
+            window: 3
+        )
+        #expect(empty.state == .noData)
+        #expect(empty.inspectedAttempts == 0)
+
+        let warming = WhatToPlaySessionPulseMetrics.classify(
+            totalAttempts: 2,
+            recentMistakes: 1,
+            recentAverageExpectedImpact: 0,
+            window: 3
+        )
+        #expect(warming.state == .warmingUp)
+        #expect(warming.inspectedAttempts == 2)
+
+        let focused = WhatToPlaySessionPulseMetrics.classify(
+            totalAttempts: 4,
+            recentMistakes: 0,
+            recentAverageExpectedImpact: 2,
+            window: 3
+        )
+        #expect(focused.state == .focused)
+        #expect(focused.inspectedAttempts == 3)
+
+        let reviewByMistakes = WhatToPlaySessionPulseMetrics.classify(
+            totalAttempts: 4,
+            recentMistakes: 2,
+            recentAverageExpectedImpact: 1,
+            window: 3
+        )
+        #expect(reviewByMistakes.state == .reviewNeeded)
+
+        let reviewByImpact = WhatToPlaySessionPulseMetrics.classify(
+            totalAttempts: 4,
+            recentMistakes: 1,
+            recentAverageExpectedImpact: -4,
+            window: 3
+        )
+        #expect(reviewByImpact.state == .reviewNeeded)
+    }
+
     @Test("مراجعة اختيار وش تلعب تحسب الفوارق وجودة القرار من المحرك")
     func choiceReviewCalculatesLossesAndQuality() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2, difficulty: .hard)

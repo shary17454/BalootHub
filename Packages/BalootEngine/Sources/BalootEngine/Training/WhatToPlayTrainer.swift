@@ -322,6 +322,50 @@ public struct WhatToPlayTrumpSuitCoverageMetrics: Sendable, Equatable {
     }
 }
 
+/// حالة الجلسة الحالية في مدرب «وش تلعب؟» دون نصوص واجهة.
+public enum WhatToPlaySessionPulseState: String, Sendable, Codable, Equatable, CaseIterable {
+    case noData
+    case warmingUp
+    case focused
+    case reviewNeeded
+}
+
+/// نبض الجلسة الحالي من آخر محاولات اللاعب في «وش تلعب؟».
+public struct WhatToPlaySessionPulseMetrics: Sendable, Equatable {
+    public let state: WhatToPlaySessionPulseState
+    public let inspectedAttempts: Int
+
+    public init(state: WhatToPlaySessionPulseState, inspectedAttempts: Int) {
+        self.state = state
+        self.inspectedAttempts = inspectedAttempts
+    }
+
+    public static func classify(
+        totalAttempts: Int,
+        recentMistakes: Int,
+        recentAverageExpectedImpact: Int,
+        window: Int = 3
+    ) -> WhatToPlaySessionPulseMetrics {
+        guard totalAttempts >= window, window > 0 else {
+            return WhatToPlaySessionPulseMetrics(
+                state: totalAttempts == 0 ? .noData : .warmingUp,
+                inspectedAttempts: max(0, totalAttempts)
+            )
+        }
+
+        let inspected = min(totalAttempts, window)
+        if recentMistakes == 0 && recentAverageExpectedImpact >= 0 {
+            return WhatToPlaySessionPulseMetrics(state: .focused, inspectedAttempts: inspected)
+        }
+
+        if recentMistakes >= 2 || recentAverageExpectedImpact < -3 {
+            return WhatToPlaySessionPulseMetrics(state: .reviewNeeded, inspectedAttempts: inspected)
+        }
+
+        return WhatToPlaySessionPulseMetrics(state: .warmingUp, inspectedAttempts: inspected)
+    }
+}
+
 /// درجة وضوح أفضل ورقة في موقف «وش تلعب؟» مقارنة بثاني أفضل خيار.
 public enum WhatToPlayBestMoveConfidence: String, Sendable, Codable, Equatable, CaseIterable {
     case tied

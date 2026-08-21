@@ -3427,49 +3427,50 @@ enum WhatToPlayStatsAnalyzer {
     }
 
     static func sessionPulse(for attempts: [WhatToPlayAttempt], window: Int = 3) -> WhatToPlaySessionPulse {
-        guard attempts.count >= window, window > 0 else {
+        let recent = Array(recentAttempts(attempts, limit: max(0, window)))
+        let metrics = WhatToPlaySessionPulseMetrics.classify(
+            totalAttempts: attempts.count,
+            recentMistakes: recent.filter { !$0.isCorrect }.count,
+            recentAverageExpectedImpact: summarize(attempts: recent).averageExpectedImpact,
+            window: window
+        )
+
+        switch metrics.state {
+        case .noData:
             return WhatToPlaySessionPulse(
-                state: attempts.isEmpty ? .noData : .warmingUp,
-                title: attempts.isEmpty ? "لا توجد جلسة بعد".localized : "بداية جلسة".localized,
-                detail: attempts.isEmpty
-                    ? "ابدأ أول موقف حتى تظهر قراءة الجلسة الحالية.".localized
-                    : "أكمل عدة مواقف متتالية حتى يعطيك المدرب قراءة آنية أوضح.".localized,
+                state: .noData,
+                title: "لا توجد جلسة بعد".localized,
+                detail: "ابدأ أول موقف حتى تظهر قراءة الجلسة الحالية.".localized,
                 iconName: "timer",
-                inspectedAttempts: attempts.count
+                inspectedAttempts: metrics.inspectedAttempts
             )
-        }
-
-        let recent = Array(recentAttempts(attempts, limit: window))
-        let mistakes = recent.filter { !$0.isCorrect }.count
-        let averageImpact = summarize(attempts: recent).averageExpectedImpact
-
-        if mistakes == 0 && averageImpact >= 0 {
+        case .focused:
             return WhatToPlaySessionPulse(
                 state: .focused,
                 title: "جلسة مركزة".localized,
                 detail: "آخر قراراتك صحيحة أو رابحة؛ استمر أو جرّب موقفًا أصعب.".localized,
                 iconName: "bolt.circle.fill",
-                inspectedAttempts: recent.count
+                inspectedAttempts: metrics.inspectedAttempts
             )
-        }
-
-        if mistakes >= 2 || averageImpact < -3 {
+        case .reviewNeeded:
             return WhatToPlaySessionPulse(
                 state: .reviewNeeded,
                 title: "توقف للمراجعة".localized,
                 detail: "آخر محاولاتك فيها أخطاء مؤثرة؛ راجع السبب قبل طلب موقف جديد.".localized,
                 iconName: "pause.circle.fill",
-                inspectedAttempts: recent.count
+                inspectedAttempts: metrics.inspectedAttempts
+            )
+        case .warmingUp:
+            return WhatToPlaySessionPulse(
+                state: .warmingUp,
+                title: attempts.count < window || window <= 0 ? "بداية جلسة".localized : "جلسة قيد البناء".localized,
+                detail: attempts.count < window || window <= 0
+                    ? "أكمل عدة مواقف متتالية حتى يعطيك المدرب قراءة آنية أوضح.".localized
+                    : "أداؤك الحالي مختلط؛ ركز على تقليل الخسارة في الاختيارات القريبة.".localized,
+                iconName: attempts.count < window || window <= 0 ? "timer" : "chart.xyaxis.line",
+                inspectedAttempts: metrics.inspectedAttempts
             )
         }
-
-        return WhatToPlaySessionPulse(
-            state: .warmingUp,
-            title: "جلسة قيد البناء".localized,
-            detail: "أداؤك الحالي مختلط؛ ركز على تقليل الخسارة في الاختيارات القريبة.".localized,
-            iconName: "chart.xyaxis.line",
-            inspectedAttempts: recent.count
-        )
     }
 
     static func microDrill(for attempts: [WhatToPlayAttempt]) -> WhatToPlayMicroDrill {
