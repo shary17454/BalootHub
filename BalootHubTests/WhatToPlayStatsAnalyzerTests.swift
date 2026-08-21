@@ -915,6 +915,59 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(item?.valueLossTitle, "خسارة قيمة عالية".localized)
     }
 
+    func testReviewQueueExplainsSecondBestSimulationPathChoice() throws {
+        let selected = PlayingCard(suit: .diamonds, rank: .king)
+        let bestSimulation = PlayingCard(suit: .hearts, rank: .ace)
+        let item = try XCTUnwrap(
+            WhatToPlayStatsAnalyzer.reviewQueue(
+                for: [
+                    attempt(
+                        daysAgo: 1,
+                        correct: false,
+                        impact: 2,
+                        bestImpact: 5,
+                        selectedCard: selected,
+                        bestSimulationCard: bestSimulation,
+                        secondBestSimulationCard: selected,
+                        projectedTeamPoints: 64,
+                        bestProjectedTeamPoints: 76,
+                        secondBestProjectedTeamPoints: 72
+                    )
+                ]
+            ).first
+        )
+
+        XCTAssertEqual(item.simulationChoiceTitle, "اخترت ثاني مسار محاكاة".localized)
+        XCTAssertTrue(item.simulationChoiceDetail?.contains("12") ?? false)
+        XCTAssertEqual(item.simulationChoiceIconName, "2.circle.fill")
+    }
+
+    func testReviewQueueExplainsOutsideSimulationPathChoice() throws {
+        let selected = PlayingCard(suit: .clubs, rank: .seven)
+        let item = try XCTUnwrap(
+            WhatToPlayStatsAnalyzer.reviewQueue(
+                for: [
+                    attempt(
+                        daysAgo: 1,
+                        correct: false,
+                        impact: -1,
+                        bestImpact: 5,
+                        selectedCard: selected,
+                        bestSimulationCard: PlayingCard(suit: .hearts, rank: .ace),
+                        secondBestSimulationCard: PlayingCard(suit: .diamonds, rank: .king),
+                        projectedTeamPoints: 48,
+                        bestProjectedTeamPoints: 80,
+                        secondBestProjectedTeamPoints: 72
+                    )
+                ]
+            ).first
+        )
+
+        XCTAssertEqual(item.simulationChoiceTitle, "خارج أفضل مسارات المحاكاة".localized)
+        XCTAssertTrue(item.simulationChoiceDetail?.contains("ليس أفضل ولا ثاني أفضل".localized) ?? false)
+        XCTAssertEqual(item.simulationChoiceIconName, "point.3.connected.trianglepath.dotted")
+    }
+
     func testReviewQueueSeverityUsesSecondSimulationLossWhenLarger() throws {
         let item = try XCTUnwrap(
             WhatToPlayStatsAnalyzer.reviewQueue(

@@ -2343,6 +2343,27 @@ struct WhatToPlayTrainerView: View {
 
                 reviewSimulationView(item)
 
+                if let title = item.simulationChoiceTitle,
+                   let detail = item.simulationChoiceDetail,
+                   let iconName = item.simulationChoiceIconName {
+                    Label {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(title)
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(AppColor.textPrimary)
+                            Text(detail)
+                                .font(.caption2)
+                                .foregroundStyle(AppColor.textSecondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    } icon: {
+                        Image(systemName: iconName)
+                            .foregroundStyle(AppColor.warning)
+                    }
+                    .padding(AppSpacing.xs)
+                    .background(AppColor.warning.opacity(0.1), in: RoundedRectangle(cornerRadius: AppRadius.small))
+                }
+
                 if let title = item.tacticalReasonTitle,
                    let detail = item.tacticalReasonDetail,
                    let iconName = item.tacticalReasonIconName {

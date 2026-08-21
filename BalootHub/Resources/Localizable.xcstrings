@@ -24532,6 +24532,90 @@
         }
       }
     },
+    "اخترت ثاني مسار محاكاة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Du hast den zweiten Simulationspfad gewählt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You picked the second simulation path" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Elegiste la segunda ruta de simulación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Vous avez choisi le deuxième chemin de simulation" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आपने दूसरा सिमुलेशन रास्ता चुना" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Anda memilih jalur simulasi kedua" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Вы выбрали второй путь симуляции" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "İkinci simülasyon yolunu seçtin" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ نے دوسرا سیمولیشن راستہ چنا" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你选择了第二模拟路径" } }
+      }
+    },
+    "اختيارك قريب من مسار المحاكاة الأفضل، لكن لا يزال يخسر عن أفضل محاكاة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Deine Wahl liegt nah am besten Simulationspfad, verliert aber noch gegenüber der besten Simulation" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your choice is close to the best simulation path, but still loses against the best simulation" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tu elección está cerca de la mejor ruta de simulación, pero aún pierde frente a la mejor simulación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Votre choix est proche du meilleur chemin de simulation, mais perd encore face à la meilleure simulation" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आपका चुनाव सर्वश्रेष्ठ सिमुलेशन रास्ते के करीब है, लेकिन अभी भी सर्वश्रेष्ठ सिमुलेशन से पीछे है" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Pilihan Anda dekat dengan jalur simulasi terbaik, tetapi masih kalah dari simulasi terbaik" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Ваш выбор близок к лучшему пути симуляции, но всё еще уступает лучшей симуляции" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Seçimin en iyi simülasyon yoluna yakın, ancak en iyi simülasyona karşı hâlâ kaybediyor" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ کا انتخاب بہترین سیمولیشن راستے کے قریب ہے، مگر اب بھی بہترین سیمولیشن سے پیچھے ہے" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你的选择接近最佳模拟路径，但仍落后于最佳模拟" } }
+      }
+    },
+    "قارن Replay بين المسارين قبل إعادة المحاولة." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Vergleiche das Replay beider Pfade, bevor du es erneut versuchst." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Compare the replay between both paths before trying again." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Compara el replay entre ambas rutas antes de intentarlo de nuevo." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Comparez le replay des deux chemins avant de réessayer." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "दोनों रास्तों का रिप्ले तुलना करें, फिर दोबारा प्रयास करें." } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Bandingkan replay kedua jalur sebelum mencoba lagi." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Сравните replay двух путей перед новой попыткой." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Tekrar denemeden önce iki yolun replay'ini karşılaştır." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "دوبارہ کوشش سے پہلے دونوں راستوں کا Replay موازنہ کریں۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "再次尝试前，比较两条路径的回放。" } }
+      }
+    },
+    "خارج أفضل مسارات المحاكاة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Außerhalb der besten Simulationspfade" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Outside the best simulation paths" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Fuera de las mejores rutas de simulación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Hors des meilleurs chemins de simulation" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सर्वश्रेष्ठ सिमुलेशन रास्तों से बाहर" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Di luar jalur simulasi terbaik" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Вне лучших путей симуляции" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "En iyi simülasyon yollarının dışında" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "بہترین سیمولیشن راستوں سے باہر" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "不在最佳模拟路径内" } }
+      }
+    },
+    "اختيارك ليس أفضل ولا ثاني أفضل مسار محاكاة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Deine Wahl ist weder der beste noch der zweitbeste Simulationspfad" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your choice is neither the best nor the second-best simulation path" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tu elección no es la mejor ni la segunda mejor ruta de simulación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Votre choix n'est ni le meilleur ni le deuxième meilleur chemin de simulation" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आपका चुनाव न सर्वश्रेष्ठ है न दूसरा सर्वश्रेष्ठ सिमुलेशन रास्ता" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Pilihan Anda bukan jalur simulasi terbaik maupun kedua terbaik" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Ваш выбор не является ни лучшим, ни вторым лучшим путем симуляции" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Seçimin ne en iyi ne de ikinci en iyi simülasyon yolu" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ کا انتخاب نہ بہترین ہے نہ دوسرا بہترین سیمولیشن راستہ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你的选择既不是最佳也不是第二佳模拟路径" } }
+      }
+    },
+    "ابدأ Replay بأفضل محاكاة ثم راقب متى تغيرت نقاط الجولة." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Starte das Replay mit der besten Simulation und beobachte, wann sich die Rundenpunkte ändern." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Start replay with the best simulation, then watch when the round points change." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Inicia el replay con la mejor simulación y observa cuándo cambian los puntos de la ronda." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Lancez le replay avec la meilleure simulation, puis observez quand les points de la manche changent." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सर्वश्रेष्ठ सिमुलेशन से रिप्ले शुरू करें, फिर देखें राउंड पॉइंट कब बदलते हैं." } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Mulai replay dengan simulasi terbaik, lalu lihat kapan poin ronde berubah." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Начните replay с лучшей симуляции и посмотрите, когда меняются очки раунда." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Replay'i en iyi simülasyonla başlat, sonra tur puanlarının ne zaman değiştiğini izle." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "بہترین سیمولیشن سے Replay شروع کریں، پھر دیکھیں راؤنڈ پوائنٹس کب بدلتے ہیں۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "从最佳模拟开始回放，然后观察回合分数何时变化。" } }
+      }
+    },
     "مطابقة المحاكاة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Simulationsabgleich" } },

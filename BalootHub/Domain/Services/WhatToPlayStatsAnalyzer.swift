@@ -275,6 +275,9 @@ struct WhatToPlayReviewItem: Equatable, Identifiable {
     let tacticalReasonTitle: String?
     let tacticalReasonDetail: String?
     let tacticalReasonIconName: String?
+    let simulationChoiceTitle: String?
+    let simulationChoiceDetail: String?
+    let simulationChoiceIconName: String?
     let simulationSummary: String?
     let simulationTeamResult: String?
     let simulationTrickPoints: Int?
@@ -1339,6 +1342,7 @@ enum WhatToPlayStatsAnalyzer {
                 lostProjectedAgainstSecondBestPoints: attempt.lostProjectedAgainstSecondBestPoints
             )
             let tacticalReason = tacticalReviewReason(for: attempt)
+            let simulationChoiceReason = simulationChoiceReviewReason(for: attempt)
             let simulationDisplay = WhatToPlaySimulationFormatter.display(for: attempt)
             return WhatToPlayReviewItem(
                 id: attempt.id,
@@ -1372,6 +1376,9 @@ enum WhatToPlayStatsAnalyzer {
                 tacticalReasonTitle: tacticalReason?.title,
                 tacticalReasonDetail: tacticalReason?.detail,
                 tacticalReasonIconName: tacticalReason?.iconName,
+                simulationChoiceTitle: simulationChoiceReason?.title,
+                simulationChoiceDetail: simulationChoiceReason?.detail,
+                simulationChoiceIconName: simulationChoiceReason?.iconName,
                 simulationSummary: simulationDisplay?.summary,
                 simulationTeamResult: simulationDisplay?.teamResult,
                 simulationTrickPoints: simulationDisplay?.trickPoints,
@@ -1456,6 +1463,30 @@ enum WhatToPlayStatsAnalyzer {
         tacticalReviewReason(
             expectedImpact: attempt.expectedImpact,
             impactBreakdown: attempt.impactBreakdown
+        )
+    }
+
+    private static func simulationChoiceReviewReason(for attempt: WhatToPlayAttempt) -> WhatToPlayReviewPriority? {
+        guard let selected = attempt.selectedCard,
+              let bestSimulation = attempt.bestSimulationCard
+        else { return nil }
+
+        if selected == bestSimulation {
+            return nil
+        }
+
+        if selected == attempt.secondBestSimulationCard {
+            return WhatToPlayReviewPriority(
+                title: "اخترت ثاني مسار محاكاة".localized,
+                detail: "\("اختيارك قريب من مسار المحاكاة الأفضل، لكن لا يزال يخسر عن أفضل محاكاة".localized): \(attempt.lostProjectedTeamPoints). \("قارن Replay بين المسارين قبل إعادة المحاولة.".localized)",
+                iconName: "2.circle.fill"
+            )
+        }
+
+        return WhatToPlayReviewPriority(
+            title: "خارج أفضل مسارات المحاكاة".localized,
+            detail: "\("اختيارك ليس أفضل ولا ثاني أفضل مسار محاكاة".localized). \("ابدأ Replay بأفضل محاكاة ثم راقب متى تغيرت نقاط الجولة.".localized)",
+            iconName: "point.3.connected.trianglepath.dotted"
         )
     }
 
