@@ -43,15 +43,15 @@ enum WhatToPlayScenarioCode {
         let normalizedCode = code.trimmingCharacters(in: .whitespacesAndNewlines)
         let parts = normalizedCode.split(separator: "-", omittingEmptySubsequences: false)
         guard parts.count == 5 || parts.count == 6,
-              parts[0] == "WTP",
+              matchesToken(String(parts[0]), "WTP"),
               let seed = UInt64(parts[1]),
-              let difficulty = WhatToPlayDifficulty(rawValue: String(parts[2]))
+              let difficulty = difficultyToken(String(parts[2]))
         else { return nil }
 
         let focusKind: WhatToPlayScenarioFocusKind?
-        if parts[3] == "auto" {
+        if matchesToken(String(parts[3]), "auto") {
             focusKind = nil
-        } else if let parsedFocus = WhatToPlayScenarioFocusKind(rawValue: String(parts[3])) {
+        } else if let parsedFocus = focusToken(String(parts[3])) {
             focusKind = parsedFocus
         } else {
             return nil
@@ -139,18 +139,34 @@ enum WhatToPlayScenarioCode {
     }
 
     private static func parseModeToken(_ value: String) -> (gameMode: GameMode?, trumpSuit: Suit?)? {
-        if value == "auto" { return (nil, nil) }
-        if value == "sun" { return (.sun, nil) }
-        if value == "hokum" { return (.hokum, nil) }
+        if matchesToken(value, "auto") { return (nil, nil) }
+        if matchesToken(value, "sun") { return (.sun, nil) }
+        if matchesToken(value, "hokum") { return (.hokum, nil) }
 
         let parts = value.split(separator: ".", omittingEmptySubsequences: false)
         guard parts.count == 2,
-              parts[0] == "hokum",
+              matchesToken(String(parts[0]), "hokum"),
               let suitOrdinal = Int(parts[1]),
               let suit = Suit.allCases.first(where: { $0.ordinal == suitOrdinal })
         else { return nil }
 
         return (.hokum, suit)
+    }
+
+    private static func matchesToken(_ lhs: String, _ rhs: String) -> Bool {
+        lhs.compare(rhs, options: [.caseInsensitive]) == .orderedSame
+    }
+
+    private static func difficultyToken(_ value: String) -> WhatToPlayDifficulty? {
+        WhatToPlayDifficulty.allCases.first { difficulty in
+            matchesToken(difficulty.rawValue, value)
+        }
+    }
+
+    private static func focusToken(_ value: String) -> WhatToPlayScenarioFocusKind? {
+        WhatToPlayScenarioFocusKind.allCases.first { focusKind in
+            matchesToken(focusKind.rawValue, value)
+        }
     }
 
     private static func codeCandidates(in text: String) -> [String] {

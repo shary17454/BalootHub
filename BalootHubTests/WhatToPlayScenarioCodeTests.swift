@@ -62,6 +62,21 @@ final class WhatToPlayScenarioCodeTests: XCTestCase {
         XCTAssertNil(parsed?.selectedCard)
     }
 
+    func testScenarioCodeParsesKeyboardUppercasedTokens() {
+        let prompt = WhatToPlayScenarioCode.parse("WTP-2026-MEDIUM-OPENINGLEAD-SUN-P")
+        let reviewed = WhatToPlayScenarioCode.parse("WTP-2026-HARD-TRUMPPRESSURE-HOKUM.3-C37")
+
+        XCTAssertEqual(prompt?.difficulty, .medium)
+        XCTAssertEqual(prompt?.focusKind, .openingLead)
+        XCTAssertEqual(prompt?.gameMode, .sun)
+        XCTAssertNil(prompt?.selectedCard)
+        XCTAssertEqual(reviewed?.difficulty, .hard)
+        XCTAssertEqual(reviewed?.focusKind, .trumpPressure)
+        XCTAssertEqual(reviewed?.gameMode, .hokum)
+        XCTAssertEqual(reviewed?.trumpSuit, .spades)
+        XCTAssertEqual(reviewed?.selectedCard, PlayingCard(suit: .spades, rank: .ace))
+    }
+
     func testScenarioCodeExtractsCodeFromSharedText() {
         let text = """
         وش تلعب؟
@@ -120,6 +135,15 @@ final class WhatToPlayScenarioCodeTests: XCTestCase {
         XCTAssertEqual(
             WhatToPlayScenarioCode.extractCode(from: text),
             "WTP-2026-hard-trumpPressure-hokum.3-C37"
+        )
+    }
+
+    func testScenarioCodeExtractionDecodesKeyboardUppercasedPercentEncodedURL() {
+        let text = "HTTPS%3A%2F%2FBALOOTHUB.LOCAL%2FSHARE%2FWTP%2D2026%2DHARD%2DTRUMPPRESSURE%2DHOKUM.3%2DC37%2FOPEN"
+
+        XCTAssertEqual(
+            WhatToPlayScenarioCode.extractCode(from: text),
+            "WTP-2026-HARD-TRUMPPRESSURE-HOKUM.3-C37"
         )
     }
 

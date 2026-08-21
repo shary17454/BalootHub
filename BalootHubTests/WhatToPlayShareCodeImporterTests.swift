@@ -141,6 +141,28 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         )
     }
 
+    func testImporterDoesNotCreateDuplicateAttemptFromPercentEncodedSharedURL() async throws {
+        let scenario = try await WhatToPlayScenarioLoader.generate(
+            seed: 2026,
+            difficulty: .medium,
+            preferredFocus: .trumpPressure,
+            preferredMode: .hokum,
+            preferredTrumpSuit: .spades
+        )
+        let selected = try XCTUnwrap(scenario.options.last)
+        let code = WhatToPlayShareCard.content(for: scenario, selectedOption: selected).scenarioCode
+        let urlText = "https://baloothub.local/share/\(code)/open"
+        let encodedURL = try XCTUnwrap(
+            urlText.addingPercentEncoding(withAllowedCharacters: CharacterSet.alphanumerics)
+        )
+
+        let result = try await WhatToPlayShareCodeImporter.import(code: encodedURL, existingScenarioCodes: [code])
+
+        XCTAssertEqual(result.kind, .reviewedDecision(isDuplicate: true))
+        XCTAssertEqual(result.selectedOption?.card, selected.card)
+        XCTAssertNil(result.attempt)
+    }
+
     func testImporterRejectsMalformedCode() async {
         do {
             _ = try await WhatToPlayShareCodeImporter.import(code: "WTP-invalid", existingScenarioCodes: [])

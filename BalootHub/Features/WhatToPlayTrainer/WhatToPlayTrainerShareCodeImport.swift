@@ -10,7 +10,7 @@ extension WhatToPlayTrainerView {
 
             HStack(spacing: AppSpacing.xs) {
                 TextField("رمز الموقف".localized, text: $shareCodeInput)
-                    .textInputAutocapitalization(.characters)
+                    .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
                     .textFieldStyle(.roundedBorder)
                     .disabled(isGeneratingScenario)
