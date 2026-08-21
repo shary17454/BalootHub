@@ -53,6 +53,7 @@ struct WhatToPlayTrainerView: View {
     @State var shareCodeInput = ""
     @State var shareCodeMessage: String?
     @State var isApplyingImportedShareCode = false
+    @State private var isSuppressingPreferredTrumpSuitChange = false
 
     init(
         seed: UInt64? = nil,
@@ -334,7 +335,7 @@ struct WhatToPlayTrainerView: View {
                 preferredTrumpSuit: nil,
                 attempts: attempts
             )
-            preferredTrumpSuit = nil
+            clearPreferredTrumpSuitForAutomaticChange()
             generateScenario()
         }
         .onChange(of: preferredFocusRaw) { _, _ in
@@ -351,7 +352,7 @@ struct WhatToPlayTrainerView: View {
                 preferredTrumpSuit: nil,
                 attempts: attempts
             )
-            preferredTrumpSuit = nil
+            clearPreferredTrumpSuitForAutomaticChange()
             generateScenario()
         }
         .onChange(of: preferredModeRaw) { _, _ in
@@ -368,7 +369,28 @@ struct WhatToPlayTrainerView: View {
                 preferredTrumpSuit: nil,
                 attempts: attempts
             )
-            preferredTrumpSuit = nil
+            clearPreferredTrumpSuitForAutomaticChange()
+            generateScenario()
+        }
+        .onChange(of: preferredTrumpSuit) { _, _ in
+            if isSuppressingPreferredTrumpSuitChange {
+                isSuppressingPreferredTrumpSuitChange = false
+                saveTrainerPreferences()
+                return
+            }
+            guard !isApplyingImportedShareCode else {
+                saveTrainerPreferences()
+                return
+            }
+            saveTrainerPreferences()
+            seed = WhatToPlayScenarioLoader.unattemptedSeed(
+                startingAt: seed,
+                difficulty: difficulty,
+                preferredFocus: preferredFocus,
+                preferredMode: preferredMode,
+                preferredTrumpSuit: preferredTrumpSuit,
+                attempts: attempts
+            )
             generateScenario()
         }
         .onDisappear {
@@ -463,6 +485,17 @@ struct WhatToPlayTrainerView: View {
             }
             .pickerStyle(.segmented)
             .accessibilityLabel("النمط".localized)
+
+            if preferredMode == .hokum {
+                Picker("لون الحكم".localized, selection: $preferredTrumpSuit) {
+                    Text("تلقائي".localized).tag(Suit?.none)
+                    ForEach(Suit.allCases) { suit in
+                        Text(suit.spokenName).tag(Optional(suit))
+                    }
+                }
+                .pickerStyle(.menu)
+                .accessibilityLabel("لون الحكم".localized)
+            }
 
             Button {
                 nextScenario()
@@ -3285,7 +3318,7 @@ struct WhatToPlayTrainerView: View {
         seed = target.seed
         preferredFocusRaw = target.preferredFocusRaw
         preferredModeRaw = target.preferredModeRaw
-        preferredTrumpSuit = target.trumpSuit
+        setPreferredTrumpSuitWithoutRegeneration(target.trumpSuit)
         selectedOption = nil
         pendingReviewSelection = target.pendingReviewSelection
         isRetryingCurrentScenario = false
@@ -3294,6 +3327,16 @@ struct WhatToPlayTrainerView: View {
         } else {
             difficulty = target.difficulty
         }
+    }
+
+    private func clearPreferredTrumpSuitForAutomaticChange() {
+        setPreferredTrumpSuitWithoutRegeneration(nil)
+    }
+
+    private func setPreferredTrumpSuitWithoutRegeneration(_ suit: Suit?) {
+        guard preferredTrumpSuit != suit else { return }
+        isSuppressingPreferredTrumpSuitChange = true
+        preferredTrumpSuit = suit
     }
 
     private func startNextScenarioRecommendation() {
@@ -3310,7 +3353,7 @@ struct WhatToPlayTrainerView: View {
             difficulty = nextScenarioRecommendation.difficulty
             preferredFocusRaw = targetFocusRaw
             preferredModeRaw = targetModeRaw
-            preferredTrumpSuit = targetTrumpSuit
+            setPreferredTrumpSuitWithoutRegeneration(targetTrumpSuit)
             generateScenario()
         }
     }
@@ -3335,7 +3378,7 @@ struct WhatToPlayTrainerView: View {
             difficulty = targetDifficulty
             preferredFocusRaw = targetFocusRaw
             preferredModeRaw = targetModeRaw
-            preferredTrumpSuit = trumpSuit
+            setPreferredTrumpSuitWithoutRegeneration(trumpSuit)
             generateScenario()
         }
     }
@@ -3436,7 +3479,7 @@ struct WhatToPlayTrainerView: View {
             difficulty = trainingSessionPlan.difficulty
             preferredFocusRaw = targetFocusRaw
             preferredModeRaw = targetModeRaw
-            preferredTrumpSuit = targetTrumpSuit
+            setPreferredTrumpSuitWithoutRegeneration(targetTrumpSuit)
             generateScenario()
         }
     }
@@ -3456,7 +3499,7 @@ struct WhatToPlayTrainerView: View {
             difficulty = plan.difficulty
             preferredFocusRaw = targetFocusRaw
             preferredModeRaw = targetModeRaw
-            preferredTrumpSuit = targetTrumpSuit
+            setPreferredTrumpSuitWithoutRegeneration(targetTrumpSuit)
             generateScenario()
         }
     }
