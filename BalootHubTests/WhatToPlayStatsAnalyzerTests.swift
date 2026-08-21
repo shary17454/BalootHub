@@ -825,7 +825,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
                 impact: 2,
                 bestImpact: 4,
                 projectedTeamPoints: 61,
-                bestProjectedTeamPoints: 74
+                bestProjectedTeamPoints: 74,
+                secondBestProjectedTeamPoints: 68
             )
         ]
 
@@ -833,6 +834,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(item?.projectedTeamPoints, 61)
         XCTAssertEqual(item?.lostProjectedTeamPoints, 13)
+        XCTAssertEqual(item?.secondBestProjectedTeamPoints, 68)
+        XCTAssertEqual(item?.lostProjectedAgainstSecondBestPoints, 7)
         XCTAssertEqual(item?.valueLossSeverity, .high)
         XCTAssertEqual(item?.valueLossTitle, "خسارة قيمة عالية".localized)
     }

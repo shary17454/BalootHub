@@ -233,6 +233,8 @@ struct WhatToPlayReviewItem: Equatable, Identifiable {
     let lostExpectedPoints: Int
     let projectedTeamPoints: Int?
     let lostProjectedTeamPoints: Int
+    let secondBestProjectedTeamPoints: Int?
+    let lostProjectedAgainstSecondBestPoints: Int
     let valueLossSeverity: WhatToPlayValueLossSeverity
     let valueLossTitle: String
     let secondBestExpectedImpact: Int?
@@ -1293,6 +1295,8 @@ enum WhatToPlayStatsAnalyzer {
                 lostExpectedPoints: attempt.lostExpectedPoints,
                 projectedTeamPoints: attempt.projectedTeamPoints,
                 lostProjectedTeamPoints: attempt.lostProjectedTeamPoints,
+                secondBestProjectedTeamPoints: attempt.secondBestProjectedTeamPoints,
+                lostProjectedAgainstSecondBestPoints: attempt.lostProjectedAgainstSecondBestPoints,
                 valueLossSeverity: severity,
                 valueLossTitle: valueLossTitle(for: severity),
                 secondBestExpectedImpact: attempt.secondBestExpectedImpact,
@@ -2434,6 +2438,12 @@ enum WhatToPlayStatsAnalyzer {
         }
         if let bestSimulationCard = item.bestSimulationCard {
             parts.append("\("أفضل محاكاة".localized): \(bestSimulationCard.accessibilityName)")
+        }
+        if let secondBestProjectedTeamPoints = item.secondBestProjectedTeamPoints {
+            parts.append("\("ثاني نتيجة محاكاة".localized): \(secondBestProjectedTeamPoints)")
+            if item.lostProjectedAgainstSecondBestPoints > 0 {
+                parts.append("\("فاقد ثاني محاكاة".localized): \(item.lostProjectedAgainstSecondBestPoints)")
+            }
         }
         if let simulationSummary = item.simulationSummary {
             parts.append(simulationSummary)
