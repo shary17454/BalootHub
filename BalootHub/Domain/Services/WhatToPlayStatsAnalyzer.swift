@@ -488,6 +488,9 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let lostProjectedTeamPoints: Int
     let averageLostProjectedTeamPoints: Int
     let projectedTeamPointAttempts: Int
+    let projectedSecondBestComparisonAttempts: Int
+    let lostProjectedAgainstSecondBestPoints: Int
+    let averageProjectedSecondBestGap: Int
     let valueCapturePercent: Int
     let valueCaptureAttempts: Int
     let impactTitle: String
@@ -2055,6 +2058,9 @@ enum WhatToPlayStatsAnalyzer {
                 lostProjectedTeamPoints: 0,
                 averageLostProjectedTeamPoints: 0,
                 projectedTeamPointAttempts: 0,
+                projectedSecondBestComparisonAttempts: 0,
+                lostProjectedAgainstSecondBestPoints: 0,
+                averageProjectedSecondBestGap: 0,
                 valueCapturePercent: 0,
                 valueCaptureAttempts: 0,
                 impactTitle: impactReading.title,
@@ -2111,6 +2117,9 @@ enum WhatToPlayStatsAnalyzer {
                 lostProjectedTeamPoints: sessionSummary.lostProjectedTeamPoints,
                 averageLostProjectedTeamPoints: sessionSummary.averageLostProjectedTeamPoints,
                 projectedTeamPointAttempts: sessionSummary.projectedTeamPointAttempts,
+                projectedSecondBestComparisonAttempts: sessionSummary.projectedSecondBestComparisonAttempts,
+                lostProjectedAgainstSecondBestPoints: sessionSummary.lostProjectedAgainstSecondBestPoints,
+                averageProjectedSecondBestGap: sessionSummary.averageProjectedSecondBestGap,
                 valueCapturePercent: sessionSummary.valueCapturePercent,
                 valueCaptureAttempts: sessionSummary.valueCaptureAttempts,
                 impactTitle: impactReading.title,
@@ -2167,6 +2176,9 @@ enum WhatToPlayStatsAnalyzer {
                 lostProjectedTeamPoints: sessionSummary.lostProjectedTeamPoints,
                 averageLostProjectedTeamPoints: sessionSummary.averageLostProjectedTeamPoints,
                 projectedTeamPointAttempts: sessionSummary.projectedTeamPointAttempts,
+                projectedSecondBestComparisonAttempts: sessionSummary.projectedSecondBestComparisonAttempts,
+                lostProjectedAgainstSecondBestPoints: sessionSummary.lostProjectedAgainstSecondBestPoints,
+                averageProjectedSecondBestGap: sessionSummary.averageProjectedSecondBestGap,
                 valueCapturePercent: sessionSummary.valueCapturePercent,
                 valueCaptureAttempts: sessionSummary.valueCaptureAttempts,
                 impactTitle: impactReading.title,
@@ -2222,6 +2234,9 @@ enum WhatToPlayStatsAnalyzer {
             lostProjectedTeamPoints: sessionSummary.lostProjectedTeamPoints,
             averageLostProjectedTeamPoints: sessionSummary.averageLostProjectedTeamPoints,
             projectedTeamPointAttempts: sessionSummary.projectedTeamPointAttempts,
+            projectedSecondBestComparisonAttempts: sessionSummary.projectedSecondBestComparisonAttempts,
+            lostProjectedAgainstSecondBestPoints: sessionSummary.lostProjectedAgainstSecondBestPoints,
+            averageProjectedSecondBestGap: sessionSummary.averageProjectedSecondBestGap,
             valueCapturePercent: sessionSummary.valueCapturePercent,
             valueCaptureAttempts: sessionSummary.valueCaptureAttempts,
             impactTitle: impactReading.title,

@@ -781,6 +781,16 @@ struct WhatToPlayTrainerView: View {
                         value: "\(progress.averageLostProjectedTeamPoints)"
                     )
                 }
+                if progress.projectedSecondBestComparisonAttempts > 0 && progress.lostProjectedAgainstSecondBestPoints > 0 {
+                    miniPlanMetric(
+                        title: "فاقد ثاني محاكاة".localized,
+                        value: "\(progress.lostProjectedAgainstSecondBestPoints)"
+                    )
+                    miniPlanMetric(
+                        title: "متوسط فاقد ثاني محاكاة".localized,
+                        value: "\(progress.averageProjectedSecondBestGap)"
+                    )
+                }
                 if let maxCostlyDecisions = progress.maxCostlyDecisions {
                     miniPlanMetric(
                         title: "قرارات مكلفة".localized,
@@ -1177,9 +1187,26 @@ struct WhatToPlayTrainerView: View {
                             value: "\(statsSummary.averageLostProjectedTeamPoints)"
                         )
                     }
+                    if statsSummary.projectedSecondBestComparisonAttempts > 0 && statsSummary.lostProjectedAgainstSecondBestPoints > 0 {
+                        InfoRow(
+                            icon: "2.circle.fill",
+                            title: "فاقد ثاني محاكاة".localized,
+                            value: "\(statsSummary.lostProjectedAgainstSecondBestPoints)"
+                        )
+                        InfoRow(
+                            icon: "chart.line.downtrend.xyaxis",
+                            title: "متوسط فاقد ثاني محاكاة".localized,
+                            value: "\(statsSummary.averageProjectedSecondBestGap)"
+                        )
+                    }
                     Text("\("محاولات المحاكاة".localized): \(statsSummary.projectedTeamPointAttempts)")
                         .font(AppTypography.caption)
                         .foregroundStyle(AppColor.textSecondary)
+                    if statsSummary.projectedSecondBestComparisonAttempts > 0 {
+                        Text("\("محاولات ثاني محاكاة".localized): \(statsSummary.projectedSecondBestComparisonAttempts)")
+                            .font(AppTypography.caption)
+                            .foregroundStyle(AppColor.textSecondary)
+                    }
                 }
                 if statsSummary.lostExpectedPoints > 0 {
                     InfoRow(

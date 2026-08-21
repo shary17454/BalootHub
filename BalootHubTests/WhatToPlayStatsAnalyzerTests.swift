@@ -3255,6 +3255,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.lostProjectedTeamPoints, 0)
         XCTAssertEqual(progress.averageLostProjectedTeamPoints, 0)
         XCTAssertEqual(progress.projectedTeamPointAttempts, 0)
+        XCTAssertEqual(progress.projectedSecondBestComparisonAttempts, 0)
+        XCTAssertEqual(progress.lostProjectedAgainstSecondBestPoints, 0)
+        XCTAssertEqual(progress.averageProjectedSecondBestGap, 0)
         XCTAssertEqual(progress.valueCapturePercent, 0)
         XCTAssertEqual(progress.valueCaptureAttempts, 0)
         XCTAssertEqual(progress.impactTitle, "الأثر غير محسوب بعد".localized)
@@ -3310,6 +3313,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.lostProjectedTeamPoints, 0)
         XCTAssertEqual(progress.averageLostProjectedTeamPoints, 0)
         XCTAssertEqual(progress.projectedTeamPointAttempts, 0)
+        XCTAssertEqual(progress.projectedSecondBestComparisonAttempts, 0)
+        XCTAssertEqual(progress.lostProjectedAgainstSecondBestPoints, 0)
+        XCTAssertEqual(progress.averageProjectedSecondBestGap, 0)
         XCTAssertEqual(progress.valueCaptureAttempts, 3)
         XCTAssertEqual(progress.valueCapturePercent, 58)
         XCTAssertEqual(progress.impactTitle, "أثر الجلسة رابح".localized)
@@ -3366,10 +3372,10 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
     func testTrainingSessionProgressTracksProjectedLossForSessionAttemptsOnly() {
         let plan = sessionPlan(difficulty: .medium, count: 3, target: 67)
         let attempts = [
-            attempt(daysAgo: 4, difficulty: .hard, correct: false, impact: -2, bestImpact: 4, projectedTeamPoints: 30, bestProjectedTeamPoints: 80),
-            attempt(daysAgo: 3, difficulty: .medium, correct: false, impact: 1, bestImpact: 4, projectedTeamPoints: 58, bestProjectedTeamPoints: 74),
-            attempt(daysAgo: 2, difficulty: .medium, correct: true, impact: 3, bestImpact: 3, projectedTeamPoints: 76, bestProjectedTeamPoints: 76),
-            attempt(daysAgo: 1, difficulty: .medium, correct: false, impact: 2, bestImpact: 4, projectedTeamPoints: 60, bestProjectedTeamPoints: 72)
+            attempt(daysAgo: 4, difficulty: .hard, correct: false, impact: -2, bestImpact: 4, projectedTeamPoints: 30, bestProjectedTeamPoints: 80, secondBestProjectedTeamPoints: 76),
+            attempt(daysAgo: 3, difficulty: .medium, correct: false, impact: 1, bestImpact: 4, projectedTeamPoints: 58, bestProjectedTeamPoints: 74, secondBestProjectedTeamPoints: 70),
+            attempt(daysAgo: 2, difficulty: .medium, correct: true, impact: 3, bestImpact: 3, projectedTeamPoints: 76, bestProjectedTeamPoints: 76, secondBestProjectedTeamPoints: 72),
+            attempt(daysAgo: 1, difficulty: .medium, correct: false, impact: 2, bestImpact: 4, projectedTeamPoints: 60, bestProjectedTeamPoints: 72, secondBestProjectedTeamPoints: 68)
         ]
 
         let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
@@ -3377,6 +3383,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.projectedTeamPointAttempts, 3)
         XCTAssertEqual(progress.lostProjectedTeamPoints, 28)
         XCTAssertEqual(progress.averageLostProjectedTeamPoints, 9)
+        XCTAssertEqual(progress.projectedSecondBestComparisonAttempts, 3)
+        XCTAssertEqual(progress.lostProjectedAgainstSecondBestPoints, 20)
+        XCTAssertEqual(progress.averageProjectedSecondBestGap, 7)
     }
 
     func testTrainingSessionGradePenalizesProjectedRoundLoss() {
