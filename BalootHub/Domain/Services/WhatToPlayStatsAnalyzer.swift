@@ -1550,9 +1550,12 @@ enum WhatToPlayStatsAnalyzer {
         }
 
         let qualitySummary = decisionQualitySummary(for: attempts)
+        let highestAttemptedDifficulty = WhatToPlayDifficulty.highestAttempted(
+            in: attempts.map(\.difficulty)
+        )
         if qualitySummary.trackedAttempts >= 3, qualitySummary.costlyPercent >= 30 {
             return WhatToPlayPracticeRecommendation(
-                difficulty: focusDifficulty(attempts)?.difficulty ?? highestAttemptedDifficulty(in: attempts) ?? .medium,
+                difficulty: focusDifficulty(attempts)?.difficulty ?? highestAttemptedDifficulty ?? .medium,
                 title: "قلّل القرارات المكلفة".localized,
                 detail: "\("نسبة القرارات المكلفة".localized): \(qualitySummary.costlyPercent)%. \("اختر مواقف قريبة من مستواك وراجع Replay أفضل قرار قبل رفع الصعوبة.".localized)",
                 iconName: "exclamationmark.triangle.fill"
@@ -1561,7 +1564,7 @@ enum WhatToPlayStatsAnalyzer {
 
         if summary.projectedTeamPointAttempts >= 3 && summary.averageLostProjectedTeamPoints >= 6 {
             return WhatToPlayPracticeRecommendation(
-                difficulty: focusDifficulty(attempts)?.difficulty ?? highestAttemptedDifficulty(in: attempts) ?? .medium,
+                difficulty: focusDifficulty(attempts)?.difficulty ?? highestAttemptedDifficulty ?? .medium,
                 title: "راجع المحاكاة".localized,
                 detail: "\("متوسط نقاط محاكاة ضائعة".localized): \(summary.averageLostProjectedTeamPoints). \("قرارك يخسر بعد استكمال الجولة؛ راجع Replay كامل قبل لعب موقف جديد.".localized)",
                 iconName: "chart.bar.xaxis"
@@ -1580,7 +1583,7 @@ enum WhatToPlayStatsAnalyzer {
 
         if summary.attempts >= 3 && summary.averageLostExpectedPoints >= 4 {
             return WhatToPlayPracticeRecommendation(
-                difficulty: focusDifficulty(attempts)?.difficulty ?? highestAttemptedDifficulty(in: attempts) ?? .medium,
+                difficulty: focusDifficulty(attempts)?.difficulty ?? highestAttemptedDifficulty ?? .medium,
                 title: "راجع القيمة قبل الصعوبة".localized,
                 detail: "\("متوسط النقاط الضائعة".localized): \(summary.averageLostExpectedPoints). \("ابق على مستوى قريب وراجع لماذا اختار الخبير ورقة أعلى قيمة قبل رفع التحدي.".localized)",
                 iconName: "chart.bar.doc.horizontal.fill"
@@ -1588,7 +1591,7 @@ enum WhatToPlayStatsAnalyzer {
         }
 
         if summary.currentStreak >= 3 && summary.accuracyPercent >= 75 {
-            let next = nextDifficulty(after: highestAttemptedDifficulty(in: attempts) ?? .medium)
+            let next = WhatToPlayDifficulty.next(after: highestAttemptedDifficulty ?? .medium)
             return WhatToPlayPracticeRecommendation(
                 difficulty: next,
                 title: "ارفع التحدي".localized,
@@ -1755,7 +1758,7 @@ enum WhatToPlayStatsAnalyzer {
 
         case .levelUp:
             return WhatToPlayTrainingSessionPlan(
-                difficulty: nextDifficulty(after: recommendation.difficulty),
+                difficulty: WhatToPlayDifficulty.next(after: recommendation.difficulty),
                 focusKind: focusKind,
                 gameMode: gameMode,
                 trumpSuit: trumpSuit,
@@ -4057,7 +4060,7 @@ enum WhatToPlayStatsAnalyzer {
     }
 
     private static func difficultyOrder(_ difficulty: WhatToPlayDifficulty) -> Int {
-        WhatToPlayDifficulty.allCases.firstIndex(of: difficulty) ?? Int.max
+        difficulty.trainingOrder
     }
 
     private static func scenarioFocusOrder(_ focusKind: WhatToPlayScenarioFocusKind) -> Int {
@@ -4252,16 +4255,6 @@ enum WhatToPlayStatsAnalyzer {
             detail: "اختيرت جلسة متوازنة لأن أداءك الحالي لا يشير إلى ضعف واحد واضح؛ الهدف تثبيت القرار عبر مواقف متنوعة.".localized,
             iconName: "target"
         )
-    }
-
-    private static func highestAttemptedDifficulty(in attempts: [WhatToPlayAttempt]) -> WhatToPlayDifficulty? {
-        attempts.map(\.difficulty).max { difficultyOrder($0) < difficultyOrder($1) }
-    }
-
-    private static func nextDifficulty(after difficulty: WhatToPlayDifficulty) -> WhatToPlayDifficulty {
-        let order = difficultyOrder(difficulty)
-        let nextIndex = min(order + 1, WhatToPlayDifficulty.allCases.count - 1)
-        return WhatToPlayDifficulty.allCases[nextIndex]
     }
 
     private static func difficultyTitle(_ difficulty: WhatToPlayDifficulty) -> String {

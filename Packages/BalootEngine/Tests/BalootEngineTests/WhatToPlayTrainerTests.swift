@@ -11,6 +11,19 @@ struct WhatToPlayTrainerTests {
         #expect(WhatToPlayDifficulty.hard.expertSamples < WhatToPlayDifficulty.expert.expertSamples)
     }
 
+    @Test("تدرج صعوبة وش تلعب يأتي من المحرك")
+    func difficultyProgressionComesFromEngine() {
+        #expect(WhatToPlayDifficulty.easy.trainingOrder < WhatToPlayDifficulty.medium.trainingOrder)
+        #expect(WhatToPlayDifficulty.medium.trainingOrder < WhatToPlayDifficulty.hard.trainingOrder)
+        #expect(WhatToPlayDifficulty.hard.trainingOrder < WhatToPlayDifficulty.expert.trainingOrder)
+        #expect(WhatToPlayDifficulty.next(after: .easy) == .medium)
+        #expect(WhatToPlayDifficulty.next(after: .medium) == .hard)
+        #expect(WhatToPlayDifficulty.next(after: .hard) == .expert)
+        #expect(WhatToPlayDifficulty.next(after: .expert) == .expert)
+        #expect(WhatToPlayDifficulty.highestAttempted(in: []) == nil)
+        #expect(WhatToPlayDifficulty.highestAttempted(in: [.medium, .easy, .hard]) == .hard)
+    }
+
     @Test("تصنيف جودة القرار يأتي من المحرك ويستخدم فاقد المحاكاة الأكبر")
     func decisionQualityClassifiesProjectedLoss() {
         #expect(WhatToPlayDecisionQuality.classify(isExpertChoice: true, lostExpectedPoints: 20) == .expertMatch)

@@ -15,6 +15,19 @@ public enum WhatToPlayDifficulty: String, Sendable, Codable, CaseIterable {
         case .expert: 24
         }
     }
+
+    public var trainingOrder: Int {
+        Self.allCases.firstIndex(of: self) ?? Int.max
+    }
+
+    public static func next(after difficulty: WhatToPlayDifficulty) -> WhatToPlayDifficulty {
+        let nextIndex = min(difficulty.trainingOrder + 1, allCases.count - 1)
+        return allCases[nextIndex]
+    }
+
+    public static func highestAttempted(in difficulties: [WhatToPlayDifficulty]) -> WhatToPlayDifficulty? {
+        difficulties.max { $0.trainingOrder < $1.trainingOrder }
+    }
 }
 
 /// جودة قرار اللاعب في موقف «وش تلعب؟» مقارنة باختيار الخبير ومحاكاة الجولة.
