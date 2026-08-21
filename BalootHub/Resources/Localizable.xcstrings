@@ -1,6 +1,166 @@
 {
   "sourceLanguage" : "ar",
   "strings" : {
+    "أسلوب لعبك" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your play style"
+          }
+        }
+      }
+    },
+    "إحصائيات اللاعب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Player statistics"
+          }
+        }
+      }
+    },
+    "تحليل محلي مبني على جلسات تسجيل البلوت المنتهية، ويستخدم بيانات السجل بدون اتصال أو حساب." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Local analysis based on completed Baloot score sessions, using history data without a connection or account."
+          }
+        }
+      }
+    },
+    "لا توجد بيانات كافية" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not enough data"
+          }
+        }
+      }
+    },
+    "الفوز" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wins"
+          }
+        }
+      }
+    },
+    "الخسارة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Losses"
+          }
+        }
+      }
+    },
+    "نسبة الفوز" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Win rate"
+          }
+        }
+      }
+    },
+    "متوسط النقاط" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Average points"
+          }
+        }
+      }
+    },
+    "أطول سلسلة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Longest streak"
+          }
+        }
+      }
+    },
+    "أعلى فوز" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Biggest win"
+          }
+        }
+      }
+    },
+    "أكبر خسارة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Biggest loss"
+          }
+        }
+      }
+    },
+    "تفصيل اللعب" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Play breakdown"
+          }
+        }
+      }
+    },
+    "جولات صن" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sun rounds"
+          }
+        }
+      }
+    },
+    "جولات حكم" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hokum rounds"
+          }
+        }
+      }
+    },
+    "نقاط المشاريع" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Project points"
+          }
+        }
+      }
+    },
+    "الكبوت" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kaboot"
+          }
+        }
+      }
+    },
     "تم عرض النتيجة، لكن تعذّر حفظ المحاولة في الإحصاءات." : {
       "localizations" : {
         "en" : {

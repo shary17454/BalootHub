@@ -34,8 +34,8 @@ struct PlayerStatsView: View {
                 if summary.finishedMatches == 0, summary.trainingAttempts == 0 {
                     EmptyStateView(
                         systemImage: "chart.xyaxis.line",
-                        title: "لا توجد بيانات كافية",
-                        message: "أنهِ جلسات تسجيل بلوت أو حل مواقف وش تلعب حتى يستطيع التطبيق تحليل أسلوب لعبك."
+                        title: "لا توجد بيانات كافية".localized,
+                        message: "أنهِ جلسات تسجيل بلوت أو حل مواقف وش تلعب حتى يستطيع التطبيق تحليل أسلوب لعبك.".localized
                     )
                 } else {
                     statsGrid
@@ -52,16 +52,16 @@ struct PlayerStatsView: View {
             .padding(AppSpacing.md)
         }
         .background(AppColor.background)
-        .navigationTitle("أسلوب لعبك")
+        .navigationTitle("أسلوب لعبك".localized)
         .navigationBarTitleDisplayMode(.inline)
     }
 
     private var header: some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
-            Label("إحصائيات اللاعب", systemImage: "chart.line.uptrend.xyaxis")
+            Label("إحصائيات اللاعب".localized, systemImage: "chart.line.uptrend.xyaxis")
                 .font(AppTypography.title)
                 .foregroundStyle(AppColor.primary)
-            Text("تحليل محلي مبني على جلسات تسجيل البلوت المنتهية، ويستخدم بيانات السجل بدون اتصال أو حساب.")
+            Text("تحليل محلي مبني على جلسات تسجيل البلوت المنتهية، ويستخدم بيانات السجل بدون اتصال أو حساب.".localized)
                 .font(AppTypography.subheadline)
                 .foregroundStyle(AppColor.textSecondary)
         }
@@ -71,14 +71,14 @@ struct PlayerStatsView: View {
 
     private var statsGrid: some View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppSpacing.sm) {
-            metric("المباريات", "\(summary.finishedMatches)", "rectangle.stack.fill")
-            metric("الفوز", "\(summary.wins)", "checkmark.seal.fill")
-            metric("الخسارة", "\(summary.losses)", "xmark.seal.fill")
-            metric("نسبة الفوز", "\(Int((summary.winRate * 100).rounded()))%", "percent")
-            metric("متوسط النقاط", "\(Int(summary.averagePoints.rounded()))", "number")
-            metric("أطول سلسلة", "\(summary.longestWinStreak)", "flame.fill")
-            metric("أعلى فوز", "\(summary.highestWinMargin)", "arrow.up.circle.fill")
-            metric("أكبر خسارة", "\(summary.biggestLossMargin)", "arrow.down.circle.fill")
+            metric("المباريات".localized, "\(summary.finishedMatches)", "rectangle.stack.fill")
+            metric("الفوز".localized, "\(summary.wins)", "checkmark.seal.fill")
+            metric("الخسارة".localized, "\(summary.losses)", "xmark.seal.fill")
+            metric("نسبة الفوز".localized, "\(Int((summary.winRate * 100).rounded()))%", "percent")
+            metric("متوسط النقاط".localized, "\(Int(summary.averagePoints.rounded()))", "number")
+            metric("أطول سلسلة".localized, "\(summary.longestWinStreak)", "flame.fill")
+            metric("أعلى فوز".localized, "\(summary.highestWinMargin)", "arrow.up.circle.fill")
+            metric("أكبر خسارة".localized, "\(summary.biggestLossMargin)", "arrow.down.circle.fill")
             metric("دقة التدريب".localized, "\(summary.trainingAccuracyPercent)%", "brain.head.profile")
             metric("قرارات خاطئة".localized, "\(summary.trainingWrongDecisions)", "xmark.octagon.fill")
         }
@@ -99,12 +99,12 @@ struct PlayerStatsView: View {
 
     private var modeBreakdown: some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
-            Text("تفصيل اللعب")
+            Text("تفصيل اللعب".localized)
                 .font(AppTypography.headline)
-            metric("جولات صن", "\(summary.sunRounds)", "sun.max.fill")
-            metric("جولات حكم", "\(summary.hokumRounds)", "suit.spade.fill")
-            metric("نقاط المشاريع", "\(summary.projectPoints)", "rectangle.stack.badge.plus")
-            metric("الكبوت", "\(summary.kabootCount)", "crown.fill")
+            metric("جولات صن".localized, "\(summary.sunRounds)", "sun.max.fill")
+            metric("جولات حكم".localized, "\(summary.hokumRounds)", "suit.spade.fill")
+            metric("نقاط المشاريع".localized, "\(summary.projectPoints)", "rectangle.stack.badge.plus")
+            metric("الكبوت".localized, "\(summary.kabootCount)", "crown.fill")
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
