@@ -1297,6 +1297,34 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "复盘模拟" } }
       }
     },
+    "قرارك يطابق أفضل خيار في الأكلة الحالية، لكن محاكاة بقية الجولة تستحق المراجعة قبل تثبيت النمط." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Deine Entscheidung entspricht der besten Option im aktuellen Stich, aber die Simulation der restlichen Runde sollte vor dem Festigen des Musters überprüft werden." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your decision matches the best option for the current trick, but the rest-of-round simulation is worth reviewing before locking in the pattern." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tu decisión coincide con la mejor opción de la baza actual, pero conviene revisar la simulación del resto de la ronda antes de fijar el patrón." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ta décision correspond à la meilleure option du pli actuel, mais la simulation du reste de la manche mérite d'être revue avant d'ancrer ce schéma." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आपका निर्णय मौजूदा ट्रिक के लिए सबसे अच्छे विकल्प से मेल खाता है, लेकिन पैटर्न पक्का करने से पहले बाकी राउंड की सिमुलेशन समीक्षा करनी चाहिए।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Keputusanmu cocok dengan opsi terbaik untuk trik saat ini, tetapi simulasi sisa ronde layak ditinjau sebelum pola itu dikunci." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Ваше решение совпадает с лучшим вариантом для текущей взятки, но симуляцию остатка раунда стоит проверить, прежде чем закреплять этот шаблон." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Kararın mevcut el için en iyi seçenekle eşleşiyor, ancak bu kalıbı kesinleştirmeden önce turun kalan simülasyonunu gözden geçirmek gerekir." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ کا فیصلہ موجودہ چال کے بہترین اختیار سے ملتا ہے، مگر اس انداز کو پکا کرنے سے پہلے باقی راؤنڈ کی سیمولیشن دیکھنا بہتر ہے۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你的决策符合当前一墩的最佳选择，但在固定这个模式前，值得复盘剩余整轮的模拟。" } }
+      }
+    },
+    "اختيارك صحيح في الأكلة الحالية، لكن نتيجة الجولة الكاملة تشير إلى مسار أقوى." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Deine Wahl ist für den aktuellen Stich richtig, aber das Ergebnis der gesamten Runde zeigt einen stärkeren Weg." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your choice is correct for the current trick, but the full-round result points to a stronger line." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tu elección es correcta para la baza actual, pero el resultado de la ronda completa apunta a una línea más fuerte." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ton choix est correct pour le pli actuel, mais le résultat de la manche complète indique une ligne plus forte." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "आपकी चाल मौजूदा ट्रिक के लिए सही है, लेकिन पूरे राउंड का परिणाम एक मजबूत लाइन दिखाता है।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Pilihanmu benar untuk trik saat ini, tetapi hasil ronde penuh menunjukkan jalur yang lebih kuat." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Ваш выбор верен для текущей взятки, но результат всего раунда указывает на более сильную линию." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Seçimin mevcut el için doğru, ancak tam tur sonucu daha güçlü bir hattı gösteriyor." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "آپ کا انتخاب موجودہ چال کے لیے درست ہے، مگر مکمل راؤنڈ کا نتیجہ ایک زیادہ مضبوط راستہ دکھاتا ہے۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "你的选择对当前一墩是正确的，但整轮结果指向更强的路线。" } }
+      }
+    },
     "قرارك يخسر بعد استكمال الجولة؛ راجع Replay كامل قبل لعب موقف جديد." : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Deine Entscheidung verliert nach Abschluss der Runde; prüfe das vollständige Replay, bevor du eine neue Situation spielst." } },

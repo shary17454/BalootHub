@@ -1795,6 +1795,64 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(action.expectedImprovement, 0)
     }
 
+    func testExpertMatchInsightKeepsLargeProjectedSimulationLoss() {
+        let insight = WhatToPlayStatsAnalyzer.decisionInsight(
+            selectedRank: 1,
+            selectedImpact: 8,
+            bestImpact: 8,
+            secondBestImpact: 7,
+            selectedProjectedTeamPoints: 52,
+            bestProjectedTeamPoints: 68
+        )
+
+        let action = WhatToPlayStatsAnalyzer.nextDecisionAction(
+            insight: insight,
+            focusKind: .trumpPressure,
+            bestCard: PlayingCard(suit: .spades, rank: .ace)
+        )
+
+        XCTAssertEqual(insight.kind, .expertMatch)
+        XCTAssertEqual(insight.lostExpectedPoints, 0)
+        XCTAssertEqual(insight.lostProjectedTeamPoints, 16)
+        XCTAssertEqual(insight.valueLossSeverity, .high)
+        XCTAssertTrue(insight.detail.contains("محاكاة".localized))
+        XCTAssertEqual(action.title, "راجع المحاكاة".localized)
+        XCTAssertTrue(action.detail.contains("نقاط محاكاة ضائعة".localized))
+        XCTAssertEqual(action.expectedImprovement, 16)
+    }
+
+    func testScenarioDecisionActionRecommendsBestSimulationCardWhenExpertPickLeaksRoundValue() throws {
+        var matchingScenario: WhatToPlayScenario?
+        var matchingExpert: WhatToPlayOption?
+        var matchingBestSimulation: WhatToPlayOption?
+
+        for seed in 1...1_000 {
+            let scenario = try WhatToPlayTrainer.generateScenario(seed: UInt64(seed), difficulty: .hard)
+            guard let expert = scenario.bestOption,
+                  let bestSimulation = WhatToPlayOptionComparison.bestSimulationOption(scenario.options),
+                  bestSimulation.card != expert.card,
+                  max(0, bestSimulation.projectedTeamPoints - expert.projectedTeamPoints) >= 9
+            else { continue }
+            matchingScenario = scenario
+            matchingExpert = expert
+            matchingBestSimulation = bestSimulation
+            break
+        }
+
+        let scenario = try XCTUnwrap(matchingScenario)
+        let expert = try XCTUnwrap(matchingExpert)
+        let bestSimulation = try XCTUnwrap(matchingBestSimulation)
+
+        let insight = try XCTUnwrap(WhatToPlayStatsAnalyzer.decisionInsight(for: expert, in: scenario))
+        let action = try XCTUnwrap(WhatToPlayStatsAnalyzer.nextDecisionAction(for: expert, in: scenario))
+
+        XCTAssertEqual(insight.kind, .expertMatch)
+        XCTAssertEqual(insight.lostProjectedTeamPoints, max(0, bestSimulation.projectedTeamPoints - expert.projectedTeamPoints))
+        XCTAssertEqual(action.title, "راجع المحاكاة".localized)
+        XCTAssertEqual(action.recommendedCard, bestSimulation.card)
+        XCTAssertEqual(action.expectedImprovement, insight.lostProjectedTeamPoints)
+    }
+
     func testNextDecisionActionTargetsMissedWinningChance() {
         let insight = WhatToPlayStatsAnalyzer.decisionInsight(
             selectedRank: 4,
@@ -1940,23 +1998,23 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
     func testRetryPromptForScenarioCarriesBestCardAndExpectedImprovement() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
         let best = try XCTUnwrap(scenario.bestOption)
+        let bestSimulation = try XCTUnwrap(WhatToPlayOptionComparison.bestSimulationOption(scenario.options))
         let selected = try XCTUnwrap(
             scenario.options.first {
                 $0.card != best.card
                     && max(
                         max(0, best.expectedImpact - $0.expectedImpact),
-                        max(0, best.projectedTeamPoints - $0.projectedTeamPoints)
+                        max(0, bestSimulation.projectedTeamPoints - $0.projectedTeamPoints)
                     ) > 0
             }
         )
 
         let prompt = try XCTUnwrap(WhatToPlayStatsAnalyzer.retryPrompt(for: selected, in: scenario))
-        let expectedImprovement = max(
-            max(0, best.expectedImpact - selected.expectedImpact),
-            max(0, best.projectedTeamPoints - selected.projectedTeamPoints)
-        )
+        let expectedLost = max(0, best.expectedImpact - selected.expectedImpact)
+        let expectedProjectedLost = max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints)
+        let expectedImprovement = max(expectedLost, expectedProjectedLost)
 
-        XCTAssertEqual(prompt.recommendedCard, best.card)
+        XCTAssertEqual(prompt.recommendedCard, expectedProjectedLost > expectedLost ? bestSimulation.card : best.card)
         XCTAssertEqual(prompt.expectedImprovement, expectedImprovement)
     }
 

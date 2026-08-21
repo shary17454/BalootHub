@@ -2735,16 +2735,19 @@ enum WhatToPlayStatsAnalyzer {
         let severity = valueLossSeverity(for: decisiveLoss)
         let severityTitle = valueLossTitle(for: severity)
         if selectedRank == 1 || decisiveLoss == 0 {
+            let expertDetail = projectedLost >= 9
+                ? "\("قرارك يطابق أفضل خيار في الأكلة الحالية، لكن محاكاة بقية الجولة تستحق المراجعة قبل تثبيت النمط.".localized) \("نقاط محاكاة ضائعة".localized): \(projectedLost)."
+                : "قرارك يطابق أفضل خيار في هذا الموقف، لذلك ركز على تذكر سبب نجاحه للمواقف المشابهة.".localized
             return WhatToPlayDecisionInsight(
                 kind: .expertMatch,
                 title: "اختيار خبير".localized,
-                detail: "قرارك يطابق أفضل خيار في هذا الموقف، لذلك ركز على تذكر سبب نجاحه للمواقف المشابهة.".localized,
+                detail: expertDetail,
                 iconName: "checkmark.seal.fill",
                 lostExpectedPoints: 0,
-                lostProjectedTeamPoints: 0,
+                lostProjectedTeamPoints: projectedLost,
                 secondBestGap: secondBestGap,
-                valueLossSeverity: .none,
-                valueLossTitle: valueLossTitle(for: .none)
+                valueLossSeverity: projectedLost > 0 ? severity : .none,
+                valueLossTitle: projectedLost > 0 ? severityTitle : valueLossTitle(for: .none)
             )
         }
 
@@ -2831,13 +2834,14 @@ enum WhatToPlayStatsAnalyzer {
 
     static func decisionInsight(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayDecisionInsight? {
         guard let best = scenario.bestOption else { return nil }
+        let bestSimulation = WhatToPlayOptionComparison.bestSimulationOption(scenario.options)
         return decisionInsight(
             selectedRank: selected.rank,
             selectedImpact: selected.expectedImpact,
             bestImpact: best.expectedImpact,
             secondBestImpact: scenario.secondBestOption?.expectedImpact,
             selectedProjectedTeamPoints: selected.projectedTeamPoints,
-            bestProjectedTeamPoints: best.projectedTeamPoints
+            bestProjectedTeamPoints: bestSimulation?.projectedTeamPoints ?? best.projectedTeamPoints
         )
     }
 
@@ -2855,16 +2859,24 @@ enum WhatToPlayStatsAnalyzer {
 
     static func nextDecisionAction(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayNextDecisionAction? {
         guard let insight = decisionInsight(for: selected, in: scenario) else { return nil }
+        let bestSimulation = WhatToPlayOptionComparison.bestSimulationOption(scenario.options)
+        let recommendedCard = insight.lostProjectedTeamPoints > insight.lostExpectedPoints
+            ? bestSimulation?.card
+            : scenario.bestOption?.card
         return nextDecisionAction(
             insight: insight,
             focusKind: scenario.context.focusKind,
-            bestCard: scenario.bestOption?.card
+            bestCard: recommendedCard
         )
     }
 
     static func retryPrompt(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayRetryPrompt? {
         guard let insight = decisionInsight(for: selected, in: scenario) else { return nil }
-        return retryPrompt(insight: insight, bestCard: scenario.bestOption?.card)
+        let bestSimulation = WhatToPlayOptionComparison.bestSimulationOption(scenario.options)
+        let recommendedCard = insight.lostProjectedTeamPoints > insight.lostExpectedPoints
+            ? bestSimulation?.card
+            : scenario.bestOption?.card
+        return retryPrompt(insight: insight, bestCard: recommendedCard)
     }
 
     static func replayContext(for selected: WhatToPlayOption, in scenario: WhatToPlayScenario) -> WhatToPlayReplayContext {
@@ -3013,6 +3025,15 @@ enum WhatToPlayStatsAnalyzer {
     ) -> WhatToPlayNextDecisionAction {
         switch insight.kind {
         case .expertMatch:
+            if insight.lostProjectedTeamPoints >= 9 {
+                return WhatToPlayNextDecisionAction(
+                    title: "راجع المحاكاة".localized,
+                    detail: "\("اختيارك صحيح في الأكلة الحالية، لكن نتيجة الجولة الكاملة تشير إلى مسار أقوى.".localized) \("نقاط محاكاة ضائعة".localized): \(insight.lostProjectedTeamPoints).",
+                    iconName: "chart.line.uptrend.xyaxis",
+                    recommendedCard: bestCard,
+                    expectedImprovement: insight.lostProjectedTeamPoints
+                )
+            }
             return WhatToPlayNextDecisionAction(
                 title: "ثبّت القراءة".localized,
                 detail: focusSuccessAction(for: focusKind),
