@@ -3584,6 +3584,37 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertTrue(recommendation.detail.contains("متوسط".localized))
     }
 
+    func testNextScenarioRecommendationAfterDecisionTargetsCurrentScenarioContext() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(
+            seed: 45,
+            difficulty: .hard,
+            preferredFocus: .trumpPressure,
+            preferredMode: .hokum,
+            preferredTrumpSuit: .spades
+        )
+        let selected = try XCTUnwrap(
+            scenario.options.last { option in
+                guard let insight = WhatToPlayStatsAnalyzer.decisionInsight(for: option, in: scenario) else { return false }
+                return insight.kind != .expertMatch
+                    || max(insight.lostProjectedTeamPoints, insight.lostProjectedAgainstSecondBestPoints) > 0
+            }
+        )
+        let insight = try XCTUnwrap(WhatToPlayStatsAnalyzer.decisionInsight(for: selected, in: scenario))
+
+        let recommendation = WhatToPlayStatsAnalyzer.nextScenarioRecommendation(
+            for: selected,
+            in: scenario,
+            attempts: []
+        )
+
+        XCTAssertEqual(recommendation.difficulty, scenario.difficulty)
+        XCTAssertEqual(recommendation.focusKind, scenario.context.focusKind)
+        XCTAssertEqual(recommendation.gameMode, scenario.context.mode)
+        XCTAssertEqual(recommendation.trumpSuit, scenario.context.trumpSuit)
+        XCTAssertEqual(recommendation.iconName, insight.iconName)
+        XCTAssertTrue(recommendation.detail.contains(insight.title))
+    }
+
     func testTrainingSessionPlanTargetsPointLeakForCautiousStyle() {
         let attempts = [
             attempt(daysAgo: 4, correct: true, impact: -4),

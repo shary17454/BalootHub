@@ -2063,6 +2063,35 @@ enum WhatToPlayStatsAnalyzer {
         )
     }
 
+    static func nextScenarioRecommendation(
+        for selected: WhatToPlayOption,
+        in scenario: WhatToPlayScenario,
+        attempts: [WhatToPlayAttempt]
+    ) -> WhatToPlayNextScenarioRecommendation {
+        let fallback = nextScenarioRecommendation(for: attempts)
+        guard let insight = decisionInsight(for: selected, in: scenario) else {
+            return fallback
+        }
+
+        let simulationLoss = max(
+            insight.lostProjectedTeamPoints,
+            insight.lostProjectedAgainstSecondBestPoints
+        )
+        guard insight.kind != .expertMatch || simulationLoss > 0 else {
+            return fallback
+        }
+
+        return WhatToPlayNextScenarioRecommendation(
+            difficulty: scenario.difficulty,
+            focusKind: scenario.context.focusKind,
+            gameMode: scenario.context.mode,
+            trumpSuit: scenario.context.trumpSuit,
+            title: "الموقف القادم".localized,
+            detail: "\(insight.title): \(insight.detail)",
+            iconName: insight.iconName
+        )
+    }
+
     static func nextTrainingSessionSeed(
         for attempts: [WhatToPlayAttempt],
         plan: WhatToPlayTrainingSessionPlan

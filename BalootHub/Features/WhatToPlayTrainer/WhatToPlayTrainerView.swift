@@ -2896,7 +2896,7 @@ struct WhatToPlayTrainerView: View {
 
             decisionReplayButtons(for: option, in: scenario)
 
-            nextScenarioAfterDecisionView(nextScenarioRecommendation)
+            nextScenarioAfterDecisionView(nextScenarioRecommendation(for: option, in: scenario))
 
             Text(option.explanation)
                 .font(AppTypography.subheadline)
@@ -2930,6 +2930,17 @@ struct WhatToPlayTrainerView: View {
         }
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+    }
+
+    private func nextScenarioRecommendation(
+        for option: WhatToPlayOption,
+        in scenario: WhatToPlayScenario
+    ) -> WhatToPlayNextScenarioRecommendation {
+        WhatToPlayStatsAnalyzer.nextScenarioRecommendation(
+            for: option,
+            in: scenario,
+            attempts: attempts
+        )
     }
 
     private func nextScenarioRecommendationContextText(_ recommendation: WhatToPlayNextScenarioRecommendation) -> String {
