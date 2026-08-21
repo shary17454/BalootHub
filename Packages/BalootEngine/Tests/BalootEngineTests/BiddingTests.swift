@@ -441,6 +441,21 @@ struct MultiplierTests {
         #expect(GameEngine.legalMultiplierActions(for: declarerID, state: state).isEmpty)
     }
 
+    @Test("أفعال المضاعفة القانونية تطابق حركات الدبل المتاحة")
+    func legalMultiplierGameActionsWrapInitialDoubleRight() throws {
+        let state = try stateInDoublingStage()
+        let doublerID = try #require(state.currentTurnPlayerID)
+        let declarerID = try #require(state.bidding.declarerID)
+
+        #expect(
+            GameEngine.legalMultiplierGameActions(for: doublerID, state: state) == [
+                .passMultiplier(playerID: doublerID),
+                .raiseMultiplier(playerID: doublerID, level: .double)
+            ]
+        )
+        #expect(GameEngine.legalMultiplierGameActions(for: declarerID, state: state).isEmpty)
+    }
+
     @Test("فريق المشتري لا يملك حق الدبل الابتدائي")
     func declaringTeamCannotDoubleItself() throws {
         let state = try stateInDoublingStage()
@@ -495,6 +510,26 @@ struct MultiplierTests {
 
         #expect(GameEngine.legalMultiplierActions(for: raiserID, state: state) == [.pass, .raise(.triple)])
         #expect(GameEngine.legalMultiplierActions(for: doublerID, state: state) == [.lock])
+    }
+
+    @Test("أفعال المضاعفة القانونية تعرض الثري والقفل بعد الدبل")
+    func legalMultiplierGameActionsExposeEscalationAndLockRights() throws {
+        var state = try stateInDoublingStage()
+        let doublerID = try #require(state.currentTurnPlayerID)
+        state = try GameEngine.apply(.raiseMultiplier(playerID: doublerID, level: .double), to: state)
+        let raiserID = try #require(state.currentTurnPlayerID)
+
+        #expect(
+            GameEngine.legalMultiplierGameActions(for: raiserID, state: state) == [
+                .passMultiplier(playerID: raiserID),
+                .raiseMultiplier(playerID: raiserID, level: .triple)
+            ]
+        )
+        #expect(
+            GameEngine.legalMultiplierGameActions(for: doublerID, state: state) == [
+                .lockMultiplier(playerID: doublerID)
+            ]
+        )
     }
 
     @Test("بلوغ سقف المضاعفة المخصص يُنهي التصعيد فورًا")

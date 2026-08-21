@@ -105,6 +105,24 @@ public enum GameEngine {
         BiddingEngine.legalMultiplierActions(for: playerID, state: state)
     }
 
+    /// أفعال المضاعفة القانونية للاعب محدد الآن.
+    ///
+    /// هذه هي صيغة ``GameAction`` من ``legalMultiplierActions(for:state:)``، فتستطيع
+    /// الواجهة والتدريب والـReplay عرض أزرار دبل/ثري/فور/قهوة/قفل ثم تطبيق الفعل
+    /// مباشرة من نفس مصدر الحقيقة.
+    public static func legalMultiplierGameActions(for playerID: Player.ID, state: GameState) -> [GameAction] {
+        legalMultiplierActions(for: playerID, state: state).map { action in
+            switch action {
+            case .pass:
+                .passMultiplier(playerID: playerID)
+            case .raise(let level):
+                .raiseMultiplier(playerID: playerID, level: level)
+            case .lock:
+                .lockMultiplier(playerID: playerID)
+            }
+        }
+    }
+
     /// المشاريع التي يستطيع لاعب معيّن إعلانها.
     public static func declarableProjects(for playerID: Player.ID, state: GameState) -> [Project] {
         BiddingEngine.declarableProjects(for: playerID, state: state)
