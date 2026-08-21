@@ -37,6 +37,8 @@ struct WhatToPlayShareCardContent: Equatable {
     let secondBestExpectedImpact: Int?
     let bestSimulationCardName: String?
     let bestProjectedTeamPoints: Int?
+    let secondBestSimulationCardName: String?
+    let secondBestProjectedTeamPoints: Int?
     let lostExpectedPoints: Int?
     let lostProjectedTeamPoints: Int?
     let lostAgainstSecondBestPoints: Int?
@@ -139,6 +141,8 @@ enum WhatToPlayShareCard {
             secondBestExpectedImpact: secondBest?.expectedImpact,
             bestSimulationCardName: bestProjected?.card.accessibilityName,
             bestProjectedTeamPoints: bestProjected?.projectedTeamPoints,
+            secondBestSimulationCardName: review?.secondBestProjectedOption?.card.accessibilityName,
+            secondBestProjectedTeamPoints: review?.secondBestProjectedOption?.projectedTeamPoints,
             lostExpectedPoints: lost,
             lostProjectedTeamPoints: projectedLost,
             lostAgainstSecondBestPoints: lostAgainstSecondBest,
@@ -231,6 +235,12 @@ enum WhatToPlayShareCard {
             }
             if let bestProjectedTeamPoints = content.bestProjectedTeamPoints {
                 lines.append("\("أفضل نتيجة محاكاة".localized): \(bestProjectedTeamPoints)")
+            }
+            if let secondBestSimulationCardName = content.secondBestSimulationCardName {
+                lines.append("\("ثاني محاكاة".localized): \(secondBestSimulationCardName)")
+            }
+            if let secondBestProjectedTeamPoints = content.secondBestProjectedTeamPoints {
+                lines.append("\("ثاني نتيجة محاكاة".localized): \(secondBestProjectedTeamPoints)")
             }
             if let selectedRank = content.selectedRank {
                 lines.append("\("ترتيب اختياري".localized): \(selectedRank)")

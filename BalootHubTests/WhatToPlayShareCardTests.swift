@@ -175,6 +175,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertFalse(text.contains("نقاط فريقك بعد المحاكاة".localized))
         XCTAssertFalse(text.contains("أفضل محاكاة".localized))
         XCTAssertFalse(text.contains("أفضل نتيجة محاكاة".localized))
+        XCTAssertFalse(text.contains("ثاني محاكاة".localized))
+        XCTAssertFalse(text.contains("ثاني نتيجة محاكاة".localized))
         XCTAssertFalse(text.contains("ثقة أفضل ورقة".localized))
     }
 
@@ -184,6 +186,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         let best = try XCTUnwrap(scenario.bestOption)
         let secondBest = try XCTUnwrap(scenario.secondBestOption)
         let bestSimulation = try XCTUnwrap(WhatToPlayTrainer.bestProjectedOption(in: scenario.options))
+        let secondBestSimulation = try XCTUnwrap(WhatToPlayTrainer.secondBestProjectedOption(in: scenario.options))
         let text = WhatToPlayShareCard.text(for: scenario, selectedOption: selected)
 
         XCTAssertTrue(text.contains("مراجعة القرار".localized))
@@ -194,6 +197,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("أثر ثاني أفضل".localized): \(secondBest.expectedImpact >= 0 ? "+\(secondBest.expectedImpact)" : "\(secondBest.expectedImpact)")"))
         XCTAssertTrue(text.contains("\("أفضل محاكاة".localized): \(bestSimulation.card.accessibilityName)"))
         XCTAssertTrue(text.contains("\("أفضل نتيجة محاكاة".localized): \(bestSimulation.projectedTeamPoints)"))
+        XCTAssertTrue(text.contains("\("ثاني محاكاة".localized): \(secondBestSimulation.card.accessibilityName)"))
+        XCTAssertTrue(text.contains("\("ثاني نتيجة محاكاة".localized): \(secondBestSimulation.projectedTeamPoints)"))
         XCTAssertTrue(text.contains("\("ترتيب اختياري".localized): \(selected.rank)"))
         XCTAssertTrue(text.contains("\("نقاط متوقعة ضائعة".localized): \(max(0, best.expectedImpact - selected.expectedImpact))"))
         XCTAssertTrue(text.contains("\("نقاط محاكاة ضائعة".localized): \(max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints))"))
@@ -231,6 +236,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).secondBestExpectedImpact)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).bestSimulationCardName)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).bestProjectedTeamPoints)
+        XCTAssertNil(WhatToPlayShareCard.content(for: scenario).secondBestSimulationCardName)
+        XCTAssertNil(WhatToPlayShareCard.content(for: scenario).secondBestProjectedTeamPoints)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).lostAgainstSecondBestPoints)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).lostProjectedTeamPoints)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).valueLossTitle)
@@ -265,6 +272,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(reviewed.secondBestExpectedImpact, secondBest.expectedImpact)
         XCTAssertEqual(reviewed.bestSimulationCardName, review.bestProjectedOption?.card.accessibilityName)
         XCTAssertEqual(reviewed.bestProjectedTeamPoints, review.bestProjectedOption?.projectedTeamPoints)
+        XCTAssertEqual(reviewed.secondBestSimulationCardName, review.secondBestProjectedOption?.card.accessibilityName)
+        XCTAssertEqual(reviewed.secondBestProjectedTeamPoints, review.secondBestProjectedOption?.projectedTeamPoints)
         XCTAssertEqual(reviewed.lostExpectedPoints, lostExpectedPoints)
         XCTAssertEqual(reviewed.lostProjectedTeamPoints, lostProjectedTeamPoints)
         XCTAssertEqual(reviewed.lostAgainstSecondBestPoints, max(0, secondBest.expectedImpact - selected.expectedImpact))

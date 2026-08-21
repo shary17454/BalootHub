@@ -18965,6 +18965,16 @@
         }
       }
     },
+    "ثاني نتيجة محاكاة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Second simulation result"
+          }
+        }
+      }
+    },
     "ثاني أفضل" : {
       "localizations" : {
         "en" : {

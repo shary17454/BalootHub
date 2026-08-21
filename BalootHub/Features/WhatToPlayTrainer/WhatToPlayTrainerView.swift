@@ -4105,6 +4105,12 @@ struct WhatToPlayShareCardPreview: View {
             if let bestProjectedTeamPoints = content.bestProjectedTeamPoints {
                 shareChip("\("أفضل نتيجة محاكاة".localized): \(bestProjectedTeamPoints)")
             }
+            if let secondBestSimulationCardName = content.secondBestSimulationCardName {
+                shareChip("\("ثاني محاكاة".localized): \(secondBestSimulationCardName)")
+            }
+            if let secondBestProjectedTeamPoints = content.secondBestProjectedTeamPoints {
+                shareChip("\("ثاني نتيجة محاكاة".localized): \(secondBestProjectedTeamPoints)")
+            }
             if let selectedRank = content.selectedRank {
                 shareChip("\("ترتيب اختياري".localized): \(selectedRank)")
             }
