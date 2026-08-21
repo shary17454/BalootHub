@@ -2195,6 +2195,9 @@ enum WhatToPlayStatsAnalyzer {
         if let legalOptionCount = item.contextLegalOptionCount {
             parts.append("\("الأوراق القانونية".localized): \(legalOptionCount)")
         }
+        if let playedCardCount = item.contextPlayedCardCount {
+            parts.append("\("أوراق".localized): \(playedCardCount)/4")
+        }
         if let selectedCard = item.selectedCard {
             parts.append("\("اختيارك".localized): \(selectedCard.accessibilityName)")
             parts.append("\("أثر القرار".localized): \(impactTextValue(item.expectedImpact))")
