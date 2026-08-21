@@ -622,6 +622,27 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.costlyDecisions, 1)
     }
 
+    func testAttemptDecisionQualityUsesSavedSecondSimulationLossWhenLarger() {
+        let secondSimulationCostly = attempt(
+            daysAgo: 1,
+            correct: false,
+            impact: 9,
+            bestImpact: 10,
+            projectedTeamPoints: 66,
+            bestProjectedTeamPoints: 68,
+            secondBestProjectedTeamPoints: 82
+        )
+
+        XCTAssertEqual(secondSimulationCostly.lostExpectedPoints, 1)
+        XCTAssertEqual(secondSimulationCostly.lostProjectedTeamPoints, 2)
+        XCTAssertEqual(secondSimulationCostly.lostProjectedAgainstSecondBestPoints, 16)
+        XCTAssertEqual(secondSimulationCostly.decisionQuality, .costly)
+
+        let summary = WhatToPlayStatsAnalyzer.decisionQualitySummary(for: [secondSimulationCostly])
+        XCTAssertEqual(summary.trackedAttempts, 1)
+        XCTAssertEqual(summary.costlyDecisions, 1)
+    }
+
     func testDecisionQualitySummaryIgnoresLegacyAttemptsWithoutBestImpact() {
         let attempts = [
             attempt(daysAgo: 2, correct: true, impact: 5),

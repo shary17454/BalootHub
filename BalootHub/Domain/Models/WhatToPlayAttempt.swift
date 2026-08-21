@@ -211,7 +211,8 @@ final class WhatToPlayAttempt {
         return WhatToPlayDecisionQuality.classify(
             isExpertChoice: isCorrect,
             lostExpectedPoints: lostExpectedPoints,
-            lostProjectedTeamPoints: lostProjectedTeamPoints
+            lostProjectedTeamPoints: lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: lostProjectedAgainstSecondBestPoints
         )
     }
 
