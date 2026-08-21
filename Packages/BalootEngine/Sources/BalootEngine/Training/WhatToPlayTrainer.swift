@@ -366,6 +366,57 @@ public struct WhatToPlaySessionPulseMetrics: Sendable, Equatable {
     }
 }
 
+/// تصنيف أسلوب اللاعب الخام في مدرب «وش تلعب؟» دون نصوص واجهة.
+public enum WhatToPlayPlayStyleCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case measuring
+    case foundational
+    case cautious
+    case inconsistent
+    case expertAligned
+}
+
+/// قياس أسلوب اللاعب في «وش تلعب؟» من أرقام الأداء فقط.
+public struct WhatToPlayPlayStyleMetrics: Sendable, Equatable {
+    public let category: WhatToPlayPlayStyleCategory
+    public let inspectedAttempts: Int
+
+    public init(category: WhatToPlayPlayStyleCategory, inspectedAttempts: Int) {
+        self.category = category
+        self.inspectedAttempts = inspectedAttempts
+    }
+
+    public static func classify(
+        attempts: Int,
+        accuracyPercent: Int,
+        averageExpectedImpact: Int,
+        minimumAttempts: Int = 3
+    ) -> WhatToPlayPlayStyleMetrics {
+        guard attempts >= minimumAttempts else {
+            return WhatToPlayPlayStyleMetrics(
+                category: .measuring,
+                inspectedAttempts: max(0, attempts)
+            )
+        }
+
+        let boundedAccuracy = max(0, min(100, accuracyPercent))
+        let category: WhatToPlayPlayStyleCategory
+        if boundedAccuracy >= 80 && averageExpectedImpact >= 0 {
+            category = .expertAligned
+        } else if boundedAccuracy < 50 {
+            category = .foundational
+        } else if boundedAccuracy >= 65 && averageExpectedImpact < 0 {
+            category = .cautious
+        } else {
+            category = .inconsistent
+        }
+
+        return WhatToPlayPlayStyleMetrics(
+            category: category,
+            inspectedAttempts: max(0, attempts)
+        )
+    }
+}
+
 /// درجة وضوح أفضل ورقة في موقف «وش تلعب؟» مقارنة بثاني أفضل خيار.
 public enum WhatToPlayBestMoveConfidence: String, Sendable, Codable, Equatable, CaseIterable {
     case tied

@@ -154,6 +154,45 @@ struct WhatToPlayTrainerTests {
         #expect(reviewByImpact.state == .reviewNeeded)
     }
 
+    @Test("تصنيف أسلوب لاعب وش تلعب يأتي من المحرك")
+    func playStyleMetricsClassifyPerformance() {
+        let measuring = WhatToPlayPlayStyleMetrics.classify(
+            attempts: 2,
+            accuracyPercent: 100,
+            averageExpectedImpact: 4
+        )
+        #expect(measuring.category == .measuring)
+        #expect(measuring.inspectedAttempts == 2)
+
+        let expert = WhatToPlayPlayStyleMetrics.classify(
+            attempts: 3,
+            accuracyPercent: 80,
+            averageExpectedImpact: 0
+        )
+        #expect(expert.category == .expertAligned)
+
+        let foundational = WhatToPlayPlayStyleMetrics.classify(
+            attempts: 5,
+            accuracyPercent: 49,
+            averageExpectedImpact: 8
+        )
+        #expect(foundational.category == .foundational)
+
+        let cautious = WhatToPlayPlayStyleMetrics.classify(
+            attempts: 5,
+            accuracyPercent: 65,
+            averageExpectedImpact: -1
+        )
+        #expect(cautious.category == .cautious)
+
+        let inconsistent = WhatToPlayPlayStyleMetrics.classify(
+            attempts: 5,
+            accuracyPercent: 64,
+            averageExpectedImpact: -1
+        )
+        #expect(inconsistent.category == .inconsistent)
+    }
+
     @Test("مراجعة اختيار وش تلعب تحسب الفوارق وجودة القرار من المحرك")
     func choiceReviewCalculatesLossesAndQuality() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2, difficulty: .hard)

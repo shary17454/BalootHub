@@ -3782,7 +3782,14 @@ enum WhatToPlayStatsAnalyzer {
 
     static func playStyle(for attempts: [WhatToPlayAttempt]) -> WhatToPlayPlayStyle {
         let summary = summarize(attempts: attempts)
-        guard summary.attempts >= 3 else {
+        let metrics = WhatToPlayPlayStyleMetrics.classify(
+            attempts: summary.attempts,
+            accuracyPercent: summary.accuracyPercent,
+            averageExpectedImpact: summary.averageExpectedImpact
+        )
+
+        switch metrics.category {
+        case .measuring:
             return WhatToPlayPlayStyle(
                 kind: .measuring,
                 title: "أسلوبك تحت القياس".localized,
@@ -3792,9 +3799,8 @@ enum WhatToPlayStatsAnalyzer {
                 advice: "حل 3 مواقف من نفس المستوى ثم راجع أول تقرير أسلوب.".localized,
                 iconName: "waveform.path.ecg"
             )
-        }
 
-        if summary.accuracyPercent >= 80 && summary.averageExpectedImpact >= 0 {
+        case .expertAligned:
             return WhatToPlayPlayStyle(
                 kind: .expertAligned,
                 title: "قريب من الخبير".localized,
@@ -3804,9 +3810,8 @@ enum WhatToPlayStatsAnalyzer {
                 advice: "ارفع الصعوبة وركز على مواقف الحكم وقراءة نية الشريك.".localized,
                 iconName: "checkmark.seal.fill"
             )
-        }
 
-        if summary.accuracyPercent < 50 {
+        case .foundational:
             return WhatToPlayPlayStyle(
                 kind: .foundational,
                 title: "تحتاج تأسيس".localized,
@@ -3816,9 +3821,8 @@ enum WhatToPlayStatsAnalyzer {
                 advice: "ابدأ بالسهل وكرر تفسير كل خطأ قبل طلب موقف جديد.".localized,
                 iconName: "target"
             )
-        }
 
-        if summary.accuracyPercent >= 65 && summary.averageExpectedImpact < 0 {
+        case .cautious:
             return WhatToPlayPlayStyle(
                 kind: .cautious,
                 title: "لاعب حذر".localized,
@@ -3828,17 +3832,18 @@ enum WhatToPlayStatsAnalyzer {
                 advice: "راجع بطاقة أثر كل قرار وابحث عن الفرق بين الأفضل وثاني أفضل.".localized,
                 iconName: "shield.lefthalf.filled"
             )
-        }
 
-        return WhatToPlayPlayStyle(
-            kind: .inconsistent,
-            title: "قراءة متذبذبة".localized,
-            detail: "نتائجك بين قرارات قوية وأخطاء مؤثرة؛ تحتاج نمط تدريب أكثر ثباتًا.".localized,
-            strength: "عند قراءة الموقف جيدًا تصل لاختيارات قريبة من الخبير.".localized,
-            weakness: "التذبذب يظهر غالبًا عند وجود حكم أو أكثر من خيار قريب.".localized,
-            advice: "درّب المستوى المقترح في جلسات قصيرة حتى تستقر الدقة.".localized,
-            iconName: "chart.xyaxis.line"
-        )
+        case .inconsistent:
+            return WhatToPlayPlayStyle(
+                kind: .inconsistent,
+                title: "قراءة متذبذبة".localized,
+                detail: "نتائجك بين قرارات قوية وأخطاء مؤثرة؛ تحتاج نمط تدريب أكثر ثباتًا.".localized,
+                strength: "عند قراءة الموقف جيدًا تصل لاختيارات قريبة من الخبير.".localized,
+                weakness: "التذبذب يظهر غالبًا عند وجود حكم أو أكثر من خيار قريب.".localized,
+                advice: "درّب المستوى المقترح في جلسات قصيرة حتى تستقر الدقة.".localized,
+                iconName: "chart.xyaxis.line"
+            )
+        }
     }
 
     static func decisionPattern(for attempts: [WhatToPlayAttempt], limit: Int = 8) -> WhatToPlayDecisionPattern {
