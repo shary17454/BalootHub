@@ -2190,6 +2190,9 @@ enum WhatToPlayStatsAnalyzer {
            let opponentPoints = item.contextOpponentTeamTrickPoints {
             parts.append("\("نقاط فريقك".localized): \(playerPoints) · \("للخصم".localized): \(opponentPoints)")
         }
+        if let legalOptionCount = item.contextLegalOptionCount {
+            parts.append("\("الأوراق القانونية".localized): \(legalOptionCount)")
+        }
         if let selectedCard = item.selectedCard {
             parts.append("\("اختيارك".localized): \(selectedCard.accessibilityName)")
             parts.append("\("أثر القرار".localized): \(impactTextValue(item.expectedImpact))")
