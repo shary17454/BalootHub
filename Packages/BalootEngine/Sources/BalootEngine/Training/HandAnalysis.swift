@@ -144,12 +144,16 @@ public enum HandAnalyzer {
         guard !legal.isEmpty else { return nil }
         let bidHand = BiddingPolicy.bidEvaluationHand(hand: hand, state: state)
         let recommended = policy.chooseBid(hand: hand, legalBids: legal, state: state)
+        let thresholds = Dictionary(uniqueKeysWithValues: legal.map { bid in
+            (bid, policy.threshold(for: bid, state: state))
+        })
         return analyze(
             hand: bidHand,
             rules: state.rules,
             policy: policy,
             legalBids: legal,
-            contextualRecommendedBid: recommended
+            contextualRecommendedBid: recommended,
+            contextualThresholds: thresholds
         )
     }
 
@@ -158,7 +162,8 @@ public enum HandAnalyzer {
         rules: BalootRulesConfiguration,
         policy: BiddingPolicy,
         legalBids: [Bid]?,
-        contextualRecommendedBid: Bid?
+        contextualRecommendedBid: Bid?,
+        contextualThresholds: [Bid: Int] = [:]
     ) -> HandAnalysis {
         let normalized = normalizedHand(hand)
         let evaluation = HandEvaluator.evaluate(hand: normalized)
@@ -174,7 +179,8 @@ public enum HandAnalyzer {
             evaluation: evaluation,
             policy: policy,
             legalBids: options,
-            recommendedBid: recommended
+            recommendedBid: recommended,
+            contextualThresholds: contextualThresholds
         )
         let projects = detectableProjects(for: normalized, recommendedBid: recommended, rules: rules)
         let projectPoints = projects.reduce(0) { $0 + $1.points }
@@ -288,10 +294,11 @@ public enum HandAnalyzer {
         evaluation: HandEvaluation,
         policy: BiddingPolicy,
         legalBids: [Bid],
-        recommendedBid: Bid
+        recommendedBid: Bid,
+        contextualThresholds: [Bid: Int]
     ) -> [HandAnalysis.BidOption] {
         legalBids.compactMap { bid -> HandAnalysis.BidOption? in
-            let threshold = threshold(for: bid, policy: policy)
+            let optionThreshold = contextualThresholds[bid] ?? threshold(for: bid, policy: policy)
             let optionScoreValue: Int
             let margin: Int
             let confidence: Int
@@ -303,7 +310,11 @@ public enum HandAnalyzer {
                     policy: policy,
                     legalBids: legalBids
                 )
-                let passThreshold = min(policy.sunThreshold, policy.hokumThreshold) - policy.riskTolerance
+                let availableThresholds = legalBids
+                    .filter(\.isBid)
+                    .map { contextualThresholds[$0] ?? threshold(for: $0, policy: policy) }
+                let passThreshold = availableThresholds.min()
+                    ?? (min(policy.sunThreshold, policy.hokumThreshold) - policy.riskTolerance)
                 optionScoreValue = bestBidScore == Int.min ? 100 : max(0, passThreshold - bestBidScore)
                 margin = recommendedBid == .pass ? optionScoreValue : -max(1, bestBidScore - passThreshold)
                 confidence = recommendedBid == .pass
@@ -314,15 +325,15 @@ public enum HandAnalyzer {
                     return nil
                 }
                 optionScoreValue = optionScore
-                margin = optionScore - threshold
-                confidence = confidencePercent(score: optionScore, threshold: threshold)
+                margin = optionScore - optionThreshold
+                confidence = confidencePercent(score: optionScore, threshold: optionThreshold)
             }
 
             return HandAnalysis.BidOption(
                 id: bidStableID(bid),
                 bid: bid,
                 score: optionScoreValue,
-                threshold: threshold == Int.max ? 0 : threshold,
+                threshold: optionThreshold == Int.max ? 0 : optionThreshold,
                 margin: margin,
                 confidencePercent: confidence,
                 isRecommended: bid == recommendedBid,
@@ -330,7 +341,7 @@ public enum HandAnalyzer {
                 detail: bidOptionDetail(
                     bid: bid,
                     score: optionScoreValue,
-                    threshold: threshold == Int.max ? 0 : threshold,
+                    threshold: optionThreshold == Int.max ? 0 : optionThreshold,
                     margin: margin,
                     confidencePercent: confidence,
                     recommendedBid: recommendedBid

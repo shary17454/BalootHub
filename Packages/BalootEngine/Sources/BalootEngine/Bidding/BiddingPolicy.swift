@@ -56,17 +56,13 @@ public struct BiddingPolicy: Sendable, Equatable {
         guard !legalBids.isEmpty else { return .pass }
         guard legalBids.contains(where: \.isBid) else { return .pass }
 
-        // شراء الشريك لا يُنافَس عليه إلا بفارق واضح: المزايدة فوق الشريك تُضعف
-        // الفريق بدل أن تقوّيه.
-        let partnerHoldsBid = partnerOwnsCurrentBid(state: state)
-
         let bidEvaluationHand = Self.bidEvaluationHand(hand: hand, state: state)
         let evaluation = HandEvaluator.evaluate(hand: bidEvaluationHand)
         var best: (bid: Bid, margin: Int)?
 
         for bid in legalBids where bid.isBid {
             guard let score = score(for: bid, hand: bidEvaluationHand, evaluation: evaluation) else { continue }
-            let threshold = self.threshold(for: bid, state: state) + (partnerHoldsBid ? partnerOverbidPenalty : 0)
+            let threshold = self.threshold(for: bid, state: state)
             let margin = score - threshold
             guard margin >= 0 else { continue }
             if best == nil || margin > best!.margin { best = (bid, margin) }
@@ -114,7 +110,11 @@ public struct BiddingPolicy: Sendable, Equatable {
         }
     }
 
-    private func threshold(for bid: Bid, state: GameState) -> Int {
+    /// عتبة شراء مزايدة محددة في سياق الحالة الحالية.
+    ///
+    /// تستخدمها سياسة الوكيل وأدوات التحليل معًا حتى لا تعرض التقارير هامش شراء
+    /// يختلف عن الهامش الذي قرر به اللاعب الآلي فعلًا، خصوصًا عند مزايدة الشريك.
+    public func threshold(for bid: Bid, state: GameState) -> Int {
         let base: Int
         switch bid {
         case .sun: base = sunThreshold
@@ -127,7 +127,8 @@ public struct BiddingPolicy: Sendable, Equatable {
         let isLastChance = state.bidding.stage == .secondRound
             && state.bidding.actionsInCurrentRound == state.players.count - 1
             && state.bidding.currentBid == nil
-        return base - riskTolerance - (isLastChance ? 6 : 0)
+        let partnerPenalty = bid.isBid && partnerOwnsCurrentBid(state: state) ? partnerOverbidPenalty : 0
+        return base - riskTolerance - (isLastChance ? 6 : 0) + partnerPenalty
     }
 
     // MARK: - قرار المضاعفة

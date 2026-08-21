@@ -102,6 +102,8 @@ struct HandAnalysisTests {
         #expect(isolated.recommendedBid == .sun)
         #expect(contextual.recommendedBid == .pass)
         #expect(contextual.bidOptions.contains { $0.bid == .pass && $0.isRecommended })
+        #expect(isolated.bidOptions.first { $0.bid == .sun }?.margin ?? 0 >= 0)
+        #expect(contextual.bidOptions.first { $0.bid == .sun }?.margin ?? 0 < 0)
     }
 
     @Test("اليد الضعيفة تقترح بس")
