@@ -210,7 +210,9 @@ public enum GameEngine {
             }
             let legal = state.bidding.legalBids(rules: state.rules)
             guard !legal.isEmpty else { return nil }
-            return .placeBid(playerID: playerID, bid: agent.chooseBid(hand: hand, legalBids: legal, state: state))
+            let chosen = agent.chooseBid(hand: hand, legalBids: legal, state: state)
+            let bid = legal.contains(chosen) ? chosen : (legal.contains(.pass) ? .pass : legal[0])
+            return .placeBid(playerID: playerID, bid: bid)
 
         case .doubling:
             let legal = legalMultiplierActions(for: playerID, state: state)

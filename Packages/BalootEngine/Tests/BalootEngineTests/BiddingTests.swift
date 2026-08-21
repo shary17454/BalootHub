@@ -23,6 +23,23 @@ private let referenceAgent = ProfiledBalootAgent(profile: AIProfile(
 
 @Suite("دورة المزايدة الكاملة")
 struct BiddingCycleTests {
+    private struct IllegalSunBidAgent: BalootAgent {
+        func chooseCard(hand: [PlayingCard], legalCards: [PlayingCard], state: GameState) -> PlayingCard {
+            legalCards.first ?? PlayingCard(suit: .spades, rank: .seven)
+        }
+
+        func chooseMode(hand: [PlayingCard], state: GameState) -> (mode: GameMode, trumpSuit: Suit?) {
+            (.sun, nil)
+        }
+
+        func chooseBid(hand: [PlayingCard], legalBids: [Bid], state: GameState) -> Bid {
+            .sun
+        }
+
+        func chooseMultiplierAction(hand: [PlayingCard], state: GameState) -> MultiplierDecision {
+            .pass
+        }
+    }
 
     @Test("أسماء المزايدات عربية ومستقرة للـReplay والتحليل")
     func bidArabicNamesAreStable() {
@@ -218,6 +235,35 @@ struct BiddingCycleTests {
         #expect(throws: GameEngineError.bidding(.illegalBid)) {
             try GameEngine.apply(.placeBid(playerID: nextID, bid: .sun), to: state)
         }
+    }
+
+    @Test("اختيار AI لمزايدة ممنوعة يسقط إلى بس قانونية")
+    func illegalAIBidFallsBackToLegalPass() throws {
+        var rules = BalootRulesConfiguration.standard
+        rules.sunAllowedInFirstRound = false
+        rules.multipliersEnabled = false
+        rules.projectsRequireDeclaration = false
+        var state = GameState.newLocalMatch(rules: rules)
+        state.players = state.players.map { player in
+            var updated = player
+            updated.kind = .ai
+            return updated
+        }
+        state = try GameEngine.apply(.dealCards(seed: 15), to: state)
+
+        let upSuit = try #require(state.bidding.upCard?.suit)
+        let buyerID = try #require(state.currentTurnPlayerID)
+        state = try GameEngine.apply(.placeBid(playerID: buyerID, bid: .hokum(suit: upSuit)), to: state)
+
+        let passerID = try #require(state.currentTurnPlayerID)
+        let advanced = try GameEngine.advanceAIPlayers(
+            state: state,
+            agent: IllegalSunBidAgent(),
+            maxSteps: 1
+        )
+
+        #expect(advanced.actionHistory.last == .placeBid(playerID: passerID, bid: .pass))
+        #expect(advanced.bidding.bids.last?.bid == .pass)
     }
 
     @Test("بعد استقرار الشراء توزَّع الأوراق المتبقية والمشتري يأخذ الورقة المكشوفة")
