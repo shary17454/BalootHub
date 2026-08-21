@@ -2179,9 +2179,11 @@ enum WhatToPlayStatsAnalyzer {
         ]
         if let selectedCard = item.selectedCard {
             parts.append("\("اختيارك".localized): \(selectedCard.accessibilityName)")
+            parts.append("\("أثر القرار".localized): \(impactTextValue(item.expectedImpact))")
         }
         if let bestCard = item.bestCard {
             parts.append("\("أفضل ورقة".localized): \(bestCard.accessibilityName)")
+            parts.append("\("الأثر المتوقع".localized): \(impactTextValue(item.expectedImpact + item.lostExpectedPoints))")
         }
         if let secondBestCard = item.secondBestCard {
             parts.append("\("ثاني أفضل".localized): \(secondBestCard.accessibilityName)")
