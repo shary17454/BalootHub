@@ -90,6 +90,8 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertFalse(bestSummary.decisionQuality?.systemImage.isEmpty ?? true)
         XCTAssertEqual(bestSummary.nextActionTitle, "ثبّت القراءة".localized)
         XCTAssertTrue(bestSummary.nextActionDetail?.contains(best.card.accessibilityName) ?? false)
+        XCTAssertTrue(bestSummary.nextActionDetail?.contains("اختيارك يطابق أعلى تحليل؛ ركز على تثبيت سبب القرار قبل الموقف التالي.".localized) ?? false)
+        XCTAssertTrue(bestSummary.nextActionDetail?.contains("أفضل ورقة".localized) ?? false)
 
         let expectedLost = max(0, best.expectedImpact - costly.expectedImpact)
         XCTAssertEqual(costlySummary.selectedCard, costly.card)
@@ -111,6 +113,9 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertEqual(costlySummary.decisionQualityDetail, costlySummary.decisionQuality?.detail)
         XCTAssertNotNil(costlySummary.nextActionTitle)
         XCTAssertFalse(costlySummary.nextActionDetail?.isEmpty ?? true)
+        XCTAssertFalse(costlySummary.nextActionDetail?.contains("هذا اختيار مكلف بفارق") ?? true)
+        XCTAssertFalse(costlySummary.nextActionDetail?.contains("قرارك قريب جدًا؛") ?? true)
+        XCTAssertFalse(costlySummary.nextActionDetail?.contains("القرار مقبول لكنه يخسر") ?? true)
     }
 
     func testDecisionQualityUsesProjectedRoundLossWhenLargerThanImmediateImpact() {

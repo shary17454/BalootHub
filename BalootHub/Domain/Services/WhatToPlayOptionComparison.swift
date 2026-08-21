@@ -365,7 +365,7 @@ enum WhatToPlayOptionComparison {
         if selected.isExpertChoice || decisiveLoss == 0 {
             return (
                 "ثبّت القراءة".localized,
-                "اختيارك مطابق لتحليل الخبير. قبل الموقف التالي، سمِّ سبب قوة \(selected.card.accessibilityName) حتى تتكرر القراءة."
+                "\("اختيارك يطابق أعلى تحليل؛ ركز على تثبيت سبب القرار قبل الموقف التالي.".localized) \("أفضل ورقة".localized): \(selected.card.accessibilityName)."
             )
         }
         if lostProjectedTeamPoints > lostExpectedPoints {
@@ -375,21 +375,21 @@ enum WhatToPlayOptionComparison {
             )
         }
         if decisiveLoss <= 2 {
-            let secondText = second.map { " وثاني أفضل كان \($0.card.accessibilityName)" } ?? ""
+            let secondText = second.map { " \("ثاني أفضل".localized): \($0.card.accessibilityName)." } ?? ""
             return (
                 "راجع الفرق الصغير".localized,
-                "قرارك قريب جدًا؛ الفارق عن الأفضل \(lostExpectedPoints)\(secondText). ركز على سبب تقدّم \(best.card.accessibilityName)."
+                "\("قارن الفرق بين اختيارك وأفضل ورقة؛ هذا النوع من الفوارق الصغيرة يتراكم.".localized) \("الفارق عن اختيار الخبير".localized): \(lostExpectedPoints). \("أفضل ورقة".localized): \(best.card.accessibilityName).\(secondText)"
             )
         }
         if decisiveLoss <= 8 {
             return (
                 "قارن قبل اللعب".localized,
-                "القرار مقبول لكنه يخسر \(lostExpectedPoints) نقاط أثر متوقعة. في المرة القادمة احذف خيارين ضعيفين ثم قارن \(best.card.accessibilityName) باختيارك."
+                "\("قبل الموقف التالي، احذف الخيارات الضعيفة ثم قارن اختيارك بأفضل ورقة وثاني أفضل ورقة.".localized) \("النقاط الضائعة".localized): \(lostExpectedPoints). \("أفضل ورقة".localized): \(best.card.accessibilityName)."
             )
         }
         return (
             "أعد الموقف".localized,
-            "هذا اختيار مكلف بفارق \(lostExpectedPoints). أعد نفس الموقف وشاهد إعادة أفضل قرار قبل الانتقال لموقف جديد."
+            "\(WhatToPlayDecisionQuality.costly.detail) \("النقاط الضائعة".localized): \(lostExpectedPoints). \("أفضل ورقة".localized): \(best.card.accessibilityName)."
         )
     }
 
