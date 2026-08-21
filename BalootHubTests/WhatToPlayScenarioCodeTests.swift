@@ -105,6 +105,24 @@ final class WhatToPlayScenarioCodeTests: XCTestCase {
         )
     }
 
+    func testScenarioCodeExtractionDecodesPercentEncodedCode() {
+        let text = "WTP%2D2026%2Dhard%2DtrumpPressure%2Dhokum.3%2DC37"
+
+        XCTAssertEqual(
+            WhatToPlayScenarioCode.extractCode(from: text),
+            "WTP-2026-hard-trumpPressure-hokum.3-C37"
+        )
+    }
+
+    func testScenarioCodeExtractionDecodesPercentEncodedURL() {
+        let text = "https%3A%2F%2Fbaloothub.local%2Fshare%2FWTP%2D2026%2Dhard%2DtrumpPressure%2Dhokum.3%2DC37%2Fopen"
+
+        XCTAssertEqual(
+            WhatToPlayScenarioCode.extractCode(from: text),
+            "WTP-2026-hard-trumpPressure-hokum.3-C37"
+        )
+    }
+
     func testScenarioCodeExtractionRejectsTextWithoutValidCode() {
         XCTAssertNil(WhatToPlayScenarioCode.extractCode(from: "رمز الموقف: WTP-bad"))
         XCTAssertNil(WhatToPlayScenarioCode.extractCode(from: "لا يوجد رمز هنا"))

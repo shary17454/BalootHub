@@ -88,12 +88,26 @@ enum WhatToPlayScenarioCode {
         if parse(trimmed) != nil {
             return trimmed
         }
+        if let decoded = trimmed.removingPercentEncoding,
+           decoded != trimmed,
+           parse(decoded) != nil {
+            return decoded
+        }
 
-        for candidate in codeCandidates(in: text) where parse(candidate) != nil {
-            return candidate
+        for source in candidateSources(from: text) {
+            for candidate in codeCandidates(in: source) where parse(candidate) != nil {
+                return candidate
+            }
         }
 
         return nil
+    }
+
+    private static func candidateSources(from text: String) -> [String] {
+        guard let decoded = text.removingPercentEncoding, decoded != text else {
+            return [text]
+        }
+        return [text, decoded]
     }
 
     private static func parseSelectedCard(_ value: String) -> PlayingCard?? {
