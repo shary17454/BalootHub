@@ -813,6 +813,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(item?.projectedTeamPoints, 61)
         XCTAssertEqual(item?.lostProjectedTeamPoints, 13)
+        XCTAssertEqual(item?.valueLossSeverity, .high)
+        XCTAssertEqual(item?.valueLossTitle, "خسارة قيمة عالية".localized)
     }
 
     func testAttemptStoresScenarioContextForReplayableReview() {
