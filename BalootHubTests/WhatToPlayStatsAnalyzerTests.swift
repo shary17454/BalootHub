@@ -4276,6 +4276,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(tip.title, "ابدأ القياس".localized)
         XCTAssertEqual(tip.iconName, "target")
+        XCTAssertEqual(tip.targetLine, "\("المستوى".localized): \("سهل".localized)")
     }
 
     func testCoachingTipForLowAccuracyFocusesOnSlowingDown() {
@@ -4288,6 +4289,10 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         let tip = WhatToPlayStatsAnalyzer.coachingTip(for: attempts)
 
         XCTAssertEqual(tip.title, "خفف السرعة".localized)
+        XCTAssertEqual(
+            tip.targetLine,
+            "\("المستوى".localized): \("سهل".localized) · \("تركيز التدريب".localized): \("اتباع اللون".localized)"
+        )
     }
 
     func testCoachingTipForNegativeImpactFocusesOnPointLoss() {
@@ -4300,6 +4305,10 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         let tip = WhatToPlayStatsAnalyzer.coachingTip(for: attempts)
 
         XCTAssertEqual(tip.title, "قلل نزيف النقاط".localized)
+        XCTAssertEqual(
+            tip.targetLine,
+            "\("المستوى".localized): \("متوسط".localized) · \("تركيز التدريب".localized): \("خيارات محدودة".localized)"
+        )
     }
 
     func testCoachingTipForFarChoiceRateFocusesOnFilteringOptions() {
@@ -4328,6 +4337,10 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(tip.title, "راجع المحاكاة".localized)
         XCTAssertEqual(tip.iconName, "chart.bar.xaxis")
         XCTAssertTrue(tip.detail.contains("\("متوسط فاقد ثاني محاكاة".localized): 8"))
+        XCTAssertEqual(
+            tip.targetLine,
+            "\("المستوى".localized): \("صعب".localized) · \("تركيز التدريب".localized): \("ضغط الحكم".localized)"
+        )
     }
 
     func testCoachingTipForCurrentStreakEncouragesHarderPractice() {
@@ -4340,6 +4353,10 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         let tip = WhatToPlayStatsAnalyzer.coachingTip(for: attempts)
 
         XCTAssertEqual(tip.title, "سلسلة ممتازة".localized)
+        XCTAssertEqual(
+            tip.targetLine,
+            "\("المستوى".localized): \("صعب".localized) · \("تركيز التدريب".localized): \("ضغط الحكم".localized) · \("النمط".localized): \("حكم".localized)"
+        )
     }
 
     private func sessionPlan(

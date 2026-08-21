@@ -1490,6 +1490,12 @@ struct WhatToPlayTrainerView: View {
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
+                if let targetLine = tip.targetLine {
+                    Text(targetLine)
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(AppColor.accent)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
         } icon: {
             Image(systemName: tip.iconName)

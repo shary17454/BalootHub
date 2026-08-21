@@ -185,6 +185,14 @@ struct WhatToPlayCoachingTip: Equatable {
     let title: String
     let detail: String
     let iconName: String
+    let targetLine: String?
+
+    init(title: String, detail: String, iconName: String, targetLine: String? = nil) {
+        self.title = title
+        self.detail = detail
+        self.iconName = iconName
+        self.targetLine = targetLine
+    }
 }
 
 struct WhatToPlayOutcomeInsight: Equatable {
@@ -4473,45 +4481,69 @@ enum WhatToPlayStatsAnalyzer {
             return WhatToPlayCoachingTip(
                 title: "ابدأ القياس".localized,
                 detail: "حل عدة مواقف من كل مستوى حتى يعطيك المدرب قراءة أدق لأسلوبك.".localized,
-                iconName: "target"
+                iconName: "target",
+                targetLine: coachingTargetLine(difficulty: .easy, focusKind: nil, gameMode: nil)
             )
         case .slowDown:
             return WhatToPlayCoachingTip(
                 title: "خفف السرعة".localized,
                 detail: "قبل اختيار الورقة، راجع اللون المطلوب والحكم الموجود ثم قارن هل تستطيع ربح الأكلة أو تقليل خسارتها.".localized,
-                iconName: "pause.circle.fill"
+                iconName: "pause.circle.fill",
+                targetLine: coachingTargetLine(difficulty: .easy, focusKind: .followSuit, gameMode: nil)
             )
         case .reducePointLeak:
             return WhatToPlayCoachingTip(
                 title: "قلل نزيف النقاط".localized,
                 detail: "اختياراتك الأخيرة تخسر نقاطًا متوقعة؛ جرّب حفظ الورق العالي عندما لا تستطيع الفوز بالأكلة.".localized,
-                iconName: "shield.lefthalf.filled"
+                iconName: "shield.lefthalf.filled",
+                targetLine: coachingTargetLine(difficulty: .medium, focusKind: .narrowChoice, gameMode: nil)
             )
         case .secondSimulationReview:
             return WhatToPlayCoachingTip(
                 title: "راجع المحاكاة".localized,
                 detail: "\("متوسط فاقد ثاني محاكاة".localized): \(metrics.averageProjectedSecondBestGap). \("راجع ثاني أفضل محاكاة قبل اعتماد قرار يبدو صحيحًا.".localized)",
-                iconName: "chart.bar.xaxis"
+                iconName: "chart.bar.xaxis",
+                targetLine: coachingTargetLine(difficulty: .hard, focusKind: .trumpPressure, gameMode: nil)
             )
         case .narrowChoices:
             return WhatToPlayCoachingTip(
                 title: "صفِّ الخيارات أولًا".localized,
                 detail: "نسبة الاختيارات خارج أفضل خيارين مرتفعة. قبل المقارنة النهائية، استبعد الورق الذي لا يكسب الأكلة ولا يقلل الخسارة.".localized,
-                iconName: "line.3.horizontal.decrease.circle.fill"
+                iconName: "line.3.horizontal.decrease.circle.fill",
+                targetLine: coachingTargetLine(difficulty: .medium, focusKind: .narrowChoice, gameMode: nil)
             )
         case .strongStreak:
             return WhatToPlayCoachingTip(
                 title: "سلسلة ممتازة".localized,
                 detail: "أنت تكرر قرارات قريبة من الخبير. ارفع الصعوبة أو ركز على مواقف الحكم لاختبار قراءة أقوى.".localized,
-                iconName: "flame.fill"
+                iconName: "flame.fill",
+                targetLine: coachingTargetLine(difficulty: .hard, focusKind: .trumpPressure, gameMode: .hokum)
             )
         case .compareChoices:
             return WhatToPlayCoachingTip(
                 title: "استمر بالمقارنة".localized,
                 detail: "بعد كل إجابة راجع بطاقة أثر كل قرار؛ الفرق بين اختيارك والخيار الثاني يعلمك متى تكون المخاطرة مقبولة.".localized,
-                iconName: "lightbulb.fill"
+                iconName: "lightbulb.fill",
+                targetLine: coachingTargetLine(difficulty: .medium, focusKind: nil, gameMode: nil)
             )
         }
+    }
+
+    private static func coachingTargetLine(
+        difficulty: WhatToPlayDifficulty,
+        focusKind: WhatToPlayScenarioFocusKind?,
+        gameMode: GameMode?
+    ) -> String {
+        var parts = [
+            "\("المستوى".localized): \(difficultyTitle(difficulty))"
+        ]
+        if let focusKind {
+            parts.append("\("تركيز التدريب".localized): \(scenarioFocusTitle(focusKind))")
+        }
+        if let gameMode {
+            parts.append("\("النمط".localized): \(gameModeTitle(gameMode))")
+        }
+        return parts.joined(separator: " · ")
     }
 
     private static func difficultyOrder(_ difficulty: WhatToPlayDifficulty) -> Int {
