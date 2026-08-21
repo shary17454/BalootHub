@@ -35,6 +35,8 @@
 		4A88DCD94F14C30E2E420352 /* CancellableTaskBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC40715873C84BCBB064415D /* CancellableTaskBox.swift */; };
 		4D8A0D8E4FC34C9587EAF731 /* ScoringQuizAttempt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E98C1D6A2A142ED953F3D57 /* ScoringQuizAttempt.swift */; };
 		4FDB48E42E0CE12627F4AD7E /* WhatToPlayTrainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCEEEAFFE7918B385BB6EF34 /* WhatToPlayTrainerView.swift */; };
+		4FDB48E42E0CE12627F4AD80 /* WhatToPlayTrainerShareCodeImport.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCEEEAFFE7918B385BB6EF35 /* WhatToPlayTrainerShareCodeImport.swift */; };
+		4FDB48E42E0CE12627F4AD82 /* WhatToPlayTrainerOptionPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCEEEAFFE7918B385BB6EF36 /* WhatToPlayTrainerOptionPresentation.swift */; };
 		529EF7EDF1804FBC82FED2EC /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41EF024C529F4D39B261D9D9 /* RootTabView.swift */; };
 		5C3207CE093746BEA8914BDB /* CatalogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BD7ECD51144879B505C6CB /* CatalogView.swift */; };
 		5F0C8B4A7D6E4B3EB15C229A /* DailyChallengeCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88C1D026EA1418FA1FEC017 /* DailyChallengeCenter.swift */; };
@@ -233,6 +235,8 @@
 		D96B0E69259F48239E70C5E8 /* OfflineTournament.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineTournament.swift; sourceTree = "<group>"; };
 		DC40715873C84BCBB064415D /* CancellableTaskBox.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CancellableTaskBox.swift; sourceTree = "<group>"; };
 		DCEEEAFFE7918B385BB6EF34 /* WhatToPlayTrainerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WhatToPlayTrainerView.swift; sourceTree = "<group>"; };
+		DCEEEAFFE7918B385BB6EF35 /* WhatToPlayTrainerShareCodeImport.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WhatToPlayTrainerShareCodeImport.swift; sourceTree = "<group>"; };
+		DCEEEAFFE7918B385BB6EF36 /* WhatToPlayTrainerOptionPresentation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WhatToPlayTrainerOptionPresentation.swift; sourceTree = "<group>"; };
 		DD926CE4B79280B21E0E0D42 /* BalootEncyclopediaAndRareCaseTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BalootEncyclopediaAndRareCaseTests.swift; sourceTree = "<group>"; };
 		E0811162DCF843A7B33CF1E3 /* ScoreRound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreRound.swift; sourceTree = "<group>"; };
 		E26F1901589540B5AF735A37 /* StatusBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBadge.swift; sourceTree = "<group>"; };
@@ -560,6 +564,8 @@
 			isa = PBXGroup;
 			children = (
 				DCEEEAFFE7918B385BB6EF34 /* WhatToPlayTrainerView.swift */,
+				DCEEEAFFE7918B385BB6EF35 /* WhatToPlayTrainerShareCodeImport.swift */,
+				DCEEEAFFE7918B385BB6EF36 /* WhatToPlayTrainerOptionPresentation.swift */,
 			);
 			name = WhatToPlayTrainer;
 			path = WhatToPlayTrainer;
@@ -800,6 +806,8 @@
 				6B5655E03DEC17338A9D5AD1 /* SelectableChip.swift in Sources */,
 				E51985E614E741E42A0CE6C2 /* AppLogger.swift in Sources */,
 				4FDB48E42E0CE12627F4AD7E /* WhatToPlayTrainerView.swift in Sources */,
+				4FDB48E42E0CE12627F4AD80 /* WhatToPlayTrainerShareCodeImport.swift in Sources */,
+				4FDB48E42E0CE12627F4AD82 /* WhatToPlayTrainerOptionPresentation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

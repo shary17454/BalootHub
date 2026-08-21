@@ -30,26 +30,29 @@ struct WhatToPlayTrainerView: View {
     private let routeSeedBase: UInt64?
     private let targetCount: Int?
 
-    @Environment(\.modelContext) private var modelContext
+    @Environment(\.modelContext) var modelContext
     @Environment(\.displayScale) private var displayScale
-    @Query(sort: \WhatToPlayAttempt.createdAt, order: .reverse) private var attempts: [WhatToPlayAttempt]
+    @Query(sort: \WhatToPlayAttempt.createdAt, order: .reverse) var attempts: [WhatToPlayAttempt]
 
-    @State private var difficulty: WhatToPlayDifficulty = .medium
-    @State private var preferredFocusRaw = "auto"
-    @State private var preferredModeRaw = "auto"
-    @State private var preferredTrumpSuit: Suit?
-    @State private var seed: UInt64 = 2026
-    @State private var scenario: WhatToPlayScenario?
-    @State private var selectedOption: WhatToPlayOption?
-    @State private var errorMessage: String?
-    @State private var illegalMoveExplanation: String?
-    @State private var isGeneratingScenario = false
-    @State private var isRetryingCurrentScenario = false
-    @State private var generationTask: Task<Void, Never>?
+    @State var difficulty: WhatToPlayDifficulty = .medium
+    @State var preferredFocusRaw = "auto"
+    @State var preferredModeRaw = "auto"
+    @State var preferredTrumpSuit: Suit?
+    @State var seed: UInt64 = 2026
+    @State var scenario: WhatToPlayScenario?
+    @State var selectedOption: WhatToPlayOption?
+    @State var errorMessage: String?
+    @State var illegalMoveExplanation: String?
+    @State var isGeneratingScenario = false
+    @State var isRetryingCurrentScenario = false
+    @State var generationTask: Task<Void, Never>?
     @State private var replayPresentation: WhatToPlayReplayPresentation?
     @State private var pendingReviewSelection: PlayingCard?
-    @State private var shareImageURL: URL?
-    @State private var isRenderingShareImage = false
+    @State var shareImageURL: URL?
+    @State var isRenderingShareImage = false
+    @State var shareCodeInput = ""
+    @State var shareCodeMessage: String?
+    @State var isApplyingImportedShareCode = false
 
     init(
         seed: UInt64? = nil,
@@ -250,7 +253,7 @@ struct WhatToPlayTrainerView: View {
         GameMode(rawValue: preferredModeRaw)
     }
 
-    private func saveTrainerPreferences() {
+    func saveTrainerPreferences() {
         WhatToPlayTrainerPreferences.save(
             difficulty: difficulty,
             preferredFocus: preferredFocus,
@@ -308,6 +311,10 @@ struct WhatToPlayTrainerView: View {
             if scenario == nil { generateScenario() }
         }
         .onChange(of: difficulty) { _, _ in
+            guard !isApplyingImportedShareCode else {
+                saveTrainerPreferences()
+                return
+            }
             saveTrainerPreferences()
             seed = WhatToPlayScenarioLoader.unattemptedSeed(
                 startingAt: seed,
@@ -321,6 +328,10 @@ struct WhatToPlayTrainerView: View {
             generateScenario()
         }
         .onChange(of: preferredFocusRaw) { _, _ in
+            guard !isApplyingImportedShareCode else {
+                saveTrainerPreferences()
+                return
+            }
             saveTrainerPreferences()
             seed = WhatToPlayScenarioLoader.unattemptedSeed(
                 startingAt: seed,
@@ -334,6 +345,10 @@ struct WhatToPlayTrainerView: View {
             generateScenario()
         }
         .onChange(of: preferredModeRaw) { _, _ in
+            guard !isApplyingImportedShareCode else {
+                saveTrainerPreferences()
+                return
+            }
             saveTrainerPreferences()
             seed = WhatToPlayScenarioLoader.unattemptedSeed(
                 startingAt: seed,
@@ -448,6 +463,8 @@ struct WhatToPlayTrainerView: View {
             .buttonStyle(.bordered)
             .tint(AppColor.primary)
             .disabled(isGeneratingScenario)
+
+            shareCodeImportView
         }
     }
 
@@ -3129,56 +3146,6 @@ struct WhatToPlayTrainerView: View {
         guard let card, let impact else { return "لا يوجد بديل".localized }
         let projection = projectedTeamPoints.map { " · \("محاكاة".localized): \($0)" } ?? ""
         return "\(card.accessibilityName) · \(impactText(impact))\(projection)"
-    }
-
-    private func optionOutcomeText(_ outcome: WhatToPlayOptionOutcome) -> String {
-        switch outcome {
-        case .leadsTrick:
-            "يفتتح الأكلة".localized
-        case .developsTrick:
-            "يبقي الأكلة مفتوحة".localized
-        case .winsTrick:
-            "يكسب الأكلة".localized
-        case .losesTrick:
-            "يخسر الأكلة".localized
-        }
-    }
-
-    private func optionOutcomeIcon(_ outcome: WhatToPlayOptionOutcome) -> String {
-        switch outcome {
-        case .leadsTrick:
-            "arrowshape.turn.up.forward.fill"
-        case .developsTrick:
-            "ellipsis.circle.fill"
-        case .winsTrick:
-            "checkmark.circle.fill"
-        case .losesTrick:
-            "xmark.circle.fill"
-        }
-    }
-
-    private func optionOutcomeTint(_ outcome: WhatToPlayOptionOutcome) -> Color {
-        switch outcome {
-        case .winsTrick:
-            AppColor.success
-        case .losesTrick:
-            AppColor.danger
-        case .leadsTrick, .developsTrick:
-            AppColor.accent
-        }
-    }
-
-    private func optionTacticalTint(_ tag: WhatToPlayOptionTacticalTag) -> Color {
-        switch tag {
-        case .expertPick, .winsNow:
-            AppColor.success
-        case .closeAlternative, .holdsPosition:
-            AppColor.accent
-        case .opensRisk:
-            AppColor.warning
-        case .costly:
-            AppColor.danger
-        }
     }
 
     private func generateScenario() {
