@@ -91,6 +91,15 @@ public enum GameEngine {
         return state.bidding.legalBids(rules: state.rules)
     }
 
+    /// أفعال المزايدة القانونية للاعب محدد الآن.
+    ///
+    /// هذه تقابل ``legalMoves(for:state:)`` للورق: تعطي الواجهة والتدريب والـReplay
+    /// أفعالًا قابلة للتطبيق مباشرة بدل أن يعيد كل مستدعٍ تغليف ``Bid`` داخل
+    /// ``GameAction/placeBid(playerID:bid:)`` بنفسه.
+    public static func legalBidActions(for playerID: Player.ID, state: GameState) -> [GameAction] {
+        legalBids(for: playerID, state: state).map { .placeBid(playerID: playerID, bid: $0) }
+    }
+
     /// حركات المضاعفة القانونية للاعب محدد في لحظة المزايدة الحالية.
     public static func legalMultiplierActions(for playerID: Player.ID, state: GameState) -> [LegalMultiplierAction] {
         BiddingEngine.legalMultiplierActions(for: playerID, state: state)

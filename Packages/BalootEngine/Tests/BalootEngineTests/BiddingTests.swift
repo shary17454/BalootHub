@@ -129,6 +129,31 @@ struct BiddingCycleTests {
         #expect(GameEngine.legalBids(for: waitingID, state: state).isEmpty)
     }
 
+    @Test("أفعال المزايدة القانونية تطابق المزايدات المتاحة لصاحب الدور")
+    func legalBidActionsWrapLegalBidsForCurrentPlayer() throws {
+        var state = GameState.newLocalMatch(rules: .standard)
+        state = try GameEngine.apply(.dealCards(seed: 14), to: state)
+
+        let currentID = try #require(state.currentTurnPlayerID)
+        let legalBids = GameEngine.legalBids(for: currentID, state: state)
+
+        #expect(
+            GameEngine.legalBidActions(for: currentID, state: state)
+                == legalBids.map { .placeBid(playerID: currentID, bid: $0) }
+        )
+    }
+
+    @Test("أفعال المزايدة القانونية فارغة للاعب غير صاحب الدور")
+    func legalBidActionsAreEmptyForWaitingPlayer() throws {
+        var state = GameState.newLocalMatch(rules: .standard)
+        state = try GameEngine.apply(.dealCards(seed: 14), to: state)
+
+        let currentID = try #require(state.currentTurnPlayerID)
+        let waitingID = try #require(state.players.first { $0.id != currentID }?.id)
+
+        #expect(GameEngine.legalBidActions(for: waitingID, state: state).isEmpty)
+    }
+
     @Test("شراء حكم بلون غير المكشوف في الجولة الأولى يُرفض")
     func illegalFirstRoundHokumIsRejected() throws {
         var state = GameState.newLocalMatch(rules: .standard)
