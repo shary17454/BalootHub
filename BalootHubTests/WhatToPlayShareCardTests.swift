@@ -246,6 +246,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
 
         let reviewed = WhatToPlayShareCard.content(for: scenario, selectedOption: selected)
         let secondBest = try XCTUnwrap(scenario.secondBestOption)
+        let bestSimulation = try XCTUnwrap(WhatToPlayOptionComparison.bestSimulationOption(scenario.options))
+        let lostProjectedTeamPoints = max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints)
 
         XCTAssertTrue(reviewed.includesAnswerReview)
         XCTAssertEqual(reviewed.subtitle, "مراجعة قرار من Baloot Hub".localized)
@@ -255,9 +257,14 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(reviewed.secondBestCardName, secondBest.card.accessibilityName)
         XCTAssertEqual(reviewed.secondBestExpectedImpact, secondBest.expectedImpact)
         XCTAssertEqual(reviewed.lostExpectedPoints, 0)
-        XCTAssertEqual(reviewed.lostProjectedTeamPoints, 0)
+        XCTAssertEqual(reviewed.lostProjectedTeamPoints, lostProjectedTeamPoints)
         XCTAssertEqual(reviewed.lostAgainstSecondBestPoints, max(0, secondBest.expectedImpact - selected.expectedImpact))
-        XCTAssertEqual(reviewed.valueLossTitle, "لا توجد خسارة قيمة".localized)
+        XCTAssertEqual(
+            reviewed.valueLossTitle,
+            WhatToPlayStatsAnalyzer.valueLossTitle(
+                for: WhatToPlayStatsAnalyzer.valueLossSeverity(for: lostProjectedTeamPoints)
+            )
+        )
         XCTAssertEqual(reviewed.decisionQualityTitle, "مطابق للخبير".localized)
         XCTAssertEqual(reviewed.decisionQualityDetail, WhatToPlayDecisionQuality.expertMatch.detail)
         let confidence = try XCTUnwrap(
