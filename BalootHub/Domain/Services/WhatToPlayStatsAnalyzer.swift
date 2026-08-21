@@ -2130,6 +2130,8 @@ enum WhatToPlayStatsAnalyzer {
                     "\("نتيجة الجلسة".localized): \(progress.gradePercent)/100",
                     progress.gradeTitle,
                     progress.gradeDetail,
+                    progress.gradeReasonTitle,
+                    progress.gradeReasonDetail,
                     "ابدأ موقفًا جديدًا بالمستوى المقترح بدل تكرار خطة أتقنتها.".localized
                 ].joined(separator: ". "),
                 contextLine: trainingSessionReviewContext(difficulty: recommendation.difficulty, focusKind: recommendation.focusKind, gameMode: recommendation.gameMode, trumpSuit: recommendation.trumpSuit),

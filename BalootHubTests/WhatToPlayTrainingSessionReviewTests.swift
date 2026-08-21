@@ -28,6 +28,8 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
         XCTAssertTrue(review.detail.contains("\("نتيجة الجلسة".localized): 100/100"))
         XCTAssertTrue(review.detail.contains("جلسة ممتازة".localized))
         XCTAssertTrue(review.detail.contains("قراراتك قريبة من الخبير وتحقق أثرًا قويًا".localized))
+        XCTAssertTrue(review.detail.contains("التقييم متوازن".localized))
+        XCTAssertTrue(review.detail.contains("الدقة وأثر القرار قريبان".localized))
     }
 
     func testReplayMistakeDetailIncludesSecondBestAndSimulationLoss() {
