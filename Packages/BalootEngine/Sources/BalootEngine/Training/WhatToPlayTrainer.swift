@@ -1704,6 +1704,28 @@ public struct WhatToPlayWeaknessFocusRankMetrics: Sendable, Equatable {
     }
 }
 
+/// مفاتيح ترتيب مستوى الصعوبة صاحب أكبر نزيف في متوسط أثر قرارات «وش تلعب؟».
+public struct WhatToPlayDifficultyImpactRankMetrics: Sendable, Equatable {
+    public let averageExpectedImpact: Int
+    public let difficultyOrder: Int
+
+    public init(averageExpectedImpact: Int, difficultyOrder: Int) {
+        self.averageExpectedImpact = averageExpectedImpact
+        self.difficultyOrder = difficultyOrder
+    }
+
+    public static func ranksBefore(
+        _ lhs: WhatToPlayDifficultyImpactRankMetrics,
+        _ rhs: WhatToPlayDifficultyImpactRankMetrics
+    ) -> Bool {
+        if lhs.averageExpectedImpact != rhs.averageExpectedImpact {
+            return lhs.averageExpectedImpact < rhs.averageExpectedImpact
+        }
+
+        return lhs.difficultyOrder > rhs.difficultyOrder
+    }
+}
+
 /// ملخص جودة قرارات «وش تلعب؟» من تصنيفات المحرك نفسها.
 public struct WhatToPlayDecisionQualitySummaryMetrics: Sendable, Equatable {
     public let trackedAttempts: Int

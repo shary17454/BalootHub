@@ -1144,10 +1144,10 @@ enum WhatToPlayStatsAnalyzer {
         let candidates = summariesByDifficulty(attempts)
             .filter { $0.summary.attempts >= minimumAttempts }
         guard let weakest = candidates.min(by: { lhs, rhs in
-            if lhs.summary.averageExpectedImpact != rhs.summary.averageExpectedImpact {
-                return lhs.summary.averageExpectedImpact < rhs.summary.averageExpectedImpact
-            }
-            return difficultyOrder(lhs.difficulty) > difficultyOrder(rhs.difficulty)
+            WhatToPlayDifficultyImpactRankMetrics.ranksBefore(
+                difficultyImpactRankMetrics(for: lhs),
+                difficultyImpactRankMetrics(for: rhs)
+            )
         }) else { return nil }
 
         if weakest.summary.averageExpectedImpact < 0 {
@@ -1168,6 +1168,15 @@ enum WhatToPlayStatsAnalyzer {
             title: "لا يوجد نزيف واضح".localized,
             detail: "متوسط الأثر المتوقع غير سلبي في المستويات التي تملك عينات كافية؛ يمكنك رفع الصعوبة تدريجيًا.".localized,
             iconName: "checkmark.seal.fill"
+        )
+    }
+
+    private static func difficultyImpactRankMetrics(
+        for candidate: (difficulty: WhatToPlayDifficulty, summary: WhatToPlayStatsSummary)
+    ) -> WhatToPlayDifficultyImpactRankMetrics {
+        WhatToPlayDifficultyImpactRankMetrics(
+            averageExpectedImpact: candidate.summary.averageExpectedImpact,
+            difficultyOrder: difficultyOrder(candidate.difficulty)
         )
     }
 

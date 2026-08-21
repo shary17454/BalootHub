@@ -996,6 +996,29 @@ struct WhatToPlayTrainerTests {
         #expect(WhatToPlayWeaknessFocusRankMetrics.ranksBefore(earlierStableOrder, laterStableOrder))
     }
 
+    @Test("ترتيب نزيف الصعوبة في وش تلعب يأتي من المحرك")
+    func difficultyImpactRankMetricsRankWorstDifficulty() {
+        let lowerImpact = WhatToPlayDifficultyImpactRankMetrics(
+            averageExpectedImpact: -4,
+            difficultyOrder: 1
+        )
+        let higherImpact = WhatToPlayDifficultyImpactRankMetrics(
+            averageExpectedImpact: 2,
+            difficultyOrder: 4
+        )
+        #expect(WhatToPlayDifficultyImpactRankMetrics.ranksBefore(lowerImpact, higherImpact))
+
+        let harderTie = WhatToPlayDifficultyImpactRankMetrics(
+            averageExpectedImpact: -2,
+            difficultyOrder: 4
+        )
+        let easierTie = WhatToPlayDifficultyImpactRankMetrics(
+            averageExpectedImpact: -2,
+            difficultyOrder: 2
+        )
+        #expect(WhatToPlayDifficultyImpactRankMetrics.ranksBefore(harderTie, easierTie))
+    }
+
     @Test("ملخص جودة قرارات وش تلعب يأتي من المحرك")
     func decisionQualitySummaryMetricsClassifyQualities() {
         #expect(WhatToPlayDecisionQualitySummaryMetrics.summarize(qualities: []) == .empty)
