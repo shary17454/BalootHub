@@ -3,6 +3,33 @@ import BalootEngine
 @testable import BalootHub
 
 final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
+    func testAchievedSessionReviewIncludesGradeReason() {
+        let plan = WhatToPlayTrainingSessionPlan(
+            difficulty: .easy,
+            focusKind: nil,
+            gameMode: nil,
+            scenarioCount: 3,
+            targetAccuracyPercent: 67,
+            targetAverageExpectedImpact: 1,
+            title: "خطة".localized,
+            detail: "تفصيل".localized,
+            successMetric: "هدف".localized,
+            iconName: "target"
+        )
+        let attempts = [
+            attempt(seed: 11, selected: PlayingCard(suit: .clubs, rank: .ace), best: PlayingCard(suit: .clubs, rank: .ace), isCorrect: true, impact: 6),
+            attempt(seed: 12, selected: PlayingCard(suit: .hearts, rank: .ace), best: PlayingCard(suit: .hearts, rank: .ace), isCorrect: true, impact: 6),
+            attempt(seed: 13, selected: PlayingCard(suit: .spades, rank: .ace), best: PlayingCard(suit: .spades, rank: .ace), isCorrect: true, impact: 6)
+        ]
+
+        let review = WhatToPlayStatsAnalyzer.trainingSessionReview(for: attempts, plan: plan)
+
+        XCTAssertEqual(review.action, .nextChallenge)
+        XCTAssertTrue(review.detail.contains("\("نتيجة الجلسة".localized): 100/100"))
+        XCTAssertTrue(review.detail.contains("جلسة ممتازة".localized))
+        XCTAssertTrue(review.detail.contains("قراراتك قريبة من الخبير وتحقق أثرًا قويًا".localized))
+    }
+
     func testReplayMistakeDetailIncludesSecondBestAndSimulationLoss() {
         let selected = PlayingCard(suit: .clubs, rank: .seven)
         let best = PlayingCard(suit: .hearts, rank: .ace)
@@ -61,7 +88,9 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
         seed: UInt64,
         selected: PlayingCard,
         best: PlayingCard,
-        second: PlayingCard? = nil
+        second: PlayingCard? = nil,
+        isCorrect: Bool = false,
+        impact: Int = -4
     ) -> WhatToPlayAttempt {
         WhatToPlayAttempt(
             createdAt: Date(timeIntervalSince1970: Double(seed)),
@@ -71,9 +100,9 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
             bestCard: best,
             secondBestCard: second,
             bestSimulationCard: second == nil ? nil : PlayingCard(suit: .diamonds, rank: .ace),
-            isCorrect: false,
+            isCorrect: isCorrect,
             selectedRank: second == nil ? 3 : 4,
-            expectedImpact: -4,
+            expectedImpact: impact,
             bestExpectedImpact: 8,
             secondBestExpectedImpact: second == nil ? nil : 5,
             projectedTeamPoints: 50,

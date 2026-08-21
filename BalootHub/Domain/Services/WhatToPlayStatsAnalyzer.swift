@@ -2126,7 +2126,12 @@ enum WhatToPlayStatsAnalyzer {
             return WhatToPlayTrainingSessionReview(
                 action: .nextChallenge,
                 title: "ابدأ تحدي أقوى".localized,
-                detail: "\("نتيجة الجلسة".localized): \(progress.gradePercent)/100. \("ابدأ موقفًا جديدًا بالمستوى المقترح بدل تكرار خطة أتقنتها.".localized)",
+                detail: [
+                    "\("نتيجة الجلسة".localized): \(progress.gradePercent)/100",
+                    progress.gradeTitle,
+                    progress.gradeDetail,
+                    "ابدأ موقفًا جديدًا بالمستوى المقترح بدل تكرار خطة أتقنتها.".localized
+                ].joined(separator: ". "),
                 contextLine: trainingSessionReviewContext(difficulty: recommendation.difficulty, focusKind: recommendation.focusKind, gameMode: recommendation.gameMode, trumpSuit: recommendation.trumpSuit),
                 iconName: "arrow.up.circle.fill",
                 replaySeed: nil,
