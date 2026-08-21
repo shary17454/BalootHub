@@ -87,6 +87,48 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
         XCTAssertTrue(review.detail.contains("\("نقاط محاكاة ضائعة".localized): 12"))
     }
 
+    func testReviewScenarioTargetReplaysPreviousSelection() throws {
+        let selected = PlayingCard(suit: .hearts, rank: .ace)
+        let stored = attempt(
+            seed: 20,
+            selected: selected,
+            best: PlayingCard(suit: .clubs, rank: .ace)
+        )
+        let item = try XCTUnwrap(WhatToPlayStatsAnalyzer.reviewQueue(for: [stored]).first)
+
+        let target = WhatToPlayReviewScenarioTarget.replaying(item)
+
+        XCTAssertEqual(target.seed, item.seed)
+        XCTAssertEqual(target.difficulty, .medium)
+        XCTAssertEqual(target.focusKind, .followSuit)
+        XCTAssertEqual(target.preferredFocusRaw, WhatToPlayScenarioFocusKind.followSuit.rawValue)
+        XCTAssertEqual(target.gameMode, .hokum)
+        XCTAssertEqual(target.preferredModeRaw, GameMode.hokum.rawValue)
+        XCTAssertEqual(target.trumpSuit, .spades)
+        XCTAssertEqual(target.pendingReviewSelection, selected)
+    }
+
+    func testReviewScenarioTargetPracticesBlindWithoutPreviousSelection() throws {
+        let selected = PlayingCard(suit: .hearts, rank: .ace)
+        let stored = attempt(
+            seed: 21,
+            selected: selected,
+            best: PlayingCard(suit: .clubs, rank: .ace)
+        )
+        let item = try XCTUnwrap(WhatToPlayStatsAnalyzer.reviewQueue(for: [stored]).first)
+
+        let target = WhatToPlayReviewScenarioTarget.practicingBlind(item)
+
+        XCTAssertEqual(target.seed, item.seed)
+        XCTAssertEqual(target.difficulty, .medium)
+        XCTAssertEqual(target.focusKind, .followSuit)
+        XCTAssertEqual(target.preferredFocusRaw, WhatToPlayScenarioFocusKind.followSuit.rawValue)
+        XCTAssertEqual(target.gameMode, .hokum)
+        XCTAssertEqual(target.preferredModeRaw, GameMode.hokum.rawValue)
+        XCTAssertEqual(target.trumpSuit, .spades)
+        XCTAssertNil(target.pendingReviewSelection)
+    }
+
     private func attempt(
         seed: UInt64,
         selected: PlayingCard,

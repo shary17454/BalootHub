@@ -3217,32 +3217,25 @@ struct WhatToPlayTrainerView: View {
     }
 
     private func replayReviewItem(_ item: WhatToPlayReviewItem) {
-        seed = item.seed
-        preferredFocusRaw = item.focusKind?.rawValue ?? "auto"
-        preferredModeRaw = item.gameMode?.rawValue ?? "auto"
-        preferredTrumpSuit = item.contextTrumpSuit
-        selectedOption = nil
-        pendingReviewSelection = item.selectedCard
-        isRetryingCurrentScenario = false
-        if difficulty == item.difficulty {
-            generateScenario()
-        } else {
-            difficulty = item.difficulty
-        }
+        applyReviewScenarioTarget(.replaying(item))
     }
 
     private func practiceReviewItem(_ item: WhatToPlayReviewItem) {
-        seed = item.seed
-        preferredFocusRaw = item.focusKind?.rawValue ?? "auto"
-        preferredModeRaw = item.gameMode?.rawValue ?? "auto"
-        preferredTrumpSuit = item.contextTrumpSuit
+        applyReviewScenarioTarget(.practicingBlind(item))
+    }
+
+    private func applyReviewScenarioTarget(_ target: WhatToPlayReviewScenarioTarget) {
+        seed = target.seed
+        preferredFocusRaw = target.preferredFocusRaw
+        preferredModeRaw = target.preferredModeRaw
+        preferredTrumpSuit = target.trumpSuit
         selectedOption = nil
-        pendingReviewSelection = nil
+        pendingReviewSelection = target.pendingReviewSelection
         isRetryingCurrentScenario = false
-        if difficulty == item.difficulty {
+        if difficulty == target.difficulty {
             generateScenario()
         } else {
-            difficulty = item.difficulty
+            difficulty = target.difficulty
         }
     }
 

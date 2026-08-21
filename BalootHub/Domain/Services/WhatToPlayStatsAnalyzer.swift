@@ -251,6 +251,40 @@ struct WhatToPlayReviewItem: Equatable, Identifiable {
     let contextOpponentTeamTrickPoints: Int?
 }
 
+struct WhatToPlayReviewScenarioTarget: Equatable {
+    let seed: UInt64
+    let difficulty: WhatToPlayDifficulty
+    let focusKind: WhatToPlayScenarioFocusKind?
+    let gameMode: GameMode?
+    let trumpSuit: Suit?
+    let pendingReviewSelection: PlayingCard?
+
+    var preferredFocusRaw: String {
+        focusKind?.rawValue ?? "auto"
+    }
+
+    var preferredModeRaw: String {
+        gameMode?.rawValue ?? "auto"
+    }
+
+    static func replaying(_ item: WhatToPlayReviewItem) -> WhatToPlayReviewScenarioTarget {
+        WhatToPlayReviewScenarioTarget(item: item, pendingReviewSelection: item.selectedCard)
+    }
+
+    static func practicingBlind(_ item: WhatToPlayReviewItem) -> WhatToPlayReviewScenarioTarget {
+        WhatToPlayReviewScenarioTarget(item: item, pendingReviewSelection: nil)
+    }
+
+    private init(item: WhatToPlayReviewItem, pendingReviewSelection: PlayingCard?) {
+        seed = item.seed
+        difficulty = item.difficulty
+        focusKind = item.focusKind
+        gameMode = item.gameMode
+        trumpSuit = item.contextTrumpSuit
+        self.pendingReviewSelection = pendingReviewSelection
+    }
+}
+
 struct WhatToPlayReviewPriority: Equatable {
     let title: String
     let detail: String
