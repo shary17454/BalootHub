@@ -188,6 +188,49 @@ struct WhatToPlayTrainerTests {
         #expect(metrics.isExpertChoice == selected.isExpertChoice)
     }
 
+    @Test("تصنيف رؤية قرار وش تلعب الخام يأتي من المحرك")
+    func decisionInsightMetricsClassifyDecision() {
+        let expert = WhatToPlayDecisionInsightMetrics.classify(
+            selectedRank: 1,
+            selectedImpact: 8,
+            bestImpact: 8,
+            secondBestImpact: 5
+        )
+        #expect(expert.category == .expertMatch)
+        #expect(expert.valueLossSeverity == .none)
+
+        let close = WhatToPlayDecisionInsightMetrics.classify(
+            selectedRank: 2,
+            selectedImpact: 6,
+            bestImpact: 8,
+            secondBestImpact: 6
+        )
+        #expect(close.category == .closeAlternative)
+        #expect(close.lostExpectedPoints == 2)
+        #expect(close.valueLossSeverity == .low)
+
+        let projectedLeak = WhatToPlayDecisionInsightMetrics.classify(
+            selectedRank: 2,
+            selectedImpact: 7,
+            bestImpact: 8,
+            secondBestImpact: 7,
+            selectedProjectedTeamPoints: 52,
+            bestProjectedTeamPoints: 68
+        )
+        #expect(projectedLeak.category == .pointLeak)
+        #expect(projectedLeak.lostProjectedTeamPoints == 16)
+        #expect(projectedLeak.valueLossSeverity == .high)
+
+        let missedWin = WhatToPlayDecisionInsightMetrics.classify(
+            selectedRank: 4,
+            selectedImpact: -3,
+            bestImpact: 7,
+            secondBestImpact: 2
+        )
+        #expect(missedWin.category == .missedWinningChance)
+        #expect(missedWin.secondBestGap == 5)
+    }
+
     @Test("مستوى الخبير يولد موقفًا حقيقيًا قابلًا للتقييم")
     func expertDifficultyGeneratesPlayableScenario() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .expert)

@@ -41,6 +41,100 @@ public enum WhatToPlayDecisionQuality: String, Sendable, Codable, Equatable, Cas
     }
 }
 
+/// التصنيف الخام لرؤية قرار اللاعب في موقف «وش تلعب؟».
+public enum WhatToPlayDecisionInsightCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case expertMatch
+    case closeAlternative
+    case missedWinningChance
+    case pointLeak
+}
+
+/// شدة خسارة القيمة عند مقارنة خيار اللاعب بأفضل خيار في «وش تلعب؟».
+public enum WhatToPlayValueLossSeverityCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case none
+    case low
+    case medium
+    case high
+
+    public static func classify(decisiveLoss: Int) -> WhatToPlayValueLossSeverityCategory {
+        switch decisiveLoss {
+        case ...0:
+            .none
+        case 1...2:
+            .low
+        case 3...5:
+            .medium
+        default:
+            .high
+        }
+    }
+}
+
+/// أرقام وتصنيف قرار المستخدم دون نصوص واجهة أو أيقونات.
+public struct WhatToPlayDecisionInsightMetrics: Sendable, Equatable {
+    public let category: WhatToPlayDecisionInsightCategory
+    public let lostExpectedPoints: Int
+    public let lostProjectedTeamPoints: Int
+    public let secondBestGap: Int?
+    public let valueLossSeverity: WhatToPlayValueLossSeverityCategory
+
+    public init(
+        category: WhatToPlayDecisionInsightCategory,
+        lostExpectedPoints: Int,
+        lostProjectedTeamPoints: Int,
+        secondBestGap: Int?,
+        valueLossSeverity: WhatToPlayValueLossSeverityCategory
+    ) {
+        self.category = category
+        self.lostExpectedPoints = lostExpectedPoints
+        self.lostProjectedTeamPoints = lostProjectedTeamPoints
+        self.secondBestGap = secondBestGap
+        self.valueLossSeverity = valueLossSeverity
+    }
+
+    public static func classify(
+        selectedRank: Int,
+        selectedImpact: Int,
+        bestImpact: Int,
+        secondBestImpact: Int?,
+        selectedProjectedTeamPoints: Int? = nil,
+        bestProjectedTeamPoints: Int? = nil
+    ) -> WhatToPlayDecisionInsightMetrics {
+        let lostExpectedPoints = max(0, bestImpact - selectedImpact)
+        let lostProjectedTeamPoints: Int
+        if let selectedProjectedTeamPoints, let bestProjectedTeamPoints {
+            lostProjectedTeamPoints = max(0, bestProjectedTeamPoints - selectedProjectedTeamPoints)
+        } else {
+            lostProjectedTeamPoints = 0
+        }
+
+        let decisiveLoss = max(lostExpectedPoints, lostProjectedTeamPoints)
+        let secondBestGap = secondBestImpact.map { max(0, $0 - selectedImpact) }
+        let severity = WhatToPlayValueLossSeverityCategory.classify(decisiveLoss: decisiveLoss)
+
+        let category: WhatToPlayDecisionInsightCategory
+        if selectedRank == 1 || decisiveLoss == 0 {
+            category = .expertMatch
+        } else if lostProjectedTeamPoints > lostExpectedPoints {
+            category = .pointLeak
+        } else if selectedRank == 2 || decisiveLoss <= 2 || secondBestImpact == selectedImpact {
+            category = .closeAlternative
+        } else if selectedImpact < 0 && bestImpact > 0 {
+            category = .missedWinningChance
+        } else {
+            category = .pointLeak
+        }
+
+        return WhatToPlayDecisionInsightMetrics(
+            category: category,
+            lostExpectedPoints: lostExpectedPoints,
+            lostProjectedTeamPoints: lostProjectedTeamPoints,
+            secondBestGap: secondBestGap,
+            valueLossSeverity: severity
+        )
+    }
+}
+
 /// درجة وضوح أفضل ورقة في موقف «وش تلعب؟» مقارنة بثاني أفضل خيار.
 public enum WhatToPlayBestMoveConfidence: String, Sendable, Codable, Equatable, CaseIterable {
     case tied

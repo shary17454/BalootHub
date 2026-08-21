@@ -2723,19 +2723,23 @@ enum WhatToPlayStatsAnalyzer {
         selectedProjectedTeamPoints: Int? = nil,
         bestProjectedTeamPoints: Int? = nil
     ) -> WhatToPlayDecisionInsight {
-        let lost = max(0, bestImpact - selectedImpact)
-        let projectedLost: Int
-        if let selectedProjectedTeamPoints, let bestProjectedTeamPoints {
-            projectedLost = max(0, bestProjectedTeamPoints - selectedProjectedTeamPoints)
-        } else {
-            projectedLost = 0
-        }
-        let decisiveLoss = max(lost, projectedLost)
-        let secondBestGap = secondBestImpact.map { max(0, $0 - selectedImpact) }
-        let severity = valueLossSeverity(for: decisiveLoss)
+        let metrics = WhatToPlayDecisionInsightMetrics.classify(
+            selectedRank: selectedRank,
+            selectedImpact: selectedImpact,
+            bestImpact: bestImpact,
+            secondBestImpact: secondBestImpact,
+            selectedProjectedTeamPoints: selectedProjectedTeamPoints,
+            bestProjectedTeamPoints: bestProjectedTeamPoints
+        )
+        let lost = metrics.lostExpectedPoints
+        let projectedLost = metrics.lostProjectedTeamPoints
+        let secondBestGap = metrics.secondBestGap
+        let severity = valueLossSeverity(for: metrics.valueLossSeverity)
         let severityTitle = valueLossTitle(for: severity)
-        if selectedRank == 1 || decisiveLoss == 0 {
-            let expertDetail = projectedLost >= 9
+
+        switch metrics.category {
+        case .expertMatch:
+            let expertDetail = metrics.lostProjectedTeamPoints >= 9
                 ? "\("قرارك يطابق أفضل خيار في الأكلة الحالية، لكن محاكاة بقية الجولة تستحق المراجعة قبل تثبيت النمط.".localized) \("نقاط محاكاة ضائعة".localized): \(projectedLost)."
                 : "قرارك يطابق أفضل خيار في هذا الموقف، لذلك ركز على تذكر سبب نجاحه للمواقف المشابهة.".localized
             return WhatToPlayDecisionInsight(
@@ -2746,12 +2750,10 @@ enum WhatToPlayStatsAnalyzer {
                 lostExpectedPoints: 0,
                 lostProjectedTeamPoints: projectedLost,
                 secondBestGap: secondBestGap,
-                valueLossSeverity: projectedLost > 0 ? severity : .none,
-                valueLossTitle: projectedLost > 0 ? severityTitle : valueLossTitle(for: .none)
+                valueLossSeverity: metrics.lostProjectedTeamPoints > 0 ? severity : .none,
+                valueLossTitle: metrics.lostProjectedTeamPoints > 0 ? severityTitle : valueLossTitle(for: .none)
             )
-        }
-
-        if projectedLost > lost {
+        case .pointLeak where metrics.lostProjectedTeamPoints > metrics.lostExpectedPoints:
             return WhatToPlayDecisionInsight(
                 kind: .pointLeak,
                 title: "المحاكاة ترجّح المراجعة".localized,
@@ -2763,9 +2765,7 @@ enum WhatToPlayStatsAnalyzer {
                 valueLossSeverity: severity,
                 valueLossTitle: severityTitle
             )
-        }
-
-        if selectedRank == 2 || decisiveLoss <= 2 || secondBestImpact == selectedImpact {
+        case .closeAlternative:
             return WhatToPlayDecisionInsight(
                 kind: .closeAlternative,
                 title: "اختيار قريب".localized,
@@ -2777,9 +2777,7 @@ enum WhatToPlayStatsAnalyzer {
                 valueLossSeverity: severity,
                 valueLossTitle: severityTitle
             )
-        }
-
-        if selectedImpact < 0 && bestImpact > 0 {
+        case .missedWinningChance:
             return WhatToPlayDecisionInsight(
                 kind: .missedWinningChance,
                 title: "فاتتك فرصة ربح".localized,
@@ -2791,19 +2789,19 @@ enum WhatToPlayStatsAnalyzer {
                 valueLossSeverity: severity,
                 valueLossTitle: severityTitle
             )
+        case .pointLeak:
+            return WhatToPlayDecisionInsight(
+                kind: .pointLeak,
+                title: "نزيف نقاط".localized,
+                detail: "اختيارك خسر قيمة متوقعة مقارنة بالأفضل. ابحث عن الورقة التي تقلل الخسارة حتى لو لم تربح الأكلة.".localized,
+                iconName: "drop.fill",
+                lostExpectedPoints: lost,
+                lostProjectedTeamPoints: projectedLost,
+                secondBestGap: secondBestGap,
+                valueLossSeverity: severity,
+                valueLossTitle: severityTitle
+            )
         }
-
-        return WhatToPlayDecisionInsight(
-            kind: .pointLeak,
-            title: "نزيف نقاط".localized,
-            detail: "اختيارك خسر قيمة متوقعة مقارنة بالأفضل. ابحث عن الورقة التي تقلل الخسارة حتى لو لم تربح الأكلة.".localized,
-            iconName: "drop.fill",
-            lostExpectedPoints: lost,
-            lostProjectedTeamPoints: projectedLost,
-            secondBestGap: secondBestGap,
-            valueLossSeverity: severity,
-            valueLossTitle: severityTitle
-        )
     }
 
     static func valueLossSeverity(for lostExpectedPoints: Int) -> WhatToPlayValueLossSeverity {
@@ -2829,6 +2827,21 @@ enum WhatToPlayStatsAnalyzer {
             "خسارة قيمة متوسطة".localized
         case .high:
             "خسارة قيمة عالية".localized
+        }
+    }
+
+    private static func valueLossSeverity(
+        for engineSeverity: WhatToPlayValueLossSeverityCategory
+    ) -> WhatToPlayValueLossSeverity {
+        switch engineSeverity {
+        case .none:
+            .none
+        case .low:
+            .low
+        case .medium:
+            .medium
+        case .high:
+            .high
         }
     }
 
