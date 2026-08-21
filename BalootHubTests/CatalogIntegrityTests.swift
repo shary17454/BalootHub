@@ -266,12 +266,26 @@ final class CatalogIntegrityTests: XCTestCase {
             for: "تم تحميل مراجعة القرار، لكن تعذّر حفظها في الإحصاءات."
         )
 
-        XCTAssertTrue(localizations.keys.contains("ar"), "الرسالة تحتاج قيمة عربية في كتالوج النصوص")
-        XCTAssertTrue(localizations.keys.contains("en"), "الرسالة تحتاج قيمة إنجليزية في كتالوج النصوص")
+        XCTAssertEqual(Set(localizations.keys), Self.expectedTranslatedLocales)
         XCTAssertEqual(
             localizations["en"],
             "The decision review was loaded, but it could not be saved to statistics."
         )
+    }
+
+    func testSecondSimulationCoachingStringsCoverSupportedLocales() throws {
+        let keys = [
+            "فاقد ثاني محاكاة",
+            "متوسط فاقد ثاني محاكاة",
+            "محاولات ثاني محاكاة",
+            "راجع ثاني أفضل محاكاة قبل اعتماد قرار يبدو صحيحًا."
+        ]
+
+        for key in keys {
+            let localizations = try Self.localizations(for: key)
+            XCTAssertEqual(Set(localizations.keys), Self.expectedTranslatedLocales, "\(key): ترجمات اللغات المدعومة غير مكتملة")
+            XCTAssertFalse(localizations.values.contains(where: \.isEmpty), "\(key): توجد ترجمة فارغة")
+        }
     }
 
     /// الرتب والأيقونات يجب أن تكون فريدة/مرتبة حتى لا تتكرر البطاقات أو تختل الترتيب.
@@ -304,6 +318,19 @@ final class CatalogIntegrityTests: XCTestCase {
             result[pair.key] = value
         }
     }
+
+    private static let expectedTranslatedLocales: Set<String> = [
+        "de",
+        "en",
+        "es",
+        "fr",
+        "hi",
+        "id",
+        "ru",
+        "tr",
+        "ur",
+        "zh-Hans"
+    ]
 
     private static func projectRoot() throws -> URL {
         var url = URL(fileURLWithPath: #filePath)

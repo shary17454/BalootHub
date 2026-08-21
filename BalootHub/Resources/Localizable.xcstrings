@@ -173,42 +173,58 @@
     },
     "فاقد ثاني محاكاة" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Second simulation loss"
-          }
-        }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Verlust in der zweiten Simulation" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Second simulation loss" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Pérdida de segunda simulación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Perte de deuxième simulation" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "दूसरे सिमुलेशन की हानि" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kerugian simulasi kedua" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Потеря второй симуляции" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "İkinci simülasyon kaybı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "دوسری سیمولیشن کا نقصان" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "第二模拟损失" } }
       }
     },
     "متوسط فاقد ثاني محاكاة" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Average second simulation loss"
-          }
-        }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Durchschnittlicher Verlust der zweiten Simulation" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Average second simulation loss" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Pérdida media de segunda simulación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Perte moyenne de deuxième simulation" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "दूसरे सिमुलेशन की औसत हानि" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Rata-rata kerugian simulasi kedua" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Средняя потеря второй симуляции" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Ortalama ikinci simülasyon kaybı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "دوسری سیمولیشن کا اوسط نقصان" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "平均第二模拟损失" } }
       }
     },
     "محاولات ثاني محاكاة" : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Second simulation attempts"
-          }
-        }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Versuche mit zweiter Simulation" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Second simulation attempts" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Intentos de segunda simulación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tentatives de deuxième simulation" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "दूसरे सिमुलेशन के प्रयास" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Percobaan simulasi kedua" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Попытки второй симуляции" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "İkinci simülasyon denemeleri" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "دوسری سیمولیشن کی کوششیں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "第二模拟尝试" } }
       }
     },
     "راجع ثاني أفضل محاكاة قبل اعتماد قرار يبدو صحيحًا." : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Review the second-best simulation before trusting a decision that looks correct."
-          }
-        }
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Prüfe die zweitbeste Simulation, bevor du einer scheinbar richtigen Entscheidung vertraust." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Review the second-best simulation before trusting a decision that looks correct." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Revisa la segunda mejor simulación antes de confiar en una decisión que parece correcta." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Revois la deuxième meilleure simulation avant de valider une décision qui semble correcte." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सही लगने वाले निर्णय पर भरोसा करने से पहले दूसरे सर्वोत्तम सिमुलेशन की समीक्षा करें." } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tinjau simulasi terbaik kedua sebelum mempercayai keputusan yang tampak benar." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверьте вторую лучшую симуляцию, прежде чем доверять решению, которое кажется правильным." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Doğru görünen bir karara güvenmeden önce ikinci en iyi simülasyonu gözden geçir." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "درست لگنے والے فیصلے پر بھروسہ کرنے سے پہلے دوسری بہترین سیمولیشن کا جائزہ لیں۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在信任看似正确的决策前，先复盘第二佳模拟。" } }
       }
     },
     "أساسيات" : {
