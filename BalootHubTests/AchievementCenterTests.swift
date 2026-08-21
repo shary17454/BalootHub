@@ -498,8 +498,9 @@ final class AchievementCenterTests: XCTestCase {
         isCorrect: Bool
     ) throws -> ScoringQuizAttempt {
         var matchedOffset: UInt64 = 0
+        let rules = ScoreRules.from(preset: .standard, coffeeEnabled: true)
         for seed in 1...1_200 {
-            let question = ScoringQuizGenerator.generate(seed: UInt64(seed), difficulty: .hard)
+            let question = ScoringQuizGenerator.generate(seed: UInt64(seed), difficulty: .hard, rules: rules)
             guard question.category == category else { continue }
             if matchedOffset < seedOffset {
                 matchedOffset += 1

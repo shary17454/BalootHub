@@ -19,8 +19,9 @@ final class ScoringQuizTests: XCTestCase {
     }
 
     func testQuestionCategoryMatchesProjectsAndMultipliers() {
+        let rules = ScoreRules.from(preset: .standard, coffeeEnabled: true)
         let questions = (1...120).map {
-            ScoringQuizGenerator.generate(seed: UInt64($0), difficulty: .hard)
+            ScoringQuizGenerator.generate(seed: UInt64($0), difficulty: .hard, rules: rules)
         }
 
         XCTAssertTrue(questions.contains { $0.category == .projects })
@@ -78,6 +79,26 @@ final class ScoringQuizTests: XCTestCase {
             settings.scoreRules.finalScore(baseScore: 50, projects: 0, multiplier: .coffee),
             50
         )
+    }
+
+    func testGeneratorDoesNotAskCoffeeWhenRulesDisableCoffee() {
+        let rules = ScoreRules.from(preset: .highStakes, coffeeEnabled: false)
+        let questions = (1...200).map {
+            ScoringQuizGenerator.generate(seed: UInt64($0), difficulty: .hard, rules: rules)
+        }
+
+        XCTAssertFalse(questions.contains { $0.multiplier == .coffee })
+        XCTAssertFalse(questions.contains { $0.category == .coffee })
+    }
+
+    func testGeneratorCanAskCoffeeWhenRulesEnableCoffee() {
+        let rules = ScoreRules.from(preset: .highStakes, coffeeEnabled: true)
+        let questions = (1...200).map {
+            ScoringQuizGenerator.generate(seed: UInt64($0), difficulty: .hard, rules: rules)
+        }
+
+        XCTAssertTrue(questions.contains { $0.multiplier == .coffee })
+        XCTAssertTrue(questions.contains { $0.category == .coffee })
     }
 
     func testDifficultyTimeLimitsTightenAsDifficultyIncreases() {
@@ -240,8 +261,9 @@ final class ScoringQuizTests: XCTestCase {
         category: ScoringQuizQuestionCategory,
         isCorrect: Bool
     ) throws -> ScoringQuizAttempt {
+        let rules = ScoreRules.from(preset: .standard, coffeeEnabled: true)
         for seed in 1...500 {
-            let question = ScoringQuizGenerator.generate(seed: UInt64(seed), difficulty: .hard)
+            let question = ScoringQuizGenerator.generate(seed: UInt64(seed), difficulty: .hard, rules: rules)
             guard question.category == category else { continue }
             let answer = isCorrect ? question.answer : question.answer + 1
             let evaluation = ScoringQuizEvaluator.evaluate(answerText: "\(answer)", question: question)

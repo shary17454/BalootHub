@@ -306,15 +306,7 @@ enum ScoringQuizGenerator {
         let teamOneProjects = projectChoices[generator.nextInt(upperBound: projectChoices.count)]
         let teamTwoProjects = projectChoices[generator.nextInt(upperBound: projectChoices.count)]
 
-        let multipliers: [ScoreMultiplier]
-        switch difficulty {
-        case .easy:
-            multipliers = [.none]
-        case .medium:
-            multipliers = [.none, .double, .triple]
-        case .hard:
-            multipliers = [.none, .double, .triple, .quadruple, .coffee]
-        }
+        let multipliers = availableMultipliers(for: difficulty, rules: rules)
         let multiplier = multipliers[generator.nextInt(upperBound: multipliers.count)]
         let targetTeam: ScoringQuizQuestion.TargetTeam = generator.nextInt(upperBound: 2) == 0 ? .teamOne : .teamTwo
 
@@ -351,6 +343,24 @@ enum ScoringQuizGenerator {
             return .projects
         }
         return .basics
+    }
+
+    private static func availableMultipliers(
+        for difficulty: ScoringQuizDifficulty,
+        rules: ScoreRules
+    ) -> [ScoreMultiplier] {
+        switch difficulty {
+        case .easy:
+            return [.none]
+        case .medium:
+            return [.none, .double, .triple]
+        case .hard:
+            var multipliers: [ScoreMultiplier] = [.none, .double, .triple, .quadruple]
+            if rules.coffeeEnabled {
+                multipliers.append(.coffee)
+            }
+            return multipliers
+        }
     }
 }
 

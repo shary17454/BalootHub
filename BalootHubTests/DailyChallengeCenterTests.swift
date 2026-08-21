@@ -885,8 +885,9 @@ final class DailyChallengeCenterTests: XCTestCase {
         category: ScoringQuizQuestionCategory,
         isCorrect: Bool
     ) throws -> ScoringQuizAttempt {
+        let rules = ScoreRules.from(preset: .standard, coffeeEnabled: true)
         for seed in 1...800 {
-            let question = ScoringQuizGenerator.generate(seed: UInt64(seed), difficulty: .hard)
+            let question = ScoringQuizGenerator.generate(seed: UInt64(seed), difficulty: .hard, rules: rules)
             guard question.category == category else { continue }
             let submitted = isCorrect ? question.answer : question.answer + 1
             return ScoringQuizAttempt(
