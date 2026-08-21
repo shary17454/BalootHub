@@ -247,6 +247,67 @@ struct ProjectScoringTests {
         #expect(ScoreCalculator.detectKaboot(completedTricks: tricks, players: table.players) == nil)
     }
 
+    @Test("المشاريع الموجودة لا تُحتسب عند اشتراط الإعلان حتى يعلنها اللاعب")
+    func declarationRequiredScoresOnlyDeclaredProjects() throws {
+        var rules = BalootRulesConfiguration.standard
+        rules.declarerMustWinMajority = false
+        rules.kabootEnabled = false
+
+        let originalHands = [
+            table.south.id: [
+                card(.hearts, .seven),
+                card(.hearts, .eight),
+                card(.hearts, .nine)
+            ]
+        ]
+        let project = try #require(ProjectDetector.detect(
+            hand: originalHands[table.south.id] ?? [],
+            player: table.south,
+            mode: .sun,
+            trumpSuit: nil,
+            rules: rules
+        ).first)
+
+        let undeclared = ScoreCalculator.finalRoundScore(
+            completedTricks: [],
+            originalHands: originalHands,
+            players: table.players,
+            teams: table.teams,
+            mode: .sun,
+            trumpSuit: nil,
+            rules: rules,
+            declaredProjects: []
+        )
+        #expect(undeclared.projectPoints[table.teamA.id] == 0)
+        #expect(undeclared.awardedProjects.isEmpty)
+
+        let declared = ScoreCalculator.finalRoundScore(
+            completedTricks: [],
+            originalHands: originalHands,
+            players: table.players,
+            teams: table.teams,
+            mode: .sun,
+            trumpSuit: nil,
+            rules: rules,
+            declaredProjects: [project]
+        )
+        #expect(declared.projectPoints[table.teamA.id] == 20)
+        #expect(declared.awardedProjects == [project])
+
+        let automatic = ScoreCalculator.finalRoundScore(
+            completedTricks: [],
+            originalHands: originalHands,
+            players: table.players,
+            teams: table.teams,
+            mode: .sun,
+            trumpSuit: nil,
+            rules: rules,
+            declaredProjects: nil
+        )
+        #expect(automatic.projectPoints[table.teamA.id] == 20)
+        #expect(automatic.awardedProjects == [project])
+    }
+
     @Test("طياح المشتري ينقل كل نقاط الجولة إلى الخصم")
     func failedDeclarerLosesEverything() {
         var rules = BalootRulesConfiguration.standard
