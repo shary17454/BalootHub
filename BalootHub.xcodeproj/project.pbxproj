@@ -73,6 +73,7 @@
 		A9B8C7D6E5F4012345678902 /* WhatToPlaySimulationFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9B8C7D6E5F4012345678901 /* WhatToPlaySimulationFormatter.swift */; };
 		A9B8C7D6E5F4012345678904 /* WhatToPlaySimulationFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9B8C7D6E5F4012345678903 /* WhatToPlaySimulationFormatterTests.swift */; };
 		A9B8C7D6E5F4012345678906 /* WhatToPlayTrainingSessionReviewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9B8C7D6E5F4012345678905 /* WhatToPlayTrainingSessionReviewTests.swift */; };
+		A9B8C7D6E5F4012345678908 /* WhatToPlayRoundPracticeSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9B8C7D6E5F4012345678907 /* WhatToPlayRoundPracticeSessionTests.swift */; };
 		AB12CD34EF56789012345671 /* WhatToPlayTrainerPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB12CD34EF56789012345670 /* WhatToPlayTrainerPreferences.swift */; };
 		AB12CD34EF56789012345673 /* WhatToPlayTrainerPreferencesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB12CD34EF56789012345672 /* WhatToPlayTrainerPreferencesTests.swift */; };
 		A0B0C0D0E0F0112233445568 /* AppRouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0B0C0D0E0F0112233445567 /* AppRouteTests.swift */; };
@@ -199,6 +200,7 @@
 		A9B8C7D6E5F4012345678901 /* WhatToPlaySimulationFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlaySimulationFormatter.swift; sourceTree = "<group>"; };
 		A9B8C7D6E5F4012345678903 /* WhatToPlaySimulationFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlaySimulationFormatterTests.swift; sourceTree = "<group>"; };
 		A9B8C7D6E5F4012345678905 /* WhatToPlayTrainingSessionReviewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayTrainingSessionReviewTests.swift; sourceTree = "<group>"; };
+		A9B8C7D6E5F4012345678907 /* WhatToPlayRoundPracticeSessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayRoundPracticeSessionTests.swift; sourceTree = "<group>"; };
 		AB12CD34EF56789012345670 /* WhatToPlayTrainerPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayTrainerPreferences.swift; sourceTree = "<group>"; };
 		AB12CD34EF56789012345672 /* WhatToPlayTrainerPreferencesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayTrainerPreferencesTests.swift; sourceTree = "<group>"; };
 		A0B0C0D0E0F0112233445567 /* AppRouteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouteTests.swift; sourceTree = "<group>"; };
@@ -430,6 +432,7 @@
 				B1A2C3D4E5F60718293A4B65 /* WhatToPlayShareCodeImporterTests.swift */,
 				A9B8C7D6E5F4012345678903 /* WhatToPlaySimulationFormatterTests.swift */,
 				A9B8C7D6E5F4012345678905 /* WhatToPlayTrainingSessionReviewTests.swift */,
+				A9B8C7D6E5F4012345678907 /* WhatToPlayRoundPracticeSessionTests.swift */,
 				C2B3D4E5F60718293A4B5C63 /* WhatToPlayStatsAnalyzerTests.swift */,
 				AB12CD34EF56789012345672 /* WhatToPlayTrainerPreferencesTests.swift */,
 				A0B0C0D0E0F0112233445567 /* AppRouteTests.swift */,
@@ -851,6 +854,7 @@
 				B1A2C3D4E5F60718293A4B67 /* WhatToPlayShareCodeImporterTests.swift in Sources */,
 				A9B8C7D6E5F4012345678904 /* WhatToPlaySimulationFormatterTests.swift in Sources */,
 				A9B8C7D6E5F4012345678906 /* WhatToPlayTrainingSessionReviewTests.swift in Sources */,
+				A9B8C7D6E5F4012345678908 /* WhatToPlayRoundPracticeSessionTests.swift in Sources */,
 				C2B3D4E5F60718293A4B5C64 /* WhatToPlayStatsAnalyzerTests.swift in Sources */,
 				AB12CD34EF56789012345673 /* WhatToPlayTrainerPreferencesTests.swift in Sources */,
 				A0B0C0D0E0F0112233445568 /* AppRouteTests.swift in Sources */,
