@@ -108,24 +108,7 @@ enum WhatToPlayBestMoveConfidence: Equatable {
     }
 }
 
-enum WhatToPlayDecisionQuality: Equatable {
-    case expertMatch
-    case close
-    case acceptable
-    case costly
-
-    static func classify(
-        isExpertChoice: Bool,
-        lostExpectedPoints: Int,
-        lostProjectedTeamPoints: Int = 0
-    ) -> WhatToPlayDecisionQuality {
-        let decisiveLoss = max(lostExpectedPoints, lostProjectedTeamPoints)
-        if isExpertChoice || decisiveLoss == 0 { return .expertMatch }
-        if decisiveLoss <= 2 { return .close }
-        if decisiveLoss <= 8 { return .acceptable }
-        return .costly
-    }
-
+extension WhatToPlayDecisionQuality {
     var title: String {
         switch self {
         case .expertMatch:

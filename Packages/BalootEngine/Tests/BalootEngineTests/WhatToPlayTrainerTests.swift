@@ -10,6 +10,22 @@ struct WhatToPlayTrainerTests {
         #expect(WhatToPlayDifficulty.hard.expertSamples < WhatToPlayDifficulty.expert.expertSamples)
     }
 
+    @Test("تصنيف جودة القرار يأتي من المحرك ويستخدم فاقد المحاكاة الأكبر")
+    func decisionQualityClassifiesProjectedLoss() {
+        #expect(WhatToPlayDecisionQuality.classify(isExpertChoice: true, lostExpectedPoints: 20) == .expertMatch)
+        #expect(WhatToPlayDecisionQuality.classify(isExpertChoice: false, lostExpectedPoints: 0) == .expertMatch)
+        #expect(WhatToPlayDecisionQuality.classify(isExpertChoice: false, lostExpectedPoints: 2) == .close)
+        #expect(WhatToPlayDecisionQuality.classify(isExpertChoice: false, lostExpectedPoints: 8) == .acceptable)
+        #expect(WhatToPlayDecisionQuality.classify(isExpertChoice: false, lostExpectedPoints: 9) == .costly)
+        #expect(
+            WhatToPlayDecisionQuality.classify(
+                isExpertChoice: false,
+                lostExpectedPoints: 1,
+                lostProjectedTeamPoints: 12
+            ) == .costly
+        )
+    }
+
     @Test("مستوى الخبير يولد موقفًا حقيقيًا قابلًا للتقييم")
     func expertDifficultyGeneratesPlayableScenario() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .expert)

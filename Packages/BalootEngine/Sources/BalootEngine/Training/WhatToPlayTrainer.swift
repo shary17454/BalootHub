@@ -17,6 +17,30 @@ public enum WhatToPlayDifficulty: String, Sendable, Codable, CaseIterable {
     }
 }
 
+/// جودة قرار اللاعب في موقف «وش تلعب؟» مقارنة باختيار الخبير ومحاكاة الجولة.
+public enum WhatToPlayDecisionQuality: String, Sendable, Codable, Equatable, CaseIterable {
+    case expertMatch
+    case close
+    case acceptable
+    case costly
+
+    /// يصنف القرار من فاقد الأثر المباشر وفاقد نتيجة استكمال الجولة.
+    ///
+    /// يستخدم الأكبر بين الفاقدين حتى لا يظهر قرار قريب في الأكلة الحالية
+    /// كقرار جيد عندما تكشف محاكاة الجولة أنه مكلف فعليًا.
+    public static func classify(
+        isExpertChoice: Bool,
+        lostExpectedPoints: Int,
+        lostProjectedTeamPoints: Int = 0
+    ) -> WhatToPlayDecisionQuality {
+        let decisiveLoss = max(lostExpectedPoints, lostProjectedTeamPoints)
+        if isExpertChoice || decisiveLoss == 0 { return .expertMatch }
+        if decisiveLoss <= 2 { return .close }
+        if decisiveLoss <= 8 { return .acceptable }
+        return .costly
+    }
+}
+
 /// خيار ورقة في موقف تدريبي.
 public struct WhatToPlayOption: Identifiable, Sendable, Equatable {
     public let card: PlayingCard
