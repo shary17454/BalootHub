@@ -714,6 +714,29 @@ struct RoundAnalysisTests {
         #expect(report.tips.contains { $0.contains("راجع قرار المضاعفة") })
     }
 
+    @Test("تحليل الجولة يسجل قرار المضاعفة الصحيح كقوة لا كخطأ")
+    func recommendedMultiplierDecisionIsReportedAsStrength() throws {
+        let scenario = try multiplierScenarioRecommendingDouble()
+
+        let final = try GameEngine.apply(.raiseMultiplier(playerID: scenario.playerID, level: .double), to: scenario.state)
+        let report = try RoundAnalyzer.analyze(
+            initialState: scenario.state,
+            actions: [.raiseMultiplier(playerID: scenario.playerID, level: .double)],
+            playerID: scenario.playerID
+        )
+
+        let decision = try #require(report.multiplierDecisions.first)
+        #expect(final.bidding.multiplier == .double)
+        #expect(decision.selectedAction == .raise(.double))
+        #expect(decision.recommendedAction == .raise(.double))
+        #expect(decision.matchedRecommendation)
+        #expect(decision.estimatedLostPoints == 0)
+        #expect(report.multiplierMistakeCount == 0)
+        #expect(report.multiplierLostPoints == 0)
+        #expect(!report.needsMultiplierReview)
+        #expect(report.strengths.contains { $0.contains("قرارات المضاعفة وافقت") })
+    }
+
     private func makeAIMatch() -> GameState {
         var state = GameState.newLocalMatch(rules: .standard)
         state.players = state.players.map { player in
