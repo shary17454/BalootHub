@@ -3217,6 +3217,22 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(plan.rationaleIconName, "suit.spade.fill")
     }
 
+    func testTrainingSessionPlanRationaleUsesSecondProjectedLossForWeakHokumSuit() {
+        let attempts = [
+            attempt(daysAgo: 6, correct: false, impact: 2, bestImpact: 4, gameMode: .hokum, projectedTeamPoints: 50, bestProjectedTeamPoints: 52, secondBestProjectedTeamPoints: 82, scenarioContext: hokumContext(trumpSuit: .hearts)),
+            attempt(daysAgo: 5, correct: true, impact: 3, bestImpact: 3, gameMode: .hokum, projectedTeamPoints: 62, bestProjectedTeamPoints: 62, secondBestProjectedTeamPoints: 62, scenarioContext: hokumContext(trumpSuit: .hearts)),
+            attempt(daysAgo: 4, correct: false, impact: 1, bestImpact: 4, gameMode: .hokum, projectedTeamPoints: 44, bestProjectedTeamPoints: 70, secondBestProjectedTeamPoints: 70, scenarioContext: hokumContext(trumpSuit: .spades)),
+            attempt(daysAgo: 3, correct: true, impact: 2, bestImpact: 2, gameMode: .hokum, projectedTeamPoints: 72, bestProjectedTeamPoints: 72, secondBestProjectedTeamPoints: 72, scenarioContext: hokumContext(trumpSuit: .spades))
+        ]
+
+        let plan = WhatToPlayStatsAnalyzer.trainingSessionPlan(for: attempts)
+
+        XCTAssertEqual(plan.gameMode, .hokum)
+        XCTAssertEqual(plan.trumpSuit, .hearts)
+        XCTAssertTrue(plan.rationaleTitle.contains("\("حكم".localized) \(Suit.hearts.spokenName)"))
+        XCTAssertTrue(plan.rationaleDetail.contains("\("فاقد ثاني محاكاة".localized): 32"))
+    }
+
     func testTrainingSessionProgressFiltersByTargetTrumpSuit() {
         let plan = sessionPlan(difficulty: .medium, focusKind: .trumpPressure, gameMode: .hokum, trumpSuit: .spades, count: 3, target: 67)
         let attempts = [
@@ -3265,6 +3281,22 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(recommendation.gameMode, .hokum)
         XCTAssertTrue(plan.rationaleTitle.contains("حكم".localized))
         XCTAssertEqual(plan.rationaleIconName, "crown.fill")
+    }
+
+    func testTrainingSessionPlanRationaleUsesSecondProjectedLossForWeakGameMode() {
+        let attempts = [
+            attempt(daysAgo: 6, correct: false, impact: 3, bestImpact: 5, gameMode: .sun, projectedTeamPoints: 70, bestProjectedTeamPoints: 72, secondBestProjectedTeamPoints: 94),
+            attempt(daysAgo: 5, correct: true, impact: 3, bestImpact: 3, gameMode: .sun, projectedTeamPoints: 78, bestProjectedTeamPoints: 78, secondBestProjectedTeamPoints: 78),
+            attempt(daysAgo: 4, correct: false, impact: 1, bestImpact: 5, gameMode: .hokum, projectedTeamPoints: 54, bestProjectedTeamPoints: 76, secondBestProjectedTeamPoints: 76),
+            attempt(daysAgo: 3, correct: true, impact: 3, bestImpact: 3, gameMode: .hokum, projectedTeamPoints: 82, bestProjectedTeamPoints: 82, secondBestProjectedTeamPoints: 82)
+        ]
+
+        let plan = WhatToPlayStatsAnalyzer.trainingSessionPlan(for: attempts)
+
+        XCTAssertEqual(plan.gameMode, .sun)
+        XCTAssertNil(plan.trumpSuit)
+        XCTAssertTrue(plan.rationaleTitle.contains("صن".localized))
+        XCTAssertTrue(plan.rationaleDetail.contains("\("فاقد ثاني محاكاة".localized): 24"))
     }
 
     func testTrainingSessionPlanRaisesLevelForExpertAlignedStyle() {

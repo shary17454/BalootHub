@@ -4523,6 +4523,13 @@ enum WhatToPlayStatsAnalyzer {
         return "\("سبب الترشيح من المحاكاة".localized): \(summary.lostProjectedTeamPoints) \("نقطة ضاعت بعد استكمال الجولة.".localized)"
     }
 
+    private static func trainingRationaleSimulationLossText(for summary: WhatToPlayStatsSummary) -> String {
+        if summary.lostProjectedAgainstSecondBestPoints > summary.lostProjectedTeamPoints {
+            return "\("فاقد ثاني محاكاة".localized): \(summary.lostProjectedAgainstSecondBestPoints)"
+        }
+        return "\("فاقد المحاكاة".localized): \(summary.lostProjectedTeamPoints)"
+    }
+
     private static func trainingSessionPlanRationale(
         summary: WhatToPlayStatsSummary,
         style: WhatToPlayPlayStyle,
@@ -4549,7 +4556,7 @@ enum WhatToPlayStatsAnalyzer {
             guard let trumpPriority else { break }
             return TrainingSessionPlanRationale(
                 title: "\("سبب اختيار الخطة".localized): \("حكم".localized) \(trumpPriority.suit.spokenName)",
-                detail: "\("اختير لون الحكم هذا لأن نتائجه أضعف من بقية ألوان الحكم.".localized) \("الدقة".localized): \(trumpPriority.summary.accuracyPercent)% · \("النقاط الضائعة".localized): \(trumpPriority.summary.lostExpectedPoints) · \("فاقد المحاكاة".localized): \(trumpPriority.summary.lostProjectedTeamPoints).",
+                detail: "\("اختير لون الحكم هذا لأن نتائجه أضعف من بقية ألوان الحكم.".localized) \("الدقة".localized): \(trumpPriority.summary.accuracyPercent)% · \("النقاط الضائعة".localized): \(trumpPriority.summary.lostExpectedPoints) · \(trainingRationaleSimulationLossText(for: trumpPriority.summary)).",
                 iconName: trumpSuitTrainingIcon(for: trumpPriority.suit)
             )
 
@@ -4557,7 +4564,7 @@ enum WhatToPlayStatsAnalyzer {
             guard let gameModePriority else { break }
             return TrainingSessionPlanRationale(
                 title: "\("سبب اختيار الخطة".localized): \(gameModeTitle(gameModePriority.mode))",
-                detail: "\("اختير هذا النمط لأن سجل التدريب يظهر حاجة واضحة لمراجعته.".localized) \("الدقة".localized): \(gameModePriority.summary.accuracyPercent)% · \("النقاط الضائعة".localized): \(gameModePriority.summary.lostExpectedPoints) · \("فاقد المحاكاة".localized): \(gameModePriority.summary.lostProjectedTeamPoints).",
+                detail: "\("اختير هذا النمط لأن سجل التدريب يظهر حاجة واضحة لمراجعته.".localized) \("الدقة".localized): \(gameModePriority.summary.accuracyPercent)% · \("النقاط الضائعة".localized): \(gameModePriority.summary.lostExpectedPoints) · \(trainingRationaleSimulationLossText(for: gameModePriority.summary)).",
                 iconName: gameModeTrainingIcon(for: gameModePriority.mode)
             )
 
