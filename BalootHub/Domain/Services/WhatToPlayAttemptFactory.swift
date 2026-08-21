@@ -2,6 +2,12 @@ import BalootEngine
 import Foundation
 
 enum WhatToPlayAttemptFactory {
+    enum ShareCodeAttemptError: Error, Equatable {
+        case invalidCode
+        case missingSelectedCard
+        case selectedCardUnavailable
+    }
+
     static func makeAttempt(
         scenario: WhatToPlayScenario,
         evaluated option: WhatToPlayOption
@@ -31,5 +37,24 @@ enum WhatToPlayAttemptFactory {
             simulation: option.simulation,
             scenarioContext: scenario.context
         )
+    }
+
+    static func makeAttempt(code: String) async throws -> WhatToPlayAttempt {
+        guard let parsed = WhatToPlayScenarioCode.parse(code) else {
+            throw ShareCodeAttemptError.invalidCode
+        }
+        guard let selectedCard = parsed.selectedCard else {
+            throw ShareCodeAttemptError.missingSelectedCard
+        }
+
+        let scenario = try await WhatToPlayScenarioLoader.generate(code: code)
+        guard let option = scenario.options.first(where: { $0.card == selectedCard }) else {
+            throw ShareCodeAttemptError.selectedCardUnavailable
+        }
+        guard let attempt = makeAttempt(scenario: scenario, evaluated: option) else {
+            throw ShareCodeAttemptError.selectedCardUnavailable
+        }
+
+        return attempt
     }
 }
