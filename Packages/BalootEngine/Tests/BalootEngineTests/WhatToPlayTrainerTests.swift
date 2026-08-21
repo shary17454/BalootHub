@@ -112,6 +112,7 @@ struct WhatToPlayTrainerTests {
 
         let projectedPoints = scenario.options.map(\.projectedTeamPoints).max()
         #expect(scenario.bestProjectedOption?.projectedTeamPoints == projectedPoints)
+        #expect(WhatToPlayTrainer.projectedOptions(in: scenario.options).first?.card == scenario.bestProjectedOption?.card)
     }
 
     @Test("تعادل محاكاة وش تلعب يُحسم بترتيب أوراق ثابت")
@@ -124,6 +125,11 @@ struct WhatToPlayTrainerTests {
 
         #expect(WhatToPlayTrainer.bestProjectedOption(in: options)?.card == PlayingCard(suit: .hearts, rank: .ace))
         #expect(WhatToPlayTrainer.secondBestProjectedOption(in: options)?.card == PlayingCard(suit: .clubs, rank: .seven))
+        #expect(WhatToPlayTrainer.projectedOptions(in: options).map(\.card) == [
+            PlayingCard(suit: .hearts, rank: .ace),
+            PlayingCard(suit: .clubs, rank: .seven),
+            PlayingCard(suit: .clubs, rank: .eight)
+        ])
     }
 
     @Test("طلب تركيز محدد يولد موقفًا مطابقًا له بشكل حتمي")

@@ -12,17 +12,8 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         }
         let best = try XCTUnwrap(sorted.first)
         let second = try XCTUnwrap(sorted.dropFirst().first)
-        let bestSimulation = try XCTUnwrap(
-            scenario.options.max { lhs, rhs in
-                if lhs.projectedTeamPoints != rhs.projectedTeamPoints {
-                    return lhs.projectedTeamPoints < rhs.projectedTeamPoints
-                }
-                if lhs.expectedImpact != rhs.expectedImpact {
-                    return lhs.expectedImpact < rhs.expectedImpact
-                }
-                return lhs.rank > rhs.rank
-            }
-        )
+        let projectedOptions = WhatToPlayTrainer.projectedOptions(in: scenario.options)
+        let bestSimulation = try XCTUnwrap(projectedOptions.first)
 
         let summary = WhatToPlayOptionComparison.summary(for: scenario)
 
@@ -36,6 +27,7 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertEqual(summary.bestSimulationCard, bestSimulation.card)
         XCTAssertEqual(summary.bestSimulationExpectedImpact, bestSimulation.expectedImpact)
         XCTAssertEqual(summary.bestSimulationProjectedTeamPoints, bestSimulation.projectedTeamPoints)
+        XCTAssertEqual(summary.bestSimulationCard, scenario.bestProjectedOption?.card)
         XCTAssertEqual(summary.expertToBestSimulationGap, max(0, bestSimulation.projectedTeamPoints - best.projectedTeamPoints))
         XCTAssertNil(summary.selectedCard)
         XCTAssertNil(summary.selectedExpectedImpact)
@@ -258,17 +250,7 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
     func testSummaryTracksBestSimulationResultIndependently() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
         let expert = try XCTUnwrap(scenario.bestOption)
-        let bestSimulation = try XCTUnwrap(
-            scenario.options.max { lhs, rhs in
-                if lhs.projectedTeamPoints != rhs.projectedTeamPoints {
-                    return lhs.projectedTeamPoints < rhs.projectedTeamPoints
-                }
-                if lhs.expectedImpact != rhs.expectedImpact {
-                    return lhs.expectedImpact < rhs.expectedImpact
-                }
-                return lhs.rank > rhs.rank
-            }
-        )
+        let bestSimulation = try XCTUnwrap(WhatToPlayTrainer.projectedOptions(in: scenario.options).first)
 
         let summary = WhatToPlayOptionComparison.summary(for: scenario, selectedCard: expert.card)
         let rows = WhatToPlayOptionComparison.rows(for: scenario, selectedCard: expert.card)

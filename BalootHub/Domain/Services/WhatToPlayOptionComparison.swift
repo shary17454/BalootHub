@@ -329,7 +329,7 @@ enum WhatToPlayOptionComparison {
     }
 
     static func bestSimulationOption(_ options: [WhatToPlayOption]) -> WhatToPlayOption? {
-        WhatToPlayTrainer.bestProjectedOption(in: options)
+        WhatToPlayTrainer.projectedOptions(in: options).first
     }
 
     private static func decisionQuality(

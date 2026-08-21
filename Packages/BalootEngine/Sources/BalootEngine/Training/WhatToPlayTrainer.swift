@@ -457,12 +457,21 @@ public enum WhatToPlayTrainer {
 
     /// يعيد أفضل خيار حسب نقاط فريق اللاعب المتوقعة بعد استكمال الجولة.
     public static func bestProjectedOption(in options: [WhatToPlayOption]) -> WhatToPlayOption? {
-        projectedOptionRanking(options).first
+        projectedOptions(in: options).first
     }
 
     /// يعيد ثاني أفضل خيار حسب نقاط فريق اللاعب المتوقعة بعد استكمال الجولة.
     public static func secondBestProjectedOption(in options: [WhatToPlayOption]) -> WhatToPlayOption? {
-        projectedOptionRanking(options).dropFirst().first
+        projectedOptions(in: options).dropFirst().first
+    }
+
+    /// يعيد خيارات «وش تلعب؟» مرتبة حسب نتيجة استكمال الجولة من المحرك.
+    ///
+    /// يستخدم هذا الترتيب نقاط فريق اللاعب المتوقعة أولًا، ثم الأثر المباشر،
+    /// ثم ترتيب الخبير، ثم ترتيبًا ثابتًا للأوراق. الهدف أن تعتمد الواجهة
+    /// وReplay وSandbox على نفس مصدر الحقيقة عند عرض أفضل نتائج المحاكاة.
+    public static func projectedOptions(in options: [WhatToPlayOption]) -> [WhatToPlayOption] {
+        projectedOptionRanking(options)
     }
 
     /// يبني Replay قابلًا للتشغيل لقرار معيّن في موقف «وش تلعب؟».
