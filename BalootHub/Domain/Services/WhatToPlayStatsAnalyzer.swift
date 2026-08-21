@@ -3857,10 +3857,6 @@ enum WhatToPlayStatsAnalyzer {
         gameMode: GameMode? = nil,
         trumpSuit: Suit? = nil
     ) -> UInt64 {
-        let difficultyComponent = UInt64(difficultyOrder(difficulty)) * 1_000_000
-        let focusComponent = UInt64(focusKind.map(scenarioFocusOrder) ?? 0) * 100_000
-        let modeComponent = UInt64(gameMode.map(gameModeOrder) ?? 0) * 10_000
-        let trumpSuitComponent = UInt64(trumpSuit.map { $0.ordinal + 1 } ?? 0) * 100
         let attemptedSeeds = Set(
             attempts
                 .filter { $0.difficulty == difficulty }
@@ -3869,16 +3865,14 @@ enum WhatToPlayStatsAnalyzer {
                 .filter { trumpSuit == nil || $0.contextTrumpSuit == trumpSuit }
                 .map(\.replaySeed)
         )
-        var candidate = 8_000_000
-            + difficultyComponent
-            + focusComponent
-            + modeComponent
-            + trumpSuitComponent
-            + UInt64(attempts.count)
-        while attemptedSeeds.contains(candidate) {
-            candidate &+= 1
-        }
-        return candidate
+        return WhatToPlayMicroDrillSeedMetrics(
+            difficultyOrder: difficultyOrder(difficulty),
+            focusOrder: focusKind.map(scenarioFocusOrder),
+            gameModeOrder: gameMode.map(gameModeOrder),
+            trumpSuitOrdinal: trumpSuit?.ordinal,
+            totalAttemptCount: attempts.count,
+            matchingAttemptSeeds: attemptedSeeds
+        ).nextSeed
     }
 
     static func playStyle(for attempts: [WhatToPlayAttempt]) -> WhatToPlayPlayStyle {

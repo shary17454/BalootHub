@@ -200,6 +200,40 @@ struct WhatToPlayTrainerTests {
         #expect(reviewBeatsSimulation.category == .reviewMistake)
     }
 
+    @Test("بذرة الميكرو تدريب في وش تلعب حتمية وتتجاوز التصادم")
+    func microDrillSeedMetricsGenerateStableSeed() {
+        let seed = WhatToPlayMicroDrillSeedMetrics(
+            difficultyOrder: 3,
+            focusOrder: 2,
+            gameModeOrder: 1,
+            trumpSuitOrdinal: 0,
+            totalAttemptCount: 5,
+            matchingAttemptSeeds: []
+        )
+        #expect(seed.nextSeed == 11_210_105)
+
+        let collided = WhatToPlayMicroDrillSeedMetrics(
+            difficultyOrder: 3,
+            focusOrder: 2,
+            gameModeOrder: 1,
+            trumpSuitOrdinal: 0,
+            totalAttemptCount: 5,
+            matchingAttemptSeeds: [11_210_105, 11_210_106]
+        )
+        #expect(collided.nextSeed == 11_210_107)
+
+        let clamped = WhatToPlayMicroDrillSeedMetrics(
+            seedBase: 10,
+            difficultyOrder: -1,
+            focusOrder: nil,
+            gameModeOrder: nil,
+            trumpSuitOrdinal: nil,
+            totalAttemptCount: -9,
+            matchingAttemptSeeds: []
+        )
+        #expect(clamped.nextSeed == 10)
+    }
+
     @Test("تصنيف أسلوب لاعب وش تلعب يأتي من المحرك")
     func playStyleMetricsClassifyPerformance() {
         let measuring = WhatToPlayPlayStyleMetrics.classify(

@@ -464,6 +464,53 @@ public struct WhatToPlayMicroDrillMetrics: Sendable, Equatable {
     }
 }
 
+/// توليد بذرة حتمية لخطة الميكرو-تدريب في «وش تلعب؟».
+public struct WhatToPlayMicroDrillSeedMetrics: Sendable, Equatable {
+    public let seedBase: UInt64
+    public let difficultyOrder: Int
+    public let focusOrder: Int?
+    public let gameModeOrder: Int?
+    public let trumpSuitOrdinal: Int?
+    public let totalAttemptCount: Int
+    public let matchingAttemptSeeds: Set<UInt64>
+
+    public init(
+        seedBase: UInt64 = 8_000_000,
+        difficultyOrder: Int,
+        focusOrder: Int?,
+        gameModeOrder: Int?,
+        trumpSuitOrdinal: Int?,
+        totalAttemptCount: Int,
+        matchingAttemptSeeds: Set<UInt64>
+    ) {
+        self.seedBase = seedBase
+        self.difficultyOrder = difficultyOrder
+        self.focusOrder = focusOrder
+        self.gameModeOrder = gameModeOrder
+        self.trumpSuitOrdinal = trumpSuitOrdinal
+        self.totalAttemptCount = totalAttemptCount
+        self.matchingAttemptSeeds = matchingAttemptSeeds
+    }
+
+    public var nextSeed: UInt64 {
+        let difficultyComponent = UInt64(max(0, difficultyOrder)) * 1_000_000
+        let focusComponent = UInt64(max(0, focusOrder ?? 0)) * 100_000
+        let modeComponent = UInt64(max(0, gameModeOrder ?? 0)) * 10_000
+        let trumpSuitComponent = UInt64(max(0, (trumpSuitOrdinal ?? -1) + 1)) * 100
+        var candidate = seedBase
+            + difficultyComponent
+            + focusComponent
+            + modeComponent
+            + trumpSuitComponent
+            + UInt64(max(0, totalAttemptCount))
+
+        while matchingAttemptSeeds.contains(candidate) {
+            candidate &+= 1
+        }
+        return candidate
+    }
+}
+
 /// نوع موجز موقف «وش تلعب؟» قبل اختيار الورقة دون نصوص واجهة.
 public enum WhatToPlayScenarioBriefCategory: String, Sendable, Codable, Equatable, CaseIterable {
     case openingLead
