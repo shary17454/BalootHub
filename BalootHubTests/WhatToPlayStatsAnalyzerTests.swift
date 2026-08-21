@@ -1940,7 +1940,15 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
     func testRetryPromptForScenarioCarriesBestCardAndExpectedImprovement() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
         let best = try XCTUnwrap(scenario.bestOption)
-        let selected = try XCTUnwrap(scenario.options.first { $0.card != best.card })
+        let selected = try XCTUnwrap(
+            scenario.options.first {
+                $0.card != best.card
+                    && max(
+                        max(0, best.expectedImpact - $0.expectedImpact),
+                        max(0, best.projectedTeamPoints - $0.projectedTeamPoints)
+                    ) > 0
+            }
+        )
 
         let prompt = try XCTUnwrap(WhatToPlayStatsAnalyzer.retryPrompt(for: selected, in: scenario))
         let expectedImprovement = max(
