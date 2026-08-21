@@ -10,6 +10,7 @@ struct WhatToPlayOptionComparisonRow: Identifiable, Equatable {
     let impactDetail: String
     let lostExpectedPoints: Int
     let lostProjectedTeamPoints: Int
+    let lostProjectedAgainstSecondBestPoints: Int
     let outcome: WhatToPlayOptionOutcome
     let outcomeReason: String
     let simulationSummary: String
@@ -46,6 +47,7 @@ struct WhatToPlayOptionComparisonSummary: Equatable {
     let selectedProjectedTeamPoints: Int?
     let selectedLostExpectedPoints: Int?
     let selectedLostProjectedTeamPoints: Int?
+    let selectedLostProjectedAgainstSecondBestPoints: Int?
     let decisionQuality: WhatToPlayDecisionQuality?
     let decisionQualityDetail: String?
     let bestMoveConfidence: WhatToPlayBestMoveConfidence?
@@ -204,6 +206,7 @@ enum WhatToPlayOptionComparison {
             selectedProjectedTeamPoints: review.selectedOption?.projectedTeamPoints,
             selectedLostExpectedPoints: review.selectedLostExpectedPoints,
             selectedLostProjectedTeamPoints: review.selectedLostProjectedTeamPoints,
+            selectedLostProjectedAgainstSecondBestPoints: review.selectedLostProjectedAgainstSecondBestPoints,
             decisionQuality: review.decisionQuality,
             decisionQualityDetail: review.decisionQuality?.detail,
             bestMoveConfidence: review.bestMoveConfidence,
@@ -226,6 +229,7 @@ enum WhatToPlayOptionComparison {
                     impactDetail: WhatToPlayImpactFormatter.detail(for: option.impactBreakdown),
                     lostExpectedPoints: review.lostExpectedPoints,
                     lostProjectedTeamPoints: review.lostProjectedTeamPoints,
+                    lostProjectedAgainstSecondBestPoints: review.lostProjectedAgainstSecondBestPoints,
                     outcome: option.outcome,
                     outcomeReason: option.outcomeReason,
                     simulationSummary: simulationDisplay.summary,
@@ -256,7 +260,7 @@ enum WhatToPlayOptionComparison {
         case .reviewExpertSimulation:
             return (
                 "راجع المحاكاة".localized,
-                "\("اختيارك يطابق الخبير في الأكلة الحالية، لكن المحاكاة الكاملة تفضّل مراجعة مسار الجولة.".localized) \("نقاط محاكاة ضائعة".localized): \(recommendation.lostProjectedTeamPoints). \("أفضل نتيجة محاكاة".localized): \(recommendation.bestProjectedOption.card.accessibilityName)."
+                "\("اختيارك يطابق الخبير في الأكلة الحالية، لكن المحاكاة الكاملة تفضّل مراجعة مسار الجولة.".localized) \(simulationLossText(for: recommendation)). \("أفضل نتيجة محاكاة".localized): \(recommendation.bestProjectedOption.card.accessibilityName)."
             )
         case .reinforceRead:
             return (
@@ -266,7 +270,7 @@ enum WhatToPlayOptionComparison {
         case .reviewSimulation:
             return (
                 "راجع المحاكاة".localized,
-                "\("قرارك يخسر بعد استكمال الجولة؛ راجع Replay كامل قبل لعب موقف جديد.".localized) \("نقاط محاكاة ضائعة".localized): \(recommendation.lostProjectedTeamPoints). \("أفضل نتيجة محاكاة".localized): \(recommendation.bestProjectedOption.card.accessibilityName)."
+                "\("قرارك يخسر بعد استكمال الجولة؛ راجع Replay كامل قبل لعب موقف جديد.".localized) \(simulationLossText(for: recommendation)). \("أفضل نتيجة محاكاة".localized): \(recommendation.bestProjectedOption.card.accessibilityName)."
             )
         case .reviewSmallGap:
             let secondText = recommendation.secondBestOption.map { " \("ثاني أفضل".localized): \($0.card.accessibilityName)." } ?? ""
@@ -285,6 +289,13 @@ enum WhatToPlayOptionComparison {
                 "\(WhatToPlayDecisionQuality.costly.detail) \("النقاط الضائعة".localized): \(recommendation.lostExpectedPoints). \("أفضل ورقة".localized): \(recommendation.bestOption.card.accessibilityName)."
             )
         }
+    }
+
+    private static func simulationLossText(for recommendation: WhatToPlayNextActionRecommendation) -> String {
+        if recommendation.lostProjectedAgainstSecondBestPoints > recommendation.lostProjectedTeamPoints {
+            return "\("فاقد ثاني محاكاة".localized): \(recommendation.lostProjectedAgainstSecondBestPoints)"
+        }
+        return "\("نقاط محاكاة ضائعة".localized): \(recommendation.lostProjectedTeamPoints)"
     }
 
     private static func tacticalSummary(
