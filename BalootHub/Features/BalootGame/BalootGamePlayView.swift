@@ -570,7 +570,7 @@ struct BalootGamePlayView: View {
                     analysisRow(
                         icon: "exclamationmark.triangle.fill",
                         title: "أسوأ قرار",
-                        value: "\(worst.playedCard.displayLabel) بدل \(worst.bestCard.displayLabel)"
+                        value: worstDecisionAnalysisValue(worst)
                     )
                 }
                 analysisRow(
@@ -672,6 +672,12 @@ struct BalootGamePlayView: View {
         let selected = multiplierActionLabel(decision.selectedAction)
         guard !decision.matchedRecommendation else { return selected }
         return "\(selected) \("بدل".localized) \(multiplierActionLabel(decision.recommendedAction))"
+    }
+
+    private func worstDecisionAnalysisValue(_ decision: RoundDecisionAnalysis) -> String {
+        let base = "\(decision.playedCard.displayLabel) \("بدل".localized) \(decision.recommendedCard.displayLabel)"
+        guard decision.estimatedProjectedLostPoints > decision.estimatedImmediateLostPoints else { return base }
+        return "\(base) · \("أفضل نتيجة محاكاة".localized)"
     }
 
     private func multiplierActionLabel(_ action: LegalMultiplierAction) -> String {

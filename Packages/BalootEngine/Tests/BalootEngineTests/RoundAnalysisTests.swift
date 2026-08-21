@@ -86,10 +86,13 @@ struct RoundAnalysisTests {
             playedCard: PlayingCard(suit: .clubs, rank: .seven),
             bestCard: PlayingCard(suit: .clubs, rank: .ace),
             secondBestCard: nil,
+            bestProjectedCard: nil,
             selectedRank: 3,
             expectedImpact: -2,
             bestExpectedImpact: 8,
             estimatedLostPoints: 10,
+            estimatedImmediateLostPoints: 10,
+            estimatedProjectedLostPoints: 0,
             explanation: "اختبار"
         )
         let biddingDecision = RoundBiddingDecisionAnalysis(
@@ -213,10 +216,13 @@ struct RoundAnalysisTests {
             playedCard: PlayingCard(suit: .clubs, rank: .seven),
             bestCard: PlayingCard(suit: .clubs, rank: .ace),
             secondBestCard: PlayingCard(suit: .clubs, rank: .ten),
+            bestProjectedCard: nil,
             selectedRank: 3,
             expectedImpact: -4,
             bestExpectedImpact: 10,
             estimatedLostPoints: 14,
+            estimatedImmediateLostPoints: 14,
+            estimatedProjectedLostPoints: 0,
             explanation: "اختبار"
         )
         let report = RoundAnalysisReport(
@@ -383,7 +389,35 @@ struct RoundAnalysisTests {
 
         #expect(report.worstDecision?.playedCard == chosen.card)
         #expect(report.worstDecision?.selectedRank == chosen.rank)
+        #expect(report.worstDecision?.estimatedLostPoints == max(
+            report.worstDecision?.estimatedImmediateLostPoints ?? 0,
+            report.worstDecision?.estimatedProjectedLostPoints ?? 0
+        ))
         #expect(report.tacticalMistakes.isEmpty == chosen.isExpertChoice)
+    }
+
+    @Test("تحليل الجولة يلتقط أفضل نتيجة محاكاة عندما تختلف عن الأثر الفوري")
+    func roundAnalysisTracksProjectedBestCard() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2, difficulty: .hard)
+        let chosen = try #require(scenario.options.first {
+            $0.card.suit == .diamonds && $0.card.rank == .queen
+        })
+        let bestProjected = try #require(scenario.bestProjectedOption)
+        var actions = scenario.state.actionHistory
+        actions.append(.playCard(playerID: scenario.playerID, card: chosen.card))
+
+        let report = try RoundAnalyzer.analyze(
+            initialState: resettableInitialState(from: scenario.state),
+            actions: actions,
+            playerID: scenario.playerID
+        )
+        let decision = try #require(report.worstDecision)
+
+        #expect(decision.playedCard == chosen.card)
+        #expect(decision.bestProjectedCard == bestProjected.card)
+        #expect(decision.estimatedProjectedLostPoints == max(0, bestProjected.projectedTeamPoints - chosen.projectedTeamPoints))
+        #expect(decision.estimatedLostPoints == max(decision.estimatedImmediateLostPoints, decision.estimatedProjectedLostPoints))
+        #expect(decision.recommendedCard == bestProjected.card)
     }
 
     @Test("مخالفة توصية المزايدة تظهر في الأخطاء والنصائح")

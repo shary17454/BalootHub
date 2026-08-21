@@ -8,10 +8,13 @@ public struct RoundDecisionAnalysis: Identifiable, Sendable, Equatable {
     public let playedCard: PlayingCard
     public let bestCard: PlayingCard
     public let secondBestCard: PlayingCard?
+    public let bestProjectedCard: PlayingCard?
     public let selectedRank: Int
     public let expectedImpact: Int
     public let bestExpectedImpact: Int
     public let estimatedLostPoints: Int
+    public let estimatedImmediateLostPoints: Int
+    public let estimatedProjectedLostPoints: Int
     public let explanation: String
 
     public var id: String {
@@ -20,6 +23,12 @@ public struct RoundDecisionAnalysis: Identifiable, Sendable, Equatable {
 
     public var matchedExpert: Bool {
         selectedRank == 1
+    }
+
+    public var recommendedCard: PlayingCard {
+        estimatedProjectedLostPoints > estimatedImmediateLostPoints
+            ? bestProjectedCard ?? bestCard
+            : bestCard
     }
 }
 
@@ -580,7 +589,10 @@ public enum RoundAnalyzer {
               let best = options.first(where: { $0.rank == 1 })
         else { return nil }
 
-        let lost = max(0, best.expectedImpact - selected.expectedImpact)
+        let bestProjected = WhatToPlayTrainer.bestProjectedOption(in: options) ?? best
+        let immediateLost = max(0, best.expectedImpact - selected.expectedImpact)
+        let projectedLost = max(0, bestProjected.projectedTeamPoints - selected.projectedTeamPoints)
+        let lost = max(immediateLost, projectedLost)
         return RoundDecisionAnalysis(
             stepIndex: stepIndex,
             trickNumber: state.completedTricks.count + 1,
@@ -588,10 +600,13 @@ public enum RoundAnalyzer {
             playedCard: playedCard,
             bestCard: best.card,
             secondBestCard: options.first(where: { $0.rank == 2 })?.card,
+            bestProjectedCard: bestProjected.card,
             selectedRank: selected.rank,
             expectedImpact: selected.expectedImpact,
             bestExpectedImpact: best.expectedImpact,
             estimatedLostPoints: lost,
+            estimatedImmediateLostPoints: immediateLost,
+            estimatedProjectedLostPoints: projectedLost,
             explanation: selected.explanation
         )
     }
@@ -768,7 +783,7 @@ public enum RoundAnalyzer {
             }
             .prefix(max(0, 3 - min(2, biddingMistakes.count) - min(2, projectMistakes.count) - min(2, multiplierMistakes.count)))
             .map { decision in
-                "في الأكلة \(decision.trickNumber)، لعبت \(decision.playedCard.displayLabel) بينما اختيار الخبير \(decision.bestCard.displayLabel)."
+                "في الأكلة \(decision.trickNumber)، لعبت \(decision.playedCard.displayLabel) بينما اختيار الخبير \(decision.recommendedCard.displayLabel)."
             }
 
         return Array(biddingMistakes) + Array(projectMistakes) + Array(multiplierMistakes) + playMistakes
@@ -869,7 +884,7 @@ public enum RoundAnalyzer {
         }
 
         return [
-            "راجع الأكلة \(worst.trickNumber): الفرق بين \(worst.playedCard.displayLabel) و\(worst.bestCard.displayLabel) هو أوضح موضع للتحسين.",
+            "راجع الأكلة \(worst.trickNumber): الفرق بين \(worst.playedCard.displayLabel) و\(worst.recommendedCard.displayLabel) هو أوضح موضع للتحسين.",
             "عند وجود ورقة خاسرة، لا ترمِ ورقة عالية إلا إذا كان ذلك يحمي الشريك أو يسحب حكمًا مهمًا."
         ]
     }
