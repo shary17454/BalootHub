@@ -417,6 +417,40 @@ struct WhatToPlayTrainerTests {
         #expect(needsRepeat.costlyDecisionTargetMet == false)
     }
 
+    @Test("إجراء مراجعة جلسة وش تلعب يأتي من المحرك")
+    func trainingSessionReviewMetricsClassifyAction() {
+        #expect(
+            WhatToPlayTrainingSessionReviewMetrics.classify(
+                progressCategory: .notStarted,
+                hasReviewItem: false
+            ).action == .start
+        )
+        #expect(
+            WhatToPlayTrainingSessionReviewMetrics.classify(
+                progressCategory: .inProgress,
+                hasReviewItem: false
+            ).action == .continueSession
+        )
+        #expect(
+            WhatToPlayTrainingSessionReviewMetrics.classify(
+                progressCategory: .achieved,
+                hasReviewItem: true
+            ).action == .nextChallenge
+        )
+        #expect(
+            WhatToPlayTrainingSessionReviewMetrics.classify(
+                progressCategory: .needsRepeat,
+                hasReviewItem: true
+            ).action == .replayMistake
+        )
+        #expect(
+            WhatToPlayTrainingSessionReviewMetrics.classify(
+                progressCategory: .needsRepeat,
+                hasReviewItem: false
+            ).action == .repeatSession
+        )
+    }
+
     @Test("ملخص أداء وش تلعب يأتي من المحرك ويحافظ على السلاسل وفاقد القيمة")
     func statsSummaryMetricsCalculateTrainingPerformance() {
         let metrics = WhatToPlayStatsSummaryMetrics.summarize(chronologicalSamples: [

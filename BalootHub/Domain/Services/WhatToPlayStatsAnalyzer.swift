@@ -1852,6 +1852,21 @@ enum WhatToPlayStatsAnalyzer {
         }
     }
 
+    private static func trainingSessionProgressCategory(
+        _ state: WhatToPlayTrainingSessionProgressState
+    ) -> WhatToPlayTrainingSessionProgressCategory {
+        switch state {
+        case .notStarted:
+            .notStarted
+        case .inProgress:
+            .inProgress
+        case .achieved:
+            .achieved
+        case .needsRepeat:
+            .needsRepeat
+        }
+    }
+
     static func nextScenarioRecommendation(for attempts: [WhatToPlayAttempt]) -> WhatToPlayNextScenarioRecommendation {
         let plan = trainingSessionPlan(for: attempts)
         let focusPriority = focusTrainingPriority(for: attempts)
@@ -2188,8 +2203,13 @@ enum WhatToPlayStatsAnalyzer {
         attempts: [WhatToPlayAttempt],
         plan: WhatToPlayTrainingSessionPlan
     ) -> WhatToPlayTrainingSessionReview {
-        switch progress.state {
-        case .notStarted:
+        let reviewMetrics = WhatToPlayTrainingSessionReviewMetrics.classify(
+            progressCategory: trainingSessionProgressCategory(progress.state),
+            hasReviewItem: progress.reviewItem != nil
+        )
+
+        switch reviewMetrics.action {
+        case .start:
             return WhatToPlayTrainingSessionReview(
                 action: .start,
                 title: "ابدأ خطة المدرب".localized,
@@ -2205,7 +2225,7 @@ enum WhatToPlayStatsAnalyzer {
                 recommendedCard: nil,
                 expectedImprovement: 0
             )
-        case .inProgress:
+        case .continueSession:
             return WhatToPlayTrainingSessionReview(
                 action: .continueSession,
                 title: "أكمل نفس الجلسة".localized,
@@ -2221,7 +2241,7 @@ enum WhatToPlayStatsAnalyzer {
                 recommendedCard: nil,
                 expectedImprovement: 0
             )
-        case .achieved:
+        case .nextChallenge:
             let recommendation = nextScenarioRecommendation(for: attempts)
             return WhatToPlayTrainingSessionReview(
                 action: .nextChallenge,
@@ -2252,7 +2272,7 @@ enum WhatToPlayStatsAnalyzer {
                 recommendedCard: nil,
                 expectedImprovement: 0
             )
-        case .needsRepeat:
+        case .replayMistake:
             if let reviewItem = progress.reviewItem {
                 return WhatToPlayTrainingSessionReview(
                     action: .replayMistake,
@@ -2270,6 +2290,22 @@ enum WhatToPlayStatsAnalyzer {
                     expectedImprovement: microDrillExpectedImprovement(for: reviewItem)
                 )
             }
+            return WhatToPlayTrainingSessionReview(
+                action: .repeatSession,
+                title: "كرر الخطة نفسها".localized,
+                detail: progress.nextStepDetail,
+                contextLine: trainingSessionReviewContext(difficulty: plan.difficulty, focusKind: plan.focusKind, gameMode: plan.gameMode, trumpSuit: plan.trumpSuit),
+                iconName: "arrow.counterclockwise.circle.fill",
+                replaySeed: nil,
+                nextSeed: nextTrainingSessionSeed(for: attempts, plan: plan),
+                difficulty: plan.difficulty,
+                focusKind: plan.focusKind,
+                gameMode: plan.gameMode,
+                trumpSuit: plan.trumpSuit,
+                recommendedCard: nil,
+                expectedImprovement: 0
+            )
+        case .repeatSession:
             return WhatToPlayTrainingSessionReview(
                 action: .repeatSession,
                 title: "كرر الخطة نفسها".localized,

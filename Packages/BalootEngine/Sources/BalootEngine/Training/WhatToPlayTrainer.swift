@@ -861,6 +861,43 @@ public struct WhatToPlayTrainingSessionProgressMetrics: Sendable, Equatable {
     }
 }
 
+/// إجراء مراجعة جلسة تدريب «وش تلعب؟» دون نصوص واجهة.
+public enum WhatToPlayTrainingSessionReviewActionCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case start
+    case continueSession
+    case replayMistake
+    case repeatSession
+    case nextChallenge
+}
+
+/// قرار خام لإجراء مراجعة جلسة تدريب «وش تلعب؟» من حالة التقدم ووجود خطأ قابل للإعادة.
+public struct WhatToPlayTrainingSessionReviewMetrics: Sendable, Equatable {
+    public let action: WhatToPlayTrainingSessionReviewActionCategory
+
+    public init(action: WhatToPlayTrainingSessionReviewActionCategory) {
+        self.action = action
+    }
+
+    public static func classify(
+        progressCategory: WhatToPlayTrainingSessionProgressCategory,
+        hasReviewItem: Bool
+    ) -> WhatToPlayTrainingSessionReviewMetrics {
+        let action: WhatToPlayTrainingSessionReviewActionCategory
+        switch progressCategory {
+        case .notStarted:
+            action = .start
+        case .inProgress:
+            action = .continueSession
+        case .achieved:
+            action = .nextChallenge
+        case .needsRepeat:
+            action = hasReviewItem ? .replayMistake : .repeatSession
+        }
+
+        return WhatToPlayTrainingSessionReviewMetrics(action: action)
+    }
+}
+
 /// عينة أداء مختصرة من محاولة «وش تلعب؟» تكفي لحساب ملخص التدريب.
 public struct WhatToPlayStatsSample: Sendable, Equatable {
     public let isCorrect: Bool
