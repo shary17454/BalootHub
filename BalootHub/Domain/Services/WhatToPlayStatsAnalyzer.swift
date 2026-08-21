@@ -3503,7 +3503,24 @@ enum WhatToPlayStatsAnalyzer {
         let focusComponent = UInt64(focusKind.map(scenarioFocusOrder) ?? 0) * 100_000
         let modeComponent = UInt64(gameMode.map(gameModeOrder) ?? 0) * 10_000
         let trumpSuitComponent = UInt64(trumpSuit.map { $0.ordinal + 1 } ?? 0) * 100
-        return 8_000_000 + difficultyComponent + focusComponent + modeComponent + trumpSuitComponent + UInt64(attempts.count)
+        let attemptedSeeds = Set(
+            attempts
+                .filter { $0.difficulty == difficulty }
+                .filter { focusKind == nil || $0.focusKind == focusKind }
+                .filter { gameMode == nil || $0.gameMode == gameMode }
+                .filter { trumpSuit == nil || $0.contextTrumpSuit == trumpSuit }
+                .map(\.replaySeed)
+        )
+        var candidate = 8_000_000
+            + difficultyComponent
+            + focusComponent
+            + modeComponent
+            + trumpSuitComponent
+            + UInt64(attempts.count)
+        while attemptedSeeds.contains(candidate) {
+            candidate &+= 1
+        }
+        return candidate
     }
 
     static func playStyle(for attempts: [WhatToPlayAttempt]) -> WhatToPlayPlayStyle {

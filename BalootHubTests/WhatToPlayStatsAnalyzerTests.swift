@@ -2483,6 +2483,26 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(drill.focusKind, .followSuit)
     }
 
+    func testMicroDrillSkipsAttemptedSeedForSameTarget() {
+        let collidingSeed: UInt64 = 9_100_009
+        let attempts = [
+            attempt(daysAgo: 7, difficulty: .easy, correct: true, impact: 0, focusKind: .openingLead),
+            attempt(daysAgo: 6, difficulty: .easy, correct: false, impact: 0, bestImpact: 0, focusKind: .openingLead),
+            attempt(daysAgo: 5, difficulty: .medium, correct: true, impact: 0, focusKind: .openingLead),
+            attempt(daysAgo: 4, difficulty: .medium, correct: false, impact: 0, bestImpact: 0, focusKind: .openingLead),
+            attempt(daysAgo: 3, difficulty: .hard, correct: true, impact: 0, focusKind: .openingLead),
+            attempt(daysAgo: 2, difficulty: .hard, correct: true, impact: 0, focusKind: .openingLead),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 0, focusKind: .followSuit, seed: collidingSeed)
+        ] + expertCoverageAttempts(focusKind: .openingLead)
+
+        let drill = WhatToPlayStatsAnalyzer.microDrill(for: attempts)
+
+        XCTAssertEqual(drill.title, "خطة أنواع المواقف".localized)
+        XCTAssertEqual(drill.difficulty, .medium)
+        XCTAssertEqual(drill.focusKind, .followSuit)
+        XCTAssertEqual(drill.seed, collidingSeed + 1)
+    }
+
     func testMicroDrillTargetsMissingGameModeAfterDifficultyAndFocusCoverage() {
         let attempts = [
             attempt(daysAgo: 8, difficulty: .easy, correct: true, impact: 1, focusKind: .openingLead, gameMode: .sun),
