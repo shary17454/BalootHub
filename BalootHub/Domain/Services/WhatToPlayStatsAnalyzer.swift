@@ -221,6 +221,7 @@ struct WhatToPlayReviewItem: Equatable, Identifiable {
     let bestCard: PlayingCard?
     let secondBestCard: PlayingCard?
     let bestSimulationCard: PlayingCard?
+    let selectedRank: Int?
     let expectedImpact: Int
     let lostExpectedPoints: Int
     let projectedTeamPoints: Int?
@@ -1233,6 +1234,7 @@ enum WhatToPlayStatsAnalyzer {
                 bestCard: attempt.bestCard,
                 secondBestCard: attempt.secondBestCard,
                 bestSimulationCard: attempt.bestSimulationCard,
+                selectedRank: attempt.selectedRank,
                 expectedImpact: attempt.expectedImpact,
                 lostExpectedPoints: attempt.lostExpectedPoints,
                 projectedTeamPoints: attempt.projectedTeamPoints,
@@ -2196,6 +2198,9 @@ enum WhatToPlayStatsAnalyzer {
         if let selectedCard = item.selectedCard {
             parts.append("\("اختيارك".localized): \(selectedCard.accessibilityName)")
             parts.append("\("أثر القرار".localized): \(impactTextValue(item.expectedImpact))")
+        }
+        if let selectedRank = item.selectedRank {
+            parts.append("\("الترتيب".localized): \(selectedRank)")
         }
         if let bestCard = item.bestCard {
             parts.append("\("أفضل ورقة".localized): \(bestCard.accessibilityName)")

@@ -35,6 +35,7 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
         XCTAssertTrue(review.detail.contains("\("الأوراق القانونية".localized): 3"))
         XCTAssertTrue(review.detail.contains("\("اختيارك".localized): \(selected.accessibilityName)"))
         XCTAssertTrue(review.detail.contains("\("أثر القرار".localized): -4"))
+        XCTAssertTrue(review.detail.contains("\("الترتيب".localized): 4"))
         XCTAssertTrue(review.detail.contains("\("أفضل ورقة".localized): \(best.accessibilityName)"))
         XCTAssertTrue(review.detail.contains("\("الأثر المتوقع".localized): +8"))
         XCTAssertTrue(review.detail.contains("\("ثاني أفضل".localized): \(second.accessibilityName)"))
