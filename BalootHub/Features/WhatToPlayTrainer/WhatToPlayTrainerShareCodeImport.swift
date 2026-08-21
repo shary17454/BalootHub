@@ -64,7 +64,10 @@ extension WhatToPlayTrainerView {
 
         generationTask = Task {
             do {
-                let generated = try await WhatToPlayScenarioLoader.generate(code: code)
+                let imported = try await WhatToPlayShareCodeImporter.import(
+                    code: code,
+                    existingScenarioCodes: Set(attempts.map(\.scenarioCode))
+                )
                 guard !Task.isCancelled else { return }
                 isApplyingImportedShareCode = true
                 seed = parsed.seed
@@ -72,29 +75,26 @@ extension WhatToPlayTrainerView {
                 preferredFocusRaw = parsed.focusKind?.rawValue ?? "auto"
                 preferredModeRaw = "auto"
                 preferredTrumpSuit = nil
-                scenario = generated
-                selectedOption = parsed.selectedCard.flatMap {
-                    WhatToPlayTrainer.evaluateChoice(card: $0, in: generated)
-                }
-                if let attempt = try? await WhatToPlayAttemptFactory.makeAttempt(code: code),
-                   !attempts.contains(where: { $0.scenarioCode == attempt.scenarioCode }) {
+                scenario = imported.scenario
+                selectedOption = imported.selectedOption
+                if let attempt = imported.attempt {
                     modelContext.insert(attempt)
                     try? modelContext.save()
                 }
-                shareCodeMessage = selectedOption == nil
-                    ? "تم تحميل الموقف. اختر الورقة الأفضل.".localized
-                    : "تم تحميل مراجعة القرار وإضافتها للإحصاءات.".localized
+                shareCodeMessage = imported.statusMessage
                 saveTrainerPreferences()
                 Task { @MainActor in
                     isApplyingImportedShareCode = false
                 }
-            } catch WhatToPlayScenarioLoader.ScenarioCodeError.invalidCode,
+            } catch WhatToPlayShareCodeImporter.ImportError.invalidCode,
+                    WhatToPlayScenarioLoader.ScenarioCodeError.invalidCode,
                     WhatToPlayAttemptFactory.ShareCodeAttemptError.invalidCode {
                 guard !Task.isCancelled else { return }
                 scenario = nil
                 shareCodeMessage = "رمز الموقف غير صالح.".localized
                 isApplyingImportedShareCode = false
-            } catch WhatToPlayAttemptFactory.ShareCodeAttemptError.selectedCardUnavailable {
+            } catch WhatToPlayShareCodeImporter.ImportError.selectedCardUnavailable,
+                    WhatToPlayAttemptFactory.ShareCodeAttemptError.selectedCardUnavailable {
                 guard !Task.isCancelled else { return }
                 scenario = nil
                 shareCodeMessage = "الورقة الموجودة في الرمز لا تنتمي لهذا الموقف.".localized
