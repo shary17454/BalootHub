@@ -2182,11 +2182,21 @@ enum WhatToPlayStatsAnalyzer {
         if let trickNumber = item.contextTrickNumber {
             parts.append("\("الأكلة".localized): \(trickNumber)")
         }
+        if let isLeading = item.contextIsLeading {
+            if isLeading {
+                parts.append("أنت تفتتح الأكلة".localized)
+            } else if let playedCardCount = item.contextPlayedCardCount {
+                parts.append("\("أنت ترد بعد".localized) \(playedCardCount) \("ورقة".localized)")
+            }
+        }
         if let requiredSuit = item.contextRequiredSuit {
             parts.append("\("اللون المطلوب".localized): \(requiredSuit.spokenName)")
         }
         if let trumpSuit = item.contextTrumpSuit {
             parts.append("\("حكم".localized): \(trumpSuit.spokenName)")
+            if item.contextHasTrumpInCurrentTrick == true {
+                parts.append("الحكم على الطاولة".localized)
+            }
         }
         if let playerPoints = item.contextPlayerTeamTrickPoints,
            let opponentPoints = item.contextOpponentTeamTrickPoints {
