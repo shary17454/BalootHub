@@ -215,6 +215,42 @@ struct BiddingCycleTests {
         #expect(state.bidding.stage == .completed)
     }
 
+    @Test("جولة الأشكال تسمح بالصن فوق حكم لون غير المكشوف وتُعاد حتميًا")
+    func secondRoundSunCanOutbidOffSuitHokumAndReplay() throws {
+        var rules = BalootRulesConfiguration.standard
+        rules.multipliersEnabled = false
+        rules.projectsRequireDeclaration = false
+        let initial = GameState.newLocalMatch(rules: rules)
+        var state = try GameEngine.apply(.dealCards(seed: 25), to: initial)
+
+        let upSuit = try #require(state.bidding.upCard?.suit)
+        for _ in 0..<4 {
+            state = try GameEngine.apply(.placeBid(playerID: try #require(state.currentTurnPlayerID), bid: .pass), to: state)
+        }
+
+        #expect(state.bidding.stage == .secondRound)
+        let hokumSuit = try #require(Suit.allCases.first { $0 != upSuit })
+        let hokumBuyerID = try #require(state.currentTurnPlayerID)
+        #expect(GameEngine.legalBids(for: hokumBuyerID, state: state).contains(.hokum(suit: hokumSuit)))
+        state = try GameEngine.apply(.placeBid(playerID: hokumBuyerID, bid: .hokum(suit: hokumSuit)), to: state)
+
+        let sunBuyerID = try #require(state.currentTurnPlayerID)
+        #expect(GameEngine.legalBids(for: sunBuyerID, state: state) == [.pass, .sun])
+        state = try GameEngine.apply(.placeBid(playerID: sunBuyerID, bid: .sun), to: state)
+
+        #expect(state.bidding.stage == .completed)
+        #expect(state.bidding.declarerID == sunBuyerID)
+        #expect(state.mode == .sun)
+        #expect(state.trumpSuit == nil)
+        #expect(state.phase == .playing)
+
+        let replayed = try GameEngine.replay(initialState: initial, actions: state.actionHistory)
+        #expect(replayed.bidding == state.bidding)
+        #expect(replayed.mode == state.mode)
+        #expect(replayed.trumpSuit == state.trumpSuit)
+        #expect(replayed.phase == state.phase)
+    }
+
     @Test("تعطيل الصن في الجولة الأولى يمنعه حتى فوق شراء الحكم")
     func firstRoundSunDisableAlsoBlocksSunOverHokum() throws {
         var rules = BalootRulesConfiguration.standard
