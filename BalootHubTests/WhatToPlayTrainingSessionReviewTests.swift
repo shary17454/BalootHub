@@ -36,6 +36,8 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
         XCTAssertTrue(review.detail.contains("\("الفارق".localized): -6"))
         XCTAssertTrue(review.detail.contains("\("الأوراق القانونية".localized): 3"))
         XCTAssertTrue(review.detail.contains("\("أوراق".localized): 2/4"))
+        XCTAssertTrue(review.detail.contains("\("السبب التكتيكي".localized): \("تغلق الأكلة للخصم".localized)"))
+        XCTAssertTrue(review.detail.contains("اختيارك أضاف نقاطًا لأكلة انتهت للفريق الخصم".localized))
         XCTAssertTrue(review.detail.contains("\("اختيارك".localized): \(selected.accessibilityName)"))
         XCTAssertTrue(review.detail.contains("\("أثر القرار".localized): -4"))
         XCTAssertTrue(review.detail.contains("\("الترتيب".localized): 4"))
@@ -76,8 +78,20 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
             bestProjectedTeamPoints: second == nil ? 55 : 62,
             focusKind: .followSuit,
             gameMode: .hokum,
+            impactBreakdown: second == nil ? nil : opponentTrickClosureBreakdown,
             simulation: second == nil ? nil : completedOpponentSimulation,
             scenarioContext: scenarioContext
+        )
+    }
+
+    private var opponentTrickClosureBreakdown: WhatToPlayOptionImpactBreakdown {
+        WhatToPlayOptionImpactBreakdown(
+            playedCardPoints: 10,
+            immediateImpact: -4,
+            trickPointsSwing: -18,
+            completesTrick: true,
+            winsForPlayerTeam: false,
+            preservesLead: false
         )
     }
 

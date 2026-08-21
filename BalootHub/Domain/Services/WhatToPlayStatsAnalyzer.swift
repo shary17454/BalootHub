@@ -2199,6 +2199,12 @@ enum WhatToPlayStatsAnalyzer {
         if let playedCardCount = item.contextPlayedCardCount {
             parts.append("\("أوراق".localized): \(playedCardCount)/4")
         }
+        if let tacticalReasonTitle = item.tacticalReasonTitle {
+            parts.append("\("السبب التكتيكي".localized): \(tacticalReasonTitle)")
+        }
+        if let tacticalReasonDetail = item.tacticalReasonDetail {
+            parts.append(tacticalReasonDetail)
+        }
         if let selectedCard = item.selectedCard {
             parts.append("\("اختيارك".localized): \(selectedCard.accessibilityName)")
             parts.append("\("أثر القرار".localized): \(impactTextValue(item.expectedImpact))")
