@@ -2183,6 +2183,12 @@ enum WhatToPlayStatsAnalyzer {
         if let bestCard = item.bestCard {
             parts.append("\("أفضل ورقة".localized): \(bestCard.accessibilityName)")
         }
+        if let secondBestCard = item.secondBestCard {
+            parts.append("\("ثاني أفضل".localized): \(secondBestCard.accessibilityName)")
+        }
+        if let secondBestExpectedImpact = item.secondBestExpectedImpact {
+            parts.append("\("أثر ثاني أفضل".localized): \(impactTextValue(secondBestExpectedImpact))")
+        }
         if item.lostExpectedPoints > 0 {
             parts.append("\("الفاقد".localized): \(item.lostExpectedPoints)")
         }
