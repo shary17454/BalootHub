@@ -3201,80 +3201,82 @@ enum WhatToPlayStatsAnalyzer {
 
     static func mastery(for attempts: [WhatToPlayAttempt]) -> WhatToPlayMastery {
         let summary = summarize(attempts: attempts)
-        guard summary.attempts > 0 else {
-            return WhatToPlayMastery(
-                level: .starting,
-                score: 0,
-                title: "بداية التدريب".localized,
-                detail: "حل عدة مواقف حتى يظهر مستوى إتقانك الحقيقي في قراءة الطاولة.".localized,
-                iconName: "flag.fill"
-            )
-        }
+        let metrics = WhatToPlayMasteryMetrics.classify(
+            attempts: summary.attempts,
+            accuracyPercent: summary.accuracyPercent,
+            currentStreak: summary.currentStreak,
+            averageExpectedImpact: summary.averageExpectedImpact
+        )
 
-        let accuracyScore = Double(summary.accuracyPercent) * 0.6
-        let streakScore = min(Double(summary.currentStreak), 5) / 5 * 20
-        let impactScore = Double(max(-10, min(10, summary.averageExpectedImpact)) + 10)
-        let score = max(0, min(100, Int((accuracyScore + streakScore + impactScore).rounded())))
-
-        switch score {
-        case 80...100:
+        switch metrics.category {
+        case .sharp:
             return WhatToPlayMastery(
                 level: .sharp,
-                score: score,
+                score: metrics.score,
                 title: "قراءة حادة".localized,
                 detail: "قراراتك قريبة من الخبير؛ ركز الآن على المواقف الصعبة وقراءة نية الشريك.".localized,
                 iconName: "bolt.fill"
             )
-        case 60..<80:
+        case .confident:
             return WhatToPlayMastery(
                 level: .confident,
-                score: score,
+                score: metrics.score,
                 title: "متمكن".localized,
                 detail: "أساسك جيد، لكن تحسين الخيارات القريبة سيزيد نقاطك على المدى الطويل.".localized,
                 iconName: "checkmark.circle.fill"
             )
-        case 35..<60:
+        case .building:
             return WhatToPlayMastery(
                 level: .building,
-                score: score,
+                score: metrics.score,
                 title: "تبني القراءة".localized,
                 detail: "أنت تجمع خبرة مفيدة؛ راجع سبب كل قرار وكرر المواقف التي تخسر فيها نقاطًا متوقعة.".localized,
                 iconName: "chart.line.uptrend.xyaxis"
             )
-        default:
+        case .starting:
             return WhatToPlayMastery(
                 level: .starting,
-                score: score,
-                title: "تحتاج تأسيس".localized,
-                detail: "ابدأ بمواقف أسهل وركز على اللون المطلوب والحكم قبل التفكير في المخاطرة.".localized,
-                iconName: "target"
+                score: metrics.score,
+                title: summary.attempts > 0 ? "تحتاج تأسيس".localized : "بداية التدريب".localized,
+                detail: summary.attempts > 0
+                    ? "ابدأ بمواقف أسهل وركز على اللون المطلوب والحكم قبل التفكير في المخاطرة.".localized
+                    : "حل عدة مواقف حتى يظهر مستوى إتقانك الحقيقي في قراءة الطاولة.".localized,
+                iconName: summary.attempts > 0 ? "target" : "flag.fill"
             )
         }
     }
 
     static func masteryMilestone(for attempts: [WhatToPlayAttempt]) -> WhatToPlayMasteryMilestone? {
+        let summary = summarize(attempts: attempts)
         let mastery = mastery(for: attempts)
-        let target: (score: Int, title: String)?
-
-        switch mastery.score {
-        case ..<35:
-            target = (35, "تبني القراءة".localized)
-        case 35..<60:
-            target = (60, "متمكن".localized)
-        case 60..<80:
-            target = (80, "قراءة حادة".localized)
-        default:
-            target = nil
-        }
-
-        guard let target else { return nil }
-        let remaining = max(0, target.score - mastery.score)
-        return WhatToPlayMasteryMilestone(
-            targetScore: target.score,
-            targetTitle: target.title,
-            pointsRemaining: remaining,
-            detail: "\("باقي".localized) \(remaining) \("نقطة إتقان للوصول إلى".localized) \(target.title)."
+        let metrics = WhatToPlayMasteryMetrics.classify(
+            attempts: summary.attempts,
+            accuracyPercent: summary.accuracyPercent,
+            currentStreak: summary.currentStreak,
+            averageExpectedImpact: summary.averageExpectedImpact
         )
+        guard let targetScore = metrics.nextMilestoneScore else { return nil }
+        let targetTitle = masteryMilestoneTitle(for: targetScore)
+        let remaining = max(0, targetScore - mastery.score)
+        return WhatToPlayMasteryMilestone(
+            targetScore: targetScore,
+            targetTitle: targetTitle,
+            pointsRemaining: remaining,
+            detail: "\("باقي".localized) \(remaining) \("نقطة إتقان للوصول إلى".localized) \(targetTitle)."
+        )
+    }
+
+    private static func masteryMilestoneTitle(for targetScore: Int) -> String {
+        switch targetScore {
+        case 35:
+            "تبني القراءة".localized
+        case 60:
+            "متمكن".localized
+        case 80:
+            "قراءة حادة".localized
+        default:
+            "المستوى التالي".localized
+        }
     }
 
     static func practiceCoverage(

@@ -37,6 +37,49 @@ struct WhatToPlayTrainerTests {
         #expect(WhatToPlayBestMoveConfidence.classify(bestToSecondGap: 9) == .decisive)
     }
 
+    @Test("درجة إتقان وش تلعب تأتي من المحرك بعتبات ثابتة")
+    func masteryMetricsClassifyPerformance() {
+        let empty = WhatToPlayMasteryMetrics.classify(
+            attempts: 0,
+            accuracyPercent: 100,
+            currentStreak: 5,
+            averageExpectedImpact: 10
+        )
+        #expect(empty.category == .starting)
+        #expect(empty.score == 0)
+        #expect(empty.nextMilestoneScore == 35)
+
+        let building = WhatToPlayMasteryMetrics.classify(
+            attempts: 4,
+            accuracyPercent: 50,
+            currentStreak: 1,
+            averageExpectedImpact: 0
+        )
+        #expect(building.category == .building)
+        #expect(building.score == 44)
+        #expect(building.nextMilestoneScore == 60)
+
+        let confident = WhatToPlayMasteryMetrics.classify(
+            attempts: 4,
+            accuracyPercent: 75,
+            currentStreak: 2,
+            averageExpectedImpact: 0
+        )
+        #expect(confident.category == .confident)
+        #expect(confident.score == 63)
+        #expect(confident.nextMilestoneScore == 80)
+
+        let sharp = WhatToPlayMasteryMetrics.classify(
+            attempts: 5,
+            accuracyPercent: 100,
+            currentStreak: 5,
+            averageExpectedImpact: 10
+        )
+        #expect(sharp.category == .sharp)
+        #expect(sharp.score == 100)
+        #expect(sharp.nextMilestoneScore == nil)
+    }
+
     @Test("مراجعة اختيار وش تلعب تحسب الفوارق وجودة القرار من المحرك")
     func choiceReviewCalculatesLossesAndQuality() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2, difficulty: .hard)

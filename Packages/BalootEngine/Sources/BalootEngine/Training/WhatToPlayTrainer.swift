@@ -135,6 +135,69 @@ public struct WhatToPlayDecisionInsightMetrics: Sendable, Equatable {
     }
 }
 
+/// مستوى إتقان اللاعب الخام في مدرب «وش تلعب؟».
+public enum WhatToPlayMasteryCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case starting
+    case building
+    case confident
+    case sharp
+}
+
+/// درجة إتقان «وش تلعب؟» من أرقام الأداء دون نصوص واجهة.
+public struct WhatToPlayMasteryMetrics: Sendable, Equatable {
+    public let category: WhatToPlayMasteryCategory
+    public let score: Int
+
+    public init(category: WhatToPlayMasteryCategory, score: Int) {
+        self.category = category
+        self.score = score
+    }
+
+    public static func classify(
+        attempts: Int,
+        accuracyPercent: Int,
+        currentStreak: Int,
+        averageExpectedImpact: Int
+    ) -> WhatToPlayMasteryMetrics {
+        guard attempts > 0 else {
+            return WhatToPlayMasteryMetrics(category: .starting, score: 0)
+        }
+
+        let boundedAccuracy = max(0, min(100, accuracyPercent))
+        let accuracyScore = Double(boundedAccuracy) * 0.6
+        let streakScore = min(Double(max(0, currentStreak)), 5) / 5 * 20
+        let impactScore = Double(max(-10, min(10, averageExpectedImpact)) + 10)
+        let score = max(0, min(100, Int((accuracyScore + streakScore + impactScore).rounded())))
+        let category: WhatToPlayMasteryCategory
+
+        switch score {
+        case 80...100:
+            category = .sharp
+        case 60..<80:
+            category = .confident
+        case 35..<60:
+            category = .building
+        default:
+            category = .starting
+        }
+
+        return WhatToPlayMasteryMetrics(category: category, score: score)
+    }
+
+    public var nextMilestoneScore: Int? {
+        switch score {
+        case ..<35:
+            35
+        case 35..<60:
+            60
+        case 60..<80:
+            80
+        default:
+            nil
+        }
+    }
+}
+
 /// درجة وضوح أفضل ورقة في موقف «وش تلعب؟» مقارنة بثاني أفضل خيار.
 public enum WhatToPlayBestMoveConfidence: String, Sendable, Codable, Equatable, CaseIterable {
     case tied
