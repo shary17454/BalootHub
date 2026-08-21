@@ -100,6 +100,35 @@ struct WhatToPlayChoiceRankSummary: Equatable {
     }
 }
 
+struct WhatToPlaySimulationChoiceSummary: Equatable {
+    let trackedAttempts: Int
+    let bestSimulationPicks: Int
+    let secondBestSimulationPicks: Int
+    let otherPicks: Int
+
+    static let empty = WhatToPlaySimulationChoiceSummary(
+        trackedAttempts: 0,
+        bestSimulationPicks: 0,
+        secondBestSimulationPicks: 0,
+        otherPicks: 0
+    )
+
+    var bestSimulationPickPercent: Int {
+        guard trackedAttempts > 0 else { return 0 }
+        return Int((Double(bestSimulationPicks) / Double(trackedAttempts) * 100).rounded())
+    }
+
+    var secondBestSimulationPickPercent: Int {
+        guard trackedAttempts > 0 else { return 0 }
+        return Int((Double(secondBestSimulationPicks) / Double(trackedAttempts) * 100).rounded())
+    }
+
+    var otherPickPercent: Int {
+        guard trackedAttempts > 0 else { return 0 }
+        return Int((Double(otherPicks) / Double(trackedAttempts) * 100).rounded())
+    }
+}
+
 struct WhatToPlayDecisionQualitySummary: Equatable {
     let trackedAttempts: Int
     let expertMatches: Int
@@ -814,6 +843,32 @@ enum WhatToPlayStatsAnalyzer {
             expertPicks: metrics.expertPicks,
             secondBestPicks: metrics.secondBestPicks,
             farPicks: metrics.farPicks
+        )
+    }
+
+    static func simulationChoiceSummary(for attempts: [WhatToPlayAttempt]) -> WhatToPlaySimulationChoiceSummary {
+        let tracked = attempts.compactMap { attempt -> (selected: PlayingCard, best: PlayingCard, second: PlayingCard?)? in
+            guard let selected = attempt.selectedCard,
+                  let best = attempt.bestSimulationCard
+            else { return nil }
+            return (selected, best, attempt.secondBestSimulationCard)
+        }
+
+        guard !tracked.isEmpty else { return .empty }
+
+        let bestPicks = tracked.count { sample in
+            sample.selected == sample.best
+        }
+        let secondBestPicks = tracked.count { sample in
+            guard sample.selected != sample.best else { return false }
+            return sample.selected == sample.second
+        }
+
+        return WhatToPlaySimulationChoiceSummary(
+            trackedAttempts: tracked.count,
+            bestSimulationPicks: bestPicks,
+            secondBestSimulationPicks: secondBestPicks,
+            otherPicks: tracked.count - bestPicks - secondBestPicks
         )
     }
 

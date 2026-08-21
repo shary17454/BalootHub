@@ -24531,6 +24531,76 @@
           }
         }
       }
+    },
+    "مطابقة المحاكاة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Simulationsabgleich" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Simulation match" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Coincidencia de simulación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Correspondance de simulation" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सिमुलेशन मिलान" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kecocokan simulasi" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Совпадение с симуляцией" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Simülasyon eşleşmesi" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "سیمولیشن مطابقت" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "模拟匹配" } }
+      }
+    },
+    "خارج المسارين" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Außerhalb beider Pfade" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Outside both paths" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Fuera de ambas rutas" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Hors des deux chemins" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "दोनों रास्तों से बाहर" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Di luar kedua jalur" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Вне обоих путей" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "İki yolun dışında" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "دونوں راستوں سے باہر" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "不在两条路径内" } }
+      }
+    },
+    "نسبة أفضل محاكاة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Quote beste Simulation" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Best simulation rate" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tasa de mejor simulación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Taux de meilleure simulation" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सर्वश्रेष्ठ सिमुलेशन दर" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tingkat simulasi terbaik" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Доля лучшей симуляции" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "En iyi simülasyon oranı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "بہترین سیمولیشن شرح" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "最佳模拟比例" } }
+      }
+    },
+    "نسبة ثاني محاكاة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Quote zweitbeste Simulation" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Second simulation rate" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tasa de segunda simulación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Taux de deuxième simulation" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "दूसरी सिमुलेशन दर" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tingkat simulasi kedua" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Доля второй симуляции" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "İkinci simülasyon oranı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "دوسری سیمولیشن شرح" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "第二模拟比例" } }
+      }
+    },
+    "نسبة خارج المسارين" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Quote außerhalb beider Pfade" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Outside both paths rate" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Tasa fuera de ambas rutas" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Taux hors des deux chemins" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "दोनों रास्तों से बाहर की दर" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tingkat di luar kedua jalur" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Доля вне обоих путей" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "İki yol dışı oranı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "دونوں راستوں سے باہر کی شرح" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "两条路径外比例" } }
+      }
     }
   },
   "version" : "1.0"

@@ -111,6 +111,49 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.averageProjectedSecondBestGap, 3)
     }
 
+    func testSimulationChoiceSummaryClassifiesBestSecondAndOtherSimulationPicks() {
+        let bestSimulation = PlayingCard(suit: .hearts, rank: .ace)
+        let secondSimulation = PlayingCard(suit: .diamonds, rank: .king)
+        let outsideSimulation = PlayingCard(suit: .clubs, rank: .seven)
+        let attempts = [
+            attempt(
+                daysAgo: 4,
+                correct: true,
+                impact: 4,
+                selectedCard: bestSimulation,
+                bestSimulationCard: bestSimulation,
+                secondBestSimulationCard: secondSimulation
+            ),
+            attempt(
+                daysAgo: 3,
+                correct: false,
+                impact: 2,
+                selectedCard: secondSimulation,
+                bestSimulationCard: bestSimulation,
+                secondBestSimulationCard: secondSimulation
+            ),
+            attempt(
+                daysAgo: 2,
+                correct: false,
+                impact: -1,
+                selectedCard: outsideSimulation,
+                bestSimulationCard: bestSimulation,
+                secondBestSimulationCard: secondSimulation
+            ),
+            attempt(daysAgo: 1, correct: false, impact: 1)
+        ]
+
+        let summary = WhatToPlayStatsAnalyzer.simulationChoiceSummary(for: attempts)
+
+        XCTAssertEqual(summary.trackedAttempts, 3)
+        XCTAssertEqual(summary.bestSimulationPicks, 1)
+        XCTAssertEqual(summary.secondBestSimulationPicks, 1)
+        XCTAssertEqual(summary.otherPicks, 1)
+        XCTAssertEqual(summary.bestSimulationPickPercent, 33)
+        XCTAssertEqual(summary.secondBestSimulationPickPercent, 33)
+        XCTAssertEqual(summary.otherPickPercent, 33)
+    }
+
     func testDecisionHighlightsReturnBestImpactAndWorstLoss() {
         let bestCard = PlayingCard(suit: .hearts, rank: .ace)
         let worstCard = PlayingCard(suit: .spades, rank: .seven)

@@ -89,6 +89,10 @@ struct WhatToPlayTrainerView: View {
         WhatToPlayStatsAnalyzer.choiceRankSummary(for: attempts)
     }
 
+    private var simulationChoiceSummary: WhatToPlaySimulationChoiceSummary {
+        WhatToPlayStatsAnalyzer.simulationChoiceSummary(for: attempts)
+    }
+
     private var decisionQualitySummary: WhatToPlayDecisionQualitySummary {
         WhatToPlayStatsAnalyzer.decisionQualitySummary(for: attempts)
     }
@@ -1241,6 +1245,9 @@ struct WhatToPlayTrainerView: View {
                 if choiceRankSummary.trackedAttempts > 0 {
                     choiceRankSummaryView(choiceRankSummary, insight: choiceRankInsight)
                 }
+                if simulationChoiceSummary.trackedAttempts > 0 {
+                    simulationChoiceSummaryView(simulationChoiceSummary)
+                }
                 if decisionQualitySummary.trackedAttempts > 0 {
                     decisionQualitySummaryView(decisionQualitySummary, insight: decisionQualityInsight)
                 }
@@ -1363,6 +1370,28 @@ struct WhatToPlayTrainerView: View {
                 }
                 .padding(.top, AppSpacing.xs)
             }
+        }
+        .padding(AppSpacing.sm)
+        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func simulationChoiceSummaryView(_ summary: WhatToPlaySimulationChoiceSummary) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Label("مطابقة المحاكاة".localized, systemImage: "chart.xyaxis.line")
+                .font(AppTypography.subheadline.weight(.semibold))
+                .foregroundStyle(AppColor.textPrimary)
+
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 3), spacing: AppSpacing.xs) {
+                miniMetric("أفضل محاكاة".localized, "\(summary.bestSimulationPicks)", AppColor.success)
+                miniMetric("ثاني محاكاة".localized, "\(summary.secondBestSimulationPicks)", AppColor.accent)
+                miniMetric("خارج المسارين".localized, "\(summary.otherPicks)", AppColor.danger)
+            }
+
+            Text("\("محاولات مفحوصة".localized): \(summary.trackedAttempts) · \("نسبة أفضل محاكاة".localized): \(summary.bestSimulationPickPercent)% · \("نسبة ثاني محاكاة".localized): \(summary.secondBestSimulationPickPercent)% · \("نسبة خارج المسارين".localized): \(summary.otherPickPercent)%")
+                .font(.caption2)
+                .foregroundStyle(AppColor.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
