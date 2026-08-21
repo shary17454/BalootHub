@@ -1034,6 +1034,72 @@ struct WhatToPlayTrainerTests {
         #expect(compare.category == .compareChoices)
     }
 
+    @Test("توصية تدريب وش تلعب تختار المسار والصعوبة من المحرك")
+    func practiceRecommendationMetricsClassifyNextTrainingStep() {
+        #expect(practiceRecommendation().category == .startEasy)
+        #expect(practiceRecommendation().difficulty == .easy)
+
+        let declining = practiceRecommendation(
+            attempts: 6,
+            trend: .declining,
+            focusDifficulty: .medium,
+            highestAttemptedDifficulty: .hard
+        )
+        #expect(declining.category == .tacticalStepBack)
+        #expect(declining.difficulty == .medium)
+
+        let costly = practiceRecommendation(
+            attempts: 5,
+            averageLostProjectedTeamPoints: 8,
+            costlyPercent: 40,
+            focusDifficulty: .hard
+        )
+        #expect(costly.category == .reduceCostlyDecisions)
+        #expect(costly.difficulty == .hard)
+
+        let simulation = practiceRecommendation(
+            attempts: 5,
+            projectedAttempts: 3,
+            averageLostProjectedTeamPoints: 8,
+            highestAttemptedDifficulty: .hard
+        )
+        #expect(simulation.category == .simulationReview)
+        #expect(simulation.difficulty == .hard)
+
+        let weakness = practiceRecommendation(
+            attempts: 5,
+            focusDifficulty: .medium,
+            focusAccuracyPercent: 60
+        )
+        #expect(weakness.category == .weaknessFocus)
+        #expect(weakness.difficulty == .medium)
+
+        let value = practiceRecommendation(
+            attempts: 5,
+            averageLostExpectedPoints: 5,
+            highestAttemptedDifficulty: .hard
+        )
+        #expect(value.category == .valueReview)
+        #expect(value.difficulty == .hard)
+
+        let levelUp = practiceRecommendation(
+            attempts: 5,
+            accuracyPercent: 80,
+            currentStreak: 3,
+            highestAttemptedDifficulty: .hard
+        )
+        #expect(levelUp.category == .levelUp)
+        #expect(levelUp.difficulty == .expert)
+
+        let steady = practiceRecommendation(
+            attempts: 5,
+            accuracyPercent: 70,
+            highestAttemptedDifficulty: .hard
+        )
+        #expect(steady.category == .steadyMedium)
+        #expect(steady.difficulty == .medium)
+    }
+
     @Test("رؤى نتيجة قرارات وش تلعب تأتي من المحرك")
     func outcomeInsightMetricsClassifySummaries() {
         #expect(WhatToPlayOutcomeInsightMetrics.classify(summary: .empty) == nil)
@@ -1987,6 +2053,57 @@ private func trainingSessionPlanCategory(
             costlyDecisions: costlyDecisions
         )
     ).category
+}
+
+private func practiceRecommendation(
+    attempts: Int = 0,
+    accuracyPercent: Int = 50,
+    currentStreak: Int = 0,
+    averageLostExpectedPoints: Int = 0,
+    projectedAttempts: Int = 0,
+    averageLostProjectedTeamPoints: Int = 0,
+    costlyPercent: Int = 0,
+    trend: WhatToPlayTrendDirectionCategory? = nil,
+    focusDifficulty: WhatToPlayDifficulty? = nil,
+    focusAccuracyPercent: Int? = nil,
+    focusAverageExpectedImpact: Int? = nil,
+    highestAttemptedDifficulty: WhatToPlayDifficulty? = nil
+) -> WhatToPlayPracticeRecommendationMetrics {
+    let costlyDecisions = costlyPercent >= 30 ? 2 : 0
+    let qualityAttempts = costlyPercent >= 30 ? 5 : 0
+    return WhatToPlayPracticeRecommendationMetrics.classify(
+        summary: WhatToPlayStatsSummaryMetrics(
+            attempts: attempts,
+            correct: 0,
+            accuracyPercent: accuracyPercent,
+            currentStreak: currentStreak,
+            bestStreak: currentStreak,
+            averageExpectedImpact: 1,
+            lostExpectedPoints: averageLostExpectedPoints * max(1, attempts),
+            averageLostExpectedPoints: averageLostExpectedPoints,
+            lostAgainstSecondBestPoints: 0,
+            secondBestComparisonAttempts: 0,
+            averageSecondBestGap: 0,
+            valueCapturePercent: 50,
+            valueCaptureAttempts: attempts,
+            projectedTeamPointAttempts: projectedAttempts,
+            averageProjectedTeamPoints: 70,
+            lostProjectedTeamPoints: averageLostProjectedTeamPoints * max(1, projectedAttempts),
+            averageLostProjectedTeamPoints: averageLostProjectedTeamPoints
+        ),
+        decisionQualitySummary: WhatToPlayDecisionQualitySummaryMetrics(
+            trackedAttempts: qualityAttempts,
+            expertMatches: qualityAttempts - costlyDecisions,
+            closeDecisions: 0,
+            acceptableDecisions: 0,
+            costlyDecisions: costlyDecisions
+        ),
+        trendDirection: trend,
+        focusDifficulty: focusDifficulty,
+        focusAccuracyPercent: focusAccuracyPercent,
+        focusAverageExpectedImpact: focusAverageExpectedImpact,
+        highestAttemptedDifficulty: highestAttemptedDifficulty
+    )
 }
 
 private func projectedOption(

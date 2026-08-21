@@ -1827,6 +1827,101 @@ public struct WhatToPlayCoachingTipMetrics: Sendable, Equatable {
     }
 }
 
+/// اتجاه أداء خام يمكن استخدامه بين تحليلات «وش تلعب؟» دون نصوص واجهة.
+public enum WhatToPlayTrendDirectionCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case improving
+    case stable
+    case declining
+}
+
+/// التصنيف الخام لتوصية التدريب التالية في «وش تلعب؟» دون نصوص واجهة.
+public enum WhatToPlayPracticeRecommendationCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case startEasy
+    case tacticalStepBack
+    case reduceCostlyDecisions
+    case simulationReview
+    case weaknessFocus
+    case valueReview
+    case levelUp
+    case steadyMedium
+}
+
+/// مدخلات ونتيجة توصية التدريب التالية في «وش تلعب؟».
+public struct WhatToPlayPracticeRecommendationMetrics: Sendable, Equatable {
+    public let category: WhatToPlayPracticeRecommendationCategory
+    public let difficulty: WhatToPlayDifficulty
+    public let costlyPercent: Int
+    public let averageLostProjectedTeamPoints: Int
+    public let averageLostExpectedPoints: Int
+
+    public init(
+        category: WhatToPlayPracticeRecommendationCategory,
+        difficulty: WhatToPlayDifficulty,
+        costlyPercent: Int,
+        averageLostProjectedTeamPoints: Int,
+        averageLostExpectedPoints: Int
+    ) {
+        self.category = category
+        self.difficulty = difficulty
+        self.costlyPercent = costlyPercent
+        self.averageLostProjectedTeamPoints = averageLostProjectedTeamPoints
+        self.averageLostExpectedPoints = averageLostExpectedPoints
+    }
+
+    public static func classify(
+        summary: WhatToPlayStatsSummaryMetrics,
+        decisionQualitySummary: WhatToPlayDecisionQualitySummaryMetrics,
+        trendDirection: WhatToPlayTrendDirectionCategory?,
+        focusDifficulty: WhatToPlayDifficulty?,
+        focusAccuracyPercent: Int?,
+        focusAverageExpectedImpact: Int?,
+        highestAttemptedDifficulty: WhatToPlayDifficulty?
+    ) -> WhatToPlayPracticeRecommendationMetrics {
+        let nearestDifficulty = focusDifficulty ?? highestAttemptedDifficulty ?? .medium
+        let category: WhatToPlayPracticeRecommendationCategory
+        let difficulty: WhatToPlayDifficulty
+
+        if summary.attempts == 0 {
+            category = .startEasy
+            difficulty = .easy
+        } else if trendDirection == .declining {
+            category = .tacticalStepBack
+            difficulty = focusDifficulty ?? .easy
+        } else if decisionQualitySummary.trackedAttempts >= 3,
+                  decisionQualitySummary.costlyPercent >= 30 {
+            category = .reduceCostlyDecisions
+            difficulty = nearestDifficulty
+        } else if summary.projectedTeamPointAttempts >= 3,
+                  summary.averageLostProjectedTeamPoints >= 6 {
+            category = .simulationReview
+            difficulty = nearestDifficulty
+        } else if let focusDifficulty,
+                  ((focusAccuracyPercent ?? 100) < 70 || (focusAverageExpectedImpact ?? 0) < 0) {
+            category = .weaknessFocus
+            difficulty = focusDifficulty
+        } else if summary.attempts >= 3,
+                  summary.averageLostExpectedPoints >= 4 {
+            category = .valueReview
+            difficulty = nearestDifficulty
+        } else if summary.currentStreak >= 3,
+                  summary.accuracyPercent >= 75 {
+            category = .levelUp
+            difficulty = WhatToPlayDifficulty.next(after: highestAttemptedDifficulty ?? .medium)
+        } else {
+            category = .steadyMedium
+            difficulty = .medium
+        }
+
+        return WhatToPlayPracticeRecommendationMetrics(
+            category: category,
+            difficulty: difficulty,
+            costlyPercent: decisionQualitySummary.costlyPercent,
+            averageLostProjectedTeamPoints: summary.averageLostProjectedTeamPoints,
+            averageLostExpectedPoints: summary.averageLostExpectedPoints
+        )
+    }
+}
+
 /// التصنيف الخام لرؤية نتيجة قرارات «وش تلعب؟».
 public enum WhatToPlayOutcomeInsightCategory: String, Sendable, Codable, Equatable, CaseIterable {
     case losingOften

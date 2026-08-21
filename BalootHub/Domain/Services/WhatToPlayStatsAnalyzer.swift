@@ -333,6 +333,17 @@ enum WhatToPlayTrendDirection: Equatable {
     case improving
     case stable
     case declining
+
+    var engineCategory: WhatToPlayTrendDirectionCategory {
+        switch self {
+        case .improving:
+            .improving
+        case .stable:
+            .stable
+        case .declining:
+            .declining
+        }
+    }
 }
 
 struct WhatToPlayPerformanceTrend: Equatable {
@@ -1531,81 +1542,100 @@ enum WhatToPlayStatsAnalyzer {
 
     static func practiceRecommendation(for attempts: [WhatToPlayAttempt]) -> WhatToPlayPracticeRecommendation {
         let summary = summarize(attempts: attempts)
-        guard summary.attempts > 0 else {
+        let qualitySummary = decisionQualitySummary(for: attempts)
+        let focus = focusDifficulty(attempts)
+        let metrics = WhatToPlayPracticeRecommendationMetrics.classify(
+            summary: WhatToPlayStatsSummaryMetrics(
+                attempts: summary.attempts,
+                correct: summary.correct,
+                accuracyPercent: summary.accuracyPercent,
+                currentStreak: summary.currentStreak,
+                bestStreak: summary.bestStreak,
+                averageExpectedImpact: summary.averageExpectedImpact,
+                lostExpectedPoints: summary.lostExpectedPoints,
+                averageLostExpectedPoints: summary.averageLostExpectedPoints,
+                lostAgainstSecondBestPoints: summary.lostAgainstSecondBestPoints,
+                secondBestComparisonAttempts: summary.secondBestComparisonAttempts,
+                averageSecondBestGap: summary.averageSecondBestGap,
+                valueCapturePercent: summary.valueCapturePercent,
+                valueCaptureAttempts: summary.valueCaptureAttempts,
+                projectedTeamPointAttempts: summary.projectedTeamPointAttempts,
+                averageProjectedTeamPoints: summary.averageProjectedTeamPoints,
+                lostProjectedTeamPoints: summary.lostProjectedTeamPoints,
+                averageLostProjectedTeamPoints: summary.averageLostProjectedTeamPoints
+            ),
+            decisionQualitySummary: WhatToPlayDecisionQualitySummaryMetrics(
+                trackedAttempts: qualitySummary.trackedAttempts,
+                expertMatches: qualitySummary.expertMatches,
+                closeDecisions: qualitySummary.closeDecisions,
+                acceptableDecisions: qualitySummary.acceptableDecisions,
+                costlyDecisions: qualitySummary.costlyDecisions
+            ),
+            trendDirection: performanceTrend(attempts: attempts, recentWindow: 3)?.direction.engineCategory,
+            focusDifficulty: focus?.difficulty,
+            focusAccuracyPercent: focus?.summary.accuracyPercent,
+            focusAverageExpectedImpact: focus?.summary.averageExpectedImpact,
+            highestAttemptedDifficulty: WhatToPlayDifficulty.highestAttempted(in: attempts.map(\.difficulty))
+        )
+
+        switch metrics.category {
+        case .startEasy:
             return WhatToPlayPracticeRecommendation(
-                difficulty: .easy,
+                difficulty: metrics.difficulty,
                 title: "ابدأ من السهل".localized,
                 detail: "ابدأ بمواقف سهلة حتى يبني المدرب خط أساس واضحًا لطريقة لعبك.".localized,
                 iconName: "play.circle.fill"
             )
-        }
-
-        if performanceTrend(attempts: attempts, recentWindow: 3)?.direction == .declining {
+        case .tacticalStepBack:
             return WhatToPlayPracticeRecommendation(
-                difficulty: focusDifficulty(attempts)?.difficulty ?? .easy,
+                difficulty: metrics.difficulty,
                 title: "ارجع خطوة تكتيكية".localized,
                 detail: "الأداء الأخير تراجع؛ العب مواقف أوضح قليلًا وراجع سبب كل ورقة قبل رفع الصعوبة.".localized,
                 iconName: "arrow.uturn.backward.circle.fill"
             )
-        }
-
-        let qualitySummary = decisionQualitySummary(for: attempts)
-        let highestAttemptedDifficulty = WhatToPlayDifficulty.highestAttempted(
-            in: attempts.map(\.difficulty)
-        )
-        if qualitySummary.trackedAttempts >= 3, qualitySummary.costlyPercent >= 30 {
+        case .reduceCostlyDecisions:
             return WhatToPlayPracticeRecommendation(
-                difficulty: focusDifficulty(attempts)?.difficulty ?? highestAttemptedDifficulty ?? .medium,
+                difficulty: metrics.difficulty,
                 title: "قلّل القرارات المكلفة".localized,
-                detail: "\("نسبة القرارات المكلفة".localized): \(qualitySummary.costlyPercent)%. \("اختر مواقف قريبة من مستواك وراجع Replay أفضل قرار قبل رفع الصعوبة.".localized)",
+                detail: "\("نسبة القرارات المكلفة".localized): \(metrics.costlyPercent)%. \("اختر مواقف قريبة من مستواك وراجع Replay أفضل قرار قبل رفع الصعوبة.".localized)",
                 iconName: "exclamationmark.triangle.fill"
             )
-        }
-
-        if summary.projectedTeamPointAttempts >= 3 && summary.averageLostProjectedTeamPoints >= 6 {
+        case .simulationReview:
             return WhatToPlayPracticeRecommendation(
-                difficulty: focusDifficulty(attempts)?.difficulty ?? highestAttemptedDifficulty ?? .medium,
+                difficulty: metrics.difficulty,
                 title: "راجع المحاكاة".localized,
-                detail: "\("متوسط نقاط محاكاة ضائعة".localized): \(summary.averageLostProjectedTeamPoints). \("قرارك يخسر بعد استكمال الجولة؛ راجع Replay كامل قبل لعب موقف جديد.".localized)",
+                detail: "\("متوسط نقاط محاكاة ضائعة".localized): \(metrics.averageLostProjectedTeamPoints). \("قرارك يخسر بعد استكمال الجولة؛ راجع Replay كامل قبل لعب موقف جديد.".localized)",
                 iconName: "chart.bar.xaxis"
             )
-        }
-
-        if let focus = focusDifficulty(attempts),
-           focus.summary.accuracyPercent < 70 || focus.summary.averageExpectedImpact < 0 {
+        case .weaknessFocus:
             return WhatToPlayPracticeRecommendation(
-                difficulty: focus.difficulty,
+                difficulty: metrics.difficulty,
                 title: "درّب نقطة الضعف".localized,
-                detail: "\("أفضل تدريب الآن".localized): \(difficultyTitle(focus.difficulty)). \("كرر هذا المستوى حتى ترفع الدقة وتقلل خسارة النقاط المتوقعة.".localized)",
+                detail: "\("أفضل تدريب الآن".localized): \(difficultyTitle(metrics.difficulty)). \("كرر هذا المستوى حتى ترفع الدقة وتقلل خسارة النقاط المتوقعة.".localized)",
                 iconName: "scope"
             )
-        }
-
-        if summary.attempts >= 3 && summary.averageLostExpectedPoints >= 4 {
+        case .valueReview:
             return WhatToPlayPracticeRecommendation(
-                difficulty: focusDifficulty(attempts)?.difficulty ?? highestAttemptedDifficulty ?? .medium,
+                difficulty: metrics.difficulty,
                 title: "راجع القيمة قبل الصعوبة".localized,
-                detail: "\("متوسط النقاط الضائعة".localized): \(summary.averageLostExpectedPoints). \("ابق على مستوى قريب وراجع لماذا اختار الخبير ورقة أعلى قيمة قبل رفع التحدي.".localized)",
+                detail: "\("متوسط النقاط الضائعة".localized): \(metrics.averageLostExpectedPoints). \("ابق على مستوى قريب وراجع لماذا اختار الخبير ورقة أعلى قيمة قبل رفع التحدي.".localized)",
                 iconName: "chart.bar.doc.horizontal.fill"
             )
-        }
-
-        if summary.currentStreak >= 3 && summary.accuracyPercent >= 75 {
-            let next = WhatToPlayDifficulty.next(after: highestAttemptedDifficulty ?? .medium)
+        case .levelUp:
             return WhatToPlayPracticeRecommendation(
-                difficulty: next,
+                difficulty: metrics.difficulty,
                 title: "ارفع التحدي".localized,
                 detail: "سلسلتك الحالية قوية؛ جرّب مستوى أعلى لاختبار القراءة تحت ضغط أكبر.".localized,
                 iconName: "arrow.up.circle.fill"
             )
+        case .steadyMedium:
+            return WhatToPlayPracticeRecommendation(
+                difficulty: metrics.difficulty,
+                title: "واصل التدريب المتوسط".localized,
+                detail: "هذا المستوى يعطيك مواقف كافية لاختبار التلزيم والقطع وحماية الشريك بدون قفزة صعبة مبكرة.".localized,
+                iconName: "target"
+            )
         }
-
-        return WhatToPlayPracticeRecommendation(
-            difficulty: .medium,
-            title: "واصل التدريب المتوسط".localized,
-            detail: "هذا المستوى يعطيك مواقف كافية لاختبار التلزيم والقطع وحماية الشريك بدون قفزة صعبة مبكرة.".localized,
-            iconName: "target"
-        )
     }
 
     static func trainingSessionPlan(for attempts: [WhatToPlayAttempt]) -> WhatToPlayTrainingSessionPlan {
