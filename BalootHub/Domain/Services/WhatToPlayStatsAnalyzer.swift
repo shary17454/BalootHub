@@ -3288,17 +3288,8 @@ enum WhatToPlayStatsAnalyzer {
         focusKind: WhatToPlayScenarioFocusKind,
         tacticalReason: WhatToPlayReviewPriority?
     ) -> WhatToPlayDecisionReview {
-        let firstStep: String
-        switch focusKind {
-        case .openingLead:
-            firstStep = "قارن هل افتتاحك يكشف قوة يدك مبكرًا أو يحفظها للأكلة القادمة.".localized
-        case .followSuit:
-            firstStep = "راجع اللون المطلوب أولًا، ثم اسأل هل تستطيع ربح الأكلة أم يجب تقليل خسارتها.".localized
-        case .trumpPressure:
-            firstStep = "افحص الحكم الموجود على الطاولة قبل رمي ورقة عالية أو حكم أعلى.".localized
-        case .narrowChoice:
-            firstStep = "عندما تكون الخيارات قليلة، رتّبها حسب أقل خسارة لا حسب أعلى ورقة.".localized
-        }
+        let focusStep = WhatToPlayDecisionReviewFocusStepMetrics.classify(focusKind: focusKind)
+        let firstStep = decisionReviewFocusStepText(focusStep.category)
 
         let secondStep: String
         switch insight.kind {
@@ -3328,6 +3319,21 @@ enum WhatToPlayStatsAnalyzer {
             iconName: "checklist",
             steps: steps
         )
+    }
+
+    private static func decisionReviewFocusStepText(
+        _ category: WhatToPlayDecisionReviewFocusStepCategory
+    ) -> String {
+        switch category {
+        case .openingLead:
+            return "قارن هل افتتاحك يكشف قوة يدك مبكرًا أو يحفظها للأكلة القادمة.".localized
+        case .followSuit:
+            return "راجع اللون المطلوب أولًا، ثم اسأل هل تستطيع ربح الأكلة أم يجب تقليل خسارتها.".localized
+        case .trumpPressure:
+            return "افحص الحكم الموجود على الطاولة قبل رمي ورقة عالية أو حكم أعلى.".localized
+        case .narrowChoice:
+            return "عندما تكون الخيارات قليلة، رتّبها حسب أقل خسارة لا حسب أعلى ورقة.".localized
+        }
     }
 
     private static func focusSuccessAction(for focusKind: WhatToPlayScenarioFocusKind) -> String {

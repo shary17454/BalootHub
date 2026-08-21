@@ -1651,6 +1651,14 @@ struct WhatToPlayTrainerTests {
         #expect(missedWin.secondBestGap == 5)
     }
 
+    @Test("خطوة مراجعة قرار وش تلعب حسب محور الموقف تأتي من المحرك")
+    func decisionReviewFocusStepMetricsClassifyFocus() {
+        #expect(reviewFocus(.openingLead).category == .openingLead)
+        #expect(reviewFocus(.followSuit).category == .followSuit)
+        #expect(reviewFocus(.trumpPressure).category == .trumpPressure)
+        #expect(reviewFocus(.narrowChoice).category == .narrowChoice)
+    }
+
     @Test("توصية إعادة موقف وش تلعب تأتي من المحرك")
     func retryRecommendationComesFromEngine() throws {
         let expertScenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
@@ -2635,6 +2643,12 @@ private func scenarioBrief(
             focusKind: focus
         )
     )
+}
+
+private func reviewFocus(
+    _ focus: WhatToPlayScenarioFocusKind
+) -> WhatToPlayDecisionReviewFocusStepMetrics {
+    WhatToPlayDecisionReviewFocusStepMetrics.classify(focusKind: focus)
 }
 
 private func performanceTrendSamples(

@@ -148,6 +148,38 @@ public struct WhatToPlayDecisionInsightMetrics: Sendable, Equatable {
     }
 }
 
+/// نوع أول خطوة في مراجعة قرار «وش تلعب؟» حسب محور الموقف.
+public enum WhatToPlayDecisionReviewFocusStepCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case openingLead
+    case followSuit
+    case trumpPressure
+    case narrowChoice
+}
+
+/// تصنيف خطوة مراجعة القرار المرتبطة بمحور الموقف دون نصوص واجهة.
+public struct WhatToPlayDecisionReviewFocusStepMetrics: Sendable, Equatable {
+    public let category: WhatToPlayDecisionReviewFocusStepCategory
+
+    public init(category: WhatToPlayDecisionReviewFocusStepCategory) {
+        self.category = category
+    }
+
+    public static func classify(
+        focusKind: WhatToPlayScenarioFocusKind
+    ) -> WhatToPlayDecisionReviewFocusStepMetrics {
+        switch focusKind {
+        case .openingLead:
+            WhatToPlayDecisionReviewFocusStepMetrics(category: .openingLead)
+        case .followSuit:
+            WhatToPlayDecisionReviewFocusStepMetrics(category: .followSuit)
+        case .trumpPressure:
+            WhatToPlayDecisionReviewFocusStepMetrics(category: .trumpPressure)
+        case .narrowChoice:
+            WhatToPlayDecisionReviewFocusStepMetrics(category: .narrowChoice)
+        }
+    }
+}
+
 /// مستوى إتقان اللاعب الخام في مدرب «وش تلعب؟».
 public enum WhatToPlayMasteryCategory: String, Sendable, Codable, Equatable, CaseIterable {
     case starting
