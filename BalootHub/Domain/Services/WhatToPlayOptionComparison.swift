@@ -329,21 +329,7 @@ enum WhatToPlayOptionComparison {
     }
 
     static func bestSimulationOption(_ options: [WhatToPlayOption]) -> WhatToPlayOption? {
-        options.max { lhs, rhs in
-            if lhs.projectedTeamPoints != rhs.projectedTeamPoints {
-                return lhs.projectedTeamPoints < rhs.projectedTeamPoints
-            }
-            if lhs.expectedImpact != rhs.expectedImpact {
-                return lhs.expectedImpact < rhs.expectedImpact
-            }
-            if lhs.rank != rhs.rank {
-                return lhs.rank > rhs.rank
-            }
-            if lhs.card.suit.ordinal != rhs.card.suit.ordinal {
-                return lhs.card.suit.ordinal > rhs.card.suit.ordinal
-            }
-            return lhs.card.rank.ordinal > rhs.card.rank.ordinal
-        }
+        WhatToPlayTrainer.bestProjectedOption(in: options)
     }
 
     private static func decisionQuality(

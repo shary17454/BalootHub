@@ -102,6 +102,30 @@ struct WhatToPlayTrainerTests {
         #expect(first.context == second.context)
     }
 
+    @Test("أفضل خيار بمحاكاة الجولة يأتي من المحرك وبترتيب حتمي")
+    func projectedBestOptionIsDeterministic() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .hard)
+        let repeated = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .hard)
+
+        #expect(scenario.bestProjectedOption?.card == repeated.bestProjectedOption?.card)
+        #expect(scenario.secondBestProjectedOption?.card == repeated.secondBestProjectedOption?.card)
+
+        let projectedPoints = scenario.options.map(\.projectedTeamPoints).max()
+        #expect(scenario.bestProjectedOption?.projectedTeamPoints == projectedPoints)
+    }
+
+    @Test("تعادل محاكاة وش تلعب يُحسم بترتيب أوراق ثابت")
+    func projectedBestOptionTieBreaksWithStableCardOrder() {
+        let options = [
+            projectedOption(card: PlayingCard(suit: .hearts, rank: .ace), rank: 3),
+            projectedOption(card: PlayingCard(suit: .clubs, rank: .seven), rank: 3),
+            projectedOption(card: PlayingCard(suit: .clubs, rank: .eight), rank: 3)
+        ]
+
+        #expect(WhatToPlayTrainer.bestProjectedOption(in: options)?.card == PlayingCard(suit: .hearts, rank: .ace))
+        #expect(WhatToPlayTrainer.secondBestProjectedOption(in: options)?.card == PlayingCard(suit: .clubs, rank: .seven))
+    }
+
     @Test("طلب تركيز محدد يولد موقفًا مطابقًا له بشكل حتمي")
     func generationHonorsPreferredFocusDeterministically() throws {
         for focusKind in WhatToPlayScenarioFocusKind.allCases {
@@ -637,4 +661,37 @@ struct WhatToPlayTrainerTests {
             ?? current.teamTrickPoints[player.teamID]
             ?? 0
     }
+}
+
+private func projectedOption(card: PlayingCard, rank: Int) -> WhatToPlayOption {
+    WhatToPlayOption(
+        card: card,
+        rank: rank,
+        score: 0,
+        isExpertChoice: false,
+        expectedImpact: 4,
+        projectedTeamPoints: 40,
+        impactBreakdown: WhatToPlayOptionImpactBreakdown(
+            playedCardPoints: 0,
+            immediateImpact: 0,
+            trickPointsSwing: 0,
+            completesTrick: false,
+            winsForPlayerTeam: nil,
+            preservesLead: false
+        ),
+        simulation: WhatToPlayOptionSimulation(
+            phaseAfterPlay: .playing,
+            currentTrickCardCount: 1,
+            completedTrickWinnerID: nil,
+            completedTrickWinnerTeamID: nil,
+            completedTrickWonByPlayerTeam: nil,
+            completedTrickPoints: 0,
+            nextTurnPlayerID: nil,
+            playerRemainingCards: 7,
+            actionHistoryCount: 1
+        ),
+        outcome: .developsTrick,
+        outcomeReason: "",
+        explanation: ""
+    )
 }

@@ -220,6 +220,20 @@ public struct WhatToPlayScenario: Sendable {
     public var secondBestOption: WhatToPlayOption? {
         options.first { $0.rank == 2 }
     }
+
+    /// أفضل خيار عند استكمال الجولة من نفس حالة المحرك بعد فرض الورقة.
+    ///
+    /// قد يختلف هذا عن اختيار الخبير اللحظي عندما تكشف المحاكاة أن ورقة أخرى
+    /// تحفظ نقاط الفريق في نهاية الجولة بشكل أفضل. يبقى الترتيب حتميًا عند
+    /// التعادل حتى تصل نفس البذرة ونفس الحالة إلى نفس بطاقة التدريب دائمًا.
+    public var bestProjectedOption: WhatToPlayOption? {
+        WhatToPlayTrainer.bestProjectedOption(in: options)
+    }
+
+    /// ثاني أفضل خيار حسب نقاط الفريق المتوقعة بعد استكمال الجولة.
+    public var secondBestProjectedOption: WhatToPlayOption? {
+        WhatToPlayTrainer.secondBestProjectedOption(in: options)
+    }
 }
 
 /// Replay مرئي لقرار تدريب «وش تلعب؟».
@@ -439,6 +453,16 @@ public enum WhatToPlayTrainer {
     /// يقيّم اختيار المستخدم مقارنة باختيار الخبير.
     public static func evaluateChoice(card: PlayingCard, in scenario: WhatToPlayScenario) -> WhatToPlayOption? {
         scenario.options.first { $0.card == card }
+    }
+
+    /// يعيد أفضل خيار حسب نقاط فريق اللاعب المتوقعة بعد استكمال الجولة.
+    public static func bestProjectedOption(in options: [WhatToPlayOption]) -> WhatToPlayOption? {
+        projectedOptionRanking(options).first
+    }
+
+    /// يعيد ثاني أفضل خيار حسب نقاط فريق اللاعب المتوقعة بعد استكمال الجولة.
+    public static func secondBestProjectedOption(in options: [WhatToPlayOption]) -> WhatToPlayOption? {
+        projectedOptionRanking(options).dropFirst().first
     }
 
     /// يبني Replay قابلًا للتشغيل لقرار معيّن في موقف «وش تلعب؟».
@@ -798,5 +822,23 @@ public enum WhatToPlayTrainer {
 
     private static func heuristicComparableScore(projectedTeamPoints: Int, impact: Int) -> Int {
         projectedTeamPoints == Int.min ? impact : projectedTeamPoints
+    }
+
+    private static func projectedOptionRanking(_ options: [WhatToPlayOption]) -> [WhatToPlayOption] {
+        options.sorted { lhs, rhs in
+            if lhs.projectedTeamPoints != rhs.projectedTeamPoints {
+                return lhs.projectedTeamPoints > rhs.projectedTeamPoints
+            }
+            if lhs.expectedImpact != rhs.expectedImpact {
+                return lhs.expectedImpact > rhs.expectedImpact
+            }
+            if lhs.rank != rhs.rank {
+                return lhs.rank < rhs.rank
+            }
+            if lhs.card.suit.ordinal != rhs.card.suit.ordinal {
+                return lhs.card.suit.ordinal < rhs.card.suit.ordinal
+            }
+            return lhs.card.rank.ordinal < rhs.card.rank.ordinal
+        }
     }
 }
