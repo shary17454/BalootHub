@@ -3343,7 +3343,7 @@ enum WhatToPlayStatsAnalyzer {
         case .reviewSimulation:
             return WhatToPlayNextDecisionAction(
                 title: "راجع أثر الجولة".localized,
-                detail: "\("قرارك بدا قريبًا في الأكلة، لكنه خسر بعد استكمال الجولة".localized): \(max(recommendation.lostProjectedTeamPoints, recommendation.lostProjectedAgainstSecondBestPoints)). \("شاهد Replay وقارن مسار أفضل ورقة.".localized)",
+                detail: "\("قرارك بدا قريبًا في الأكلة، لكنه خسر بعد استكمال الجولة".localized). \(simulationLossText(projectedLost: recommendation.lostProjectedTeamPoints, secondProjectedLost: recommendation.lostProjectedAgainstSecondBestPoints)). \("شاهد Replay وقارن مسار أفضل ورقة.".localized)",
                 iconName: "drop.fill",
                 recommendedCard: bestCard,
                 expectedImprovement: recommendation.expectedImprovement
@@ -3401,7 +3401,7 @@ enum WhatToPlayStatsAnalyzer {
 
     private static func pointLeakActionDetail(insight: WhatToPlayDecisionInsight) -> String {
         if simulationLoss(for: insight) > insight.lostExpectedPoints {
-            return "\("قرارك بدا قريبًا في الأكلة، لكنه خسر بعد استكمال الجولة".localized): \(simulationLoss(for: insight)). \("شاهد Replay وقارن مسار أفضل ورقة.".localized)"
+            return "\("قرارك بدا قريبًا في الأكلة، لكنه خسر بعد استكمال الجولة".localized). \(simulationLossText(projectedLost: insight.lostProjectedTeamPoints, secondProjectedLost: insight.lostProjectedAgainstSecondBestPoints)). \("شاهد Replay وقارن مسار أفضل ورقة.".localized)"
         }
 
         return "في الموقف القادم ابدأ بسؤال واحد: ما أقل ورقة تخسر أقل نقاط متوقعة إذا كانت الأكلة للخصم؟".localized

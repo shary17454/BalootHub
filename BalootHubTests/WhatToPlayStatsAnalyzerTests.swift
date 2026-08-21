@@ -2064,6 +2064,31 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(action.title, "راجع أثر الجولة".localized)
         XCTAssertTrue(action.detail.contains("خسر بعد استكمال الجولة".localized))
+        XCTAssertTrue(action.detail.contains("\("نقاط محاكاة ضائعة".localized): 16"))
+        XCTAssertEqual(action.expectedImprovement, 16)
+    }
+
+    func testNextDecisionActionNamesSecondSimulationLossWhenItIsLarger() {
+        let insight = WhatToPlayStatsAnalyzer.decisionInsight(
+            selectedRank: 2,
+            selectedImpact: 7,
+            bestImpact: 8,
+            secondBestImpact: 7,
+            selectedProjectedTeamPoints: 52,
+            bestProjectedTeamPoints: 54,
+            secondBestProjectedTeamPoints: 68
+        )
+
+        let action = WhatToPlayStatsAnalyzer.nextDecisionAction(
+            insight: insight,
+            focusKind: .narrowChoice,
+            bestCard: PlayingCard(suit: .diamonds, rank: .ace)
+        )
+
+        XCTAssertEqual(action.title, "راجع أثر الجولة".localized)
+        XCTAssertTrue(action.detail.contains("خسر بعد استكمال الجولة".localized))
+        XCTAssertTrue(action.detail.contains("\("فاقد ثاني محاكاة".localized): 16"))
+        XCTAssertFalse(action.detail.contains("\("نقاط محاكاة ضائعة".localized): 2"))
         XCTAssertEqual(action.expectedImprovement, 16)
     }
 
