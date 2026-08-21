@@ -75,6 +75,15 @@ final class CatalogFilterTests: XCTestCase {
         XCTAssertTrue(slugs.contains("offline-tournaments"))
     }
 
+    func testWhatToPlayCatalogDescribesReplayBackedRoundState() throws {
+        let item = try XCTUnwrap(makeItems().first { $0.slug == "what-to-play-trainer" })
+        let projects = try XCTUnwrap(item.ruleSection(.projects))
+
+        XCTAssertTrue(projects.body.contains("GameState"))
+        XCTAssertTrue(projects.body.contains("Replay"))
+        XCTAssertFalse(projects.body.contains("يمكن توسيعها لاحقًا"))
+    }
+
     func testBalootModesAreReferencesInsideSingleBalootGame() {
         let items = makeItems()
         let modeSlugs = [
