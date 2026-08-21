@@ -2336,7 +2336,11 @@ struct WhatToPlayTrainerView: View {
     }
 
     private func attemptContextText(_ attempt: WhatToPlayAttempt) -> String {
-        scenarioContextText(
+        if let context = attempt.scenarioContext {
+            return scenarioContextText(context)
+        }
+
+        return scenarioContextText(
             trickNumber: attempt.contextTrickNumber,
             isLeading: attempt.contextIsLeading,
             requiredSuit: attempt.contextRequiredSuit,
@@ -2350,6 +2354,10 @@ struct WhatToPlayTrainerView: View {
     }
 
     private func reviewContextText(_ item: WhatToPlayReviewItem) -> String? {
+        if let context = item.scenarioContext {
+            return scenarioContextText(context)
+        }
+
         let text = scenarioContextText(
             trickNumber: item.contextTrickNumber,
             isLeading: item.contextIsLeading,
@@ -2362,6 +2370,20 @@ struct WhatToPlayTrainerView: View {
             opponentTeamPoints: item.contextOpponentTeamTrickPoints
         )
         return text.isEmpty ? nil : text
+    }
+
+    private func scenarioContextText(_ context: WhatToPlayScenarioContext) -> String {
+        scenarioContextText(
+            trickNumber: context.trickNumber,
+            isLeading: context.isLeading,
+            requiredSuit: context.requiredSuit,
+            trumpSuit: context.trumpSuit,
+            hasTrumpInCurrentTrick: context.hasTrumpInCurrentTrick,
+            playedCardCount: context.playedCardCount,
+            legalOptionCount: context.legalOptionCount,
+            playerTeamPoints: context.playerTeamTrickPoints,
+            opponentTeamPoints: context.opponentTeamTrickPoints
+        )
     }
 
     private func scenarioContextText(

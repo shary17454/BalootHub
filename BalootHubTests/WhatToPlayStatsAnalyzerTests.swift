@@ -879,6 +879,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(item.contextLegalOptionCount, 5)
         XCTAssertEqual(item.contextPlayerTeamTrickPoints, 42)
         XCTAssertEqual(item.contextOpponentTeamTrickPoints, 21)
+        XCTAssertEqual(item.scenarioContext, context)
     }
 
     func testAttemptWithoutTrumpContextKeepsBackwardCompatibleNilValues() {

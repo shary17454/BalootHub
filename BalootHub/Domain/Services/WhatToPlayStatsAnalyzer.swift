@@ -249,6 +249,33 @@ struct WhatToPlayReviewItem: Equatable, Identifiable {
     let contextLegalOptionCount: Int?
     let contextPlayerTeamTrickPoints: Int?
     let contextOpponentTeamTrickPoints: Int?
+
+    var scenarioContext: WhatToPlayScenarioContext? {
+        guard let contextTrickNumber,
+              let contextIsLeading,
+              let contextPlayedCardCount,
+              let contextLegalOptionCount,
+              let contextHasTrumpInCurrentTrick,
+              let contextPlayerTeamTrickPoints,
+              let contextOpponentTeamTrickPoints,
+              let focusKind
+        else { return nil }
+
+        return WhatToPlayScenarioContext(
+            trickNumber: contextTrickNumber,
+            isLeading: contextIsLeading,
+            requiredSuit: contextRequiredSuit,
+            playedCardCount: contextPlayedCardCount,
+            legalOptionCount: contextLegalOptionCount,
+            mode: gameMode,
+            trumpSuit: contextTrumpSuit,
+            hasTrumpInCurrentTrick: contextHasTrumpInCurrentTrick,
+            playerTeamTrickPoints: contextPlayerTeamTrickPoints,
+            opponentTeamTrickPoints: contextOpponentTeamTrickPoints,
+            playerTeamPointMargin: contextPlayerTeamTrickPoints - contextOpponentTeamTrickPoints,
+            focusKind: focusKind
+        )
+    }
 }
 
 struct WhatToPlayReviewScenarioTarget: Equatable {
