@@ -872,6 +872,162 @@ public struct WhatToPlayStatsSummaryMetrics: Sendable, Equatable {
     }
 }
 
+/// ملخص نتائج قرارات «وش تلعب؟» حسب نتيجة الأكلة دون نصوص واجهة.
+public struct WhatToPlayOutcomeSummaryMetrics: Sendable, Equatable {
+    public let trackedAttempts: Int
+    public let winningTrickAttempts: Int
+    public let losingTrickAttempts: Int
+    public let openTrickAttempts: Int
+
+    public static let empty = WhatToPlayOutcomeSummaryMetrics(
+        trackedAttempts: 0,
+        winningTrickAttempts: 0,
+        losingTrickAttempts: 0,
+        openTrickAttempts: 0
+    )
+
+    public init(
+        trackedAttempts: Int,
+        winningTrickAttempts: Int,
+        losingTrickAttempts: Int,
+        openTrickAttempts: Int
+    ) {
+        self.trackedAttempts = trackedAttempts
+        self.winningTrickAttempts = winningTrickAttempts
+        self.losingTrickAttempts = losingTrickAttempts
+        self.openTrickAttempts = openTrickAttempts
+    }
+
+    public var winningPercent: Int {
+        guard trackedAttempts > 0 else { return 0 }
+        return Int((Double(winningTrickAttempts) / Double(trackedAttempts) * 100).rounded())
+    }
+
+    public var losingPercent: Int {
+        guard trackedAttempts > 0 else { return 0 }
+        return Int((Double(losingTrickAttempts) / Double(trackedAttempts) * 100).rounded())
+    }
+
+    public static func summarize(outcomes: [WhatToPlayOptionOutcome]) -> WhatToPlayOutcomeSummaryMetrics {
+        guard !outcomes.isEmpty else { return .empty }
+
+        let winning = outcomes.filter { $0 == .winsTrick }.count
+        let losing = outcomes.filter { $0 == .losesTrick }.count
+        return WhatToPlayOutcomeSummaryMetrics(
+            trackedAttempts: outcomes.count,
+            winningTrickAttempts: winning,
+            losingTrickAttempts: losing,
+            openTrickAttempts: outcomes.count - winning - losing
+        )
+    }
+}
+
+/// ملخص رتبة اختيارات اللاعب في «وش تلعب؟» مقارنة بترتيب الخبير.
+public struct WhatToPlayChoiceRankSummaryMetrics: Sendable, Equatable {
+    public let trackedAttempts: Int
+    public let expertPicks: Int
+    public let secondBestPicks: Int
+    public let farPicks: Int
+
+    public static let empty = WhatToPlayChoiceRankSummaryMetrics(
+        trackedAttempts: 0,
+        expertPicks: 0,
+        secondBestPicks: 0,
+        farPicks: 0
+    )
+
+    public init(
+        trackedAttempts: Int,
+        expertPicks: Int,
+        secondBestPicks: Int,
+        farPicks: Int
+    ) {
+        self.trackedAttempts = trackedAttempts
+        self.expertPicks = expertPicks
+        self.secondBestPicks = secondBestPicks
+        self.farPicks = farPicks
+    }
+
+    public var expertPickPercent: Int {
+        guard trackedAttempts > 0 else { return 0 }
+        return Int((Double(expertPicks) / Double(trackedAttempts) * 100).rounded())
+    }
+
+    public var nearMissPercent: Int {
+        guard trackedAttempts > 0 else { return 0 }
+        return Int((Double(secondBestPicks) / Double(trackedAttempts) * 100).rounded())
+    }
+
+    public var farPickPercent: Int {
+        guard trackedAttempts > 0 else { return 0 }
+        return Int((Double(farPicks) / Double(trackedAttempts) * 100).rounded())
+    }
+
+    public static func summarize(selectedRanks ranks: [Int]) -> WhatToPlayChoiceRankSummaryMetrics {
+        guard !ranks.isEmpty else { return .empty }
+
+        return WhatToPlayChoiceRankSummaryMetrics(
+            trackedAttempts: ranks.count,
+            expertPicks: ranks.filter { $0 == 1 }.count,
+            secondBestPicks: ranks.filter { $0 == 2 }.count,
+            farPicks: ranks.filter { $0 > 2 }.count
+        )
+    }
+}
+
+/// ملخص جودة قرارات «وش تلعب؟» من تصنيفات المحرك نفسها.
+public struct WhatToPlayDecisionQualitySummaryMetrics: Sendable, Equatable {
+    public let trackedAttempts: Int
+    public let expertMatches: Int
+    public let closeDecisions: Int
+    public let acceptableDecisions: Int
+    public let costlyDecisions: Int
+
+    public static let empty = WhatToPlayDecisionQualitySummaryMetrics(
+        trackedAttempts: 0,
+        expertMatches: 0,
+        closeDecisions: 0,
+        acceptableDecisions: 0,
+        costlyDecisions: 0
+    )
+
+    public init(
+        trackedAttempts: Int,
+        expertMatches: Int,
+        closeDecisions: Int,
+        acceptableDecisions: Int,
+        costlyDecisions: Int
+    ) {
+        self.trackedAttempts = trackedAttempts
+        self.expertMatches = expertMatches
+        self.closeDecisions = closeDecisions
+        self.acceptableDecisions = acceptableDecisions
+        self.costlyDecisions = costlyDecisions
+    }
+
+    public var costlyPercent: Int {
+        guard trackedAttempts > 0 else { return 0 }
+        return Int((Double(costlyDecisions) / Double(trackedAttempts) * 100).rounded())
+    }
+
+    public var strongPercent: Int {
+        guard trackedAttempts > 0 else { return 0 }
+        return Int((Double(expertMatches + closeDecisions) / Double(trackedAttempts) * 100).rounded())
+    }
+
+    public static func summarize(qualities: [WhatToPlayDecisionQuality]) -> WhatToPlayDecisionQualitySummaryMetrics {
+        guard !qualities.isEmpty else { return .empty }
+
+        return WhatToPlayDecisionQualitySummaryMetrics(
+            trackedAttempts: qualities.count,
+            expertMatches: qualities.filter { $0 == .expertMatch }.count,
+            closeDecisions: qualities.filter { $0 == .close }.count,
+            acceptableDecisions: qualities.filter { $0 == .acceptable }.count,
+            costlyDecisions: qualities.filter { $0 == .costly }.count
+        )
+    }
+}
+
 /// درجة وضوح أفضل ورقة في موقف «وش تلعب؟» مقارنة بثاني أفضل خيار.
 public enum WhatToPlayBestMoveConfidence: String, Sendable, Codable, Equatable, CaseIterable {
     case tied

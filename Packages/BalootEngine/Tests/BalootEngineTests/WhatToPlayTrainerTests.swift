@@ -392,6 +392,62 @@ struct WhatToPlayTrainerTests {
         #expect(metrics.bestStreak == 1)
     }
 
+    @Test("ملخص نتائج قرارات وش تلعب يأتي من المحرك")
+    func outcomeSummaryMetricsClassifyOutcomes() {
+        #expect(WhatToPlayOutcomeSummaryMetrics.summarize(outcomes: []) == .empty)
+
+        let metrics = WhatToPlayOutcomeSummaryMetrics.summarize(outcomes: [
+            .winsTrick,
+            .losesTrick,
+            .leadsTrick,
+            .developsTrick,
+            .winsTrick
+        ])
+
+        #expect(metrics.trackedAttempts == 5)
+        #expect(metrics.winningTrickAttempts == 2)
+        #expect(metrics.losingTrickAttempts == 1)
+        #expect(metrics.openTrickAttempts == 2)
+        #expect(metrics.winningPercent == 40)
+        #expect(metrics.losingPercent == 20)
+    }
+
+    @Test("ملخص رتب اختيارات وش تلعب يأتي من المحرك")
+    func choiceRankSummaryMetricsClassifyRanks() {
+        #expect(WhatToPlayChoiceRankSummaryMetrics.summarize(selectedRanks: []) == .empty)
+
+        let metrics = WhatToPlayChoiceRankSummaryMetrics.summarize(selectedRanks: [1, 2, 4, 3, 1])
+
+        #expect(metrics.trackedAttempts == 5)
+        #expect(metrics.expertPicks == 2)
+        #expect(metrics.secondBestPicks == 1)
+        #expect(metrics.farPicks == 2)
+        #expect(metrics.expertPickPercent == 40)
+        #expect(metrics.nearMissPercent == 20)
+        #expect(metrics.farPickPercent == 40)
+    }
+
+    @Test("ملخص جودة قرارات وش تلعب يأتي من المحرك")
+    func decisionQualitySummaryMetricsClassifyQualities() {
+        #expect(WhatToPlayDecisionQualitySummaryMetrics.summarize(qualities: []) == .empty)
+
+        let metrics = WhatToPlayDecisionQualitySummaryMetrics.summarize(qualities: [
+            .expertMatch,
+            .close,
+            .acceptable,
+            .costly,
+            .costly
+        ])
+
+        #expect(metrics.trackedAttempts == 5)
+        #expect(metrics.expertMatches == 1)
+        #expect(metrics.closeDecisions == 1)
+        #expect(metrics.acceptableDecisions == 1)
+        #expect(metrics.costlyDecisions == 2)
+        #expect(metrics.strongPercent == 40)
+        #expect(metrics.costlyPercent == 40)
+    }
+
     @Test("مراجعة اختيار وش تلعب تحسب الفوارق وجودة القرار من المحرك")
     func choiceReviewCalculatesLossesAndQuality() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2, difficulty: .hard)

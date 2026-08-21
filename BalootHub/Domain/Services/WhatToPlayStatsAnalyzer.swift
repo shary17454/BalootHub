@@ -766,47 +766,36 @@ enum WhatToPlayStatsAnalyzer {
     }
 
     static func outcomeSummary(for attempts: [WhatToPlayAttempt]) -> WhatToPlayOutcomeSummary {
-        let outcomes = attempts.compactMap(\.outcome)
-        guard !outcomes.isEmpty else { return .empty }
-
-        let winning = outcomes.filter { $0 == .winsTrick }.count
-        let losing = outcomes.filter { $0 == .losesTrick }.count
-        let open = outcomes.count - winning - losing
+        let metrics = WhatToPlayOutcomeSummaryMetrics.summarize(outcomes: attempts.compactMap(\.outcome))
 
         return WhatToPlayOutcomeSummary(
-            trackedAttempts: outcomes.count,
-            winningTrickAttempts: winning,
-            losingTrickAttempts: losing,
-            openTrickAttempts: open
+            trackedAttempts: metrics.trackedAttempts,
+            winningTrickAttempts: metrics.winningTrickAttempts,
+            losingTrickAttempts: metrics.losingTrickAttempts,
+            openTrickAttempts: metrics.openTrickAttempts
         )
     }
 
     static func choiceRankSummary(for attempts: [WhatToPlayAttempt]) -> WhatToPlayChoiceRankSummary {
-        let ranks = attempts.compactMap(\.selectedRank)
-        guard !ranks.isEmpty else { return .empty }
-
-        let expertPicks = ranks.filter { $0 == 1 }.count
-        let secondBestPicks = ranks.filter { $0 == 2 }.count
-        let farPicks = ranks.filter { $0 > 2 }.count
+        let metrics = WhatToPlayChoiceRankSummaryMetrics.summarize(selectedRanks: attempts.compactMap(\.selectedRank))
 
         return WhatToPlayChoiceRankSummary(
-            trackedAttempts: ranks.count,
-            expertPicks: expertPicks,
-            secondBestPicks: secondBestPicks,
-            farPicks: farPicks
+            trackedAttempts: metrics.trackedAttempts,
+            expertPicks: metrics.expertPicks,
+            secondBestPicks: metrics.secondBestPicks,
+            farPicks: metrics.farPicks
         )
     }
 
     static func decisionQualitySummary(for attempts: [WhatToPlayAttempt]) -> WhatToPlayDecisionQualitySummary {
-        let qualities = attempts.compactMap(\.decisionQuality)
-        guard !qualities.isEmpty else { return .empty }
+        let metrics = WhatToPlayDecisionQualitySummaryMetrics.summarize(qualities: attempts.compactMap(\.decisionQuality))
 
         return WhatToPlayDecisionQualitySummary(
-            trackedAttempts: qualities.count,
-            expertMatches: qualities.filter { $0 == .expertMatch }.count,
-            closeDecisions: qualities.filter { $0 == .close }.count,
-            acceptableDecisions: qualities.filter { $0 == .acceptable }.count,
-            costlyDecisions: qualities.filter { $0 == .costly }.count
+            trackedAttempts: metrics.trackedAttempts,
+            expertMatches: metrics.expertMatches,
+            closeDecisions: metrics.closeDecisions,
+            acceptableDecisions: metrics.acceptableDecisions,
+            costlyDecisions: metrics.costlyDecisions
         )
     }
 
