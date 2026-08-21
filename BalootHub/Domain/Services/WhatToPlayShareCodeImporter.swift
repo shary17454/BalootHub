@@ -37,11 +37,13 @@ enum WhatToPlayShareCodeImporter {
         code: String,
         existingScenarioCodes: Set<String>
     ) async throws -> WhatToPlayShareCodeImportResult {
-        guard let parsed = WhatToPlayScenarioCode.parse(code) else {
+        guard let extractedCode = WhatToPlayScenarioCode.extractCode(from: code),
+              let parsed = WhatToPlayScenarioCode.parse(extractedCode)
+        else {
             throw ImportError.invalidCode
         }
 
-        let scenario = try await WhatToPlayScenarioLoader.generate(code: code)
+        let scenario = try await WhatToPlayScenarioLoader.generate(code: extractedCode)
         guard let selectedCard = parsed.selectedCard else {
             return WhatToPlayShareCodeImportResult(
                 parsed: parsed,

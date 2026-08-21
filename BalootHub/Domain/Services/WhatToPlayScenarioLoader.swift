@@ -93,7 +93,9 @@ enum WhatToPlayScenarioLoader {
     }
 
     static func generate(code: String) async throws -> WhatToPlayScenario {
-        guard let parsed = WhatToPlayScenarioCode.parse(code) else {
+        guard let extractedCode = WhatToPlayScenarioCode.extractCode(from: code),
+              let parsed = WhatToPlayScenarioCode.parse(extractedCode)
+        else {
             throw ScenarioCodeError.invalidCode
         }
 

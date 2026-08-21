@@ -46,7 +46,9 @@ extension WhatToPlayTrainerView {
     func loadShareCode() {
         let code = shareCodeInput.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !code.isEmpty else { return }
-        guard let parsed = WhatToPlayScenarioCode.parse(code) else {
+        guard let extractedCode = WhatToPlayScenarioCode.extractCode(from: code),
+              let parsed = WhatToPlayScenarioCode.parse(extractedCode)
+        else {
             shareCodeMessage = "رمز الموقف غير صالح.".localized
             return
         }
@@ -65,7 +67,7 @@ extension WhatToPlayTrainerView {
         generationTask = Task { @MainActor in
             do {
                 let imported = try await WhatToPlayShareCodeImporter.import(
-                    code: code,
+                    code: extractedCode,
                     existingScenarioCodes: Set(attempts.map(\.scenarioCode))
                 )
                 guard !Task.isCancelled else { return }

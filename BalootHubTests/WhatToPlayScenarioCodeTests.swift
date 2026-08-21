@@ -50,6 +50,24 @@ final class WhatToPlayScenarioCodeTests: XCTestCase {
         XCTAssertEqual(reviewed?.selectedCard, PlayingCard(suit: .spades, rank: .ace))
     }
 
+    func testScenarioCodeExtractsCodeFromSharedText() {
+        let text = """
+        وش تلعب؟
+        رمز الموقف: WTP-2026-medium-followSuit-C07
+        النمط: صن
+        """
+
+        XCTAssertEqual(
+            WhatToPlayScenarioCode.extractCode(from: text),
+            "WTP-2026-medium-followSuit-C07"
+        )
+    }
+
+    func testScenarioCodeExtractionRejectsTextWithoutValidCode() {
+        XCTAssertNil(WhatToPlayScenarioCode.extractCode(from: "رمز الموقف: WTP-bad"))
+        XCTAssertNil(WhatToPlayScenarioCode.extractCode(from: "لا يوجد رمز هنا"))
+    }
+
     func testScenarioCodeRejectsMalformedValues() {
         XCTAssertNil(WhatToPlayScenarioCode.parse("WTP-2026-medium-openingLead"))
         XCTAssertNil(WhatToPlayScenarioCode.parse("BAD-2026-medium-openingLead-P"))

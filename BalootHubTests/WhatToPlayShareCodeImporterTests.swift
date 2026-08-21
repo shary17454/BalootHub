@@ -39,6 +39,22 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.statusMessage, "تم تحميل مراجعة القرار وإضافتها للإحصاءات.".localized)
     }
 
+    func testImporterLoadsFullSharedText() async throws {
+        let scenario = try await WhatToPlayScenarioLoader.generate(
+            seed: 2026,
+            difficulty: .easy,
+            preferredFocus: .followSuit
+        )
+        let selected = try XCTUnwrap(scenario.options.last)
+        let sharedText = WhatToPlayShareCard.text(for: scenario, selectedOption: selected)
+
+        let result = try await WhatToPlayShareCodeImporter.import(code: sharedText, existingScenarioCodes: [])
+
+        XCTAssertEqual(result.kind, .reviewedDecision(isDuplicate: false))
+        XCTAssertEqual(result.selectedOption?.card, selected.card)
+        XCTAssertEqual(result.attempt?.scenarioCode, WhatToPlayShareCard.content(for: scenario, selectedOption: selected).scenarioCode)
+    }
+
     func testImporterDoesNotCreateDuplicateAttempt() async throws {
         let scenario = try await WhatToPlayScenarioLoader.generate(
             seed: 2026,

@@ -33,7 +33,8 @@ enum WhatToPlayScenarioCode {
     }
 
     static func parse(_ code: String) -> Parsed? {
-        let parts = code.split(separator: "-", omittingEmptySubsequences: false)
+        let normalizedCode = code.trimmingCharacters(in: .whitespacesAndNewlines)
+        let parts = normalizedCode.split(separator: "-", omittingEmptySubsequences: false)
         guard parts.count == 5,
               parts[0] == "WTP",
               let seed = UInt64(parts[1]),
@@ -57,6 +58,27 @@ enum WhatToPlayScenarioCode {
             focusKind: focusKind,
             selectedCard: selectedCard
         )
+    }
+
+    static func extractCode(from text: String) -> String? {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        if parse(trimmed) != nil {
+            return trimmed
+        }
+
+        guard let start = text.range(of: "WTP-")?.lowerBound else { return nil }
+        let suffix = text[start...]
+        var code = ""
+        let terminators = CharacterSet.whitespacesAndNewlines
+            .union(CharacterSet(charactersIn: "،,:;؟!?()[]{}<>\"'"))
+
+        for scalar in suffix.unicodeScalars {
+            if terminators.contains(scalar) { break }
+            code.unicodeScalars.append(scalar)
+        }
+
+        let normalized = code.trimmingCharacters(in: .punctuationCharacters)
+        return parse(normalized) == nil ? nil : normalized
     }
 
     private static func parseSelectedCard(_ value: String) -> PlayingCard?? {

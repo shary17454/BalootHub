@@ -40,14 +40,16 @@ enum WhatToPlayAttemptFactory {
     }
 
     static func makeAttempt(code: String) async throws -> WhatToPlayAttempt {
-        guard let parsed = WhatToPlayScenarioCode.parse(code) else {
+        guard let extractedCode = WhatToPlayScenarioCode.extractCode(from: code),
+              let parsed = WhatToPlayScenarioCode.parse(extractedCode)
+        else {
             throw ShareCodeAttemptError.invalidCode
         }
         guard let selectedCard = parsed.selectedCard else {
             throw ShareCodeAttemptError.missingSelectedCard
         }
 
-        let scenario = try await WhatToPlayScenarioLoader.generate(code: code)
+        let scenario = try await WhatToPlayScenarioLoader.generate(code: extractedCode)
         guard let option = scenario.options.first(where: { $0.card == selectedCard }) else {
             throw ShareCodeAttemptError.selectedCardUnavailable
         }
