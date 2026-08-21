@@ -2021,7 +2021,9 @@ enum WhatToPlayStatsAnalyzer {
             accuracyTargetMet: progressMetrics.accuracyTargetMet,
             impactTargetMet: progressMetrics.impactTargetMet,
             costlyDecisionTargetMet: progressMetrics.costlyDecisionTargetMet,
-            averageLostExpectedPoints: sessionSummary.averageLostExpectedPoints
+            averageLostExpectedPoints: sessionSummary.averageLostExpectedPoints,
+            averageLostProjectedTeamPoints: sessionSummary.averageLostProjectedTeamPoints,
+            averageProjectedSecondBestGap: sessionSummary.averageProjectedSecondBestGap
         )
         let grade = trainingSessionGrade(
             completedAttempts: progressMetrics.completedAttempts,
@@ -2713,7 +2715,9 @@ enum WhatToPlayStatsAnalyzer {
         accuracyTargetMet: Bool,
         impactTargetMet: Bool,
         costlyDecisionTargetMet: Bool,
-        averageLostExpectedPoints: Int
+        averageLostExpectedPoints: Int,
+        averageLostProjectedTeamPoints: Int,
+        averageProjectedSecondBestGap: Int
     ) -> (title: String, detail: String, iconName: String) {
         let metrics = WhatToPlayTrainingSessionNextStepMetrics.classify(
             progressCategory: trainingSessionProgressCategory(state),
@@ -2722,7 +2726,9 @@ enum WhatToPlayStatsAnalyzer {
             accuracyTargetMet: accuracyTargetMet,
             impactTargetMet: impactTargetMet,
             costlyDecisionTargetMet: costlyDecisionTargetMet,
-            averageLostExpectedPoints: averageLostExpectedPoints
+            averageLostExpectedPoints: averageLostExpectedPoints,
+            averageLostProjectedTeamPoints: averageLostProjectedTeamPoints,
+            averageProjectedSecondBestGap: averageProjectedSecondBestGap
         )
 
         switch metrics.category {
@@ -2741,7 +2747,7 @@ enum WhatToPlayStatsAnalyzer {
         case .reduceLostValue:
             return (
                 "قلل النقاط الضائعة".localized,
-                "\("متوسط الضياع".localized): \(metrics.averageLostExpectedPoints). \("قبل الموقف التالي، احذف الخيارات الضعيفة ثم قارن اختيارك بأفضل ورقة وثاني أفضل ورقة.".localized)",
+                "\("متوسط الضياع".localized): \(metrics.averageLossPoints). \("قبل الموقف التالي، احذف الخيارات الضعيفة ثم قارن اختيارك بأفضل ورقة وثاني أفضل ورقة.".localized)",
                 "chart.bar.doc.horizontal.fill"
             )
         case .continueBatch:
@@ -2765,7 +2771,7 @@ enum WhatToPlayStatsAnalyzer {
         case .reviewLostValue:
             return (
                 "راجع القيمة الضائعة".localized,
-                "\("متوسط الضياع".localized): \(metrics.averageLostExpectedPoints). \("أعد الجلسة وركّز على تقليل الفارق عن اختيار الخبير قبل رفع الصعوبة.".localized)",
+                "\("متوسط الضياع".localized): \(metrics.averageLossPoints). \("أعد الجلسة وركّز على تقليل الفارق عن اختيار الخبير قبل رفع الصعوبة.".localized)",
                 "drop.fill"
             )
         case .reviewDecisionQuality:

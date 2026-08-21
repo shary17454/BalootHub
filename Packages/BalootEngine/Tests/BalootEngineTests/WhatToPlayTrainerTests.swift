@@ -517,6 +517,15 @@ struct WhatToPlayTrainerTests {
                 averageLostExpectedPoints: 4
             ).category == .reduceLostValue
         )
+        let projectedLossStep = nextStep(
+            progress: .inProgress,
+            remainingAttempts: 2,
+            correctNeeded: 1,
+            averageLostExpectedPoints: 1,
+            averageLostProjectedTeamPoints: 7
+        )
+        #expect(projectedLossStep.category == .reduceLostValue)
+        #expect(projectedLossStep.averageLossPoints == 7)
         #expect(
             nextStep(
                 progress: .inProgress,
@@ -544,6 +553,15 @@ struct WhatToPlayTrainerTests {
                 averageLostExpectedPoints: 4
             ).category == .reviewLostValue
         )
+        let secondSimulationReview = nextStep(
+            progress: .needsRepeat,
+            accuracyMet: true,
+            impactMet: true,
+            averageLostExpectedPoints: 1,
+            averageProjectedSecondBestGap: 6
+        )
+        #expect(secondSimulationReview.category == .reviewLostValue)
+        #expect(secondSimulationReview.averageLossPoints == 6)
         #expect(
             nextStep(
                 progress: .needsRepeat,
@@ -2749,7 +2767,9 @@ private func nextStep(
     accuracyMet: Bool = false,
     impactMet: Bool = false,
     costlyMet: Bool = true,
-    averageLostExpectedPoints: Int = 0
+    averageLostExpectedPoints: Int = 0,
+    averageLostProjectedTeamPoints: Int = 0,
+    averageProjectedSecondBestGap: Int = 0
 ) -> WhatToPlayTrainingSessionNextStepMetrics {
     WhatToPlayTrainingSessionNextStepMetrics.classify(
         progressCategory: progress,
@@ -2758,7 +2778,9 @@ private func nextStep(
         accuracyTargetMet: accuracyMet,
         impactTargetMet: impactMet,
         costlyDecisionTargetMet: costlyMet,
-        averageLostExpectedPoints: averageLostExpectedPoints
+        averageLostExpectedPoints: averageLostExpectedPoints,
+        averageLostProjectedTeamPoints: averageLostProjectedTeamPoints,
+        averageProjectedSecondBestGap: averageProjectedSecondBestGap
     )
 }
 

@@ -3756,6 +3756,47 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.nextStepIconName, "drop.fill")
     }
 
+    func testTrainingSessionProgressRepeatStepTargetsProjectedSecondBestLoss() {
+        let plan = sessionPlan(difficulty: .medium, count: 3, target: 67)
+        let attempts = [
+            attempt(
+                daysAgo: 3,
+                difficulty: .medium,
+                correct: true,
+                impact: 3,
+                bestImpact: 3,
+                projectedTeamPoints: 40,
+                secondBestProjectedTeamPoints: 48
+            ),
+            attempt(
+                daysAgo: 2,
+                difficulty: .medium,
+                correct: false,
+                impact: 3,
+                bestImpact: 3,
+                projectedTeamPoints: 41,
+                secondBestProjectedTeamPoints: 49
+            ),
+            attempt(
+                daysAgo: 1,
+                difficulty: .medium,
+                correct: false,
+                impact: 3,
+                bestImpact: 3,
+                projectedTeamPoints: 42,
+                secondBestProjectedTeamPoints: 50
+            )
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.state, .needsRepeat)
+        XCTAssertEqual(progress.averageLostExpectedPoints, 0)
+        XCTAssertEqual(progress.averageProjectedSecondBestGap, 8)
+        XCTAssertEqual(progress.nextStepTitle, "راجع القيمة الضائعة".localized)
+        XCTAssertTrue(progress.nextStepDetail.contains("\("متوسط الضياع".localized): 8"))
+    }
+
     func testTrainingSessionGradeReasonIdentifiesAccuracyWeakness() {
         let plan = sessionPlan(difficulty: .medium, count: 4, target: 75)
         let attempts = [

@@ -1160,17 +1160,20 @@ public struct WhatToPlayTrainingSessionNextStepMetrics: Sendable, Equatable {
     public let remainingAttempts: Int
     public let correctAttemptsNeededForTarget: Int
     public let averageLostExpectedPoints: Int
+    public let averageLossPoints: Int
 
     public init(
         category: WhatToPlayTrainingSessionNextStepCategory,
         remainingAttempts: Int,
         correctAttemptsNeededForTarget: Int,
-        averageLostExpectedPoints: Int
+        averageLostExpectedPoints: Int,
+        averageLossPoints: Int? = nil
     ) {
         self.category = category
         self.remainingAttempts = remainingAttempts
         self.correctAttemptsNeededForTarget = correctAttemptsNeededForTarget
         self.averageLostExpectedPoints = averageLostExpectedPoints
+        self.averageLossPoints = averageLossPoints ?? averageLostExpectedPoints
     }
 
     public static func classify(
@@ -1181,11 +1184,18 @@ public struct WhatToPlayTrainingSessionNextStepMetrics: Sendable, Equatable {
         impactTargetMet: Bool,
         costlyDecisionTargetMet: Bool,
         averageLostExpectedPoints: Int,
+        averageLostProjectedTeamPoints: Int = 0,
+        averageProjectedSecondBestGap: Int = 0,
         lostValueThreshold: Int = 4
     ) -> WhatToPlayTrainingSessionNextStepMetrics {
         let remaining = max(0, remainingAttempts)
         let neededCorrect = max(0, correctAttemptsNeededForTarget)
         let lostValue = max(0, averageLostExpectedPoints)
+        let lossValue = max(
+            lostValue,
+            max(0, averageLostProjectedTeamPoints),
+            max(0, averageProjectedSecondBestGap)
+        )
         let threshold = max(0, lostValueThreshold)
 
         let category: WhatToPlayTrainingSessionNextStepCategory
@@ -1195,7 +1205,7 @@ public struct WhatToPlayTrainingSessionNextStepMetrics: Sendable, Equatable {
         case .inProgress:
             if neededCorrect > remaining {
                 category = .accuracyUnreachable
-            } else if lostValue >= threshold {
+            } else if lossValue >= threshold {
                 category = .reduceLostValue
             } else {
                 category = .continueBatch
@@ -1205,7 +1215,7 @@ public struct WhatToPlayTrainingSessionNextStepMetrics: Sendable, Equatable {
         case .needsRepeat:
             if !costlyDecisionTargetMet {
                 category = .reduceCostlyDecisions
-            } else if lostValue >= threshold {
+            } else if lossValue >= threshold {
                 category = .reviewLostValue
             } else if accuracyTargetMet && !impactTargetMet {
                 category = .reviewDecisionQuality
@@ -1220,7 +1230,8 @@ public struct WhatToPlayTrainingSessionNextStepMetrics: Sendable, Equatable {
             category: category,
             remainingAttempts: remaining,
             correctAttemptsNeededForTarget: neededCorrect,
-            averageLostExpectedPoints: lostValue
+            averageLostExpectedPoints: lostValue,
+            averageLossPoints: lossValue
         )
     }
 }
