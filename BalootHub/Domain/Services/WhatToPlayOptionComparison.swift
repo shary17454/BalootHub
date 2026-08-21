@@ -214,11 +214,9 @@ enum WhatToPlayOptionComparison {
     }
 
     static func rows(for scenario: WhatToPlayScenario, selectedCard: PlayingCard) -> [WhatToPlayOptionComparisonRow] {
-        let bestImpact = scenario.bestOption?.expectedImpact ?? scenario.options.map(\.expectedImpact).max() ?? 0
-        let bestSimulation = bestSimulationOption(scenario.options)
-        let bestProjectedTeamPoints = bestSimulation?.projectedTeamPoints ?? scenario.options.map(\.projectedTeamPoints).max() ?? 0
-        return sortedOptions(scenario.options)
-            .map { option in
+        WhatToPlayTrainer.optionReviews(in: scenario)
+            .map { review in
+                let option = review.option
                 let simulationDisplay = WhatToPlaySimulationFormatter.display(for: option.simulation)
                 return WhatToPlayOptionComparisonRow(
                     card: option.card,
@@ -227,22 +225,18 @@ enum WhatToPlayOptionComparison {
                     projectedTeamPoints: option.projectedTeamPoints,
                     impactBreakdown: option.impactBreakdown,
                     impactDetail: WhatToPlayImpactFormatter.detail(for: option.impactBreakdown),
-                    lostExpectedPoints: max(0, bestImpact - option.expectedImpact),
-                    lostProjectedTeamPoints: max(0, bestProjectedTeamPoints - option.projectedTeamPoints),
+                    lostExpectedPoints: review.lostExpectedPoints,
+                    lostProjectedTeamPoints: review.lostProjectedTeamPoints,
                     outcome: option.outcome,
                     outcomeReason: option.outcomeReason,
                     simulationSummary: simulationDisplay.summary,
                     simulationTeamResult: simulationDisplay.teamResult,
                     simulationTrickPoints: simulationDisplay.trickPoints,
-                    tacticalTag: WhatToPlayOptionTacticalTag.classify(
-                        option: option,
-                        bestExpectedImpact: bestImpact,
-                        bestProjectedTeamPoints: bestProjectedTeamPoints
-                    ),
+                    tacticalTag: review.tacticalTag,
                     tacticalSummary: tacticalSummary(
                         for: option,
-                        bestImpact: bestImpact,
-                        bestProjectedTeamPoints: bestProjectedTeamPoints
+                        lostExpectedPoints: review.lostExpectedPoints,
+                        lostProjectedTeamPoints: review.lostProjectedTeamPoints
                     ),
                     coachingSummary: coachingSummary(
                         for: option,
@@ -252,7 +246,7 @@ enum WhatToPlayOptionComparison {
                     rationale: option.explanation,
                     isSelected: option.card == selectedCard,
                     isExpertChoice: option.isExpertChoice,
-                    isBestSimulationResult: option.card == bestSimulation?.card
+                    isBestSimulationResult: review.isBestProjectedResult
                 )
             }
     }
@@ -321,11 +315,9 @@ enum WhatToPlayOptionComparison {
 
     private static func tacticalSummary(
         for option: WhatToPlayOption,
-        bestImpact: Int,
-        bestProjectedTeamPoints: Int
+        lostExpectedPoints lost: Int,
+        lostProjectedTeamPoints projectedLost: Int
     ) -> String {
-        let lost = max(0, bestImpact - option.expectedImpact)
-        let projectedLost = max(0, bestProjectedTeamPoints - option.projectedTeamPoints)
         let decisiveLoss = max(lost, projectedLost)
         if option.isExpertChoice {
             return "هذه أعلى ورقة حسب تحليل الخبير لهذا الموقف.".localized

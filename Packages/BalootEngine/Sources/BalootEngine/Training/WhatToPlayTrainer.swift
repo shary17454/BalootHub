@@ -364,6 +364,31 @@ public struct WhatToPlayChoiceReview: Sendable, Equatable {
     }
 }
 
+/// مراجعة رقمية لخيار واحد داخل موقف «وش تلعب؟».
+public struct WhatToPlayOptionReview: Identifiable, Sendable, Equatable {
+    public let option: WhatToPlayOption
+    public let lostExpectedPoints: Int
+    public let lostProjectedTeamPoints: Int
+    public let tacticalTag: WhatToPlayOptionTacticalTag
+    public let isBestProjectedResult: Bool
+
+    public var id: PlayingCard { option.card }
+
+    public init(
+        option: WhatToPlayOption,
+        lostExpectedPoints: Int,
+        lostProjectedTeamPoints: Int,
+        tacticalTag: WhatToPlayOptionTacticalTag,
+        isBestProjectedResult: Bool
+    ) {
+        self.option = option
+        self.lostExpectedPoints = lostExpectedPoints
+        self.lostProjectedTeamPoints = lostProjectedTeamPoints
+        self.tacticalTag = tacticalTag
+        self.isBestProjectedResult = isBestProjectedResult
+    }
+}
+
 /// مولّد ومحلّل مواقف «وش تلعب؟».
 public enum WhatToPlayTrainer {
     public enum ScenarioError: Error, Sendable, Equatable {
@@ -611,6 +636,34 @@ public enum WhatToPlayTrainer {
             decisionQuality: decisionQuality,
             bestMoveConfidence: WhatToPlayBestMoveConfidence.classify(bestToSecondGap: bestToSecondGap)
         )
+    }
+
+    /// يراجع كل خيار قانوني في الموقف من المحرك، لا من الواجهة.
+    public static func optionReviews(in scenario: WhatToPlayScenario) -> [WhatToPlayOptionReview] {
+        let sorted = rankedOptions(scenario.options)
+        let bestExpectedImpact = scenario.bestOption?.expectedImpact
+            ?? scenario.options.map(\.expectedImpact).max()
+            ?? 0
+        let bestProjected = bestProjectedOption(in: scenario.options)
+        let bestProjectedTeamPoints = bestProjected?.projectedTeamPoints
+            ?? scenario.options.map(\.projectedTeamPoints).max()
+            ?? 0
+
+        return sorted.map { option in
+            let lostExpectedPoints = max(0, bestExpectedImpact - option.expectedImpact)
+            let lostProjectedTeamPoints = max(0, bestProjectedTeamPoints - option.projectedTeamPoints)
+            return WhatToPlayOptionReview(
+                option: option,
+                lostExpectedPoints: lostExpectedPoints,
+                lostProjectedTeamPoints: lostProjectedTeamPoints,
+                tacticalTag: WhatToPlayOptionTacticalTag.classify(
+                    option: option,
+                    bestExpectedImpact: bestExpectedImpact,
+                    bestProjectedTeamPoints: bestProjectedTeamPoints
+                ),
+                isBestProjectedResult: option.card == bestProjected?.card
+            )
+        }
     }
 
     /// يعيد أفضل خيار حسب نقاط فريق اللاعب المتوقعة بعد استكمال الجولة.

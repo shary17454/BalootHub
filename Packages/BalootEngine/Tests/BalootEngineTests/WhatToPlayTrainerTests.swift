@@ -116,6 +116,36 @@ struct WhatToPlayTrainerTests {
         #expect(WhatToPlayOptionTacticalTag.classify(option: holds, bestExpectedImpact: 10, bestProjectedTeamPoints: 40) == .holdsPosition)
     }
 
+    @Test("مراجعات خيارات وش تلعب ترتب الصفوف وتحسب الفاقد من المحرك")
+    func optionReviewsCalculateRowsFromEngine() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2, difficulty: .hard)
+        let reviews = WhatToPlayTrainer.optionReviews(in: scenario)
+        let best = try #require(scenario.bestOption)
+        let bestProjected = try #require(scenario.bestProjectedOption)
+
+        #expect(reviews.map(\.option.card) == scenario.options.sorted { lhs, rhs in
+            if lhs.rank != rhs.rank { return lhs.rank < rhs.rank }
+            if lhs.card.suit.ordinal != rhs.card.suit.ordinal {
+                return lhs.card.suit.ordinal < rhs.card.suit.ordinal
+            }
+            return lhs.card.rank.ordinal < rhs.card.rank.ordinal
+        }.map(\.card))
+        #expect(reviews.first?.option.card == best.card)
+        #expect(reviews.contains { $0.isBestProjectedResult && $0.option.card == bestProjected.card })
+
+        for review in reviews {
+            #expect(review.lostExpectedPoints == max(0, best.expectedImpact - review.option.expectedImpact))
+            #expect(review.lostProjectedTeamPoints == max(0, bestProjected.projectedTeamPoints - review.option.projectedTeamPoints))
+            #expect(
+                review.tacticalTag == WhatToPlayOptionTacticalTag.classify(
+                    option: review.option,
+                    bestExpectedImpact: best.expectedImpact,
+                    bestProjectedTeamPoints: bestProjected.projectedTeamPoints
+                )
+            )
+        }
+    }
+
     @Test("مستوى الخبير يولد موقفًا حقيقيًا قابلًا للتقييم")
     func expertDifficultyGeneratesPlayableScenario() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .expert)
