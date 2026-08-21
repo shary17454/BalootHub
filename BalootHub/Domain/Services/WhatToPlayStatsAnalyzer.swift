@@ -2186,6 +2186,10 @@ enum WhatToPlayStatsAnalyzer {
         if let trumpSuit = item.contextTrumpSuit {
             parts.append("\("حكم".localized): \(trumpSuit.spokenName)")
         }
+        if let playerPoints = item.contextPlayerTeamTrickPoints,
+           let opponentPoints = item.contextOpponentTeamTrickPoints {
+            parts.append("\("نقاط فريقك".localized): \(playerPoints) · \("للخصم".localized): \(opponentPoints)")
+        }
         if let selectedCard = item.selectedCard {
             parts.append("\("اختيارك".localized): \(selectedCard.accessibilityName)")
             parts.append("\("أثر القرار".localized): \(impactTextValue(item.expectedImpact))")
