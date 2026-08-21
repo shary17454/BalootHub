@@ -146,10 +146,13 @@ enum RoundReplayShareSummary {
 
         for hint in costly.prefix(3) {
             let second = hint.secondBestCard.map { " · \("ثاني أفضل".localized): \($0.accessibilityName)" } ?? ""
+            let projected = hint.bestProjectedCard != hint.bestCard || hint.estimatedProjectedLostPoints > hint.estimatedImmediateLostPoints
+                ? " · \("أفضل نتيجة محاكاة".localized): \(hint.bestProjectedCard.accessibilityName)"
+                : ""
             lines.append(
                 "- \("الأكلة".localized) \(hint.trickNumber) · \(playerName(hint.playerID, in: finalState)): " +
                 "\("لعب".localized) \(hint.playedCard.accessibilityName) · " +
-                "\("أفضل قرار".localized): \(hint.bestCard.accessibilityName)\(second) · " +
+                "\("أفضل قرار".localized): \(hint.bestCard.accessibilityName)\(second)\(projected) · " +
                 "\("الفاقد المتوقع".localized) \(hint.estimatedLostPoints)"
             )
         }

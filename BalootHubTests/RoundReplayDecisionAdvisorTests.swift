@@ -36,6 +36,7 @@ final class RoundReplayDecisionAdvisorTests: XCTestCase {
         XCTAssertEqual(hint.trickNumber, beforePlay.completedTricks.count + 1)
         XCTAssertTrue(legal.contains(hint.playedCard))
         XCTAssertTrue(legal.contains(hint.bestCard))
+        XCTAssertEqual(hint.bestProjectedCard, bestProjected.card)
         XCTAssertEqual(hint.estimatedProjectedLostPoints, max(0, bestProjected.projectedTeamPoints - selected.projectedTeamPoints))
         XCTAssertGreaterThanOrEqual(hint.selectedRank, 1)
         XCTAssertGreaterThanOrEqual(hint.estimatedImmediateLostPoints, 0)
@@ -59,6 +60,7 @@ final class RoundReplayDecisionAdvisorTests: XCTestCase {
         ))
 
         XCTAssertEqual(hint.playedCard, selected.card)
+        XCTAssertEqual(hint.bestProjectedCard, scenario.bestProjectedOption?.card)
         XCTAssertGreaterThan(hint.estimatedProjectedLostPoints, hint.estimatedImmediateLostPoints)
         XCTAssertEqual(hint.estimatedLostPoints, hint.estimatedProjectedLostPoints)
     }

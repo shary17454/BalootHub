@@ -204,6 +204,9 @@ struct RoundReplayView: View {
             if let secondBestCard = hint.secondBestCard {
                 detailRow("ثاني أفضل ورقة".localized, secondBestCard.accessibilityName)
             }
+            if hint.bestProjectedCard != hint.bestCard || hint.estimatedProjectedLostPoints > hint.estimatedImmediateLostPoints {
+                detailRow("أفضل نتيجة محاكاة".localized, hint.bestProjectedCard.accessibilityName)
+            }
             if hint.estimatedLostPoints > 0 {
                 detailRow("فاقد متوقع".localized, "\(hint.estimatedLostPoints)")
                 if hint.estimatedProjectedLostPoints > hint.estimatedImmediateLostPoints {

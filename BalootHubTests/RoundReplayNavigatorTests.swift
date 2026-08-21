@@ -99,6 +99,14 @@ final class RoundReplayNavigatorTests: XCTestCase {
         XCTAssertTrue(summary.contains("الفاقد المتوقع".localized))
     }
 
+    func testReplayShareSummaryIncludesBestProjectedCardWhenSimulationDiffers() throws {
+        let replay = try makeReplayWithProjectedDecision()
+        let summary = RoundReplayShareSummary.text(initialState: replay.initial, actions: replay.actions)
+
+        XCTAssertTrue(summary.contains("أفضل نتيجة محاكاة".localized))
+        XCTAssertTrue(summary.contains(replay.hint.bestProjectedCard.accessibilityName))
+    }
+
     private func makeCompletedReplay(seed: UInt64) throws -> (initial: GameState, actions: [GameAction]) {
         let initial = makeAIMatch()
         var state = try GameEngine.apply(.dealCards(seed: seed), to: initial)
@@ -129,6 +137,24 @@ final class RoundReplayNavigatorTests: XCTestCase {
         }
         XCTFail("لم يتم العثور على Replay يحتوي قرارًا يحتاج مراجعة")
         throw NSError(domain: "RoundReplayNavigatorTests", code: 1)
+    }
+
+    private func makeReplayWithProjectedDecision() throws -> (initial: GameState, actions: [GameAction], hint: RoundReplayDecisionHint) {
+        for seed in 1_400..<1_520 {
+            let replay = try makeCompletedReplay(seed: UInt64(seed))
+            for index in replay.actions.indices {
+                guard let hint = RoundReplayDecisionAdvisor.hint(
+                    initialState: replay.initial,
+                    actions: replay.actions,
+                    currentStep: index + 1
+                ) else { continue }
+                if hint.bestProjectedCard != hint.bestCard || hint.estimatedProjectedLostPoints > hint.estimatedImmediateLostPoints {
+                    return (replay.initial, replay.actions, hint)
+                }
+            }
+        }
+        XCTFail("لم يتم العثور على Replay يحتوي أفضل نتيجة محاكاة مختلفة")
+        throw NSError(domain: "RoundReplayNavigatorTests", code: 2)
     }
 
     private func makeAIMatch() -> GameState {

@@ -7,6 +7,7 @@ struct RoundReplayDecisionHint: Equatable {
     let playedCard: PlayingCard
     let bestCard: PlayingCard
     let secondBestCard: PlayingCard?
+    let bestProjectedCard: PlayingCard
     let selectedRank: Int
     let estimatedImmediateLostPoints: Int
     let estimatedProjectedLostPoints: Int
@@ -55,6 +56,7 @@ enum RoundReplayDecisionAdvisor {
             playedCard: playedCard,
             bestCard: best.card,
             secondBestCard: options.first(where: { $0.rank == 2 })?.card,
+            bestProjectedCard: bestSimulation.card,
             selectedRank: selected.rank,
             estimatedImmediateLostPoints: immediateLost,
             estimatedProjectedLostPoints: projectedLost,
