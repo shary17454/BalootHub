@@ -451,6 +451,38 @@ struct WhatToPlayTrainerTests {
         )
     }
 
+    @Test("أولوية عنصر مراجعة وش تلعب تأتي من المحرك")
+    func reviewPriorityMetricsClassifyReason() {
+        #expect(
+            WhatToPlayReviewPriorityMetrics.classify(
+                expectedImpact: -1,
+                lostExpectedPoints: 10,
+                lostProjectedTeamPoints: 10
+            ).category == .negativeImpact
+        )
+        #expect(
+            WhatToPlayReviewPriorityMetrics.classify(
+                expectedImpact: 0,
+                lostExpectedPoints: 6,
+                lostProjectedTeamPoints: 12
+            ).category == .valueOpportunity
+        )
+        #expect(
+            WhatToPlayReviewPriorityMetrics.classify(
+                expectedImpact: 0,
+                lostExpectedPoints: 2,
+                lostProjectedTeamPoints: 6
+            ).category == .simulationLoss
+        )
+        #expect(
+            WhatToPlayReviewPriorityMetrics.classify(
+                expectedImpact: 1,
+                lostExpectedPoints: 2,
+                lostProjectedTeamPoints: 0
+            ).category == .closeTacticalGap
+        )
+    }
+
     @Test("ملخص أداء وش تلعب يأتي من المحرك ويحافظ على السلاسل وفاقد القيمة")
     func statsSummaryMetricsCalculateTrainingPerformance() {
         let metrics = WhatToPlayStatsSummaryMetrics.summarize(chronologicalSamples: [

@@ -1440,35 +1440,41 @@ enum WhatToPlayStatsAnalyzer {
     }
 
     static func reviewPriority(for item: WhatToPlayReviewItem) -> WhatToPlayReviewPriority {
-        if item.expectedImpact < 0 {
+        let metrics = WhatToPlayReviewPriorityMetrics.classify(
+            expectedImpact: item.expectedImpact,
+            lostExpectedPoints: item.lostExpectedPoints,
+            lostProjectedTeamPoints: item.lostProjectedTeamPoints
+        )
+
+        switch metrics.category {
+        case .negativeImpact:
             return WhatToPlayReviewPriority(
                 title: "أولوية عالية".localized,
                 detail: "\("اختيارك خسر أثرًا متوقعًا".localized): \(impactTextValue(item.expectedImpact)). \("ابدأ بإعادة هذا الموقف قبل أي تدريب جديد.".localized)",
                 iconName: "exclamationmark.triangle.fill"
             )
-        }
 
-        if item.lostExpectedPoints >= 6 {
+        case .valueOpportunity:
             return WhatToPlayReviewPriority(
                 title: "فرصة قيمة ضاعت".localized,
                 detail: "\("الفارق عن اختيار الخبير".localized): \(item.lostExpectedPoints). \("راجع سبب ارتفاع قيمة أفضل ورقة.".localized)",
                 iconName: "arrow.up.right.circle.fill"
             )
-        }
 
-        if item.lostProjectedTeamPoints >= 6 {
+        case .simulationLoss:
             return WhatToPlayReviewPriority(
                 title: "المحاكاة ترجّح المراجعة".localized,
                 detail: "\("خسرت بعد استكمال الجولة".localized): \(item.lostProjectedTeamPoints). \("راجع كيف تغيّر القرار نتيجة الجولة لا الأكلة فقط.".localized)",
                 iconName: "chart.bar.xaxis"
             )
-        }
 
-        return WhatToPlayReviewPriority(
-            title: "فرق تكتيكي قريب".localized,
-            detail: "القرار ليس مكلفًا مباشرة، لكن مراجعة الفارق الصغير تثبت عادة اختيار أفضل ورقة.".localized,
-            iconName: "2.circle.fill"
-        )
+        case .closeTacticalGap:
+            return WhatToPlayReviewPriority(
+                title: "فرق تكتيكي قريب".localized,
+                detail: "القرار ليس مكلفًا مباشرة، لكن مراجعة الفارق الصغير تثبت عادة اختيار أفضل ورقة.".localized,
+                iconName: "2.circle.fill"
+            )
+        }
     }
 
     private static func impactTextValue(_ value: Int) -> String {

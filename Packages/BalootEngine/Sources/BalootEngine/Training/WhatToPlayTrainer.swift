@@ -898,6 +898,43 @@ public struct WhatToPlayTrainingSessionReviewMetrics: Sendable, Equatable {
     }
 }
 
+/// سبب أولوية عنصر مراجعة «وش تلعب؟» دون نصوص واجهة.
+public enum WhatToPlayReviewPriorityCategory: String, Sendable, Codable, Equatable, CaseIterable {
+    case negativeImpact
+    case valueOpportunity
+    case simulationLoss
+    case closeTacticalGap
+}
+
+/// تصنيف خام لأولوية عنصر مراجعة «وش تلعب؟» من أثر القرار وفاقد الخبير والمحاكاة.
+public struct WhatToPlayReviewPriorityMetrics: Sendable, Equatable {
+    public let category: WhatToPlayReviewPriorityCategory
+
+    public init(category: WhatToPlayReviewPriorityCategory) {
+        self.category = category
+    }
+
+    public static func classify(
+        expectedImpact: Int,
+        lostExpectedPoints: Int,
+        lostProjectedTeamPoints: Int
+    ) -> WhatToPlayReviewPriorityMetrics {
+        if expectedImpact < 0 {
+            return WhatToPlayReviewPriorityMetrics(category: .negativeImpact)
+        }
+
+        if lostExpectedPoints >= 6 {
+            return WhatToPlayReviewPriorityMetrics(category: .valueOpportunity)
+        }
+
+        if lostProjectedTeamPoints >= 6 {
+            return WhatToPlayReviewPriorityMetrics(category: .simulationLoss)
+        }
+
+        return WhatToPlayReviewPriorityMetrics(category: .closeTacticalGap)
+    }
+}
+
 /// عينة أداء مختصرة من محاولة «وش تلعب؟» تكفي لحساب ملخص التدريب.
 public struct WhatToPlayStatsSample: Sendable, Equatable {
     public let isCorrect: Bool
