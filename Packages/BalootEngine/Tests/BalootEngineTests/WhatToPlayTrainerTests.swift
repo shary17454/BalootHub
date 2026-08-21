@@ -80,6 +80,34 @@ struct WhatToPlayTrainerTests {
         #expect(sharp.nextMilestoneScore == nil)
     }
 
+    @Test("تغطية تدريب وش تلعب تأتي من المحرك")
+    func coverageMetricsReportMissingTrainingDimensions() {
+        let difficulty = WhatToPlayDifficultyCoverageMetrics.classify(counts: [.easy: 2])
+        #expect(difficulty.sampledDifficulties == 1)
+        #expect(difficulty.totalDifficulties == 4)
+        #expect(difficulty.missingDifficulties == [.medium, .hard, .expert])
+        #expect(!difficulty.isBalanced)
+
+        let focus = WhatToPlayFocusCoverageMetrics.classify(counts: [
+            .openingLead: 2,
+            .trumpPressure: 1
+        ])
+        #expect(focus.sampledFocusKinds == 1)
+        #expect(focus.missingFocusKinds == [.followSuit, .trumpPressure, .narrowChoice])
+
+        let mode = WhatToPlayGameModeCoverageMetrics.classify(counts: [.sun: 2, .hokum: 2])
+        #expect(mode.isBalanced)
+        #expect(mode.sampledModes == 2)
+        #expect(mode.missingModes.isEmpty)
+
+        let trump = WhatToPlayTrumpSuitCoverageMetrics.classify(counts: [
+            .hearts: 2,
+            .clubs: 1
+        ])
+        #expect(trump.sampledSuits == 1)
+        #expect(trump.missingSuits == [.diamonds, .clubs, .spades])
+    }
+
     @Test("مراجعة اختيار وش تلعب تحسب الفوارق وجودة القرار من المحرك")
     func choiceReviewCalculatesLossesAndQuality() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2, difficulty: .hard)

@@ -198,6 +198,130 @@ public struct WhatToPlayMasteryMetrics: Sendable, Equatable {
     }
 }
 
+/// تغطية مستويات صعوبة مدرب «وش تلعب؟».
+public struct WhatToPlayDifficultyCoverageMetrics: Sendable, Equatable {
+    public let sampledDifficulties: Int
+    public let totalDifficulties: Int
+    public let missingDifficulties: [WhatToPlayDifficulty]
+
+    public init(
+        sampledDifficulties: Int,
+        totalDifficulties: Int,
+        missingDifficulties: [WhatToPlayDifficulty]
+    ) {
+        self.sampledDifficulties = sampledDifficulties
+        self.totalDifficulties = totalDifficulties
+        self.missingDifficulties = missingDifficulties
+    }
+
+    public var isBalanced: Bool { missingDifficulties.isEmpty }
+
+    public static func classify(
+        counts: [WhatToPlayDifficulty: Int],
+        minimumAttemptsPerDifficulty: Int = 2
+    ) -> WhatToPlayDifficultyCoverageMetrics {
+        let missing = WhatToPlayDifficulty.allCases.filter {
+            (counts[$0] ?? 0) < minimumAttemptsPerDifficulty
+        }
+        return WhatToPlayDifficultyCoverageMetrics(
+            sampledDifficulties: WhatToPlayDifficulty.allCases.count - missing.count,
+            totalDifficulties: WhatToPlayDifficulty.allCases.count,
+            missingDifficulties: missing
+        )
+    }
+}
+
+/// تغطية أنواع مواقف مدرب «وش تلعب؟».
+public struct WhatToPlayFocusCoverageMetrics: Sendable, Equatable {
+    public let sampledFocusKinds: Int
+    public let totalFocusKinds: Int
+    public let missingFocusKinds: [WhatToPlayScenarioFocusKind]
+
+    public init(
+        sampledFocusKinds: Int,
+        totalFocusKinds: Int,
+        missingFocusKinds: [WhatToPlayScenarioFocusKind]
+    ) {
+        self.sampledFocusKinds = sampledFocusKinds
+        self.totalFocusKinds = totalFocusKinds
+        self.missingFocusKinds = missingFocusKinds
+    }
+
+    public var isBalanced: Bool { missingFocusKinds.isEmpty }
+
+    public static func classify(
+        counts: [WhatToPlayScenarioFocusKind: Int],
+        minimumAttemptsPerFocus: Int = 2
+    ) -> WhatToPlayFocusCoverageMetrics {
+        let missing = WhatToPlayScenarioFocusKind.allCases.filter {
+            (counts[$0] ?? 0) < minimumAttemptsPerFocus
+        }
+        return WhatToPlayFocusCoverageMetrics(
+            sampledFocusKinds: WhatToPlayScenarioFocusKind.allCases.count - missing.count,
+            totalFocusKinds: WhatToPlayScenarioFocusKind.allCases.count,
+            missingFocusKinds: missing
+        )
+    }
+}
+
+/// تغطية نمطي الصن والحكم في مدرب «وش تلعب؟».
+public struct WhatToPlayGameModeCoverageMetrics: Sendable, Equatable {
+    public let sampledModes: Int
+    public let totalModes: Int
+    public let missingModes: [GameMode]
+
+    public init(sampledModes: Int, totalModes: Int, missingModes: [GameMode]) {
+        self.sampledModes = sampledModes
+        self.totalModes = totalModes
+        self.missingModes = missingModes
+    }
+
+    public var isBalanced: Bool { missingModes.isEmpty }
+
+    public static func classify(
+        counts: [GameMode: Int],
+        minimumAttemptsPerMode: Int = 2
+    ) -> WhatToPlayGameModeCoverageMetrics {
+        let missing = GameMode.allCases.filter {
+            (counts[$0] ?? 0) < minimumAttemptsPerMode
+        }
+        return WhatToPlayGameModeCoverageMetrics(
+            sampledModes: GameMode.allCases.count - missing.count,
+            totalModes: GameMode.allCases.count,
+            missingModes: missing
+        )
+    }
+}
+
+/// تغطية ألوان الحكم في مدرب «وش تلعب؟».
+public struct WhatToPlayTrumpSuitCoverageMetrics: Sendable, Equatable {
+    public let sampledSuits: Int
+    public let totalSuits: Int
+    public let missingSuits: [Suit]
+
+    public init(sampledSuits: Int, totalSuits: Int, missingSuits: [Suit]) {
+        self.sampledSuits = sampledSuits
+        self.totalSuits = totalSuits
+        self.missingSuits = missingSuits
+    }
+
+    public var isBalanced: Bool { missingSuits.isEmpty }
+
+    public static func classify(
+        counts: [Suit: Int],
+        minimumAttemptsPerSuit: Int = 2
+    ) -> WhatToPlayTrumpSuitCoverageMetrics {
+        let missing = Suit.allCases.filter {
+            (counts[$0] ?? 0) < minimumAttemptsPerSuit
+        }
+        return WhatToPlayTrumpSuitCoverageMetrics(
+            sampledSuits: Suit.allCases.count - missing.count,
+            totalSuits: Suit.allCases.count,
+            missingSuits: missing
+        )
+    }
+}
+
 /// درجة وضوح أفضل ورقة في موقف «وش تلعب؟» مقارنة بثاني أفضل خيار.
 public enum WhatToPlayBestMoveConfidence: String, Sendable, Codable, Equatable, CaseIterable {
     case tied

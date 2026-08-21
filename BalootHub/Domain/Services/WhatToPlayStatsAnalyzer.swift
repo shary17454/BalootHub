@@ -3283,15 +3283,15 @@ enum WhatToPlayStatsAnalyzer {
         for attempts: [WhatToPlayAttempt],
         minimumAttemptsPerDifficulty: Int = 2
     ) -> WhatToPlayPracticeCoverage {
-        let missing = WhatToPlayDifficulty.allCases.filter { difficulty in
-            attempts.filter { $0.difficulty == difficulty }.count < minimumAttemptsPerDifficulty
-        }
-        let sampled = WhatToPlayDifficulty.allCases.count - missing.count
+        let metrics = WhatToPlayDifficultyCoverageMetrics.classify(
+            counts: difficultyCounts(for: attempts),
+            minimumAttemptsPerDifficulty: minimumAttemptsPerDifficulty
+        )
 
-        if missing.isEmpty {
+        if metrics.isBalanced {
             return WhatToPlayPracticeCoverage(
-                sampledDifficulties: sampled,
-                totalDifficulties: WhatToPlayDifficulty.allCases.count,
+                sampledDifficulties: metrics.sampledDifficulties,
+                totalDifficulties: metrics.totalDifficulties,
                 missingDifficulties: [],
                 title: "تغطية متوازنة".localized,
                 detail: "لديك عينات كافية من كل مستويات وش تلعب، لذلك تصبح توصيات المدرب أدق.".localized,
@@ -3299,11 +3299,11 @@ enum WhatToPlayStatsAnalyzer {
             )
         }
 
-        let names = missing.map(difficultyTitle).joined(separator: "، ")
+        let names = metrics.missingDifficulties.map(difficultyTitle).joined(separator: "، ")
         return WhatToPlayPracticeCoverage(
-            sampledDifficulties: sampled,
-            totalDifficulties: WhatToPlayDifficulty.allCases.count,
-            missingDifficulties: missing,
+            sampledDifficulties: metrics.sampledDifficulties,
+            totalDifficulties: metrics.totalDifficulties,
+            missingDifficulties: metrics.missingDifficulties,
             title: "أكمل تغطية التدريب".localized,
             detail: "\("درّب هذه المستويات أكثر".localized): \(names).",
             iconName: "square.grid.3x3.fill"
@@ -3314,15 +3314,15 @@ enum WhatToPlayStatsAnalyzer {
         for attempts: [WhatToPlayAttempt],
         minimumAttemptsPerFocus: Int = 2
     ) -> WhatToPlayScenarioFocusCoverage {
-        let missing = WhatToPlayScenarioFocusKind.allCases.filter { focusKind in
-            attempts.filter { $0.focusKind == focusKind }.count < minimumAttemptsPerFocus
-        }
-        let sampled = WhatToPlayScenarioFocusKind.allCases.count - missing.count
+        let metrics = WhatToPlayFocusCoverageMetrics.classify(
+            counts: focusCounts(for: attempts),
+            minimumAttemptsPerFocus: minimumAttemptsPerFocus
+        )
 
-        if missing.isEmpty {
+        if metrics.isBalanced {
             return WhatToPlayScenarioFocusCoverage(
-                sampledFocusKinds: sampled,
-                totalFocusKinds: WhatToPlayScenarioFocusKind.allCases.count,
+                sampledFocusKinds: metrics.sampledFocusKinds,
+                totalFocusKinds: metrics.totalFocusKinds,
                 missingFocusKinds: [],
                 title: "تغطية مواقف متوازنة".localized,
                 detail: "لديك عينات كافية من كل أنواع مواقف وش تلعب، لذلك تصبح توصيات التركيز أدق.".localized,
@@ -3330,11 +3330,11 @@ enum WhatToPlayStatsAnalyzer {
             )
         }
 
-        let names = missing.map(scenarioFocusTitle).joined(separator: "، ")
+        let names = metrics.missingFocusKinds.map(scenarioFocusTitle).joined(separator: "، ")
         return WhatToPlayScenarioFocusCoverage(
-            sampledFocusKinds: sampled,
-            totalFocusKinds: WhatToPlayScenarioFocusKind.allCases.count,
-            missingFocusKinds: missing,
+            sampledFocusKinds: metrics.sampledFocusKinds,
+            totalFocusKinds: metrics.totalFocusKinds,
+            missingFocusKinds: metrics.missingFocusKinds,
             title: "أكمل أنواع المواقف".localized,
             detail: "\("درّب هذه المواقف أكثر".localized): \(names).",
             iconName: "scope"
@@ -3345,15 +3345,15 @@ enum WhatToPlayStatsAnalyzer {
         for attempts: [WhatToPlayAttempt],
         minimumAttemptsPerMode: Int = 2
     ) -> WhatToPlayGameModeCoverage {
-        let missing = GameMode.allCases.filter { mode in
-            attempts.filter { $0.gameMode == mode }.count < minimumAttemptsPerMode
-        }
-        let sampled = GameMode.allCases.count - missing.count
+        let metrics = WhatToPlayGameModeCoverageMetrics.classify(
+            counts: gameModeCounts(for: attempts),
+            minimumAttemptsPerMode: minimumAttemptsPerMode
+        )
 
-        if missing.isEmpty {
+        if metrics.isBalanced {
             return WhatToPlayGameModeCoverage(
-                sampledModes: sampled,
-                totalModes: GameMode.allCases.count,
+                sampledModes: metrics.sampledModes,
+                totalModes: metrics.totalModes,
                 missingModes: [],
                 title: "تغطية الصن والحكم متوازنة".localized,
                 detail: "لديك عينات كافية من الصن والحكم، لذلك تصبح توصيات نمط اللعب أدق.".localized,
@@ -3361,11 +3361,11 @@ enum WhatToPlayStatsAnalyzer {
             )
         }
 
-        let names = missing.map(gameModeTitle).joined(separator: "، ")
+        let names = metrics.missingModes.map(gameModeTitle).joined(separator: "، ")
         return WhatToPlayGameModeCoverage(
-            sampledModes: sampled,
-            totalModes: GameMode.allCases.count,
-            missingModes: missing,
+            sampledModes: metrics.sampledModes,
+            totalModes: metrics.totalModes,
+            missingModes: metrics.missingModes,
             title: "وازن تدريب الصن والحكم".localized,
             detail: "\("درّب هذه الأنماط أكثر".localized): \(names).",
             iconName: "flag.checkered"
@@ -3376,17 +3376,15 @@ enum WhatToPlayStatsAnalyzer {
         for attempts: [WhatToPlayAttempt],
         minimumAttemptsPerSuit: Int = 2
     ) -> WhatToPlayTrumpSuitCoverage {
-        let missing = Suit.allCases.filter { suit in
-            attempts.filter {
-                $0.gameMode == .hokum && $0.contextTrumpSuit == suit
-            }.count < minimumAttemptsPerSuit
-        }
-        let sampled = Suit.allCases.count - missing.count
+        let metrics = WhatToPlayTrumpSuitCoverageMetrics.classify(
+            counts: trumpSuitCounts(for: attempts),
+            minimumAttemptsPerSuit: minimumAttemptsPerSuit
+        )
 
-        if missing.isEmpty {
+        if metrics.isBalanced {
             return WhatToPlayTrumpSuitCoverage(
-                sampledSuits: sampled,
-                totalSuits: Suit.allCases.count,
+                sampledSuits: metrics.sampledSuits,
+                totalSuits: metrics.totalSuits,
                 missingSuits: [],
                 title: "تغطية ألوان الحكم متوازنة".localized,
                 detail: "لديك عينات كافية من كل ألوان الحكم، لذلك تصبح توصيات الحكم أدق.".localized,
@@ -3394,15 +3392,38 @@ enum WhatToPlayStatsAnalyzer {
             )
         }
 
-        let names = missing.map(\.spokenName).joined(separator: "، ")
+        let names = metrics.missingSuits.map(\.spokenName).joined(separator: "، ")
         return WhatToPlayTrumpSuitCoverage(
-            sampledSuits: sampled,
-            totalSuits: Suit.allCases.count,
-            missingSuits: missing,
+            sampledSuits: metrics.sampledSuits,
+            totalSuits: metrics.totalSuits,
+            missingSuits: metrics.missingSuits,
             title: "وازن ألوان الحكم".localized,
             detail: "\("درّب ألوان الحكم هذه أكثر".localized): \(names).",
             iconName: "suit.spade.fill"
         )
+    }
+
+    private static func difficultyCounts(for attempts: [WhatToPlayAttempt]) -> [WhatToPlayDifficulty: Int] {
+        Dictionary(grouping: attempts, by: \.difficulty).mapValues(\.count)
+    }
+
+    private static func focusCounts(for attempts: [WhatToPlayAttempt]) -> [WhatToPlayScenarioFocusKind: Int] {
+        Dictionary(grouping: attempts.compactMap(\.focusKind), by: { $0 }).mapValues(\.count)
+    }
+
+    private static func gameModeCounts(for attempts: [WhatToPlayAttempt]) -> [GameMode: Int] {
+        Dictionary(grouping: attempts.compactMap(\.gameMode), by: { $0 }).mapValues(\.count)
+    }
+
+    private static func trumpSuitCounts(for attempts: [WhatToPlayAttempt]) -> [Suit: Int] {
+        Dictionary(
+            grouping: attempts.compactMap { attempt -> Suit? in
+                guard attempt.gameMode == .hokum else { return nil }
+                return attempt.contextTrumpSuit
+            },
+            by: { $0 }
+        )
+        .mapValues(\.count)
     }
 
     static func sessionPulse(for attempts: [WhatToPlayAttempt], window: Int = 3) -> WhatToPlaySessionPulse {
