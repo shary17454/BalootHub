@@ -74,31 +74,21 @@ enum WhatToPlayShareCard {
         let state = scenario.state
         let played = state.currentTrick?.playedCards ?? []
         let mode = modeText(state)
-        let best = selectedOption == nil ? nil : scenario.bestOption
-        let secondBest = selectedOption == nil ? nil : scenario.secondBestOption
-        let bestSimulation = selectedOption == nil ? nil : WhatToPlayOptionComparison.bestSimulationOption(scenario.options)
-        let lost = selectedOption.flatMap { selected in
-            best.map { max(0, $0.expectedImpact - selected.expectedImpact) }
+        let review = selectedOption.map {
+            WhatToPlayTrainer.choiceReview(in: scenario, selectedCard: $0.card)
         }
-        let projectedLost = selectedOption.flatMap { selected in
-            bestSimulation.map { max(0, $0.projectedTeamPoints - selected.projectedTeamPoints) }
-        }
+        let best = review?.bestOption
+        let secondBest = review?.secondBestOption
+        let lost = review?.selectedLostExpectedPoints
+        let projectedLost = review?.selectedLostProjectedTeamPoints
         let lostAgainstSecondBest = selectedOption.flatMap { selected in
-            secondBest.map { max(0, $0.expectedImpact - selected.expectedImpact) }
+            review?.secondBestOption.map { max(0, $0.expectedImpact - selected.expectedImpact) }
         }
         let valueLossTitle = lost.map { lostExpectedPoints in
             let decisiveLoss = max(lostExpectedPoints, projectedLost ?? 0)
             return WhatToPlayStatsAnalyzer.valueLossTitle(for: WhatToPlayStatsAnalyzer.valueLossSeverity(for: decisiveLoss))
         }
-        let decisionQualityTitle = selectedOption.flatMap { selected in
-            lost.map {
-                WhatToPlayDecisionQuality.classify(
-                    isExpertChoice: selected.isExpertChoice,
-                    lostExpectedPoints: $0,
-                    lostProjectedTeamPoints: projectedLost ?? 0
-                ).title
-            }
-        }
+        let decisionQualityTitle = review?.decisionQuality?.title
         let comparisonSummary = selectedOption.map {
             WhatToPlayOptionComparison.summary(for: scenario, selectedCard: $0.card)
         }

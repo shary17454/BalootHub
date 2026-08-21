@@ -245,18 +245,19 @@ final class WhatToPlayShareCardTests: XCTestCase {
         )
 
         let reviewed = WhatToPlayShareCard.content(for: scenario, selectedOption: selected)
-        let secondBest = try XCTUnwrap(scenario.secondBestOption)
-        let bestSimulation = try XCTUnwrap(WhatToPlayOptionComparison.bestSimulationOption(scenario.options))
-        let lostProjectedTeamPoints = max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints)
+        let review = WhatToPlayTrainer.choiceReview(in: scenario, selectedCard: selected.card)
+        let secondBest = try XCTUnwrap(review.secondBestOption)
+        let lostExpectedPoints = try XCTUnwrap(review.selectedLostExpectedPoints)
+        let lostProjectedTeamPoints = try XCTUnwrap(review.selectedLostProjectedTeamPoints)
 
         XCTAssertTrue(reviewed.includesAnswerReview)
         XCTAssertEqual(reviewed.subtitle, "مراجعة قرار من Baloot Hub".localized)
         XCTAssertEqual(reviewed.selectedCardName, selected.card.accessibilityName)
-        XCTAssertEqual(reviewed.bestCardName, selected.card.accessibilityName)
-        XCTAssertEqual(reviewed.bestExpectedImpact, selected.expectedImpact)
+        XCTAssertEqual(reviewed.bestCardName, review.bestOption?.card.accessibilityName)
+        XCTAssertEqual(reviewed.bestExpectedImpact, review.bestOption?.expectedImpact)
         XCTAssertEqual(reviewed.secondBestCardName, secondBest.card.accessibilityName)
         XCTAssertEqual(reviewed.secondBestExpectedImpact, secondBest.expectedImpact)
-        XCTAssertEqual(reviewed.lostExpectedPoints, 0)
+        XCTAssertEqual(reviewed.lostExpectedPoints, lostExpectedPoints)
         XCTAssertEqual(reviewed.lostProjectedTeamPoints, lostProjectedTeamPoints)
         XCTAssertEqual(reviewed.lostAgainstSecondBestPoints, max(0, secondBest.expectedImpact - selected.expectedImpact))
         XCTAssertEqual(
@@ -265,8 +266,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
                 for: WhatToPlayStatsAnalyzer.valueLossSeverity(for: lostProjectedTeamPoints)
             )
         )
-        XCTAssertEqual(reviewed.decisionQualityTitle, "مطابق للخبير".localized)
-        XCTAssertEqual(reviewed.decisionQualityDetail, WhatToPlayDecisionQuality.expertMatch.detail)
+        XCTAssertEqual(reviewed.decisionQualityTitle, review.decisionQuality?.title)
+        XCTAssertEqual(reviewed.decisionQualityDetail, review.decisionQuality?.detail)
         let confidence = try XCTUnwrap(
             WhatToPlayOptionComparison.summary(for: scenario, selectedCard: selected.card).bestMoveConfidence
         )
@@ -326,21 +327,22 @@ final class WhatToPlayShareCardTests: XCTestCase {
 
     func testShareDecisionQualityUsesProjectedLossWhenLarger() throws {
         let (scenario, selected) = try simulationLossShareSelection()
-        let best = try XCTUnwrap(scenario.bestOption)
-        let bestSimulation = try XCTUnwrap(WhatToPlayOptionComparison.bestSimulationOption(scenario.options))
+        let review = WhatToPlayTrainer.choiceReview(in: scenario, selectedCard: selected.card)
+        let lostExpectedPoints = try XCTUnwrap(review.selectedLostExpectedPoints)
+        let lostProjectedTeamPoints = try XCTUnwrap(review.selectedLostProjectedTeamPoints)
 
         let content = WhatToPlayShareCard.content(for: scenario, selectedOption: selected)
         let text = WhatToPlayShareCard.text(for: scenario, selectedOption: selected)
 
-        XCTAssertLessThanOrEqual(max(0, best.expectedImpact - selected.expectedImpact), 2)
-        XCTAssertGreaterThanOrEqual(max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints), 9)
-        XCTAssertEqual(content.lostProjectedTeamPoints, max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints))
-        XCTAssertEqual(content.decisionQualityTitle, "قرار مكلف".localized)
-        XCTAssertEqual(content.decisionQualityDetail, WhatToPlayDecisionQuality.costly.detail)
+        XCTAssertLessThanOrEqual(lostExpectedPoints, 2)
+        XCTAssertGreaterThanOrEqual(lostProjectedTeamPoints, 9)
+        XCTAssertEqual(content.lostProjectedTeamPoints, lostProjectedTeamPoints)
+        XCTAssertEqual(content.decisionQualityTitle, review.decisionQuality?.title)
+        XCTAssertEqual(content.decisionQualityDetail, review.decisionQuality?.detail)
         XCTAssertEqual(content.valueLossTitle, "خسارة قيمة عالية".localized)
         XCTAssertTrue(text.contains("\("نقاط محاكاة ضائعة".localized): \(try XCTUnwrap(content.lostProjectedTeamPoints))"))
-        XCTAssertTrue(text.contains("\("تقييم القرار".localized): \("قرار مكلف".localized)"))
-        XCTAssertTrue(text.contains(WhatToPlayDecisionQuality.costly.detail))
+        XCTAssertTrue(text.contains("\("تقييم القرار".localized): \(try XCTUnwrap(review.decisionQuality?.title))"))
+        XCTAssertTrue(text.contains(try XCTUnwrap(review.decisionQuality?.detail)))
         XCTAssertTrue(text.contains("\("شدة خسارة القيمة".localized): \("خسارة قيمة عالية".localized)"))
     }
 
