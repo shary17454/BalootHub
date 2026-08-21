@@ -214,6 +214,7 @@ struct WhatToPlayDifficultyImpactInsight: Equatable {
 struct WhatToPlayReviewItem: Equatable, Identifiable {
     let id: UUID
     let seed: UInt64
+    let scenarioCode: String
     let difficulty: WhatToPlayDifficulty
     let focusKind: WhatToPlayScenarioFocusKind?
     let gameMode: GameMode?
@@ -1227,6 +1228,7 @@ enum WhatToPlayStatsAnalyzer {
             return WhatToPlayReviewItem(
                 id: attempt.id,
                 seed: attempt.replaySeed,
+                scenarioCode: attempt.scenarioCode,
                 difficulty: attempt.difficulty,
                 focusKind: attempt.focusKind,
                 gameMode: attempt.gameMode,

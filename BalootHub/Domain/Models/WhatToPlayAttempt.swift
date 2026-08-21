@@ -140,6 +140,15 @@ final class WhatToPlayAttempt {
         return UInt64(clamping: seedValue)
     }
 
+    /// رمز حتمي يربط المحاولة بالموقف القابل للإعادة وببطاقات المشاركة.
+    ///
+    /// محسوب من الحقول المحفوظة أصلًا، لذلك لا يحتاج Migration ولا يغيّر مخطط SwiftData.
+    var scenarioCode: String {
+        let focus = focusKindRaw ?? "auto"
+        let selected = selectedCard.map { "-C\($0.suit.ordinal)\($0.rank.ordinal)" } ?? "-P"
+        return "WTP-\(replaySeed)-\(difficulty.rawValue)-\(focus)\(selected)"
+    }
+
     var selectedCard: PlayingCard? {
         guard let suit = Suit(rawValue: selectedSuitRaw),
               let rank = Rank(rawValue: selectedRankRaw)

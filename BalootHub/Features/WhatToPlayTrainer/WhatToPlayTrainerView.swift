@@ -836,7 +836,7 @@ struct WhatToPlayTrainerView: View {
                     Label("أهم موقف للمراجعة".localized, systemImage: reviewItem.iconName)
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(AppColor.danger)
-                    Text(reviewItem.detail)
+                    Text("\(reviewItem.detail)\n\("رمز الموقف".localized): \(reviewItem.scenarioCode)")
                         .font(.caption2)
                         .foregroundStyle(AppColor.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -2101,7 +2101,7 @@ struct WhatToPlayTrainerView: View {
                         .lineLimit(2)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-                Text("\("اختيارك".localized): \(cardName(item.selectedCard)) · \("أفضل ورقة".localized): \(cardName(item.bestCard))")
+                Text("\("اختيارك".localized): \(cardName(item.selectedCard)) · \("أفضل ورقة".localized): \(cardName(item.bestCard)) · \("رمز الموقف".localized): \(item.scenarioCode)")
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(AppColor.textSecondary)
                     .lineLimit(2)
