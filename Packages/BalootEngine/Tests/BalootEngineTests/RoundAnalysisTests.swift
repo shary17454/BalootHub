@@ -420,6 +420,36 @@ struct RoundAnalysisTests {
         #expect(decision.recommendedCard == bestProjected.card)
     }
 
+    @Test("اختيار الخبير يدخل مراجعة اللعب إذا خسر في محاكاة الجولة")
+    func expertMatchStillNeedsReviewWhenProjectedLossExists() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 1, difficulty: .hard)
+        let expert = try #require(scenario.bestOption)
+        let bestProjected = try #require(scenario.bestProjectedOption)
+        #expect(bestProjected.card != expert.card)
+        var actions = scenario.state.actionHistory
+        actions.append(.playCard(playerID: scenario.playerID, card: expert.card))
+
+        let report = try RoundAnalyzer.analyze(
+            initialState: resettableInitialState(from: scenario.state),
+            actions: actions,
+            playerID: scenario.playerID
+        )
+        let decision = try #require(report.worstDecision)
+
+        #expect(decision.matchedExpert)
+        #expect(decision.estimatedImmediateLostPoints == 0)
+        #expect(decision.estimatedProjectedLostPoints > 0)
+        #expect(decision.estimatedLostPoints == decision.estimatedProjectedLostPoints)
+        #expect(decision.recommendedCard == bestProjected.card)
+        #expect(report.needsPlayReview)
+        #expect(report.primaryReviewFocus == RoundReviewFocus(
+            priority: .play,
+            estimatedLostPoints: decision.estimatedLostPoints,
+            mistakeCount: 1
+        ))
+        #expect(report.tacticalMistakes.contains { $0.contains("التوصية") })
+    }
+
     @Test("مخالفة توصية المزايدة تظهر في الأخطاء والنصائح")
     func nonRecommendedBidIsReportedAsTacticalMistake() throws {
         var rules = BalootRulesConfiguration.standard

@@ -212,7 +212,7 @@ public struct RoundAnalysisReport: Sendable, Equatable {
 
     /// هل تحتاج الجولة إلى مراجعة قرارات اللعب داخل الأكلات؟
     public var needsPlayReview: Bool {
-        decisions.contains { !$0.matchedExpert } && playLostPoints > 0
+        playLostPoints > 0
     }
 
     /// هل تحتاج الجولة إلى مراجعة مزايدة قبل مراجعة الأكلات؟
@@ -261,7 +261,7 @@ public struct RoundAnalysisReport: Sendable, Equatable {
             (.bidding, needsBiddingReview ? biddingLostPoints : 0, biddingMistakeCount, 0),
             (.projects, needsProjectReview ? projectLostPoints : 0, projectMistakeCount, 1),
             (.multipliers, needsMultiplierReview ? multiplierLostPoints : 0, multiplierMistakeCount, 2),
-            (.play, needsPlayReview ? playLostPoints : 0, decisions.filter { !$0.matchedExpert }.count, 3)
+            (.play, needsPlayReview ? playLostPoints : 0, decisions.filter { $0.estimatedLostPoints > 0 }.count, 3)
         ]
 
         return candidates
@@ -776,14 +776,14 @@ public enum RoundAnalyzer {
             }
 
         let playMistakes = decisions
-            .filter { !$0.matchedExpert }
+            .filter { $0.estimatedLostPoints > 0 }
             .sorted { lhs, rhs in
                 if lhs.estimatedLostPoints != rhs.estimatedLostPoints { return lhs.estimatedLostPoints > rhs.estimatedLostPoints }
                 return lhs.stepIndex < rhs.stepIndex
             }
             .prefix(max(0, 3 - min(2, biddingMistakes.count) - min(2, projectMistakes.count) - min(2, multiplierMistakes.count)))
             .map { decision in
-                "في الأكلة \(decision.trickNumber)، لعبت \(decision.playedCard.displayLabel) بينما اختيار الخبير \(decision.recommendedCard.displayLabel)."
+                "في الأكلة \(decision.trickNumber)، لعبت \(decision.playedCard.displayLabel) بينما التوصية \(decision.recommendedCard.displayLabel)."
             }
 
         return Array(biddingMistakes) + Array(projectMistakes) + Array(multiplierMistakes) + playMistakes
@@ -884,7 +884,7 @@ public enum RoundAnalyzer {
         }
 
         return [
-            "راجع الأكلة \(worst.trickNumber): الفرق بين \(worst.playedCard.displayLabel) و\(worst.recommendedCard.displayLabel) هو أوضح موضع للتحسين.",
+            "راجع الأكلة \(worst.trickNumber): الفرق بين \(worst.playedCard.displayLabel) والتوصية \(worst.recommendedCard.displayLabel) هو أوضح موضع للتحسين.",
             "عند وجود ورقة خاسرة، لا ترمِ ورقة عالية إلا إذا كان ذلك يحمي الشريك أو يسحب حكمًا مهمًا."
         ]
     }
