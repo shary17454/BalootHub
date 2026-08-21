@@ -128,6 +128,34 @@ public enum GameEngine {
         BiddingEngine.declarableProjects(for: playerID, state: state)
     }
 
+    /// أفعال إعلان المشاريع القانونية للاعب محدد الآن.
+    ///
+    /// تعيد دائمًا فعل «لا أعلن شيئًا» عندما يكون اللاعب صاحب الدور في مرحلة الإعلان،
+    /// ثم كل مجموعات المشاريع القانونية غير المعلنة سابقًا بترتيب حتمي. هذا يجعل
+    /// الإعلان جزءًا كاملًا من نموذج الأفعال مثل المزايدة والمضاعفة ولعب الورق.
+    public static func legalProjectDeclarationActions(for playerID: Player.ID, state: GameState) -> [GameAction] {
+        guard state.phase == .declaring,
+              state.currentTurnPlayerID == playerID,
+              state.player(id: playerID) != nil
+        else { return [] }
+
+        let projects = declarableProjects(for: playerID, state: state)
+            .filter { !state.declaredProjects.contains($0) }
+            .sorted { $0.id < $1.id }
+
+        var actions: [GameAction] = [.declareProjects(playerID: playerID, projects: [])]
+        guard !projects.isEmpty else { return actions }
+
+        let subsetCount = 1 << projects.count
+        for mask in 1..<subsetCount {
+            let subset = projects.enumerated().compactMap { index, project in
+                (mask & (1 << index)) == 0 ? nil : project
+            }
+            actions.append(.declareProjects(playerID: playerID, projects: subset))
+        }
+        return actions
+    }
+
     /// الأوراق القانونية للاعب معيّن في وضعه الحالي.
     public static func legalCards(for playerID: Player.ID, state: GameState) -> [PlayingCard] {
         guard state.phase == .playing, let mode = state.mode,

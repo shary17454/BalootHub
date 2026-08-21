@@ -644,6 +644,73 @@ struct MultiplierTests {
         }
     }
 
+    @Test("أفعال إعلان المشاريع القانونية تشمل عدم الإعلان وكل مجموعات مشاريع اللاعب")
+    func legalProjectDeclarationActionsExposeProjectSubsets() throws {
+        var state = GameState.newLocalMatch(rules: .standard)
+        let player = try #require(state.player(at: state.dealerSeat.next))
+        state.phase = .declaring
+        state.mode = .sun
+        state.currentTurnPlayerID = player.id
+        state.originalHands[player.id] = [
+            PlayingCard(suit: .hearts, rank: .seven),
+            PlayingCard(suit: .hearts, rank: .eight),
+            PlayingCard(suit: .hearts, rank: .nine),
+            PlayingCard(suit: .clubs, rank: .queen),
+            PlayingCard(suit: .clubs, rank: .king),
+            PlayingCard(suit: .clubs, rank: .ace)
+        ]
+        let projects = GameEngine.declarableProjects(for: player.id, state: state).sorted { $0.id < $1.id }
+        #expect(projects.count == 2)
+
+        #expect(
+            GameEngine.legalProjectDeclarationActions(for: player.id, state: state) == [
+                .declareProjects(playerID: player.id, projects: []),
+                .declareProjects(playerID: player.id, projects: [projects[0]]),
+                .declareProjects(playerID: player.id, projects: [projects[1]]),
+                .declareProjects(playerID: player.id, projects: projects)
+            ]
+        )
+    }
+
+    @Test("أفعال إعلان المشاريع القانونية فارغة للاعب غير صاحب الدور")
+    func legalProjectDeclarationActionsRequireCurrentTurn() throws {
+        var state = GameState.newLocalMatch(rules: .standard)
+        let current = try #require(state.player(at: state.dealerSeat.next))
+        let waiting = try #require(state.players.first { $0.id != current.id })
+        state.phase = .declaring
+        state.mode = .sun
+        state.currentTurnPlayerID = current.id
+
+        #expect(GameEngine.legalProjectDeclarationActions(for: waiting.id, state: state).isEmpty)
+    }
+
+    @Test("أفعال إعلان المشاريع القانونية لا تعرض مشروعًا معلنًا مسبقًا")
+    func legalProjectDeclarationActionsFilterAlreadyDeclaredProjects() throws {
+        var state = GameState.newLocalMatch(rules: .standard)
+        let player = try #require(state.player(at: state.dealerSeat.next))
+        state.phase = .declaring
+        state.mode = .sun
+        state.currentTurnPlayerID = player.id
+        state.originalHands[player.id] = [
+            PlayingCard(suit: .hearts, rank: .seven),
+            PlayingCard(suit: .hearts, rank: .eight),
+            PlayingCard(suit: .hearts, rank: .nine),
+            PlayingCard(suit: .clubs, rank: .queen),
+            PlayingCard(suit: .clubs, rank: .king),
+            PlayingCard(suit: .clubs, rank: .ace)
+        ]
+        let projects = GameEngine.declarableProjects(for: player.id, state: state).sorted { $0.id < $1.id }
+        state.declaredProjects = [try #require(projects.first)]
+        let remaining = try #require(projects.last)
+
+        #expect(
+            GameEngine.legalProjectDeclarationActions(for: player.id, state: state) == [
+                .declareProjects(playerID: player.id, projects: []),
+                .declareProjects(playerID: player.id, projects: [remaining])
+            ]
+        )
+    }
+
     @Test("قفل المضاعفة يُعاد من سجل الأفعال كما حدث")
     func lockedMultiplierReplaysDeterministically() throws {
         let initial = GameState.newLocalMatch(rules: .standard)
