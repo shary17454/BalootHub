@@ -312,39 +312,33 @@ enum WhatToPlayShareCard {
     }
 
     private static func tacticalReason(for option: WhatToPlayOption) -> WhatToPlayShareTacticalReason? {
-        guard option.expectedImpact < 0 else { return nil }
-        let breakdown = option.impactBreakdown
+        let metrics = WhatToPlayTacticalReviewReasonMetrics.classify(
+            expectedImpact: option.expectedImpact,
+            impactBreakdown: option.impactBreakdown
+        )
 
-        if breakdown.completesTrick,
-           breakdown.winsForPlayerTeam == false,
-           breakdown.trickPointsSwing < 0 {
+        switch metrics.category {
+        case .opponentTrickClosure:
             return WhatToPlayShareTacticalReason(
                 title: "تغلق الأكلة للخصم".localized,
                 detail: "اختيارك أضاف نقاطًا لأكلة انتهت للفريق الخصم. راجع هل كان يمكن تقليل الخسارة بدل تغذية الأكلة.".localized,
                 iconName: "flag.slash.fill"
             )
-        }
-
-        if !breakdown.completesTrick,
-           !breakdown.preservesLead,
-           breakdown.playedCardPoints > 0,
-           breakdown.immediateImpact < 0 {
+        case .unprotectedPointDump:
             return WhatToPlayShareTacticalReason(
                 title: "ترمي نقاطًا بلا حماية".localized,
                 detail: "الورقة تحمل نقاطًا والأكلة لم تُحسم بعد. اسأل هل شريكك يحميها أو هل الأفضل التخلص من ورقة أرخص.".localized,
                 iconName: "drop.triangle.fill"
             )
-        }
-
-        if breakdown.preservesLead, breakdown.immediateImpact < 0 {
+        case .costlyOpeningLead:
             return WhatToPlayShareTacticalReason(
                 title: "افتتاح مكلف".localized,
                 detail: "بدأت الأكلة بورقة تخفض الأثر المتوقع. جرّب افتتاحًا يحفظ القوة أو يسحب الحكم بسبب واضح.".localized,
                 iconName: "arrow.up.forward.circle.fill"
             )
+        case nil:
+            return nil
         }
-
-        return nil
     }
 
     private static func modeText(_ state: GameState) -> String {

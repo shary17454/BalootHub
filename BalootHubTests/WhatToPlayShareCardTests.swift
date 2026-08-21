@@ -291,10 +291,15 @@ final class WhatToPlayShareCardTests: XCTestCase {
 
     func testShareCardIncludesTacticalReasonAfterCostlySelection() throws {
         let (scenario, selected) = try costlyShareSelection()
+        let reason = WhatToPlayTacticalReviewReasonMetrics.classify(
+            expectedImpact: selected.expectedImpact,
+            impactBreakdown: selected.impactBreakdown
+        )
 
         let content = WhatToPlayShareCard.content(for: scenario, selectedOption: selected)
         let text = WhatToPlayShareCard.text(for: scenario, selectedOption: selected)
 
+        XCTAssertNotNil(reason.category)
         XCTAssertNotNil(content.tacticalReasonTitle)
         XCTAssertNotNil(content.tacticalReasonDetail)
         XCTAssertNotNil(content.tacticalReasonIconName)
@@ -489,21 +494,10 @@ final class WhatToPlayShareCardTests: XCTestCase {
     private func costlyShareSelection() throws -> (WhatToPlayScenario, WhatToPlayOption) {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 3, difficulty: .hard)
         let option = try XCTUnwrap(scenario.options.first { option in
-            option.expectedImpact < 0
-                && (
-                    option.impactBreakdown.preservesLead
-                    || (
-                        option.impactBreakdown.completesTrick
-                            && option.impactBreakdown.winsForPlayerTeam == false
-                            && option.impactBreakdown.trickPointsSwing < 0
-                    )
-                    || (
-                        !option.impactBreakdown.completesTrick
-                            && !option.impactBreakdown.preservesLead
-                            && option.impactBreakdown.playedCardPoints > 0
-                            && option.impactBreakdown.immediateImpact < 0
-                    )
-                )
+            WhatToPlayTacticalReviewReasonMetrics.classify(
+                expectedImpact: option.expectedImpact,
+                impactBreakdown: option.impactBreakdown
+            ).category != nil
         })
         return (scenario, option)
     }
