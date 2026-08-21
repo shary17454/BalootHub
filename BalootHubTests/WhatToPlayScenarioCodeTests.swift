@@ -63,6 +63,18 @@ final class WhatToPlayScenarioCodeTests: XCTestCase {
         )
     }
 
+    func testScenarioCodeExtractionSkipsInvalidCandidateBeforeValidCode() {
+        let text = """
+        نسخة قديمة: WTP-bad
+        رمز الموقف: WTP-2026-hard-trumpPressure-C37
+        """
+
+        XCTAssertEqual(
+            WhatToPlayScenarioCode.extractCode(from: text),
+            "WTP-2026-hard-trumpPressure-C37"
+        )
+    }
+
     func testScenarioCodeExtractionRejectsTextWithoutValidCode() {
         XCTAssertNil(WhatToPlayScenarioCode.extractCode(from: "رمز الموقف: WTP-bad"))
         XCTAssertNil(WhatToPlayScenarioCode.extractCode(from: "لا يوجد رمز هنا"))

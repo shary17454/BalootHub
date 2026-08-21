@@ -66,19 +66,11 @@ enum WhatToPlayScenarioCode {
             return trimmed
         }
 
-        guard let start = text.range(of: "WTP-")?.lowerBound else { return nil }
-        let suffix = text[start...]
-        var code = ""
-        let terminators = CharacterSet.whitespacesAndNewlines
-            .union(CharacterSet(charactersIn: "،,:;؟!?()[]{}<>\"'"))
-
-        for scalar in suffix.unicodeScalars {
-            if terminators.contains(scalar) { break }
-            code.unicodeScalars.append(scalar)
+        for candidate in codeCandidates(in: text) where parse(candidate) != nil {
+            return candidate
         }
 
-        let normalized = code.trimmingCharacters(in: .punctuationCharacters)
-        return parse(normalized) == nil ? nil : normalized
+        return nil
     }
 
     private static func parseSelectedCard(_ value: String) -> PlayingCard?? {
@@ -92,5 +84,28 @@ enum WhatToPlayScenarioCode {
               let rank = Rank.allCases.first(where: { $0.ordinal == rankOrdinal })
         else { return nil }
         return .some(PlayingCard(suit: suit, rank: rank))
+    }
+
+    private static func codeCandidates(in text: String) -> [String] {
+        let terminators = CharacterSet.whitespacesAndNewlines
+            .union(CharacterSet(charactersIn: "،,:;؟!?()[]{}<>\"'"))
+        var candidates: [String] = []
+        var searchRange = text.startIndex..<text.endIndex
+
+        while let range = text.range(of: "WTP-", range: searchRange) {
+            let suffix = text[range.lowerBound...]
+            var code = ""
+            for scalar in suffix.unicodeScalars {
+                if terminators.contains(scalar) { break }
+                code.unicodeScalars.append(scalar)
+            }
+            let normalized = code.trimmingCharacters(in: .punctuationCharacters)
+            if !normalized.isEmpty {
+                candidates.append(normalized)
+            }
+            searchRange = range.upperBound..<text.endIndex
+        }
+
+        return candidates
     }
 }
