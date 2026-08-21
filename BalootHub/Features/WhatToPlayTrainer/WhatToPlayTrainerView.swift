@@ -3816,6 +3816,11 @@ struct WhatToPlayShareCardPreview: View {
                     Text(content.subtitle)
                         .font(AppTypography.caption)
                         .foregroundStyle(.white.opacity(0.78))
+                    Text("\("رمز الموقف".localized): \(content.scenarioCode)")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.72))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
                 }
                 Spacer(minLength: AppSpacing.md)
                 Text("Baloot Hub")

@@ -1452,6 +1452,20 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "种子" } }
       }
     },
+    "رمز الموقف" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Scenario code" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Scenario code" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Código del escenario" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Code du scénario" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "स्थिति कोड" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kode skenario" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Код ситуации" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Senaryo kodu" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "منظرنامہ کوڈ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "局面代码" } }
+      }
+    },
     "تحسن متوقع" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Erwartete Verbesserung" } },

@@ -15,9 +15,11 @@ final class WhatToPlayShareCardTests: XCTestCase {
     func testShareTextContainsScenarioContextAndLegalOptions() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
         let text = WhatToPlayShareCard.text(for: scenario)
+        let content = WhatToPlayShareCard.content(for: scenario)
 
         XCTAssertTrue(text.contains("وش تلعب؟".localized))
         XCTAssertTrue(text.contains("\("أنت تلعب".localized) \(contentMode(for: scenario))"))
+        XCTAssertTrue(text.contains("\("رمز الموقف".localized): \(content.scenarioCode)"))
         XCTAssertTrue(text.contains("\("النمط".localized):"))
         XCTAssertTrue(text.contains("\("الصعوبة".localized):"))
         XCTAssertTrue(text.contains("\("تركيز التدريب".localized):"))
@@ -31,12 +33,35 @@ final class WhatToPlayShareCardTests: XCTestCase {
         }
     }
 
+    func testShareCardScenarioCodeIsStableAndSelectionAware() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
+        let selected = try XCTUnwrap(scenario.options.last)
+
+        let promptContent = WhatToPlayShareCard.content(for: scenario)
+        let repeatedPromptContent = WhatToPlayShareCard.content(for: scenario)
+        let reviewedContent = WhatToPlayShareCard.content(for: scenario, selectedOption: selected)
+
+        XCTAssertEqual(promptContent.scenarioCode, repeatedPromptContent.scenarioCode)
+        XCTAssertEqual(
+            promptContent.scenarioCode,
+            "WTP-\(scenario.seed)-\(scenario.difficulty.rawValue)-\(scenario.context.focusKind.rawValue)-P"
+        )
+        XCTAssertEqual(
+            reviewedContent.scenarioCode,
+            "WTP-\(scenario.seed)-\(scenario.difficulty.rawValue)-\(scenario.context.focusKind.rawValue)-C\(selected.card.suit.ordinal)\(selected.card.rank.ordinal)"
+        )
+        XCTAssertNotEqual(promptContent.scenarioCode, reviewedContent.scenarioCode)
+        XCTAssertTrue(WhatToPlayShareCard.text(for: scenario).contains(promptContent.scenarioCode))
+        XCTAssertTrue(WhatToPlayShareCard.text(for: scenario, selectedOption: selected).contains(reviewedContent.scenarioCode))
+    }
+
     func testShareCardContentSeparatesVisualSections() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
         let content = WhatToPlayShareCard.content(for: scenario)
 
         XCTAssertEqual(content.title, "وش تلعب؟".localized)
         XCTAssertEqual(content.contextLine, "\("أنت تلعب".localized) \(content.mode)")
+        XCTAssertFalse(content.scenarioCode.isEmpty)
         XCTAssertEqual(content.mode.isEmpty, false)
         XCTAssertEqual(content.difficulty.isEmpty, false)
         XCTAssertEqual(content.focus.isEmpty, false)

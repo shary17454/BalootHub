@@ -14,6 +14,7 @@ struct WhatToPlayShareCardContent: Equatable {
 
     let title: String
     let subtitle: String
+    let scenarioCode: String
     let contextLine: String
     let mode: String
     let difficulty: String
@@ -107,6 +108,7 @@ enum WhatToPlayShareCard {
             subtitle: selectedOption == nil
                 ? "موقف تدريبي من Baloot Hub".localized
                 : "مراجعة قرار من Baloot Hub".localized,
+            scenarioCode: scenarioCode(for: scenario, selectedOption: selectedOption),
             contextLine: "\("أنت تلعب".localized) \(mode)",
             mode: mode,
             difficulty: difficultyText(scenario.difficulty),
@@ -172,6 +174,7 @@ enum WhatToPlayShareCard {
             content.title,
             content.subtitle,
             content.contextLine,
+            "\("رمز الموقف".localized): \(content.scenarioCode)",
             "\("النمط".localized): \(content.mode)",
             "\("الصعوبة".localized): \(content.difficulty)",
             "\("تركيز التدريب".localized): \(content.focus)",
@@ -293,6 +296,14 @@ enum WhatToPlayShareCard {
             }
             return lhs.card.rank.ordinal < rhs.card.rank.ordinal
         }
+    }
+
+    private static func scenarioCode(
+        for scenario: WhatToPlayScenario,
+        selectedOption: WhatToPlayOption?
+    ) -> String {
+        let selected = selectedOption.map { "-C\($0.card.suit.ordinal)\($0.card.rank.ordinal)" } ?? "-P"
+        return "WTP-\(scenario.seed)-\(scenario.difficulty.rawValue)-\(scenario.context.focusKind.rawValue)\(selected)"
     }
 
     private static func tacticalReason(for option: WhatToPlayOption) -> WhatToPlayShareTacticalReason? {
