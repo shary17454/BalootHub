@@ -498,11 +498,36 @@ enum WhatToPlayShareCard {
         lines.append("\("المكتمل".localized): \(progress.completedAttempts) \("من".localized) \(progress.targetAttempts)")
         lines.append("\("الدقة الحالية".localized): \(progress.accuracyPercent)%")
         lines.append("\("أفضل دقة ممكنة".localized): \(progress.bestPossibleAccuracyPercent)%")
+        lines.append(trainingSessionTargetText(
+            title: "هدف الدقة".localized,
+            isMet: progress.accuracyTargetMet
+        ))
+        lines.append(trainingSessionTargetText(
+            title: "إمكانية هدف الدقة".localized,
+            isMet: progress.accuracyTargetReachable
+        ))
         if let nextSeed = progress.nextSeed {
             lines.append("\(trainingSessionNextSeedTitle(progress.nextSeedState)): \(nextSeed)")
         }
         lines.append("\("متوسط الأثر".localized): \(impactText(progress.averageExpectedImpact))")
         lines.append("\("أثر الجلسة".localized): \(impactText(progress.totalExpectedImpact))")
+        lines.append(trainingSessionTargetText(
+            title: "هدف الأثر".localized,
+            isMet: progress.impactTargetMet
+        ))
+        if progress.expectedImpactNeededForTarget > 0 {
+            lines.append(trainingSessionTargetText(
+                title: "ضغط الأثر".localized,
+                isMet: !progress.impactRecoveryHighPressure
+            ))
+        }
+        if let maxCostlyDecisions = progress.maxCostlyDecisions {
+            lines.append("\("قرارات مكلفة".localized): \(progress.costlyDecisions)/\(maxCostlyDecisions)")
+            lines.append(trainingSessionTargetText(
+                title: "هدف القرارات المكلفة".localized,
+                isMet: progress.costlyDecisionTargetMet
+            ))
+        }
         lines.append("\("تقييم الجلسة".localized): \(progress.gradeTitle) · \(progress.gradePercent)/100")
         lines.append(progress.gradeDetail)
         lines.append("\(progress.gradeReasonTitle): \(progress.gradeReasonDetail)")
@@ -668,6 +693,10 @@ enum WhatToPlayShareCard {
         case .complete:
             return "الجلسة مكتملة".localized
         }
+    }
+
+    private static func trainingSessionTargetText(title: String, isMet: Bool) -> String {
+        "\(title): \(isMet ? "متحقق".localized : "غير متحقق".localized)"
     }
 
     private static func decisionHighlightText(_ highlight: WhatToPlayDecisionHighlight) -> String {
