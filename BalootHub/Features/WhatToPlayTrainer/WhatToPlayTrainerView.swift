@@ -3600,6 +3600,20 @@ struct WhatToPlayTrainerView: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.75)
                 }
+                if row.expectedImprovement > 0 {
+                    Text("\("تحسن متوقع".localized): +\(row.expectedImprovement)")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(AppColor.success)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                }
+                if row.expectedImprovement > 0, let source = row.expectedImprovementSource {
+                    Text("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: source))")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(AppColor.textSecondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                }
                 Text(optionOutcomeText(row.outcome))
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(optionOutcomeTint(row.outcome))

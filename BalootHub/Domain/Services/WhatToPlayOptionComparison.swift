@@ -11,6 +11,8 @@ struct WhatToPlayOptionComparisonRow: Identifiable, Equatable {
     let lostExpectedPoints: Int
     let lostProjectedTeamPoints: Int
     let lostProjectedAgainstSecondBestPoints: Int
+    let expectedImprovement: Int
+    let expectedImprovementSource: WhatToPlayExpectedImprovementSource?
     let outcome: WhatToPlayOptionOutcome
     let outcomeReason: String
     let simulationSummary: String
@@ -223,6 +225,11 @@ enum WhatToPlayOptionComparison {
             .map { review in
                 let option = review.option
                 let simulationDisplay = WhatToPlaySimulationFormatter.display(for: option.simulation)
+                let improvement = WhatToPlayExpectedImprovementMetrics.calculate(
+                    lostExpectedPoints: review.lostExpectedPoints,
+                    lostProjectedTeamPoints: review.lostProjectedTeamPoints,
+                    lostProjectedAgainstSecondBestPoints: review.lostProjectedAgainstSecondBestPoints
+                )
                 return WhatToPlayOptionComparisonRow(
                     card: option.card,
                     rank: option.rank,
@@ -233,6 +240,8 @@ enum WhatToPlayOptionComparison {
                     lostExpectedPoints: review.lostExpectedPoints,
                     lostProjectedTeamPoints: review.lostProjectedTeamPoints,
                     lostProjectedAgainstSecondBestPoints: review.lostProjectedAgainstSecondBestPoints,
+                    expectedImprovement: improvement.points,
+                    expectedImprovementSource: improvement.points > 0 ? improvement.source : nil,
                     outcome: option.outcome,
                     outcomeReason: option.outcomeReason,
                     simulationSummary: simulationDisplay.summary,

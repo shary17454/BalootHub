@@ -262,6 +262,24 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         }
     }
 
+    func testRowsCalculateExpectedImprovementSourceForEveryOption() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let selected = try XCTUnwrap(scenario.options.last)
+
+        let rows = WhatToPlayOptionComparison.rows(for: scenario, selectedCard: selected.card)
+
+        XCTAssertEqual(rows.count, scenario.options.count)
+        for row in rows {
+            let expected = WhatToPlayExpectedImprovementMetrics.calculate(
+                lostExpectedPoints: row.lostExpectedPoints,
+                lostProjectedTeamPoints: row.lostProjectedTeamPoints,
+                lostProjectedAgainstSecondBestPoints: row.lostProjectedAgainstSecondBestPoints
+            )
+            XCTAssertEqual(row.expectedImprovement, expected.points)
+            XCTAssertEqual(row.expectedImprovementSource, expected.points > 0 ? expected.source : nil)
+        }
+    }
+
     func testSummaryTracksBestSimulationResultIndependently() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
         let expert = try XCTUnwrap(scenario.bestOption)
