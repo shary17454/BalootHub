@@ -23944,6 +23944,16 @@
         }
       }
     },
+    "نسبة التأثر" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Affected rate"
+          }
+        }
+      }
+    },
     "من" : {
       "localizations" : {
         "en" : {

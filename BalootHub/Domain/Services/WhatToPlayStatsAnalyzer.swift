@@ -1037,6 +1037,11 @@ struct WhatToPlayDecisionPattern: Equatable {
     var hasActionableTarget: Bool {
         targetDifficulty != nil || targetFocusKind != nil || targetGameMode != nil || targetTrumpSuit != nil
     }
+
+    var affectedPercent: Int {
+        guard inspectedAttempts > 0 else { return 0 }
+        return Int((Double(affectedAttempts) / Double(inspectedAttempts) * 100).rounded())
+    }
 }
 
 enum WhatToPlayStatsAnalyzer {

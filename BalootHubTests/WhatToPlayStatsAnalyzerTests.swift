@@ -3314,6 +3314,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(pattern.kind, .noData)
         XCTAssertEqual(pattern.inspectedAttempts, 0)
         XCTAssertEqual(pattern.affectedAttempts, 0)
+        XCTAssertEqual(pattern.affectedPercent, 0)
         XCTAssertEqual(pattern.title, "نمط قراراتك غير معروف".localized)
     }
 
@@ -3328,6 +3329,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(pattern.kind, .clean)
         XCTAssertEqual(pattern.inspectedAttempts, 3)
+        XCTAssertEqual(pattern.affectedPercent, 0)
         XCTAssertEqual(pattern.affectedAttempts, 0)
         XCTAssertEqual(pattern.title, "قراراتك الأخيرة نظيفة".localized)
     }

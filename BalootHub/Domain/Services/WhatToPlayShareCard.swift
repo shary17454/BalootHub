@@ -643,7 +643,8 @@ enum WhatToPlayShareCard {
             pattern.title,
             pattern.detail,
             "\("محاولات مفحوصة".localized): \(pattern.inspectedAttempts)",
-            "\("محاولات متأثرة".localized): \(pattern.affectedAttempts)"
+            "\("محاولات متأثرة".localized): \(pattern.affectedAttempts)",
+            "\("نسبة التأثر".localized): \(pattern.affectedPercent)%"
         ]
 
         if let targetLine = pattern.targetLine {

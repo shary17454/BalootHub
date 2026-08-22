@@ -783,6 +783,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains(pattern.detail))
         XCTAssertTrue(text.contains("\("محاولات مفحوصة".localized): 8"))
         XCTAssertTrue(text.contains("\("محاولات متأثرة".localized): 3"))
+        XCTAssertTrue(text.contains("\("نسبة التأثر".localized): 38%"))
         XCTAssertTrue(text.contains("\("التدريب المقترح".localized): \(try XCTUnwrap(pattern.targetLine))"))
         XCTAssertTrue(text.contains("افتح مدرب وش تلعب وراجع نمط قراراتك.".localized))
     }
