@@ -273,11 +273,13 @@ final class CatalogIntegrityTests: XCTestCase {
         )
     }
 
-    func testSecondSimulationCoachingStringsCoverSupportedLocales() throws {
+    func testTrainingCoachingStringsCoverSupportedLocales() throws {
         let keys = [
             "فاقد ثاني محاكاة",
             "متوسط فاقد ثاني محاكاة",
             "محاولات ثاني محاكاة",
+            "ثاني أفضل محاكاة",
+            "مصدر التحسن",
             "راجع ثاني أفضل محاكاة قبل اعتماد قرار يبدو صحيحًا."
         ]
 
