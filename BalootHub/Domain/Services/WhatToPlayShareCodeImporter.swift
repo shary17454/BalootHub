@@ -42,7 +42,8 @@ struct WhatToPlayShareCodeImportResult {
             "\("الصعوبة".localized): \(contextContent.difficulty)",
             "\("نوع الموقف".localized): \(contextContent.focus)",
             "\("الدور".localized): \(contextContent.turnPlayerName)",
-            "\("خيارات".localized): \(contextContent.legalOptionCount) · \("على الطاولة".localized): \(contextContent.playedCardCount)"
+            "\("خيارات".localized): \(contextContent.legalOptionCount) · \("على الطاولة".localized): \(contextContent.playedCardCount)",
+            "\("الأوراق القانونية".localized): \(contextContent.legalCardNames.joined(separator: "، "))"
         ]
         if let selectedOption {
             let comparisonSummary = WhatToPlayOptionComparison.summary(

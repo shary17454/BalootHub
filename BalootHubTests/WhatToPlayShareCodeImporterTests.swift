@@ -33,6 +33,11 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
                 "\("خيارات".localized): \(contextContent.legalOptionCount) · \("على الطاولة".localized): \(contextContent.playedCardCount)"
             )
         )
+        XCTAssertTrue(
+            result.statusMessage.contains(
+                "\("الأوراق القانونية".localized): \(contextContent.legalCardNames.joined(separator: "، "))"
+            )
+        )
         XCTAssertFalse(result.statusMessage.contains("اختيارك".localized))
         XCTAssertFalse(result.statusMessage.contains("أفضل ورقة".localized))
         XCTAssertFalse(result.statusMessage.contains("تقييم القرار".localized))
@@ -84,6 +89,11 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertTrue(
             result.statusMessage.contains(
                 "\("خيارات".localized): \(contextContent.legalOptionCount) · \("على الطاولة".localized): \(contextContent.playedCardCount)"
+            )
+        )
+        XCTAssertTrue(
+            result.statusMessage.contains(
+                "\("الأوراق القانونية".localized): \(contextContent.legalCardNames.joined(separator: "، "))"
             )
         )
         XCTAssertTrue(result.statusMessage.contains("\("اختيارك".localized): \(selected.card.accessibilityName)"))
