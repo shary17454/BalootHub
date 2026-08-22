@@ -984,6 +984,13 @@ struct WhatToPlayTrainerView: View {
                     .foregroundStyle(AppColor.accent)
                     .lineLimit(2)
                     .minimumScaleFactor(0.85)
+                if let statusLine = review.statusLine {
+                    Text(statusLine)
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(AppColor.warning)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.85)
+                }
                 if let recommendedCard = review.recommendedCard {
                     Text("\("ورقة المراجعة".localized): \(recommendedCard.accessibilityName)")
                         .font(.caption2.weight(.semibold))

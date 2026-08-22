@@ -655,6 +655,7 @@ struct WhatToPlayTrainingSessionReview: Equatable {
     let recommendedCard: PlayingCard?
     let expectedImprovement: Int
     let retriesIncorrectNextSeed: Bool
+    let statusLine: String?
 
     init(
         action: WhatToPlayTrainingSessionReviewAction,
@@ -670,7 +671,8 @@ struct WhatToPlayTrainingSessionReview: Equatable {
         trumpSuit: Suit?,
         recommendedCard: PlayingCard?,
         expectedImprovement: Int,
-        retriesIncorrectNextSeed: Bool = false
+        retriesIncorrectNextSeed: Bool = false,
+        statusLine: String? = nil
     ) {
         self.action = action
         self.title = title
@@ -686,6 +688,7 @@ struct WhatToPlayTrainingSessionReview: Equatable {
         self.recommendedCard = recommendedCard
         self.expectedImprovement = expectedImprovement
         self.retriesIncorrectNextSeed = retriesIncorrectNextSeed
+        self.statusLine = statusLine
     }
 }
 
@@ -2578,7 +2581,11 @@ enum WhatToPlayStatsAnalyzer {
                 trumpSuit: plan.trumpSuit,
                 recommendedCard: nil,
                 expectedImprovement: 0,
-                retriesIncorrectNextSeed: retriesIncorrectNextSeed
+                retriesIncorrectNextSeed: retriesIncorrectNextSeed,
+                statusLine: trainingSessionReviewStatusLine(
+                    retriesIncorrectNextSeed: retriesIncorrectNextSeed,
+                    nextSeed: nextSeed
+                )
             )
         case .nextChallenge:
             let recommendation = nextScenarioRecommendation(for: attempts)
@@ -2654,7 +2661,11 @@ enum WhatToPlayStatsAnalyzer {
                 trumpSuit: plan.trumpSuit,
                 recommendedCard: nil,
                 expectedImprovement: 0,
-                retriesIncorrectNextSeed: retriesIncorrectNextSeed
+                retriesIncorrectNextSeed: retriesIncorrectNextSeed,
+                statusLine: trainingSessionReviewStatusLine(
+                    retriesIncorrectNextSeed: retriesIncorrectNextSeed,
+                    nextSeed: nextSeed
+                )
             )
         case .repeatSession:
             let nextSeed = nextTrainingSessionSeed(for: attempts, plan: plan)
@@ -2682,7 +2693,11 @@ enum WhatToPlayStatsAnalyzer {
                 trumpSuit: plan.trumpSuit,
                 recommendedCard: nil,
                 expectedImprovement: 0,
-                retriesIncorrectNextSeed: retriesIncorrectNextSeed
+                retriesIncorrectNextSeed: retriesIncorrectNextSeed,
+                statusLine: trainingSessionReviewStatusLine(
+                    retriesIncorrectNextSeed: retriesIncorrectNextSeed,
+                    nextSeed: nextSeed
+                )
             )
         }
     }
@@ -2712,6 +2727,14 @@ enum WhatToPlayStatsAnalyzer {
             return false
         }
         return !latest.isCorrect
+    }
+
+    private static func trainingSessionReviewStatusLine(
+        retriesIncorrectNextSeed: Bool,
+        nextSeed: UInt64
+    ) -> String? {
+        guard retriesIncorrectNextSeed else { return nil }
+        return "\("إعادة محاولة".localized): \(nextSeed)"
     }
 
     private static func trainingSessionReviewMistakeDetail(_ item: WhatToPlayReviewItem) -> String {
