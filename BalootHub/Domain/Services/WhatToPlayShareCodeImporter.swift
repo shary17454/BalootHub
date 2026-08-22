@@ -42,6 +42,17 @@ struct WhatToPlayShareCodeImportResult {
         max(0, comparisonSummary?.selectedLostProjectedAgainstSecondBestPoints ?? 0)
     }
 
+    var valueLossTitle: String? {
+        guard selectedOption != nil else { return nil }
+        let severity = WhatToPlayStatsAnalyzer.valueLossSeverity(
+            lostExpectedPoints: comparisonSummary?.selectedLostExpectedPoints ?? 0,
+            lostProjectedTeamPoints: comparisonSummary?.selectedLostProjectedTeamPoints ?? 0,
+            lostProjectedAgainstSecondBestPoints: lostProjectedAgainstSecondBestPoints
+        )
+        guard severity != .none else { return nil }
+        return WhatToPlayStatsAnalyzer.valueLossTitle(for: severity)
+    }
+
     var reviewCardSourceTitle: String? {
         guard selectedOption != nil,
               expectedImprovement > 0,
@@ -64,6 +75,9 @@ struct WhatToPlayShareCodeImportResult {
         lines.append(contentsOf: scenarioContextLines())
         if let selectedOption {
             lines.append(contentsOf: reviewedDecisionLines(for: selectedOption))
+        }
+        if let valueLossTitle {
+            lines.append("\("شدة خسارة القيمة".localized): \(valueLossTitle)")
         }
         lines.append(contentsOf: expectedImprovementLines(points: expectedImprovement, source: expectedImprovementSource))
         if let reviewCardSourceTitle {

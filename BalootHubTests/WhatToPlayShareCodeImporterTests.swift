@@ -24,6 +24,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertNil(result.secondBestSimulationCard)
         XCTAssertNil(result.secondBestProjectedTeamPoints)
         XCTAssertEqual(result.lostProjectedAgainstSecondBestPoints, 0)
+        XCTAssertNil(result.valueLossTitle)
         XCTAssertTrue(result.statusMessage.contains("تم تحميل الموقف. اختر الورقة الأفضل.".localized))
         XCTAssertTrue(result.statusMessage.contains("\("رمز الموقف".localized): \(code)"))
         let contextContent = WhatToPlayShareCard.content(for: scenario)
@@ -64,6 +65,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertFalse(result.statusMessage.contains("نتيجة المحاكاة".localized))
         XCTAssertFalse(result.statusMessage.contains("اتجاه الأكلة".localized))
         XCTAssertFalse(result.statusMessage.contains("نقاط الأكلة".localized))
+        XCTAssertFalse(result.statusMessage.contains("شدة خسارة القيمة".localized))
         XCTAssertNil(result.reviewCardSourceTitle)
         XCTAssertFalse(result.statusMessage.contains("سبب ورقة المراجعة".localized))
     }
@@ -165,6 +167,9 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
            selectedLostProjectedAgainstSecondBestPoints > 0 {
             XCTAssertEqual(result.lostProjectedAgainstSecondBestPoints, selectedLostProjectedAgainstSecondBestPoints)
             XCTAssertTrue(result.statusMessage.contains("\("فاقد ثاني محاكاة".localized): \(selectedLostProjectedAgainstSecondBestPoints)"))
+        }
+        if let valueLossTitle = result.valueLossTitle {
+            XCTAssertTrue(result.statusMessage.contains("\("شدة خسارة القيمة".localized): \(valueLossTitle)"))
         }
         XCTAssertTrue(result.statusMessage.contains("\("سبب تكتيكي".localized): \(selectedComparisonRow.tacticalSummary)"))
         let simulationDisplay = WhatToPlaySimulationFormatter.display(for: selected.simulation)
