@@ -125,6 +125,43 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
         XCTAssertEqual(drill.expectedImprovement, 12)
     }
 
+    func testInProgressSessionReviewsMistakeWhenAccuracyTargetCannotBeRecovered() {
+        let plan = WhatToPlayTrainingSessionPlan(
+            difficulty: .medium,
+            focusKind: .followSuit,
+            gameMode: .hokum,
+            scenarioCount: 3,
+            targetAccuracyPercent: 100,
+            targetAverageExpectedImpact: 0,
+            title: "خطة".localized,
+            detail: "تفصيل".localized,
+            successMetric: "هدف".localized,
+            iconName: "target"
+        )
+        let attempts = [
+            attempt(
+                seed: 40,
+                selected: PlayingCard(suit: .clubs, rank: .seven),
+                best: PlayingCard(suit: .hearts, rank: .ace)
+            ),
+            attempt(
+                seed: 41,
+                selected: PlayingCard(suit: .diamonds, rank: .eight),
+                best: PlayingCard(suit: .spades, rank: .ace)
+            )
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+        let review = WhatToPlayStatsAnalyzer.trainingSessionReview(for: progress, attempts: attempts, plan: plan)
+
+        XCTAssertEqual(progress.state, .inProgress)
+        XCTAssertFalse(progress.accuracyTargetReachable)
+        XCTAssertEqual(review.action, .replayMistake)
+        XCTAssertEqual(review.replaySeed, 41)
+        XCTAssertEqual(review.title, "راجع الخطأ الأعلى أثرًا".localized)
+        XCTAssertTrue(review.detail.contains("قبل تكرار الجلسة؛ هذا يربط التدريب بسبب الخسارة لا بعدد المحاولات فقط.".localized))
+    }
+
     func testReviewScenarioTargetReplaysPreviousSelection() throws {
         let selected = PlayingCard(suit: .hearts, rank: .ace)
         let stored = attempt(

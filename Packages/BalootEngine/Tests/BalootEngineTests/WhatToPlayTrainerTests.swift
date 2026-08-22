@@ -597,6 +597,20 @@ struct WhatToPlayTrainerTests {
         )
         #expect(
             WhatToPlayTrainingSessionReviewMetrics.classify(
+                progressCategory: .inProgress,
+                hasReviewItem: true,
+                accuracyTargetReachable: false
+            ).action == .replayMistake
+        )
+        #expect(
+            WhatToPlayTrainingSessionReviewMetrics.classify(
+                progressCategory: .inProgress,
+                hasReviewItem: false,
+                accuracyTargetReachable: false
+            ).action == .continueSession
+        )
+        #expect(
+            WhatToPlayTrainingSessionReviewMetrics.classify(
                 progressCategory: .achieved,
                 hasReviewItem: true
             ).action == .nextChallenge

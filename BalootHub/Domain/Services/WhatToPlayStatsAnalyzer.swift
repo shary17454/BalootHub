@@ -2445,7 +2445,8 @@ enum WhatToPlayStatsAnalyzer {
     ) -> WhatToPlayTrainingSessionReview {
         let reviewMetrics = WhatToPlayTrainingSessionReviewMetrics.classify(
             progressCategory: trainingSessionProgressCategory(progress.state),
-            hasReviewItem: progress.reviewItem != nil
+            hasReviewItem: progress.reviewItem != nil,
+            accuracyTargetReachable: progress.accuracyTargetReachable
         )
 
         switch reviewMetrics.action {

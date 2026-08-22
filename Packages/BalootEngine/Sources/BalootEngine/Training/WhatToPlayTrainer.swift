@@ -1267,14 +1267,15 @@ public struct WhatToPlayTrainingSessionReviewMetrics: Sendable, Equatable {
 
     public static func classify(
         progressCategory: WhatToPlayTrainingSessionProgressCategory,
-        hasReviewItem: Bool
+        hasReviewItem: Bool,
+        accuracyTargetReachable: Bool = true
     ) -> WhatToPlayTrainingSessionReviewMetrics {
         let action: WhatToPlayTrainingSessionReviewActionCategory
         switch progressCategory {
         case .notStarted:
             action = .start
         case .inProgress:
-            action = .continueSession
+            action = !accuracyTargetReachable && hasReviewItem ? .replayMistake : .continueSession
         case .achieved:
             action = .nextChallenge
         case .needsRepeat:
