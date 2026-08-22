@@ -31,7 +31,10 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertTrue(result.statusMessage.contains("\("النمط".localized): \(contextContent.mode)"))
         XCTAssertTrue(result.statusMessage.contains("\("الصعوبة".localized): \(contextContent.difficulty)"))
         XCTAssertTrue(result.statusMessage.contains("\("نوع الموقف".localized): \(contextContent.focus)"))
+        XCTAssertTrue(result.statusMessage.contains("\("الأكلة".localized): \(contextContent.trickProgress)"))
+        XCTAssertTrue(result.statusMessage.contains("\("النقاط".localized): \(contextContent.scoreLine)"))
         XCTAssertTrue(result.statusMessage.contains("\("الدور".localized): \(contextContent.turnPlayerName)"))
+        XCTAssertTrue(result.statusMessage.contains(contextContent.turnContextLine))
         XCTAssertTrue(
             result.statusMessage.contains(
                 "\("خيارات".localized): \(contextContent.legalOptionCount) · \("على الطاولة".localized): \(contextContent.playedCardCount)"
@@ -96,7 +99,10 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertTrue(result.statusMessage.contains("\("النمط".localized): \(contextContent.mode)"))
         XCTAssertTrue(result.statusMessage.contains("\("الصعوبة".localized): \(contextContent.difficulty)"))
         XCTAssertTrue(result.statusMessage.contains("\("نوع الموقف".localized): \(contextContent.focus)"))
+        XCTAssertTrue(result.statusMessage.contains("\("الأكلة".localized): \(contextContent.trickProgress)"))
+        XCTAssertTrue(result.statusMessage.contains("\("النقاط".localized): \(contextContent.scoreLine)"))
         XCTAssertTrue(result.statusMessage.contains("\("الدور".localized): \(contextContent.turnPlayerName)"))
+        XCTAssertTrue(result.statusMessage.contains(contextContent.turnContextLine))
         XCTAssertTrue(
             result.statusMessage.contains(
                 "\("خيارات".localized): \(contextContent.legalOptionCount) · \("على الطاولة".localized): \(contextContent.playedCardCount)"

@@ -104,7 +104,10 @@ struct WhatToPlayShareCodeImportResult {
             "\("النمط".localized): \(contextContent.mode)",
             "\("الصعوبة".localized): \(contextContent.difficulty)",
             "\("نوع الموقف".localized): \(contextContent.focus)",
+            "\("الأكلة".localized): \(contextContent.trickProgress)",
+            "\("النقاط".localized): \(contextContent.scoreLine)",
             "\("الدور".localized): \(contextContent.turnPlayerName)",
+            contextContent.turnContextLine,
             "\("خيارات".localized): \(contextContent.legalOptionCount) · \("على الطاولة".localized): \(contextContent.playedCardCount)",
             "\("الأوراق القانونية".localized): \(contextContent.legalCardNames.joined(separator: "، "))"
         ]
