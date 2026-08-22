@@ -225,11 +225,7 @@ enum WhatToPlayOptionComparison {
             .map { review in
                 let option = review.option
                 let simulationDisplay = WhatToPlaySimulationFormatter.display(for: option.simulation)
-                let improvement = WhatToPlayExpectedImprovementMetrics.calculate(
-                    lostExpectedPoints: review.lostExpectedPoints,
-                    lostProjectedTeamPoints: review.lostProjectedTeamPoints,
-                    lostProjectedAgainstSecondBestPoints: review.lostProjectedAgainstSecondBestPoints
-                )
+                let improvement = expectedImprovement(for: option, in: scenario)
                 return WhatToPlayOptionComparisonRow(
                     card: option.card,
                     rank: option.rank,
@@ -264,6 +260,22 @@ enum WhatToPlayOptionComparison {
                     isSecondBestSimulationResult: option.card == secondBestSimulationCard
                 )
             }
+    }
+
+    static func expectedImprovement(
+        for option: WhatToPlayOption,
+        in scenario: WhatToPlayScenario
+    ) -> WhatToPlayExpectedImprovementMetrics {
+        let bestExpectedImpact = scenario.bestOption?.expectedImpact ?? option.expectedImpact
+        let bestProjectedTeamPoints = WhatToPlayTrainer.bestProjectedOption(in: scenario.options)?.projectedTeamPoints
+            ?? option.projectedTeamPoints
+        let secondBestProjectedTeamPoints = WhatToPlayTrainer.secondBestProjectedOption(in: scenario.options)?.projectedTeamPoints
+            ?? option.projectedTeamPoints
+        return WhatToPlayExpectedImprovementMetrics.calculate(
+            lostExpectedPoints: max(0, bestExpectedImpact - option.expectedImpact),
+            lostProjectedTeamPoints: max(0, bestProjectedTeamPoints - option.projectedTeamPoints),
+            lostProjectedAgainstSecondBestPoints: max(0, secondBestProjectedTeamPoints - option.projectedTeamPoints)
+        )
     }
 
     static func nextAction(

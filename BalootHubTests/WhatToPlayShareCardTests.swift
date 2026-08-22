@@ -210,17 +210,18 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("ثاني نتيجة محاكاة".localized): \(secondBestSimulation.projectedTeamPoints)"))
         XCTAssertTrue(text.contains("\("فاقد ثاني محاكاة".localized): \(max(0, secondBestSimulation.projectedTeamPoints - selected.projectedTeamPoints))"))
         for option in scenario.options {
+            let improvement = WhatToPlayOptionComparison.expectedImprovement(for: option, in: scenario)
             let line = WhatToPlayShareCard.legalCardText(
                 .init(
                     cardName: option.card.accessibilityName,
                     expectedImpact: option.expectedImpact,
                     projectedTeamPoints: option.projectedTeamPoints,
-                    expectedImprovement: expectedLegalCardImprovement(for: option, in: scenario).points > 0
-                        ? expectedLegalCardImprovement(for: option, in: scenario).points
+                    expectedImprovement: improvement.points > 0
+                        ? improvement.points
                         : nil,
-                    expectedImprovementSourceTitle: expectedLegalCardImprovement(for: option, in: scenario).points > 0
+                    expectedImprovementSourceTitle: improvement.points > 0
                         ? WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(
-                            for: expectedLegalCardImprovement(for: option, in: scenario).source
+                            for: improvement.source
                         )
                         : nil,
                     isExpertChoice: option.isExpertChoice
@@ -356,14 +357,14 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(
             reviewed.legalCards.map(\.expectedImprovement),
             sortedOptions.map {
-                let improvement = expectedLegalCardImprovement(for: $0, in: scenario)
+                let improvement = WhatToPlayOptionComparison.expectedImprovement(for: $0, in: scenario)
                 return improvement.points > 0 ? improvement.points : nil
             }
         )
         XCTAssertEqual(
             reviewed.legalCards.map(\.expectedImprovementSourceTitle),
             sortedOptions.map {
-                let improvement = expectedLegalCardImprovement(for: $0, in: scenario)
+                let improvement = WhatToPlayOptionComparison.expectedImprovement(for: $0, in: scenario)
                 return improvement.points > 0
                     ? WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: improvement.source)
                     : nil
@@ -901,22 +902,6 @@ final class WhatToPlayShareCardTests: XCTestCase {
             return "\("اللون المطلوب".localized): \(requiredSuit.arabicName)"
         }
         return "الأوراق على الطاولة".localized
-    }
-
-    private func expectedLegalCardImprovement(
-        for option: WhatToPlayOption,
-        in scenario: WhatToPlayScenario
-    ) -> WhatToPlayExpectedImprovementMetrics {
-        let bestExpectedImpact = scenario.bestOption?.expectedImpact ?? option.expectedImpact
-        let bestProjectedTeamPoints = WhatToPlayTrainer.bestProjectedOption(in: scenario.options)?.projectedTeamPoints
-            ?? option.projectedTeamPoints
-        let secondBestProjectedTeamPoints = WhatToPlayTrainer.secondBestProjectedOption(in: scenario.options)?.projectedTeamPoints
-            ?? option.projectedTeamPoints
-        return WhatToPlayExpectedImprovementMetrics.calculate(
-            lostExpectedPoints: max(0, bestExpectedImpact - option.expectedImpact),
-            lostProjectedTeamPoints: max(0, bestProjectedTeamPoints - option.projectedTeamPoints),
-            lostProjectedAgainstSecondBestPoints: max(0, secondBestProjectedTeamPoints - option.projectedTeamPoints)
-        )
     }
 
     private func strongHokumHand() -> [PlayingCard] {

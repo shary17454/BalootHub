@@ -280,6 +280,20 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         }
     }
 
+    func testRowsUseCentralExpectedImprovementForEveryOption() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let selected = try XCTUnwrap(scenario.options.last)
+
+        let rows = WhatToPlayOptionComparison.rows(for: scenario, selectedCard: selected.card)
+
+        for row in rows {
+            let option = try XCTUnwrap(scenario.options.first { $0.card == row.card })
+            let expected = WhatToPlayOptionComparison.expectedImprovement(for: option, in: scenario)
+            XCTAssertEqual(row.expectedImprovement, expected.points)
+            XCTAssertEqual(row.expectedImprovementSource, expected.points > 0 ? expected.source : nil)
+        }
+    }
+
     func testSummaryTracksBestSimulationResultIndependently() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
         let expert = try XCTUnwrap(scenario.bestOption)

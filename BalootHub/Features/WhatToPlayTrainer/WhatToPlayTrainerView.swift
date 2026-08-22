@@ -2973,7 +2973,7 @@ struct WhatToPlayTrainerView: View {
     private func optionAccessibilityLabel(_ option: WhatToPlayOption) -> String {
         let bestSimulationCard = scenario.flatMap { WhatToPlayTrainer.bestProjectedOption(in: $0.options)?.card }
         let secondBestSimulationCard = scenario.flatMap { WhatToPlayTrainer.secondBestProjectedOption(in: $0.options)?.card }
-        let improvement = optionImprovementMetrics(option)
+        let improvement = scenario.map { WhatToPlayOptionComparison.expectedImprovement(for: option, in: $0) }
         return WhatToPlayOptionDisclosure.accessibilityLabel(
             cardName: option.card.accessibilityName,
             rank: option.rank,
@@ -2988,20 +2988,6 @@ struct WhatToPlayTrainerView: View {
             isExpertChoice: option.isExpertChoice,
             isBestSimulationResult: option.card == bestSimulationCard,
             isSecondBestSimulationResult: option.card == secondBestSimulationCard
-        )
-    }
-
-    private func optionImprovementMetrics(_ option: WhatToPlayOption) -> WhatToPlayExpectedImprovementMetrics? {
-        guard let scenario else { return nil }
-        let bestExpectedImpact = scenario.bestOption?.expectedImpact ?? option.expectedImpact
-        let bestProjectedTeamPoints = WhatToPlayTrainer.bestProjectedOption(in: scenario.options)?.projectedTeamPoints
-            ?? option.projectedTeamPoints
-        let secondBestProjectedTeamPoints = WhatToPlayTrainer.secondBestProjectedOption(in: scenario.options)?.projectedTeamPoints
-            ?? option.projectedTeamPoints
-        return WhatToPlayExpectedImprovementMetrics.calculate(
-            lostExpectedPoints: max(0, bestExpectedImpact - option.expectedImpact),
-            lostProjectedTeamPoints: max(0, bestProjectedTeamPoints - option.projectedTeamPoints),
-            lostProjectedAgainstSecondBestPoints: max(0, secondBestProjectedTeamPoints - option.projectedTeamPoints)
         )
     }
 

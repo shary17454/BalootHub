@@ -157,7 +157,7 @@ enum WhatToPlayShareCard {
                 )
             },
             legalCards: sortedLegalOptions.map { option in
-                let improvement = legalCardImprovement(for: option, in: scenario)
+                let improvement = WhatToPlayOptionComparison.expectedImprovement(for: option, in: scenario)
                 return WhatToPlayShareCardContent.LegalCardLine(
                     cardName: option.card.accessibilityName,
                     expectedImpact: shouldRevealOptionImpact ? option.expectedImpact : nil,
@@ -572,22 +572,6 @@ enum WhatToPlayShareCard {
             parts.append("اختيار الخبير".localized)
         }
         return parts.joined(separator: " · ")
-    }
-
-    private static func legalCardImprovement(
-        for option: WhatToPlayOption,
-        in scenario: WhatToPlayScenario
-    ) -> WhatToPlayExpectedImprovementMetrics {
-        let bestExpectedImpact = scenario.bestOption?.expectedImpact ?? option.expectedImpact
-        let bestProjectedTeamPoints = WhatToPlayTrainer.bestProjectedOption(in: scenario.options)?.projectedTeamPoints
-            ?? option.projectedTeamPoints
-        let secondBestProjectedTeamPoints = WhatToPlayTrainer.secondBestProjectedOption(in: scenario.options)?.projectedTeamPoints
-            ?? option.projectedTeamPoints
-        return WhatToPlayExpectedImprovementMetrics.calculate(
-            lostExpectedPoints: max(0, bestExpectedImpact - option.expectedImpact),
-            lostProjectedTeamPoints: max(0, bestProjectedTeamPoints - option.projectedTeamPoints),
-            lostProjectedAgainstSecondBestPoints: max(0, secondBestProjectedTeamPoints - option.projectedTeamPoints)
-        )
     }
 
     private static func positiveImprovement(_ value: Int?) -> Int? {
