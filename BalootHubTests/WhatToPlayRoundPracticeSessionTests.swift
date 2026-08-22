@@ -36,6 +36,42 @@ final class WhatToPlayRoundPracticeSessionTests: XCTestCase {
         XCTAssertEqual(seed, 1_201)
     }
 
+    func testProgressUsesLatestAttemptWhenSeedIsRetriedCorrectly() {
+        let plan = sessionPlan(difficulty: .hard, focusKind: .narrowChoice, seedBase: 900, count: 3)
+        let attempts = [
+            attempt(daysAgo: 3, difficulty: .hard, correct: false, impact: -3, focusKind: .narrowChoice, seed: 900),
+            attempt(daysAgo: 2, difficulty: .hard, correct: true, impact: 4, focusKind: .narrowChoice, seed: 901),
+            attempt(daysAgo: 1, difficulty: .hard, correct: true, impact: 6, focusKind: .narrowChoice, seed: 900)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+        let nextSeed = WhatToPlayStatsAnalyzer.nextTrainingSessionSeed(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.completedAttempts, 2)
+        XCTAssertEqual(progress.correctAttempts, 2)
+        XCTAssertEqual(progress.totalExpectedImpact, 10)
+        XCTAssertEqual(progress.remainingAttempts, 1)
+        XCTAssertEqual(nextSeed, 902)
+    }
+
+    func testProgressUsesLatestAttemptWhenSeedIsRetriedIncorrectly() {
+        let plan = sessionPlan(difficulty: .hard, focusKind: .narrowChoice, seedBase: 900, count: 3)
+        let attempts = [
+            attempt(daysAgo: 3, difficulty: .hard, correct: true, impact: 5, focusKind: .narrowChoice, seed: 900),
+            attempt(daysAgo: 2, difficulty: .hard, correct: true, impact: 4, focusKind: .narrowChoice, seed: 901),
+            attempt(daysAgo: 1, difficulty: .hard, correct: false, impact: -2, focusKind: .narrowChoice, seed: 900)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+        let nextSeed = WhatToPlayStatsAnalyzer.nextTrainingSessionSeed(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.completedAttempts, 2)
+        XCTAssertEqual(progress.correctAttempts, 1)
+        XCTAssertEqual(progress.totalExpectedImpact, 2)
+        XCTAssertEqual(progress.remainingAttempts, 1)
+        XCTAssertEqual(nextSeed, 902)
+    }
+
     func testRoundReviewSessionSourceBuildsRoundAnalysisPlanCopy() {
         let plan = WhatToPlayTrainingSessionSource.roundReview.makePlan(
             difficulty: .hard,
