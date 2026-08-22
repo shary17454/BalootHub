@@ -734,6 +734,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("إمكانية هدف الدقة".localized): \("متحقق".localized)"))
         XCTAssertTrue(text.contains("\("الموقف القادم".localized): \(try XCTUnwrap(progress.nextSeed))"))
         XCTAssertTrue(text.contains("\("تقييم الجلسة".localized): \(progress.gradeTitle) · \(progress.gradePercent)/100"))
+        XCTAssertTrue(text.contains("\("مكون الدقة".localized): \(progress.gradeAccuracyComponent)/100"))
+        XCTAssertTrue(text.contains("\("مكون الأثر".localized): \(progress.gradeImpactComponent)/100"))
         XCTAssertTrue(text.contains("\("الخطوة التالية".localized): \(progress.nextStepTitle)"))
         XCTAssertTrue(text.contains("افتح مدرب وش تلعب وأكمل جلسة التدريب.".localized))
     }

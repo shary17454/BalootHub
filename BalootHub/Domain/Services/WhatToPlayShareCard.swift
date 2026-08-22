@@ -585,6 +585,8 @@ enum WhatToPlayShareCard {
             ))
         }
         lines.append("\("تقييم الجلسة".localized): \(progress.gradeTitle) · \(progress.gradePercent)/100")
+        lines.append("\("مكون الدقة".localized): \(progress.gradeAccuracyComponent)/100")
+        lines.append("\("مكون الأثر".localized): \(progress.gradeImpactComponent)/100")
         lines.append(progress.gradeDetail)
         lines.append("\(progress.gradeReasonTitle): \(progress.gradeReasonDetail)")
         if let bestDecisionHighlight = progress.bestDecisionHighlight {
