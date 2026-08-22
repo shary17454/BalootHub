@@ -3449,6 +3449,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(pattern.kind, .followSuitMistake)
         XCTAssertEqual(pattern.affectedAttempts, 2)
         XCTAssertEqual(pattern.title, "أخطاء عند التلزيم".localized)
+        XCTAssertTrue(pattern.hasActionableTarget)
+        XCTAssertEqual(pattern.targetDifficulty, .medium)
+        XCTAssertEqual(pattern.targetFocusKind, .followSuit)
     }
 
     func testDecisionPatternRecognizesTrumpPressureMistakesFromScenarioContext() {
@@ -3464,6 +3467,48 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(pattern.kind, .trumpPressureMistake)
         XCTAssertEqual(pattern.affectedAttempts, 2)
         XCTAssertEqual(pattern.title, "ضغط الحكم يربك قرارك".localized)
+        XCTAssertTrue(pattern.hasActionableTarget)
+        XCTAssertEqual(pattern.targetDifficulty, .hard)
+        XCTAssertEqual(pattern.targetFocusKind, .trumpPressure)
+        XCTAssertEqual(pattern.targetGameMode, .hokum)
+    }
+
+    func testDecisionPatternCleanHasNoActionableTarget() {
+        let attempts = [
+            attempt(daysAgo: 3, correct: true, impact: 4),
+            attempt(daysAgo: 2, correct: true, impact: 2),
+            attempt(daysAgo: 1, correct: true, impact: 1)
+        ]
+
+        let pattern = WhatToPlayStatsAnalyzer.decisionPattern(for: attempts)
+
+        XCTAssertEqual(pattern.kind, .clean)
+        XCTAssertFalse(pattern.hasActionableTarget)
+        XCTAssertNil(pattern.targetDifficulty)
+        XCTAssertNil(pattern.targetFocusKind)
+        XCTAssertNil(pattern.targetGameMode)
+    }
+
+    func testDecisionPatternTargetUsesNextUnattemptedSeed() {
+        let context = hokumContext(trumpSuit: .spades)
+        let attempts = [
+            attempt(daysAgo: 3, difficulty: .hard, correct: false, impact: -7, seed: 42, scenarioContext: context),
+            attempt(daysAgo: 2, difficulty: .hard, correct: false, impact: -3, seed: 43, scenarioContext: context)
+        ]
+        let pattern = WhatToPlayStatsAnalyzer.decisionPattern(for: attempts)
+
+        let target = WhatToPlayCoachingScenarioTarget.make(
+            from: pattern,
+            after: 42,
+            fallbackDifficulty: .easy,
+            attempts: attempts
+        )
+
+        XCTAssertEqual(target?.difficulty, .hard)
+        XCTAssertEqual(target?.focusKind, .trumpPressure)
+        XCTAssertEqual(target?.gameMode, .hokum)
+        XCTAssertNotEqual(target?.seed, 42)
+        XCTAssertNotEqual(target?.seed, 43)
     }
 
     func testDecisionPatternUsesRecentLimit() {

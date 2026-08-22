@@ -1664,27 +1664,40 @@ struct WhatToPlayTrainerView: View {
     }
 
     private func decisionPatternView(_ pattern: WhatToPlayDecisionPattern) -> some View {
-        Label {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(pattern.title)
-                    .font(AppTypography.subheadline.weight(.semibold))
-                    .foregroundStyle(AppColor.textPrimary)
-                Text(pattern.detail)
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColor.textSecondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                Text("\("محاولات مفحوصة".localized): \(pattern.inspectedAttempts) · \("محاولات متأثرة".localized): \(pattern.affectedAttempts)")
-                    .font(.caption2.weight(.semibold))
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            Label {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(pattern.title)
+                        .font(AppTypography.subheadline.weight(.semibold))
+                        .foregroundStyle(AppColor.textPrimary)
+                    Text(pattern.detail)
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColor.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text("\("محاولات مفحوصة".localized): \(pattern.inspectedAttempts) · \("محاولات متأثرة".localized): \(pattern.affectedAttempts)")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(decisionPatternTint(pattern.kind))
+                }
+            } icon: {
+                Image(systemName: pattern.iconName)
                     .foregroundStyle(decisionPatternTint(pattern.kind))
             }
-        } icon: {
-            Image(systemName: pattern.iconName)
-                .foregroundStyle(decisionPatternTint(pattern.kind))
+            .accessibilityElement(children: .combine)
+
+            if pattern.hasActionableTarget {
+                Button {
+                    startDecisionPatternTarget(pattern)
+                } label: {
+                    Label("ابدأ".localized, systemImage: "play.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .disabled(isGeneratingScenario)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppSpacing.sm)
         .background(decisionPatternTint(pattern.kind).opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
-        .accessibilityElement(children: .combine)
     }
 
     private func decisionPatternTint(_ kind: WhatToPlayDecisionPatternKind) -> Color {
@@ -3861,6 +3874,23 @@ struct WhatToPlayTrainerView: View {
             setPreferredTrumpSuitWithoutRegeneration(target.trumpSuit)
             generateScenario()
         }
+    }
+
+    private func startDecisionPatternTarget(_ pattern: WhatToPlayDecisionPattern) {
+        guard let target = WhatToPlayCoachingScenarioTarget.make(
+            from: pattern,
+            after: seed,
+            fallbackDifficulty: difficulty,
+            attempts: attempts
+        ) else { return }
+
+        startMicroDrill(
+            scenarioSeed: target.seed,
+            difficulty: target.difficulty,
+            focusKind: target.focusKind,
+            gameMode: target.gameMode,
+            trumpSuit: target.trumpSuit
+        )
     }
 
     private func startMicroDrill(

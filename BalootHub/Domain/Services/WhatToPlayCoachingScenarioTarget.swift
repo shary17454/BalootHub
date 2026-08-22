@@ -45,4 +45,34 @@ struct WhatToPlayCoachingScenarioTarget: Equatable {
             trumpSuit: trumpSuit
         )
     }
+
+    static func make(
+        from pattern: WhatToPlayDecisionPattern,
+        after currentSeed: UInt64,
+        fallbackDifficulty: WhatToPlayDifficulty,
+        attempts: [WhatToPlayAttempt]
+    ) -> WhatToPlayCoachingScenarioTarget? {
+        guard pattern.hasActionableTarget else { return nil }
+
+        let difficulty = pattern.targetDifficulty ?? fallbackDifficulty
+        let focusKind = pattern.targetFocusKind
+        let gameMode = pattern.targetGameMode
+        let trumpSuit = pattern.targetTrumpSuit
+        let seed = WhatToPlayScenarioLoader.nextUnattemptedSeed(
+            after: currentSeed,
+            difficulty: difficulty,
+            preferredFocus: focusKind,
+            preferredMode: gameMode,
+            preferredTrumpSuit: trumpSuit,
+            attempts: attempts
+        )
+
+        return WhatToPlayCoachingScenarioTarget(
+            seed: seed,
+            difficulty: difficulty,
+            focusKind: focusKind,
+            gameMode: gameMode,
+            trumpSuit: trumpSuit
+        )
+    }
 }
