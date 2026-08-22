@@ -91,6 +91,62 @@ final class BalootGameViewModelRegressionTests: XCTestCase {
         XCTAssertEqual(replayed.dealerSeat, viewModel.state.dealerSeat)
     }
 
+    /// **يحرس صمت الطاولة**: ردّ الفعل (صوت/اهتزاز/مؤثر) يُحسب داخل `perform(_:)`،
+    /// فأي فعل يُطبَّق خارجه يمرّ بلا إشارة. تتحقق هنا من أن الأفعال البشرية تنتج
+    /// إشارة، وأن الإشارة **تُستهلك مرة واحدة** فلا يتكرر الصوت مع كل إعادة رسم.
+    @MainActor
+    func testHumanActionsProduceFeedbackConsumedExactlyOnce() throws {
+        let viewModel = BalootGameViewModel(tableMode: .localHumans, rules: .standard)
+        viewModel.deal(seed: 9)
+
+        viewModel.revealLocalHumanHand()
+        viewModel.placeBid(.sun)
+
+        let bidSignal = try XCTUnwrap(viewModel.consumeFeedback(), "الشراء بلا أي ردّ فعل")
+        XCTAssertEqual(bidSignal.event, .bidPlaced)
+        XCTAssertNil(viewModel.consumeFeedback(), "الإشارة تُستهلك مرة واحدة فقط")
+    }
+
+    /// **يحرس صمت الأكلة**: أول ورقة في الأكلة صوتها خفيف، أما إغلاق الأكلة فيجب أن
+    /// يُميّز الفوز من الخسارة — وإلا فقد اللاعب أوضح إشارة على مجرى الجولة.
+    @MainActor
+    func testClosingTrickReportsWinOrLossNotJustCardSound() throws {
+        let viewModel = BalootGameViewModel(tableMode: .localHumans, rules: .standard)
+        viewModel.deal(seed: 9)
+        viewModel.revealLocalHumanHand()
+        viewModel.placeBid(.sun)
+
+        // مرحلة المضاعفة ثم مرحلة الإعلان: كلاهما يدور على اللاعبين الأربعة، فلا بد
+        // من استنفادهما بالكامل قبل أن تبدأ مرحلة اللعب فعلًا.
+        var guardCounter = 0
+        while viewModel.state.phase != .playing {
+            guardCounter += 1
+            XCTAssertLessThan(guardCounter, 32, "الجولة لم تصل لمرحلة اللعب")
+            viewModel.revealLocalHumanHand()
+            switch viewModel.state.phase {
+            case .bidding: viewModel.passMultiplier()
+            case .declaring: viewModel.skipDeclaration()
+            default: return XCTFail("حالة غير متوقعة قبل اللعب: \(viewModel.state.phase)")
+            }
+        }
+        _ = viewModel.consumeFeedback() // تجاهل إشارات المزايدة والإعلان.
+
+        var events: [FeedbackEvent] = []
+        for _ in 0..<4 {
+            viewModel.revealLocalHumanHand()
+            let card = try XCTUnwrap(viewModel.legalCardsForHuman.first)
+            viewModel.play(card)
+            events.append(try XCTUnwrap(viewModel.consumeFeedback()?.event, "ورقة بلا أي ردّ فعل"))
+        }
+
+        XCTAssertEqual(viewModel.state.completedTricks.count, 1, "أربع أوراق تُغلق أكلة واحدة")
+        XCTAssertEqual(Array(events.prefix(3)), [.cardPlayed, .cardPlayed, .cardPlayed])
+        XCTAssertTrue(
+            [.trickWon, .trickLost].contains(events[3]),
+            "الورقة الرابعة تحسم الأكلة فلازم تُبلّغ فوزًا أو خسارة لا مجرد صوت ورقة"
+        )
+    }
+
     /// **يحرس الخلل العالي**: القفل فعل **خارج الدور** بتصميم المحرك (يملكه الفريق
     /// صاحب المضاعفة الحالية، وهو غالبًا ليس صاحب الدور الآن لأن الدور ينتقل للفريق
     /// المقابل فور كل رفع). ربط `lockMultiplier()` بشرط "دور اللاعب البشري الحالي"

@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 import BalootEngine
 
 struct RoundReplayView: View {
@@ -14,6 +15,12 @@ struct RoundReplayView: View {
     @State private var isPlaying = false
     @State private var speed: ReplayPlaybackSpeed = .normal
     @State private var showAllHands = false
+    @Query private var settingsList: [AppSettings]
+
+    /// نمط وجه الورقة المختار من شاشة التخصيص.
+    private var cardFaceStyle: CardFaceStyle {
+        AppearanceCatalog.resolveTrusted(settingsList.first?.appearanceSelection ?? .standard).cardFace
+    }
 
     private var snapshot: GameState {
         (try? GameEngine.replay(initialState: initialState, actions: actions, upTo: step)) ?? initialState
@@ -408,7 +415,7 @@ struct RoundReplayView: View {
             } else {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 42), spacing: AppSpacing.xs)], spacing: AppSpacing.xs) {
                     ForEach(Array(cards.enumerated()), id: \.offset) { _, played in
-                        ReplayCardView(card: played.card)
+                        ReplayCardView(card: played.card, style: cardFaceStyle)
                     }
                 }
                 if let winnerID = state.completedTricks.last?.winnerPlayerID,
@@ -565,12 +572,15 @@ private enum ReplayPlaybackSpeed: String, CaseIterable, Identifiable {
 
 private struct ReplayCardView: View {
     let card: PlayingCard
+    /// نسخة مصغّرة من الورقة تناسب شريط Replay، لكنها تتبع نمط الوجه المختار
+    /// حتى لا تختلف قراءة الورقة بين شاشة اللعب وشاشة الإعادة.
+    var style: CardFaceStyle = .classic
 
     private var isRed: Bool { card.suit.isRed }
 
     var body: some View {
         VStack(spacing: 1) {
-            Text(card.rank.shortLabel)
+            Text(style.label(for: card.rank))
                 .font(.caption.weight(.bold))
             Text(card.suit.symbol)
                 .font(.caption2.weight(.bold))

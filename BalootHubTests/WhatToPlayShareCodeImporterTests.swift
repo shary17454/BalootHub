@@ -240,8 +240,24 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.selectedOption?.card, selected.card)
         XCTAssertEqual(result.expectedImprovement, 0)
         XCTAssertNil(result.expectedImprovementSource)
-        XCTAssertFalse(result.statusMessage.contains("تحسن متوقع".localized))
-        XCTAssertFalse(result.statusMessage.contains("مصدر التحسن".localized))
+        // الفحص على **سطور القرار** لا على النص كله: جدول الأوراق القانونية يعرض لكل
+        // ورقة كم كنت ستكسب لو لعبتها بدل الأفضل، وهو مرجع ثابت لا علاقة له بما
+        // اختاره اللاعب. المطلوب ألا يظهر سطر تحسّن **مستقل** ينصح لاعبًا طابق الخبير.
+        let decisionLines = result.statusMessage
+            .split(separator: "\n", omittingEmptySubsequences: false)
+            .map(String.init)
+        XCTAssertFalse(
+            decisionLines.contains { $0.hasPrefix("\("تحسن متوقع".localized):") },
+            "قرار مطابق للخبير ما يفترض يظهر له سطر تحسّن مستقل"
+        )
+        XCTAssertFalse(
+            decisionLines.contains { $0.hasPrefix("\("مصدر التحسن".localized):") },
+            "قرار مطابق للخبير ما يفترض يظهر له سطر مصدر تحسّن مستقل"
+        )
+        XCTAssertFalse(
+            decisionLines.contains { $0.hasPrefix("\("تدريب الإعادة".localized):") },
+            "ما في شيء يُعاد تدريبه إذا كان الاختيار هو اختيار الخبير"
+        )
     }
 
     func testImporterCanRunOffMainActor() async throws {

@@ -2363,6 +2363,17 @@ enum WhatToPlayStatsAnalyzer {
         for attempts: [WhatToPlayAttempt],
         plan: WhatToPlayTrainingSessionPlan
     ) -> UInt64 {
+        // في **دفعة مواقف محددة** (خطة بـseedBase) إعادة الموقف الذي أُخطئ فيه للتو
+        // تسبق التقدّم لموقف جديد: التدريب يفيد حين يُصحَّح الخطأ فورًا لا حين يُترك
+        // خلفه. كان هذا الشرط مطبَّقًا داخل ``trainingSessionProgress`` وحدها، فكانت
+        // هذه الدالة — وهي الواجهة العامة التي تسأل "ما البذرة التالية؟" — تتخطى
+        // الموقف الخاطئ وتناقض التقدّم المعروض في نفس الشاشة.
+        //
+        // الخطط بلا `seedBase` مستثناة: بذورها تُولَّد من خصائص الخطة لا من دفعة
+        // مغلقة، فليس فيها "موقف تالٍ في الدفعة" أصلًا.
+        if plan.seedBase != nil, let retrySeed = trainingSessionRetrySeed(for: attempts, plan: plan) {
+            return retrySeed
+        }
         let matchingAttempts = uniqueMatchingTrainingAttempts(for: attempts, plan: plan)
         return WhatToPlayTrainingSessionSeedMetrics(
             seedBase: plan.seedBase,

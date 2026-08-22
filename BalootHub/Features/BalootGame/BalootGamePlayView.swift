@@ -13,6 +13,20 @@ struct BalootGamePlayView: View {
     @State private var isPresentingStopConfirm = false
     @State private var isPresentingRules = false
     @State private var isPresentingReplay = false
+    @State private var celebration: CelebrationKind?
+    @Namespace private var cardNamespace
+    @Query private var settingsList: [AppSettings]
+
+    /// المظهر المختار للطاولة. يُقرأ من الإعدادات مباشرة بلا فحص فتح لأن الحفظ نفسه
+    /// لا يقبل نمطًا مقفولًا (انظر ``AppearanceCatalog/apply(entry:to:)``).
+    private var appearance: TableAppearance {
+        AppearanceCatalog.resolveTrusted(settingsList.first?.appearanceSelection ?? .standard)
+    }
+
+    /// هل تُعرض مؤثرات المشاريع والكبوت؟ إطفاء الحركة من إعدادات النظام يلغيها دائمًا.
+    private var showsCelebrations: Bool {
+        !reduceMotion && (settingsList.first?.celebrationEffectsEnabled ?? true)
+    }
 
     init(slug: String) {
         self.slug = slug
@@ -47,6 +61,16 @@ struct BalootGamePlayView: View {
             .padding(AppSpacing.md)
         }
         .background(AppColor.background)
+        .overlay {
+            if let celebration {
+                // ‏`id` ضروري: مؤثران متتاليان (مشروع ثم كبوت) لهما نفس نوع الواجهة،
+                // فبلا تغيير الهوية لا تُعاد `task` وتبقى مدة المؤثر الأول سارية على الثاني.
+                CelebrationOverlay(kind: celebration) { self.celebration = nil }
+                    .id(celebration.id)
+            }
+        }
+        .onAppear { syncFeedbackSettings() }
+        .onChange(of: viewModel.pendingFeedback) { _, _ in consumeFeedback() }
         .navigationTitle("طاولة اللعب")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -143,14 +167,25 @@ struct BalootGamePlayView: View {
     }
 
     private var table: some View {
-        RoundedRectangle(cornerRadius: AppRadius.large)
-            .fill(RadialGradient(colors: [AppColor.primary.opacity(0.35), AppColor.primary.opacity(0.12)], center: .center, startRadius: 10, endRadius: 400))
-            .ignoresSafeArea()
+        ZStack {
+            // الخلفية تتجاوز الحواف الآمنة بنفسها، أما سطح الطاولة فيبقى داخلها
+            // بهامش صغير حتى يظهر النمط المختار للخلفية حول الطاولة لا خلفها فقط.
+            TableBackdrop(style: appearance.backdrop, theme: appearance.theme)
+            TableFeltSurface(style: appearance.felt)
+                .padding(AppSpacing.xs)
+        }
     }
 
     private var topBar: some View {
         HStack {
-            SeatIndicator(name: playerName(.north), isCurrentTurn: isCurrentSeat(.north), cardCount: cardCount(.north))
+            SeatIndicator(
+                name: playerName(.north),
+                seatIndex: 1,
+                isCurrentTurn: isCurrentSeat(.north),
+                cardCount: cardCount(.north),
+                avatarStyle: appearance.avatar,
+                theme: appearance.theme
+            )
             Spacer()
             VStack {
                 Label(viewModel.tableMode.title, systemImage: viewModel.tableMode.systemImage)
@@ -189,7 +224,7 @@ struct BalootGamePlayView: View {
                     Text("الورقة المكشوفة")
                         .font(AppTypography.caption)
                         .foregroundStyle(AppColor.textSecondary)
-                    CardView(card: upCard)
+                    PlayingCardFaceView(card: upCard, style: appearance.cardFace)
                 }
             }
 
@@ -727,7 +762,8 @@ struct BalootGamePlayView: View {
             HStack(spacing: AppSpacing.sm) {
                 if !viewModel.trickOnTable.isEmpty {
                     ForEach(viewModel.trickOnTable) { played in
-                        CardView(card: played.card)
+                        PlayingCardFaceView(card: played.card, style: appearance.cardFace)
+                            .matchedGeometryEffect(id: played.card.id, in: cardNamespace)
                             .transition(reduceMotion ? .identity : .scale.combined(with: .opacity))
                     }
                 } else if viewModel.state.phase == .playing {
@@ -767,7 +803,8 @@ struct BalootGamePlayView: View {
                 HStack(spacing: AppSpacing.xs) {
                     ForEach(viewModel.visibleHumanHand) { card in
                         let isPlayable = canAct && legalCards.contains(card)
-                        CardView(card: card)
+                        PlayingCardFaceView(card: card, style: appearance.cardFace, isHighlighted: isPlayable)
+                            .matchedGeometryEffect(id: card.id, in: cardNamespace)
                             .opacity(isPlayable ? 1 : 0.4)
                             .onTapGesture {
                                 // الضغط على ورقة ممنوعة يشرح السبب بدل أن يُتجاهل بصمت.
@@ -782,6 +819,7 @@ struct BalootGamePlayView: View {
                     }
                 }
                 .padding(.vertical, AppSpacing.xs)
+                .animation(AppAnimation.spring(reduceMotion: reduceMotion), value: viewModel.visibleHumanHand.count)
             }
         }
     }
@@ -822,6 +860,22 @@ struct BalootGamePlayView: View {
 
     private var errorAlertBinding: Binding<Bool> {
         Binding(get: { viewModel.errorMessage != nil }, set: { if !$0 { viewModel.clearError() } })
+    }
+
+    /// يمرّر تفضيلات الصوت والاهتزاز لمشغّل ردود الفعل قبل أول حدث في الطاولة.
+    private func syncFeedbackSettings() {
+        FeedbackPlayer.shared.sync(
+            soundEnabled: settingsList.first?.soundEnabled ?? true,
+            hapticsEnabled: settingsList.first?.hapticsEnabled ?? true
+        )
+    }
+
+    /// يشغّل صوت/اهتزاز آخر حدث ويعرض مؤثره البصري إن استحق.
+    private func consumeFeedback() {
+        guard let signal = viewModel.consumeFeedback() else { return }
+        FeedbackPlayer.shared.play(signal.event)
+        guard showsCelebrations, let kind = signal.celebration else { return }
+        celebration = kind
     }
 
     private func playerName(_ seat: SeatPosition) -> String {
@@ -866,56 +920,26 @@ struct BalootGamePlayView: View {
 
 private struct SeatIndicator: View {
     let name: String
+    let seatIndex: Int
     let isCurrentTurn: Bool
     let cardCount: Int
+    var avatarStyle: AvatarStyle = .person
+    var theme: TableThemeStyle = .baloot
 
     var body: some View {
         VStack(spacing: AppSpacing.xxs) {
-            ZStack {
-                Circle().fill(isCurrentTurn ? AppColor.primary : AppColor.surface).frame(width: 44, height: 44)
-                Image(systemName: "person.fill")
-                    .foregroundStyle(isCurrentTurn ? .white : AppColor.textSecondary)
-            }
+            SeatAvatarView(
+                name: name,
+                seatIndex: seatIndex,
+                style: avatarStyle,
+                theme: theme,
+                isCurrentTurn: isCurrentTurn
+            )
             Text(name).font(AppTypography.caption)
             Text("\(cardCount) أوراق").font(.caption2).foregroundStyle(AppColor.textSecondary)
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(name)\(isCurrentTurn ? "، دوره الآن" : "")")
-    }
-}
-
-private struct CardView: View {
-    let card: PlayingCard
-
-    /// الإطار الثابت كان يقصّ النص عند تكبير الخط، فيتمدّد الآن مع Dynamic Type
-    /// انطلاقًا من نفس المقاس الأصلي عند الحجم القياسي.
-    @ScaledMetric(relativeTo: .body) private var cardWidth: CGFloat = 46
-    @ScaledMetric(relativeTo: .body) private var cardHeight: CGFloat = 64
-
-    private var isRed: Bool { card.suit.isRed }
-
-    var body: some View {
-        VStack(spacing: 2) {
-            Text(card.rank.shortLabel)
-                .font(.system(.body, design: .rounded).weight(.bold))
-            Image(systemName: symbolName)
-                .font(.caption)
-        }
-        .foregroundStyle(isRed ? AppColor.danger : AppColor.textPrimary)
-        .minimumScaleFactor(0.6)
-        .frame(width: cardWidth, height: cardHeight)
-        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.small))
-        .overlay(RoundedRectangle(cornerRadius: AppRadius.small).stroke(AppColor.border, lineWidth: 1))
-        .accessibilityLabel(card.accessibilityName)
-    }
-
-    private var symbolName: String {
-        switch card.suit {
-        case .hearts: "suit.heart.fill"
-        case .diamonds: "suit.diamond.fill"
-        case .clubs: "suit.club.fill"
-        case .spades: "suit.spade.fill"
-        }
     }
 }
 

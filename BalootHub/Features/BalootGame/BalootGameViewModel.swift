@@ -56,6 +56,8 @@ final class BalootGameViewModel {
     private var revealedLocalHumanID: Player.ID?
     private var roundReplayInitialState: GameState
     private var didNotifyRoundFinished = false
+    /// آخر إشارة ردّ فعل لم تستهلكها الواجهة بعد.
+    private(set) var pendingFeedback: GameFeedbackSignal?
 
     /// يُستدعى مرة واحدة فقط عند انتهاء كل جولة، بعد احتساب ``GameState/awardedProjects``.
     /// الواجهة تستخدمه لحفظ إحصائيات خارج نطاق المحرك (مثل سجل المشاريع) عبر SwiftData،
@@ -657,15 +659,39 @@ final class BalootGameViewModel {
 
     private func perform(_ action: GameAction) {
         do {
+            let previous = state
             state = try GameEngine.apply(action, to: state)
             concealLocalHumanHand()
             errorMessage = nil
+            resolveFeedback(for: action, before: previous)
             scheduleRoundAnalysisIfNeeded()
             notifyRoundFinishedIfNeeded()
         } catch {
             AppLogger.game.error("رفض المحرك فعلًا: \(String(describing: action), privacy: .public) — \(String(describing: error), privacy: .public)")
             errorMessage = Self.moveErrorMessage
         }
+    }
+
+    /// يحسب ردّ الفعل (صوت/اهتزاز/مؤثر) الناتج عن آخر فعل، لتقرأه الواجهة وتستهلكه.
+    private func resolveFeedback(for action: GameAction, before: GameState) {
+        pendingFeedback = GameFeedbackResolver.signal(
+            for: action,
+            before: before,
+            after: state,
+            humanTeamID: deviceOwnerTeamID
+        )
+    }
+
+    /// فريق صاحب الجهاز. يُحدَّد بالمقعد الجنوبي لا بنوع اللاعب، لأن وضع المجلس
+    /// يجعل اللاعبين الأربعة بشرًا فلا يصلح `kind == .human` للتمييز.
+    private var deviceOwnerTeamID: Team.ID? {
+        state.players.first { $0.seat == .south }?.teamID
+    }
+
+    /// يقرأ آخر إشارة ردّ فعل ويمسحها، حتى لا تتكرر مع كل إعادة رسم.
+    func consumeFeedback() -> GameFeedbackSignal? {
+        defer { pendingFeedback = nil }
+        return pendingFeedback
     }
 
     /// يبلّغ ``onRoundFinished`` مرة واحدة بالضبط لكل جولة، بعد أن يحتسب المحرك
@@ -755,8 +781,12 @@ final class BalootGameViewModel {
                 guard !Task.isCancelled, let action else { break }
 
                 do {
+                    let before = self.state
                     self.state = try GameEngine.apply(action, to: self.state)
                     self.errorMessage = nil
+                    // هذه الحلقة لا تمر عبر `perform(_:)`، فبدون هذا السطر تصبح كل
+                    // أدوار الخصوم صامتة: لا صوت لورقة آلية ولا لفوز الخصم بالأكلة.
+                    self.resolveFeedback(for: action, before: before)
                     // مسار مباشر إلى `.finished` بلا مرور بـ`.scoring` ممكن هنا (دورة
                     // ميتة تُغلقها مزايدة آلية)، وهذا الحلقة لا تمر عبر `perform(_:)`
                     // فيفوّت `onRoundFinished` بدونه — لا يضر استدعاؤه هنا في المسار

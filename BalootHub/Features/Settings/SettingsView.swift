@@ -23,6 +23,17 @@ struct SettingsView: View {
         }
         .navigationTitle("الإعدادات")
         .task { ensureSettings() }
+        .onChange(of: settings?.soundEnabled ?? true) { _, _ in syncFeedback() }
+        .onChange(of: settings?.hapticsEnabled ?? true) { _, _ in syncFeedback() }
+        .onAppear { syncFeedback() }
+    }
+
+    /// يمرّر تفضيلات الصوت والاهتزاز لمشغّل ردود الفعل المشترك.
+    private func syncFeedback() {
+        FeedbackPlayer.shared.sync(
+            soundEnabled: settings?.soundEnabled ?? true,
+            hapticsEnabled: settings?.hapticsEnabled ?? true
+        )
     }
 
     /// ينشئ سجل الإعدادات الوحيد إن لم يكن موجودًا. تُستدعى خارج دورة الرسم.
@@ -41,9 +52,23 @@ struct SettingsView: View {
                 }
             }
 
+            Section("شكل الطاولة") {
+                NavigationLink {
+                    AppearanceStudioView()
+                } label: {
+                    Label("تخصيص الطاولة", systemImage: "paintbrush.pointed")
+                }
+                Text("أشكال الأوراق وظهرها ولبس الطاولة والخلفية وصورة اللاعب والثيم. تُفتح الأنماط بالتقدّم في نمط المسيرة، بلا أي شراء.")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+            }
+
             Section("الصوت والاهتزاز") {
                 Toggle("المؤثرات الصوتية", isOn: binding(settings, \.soundEnabled))
                 Toggle("الاهتزاز اللمسي", isOn: binding(settings, \.hapticsEnabled))
+                Text("تُستخدم أصوات واجهة النظام مباشرة، فلا يحمل التطبيق أي ملفات صوت.")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
             }
 
             Section("تسجيل البلوت") {
@@ -80,6 +105,17 @@ struct SettingsView: View {
                     Label("قواعد مجلسي", systemImage: "slider.horizontal.3")
                 }
                 Text("تُستخدم هذه القواعد عند بدء طاولة بلوت جديدة، مع بقاء مسجل النقاط مستقلًا بصيغته الحالية.")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+            }
+
+            Section("اللعب الجماعي") {
+                NavigationLink {
+                    MultiplayerReadinessView()
+                } label: {
+                    Label("جاهزية اللعب الجماعي", systemImage: "person.2.wave.2")
+                }
+                Text("التطبيق يعمل دون إنترنت بالكامل. هذه الصفحة توضّح ما جُهِّز في البنية لدعم اللعب عن بُعد لاحقًا.")
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
             }
