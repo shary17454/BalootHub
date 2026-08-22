@@ -2119,6 +2119,34 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertNil(action.expectedImprovementSource)
     }
 
+    func testNextDecisionActionDropsImprovementSourceWhenImprovementIsZero() {
+        let action = WhatToPlayNextDecisionAction(
+            title: "ثبّت القراءة".localized,
+            detail: "اختيار صحيح".localized,
+            iconName: "checkmark.seal.fill",
+            recommendedCard: PlayingCard(suit: .spades, rank: .ace),
+            expectedImprovement: 0,
+            expectedImprovementSource: .projectedTeamPoints
+        )
+
+        XCTAssertEqual(action.expectedImprovement, 0)
+        XCTAssertNil(action.expectedImprovementSource)
+    }
+
+    func testRetryPromptDropsImprovementSourceWhenImprovementIsZero() {
+        let prompt = WhatToPlayRetryPrompt(
+            title: "أعد المحاولة".localized,
+            detail: "راجع القرار".localized,
+            iconName: "arrow.counterclockwise.circle.fill",
+            recommendedCard: PlayingCard(suit: .hearts, rank: .jack),
+            expectedImprovement: 0,
+            expectedImprovementSource: .expectedPoints
+        )
+
+        XCTAssertEqual(prompt.expectedImprovement, 0)
+        XCTAssertNil(prompt.expectedImprovementSource)
+    }
+
     func testExpertMatchInsightKeepsLargeProjectedSimulationLoss() {
         let insight = WhatToPlayStatsAnalyzer.decisionInsight(
             selectedRank: 1,
@@ -4342,8 +4370,31 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertNil(review.replaySeed)
         XCTAssertNil(review.recommendedCard)
         XCTAssertEqual(review.expectedImprovement, 0)
+        XCTAssertNil(review.expectedImprovementSource)
         XCTAssertFalse(review.retriesIncorrectNextSeed)
         XCTAssertNil(review.statusLine)
+    }
+
+    func testTrainingSessionReviewDropsImprovementSourceWhenImprovementIsZero() {
+        let review = WhatToPlayTrainingSessionReview(
+            action: .continueSession,
+            title: "أكمل نفس الجلسة".localized,
+            detail: "أكمل الخطة".localized,
+            contextLine: "سهل".localized,
+            iconName: "play.circle.fill",
+            replaySeed: nil,
+            nextSeed: 100,
+            difficulty: .easy,
+            focusKind: .openingLead,
+            gameMode: .sun,
+            trumpSuit: nil,
+            recommendedCard: nil,
+            expectedImprovement: 0,
+            expectedImprovementSource: .projectedSecondBestPoints
+        )
+
+        XCTAssertEqual(review.expectedImprovement, 0)
+        XCTAssertNil(review.expectedImprovementSource)
     }
 
     func testTrainingSessionReviewExplainsRetryingIncorrectNextSeed() {

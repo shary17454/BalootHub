@@ -711,7 +711,7 @@ struct WhatToPlayTrainingSessionReview: Equatable {
         self.trumpSuit = trumpSuit
         self.recommendedCard = recommendedCard
         self.expectedImprovement = expectedImprovement
-        self.expectedImprovementSource = expectedImprovementSource
+        self.expectedImprovementSource = expectedImprovement > 0 ? expectedImprovementSource : nil
         self.retriesIncorrectNextSeed = retriesIncorrectNextSeed
         self.statusLine = statusLine
     }
@@ -765,6 +765,22 @@ struct WhatToPlayNextDecisionAction: Equatable {
     let recommendedCard: PlayingCard?
     let expectedImprovement: Int
     let expectedImprovementSource: WhatToPlayExpectedImprovementSource?
+
+    init(
+        title: String,
+        detail: String,
+        iconName: String,
+        recommendedCard: PlayingCard?,
+        expectedImprovement: Int,
+        expectedImprovementSource: WhatToPlayExpectedImprovementSource?
+    ) {
+        self.title = title
+        self.detail = detail
+        self.iconName = iconName
+        self.recommendedCard = recommendedCard
+        self.expectedImprovement = expectedImprovement
+        self.expectedImprovementSource = expectedImprovement > 0 ? expectedImprovementSource : nil
+    }
 }
 
 struct WhatToPlayRetryPrompt: Equatable {
@@ -774,6 +790,22 @@ struct WhatToPlayRetryPrompt: Equatable {
     let recommendedCard: PlayingCard?
     let expectedImprovement: Int
     let expectedImprovementSource: WhatToPlayExpectedImprovementSource?
+
+    init(
+        title: String,
+        detail: String,
+        iconName: String,
+        recommendedCard: PlayingCard?,
+        expectedImprovement: Int,
+        expectedImprovementSource: WhatToPlayExpectedImprovementSource?
+    ) {
+        self.title = title
+        self.detail = detail
+        self.iconName = iconName
+        self.recommendedCard = recommendedCard
+        self.expectedImprovement = expectedImprovement
+        self.expectedImprovementSource = expectedImprovement > 0 ? expectedImprovementSource : nil
+    }
 }
 
 struct WhatToPlayScenarioBrief: Equatable {
