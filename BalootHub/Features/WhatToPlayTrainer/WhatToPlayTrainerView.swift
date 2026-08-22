@@ -3628,6 +3628,14 @@ struct WhatToPlayTrainerView: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.75)
                 }
+                if row.lostProjectedAgainstSecondBestPoints > 0,
+                   row.lostProjectedAgainstSecondBestPoints != row.lostProjectedTeamPoints {
+                    Text("\("فاقد ثاني محاكاة".localized): \(row.lostProjectedAgainstSecondBestPoints)")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(AppColor.warning)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                }
                 if row.expectedImprovement > 0 {
                     Text("\("تحسن متوقع".localized): +\(row.expectedImprovement)")
                         .font(.caption2.weight(.semibold))
