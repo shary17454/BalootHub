@@ -3227,7 +3227,7 @@ struct WhatToPlayTrainerView: View {
                     .foregroundStyle(AppColor.success)
             }
 
-            if let source = prompt.expectedImprovementSource {
+            if prompt.expectedImprovement > 0, let source = prompt.expectedImprovementSource {
                 Text("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: source))")
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(AppColor.textSecondary)
@@ -3267,7 +3267,7 @@ struct WhatToPlayTrainerView: View {
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(AppColor.success)
                 }
-                if let source = action.expectedImprovementSource {
+                if action.expectedImprovement > 0, let source = action.expectedImprovementSource {
                     Text("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: source))")
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(AppColor.textSecondary)
