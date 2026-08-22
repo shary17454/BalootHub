@@ -108,6 +108,9 @@ struct WhatToPlayShareCodeImportResult {
             "\("خيارات".localized): \(contextContent.legalOptionCount) · \("على الطاولة".localized): \(contextContent.playedCardCount)",
             "\("الأوراق القانونية".localized): \(contextContent.legalCardNames.joined(separator: "، "))"
         ]
+        if scenario.state.mode == .hokum, let trumpSuit = scenario.state.trumpSuit {
+            lines.append("\("لون الحكم".localized): \(trumpSuit.spokenName)")
+        }
         if contextContent.isOpeningTrick {
             lines.append("أنت تفتتح الأكلة.".localized)
         } else {

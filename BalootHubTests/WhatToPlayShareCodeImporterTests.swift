@@ -279,6 +279,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.attempt?.gameMode, .hokum)
         XCTAssertEqual(result.attempt?.contextTrumpSuit, .spades)
         XCTAssertEqual(result.attempt?.scenarioCode, code)
+        XCTAssertTrue(result.statusMessage.contains("\("لون الحكم".localized): \(Suit.spades.spokenName)"))
     }
 
     func testImporterLoadsFullSharedText() async throws {
