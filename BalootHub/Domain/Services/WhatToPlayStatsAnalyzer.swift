@@ -965,6 +965,8 @@ enum WhatToPlayDecisionPatternKind: Equatable {
     case opponentTrickClosure
     case unprotectedPointDump
     case costlyOpeningLead
+    case followSuitMistake
+    case trumpPressureMistake
 }
 
 struct WhatToPlayDecisionPattern: Equatable {
@@ -4849,6 +4851,24 @@ enum WhatToPlayStatsAnalyzer {
                 detail: "بعض أخطائك جاءت من بداية الأكلة بورقة تخفض الأثر المتوقع. عند الافتتاح، اختر ورقة تكشف أقل قدر من قوتك أو تسحب الحكم لغرض واضح.".localized,
                 iconName: "arrow.up.forward.circle.fill"
             )
+        case .followSuitMistake:
+            return WhatToPlayDecisionPattern(
+                kind: .followSuitMistake,
+                inspectedAttempts: metrics.inspectedAttempts,
+                affectedAttempts: metrics.affectedAttempts,
+                title: "أخطاء عند التلزيم".localized,
+                detail: "تكررت أخطاء مكلفة عندما كان على الطاولة لون مطلوب. قبل اختيار الورقة، احصر أوراق اللون أولًا ثم قارن هل تلعب للحماية أو لتخفيف الخسارة.".localized,
+                iconName: "rectangle.stack.badge.play.fill"
+            )
+        case .trumpPressureMistake:
+            return WhatToPlayDecisionPattern(
+                kind: .trumpPressureMistake,
+                inspectedAttempts: metrics.inspectedAttempts,
+                affectedAttempts: metrics.affectedAttempts,
+                title: "ضغط الحكم يربك قرارك".localized,
+                detail: "أكثر من خطأ حديث جاء في مواقف حكم أو وفيها حكم على الطاولة. راقب قوة الحكم المتبقية ولا تقطع إلا إذا كان القطع يربح الأكلة أو يحمي نقاط الفريق.".localized,
+                iconName: "crown.fill"
+            )
 
         case .usefulAlternatives:
             return WhatToPlayDecisionPattern(
@@ -4867,7 +4887,8 @@ enum WhatToPlayStatsAnalyzer {
             isCorrect: attempt.isCorrect,
             selectedRank: attempt.selectedRank,
             expectedImpact: attempt.expectedImpact,
-            impactBreakdown: attempt.impactBreakdown
+            impactBreakdown: attempt.impactBreakdown,
+            scenarioContext: attempt.scenarioContext
         )
     }
 

@@ -718,6 +718,8 @@ public enum WhatToPlayDecisionPatternCategory: String, Sendable, Codable, Equata
     case opponentTrickClosure
     case unprotectedPointDump
     case costlyOpeningLead
+    case followSuitMistake
+    case trumpPressureMistake
 }
 
 /// عينة قرار مختصرة تكفي لتصنيف نمط قرارات «وش تلعب؟».
@@ -726,17 +728,20 @@ public struct WhatToPlayDecisionPatternSample: Sendable, Equatable {
     public let selectedRank: Int?
     public let expectedImpact: Int
     public let impactBreakdown: WhatToPlayOptionImpactBreakdown?
+    public let scenarioContext: WhatToPlayScenarioContext?
 
     public init(
         isCorrect: Bool,
         selectedRank: Int?,
         expectedImpact: Int,
-        impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil
+        impactBreakdown: WhatToPlayOptionImpactBreakdown? = nil,
+        scenarioContext: WhatToPlayScenarioContext? = nil
     ) {
         self.isCorrect = isCorrect
         self.selectedRank = selectedRank
         self.expectedImpact = expectedImpact
         self.impactBreakdown = impactBreakdown
+        self.scenarioContext = scenarioContext
     }
 }
 
@@ -778,6 +783,10 @@ public struct WhatToPlayDecisionPatternMetrics: Sendable, Equatable {
             return impactPattern
         }
 
+        if let contextPattern = contextAwareDecisionPattern(samples: samples, mistakes: mistakes) {
+            return contextPattern
+        }
+
         let farRankChoices = mistakes.filter { ($0.selectedRank ?? 1) > 2 }
         if farRankChoices.count >= 2 && farRankChoices.count >= mistakes.count - farRankChoices.count {
             return WhatToPlayDecisionPatternMetrics(
@@ -801,6 +810,42 @@ public struct WhatToPlayDecisionPatternMetrics: Sendable, Equatable {
             category: .usefulAlternatives,
             inspectedAttempts: samples.count,
             affectedAttempts: usefulAlternatives
+        )
+    }
+
+    private static func contextAwareDecisionPattern(
+        samples: [WhatToPlayDecisionPatternSample],
+        mistakes: [WhatToPlayDecisionPatternSample]
+    ) -> WhatToPlayDecisionPatternMetrics? {
+        let costlyMistakes = mistakes.filter { $0.expectedImpact < 0 }
+        guard costlyMistakes.count >= 2 else { return nil }
+
+        let followSuitMistakes = costlyMistakes.filter { sample in
+            guard let context = sample.scenarioContext else { return false }
+            return !context.isLeading && context.requiredSuit != nil && context.focusKind == .followSuit
+        }.count
+        let trumpPressureMistakes = costlyMistakes.filter { sample in
+            guard let context = sample.scenarioContext else { return false }
+            return context.mode == .hokum && (context.focusKind == .trumpPressure || context.hasTrumpInCurrentTrick)
+        }.count
+
+        let candidates: [(category: WhatToPlayDecisionPatternCategory, count: Int)] = [
+            (.trumpPressureMistake, trumpPressureMistakes),
+            (.followSuitMistake, followSuitMistakes)
+        ]
+        let best = candidates.max { lhs, rhs in
+            if lhs.count == rhs.count {
+                return priority(lhs.category) < priority(rhs.category)
+            }
+            return lhs.count < rhs.count
+        }
+
+        guard let best, best.count >= 2 else { return nil }
+
+        return WhatToPlayDecisionPatternMetrics(
+            category: best.category,
+            inspectedAttempts: samples.count,
+            affectedAttempts: best.count
         )
     }
 
@@ -852,6 +897,10 @@ public struct WhatToPlayDecisionPatternMetrics: Sendable, Equatable {
         case .unprotectedPointDump:
             return 2
         case .costlyOpeningLead:
+            return 1
+        case .trumpPressureMistake:
+            return 2
+        case .followSuitMistake:
             return 1
         case .noData, .clean, .usefulAlternatives, .farRankChoices, .pointLeaks:
             return 0

@@ -337,6 +337,25 @@ struct WhatToPlayTrainerTests {
         #expect(openingLead.affectedAttempts == 2)
     }
 
+    @Test("تصنيف نمط قرارات وش تلعب يلتقط أخطاء السياق من حالة الموقف")
+    func decisionPatternMetricsClassifyScenarioContext() {
+        let followSuit = WhatToPlayDecisionPatternMetrics.classify(samples: [
+            decisionPatternSample(correct: false, impact: -6, context: .followSuitMistake),
+            decisionPatternSample(correct: false, impact: -4, context: .followSuitMistake),
+            decisionPatternSample(correct: false, impact: 1, rank: 4)
+        ])
+        #expect(followSuit.category == .followSuitMistake)
+        #expect(followSuit.affectedAttempts == 2)
+
+        let trumpPressure = WhatToPlayDecisionPatternMetrics.classify(samples: [
+            decisionPatternSample(correct: false, impact: -7, context: .trumpPressureMistake),
+            decisionPatternSample(correct: false, impact: -3, context: .trumpPressureMistake),
+            decisionPatternSample(correct: false, impact: -1, context: .followSuitMistake)
+        ])
+        #expect(trumpPressure.category == .trumpPressureMistake)
+        #expect(trumpPressure.affectedAttempts == 2)
+    }
+
     @Test("درجة جلسة تدريب وش تلعب تأتي من المحرك")
     func trainingSessionGradeMetricsClassifyPerformance() {
         let empty = WhatToPlayTrainingSessionGradeMetrics.classify(
@@ -2946,14 +2965,50 @@ private func decisionPatternSample(
     correct: Bool,
     impact: Int,
     rank: Int? = nil,
-    breakdown: WhatToPlayOptionImpactBreakdown? = nil
+    breakdown: WhatToPlayOptionImpactBreakdown? = nil,
+    context: DecisionPatternContextFixture? = nil
 ) -> WhatToPlayDecisionPatternSample {
     WhatToPlayDecisionPatternSample(
         isCorrect: correct,
         selectedRank: rank,
         expectedImpact: impact,
-        impactBreakdown: breakdown
+        impactBreakdown: breakdown,
+        scenarioContext: context?.scenarioContext
     )
+}
+
+private enum DecisionPatternContextFixture {
+    case followSuitMistake
+    case trumpPressureMistake
+
+    var scenarioContext: WhatToPlayScenarioContext {
+        switch self {
+        case .followSuitMistake:
+            return WhatToPlayScenarioContext(
+                trickNumber: 3,
+                isLeading: false,
+                requiredSuit: .hearts,
+                playedCardCount: 2,
+                legalOptionCount: 3,
+                mode: .sun,
+                trumpSuit: nil,
+                hasTrumpInCurrentTrick: false,
+                focusKind: .followSuit
+            )
+        case .trumpPressureMistake:
+            return WhatToPlayScenarioContext(
+                trickNumber: 5,
+                isLeading: false,
+                requiredSuit: .hearts,
+                playedCardCount: 3,
+                legalOptionCount: 2,
+                mode: .hokum,
+                trumpSuit: .spades,
+                hasTrumpInCurrentTrick: true,
+                focusKind: .trumpPressure
+            )
+        }
+    }
 }
 
 private func reviewQueueRank(

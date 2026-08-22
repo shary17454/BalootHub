@@ -1697,7 +1697,7 @@ struct WhatToPlayTrainerView: View {
             AppColor.accent
         case .farRankChoices:
             AppColor.warning
-        case .pointLeaks, .opponentTrickClosure, .unprotectedPointDump, .costlyOpeningLead:
+        case .pointLeaks, .opponentTrickClosure, .unprotectedPointDump, .costlyOpeningLead, .followSuitMistake, .trumpPressureMistake:
             AppColor.danger
         }
     }

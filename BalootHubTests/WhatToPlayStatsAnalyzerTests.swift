@@ -3426,6 +3426,46 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(pattern.title, "افتتاحاتك مكلفة".localized)
     }
 
+    func testDecisionPatternRecognizesFollowSuitMistakesFromScenarioContext() {
+        let context = WhatToPlayScenarioContext(
+            trickNumber: 4,
+            isLeading: false,
+            requiredSuit: .hearts,
+            playedCardCount: 2,
+            legalOptionCount: 3,
+            mode: .sun,
+            trumpSuit: nil,
+            hasTrumpInCurrentTrick: false,
+            focusKind: .followSuit
+        )
+        let attempts = [
+            attempt(daysAgo: 3, correct: false, impact: -4, scenarioContext: context),
+            attempt(daysAgo: 2, correct: false, impact: -6, scenarioContext: context),
+            attempt(daysAgo: 1, correct: true, impact: 2, scenarioContext: context)
+        ]
+
+        let pattern = WhatToPlayStatsAnalyzer.decisionPattern(for: attempts)
+
+        XCTAssertEqual(pattern.kind, .followSuitMistake)
+        XCTAssertEqual(pattern.affectedAttempts, 2)
+        XCTAssertEqual(pattern.title, "أخطاء عند التلزيم".localized)
+    }
+
+    func testDecisionPatternRecognizesTrumpPressureMistakesFromScenarioContext() {
+        let context = hokumContext(trumpSuit: .spades)
+        let attempts = [
+            attempt(daysAgo: 3, correct: false, impact: -7, scenarioContext: context),
+            attempt(daysAgo: 2, correct: false, impact: -3, scenarioContext: context),
+            attempt(daysAgo: 1, correct: false, impact: -1)
+        ]
+
+        let pattern = WhatToPlayStatsAnalyzer.decisionPattern(for: attempts)
+
+        XCTAssertEqual(pattern.kind, .trumpPressureMistake)
+        XCTAssertEqual(pattern.affectedAttempts, 2)
+        XCTAssertEqual(pattern.title, "ضغط الحكم يربك قرارك".localized)
+    }
+
     func testDecisionPatternUsesRecentLimit() {
         let attempts = [
             attempt(daysAgo: 5, correct: false, impact: -10),
