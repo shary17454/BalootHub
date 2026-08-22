@@ -22,6 +22,14 @@ struct WhatToPlayShareCodeImportResult {
     let expectedImprovement: Int
     let expectedImprovementSource: WhatToPlayExpectedImprovementSource?
 
+    var bestSimulationCard: PlayingCard? {
+        comparisonSummary?.bestSimulationCard
+    }
+
+    var bestProjectedTeamPoints: Int? {
+        comparisonSummary?.bestSimulationProjectedTeamPoints
+    }
+
     var secondBestSimulationCard: PlayingCard? {
         comparisonSummary?.secondBestSimulationCard
     }

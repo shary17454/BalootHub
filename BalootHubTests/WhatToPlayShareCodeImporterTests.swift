@@ -138,9 +138,11 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         }
         XCTAssertTrue(result.statusMessage.contains("\("نقاط فريقك بعد المحاكاة".localized): \(selectedComparisonRow.projectedTeamPoints)"))
         if let bestSimulationCard = comparisonSummary.bestSimulationCard {
+            XCTAssertEqual(result.bestSimulationCard, bestSimulationCard)
             XCTAssertTrue(result.statusMessage.contains("\("أفضل محاكاة".localized): \(bestSimulationCard.accessibilityName)"))
         }
         if let bestSimulationProjectedTeamPoints = comparisonSummary.bestSimulationProjectedTeamPoints {
+            XCTAssertEqual(result.bestProjectedTeamPoints, bestSimulationProjectedTeamPoints)
             XCTAssertTrue(result.statusMessage.contains("\("أفضل نتيجة محاكاة".localized): \(bestSimulationProjectedTeamPoints)"))
         }
         if let selectedLostProjectedTeamPoints = comparisonSummary.selectedLostProjectedTeamPoints,

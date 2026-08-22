@@ -47,6 +47,8 @@ final class WhatToPlayShareCodeImportViewTests: XCTestCase {
 
         let line = try XCTUnwrap(view.shareCodeSimulationAlternativeLine(for: result))
 
+        XCTAssertTrue(line.contains("\("أفضل محاكاة".localized): \(try XCTUnwrap(result.bestSimulationCard).accessibilityName)"))
+        XCTAssertTrue(line.contains("\("أفضل نتيجة محاكاة".localized): \(try XCTUnwrap(result.bestProjectedTeamPoints))"))
         XCTAssertTrue(line.contains("\("ثاني محاكاة".localized): \(try XCTUnwrap(result.secondBestSimulationCard).accessibilityName)"))
         XCTAssertTrue(line.contains("\("ثاني نتيجة محاكاة".localized): \(try XCTUnwrap(result.secondBestProjectedTeamPoints))"))
         XCTAssertTrue(line.contains("\("فاقد ثاني محاكاة".localized): \(result.lostProjectedAgainstSecondBestPoints)"))
@@ -55,6 +57,8 @@ final class WhatToPlayShareCodeImportViewTests: XCTestCase {
     func testShareCodeImportSimulationAlternativeAccessibilityLabelIsSpokenClearly() {
         let view = WhatToPlayTrainerView()
         let line = [
+            "\("أفضل محاكاة".localized): عشرة هاص",
+            "\("أفضل نتيجة محاكاة".localized): 66",
             "\("ثاني محاكاة".localized): إكة سباتي",
             "\("ثاني نتيجة محاكاة".localized): 58",
             "\("فاقد ثاني محاكاة".localized): 8"
@@ -64,7 +68,7 @@ final class WhatToPlayShareCodeImportViewTests: XCTestCase {
 
         XCTAssertEqual(
             label,
-            "\("بديل المحاكاة المستورد".localized): \("ثاني محاكاة".localized): إكة سباتي، \("ثاني نتيجة محاكاة".localized): 58، \("فاقد ثاني محاكاة".localized): 8"
+            "\("بديل المحاكاة المستورد".localized): \("أفضل محاكاة".localized): عشرة هاص، \("أفضل نتيجة محاكاة".localized): 66، \("ثاني محاكاة".localized): إكة سباتي، \("ثاني نتيجة محاكاة".localized): 58، \("فاقد ثاني محاكاة".localized): 8"
         )
     }
 
@@ -114,7 +118,9 @@ final class WhatToPlayShareCodeImportViewTests: XCTestCase {
             for selected in scenario.options where !selected.isExpertChoice {
                 let code = WhatToPlayShareCard.content(for: scenario, selectedOption: selected).scenarioCode
                 let result = try await WhatToPlayShareCodeImporter.import(code: code, existingScenarioCodes: [])
-                if result.secondBestSimulationCard != nil,
+                if result.bestSimulationCard != nil,
+                   result.bestProjectedTeamPoints != nil,
+                   result.secondBestSimulationCard != nil,
                    result.secondBestProjectedTeamPoints != nil,
                    result.lostProjectedAgainstSecondBestPoints > 0 {
                     return result

@@ -188,14 +188,26 @@ extension WhatToPlayTrainerView {
     func shareCodeSimulationAlternativeLine(
         for result: WhatToPlayShareCodeImportResult
     ) -> String? {
-        guard let card = result.secondBestSimulationCard else { return nil }
-        var parts = [
-            "\("ثاني محاكاة".localized): \(card.accessibilityName)"
-        ]
-        if let projectedTeamPoints = result.secondBestProjectedTeamPoints {
+        guard result.bestSimulationCard != nil || result.secondBestSimulationCard != nil else { return nil }
+        var parts: [String] = []
+        if let bestCard = result.bestSimulationCard {
+            parts.append("\("أفضل محاكاة".localized): \(bestCard.accessibilityName)")
+        }
+        if let bestProjectedTeamPoints = result.bestProjectedTeamPoints {
+            parts.append("\("أفضل نتيجة محاكاة".localized): \(bestProjectedTeamPoints)")
+        }
+        let shouldShowSecondBest = result.secondBestSimulationCard != nil
+            && result.secondBestSimulationCard != result.bestSimulationCard
+        if let secondBestCard = result.secondBestSimulationCard,
+           shouldShowSecondBest {
+            parts.append("\("ثاني محاكاة".localized): \(secondBestCard.accessibilityName)")
+        }
+        if let projectedTeamPoints = result.secondBestProjectedTeamPoints,
+           shouldShowSecondBest {
             parts.append("\("ثاني نتيجة محاكاة".localized): \(projectedTeamPoints)")
         }
-        if result.lostProjectedAgainstSecondBestPoints > 0 {
+        if result.lostProjectedAgainstSecondBestPoints > 0,
+           shouldShowSecondBest {
             parts.append("\("فاقد ثاني محاكاة".localized): \(result.lostProjectedAgainstSecondBestPoints)")
         }
         return parts.joined(separator: " · ")
