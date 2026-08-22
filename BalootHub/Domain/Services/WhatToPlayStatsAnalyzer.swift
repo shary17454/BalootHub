@@ -390,6 +390,7 @@ struct WhatToPlayReviewPriority: Equatable {
 
 struct WhatToPlayDecisionHighlight: Equatable {
     let seed: UInt64
+    let scenarioCode: String
     let selectedCard: PlayingCard?
     let expectedImpact: Int
     let lostExpectedPoints: Int
@@ -1586,6 +1587,7 @@ enum WhatToPlayStatsAnalyzer {
     private static func decisionHighlight(for attempt: WhatToPlayAttempt) -> WhatToPlayDecisionHighlight {
         WhatToPlayDecisionHighlight(
             seed: attempt.replaySeed,
+            scenarioCode: attempt.scenarioCode,
             selectedCard: attempt.selectedCard,
             expectedImpact: attempt.expectedImpact,
             lostExpectedPoints: attempt.lostExpectedPoints,

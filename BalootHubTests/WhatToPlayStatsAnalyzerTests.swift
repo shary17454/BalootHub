@@ -170,9 +170,11 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(best?.selectedCard, bestCard)
         XCTAssertEqual(best?.seed, 2)
+        XCTAssertEqual(best?.scenarioCode, attempts[1].scenarioCode)
         XCTAssertEqual(best?.expectedImpact, 9)
         XCTAssertEqual(worst?.selectedCard, secondSimulationWorstCard)
         XCTAssertEqual(worst?.seed, 0)
+        XCTAssertEqual(worst?.scenarioCode, attempts[3].scenarioCode)
         XCTAssertEqual(worst?.lostExpectedPoints, 1)
         XCTAssertEqual(worst?.lostProjectedTeamPoints, 2)
         XCTAssertEqual(worst?.lostProjectedAgainstSecondBestPoints, 30)
@@ -3901,9 +3903,11 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(progress.bestDecisionHighlight?.selectedCard, bestCard)
         XCTAssertEqual(progress.bestDecisionHighlight?.seed, 11)
+        XCTAssertEqual(progress.bestDecisionHighlight?.scenarioCode, attempts[1].scenarioCode)
         XCTAssertEqual(progress.bestDecisionHighlight?.expectedImpact, 6)
         XCTAssertEqual(progress.worstDecisionHighlight?.selectedCard, worstCard)
         XCTAssertEqual(progress.worstDecisionHighlight?.seed, 12)
+        XCTAssertEqual(progress.worstDecisionHighlight?.scenarioCode, attempts[2].scenarioCode)
         XCTAssertEqual(progress.worstDecisionHighlight?.lostExpectedPoints, 8)
         XCTAssertEqual(progress.worstDecisionHighlight?.totalLoss, 8)
     }

@@ -1386,7 +1386,7 @@ struct WhatToPlayTrainerView: View {
         let detail = loss > 0
             ? "\("فاقد القرار".localized): \(loss) · \(decisionHighlightLossSource(highlight))"
             : "\("أثر القرار".localized): \(impactText(highlight.expectedImpact))"
-        return InfoRow(icon: icon, title: title, value: "\(cardName) · \(detail) · \("Seed".localized): \(highlight.seed)")
+        return InfoRow(icon: icon, title: title, value: "\(cardName) · \(detail) · \("رمز الموقف".localized): \(highlight.scenarioCode)")
             .foregroundStyle(tint)
     }
 
