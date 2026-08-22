@@ -50,6 +50,10 @@ struct WhatToPlayShareCardContent: Equatable {
     let bestMoveConfidenceDetail: String?
     let nextActionTitle: String?
     let nextActionDetail: String?
+    let retryPromptTitle: String?
+    let retryPromptDetail: String?
+    let retryPromptRecommendedCardName: String?
+    let retryPromptExpectedImprovement: Int?
     let selectedRank: Int?
     let selectedImpact: Int?
     let selectedImpactDetail: String?
@@ -104,6 +108,9 @@ enum WhatToPlayShareCard {
         let decisionQualityTitle = review?.decisionQuality?.title
         let comparisonSummary = selectedOption.map {
             WhatToPlayOptionComparison.summary(for: scenario, selectedCard: $0.card)
+        }
+        let retryPrompt = selectedOption.flatMap {
+            WhatToPlayStatsAnalyzer.retryPrompt(for: $0, in: scenario)
         }
         let checklist = WhatToPlayStatsAnalyzer.preDecisionChecklist(for: scenario)
         let tacticalReason = selectedOption.flatMap(tacticalReason(for:))
@@ -162,6 +169,10 @@ enum WhatToPlayShareCard {
             bestMoveConfidenceDetail: comparisonSummary?.bestMoveConfidence?.detail,
             nextActionTitle: comparisonSummary?.nextActionTitle,
             nextActionDetail: comparisonSummary?.nextActionDetail,
+            retryPromptTitle: retryPrompt?.title,
+            retryPromptDetail: retryPrompt?.detail,
+            retryPromptRecommendedCardName: retryPrompt?.recommendedCard?.accessibilityName,
+            retryPromptExpectedImprovement: retryPrompt?.expectedImprovement,
             selectedRank: selectedOption?.rank,
             selectedImpact: selectedOption?.expectedImpact,
             selectedImpactDetail: selectedOption.map { WhatToPlayImpactFormatter.detail(for: $0.impactBreakdown) },
@@ -278,6 +289,18 @@ enum WhatToPlayShareCard {
             }
             if let nextActionDetail = content.nextActionDetail {
                 lines.append(nextActionDetail)
+            }
+            if let retryPromptTitle = content.retryPromptTitle {
+                lines.append("\("أعد نفس الموقف".localized): \(retryPromptTitle)")
+            }
+            if let retryPromptDetail = content.retryPromptDetail {
+                lines.append(retryPromptDetail)
+            }
+            if let retryPromptRecommendedCardName = content.retryPromptRecommendedCardName {
+                lines.append("\("جرّب الورقة".localized): \(retryPromptRecommendedCardName)")
+            }
+            if let retryPromptExpectedImprovement = content.retryPromptExpectedImprovement {
+                lines.append("\("تحسن متوقع".localized): +\(retryPromptExpectedImprovement)")
             }
             if let lostAgainstSecondBestPoints = content.lostAgainstSecondBestPoints {
                 lines.append("\("فارق عن ثاني أفضل".localized): \(lostAgainstSecondBestPoints)")
