@@ -4223,6 +4223,7 @@ struct WhatToPlayShareCardPreview: View {
 
             tableCardsSection
             legalCardsSection
+            blockedCardsSection
 
             if content.includesAnswerReview {
                 answerReviewSection
@@ -4275,6 +4276,25 @@ struct WhatToPlayShareCardPreview: View {
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppSpacing.xs) {
                 ForEach(content.legalCardNames, id: \.self) { cardName in
                     shareChip(cardName)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var blockedCardsSection: some View {
+        if !content.blockedCards.isEmpty {
+            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                Text("الأوراق الممنوعة".localized)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.86))
+
+                ForEach(Array(content.blockedCards.prefix(3).enumerated()), id: \.offset) { _, blocked in
+                    shareNote("\(blocked.cardName): \(blocked.reason)")
+                }
+
+                if content.blockedCards.count > 3 {
+                    shareChip("+\(content.blockedCards.count - 3) \("ورقة ممنوعة".localized)")
                 }
             }
         }

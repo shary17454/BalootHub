@@ -468,6 +468,32 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(data.prefix(4), pngSignature)
     }
 
+    @MainActor
+    func testShareCardImageRendererWritesBlockedCardReasonsPNGFile() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(
+            seed: 2026,
+            difficulty: .easy,
+            preferredFocus: .followSuit
+        )
+        let content = WhatToPlayShareCard.content(for: scenario)
+
+        XCTAssertFalse(content.blockedCards.isEmpty)
+        XCTAssertTrue(content.blockedCards.allSatisfy { !$0.reason.isEmpty })
+
+        let url = try WhatToPlayShareCardImageRenderer.render(
+            content: content,
+            fileName: "baloothub-share-card-blocked-cards-test.png",
+            scale: 2
+        )
+        defer { try? FileManager.default.removeItem(at: url) }
+
+        let data = try Data(contentsOf: url)
+        let pngSignature = Data([0x89, 0x50, 0x4E, 0x47])
+
+        XCTAssertGreaterThan(data.count, 1024)
+        XCTAssertEqual(data.prefix(4), pngSignature)
+    }
+
     func testHandAnalysisShareSummaryIsDeterministic() {
         let analysis = HandAnalyzer.analyze(hand: strongHokumHand())
 
