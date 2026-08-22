@@ -624,6 +624,7 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let remainingAttempts: Int
     let nextSeed: UInt64?
     let nextSeedState: WhatToPlayTrainingSessionNextSeedState
+    let nextSeedGuidance: String?
     let title: String
     let detail: String
     let iconName: String
@@ -2295,6 +2296,7 @@ enum WhatToPlayStatsAnalyzer {
             attempts: attempts,
             plan: plan
         )
+        let nextSeedGuidance = trainingSessionNextSeedGuidance(nextSeedState)
 
         if progressMetrics.category == .notStarted {
             return WhatToPlayTrainingSessionProgress(
@@ -2340,6 +2342,7 @@ enum WhatToPlayStatsAnalyzer {
                 remainingAttempts: progressMetrics.remainingAttempts,
                 nextSeed: nextSeed,
                 nextSeedState: nextSeedState,
+                nextSeedGuidance: nextSeedGuidance,
                 title: "ابدأ الجلسة".localized,
                 detail: "لم تبدأ هذه الجلسة بعد؛ اضغط زر البدء لتوليد أول موقف.".localized,
                 iconName: "play.circle.fill",
@@ -2401,6 +2404,7 @@ enum WhatToPlayStatsAnalyzer {
                 remainingAttempts: progressMetrics.remainingAttempts,
                 nextSeed: nextSeed,
                 nextSeedState: nextSeedState,
+                nextSeedGuidance: nextSeedGuidance,
                 title: "الجلسة قيد التنفيذ".localized,
                 detail: "أكمل بقية المواقف قبل الحكم على هدف الجلسة.".localized,
                 iconName: "timer.circle.fill",
@@ -2462,6 +2466,7 @@ enum WhatToPlayStatsAnalyzer {
                 remainingAttempts: progressMetrics.remainingAttempts,
                 nextSeed: nextSeed,
                 nextSeedState: nextSeedState,
+                nextSeedGuidance: nextSeedGuidance,
                 title: "هدف الجلسة تحقق".localized,
                 detail: "أداؤك في هذه الدفعة وصل إلى هدف الخطة.".localized,
                 iconName: "checkmark.seal.fill",
@@ -2522,6 +2527,7 @@ enum WhatToPlayStatsAnalyzer {
             remainingAttempts: progressMetrics.remainingAttempts,
             nextSeed: nextSeed,
             nextSeedState: nextSeedState,
+            nextSeedGuidance: nextSeedGuidance,
             title: "أعد الجلسة".localized,
             detail: trainingSessionRepeatDetail(
                 accuracyTargetMet: progressMetrics.accuracyTargetMet,
@@ -2771,6 +2777,19 @@ enum WhatToPlayStatsAnalyzer {
             return .retry(nextSeed)
         }
         return .fresh(nextSeed)
+    }
+
+    private static func trainingSessionNextSeedGuidance(
+        _ state: WhatToPlayTrainingSessionNextSeedState
+    ) -> String? {
+        switch state {
+        case let .retry(seed):
+            return "\("أعد الموقف".localized) \(seed) \("لأن آخر محاولة عليه كانت غير صحيحة قبل احتساب تقدم جديد.".localized)"
+        case let .fresh(seed):
+            return "\("الموقف".localized) \(seed) \("جديد داخل خطة الجلسة الحالية.".localized)"
+        case .complete:
+            return nil
+        }
     }
 
     private static func trainingSessionReviewStatusLine(

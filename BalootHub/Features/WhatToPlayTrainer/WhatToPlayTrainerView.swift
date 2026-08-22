@@ -695,6 +695,13 @@ struct WhatToPlayTrainerView: View {
                 .foregroundStyle(AppColor.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
 
+            if let nextSeedGuidance = progress.nextSeedGuidance {
+                Text(nextSeedGuidance)
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(trainingSessionNextSeedGuidanceTint(progress.nextSeedState))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
             ProgressView(
                 value: Double(progress.completedAttempts),
                 total: Double(max(progress.targetAttempts, 1))
@@ -1053,6 +1060,17 @@ struct WhatToPlayTrainerView: View {
             return "الموقف القادم".localized
         case .complete:
             return "الجلسة مكتملة".localized
+        }
+    }
+
+    private func trainingSessionNextSeedGuidanceTint(_ state: WhatToPlayTrainingSessionNextSeedState) -> Color {
+        switch state {
+        case .retry:
+            return AppColor.warning
+        case .fresh:
+            return AppColor.textSecondary
+        case .complete:
+            return AppColor.success
         }
     }
 
