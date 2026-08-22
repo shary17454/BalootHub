@@ -2520,14 +2520,20 @@ enum WhatToPlayStatsAnalyzer {
                 expectedImprovement: 0
             )
         case .continueSession:
+            let nextSeed = nextTrainingSessionSeed(for: attempts, plan: plan)
             return WhatToPlayTrainingSessionReview(
                 action: .continueSession,
                 title: "أكمل نفس الجلسة".localized,
-                detail: progress.nextStepDetail,
+                detail: trainingSessionNextSeedDetail(
+                    progress.nextStepDetail,
+                    nextSeed: nextSeed,
+                    attempts: attempts,
+                    plan: plan
+                ),
                 contextLine: trainingSessionReviewContext(difficulty: plan.difficulty, focusKind: plan.focusKind, gameMode: plan.gameMode, trumpSuit: plan.trumpSuit),
                 iconName: progress.nextStepIconName,
                 replaySeed: nil,
-                nextSeed: nextTrainingSessionSeed(for: attempts, plan: plan),
+                nextSeed: nextSeed,
                 difficulty: plan.difficulty,
                 focusKind: plan.focusKind,
                 gameMode: plan.gameMode,
@@ -2584,14 +2590,20 @@ enum WhatToPlayStatsAnalyzer {
                     expectedImprovement: microDrillExpectedImprovement(for: reviewItem)
                 )
             }
+            let nextSeed = nextTrainingSessionSeed(for: attempts, plan: plan)
             return WhatToPlayTrainingSessionReview(
                 action: .repeatSession,
                 title: "كرر الخطة نفسها".localized,
-                detail: progress.nextStepDetail,
+                detail: trainingSessionNextSeedDetail(
+                    progress.nextStepDetail,
+                    nextSeed: nextSeed,
+                    attempts: attempts,
+                    plan: plan
+                ),
                 contextLine: trainingSessionReviewContext(difficulty: plan.difficulty, focusKind: plan.focusKind, gameMode: plan.gameMode, trumpSuit: plan.trumpSuit),
                 iconName: "arrow.counterclockwise.circle.fill",
                 replaySeed: nil,
-                nextSeed: nextTrainingSessionSeed(for: attempts, plan: plan),
+                nextSeed: nextSeed,
                 difficulty: plan.difficulty,
                 focusKind: plan.focusKind,
                 gameMode: plan.gameMode,
@@ -2600,14 +2612,20 @@ enum WhatToPlayStatsAnalyzer {
                 expectedImprovement: 0
             )
         case .repeatSession:
+            let nextSeed = nextTrainingSessionSeed(for: attempts, plan: plan)
             return WhatToPlayTrainingSessionReview(
                 action: .repeatSession,
                 title: "كرر الخطة نفسها".localized,
-                detail: progress.nextStepDetail,
+                detail: trainingSessionNextSeedDetail(
+                    progress.nextStepDetail,
+                    nextSeed: nextSeed,
+                    attempts: attempts,
+                    plan: plan
+                ),
                 contextLine: trainingSessionReviewContext(difficulty: plan.difficulty, focusKind: plan.focusKind, gameMode: plan.gameMode, trumpSuit: plan.trumpSuit),
                 iconName: "arrow.counterclockwise.circle.fill",
                 replaySeed: nil,
-                nextSeed: nextTrainingSessionSeed(for: attempts, plan: plan),
+                nextSeed: nextSeed,
                 difficulty: plan.difficulty,
                 focusKind: plan.focusKind,
                 gameMode: plan.gameMode,
@@ -2616,6 +2634,22 @@ enum WhatToPlayStatsAnalyzer {
                 expectedImprovement: 0
             )
         }
+    }
+
+    private static func trainingSessionNextSeedDetail(
+        _ baseDetail: String,
+        nextSeed: UInt64,
+        attempts: [WhatToPlayAttempt],
+        plan: WhatToPlayTrainingSessionPlan
+    ) -> String {
+        guard let latest = latestMatchingTrainingAttempt(seed: nextSeed, attempts: attempts, plan: plan),
+              !latest.isCorrect
+        else { return baseDetail }
+
+        return [
+            "\("أعد موقف".localized) \(nextSeed) \("قبل الانتقال؛ آخر محاولة عليه كانت غير صحيحة.".localized)",
+            baseDetail
+        ].joined(separator: " ")
     }
 
     private static func trainingSessionReviewMistakeDetail(_ item: WhatToPlayReviewItem) -> String {
@@ -2787,6 +2821,15 @@ enum WhatToPlayStatsAnalyzer {
             .filter { attempt in
                 seenSeeds.insert(attempt.replaySeed).inserted
             }
+    }
+
+    private static func latestMatchingTrainingAttempt(
+        seed: UInt64,
+        attempts: [WhatToPlayAttempt],
+        plan: WhatToPlayTrainingSessionPlan
+    ) -> WhatToPlayAttempt? {
+        uniqueMatchingTrainingAttempts(for: attempts, plan: plan)
+            .first { $0.replaySeed == seed }
     }
 
     private static func sessionImpactExtreme(

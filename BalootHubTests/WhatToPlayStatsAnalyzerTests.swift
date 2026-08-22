@@ -4281,6 +4281,22 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(review.expectedImprovement, 0)
     }
 
+    func testTrainingSessionReviewExplainsRetryingIncorrectNextSeed() {
+        let plan = sessionPlan(difficulty: .medium, focusKind: .followSuit, count: 3, target: 67, seedBase: 900)
+        let attempts = [
+            attempt(daysAgo: 2, correct: true, impact: 4, bestImpact: 4, focusKind: .followSuit, seed: 900),
+            attempt(daysAgo: 1, correct: false, impact: -2, bestImpact: 4, focusKind: .followSuit, seed: 901)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+        let review = WhatToPlayStatsAnalyzer.trainingSessionReview(for: progress, attempts: attempts, plan: plan)
+
+        XCTAssertEqual(review.action, .continueSession)
+        XCTAssertEqual(review.nextSeed, 901)
+        XCTAssertTrue(review.detail.contains("\("أعد موقف".localized) 901"))
+        XCTAssertTrue(review.detail.contains("آخر محاولة عليه كانت غير صحيحة.".localized))
+    }
+
     func testTrainingSessionReviewReplaysWorstMistakeBeforeRepeating() {
         let plan = sessionPlan(difficulty: .medium, focusKind: .followSuit, gameMode: .hokum, count: 3, target: 67)
         let attempts = [
@@ -4459,13 +4475,15 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         count: Int,
         target: Int,
         impactTarget: Int = 0,
-        maxCostlyDecisions: Int? = nil
+        maxCostlyDecisions: Int? = nil,
+        seedBase: UInt64? = nil
     ) -> WhatToPlayTrainingSessionPlan {
         WhatToPlayTrainingSessionPlan(
             difficulty: difficulty,
             focusKind: focusKind,
             gameMode: gameMode,
             trumpSuit: trumpSuit,
+            seedBase: seedBase,
             scenarioCount: count,
             targetAccuracyPercent: target,
             targetAverageExpectedImpact: impactTarget,
