@@ -86,15 +86,49 @@ final class WhatToPlayOptionDisclosureTests: XCTestCase {
         XCTAssertTrue(label.contains("محاكاة الجولة".localized))
     }
 
+    func testAccessibilityIncludesProjectedLossesAfterChoice() {
+        let label = WhatToPlayOptionDisclosure.accessibilityLabel(
+            cardName: "إكة سباتي",
+            rank: 4,
+            isRevealed: true,
+            projectedTeamPoints: 40,
+            lostProjectedTeamPoints: 12,
+            lostProjectedAgainstSecondBestPoints: 8
+        )
+
+        XCTAssertTrue(label.contains("نقاط محاكاة ضائعة".localized))
+        XCTAssertTrue(label.contains("12"))
+        XCTAssertTrue(label.contains("فاقد ثاني محاكاة".localized))
+        XCTAssertTrue(label.contains("8"))
+    }
+
+    func testAccessibilityOmitsDuplicateSecondSimulationLoss() {
+        let label = WhatToPlayOptionDisclosure.accessibilityLabel(
+            cardName: "إكة سباتي",
+            rank: 4,
+            isRevealed: true,
+            projectedTeamPoints: 40,
+            lostProjectedTeamPoints: 12,
+            lostProjectedAgainstSecondBestPoints: 12
+        )
+
+        XCTAssertTrue(label.contains("نقاط محاكاة ضائعة".localized))
+        XCTAssertFalse(label.contains("فاقد ثاني محاكاة".localized))
+    }
+
     func testAccessibilityHidesImprovementBeforeChoice() {
         let label = WhatToPlayOptionDisclosure.accessibilityLabel(
             cardName: "إكة سباتي",
             rank: 3,
             isRevealed: false,
+            lostProjectedTeamPoints: 12,
+            lostProjectedAgainstSecondBestPoints: 8,
             expectedImprovement: 16,
             expectedImprovementSourceTitle: "محاكاة الجولة".localized
         )
 
+        XCTAssertFalse(label.contains("نقاط محاكاة ضائعة".localized))
+        XCTAssertFalse(label.contains("فاقد ثاني محاكاة".localized))
         XCTAssertFalse(label.contains("تحسن متوقع".localized))
         XCTAssertFalse(label.contains("مصدر التحسن".localized))
         XCTAssertFalse(label.contains("محاكاة الجولة".localized))

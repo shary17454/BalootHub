@@ -2974,12 +2974,22 @@ struct WhatToPlayTrainerView: View {
         let bestSimulationCard = scenario.flatMap { WhatToPlayTrainer.bestProjectedOption(in: $0.options)?.card }
         let secondBestSimulationCard = scenario.flatMap { WhatToPlayTrainer.secondBestProjectedOption(in: $0.options)?.card }
         let improvement = scenario.map { WhatToPlayOptionComparison.expectedImprovement(for: option, in: $0) }
+        let bestProjectedTeamPoints = scenario.flatMap { WhatToPlayTrainer.bestProjectedOption(in: $0.options)?.projectedTeamPoints }
+        let secondBestProjectedTeamPoints = scenario.flatMap { WhatToPlayTrainer.secondBestProjectedOption(in: $0.options)?.projectedTeamPoints }
+        let lostProjectedTeamPoints = bestProjectedTeamPoints.map {
+            max(0, $0 - option.projectedTeamPoints)
+        }
+        let lostProjectedAgainstSecondBestPoints = secondBestProjectedTeamPoints.map {
+            max(0, $0 - option.projectedTeamPoints)
+        }
         return WhatToPlayOptionDisclosure.accessibilityLabel(
             cardName: option.card.accessibilityName,
             rank: option.rank,
             isRevealed: selectedOption != nil,
             expectedImpact: option.expectedImpact,
             projectedTeamPoints: option.projectedTeamPoints,
+            lostProjectedTeamPoints: lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: lostProjectedAgainstSecondBestPoints,
             expectedImprovement: improvement?.points,
             expectedImprovementSourceTitle: improvement.flatMap {
                 $0.points > 0 ? WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: $0.source) : nil
