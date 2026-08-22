@@ -204,6 +204,43 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
         XCTAssertNil(target.pendingReviewSelection)
     }
 
+    func testTrainingSessionReviewItemCanStartBlindPractice() throws {
+        let selected = PlayingCard(suit: .clubs, rank: .seven)
+        let stored = attempt(
+            seed: 31,
+            selected: selected,
+            best: PlayingCard(suit: .hearts, rank: .ace),
+            second: PlayingCard(suit: .spades, rank: .king)
+        )
+        let plan = WhatToPlayTrainingSessionPlan(
+            difficulty: .medium,
+            focusKind: .followSuit,
+            gameMode: .hokum,
+            scenarioCount: 3,
+            targetAccuracyPercent: 100,
+            targetAverageExpectedImpact: 5,
+            title: "خطة".localized,
+            detail: "تفصيل".localized,
+            successMetric: "هدف".localized,
+            iconName: "target"
+        )
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: [stored], plan: plan)
+        let reviewItem = try XCTUnwrap(progress.reviewItem)
+        let target = WhatToPlayReviewScenarioTarget.practicingBlind(reviewItem)
+
+        XCTAssertEqual(reviewItem.seed, stored.replaySeed)
+        XCTAssertEqual(reviewItem.selectedCard, selected)
+        XCTAssertEqual(target.seed, stored.replaySeed)
+        XCTAssertEqual(target.difficulty, stored.difficulty)
+        XCTAssertEqual(target.focusKind, stored.focusKind)
+        XCTAssertEqual(target.preferredFocusRaw, WhatToPlayScenarioFocusKind.followSuit.rawValue)
+        XCTAssertEqual(target.gameMode, stored.gameMode)
+        XCTAssertEqual(target.preferredModeRaw, GameMode.hokum.rawValue)
+        XCTAssertEqual(target.trumpSuit, stored.contextTrumpSuit)
+        XCTAssertNil(target.pendingReviewSelection)
+    }
+
     private func attempt(
         seed: UInt64,
         difficulty: WhatToPlayDifficulty = .medium,

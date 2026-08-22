@@ -927,15 +927,27 @@ struct WhatToPlayTrainerView: View {
                             .minimumScaleFactor(0.85)
                     }
                     reviewSimulationView(reviewItem)
-                    Button {
-                        replayReviewItem(reviewItem)
-                    } label: {
-                        Label("إعادة الموقف".localized, systemImage: "arrow.clockwise")
-                            .frame(maxWidth: .infinity)
+                    HStack(spacing: AppSpacing.xs) {
+                        Button {
+                            replayReviewItem(reviewItem)
+                        } label: {
+                            Label("إعادة الموقف".localized, systemImage: "arrow.clockwise")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(AppColor.primary)
+                        .disabled(isGeneratingScenario)
+
+                        Button {
+                            practiceReviewItem(reviewItem)
+                        } label: {
+                            Label("تدرّب بدون كشف".localized, systemImage: "eye.slash.fill")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(AppColor.accent)
+                        .disabled(isGeneratingScenario)
                     }
-                    .buttonStyle(.bordered)
-                    .tint(AppColor.primary)
-                    .disabled(isGeneratingScenario)
 
                     ShareLink(item: WhatToPlayShareCard.reviewText(for: reviewItem)) {
                         Label("مشاركة موقف المراجعة".localized, systemImage: "square.and.arrow.up")
