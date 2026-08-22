@@ -372,6 +372,7 @@ enum WhatToPlayShareCard {
             lines.append(tacticalReasonDetail)
         }
 
+        lines.append("افتح مدرب وش تلعب واستورد رمز الموقف.".localized)
         lines.append("أعد الموقف وحاول اختيار ورقة أفضل.".localized)
         return lines.joined(separator: "\n")
     }

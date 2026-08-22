@@ -106,6 +106,60 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.canonicalScenarioCode, expectedCode)
     }
 
+    func testImporterLoadsReviewQueueShareText() async throws {
+        let scenario = try await WhatToPlayScenarioLoader.generate(
+            seed: 45,
+            difficulty: .hard,
+            preferredFocus: .trumpPressure,
+            preferredMode: .hokum,
+            preferredTrumpSuit: .spades
+        )
+        let selected = try XCTUnwrap(scenario.options.first { !$0.isExpertChoice })
+        let attempt = try XCTUnwrap(
+            WhatToPlayAttemptFactory.makeAttempt(scenario: scenario, evaluated: selected)
+        )
+        let reviewItem = try XCTUnwrap(
+            WhatToPlayStatsAnalyzer.reviewQueue(for: [attempt], limit: 1).first
+        )
+        let sharedText = WhatToPlayShareCard.reviewText(for: reviewItem)
+
+        let result = try await WhatToPlayShareCodeImporter.import(code: sharedText, existingScenarioCodes: [])
+
+        XCTAssertEqual(result.kind, .reviewedDecision(isDuplicate: false))
+        XCTAssertEqual(result.selectedOption?.card, selected.card)
+        XCTAssertEqual(result.attempt?.selectedCard, selected.card)
+        XCTAssertEqual(result.attempt?.scenarioCode, reviewItem.scenarioCode)
+        XCTAssertEqual(result.canonicalScenarioCode, reviewItem.scenarioCode)
+    }
+
+    func testImporterDoesNotDuplicateReviewQueueShareText() async throws {
+        let scenario = try await WhatToPlayScenarioLoader.generate(
+            seed: 45,
+            difficulty: .hard,
+            preferredFocus: .trumpPressure,
+            preferredMode: .hokum,
+            preferredTrumpSuit: .spades
+        )
+        let selected = try XCTUnwrap(scenario.options.first { !$0.isExpertChoice })
+        let attempt = try XCTUnwrap(
+            WhatToPlayAttemptFactory.makeAttempt(scenario: scenario, evaluated: selected)
+        )
+        let reviewItem = try XCTUnwrap(
+            WhatToPlayStatsAnalyzer.reviewQueue(for: [attempt], limit: 1).first
+        )
+        let sharedText = WhatToPlayShareCard.reviewText(for: reviewItem)
+
+        let result = try await WhatToPlayShareCodeImporter.import(
+            code: sharedText,
+            existingScenarioCodes: [reviewItem.scenarioCode]
+        )
+
+        XCTAssertEqual(result.kind, .reviewedDecision(isDuplicate: true))
+        XCTAssertEqual(result.selectedOption?.card, selected.card)
+        XCTAssertNil(result.attempt)
+        XCTAssertEqual(result.canonicalScenarioCode, reviewItem.scenarioCode)
+    }
+
     func testImporterLoadsCodeEmbeddedInURLPath() async throws {
         let scenario = try await WhatToPlayScenarioLoader.generate(
             seed: 2026,

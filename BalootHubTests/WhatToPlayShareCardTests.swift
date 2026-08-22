@@ -427,6 +427,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("شدة خسارة القيمة".localized): \(reviewItem.valueLossTitle)"))
         XCTAssertTrue(text.contains("\("تركيز التدريب".localized): \("ضغط الحكم".localized)"))
         XCTAssertTrue(text.contains("\("النمط".localized): \(GameMode.hokum.arabicName) \(Suit.spades.spokenName)"))
+        XCTAssertTrue(text.contains("افتح مدرب وش تلعب واستورد رمز الموقف.".localized))
         XCTAssertTrue(text.contains("أعد الموقف وحاول اختيار ورقة أفضل.".localized))
     }
 
