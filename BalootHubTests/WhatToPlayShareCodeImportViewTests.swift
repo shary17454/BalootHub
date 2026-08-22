@@ -23,6 +23,22 @@ final class WhatToPlayShareCodeImportViewTests: XCTestCase {
         XCTAssertTrue(line.contains("\("فاقد ثاني محاكاة".localized): \(result.lostProjectedAgainstSecondBestPoints)"))
     }
 
+    func testShareCodeImportSimulationAlternativeAccessibilityLabelIsSpokenClearly() {
+        let view = WhatToPlayTrainerView()
+        let line = [
+            "\("ثاني محاكاة".localized): إكة سباتي",
+            "\("ثاني نتيجة محاكاة".localized): 58",
+            "\("فاقد ثاني محاكاة".localized): 8"
+        ].joined(separator: " · ")
+
+        let label = view.shareCodeSimulationAlternativeAccessibilityLabel(for: line)
+
+        XCTAssertEqual(
+            label,
+            "\("بديل المحاكاة المستورد".localized): \("ثاني محاكاة".localized): إكة سباتي، \("ثاني نتيجة محاكاة".localized): 58، \("فاقد ثاني محاكاة".localized): 8"
+        )
+    }
+
     func testShareCodeImportOmitsSimulationAlternativeLineForPrompt() async throws {
         let view = WhatToPlayTrainerView()
         let scenario = try await WhatToPlayScenarioLoader.generate(

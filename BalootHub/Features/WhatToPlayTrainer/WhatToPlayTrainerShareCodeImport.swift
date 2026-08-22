@@ -51,6 +51,11 @@ extension WhatToPlayTrainerView {
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(AppColor.accent)
                     .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityLabel(
+                        shareCodeSimulationAlternativeAccessibilityLabel(
+                            for: shareCodeSimulationAlternativeMessage
+                        )
+                    )
             }
         }
         .padding(AppSpacing.sm)
@@ -180,6 +185,12 @@ extension WhatToPlayTrainerView {
             parts.append("\("فاقد ثاني محاكاة".localized): \(result.lostProjectedAgainstSecondBestPoints)")
         }
         return parts.joined(separator: " · ")
+    }
+
+    func shareCodeSimulationAlternativeAccessibilityLabel(
+        for line: String
+    ) -> String {
+        "\("بديل المحاكاة المستورد".localized): \(line.replacingOccurrences(of: " · ", with: "، "))"
     }
 
     private func shareCodeMessageColor(_ style: WhatToPlayShareCodeMessageStyle) -> Color {
