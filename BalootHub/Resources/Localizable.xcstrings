@@ -23572,6 +23572,62 @@
         }
       }
     },
+    "أخطاء عند التلزيم" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Fehler beim Bedienen der Farbe" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Follow-suit mistakes" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Errores al seguir el palo" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Erreurs en suivant la couleur" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सूट फ़ॉलो करने में गलतियाँ" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kesalahan mengikuti suit" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Ошибки при следовании масти" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Renk takip hataları" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "رنگ فالو کرنے کی غلطیاں" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "跟花失误" } }
+      }
+    },
+    "تكررت أخطاء مكلفة عندما كان على الطاولة لون مطلوب. قبل اختيار الورقة، احصر أوراق اللون أولًا ثم قارن هل تلعب للحماية أو لتخفيف الخسارة." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Teure Fehler traten wiederholt auf, wenn eine Farbe bedient werden musste. Prüfe vor der Karte zuerst alle Karten dieser Farbe und entscheide dann, ob du schützt oder den Verlust verringerst." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Costly mistakes repeated when there was a required suit on the table. Before choosing, isolate that suit first, then compare whether to protect or reduce the loss." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Los errores costosos se repitieron cuando había un palo obligatorio en la mesa. Antes de elegir, separa primero esas cartas y compara si conviene proteger o reducir la pérdida." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Les erreurs coûteuses se répètent quand une couleur demandée est sur la table. Avant de choisir, isole d'abord cette couleur, puis compare s'il faut protéger ou limiter la perte." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "जब टेबल पर आवश्यक सूट था तब महंगी गलतियाँ दोहराईं। पत्ती चुनने से पहले उसी सूट की पत्तियाँ अलग करें, फिर तुलना करें कि बचाना है या नुकसान घटाना है।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Kesalahan mahal berulang saat ada suit wajib di meja. Sebelum memilih kartu, pisahkan suit itu dulu, lalu bandingkan apakah perlu melindungi atau mengurangi kerugian." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Дорогие ошибки повторялись, когда на столе была обязательная масть. Перед выбором сначала отделите карты этой масти, затем решите: защищать очки или снижать потерю." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Masada takip edilmesi gereken renk varken maliyetli hatalar tekrarlandı. Kart seçmeden önce o rengi ayır, sonra korumak mı yoksa kaybı azaltmak mı gerektiğini karşılaştır." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "جب میز پر لازمی رنگ تھا تو مہنگی غلطیاں دہرائیں۔ پتا چننے سے پہلے اسی رنگ کے پتے الگ کریں، پھر دیکھیں کہ حفاظت کرنی ہے یا نقصان کم کرنا ہے۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "当桌上有必须跟的花色时，昂贵失误反复出现。选牌前先把该花色筛出，再比较是保护分数还是减少损失。" } }
+      }
+    },
+    "ضغط الحكم يربك قرارك" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Trumpfdruck verunsichert deine Entscheidung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Trump pressure disrupts your decision" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "La presión de triunfo altera tu decisión" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "La pression de l'atout perturbe ta décision" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "हुकुम का दबाव आपका निर्णय बिगाड़ता है" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Tekanan trump mengganggu keputusanmu" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Давление козыря сбивает решение" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Koz baskısı kararını bozuyor" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "حکم کا دباؤ آپ کے فیصلے کو بگاڑتا ہے" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "将牌压力干扰你的决策" } }
+      }
+    },
+    "أكثر من خطأ حديث جاء في مواقف حكم أو وفيها حكم على الطاولة. راقب قوة الحكم المتبقية ولا تقطع إلا إذا كان القطع يربح الأكلة أو يحمي نقاط الفريق." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Mehrere aktuelle Fehler entstanden in Trumpfsituationen oder wenn Trumpf auf dem Tisch lag. Beobachte die verbleibende Trumpfstärke und stich nur, wenn es den Stich gewinnt oder Teampunkte schützt." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "More than one recent mistake came in trump situations or with trump on the table. Watch the remaining trump strength, and trump in only when it wins the trick or protects team points." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Más de un error reciente ocurrió en situaciones de triunfo o con triunfo en la mesa. Vigila la fuerza de triunfo restante y corta solo si ganas la baza o proteges puntos del equipo." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Plusieurs erreurs récentes viennent de situations d'atout ou avec de l'atout sur la table. Surveille la force d'atout restante et coupe seulement si cela gagne le pli ou protège les points de l'équipe." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "एक से अधिक हाल की गलती हुकुम स्थितियों में या मेज़ पर हुकुम होने पर हुई। बची हुई हुकुम ताकत देखें और तभी काटें जब उससे बाज़ी जीते या टीम के अंक बचें।" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Lebih dari satu kesalahan terbaru terjadi dalam situasi trump atau saat trump ada di meja. Perhatikan kekuatan trump tersisa, dan potong hanya jika itu memenangkan trik atau melindungi poin tim." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Несколько последних ошибок были в козырных ситуациях или когда козырь уже был на столе. Следите за оставшейся силой козырей и перебивайте только если это выигрывает взятку или защищает очки команды." } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Birden fazla son hata koz durumlarında ya da masada koz varken geldi. Kalan koz gücünü izle ve yalnızca eli kazanacaksa veya takım puanını koruyacaksa kozla kes." } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "ایک سے زیادہ حالیہ غلطی حکم کے حالات میں یا میز پر حکم ہونے پر ہوئی۔ باقی حکم کی طاقت دیکھیں، اور تبھی کاٹیں جب اس سے چال جیتے یا ٹیم کے پوائنٹس بچیں۔" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "不止一次近期失误发生在将牌局面或桌上已有将牌时。观察剩余将牌强度，只有在能赢墩或保护队伍分数时才用将牌切。" } }
+      }
+    },
     "تبتعد عن أفضل خيارين" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Du entfernst dich von den zwei besten Optionen" } },
