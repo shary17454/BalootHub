@@ -81,6 +81,8 @@ final class PlayerStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(summary.projectedSecondBestComparisonAttempts, 3)
         XCTAssertEqual(summary.averageProjectedSecondBestGap, 7)
+        XCTAssertEqual(summary.trainingExpectedImprovement, 24)
+        XCTAssertEqual(summary.trainingExpectedImprovementSourceTitle, "الأثر المتوقع".localized)
     }
 
     func testTrainingPerformanceCanShapePlayerStyleWithoutFinishedMatches() {

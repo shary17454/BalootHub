@@ -1,4 +1,5 @@
 import Foundation
+import BalootEngine
 
 struct PlayerStatsSummary: Equatable {
     let finishedMatches: Int
@@ -22,6 +23,8 @@ struct PlayerStatsSummary: Equatable {
     let averageTrainingLostPoints: Int
     let projectedSecondBestComparisonAttempts: Int
     let averageProjectedSecondBestGap: Int
+    let trainingExpectedImprovement: Int
+    let trainingExpectedImprovementSourceTitle: String?
     let trainingValueCapturePercent: Int
     let trainingStyleTitle: String
     let trainingStyleDetail: String
@@ -59,6 +62,11 @@ enum PlayerStatsAnalyzer {
         let trainingStyle = WhatToPlayStatsAnalyzer.playStyle(for: whatToPlayAttempts)
         let decisionPattern = WhatToPlayStatsAnalyzer.decisionPattern(for: whatToPlayAttempts)
         let trainingTarget = WhatToPlayStatsAnalyzer.coachingTip(for: whatToPlayAttempts)
+        let trainingImprovement = WhatToPlayExpectedImprovementMetrics.calculate(
+            lostExpectedPoints: trainingSummary.lostExpectedPoints,
+            lostProjectedTeamPoints: trainingSummary.lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: trainingSummary.lostProjectedAgainstSecondBestPoints
+        )
         let scoringSummary = ScoringQuizStatsAnalyzer.summarize(attempts: scoringQuizAttempts)
         let scoringCategoryFocus = scoringCategoryFocus(for: scoringQuizAttempts)
 
@@ -146,6 +154,10 @@ enum PlayerStatsAnalyzer {
             averageTrainingLostPoints: trainingSummary.averageLostExpectedPoints,
             projectedSecondBestComparisonAttempts: trainingSummary.projectedSecondBestComparisonAttempts,
             averageProjectedSecondBestGap: trainingSummary.averageProjectedSecondBestGap,
+            trainingExpectedImprovement: trainingImprovement.points,
+            trainingExpectedImprovementSourceTitle: trainingImprovement.points > 0
+                ? WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: trainingImprovement.source)
+                : nil,
             trainingValueCapturePercent: trainingSummary.valueCapturePercent,
             trainingStyleTitle: trainingStyle.title,
             trainingStyleDetail: trainingStyle.detail,

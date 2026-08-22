@@ -147,6 +147,10 @@ struct PlayerStatsView: View {
             metric("متوسط الفاقد".localized, "\(summary.averageTrainingLostPoints)", "minus.circle.fill")
             metric("متوسط فاقد ثاني محاكاة".localized, "\(summary.averageProjectedSecondBestGap)", "chart.line.downtrend.xyaxis")
             metric("محاولات ثاني محاكاة".localized, "\(summary.projectedSecondBestComparisonAttempts)", "scope")
+            if summary.trainingExpectedImprovement > 0, let source = summary.trainingExpectedImprovementSourceTitle {
+                metric("تحسن متوقع".localized, "+\(summary.trainingExpectedImprovement)", "arrow.up.forward.circle.fill")
+                metric("مصدر التحسن".localized, source, "scope")
+            }
             metric("التقاط القيمة".localized, "\(summary.trainingValueCapturePercent)%", "gauge.with.dots.needle.67percent")
         }
         .padding(AppSpacing.md)
