@@ -775,6 +775,10 @@ struct WhatToPlayMicroDrill: Equatable {
     let trumpSuit: Suit?
     let recommendedCard: PlayingCard?
     let expectedImprovement: Int
+
+    var canStartScenario: Bool {
+        seed != nil && difficulty != nil
+    }
 }
 
 enum WhatToPlayStyleKind: Equatable {

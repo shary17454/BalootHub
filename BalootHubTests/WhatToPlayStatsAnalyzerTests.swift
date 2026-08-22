@@ -2860,6 +2860,41 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertNil(drill.focusKind)
         XCTAssertNil(drill.recommendedCard)
         XCTAssertEqual(drill.expectedImprovement, 0)
+        XCTAssertTrue(drill.canStartScenario)
+    }
+
+    func testMicroDrillCannotStartScenarioWithoutSeedOrDifficulty() {
+        let missingSeed = WhatToPlayMicroDrill(
+            title: "اختبار",
+            detail: "اختبار",
+            iconName: "target",
+            steps: [],
+            reviewItem: nil,
+            seed: nil,
+            difficulty: .easy,
+            focusKind: nil,
+            gameMode: nil,
+            trumpSuit: nil,
+            recommendedCard: nil,
+            expectedImprovement: 0
+        )
+        let missingDifficulty = WhatToPlayMicroDrill(
+            title: "اختبار",
+            detail: "اختبار",
+            iconName: "target",
+            steps: [],
+            reviewItem: nil,
+            seed: 1,
+            difficulty: nil,
+            focusKind: nil,
+            gameMode: nil,
+            trumpSuit: nil,
+            recommendedCard: nil,
+            expectedImprovement: 0
+        )
+
+        XCTAssertFalse(missingSeed.canStartScenario)
+        XCTAssertFalse(missingDifficulty.canStartScenario)
     }
 
     func testMicroDrillPrioritizesReviewWhenSessionNeedsReview() {
@@ -2879,6 +2914,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(drill.difficulty, .hard)
         XCTAssertEqual(drill.recommendedCard, PlayingCard(suit: .clubs, rank: .seven))
         XCTAssertEqual(drill.expectedImprovement, 11)
+        XCTAssertTrue(drill.canStartScenario)
     }
 
     func testMicroDrillPrioritizesHighValueReviewBeforeCoverage() {

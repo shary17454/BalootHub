@@ -1102,8 +1102,11 @@ struct WhatToPlayTrainerView: View {
                 .buttonStyle(.borderedProminent)
                 .tint(AppColor.primary)
                 .disabled(isGeneratingScenario)
-            } else if let seed = microDrill.seed,
-                      let difficulty = microDrill.difficulty {
+            }
+
+            if microDrill.canStartScenario,
+               let seed = microDrill.seed,
+               let difficulty = microDrill.difficulty {
                 Button {
                     startMicroDrill(
                         scenarioSeed: seed,
@@ -1113,16 +1116,20 @@ struct WhatToPlayTrainerView: View {
                         trumpSuit: microDrill.trumpSuit
                     )
                 } label: {
-                    Label("بدء الخطة المصغرة".localized, systemImage: "play.circle.fill")
+                    Label(microDrillStartButtonTitle(microDrill), systemImage: "play.circle.fill")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
-                .tint(AppColor.primary)
+                .tint(microDrill.reviewItem == nil ? AppColor.primary : AppColor.accent)
                 .disabled(isGeneratingScenario)
             }
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private func microDrillStartButtonTitle(_ drill: WhatToPlayMicroDrill) -> String {
+        drill.reviewItem == nil ? "بدء الخطة المصغرة".localized : "تدرّب على الموقف".localized
     }
 
     private var statsCard: some View {

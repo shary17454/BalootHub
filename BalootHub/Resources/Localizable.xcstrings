@@ -23617,6 +23617,16 @@
         }
       }
     },
+    "تدرّب على الموقف" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Practice this scenario"
+          }
+        }
+      }
+    },
     "فرصة قيمة ضاعت" : {
       "localizations" : {
         "en" : {
