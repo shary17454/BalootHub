@@ -22,6 +22,8 @@ struct WhatToPlayStatsSummary: Equatable {
     let projectedSecondBestComparisonAttempts: Int
     let lostProjectedAgainstSecondBestPoints: Int
     let averageProjectedSecondBestGap: Int
+    let expectedImprovement: Int
+    let expectedImprovementSource: WhatToPlayExpectedImprovementSource?
 
     static let empty = WhatToPlayStatsSummary(
         attempts: 0,
@@ -43,7 +45,9 @@ struct WhatToPlayStatsSummary: Equatable {
         averageLostProjectedTeamPoints: 0,
         projectedSecondBestComparisonAttempts: 0,
         lostProjectedAgainstSecondBestPoints: 0,
-        averageProjectedSecondBestGap: 0
+        averageProjectedSecondBestGap: 0,
+        expectedImprovement: 0,
+        expectedImprovementSource: nil
     )
 }
 
@@ -956,6 +960,11 @@ enum WhatToPlayStatsAnalyzer {
                 )
             }
         )
+        let improvementMetrics = WhatToPlayExpectedImprovementMetrics.calculate(
+            lostExpectedPoints: metrics.lostExpectedPoints,
+            lostProjectedTeamPoints: metrics.lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: metrics.lostProjectedAgainstSecondBestPoints
+        )
 
         return WhatToPlayStatsSummary(
             attempts: metrics.attempts,
@@ -977,7 +986,9 @@ enum WhatToPlayStatsAnalyzer {
             averageLostProjectedTeamPoints: metrics.averageLostProjectedTeamPoints,
             projectedSecondBestComparisonAttempts: metrics.projectedSecondBestComparisonAttempts,
             lostProjectedAgainstSecondBestPoints: metrics.lostProjectedAgainstSecondBestPoints,
-            averageProjectedSecondBestGap: metrics.averageProjectedSecondBestGap
+            averageProjectedSecondBestGap: metrics.averageProjectedSecondBestGap,
+            expectedImprovement: improvementMetrics.points,
+            expectedImprovementSource: improvementMetrics.points > 0 ? improvementMetrics.source : nil
         )
     }
 

@@ -1,5 +1,4 @@
 import Foundation
-import BalootEngine
 
 struct PlayerStatsSummary: Equatable {
     let finishedMatches: Int
@@ -62,11 +61,6 @@ enum PlayerStatsAnalyzer {
         let trainingStyle = WhatToPlayStatsAnalyzer.playStyle(for: whatToPlayAttempts)
         let decisionPattern = WhatToPlayStatsAnalyzer.decisionPattern(for: whatToPlayAttempts)
         let trainingTarget = WhatToPlayStatsAnalyzer.coachingTip(for: whatToPlayAttempts)
-        let trainingImprovement = WhatToPlayExpectedImprovementMetrics.calculate(
-            lostExpectedPoints: trainingSummary.lostExpectedPoints,
-            lostProjectedTeamPoints: trainingSummary.lostProjectedTeamPoints,
-            lostProjectedAgainstSecondBestPoints: trainingSummary.lostProjectedAgainstSecondBestPoints
-        )
         let scoringSummary = ScoringQuizStatsAnalyzer.summarize(attempts: scoringQuizAttempts)
         let scoringCategoryFocus = scoringCategoryFocus(for: scoringQuizAttempts)
 
@@ -154,10 +148,10 @@ enum PlayerStatsAnalyzer {
             averageTrainingLostPoints: trainingSummary.averageLostExpectedPoints,
             projectedSecondBestComparisonAttempts: trainingSummary.projectedSecondBestComparisonAttempts,
             averageProjectedSecondBestGap: trainingSummary.averageProjectedSecondBestGap,
-            trainingExpectedImprovement: trainingImprovement.points,
-            trainingExpectedImprovementSourceTitle: trainingImprovement.points > 0
-                ? WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: trainingImprovement.source)
-                : nil,
+            trainingExpectedImprovement: trainingSummary.expectedImprovement,
+            trainingExpectedImprovementSourceTitle: trainingSummary.expectedImprovementSource.map {
+                WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: $0)
+            },
             trainingValueCapturePercent: trainingSummary.valueCapturePercent,
             trainingStyleTitle: trainingStyle.title,
             trainingStyleDetail: trainingStyle.detail,

@@ -34,6 +34,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.projectedSecondBestComparisonAttempts, 0)
         XCTAssertEqual(summary.lostProjectedAgainstSecondBestPoints, 0)
         XCTAssertEqual(summary.averageProjectedSecondBestGap, 0)
+        XCTAssertEqual(summary.expectedImprovement, 0)
+        XCTAssertNil(summary.expectedImprovementSource)
     }
 
     func testSummaryAccumulatesLostExpectedPointsWhenBestImpactIsKnown() {
@@ -109,6 +111,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.projectedSecondBestComparisonAttempts, 2)
         XCTAssertEqual(summary.lostProjectedAgainstSecondBestPoints, 6)
         XCTAssertEqual(summary.averageProjectedSecondBestGap, 3)
+        XCTAssertEqual(summary.expectedImprovement, 12)
+        XCTAssertEqual(summary.expectedImprovementSource, .projectedTeamPoints)
     }
 
     func testSimulationChoiceSummaryClassifiesBestSecondAndOtherSimulationPicks() {

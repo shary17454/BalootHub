@@ -1339,6 +1339,18 @@ struct WhatToPlayTrainerView: View {
                             .foregroundStyle(AppColor.textSecondary)
                     }
                 }
+                if statsSummary.expectedImprovement > 0, let source = statsSummary.expectedImprovementSource {
+                    InfoRow(
+                        icon: "arrow.up.forward.circle.fill",
+                        title: "تحسن متوقع".localized,
+                        value: "+\(statsSummary.expectedImprovement)"
+                    )
+                    InfoRow(
+                        icon: "scope",
+                        title: "مصدر التحسن".localized,
+                        value: WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: source)
+                    )
+                }
                 if statsSummary.lostExpectedPoints > 0 {
                     InfoRow(
                         icon: "drop.fill",
