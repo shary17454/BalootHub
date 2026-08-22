@@ -54,6 +54,7 @@ struct WhatToPlayTrainerView: View {
     @State var shareCodeInput = ""
     @State var shareCodeMessage: String?
     @State var shareCodeMessageStyle: WhatToPlayShareCodeMessageStyle = .neutral
+    @State var shareCodeSimulationAlternativeMessage: String?
     @State var isApplyingImportedShareCode = false
     @State private var isSuppressingPreferredTrumpSuitChange = false
 

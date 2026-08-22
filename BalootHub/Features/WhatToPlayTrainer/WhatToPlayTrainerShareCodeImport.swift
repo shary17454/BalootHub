@@ -45,6 +45,13 @@ extension WhatToPlayTrainerView {
                     .foregroundStyle(shareCodeMessageColor(shareCodeMessageStyle))
                     .fixedSize(horizontal: false, vertical: true)
             }
+
+            if let shareCodeSimulationAlternativeMessage {
+                Label(shareCodeSimulationAlternativeMessage, systemImage: "point.3.connected.trianglepath.dotted")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(AppColor.accent)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
         .padding(AppSpacing.sm)
         .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
@@ -58,6 +65,7 @@ extension WhatToPlayTrainerView {
         else {
             shareCodeMessage = "رمز الموقف غير صالح.".localized
             shareCodeMessageStyle = .error
+            shareCodeSimulationAlternativeMessage = nil
             return
         }
 
@@ -72,6 +80,7 @@ extension WhatToPlayTrainerView {
         isGeneratingScenario = true
         shareCodeMessage = "جارٍ تحميل الموقف من الرمز.".localized
         shareCodeMessageStyle = .neutral
+        shareCodeSimulationAlternativeMessage = nil
 
         generationTask = Task { @MainActor in
             do {
@@ -97,6 +106,7 @@ extension WhatToPlayTrainerView {
                         modelContext.rollback()
                         shareCodeMessage = "تم تحميل مراجعة القرار، لكن تعذّر حفظها في الإحصاءات.".localized
                         shareCodeMessageStyle = .warning
+                        shareCodeSimulationAlternativeMessage = shareCodeSimulationAlternativeLine(for: imported)
                         shareCodeInput = ""
                         saveTrainerPreferences()
                         Task { @MainActor in
@@ -108,6 +118,7 @@ extension WhatToPlayTrainerView {
                 }
                 shareCodeMessage = imported.statusMessage
                 shareCodeMessageStyle = shareCodeMessageStyle(for: imported.statusTone)
+                shareCodeSimulationAlternativeMessage = shareCodeSimulationAlternativeLine(for: imported)
                 shareCodeInput = ""
                 saveTrainerPreferences()
                 Task { @MainActor in
@@ -120,6 +131,7 @@ extension WhatToPlayTrainerView {
                 scenario = nil
                 shareCodeMessage = "رمز الموقف غير صالح.".localized
                 shareCodeMessageStyle = .error
+                shareCodeSimulationAlternativeMessage = nil
                 isApplyingImportedShareCode = false
             } catch WhatToPlayShareCodeImporter.ImportError.selectedCardUnavailable,
                     WhatToPlayAttemptFactory.ShareCodeAttemptError.selectedCardUnavailable {
@@ -127,12 +139,14 @@ extension WhatToPlayTrainerView {
                 scenario = nil
                 shareCodeMessage = "الورقة الموجودة في الرمز لا تنتمي لهذا الموقف.".localized
                 shareCodeMessageStyle = .error
+                shareCodeSimulationAlternativeMessage = nil
                 isApplyingImportedShareCode = false
             } catch {
                 guard !Task.isCancelled else { return }
                 scenario = nil
                 shareCodeMessage = "تعذّر تحميل الموقف من الرمز.".localized
                 shareCodeMessageStyle = .error
+                shareCodeSimulationAlternativeMessage = nil
                 isApplyingImportedShareCode = false
             }
             isGeneratingScenario = false
@@ -150,6 +164,22 @@ extension WhatToPlayTrainerView {
         case .duplicateReview:
             return .warning
         }
+    }
+
+    func shareCodeSimulationAlternativeLine(
+        for result: WhatToPlayShareCodeImportResult
+    ) -> String? {
+        guard let card = result.secondBestSimulationCard else { return nil }
+        var parts = [
+            "\("ثاني محاكاة".localized): \(card.accessibilityName)"
+        ]
+        if let projectedTeamPoints = result.secondBestProjectedTeamPoints {
+            parts.append("\("ثاني نتيجة محاكاة".localized): \(projectedTeamPoints)")
+        }
+        if result.lostProjectedAgainstSecondBestPoints > 0 {
+            parts.append("\("فاقد ثاني محاكاة".localized): \(result.lostProjectedAgainstSecondBestPoints)")
+        }
+        return parts.joined(separator: " · ")
     }
 
     private func shareCodeMessageColor(_ style: WhatToPlayShareCodeMessageStyle) -> Color {
