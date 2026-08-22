@@ -553,6 +553,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(
             text.contains("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: improvement.source))")
         )
+        let reviewCardSourceTitle = try XCTUnwrap(WhatToPlayStatsAnalyzer.reviewCardSourceTitle(for: reviewItem))
+        XCTAssertTrue(text.contains("\("سبب ورقة المراجعة".localized): \(reviewCardSourceTitle)"))
         XCTAssertTrue(text.contains("\("تركيز التدريب".localized): \("ضغط الحكم".localized)"))
         XCTAssertTrue(text.contains("\("النمط".localized): \(GameMode.hokum.arabicName) \(Suit.spades.spokenName)"))
         XCTAssertTrue(text.contains("افتح مدرب وش تلعب واستورد رمز الموقف.".localized))

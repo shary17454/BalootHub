@@ -444,6 +444,9 @@ enum WhatToPlayShareCard {
         if improvement.points > 0 {
             lines.append("\("تحسن متوقع".localized): +\(improvement.points)")
             lines.append("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: improvement.source))")
+            if let reviewCardSourceTitle = WhatToPlayStatsAnalyzer.reviewCardSourceTitle(for: item) {
+                lines.append("\("سبب ورقة المراجعة".localized): \(reviewCardSourceTitle)")
+            }
         }
         if let simulationSummary = item.simulationSummary {
             lines.append("\("نتيجة المحاكاة".localized): \(simulationSummary)")
