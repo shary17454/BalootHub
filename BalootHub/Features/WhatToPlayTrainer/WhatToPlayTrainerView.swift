@@ -3637,6 +3637,14 @@ struct WhatToPlayTrainerView: View {
             )
         )
         miniPlanMetric(
+            title: "أفضل محاكاة".localized,
+            value: optionSummaryCardText(
+                card: summary.bestSimulationCard,
+                impact: summary.bestSimulationExpectedImpact,
+                projectedTeamPoints: summary.bestSimulationProjectedTeamPoints
+            )
+        )
+        miniPlanMetric(
             title: "ثاني محاكاة".localized,
             value: optionSummaryCardText(
                 card: summary.secondBestSimulationCard,
