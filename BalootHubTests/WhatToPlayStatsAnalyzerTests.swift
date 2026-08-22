@@ -2039,9 +2039,9 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         let review = try XCTUnwrap(WhatToPlayStatsAnalyzer.decisionReview(for: selected, in: scenario))
 
         XCTAssertEqual(review.title, "راجع القرار بهذه الطريقة".localized)
-        XCTAssertEqual(review.steps.count, 3)
+        XCTAssertGreaterThanOrEqual(review.steps.count, 3)
         XCTAssertEqual(review.steps.first, expectedFirstReviewStep(for: scenario.context.focusKind))
-        XCTAssertEqual(review.steps.last, "أعد الموقف إذا كان الفارق أكثر من نقطتين متوقعتين.".localized)
+        XCTAssertTrue(review.steps.contains("أعد الموقف إذا كان الفارق أكثر من نقطتين متوقعتين.".localized))
     }
 
     func testDecisionReviewIncludesTacticalReasonForLeakingChoice() throws {
@@ -2067,6 +2067,26 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(review.steps.first, expectedFirstReviewStep(for: .followSuit))
         XCTAssertTrue(review.steps.contains("ابحث عن الورقة التي كانت ستحوّل الأكلة من خسارة إلى ربح.".localized))
+    }
+
+    func testDecisionReviewAddsReplayStepWhenSimulationLossDominates() {
+        let insight = WhatToPlayStatsAnalyzer.decisionInsight(
+            selectedRank: 2,
+            selectedImpact: 4,
+            bestImpact: 5,
+            secondBestImpact: 4,
+            selectedProjectedTeamPoints: 52,
+            bestProjectedTeamPoints: 54,
+            secondBestProjectedTeamPoints: 68
+        )
+
+        let review = WhatToPlayStatsAnalyzer.decisionReview(insight: insight, focusKind: .trumpPressure)
+
+        XCTAssertEqual(review.steps.count, 4)
+        XCTAssertTrue(review.steps.contains {
+            $0.contains("\("فاقد ثاني محاكاة".localized): 16")
+                && $0.contains("قارن نتيجة الجولة لا الأكلة فقط".localized)
+        })
     }
 
     func testNextDecisionActionReinforcesExpertMatchByFocus() {

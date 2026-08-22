@@ -3592,6 +3592,12 @@ enum WhatToPlayStatsAnalyzer {
             "أعد الموقف إذا كان الفارق أكثر من نقطتين متوقعتين.".localized
         ]
 
+        if simulationLoss(for: insight) > insight.lostExpectedPoints {
+            steps.append(
+                "\(simulationLossText(projectedLost: insight.lostProjectedTeamPoints, secondProjectedLost: insight.lostProjectedAgainstSecondBestPoints)). \("قارن نتيجة الجولة لا الأكلة فقط".localized)"
+            )
+        }
+
         if let tacticalReason {
             steps.append("\("سبب تكتيكي".localized): \(tacticalReason.title). \(tacticalReason.detail)")
         }
