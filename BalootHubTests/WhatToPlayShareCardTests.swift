@@ -740,6 +740,25 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("افتح مدرب وش تلعب وأكمل جلسة التدريب.".localized))
     }
 
+    func testCoachingTipShareTextContainsActionableTarget() throws {
+        let tip = WhatToPlayCoachingTip(
+            title: "راجع المحاكاة".localized,
+            detail: "راجع ثاني أفضل محاكاة قبل اعتماد قرار يبدو صحيحًا.".localized,
+            iconName: "chart.bar.xaxis",
+            targetLine: "\("المستوى".localized): \("صعب".localized) · \("النمط".localized): \("حكم".localized)",
+            targetDifficulty: .hard,
+            targetGameMode: .hokum
+        )
+
+        let text = WhatToPlayShareCard.coachingTipText(for: tip)
+
+        XCTAssertTrue(text.contains("نصيحة مدرب وش تلعب؟".localized))
+        XCTAssertTrue(text.contains(tip.title))
+        XCTAssertTrue(text.contains(tip.detail))
+        XCTAssertTrue(text.contains("\("الهدف المقترح".localized): \(try XCTUnwrap(tip.targetLine))"))
+        XCTAssertTrue(text.contains("افتح مدرب وش تلعب وابدأ التدريب المقترح.".localized))
+    }
+
     func testTrainingSessionProgressShareTextOmitsNextSeedAfterCompletion() {
         let plan = WhatToPlayTrainingSessionPlan(
             difficulty: .easy,

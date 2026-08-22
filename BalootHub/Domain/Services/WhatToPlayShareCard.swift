@@ -619,6 +619,21 @@ enum WhatToPlayShareCard {
         return lines.joined(separator: "\n")
     }
 
+    static func coachingTipText(for tip: WhatToPlayCoachingTip) -> String {
+        var lines = [
+            "نصيحة مدرب وش تلعب؟".localized,
+            tip.title,
+            tip.detail
+        ]
+
+        if let targetLine = tip.targetLine {
+            lines.append("\("الهدف المقترح".localized): \(targetLine)")
+        }
+
+        lines.append("افتح مدرب وش تلعب وابدأ التدريب المقترح.".localized)
+        return lines.joined(separator: "\n")
+    }
+
     private static func appendDecisionQualityLines(
         to lines: inout [String],
         content: WhatToPlayShareCardContent

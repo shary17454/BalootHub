@@ -1693,6 +1693,13 @@ struct WhatToPlayTrainerView: View {
                 .buttonStyle(.bordered)
                 .disabled(isGeneratingScenario)
             }
+
+            ShareLink(item: WhatToPlayShareCard.coachingTipText(for: tip)) {
+                Label("مشاركة نصيحة المدرب".localized, systemImage: "square.and.arrow.up")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .tint(AppColor.primary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppSpacing.sm)
