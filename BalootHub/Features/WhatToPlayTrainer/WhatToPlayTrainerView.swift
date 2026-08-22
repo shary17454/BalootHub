@@ -4352,6 +4352,18 @@ struct WhatToPlayShareCardPreview: View {
             if let nextActionDetail = content.nextActionDetail {
                 shareNote(nextActionDetail)
             }
+            if let retryPromptTitle = content.retryPromptTitle {
+                shareChip("\("أعد نفس الموقف".localized): \(retryPromptTitle)")
+            }
+            if let retryPromptDetail = content.retryPromptDetail {
+                shareNote(retryPromptDetail)
+            }
+            if let retryPromptRecommendedCardName = content.retryPromptRecommendedCardName {
+                shareChip("\("جرّب الورقة".localized): \(retryPromptRecommendedCardName)")
+            }
+            if let retryPromptExpectedImprovement = content.retryPromptExpectedImprovement {
+                shareChip("\("تحسن متوقع".localized): +\(retryPromptExpectedImprovement)")
+            }
             if let lostAgainstSecondBestPoints = content.lostAgainstSecondBestPoints {
                 shareChip("\("فارق عن ثاني أفضل".localized): \(lostAgainstSecondBestPoints)")
             }

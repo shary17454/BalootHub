@@ -443,12 +443,16 @@ final class WhatToPlayShareCardTests: XCTestCase {
     @MainActor
     func testShareCardImageRendererWritesReviewedDecisionPNGFile() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
-        let selected = try XCTUnwrap(scenario.options.last)
+        let selected = try XCTUnwrap(scenario.options.first {
+            WhatToPlayStatsAnalyzer.retryPrompt(for: $0, in: scenario) != nil
+        })
         let content = WhatToPlayShareCard.content(for: scenario, selectedOption: selected)
 
         XCTAssertTrue(content.includesAnswerReview)
         XCTAssertNotNil(content.selectedCardName)
         XCTAssertNotNil(content.bestCardName)
+        XCTAssertNotNil(content.retryPromptTitle)
+        XCTAssertNotNil(content.retryPromptDetail)
 
         let url = try WhatToPlayShareCardImageRenderer.render(
             content: content,
