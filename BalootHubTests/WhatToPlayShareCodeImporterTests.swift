@@ -21,6 +21,9 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertNil(result.attempt)
         XCTAssertEqual(result.canonicalScenarioCode, code)
         XCTAssertEqual(result.statusTone, .prompt)
+        XCTAssertNil(result.secondBestSimulationCard)
+        XCTAssertNil(result.secondBestProjectedTeamPoints)
+        XCTAssertEqual(result.lostProjectedAgainstSecondBestPoints, 0)
         XCTAssertTrue(result.statusMessage.contains("تم تحميل الموقف. اختر الورقة الأفضل.".localized))
         XCTAssertTrue(result.statusMessage.contains("\("رمز الموقف".localized): \(code)"))
         let contextContent = WhatToPlayShareCard.content(for: scenario)
@@ -146,14 +149,17 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         }
         if let secondBestSimulationCard = comparisonSummary.secondBestSimulationCard,
            secondBestSimulationCard != comparisonSummary.bestSimulationCard {
+            XCTAssertEqual(result.secondBestSimulationCard, secondBestSimulationCard)
             XCTAssertTrue(result.statusMessage.contains("\("ثاني محاكاة".localized): \(secondBestSimulationCard.accessibilityName)"))
         }
         if let secondBestSimulationProjectedTeamPoints = comparisonSummary.secondBestSimulationProjectedTeamPoints,
            comparisonSummary.secondBestSimulationCard != comparisonSummary.bestSimulationCard {
+            XCTAssertEqual(result.secondBestProjectedTeamPoints, secondBestSimulationProjectedTeamPoints)
             XCTAssertTrue(result.statusMessage.contains("\("ثاني نتيجة محاكاة".localized): \(secondBestSimulationProjectedTeamPoints)"))
         }
         if let selectedLostProjectedAgainstSecondBestPoints = comparisonSummary.selectedLostProjectedAgainstSecondBestPoints,
            selectedLostProjectedAgainstSecondBestPoints > 0 {
+            XCTAssertEqual(result.lostProjectedAgainstSecondBestPoints, selectedLostProjectedAgainstSecondBestPoints)
             XCTAssertTrue(result.statusMessage.contains("\("فاقد ثاني محاكاة".localized): \(selectedLostProjectedAgainstSecondBestPoints)"))
         }
         XCTAssertTrue(result.statusMessage.contains("\("سبب تكتيكي".localized): \(selectedComparisonRow.tacticalSummary)"))

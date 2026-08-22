@@ -22,6 +22,23 @@ struct WhatToPlayShareCodeImportResult {
     let expectedImprovement: Int
     let expectedImprovementSource: WhatToPlayExpectedImprovementSource?
 
+    var secondBestSimulationCard: PlayingCard? {
+        comparisonSummary?.secondBestSimulationCard
+    }
+
+    var secondBestProjectedTeamPoints: Int? {
+        comparisonSummary?.secondBestSimulationProjectedTeamPoints
+    }
+
+    var lostProjectedAgainstSecondBestPoints: Int {
+        max(0, comparisonSummary?.selectedLostProjectedAgainstSecondBestPoints ?? 0)
+    }
+
+    private var comparisonSummary: WhatToPlayOptionComparisonSummary? {
+        guard let selectedOption else { return nil }
+        return WhatToPlayOptionComparison.summary(for: scenario, selectedCard: selectedOption.card)
+    }
+
     var statusMessage: String {
         var lines = [
             statusTitle,
