@@ -3784,6 +3784,7 @@ struct WhatToPlayTrainerView: View {
         illegalMoveExplanation = nil
         shareImageURL = nil
         isRenderingShareImage = false
+        clearShareCodeImportFeedback()
         isRetryingCurrentScenario = false
         scenario = nil
         isGeneratingScenario = true

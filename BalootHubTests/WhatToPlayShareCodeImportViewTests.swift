@@ -12,6 +12,19 @@ final class WhatToPlayShareCodeImportViewTests: XCTestCase {
         XCTAssertEqual(view.shareCodeMessageStyle(for: .duplicateReview), .warning)
     }
 
+    func testClearShareCodeImportFeedbackRemovesStaleImportState() {
+        var view = WhatToPlayTrainerView()
+        view.shareCodeMessage = "تم تحميل مراجعة القرار".localized
+        view.shareCodeMessageStyle = .success
+        view.shareCodeSimulationAlternativeMessage = "ثاني محاكاة: إكة سباتي"
+
+        view.clearShareCodeImportFeedback()
+
+        XCTAssertNil(view.shareCodeMessage)
+        XCTAssertEqual(view.shareCodeMessageStyle, .neutral)
+        XCTAssertNil(view.shareCodeSimulationAlternativeMessage)
+    }
+
     func testShareCodeImportFormatsSimulationAlternativeLine() async throws {
         let view = WhatToPlayTrainerView()
         let result = try await importedResultWithSimulationAlternative()

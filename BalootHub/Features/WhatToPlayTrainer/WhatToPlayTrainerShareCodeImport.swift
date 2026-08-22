@@ -158,6 +158,12 @@ extension WhatToPlayTrainerView {
         }
     }
 
+    func clearShareCodeImportFeedback() {
+        shareCodeMessage = nil
+        shareCodeMessageStyle = .neutral
+        shareCodeSimulationAlternativeMessage = nil
+    }
+
     func shareCodeMessageStyle(
         for tone: WhatToPlayShareCodeImportStatusTone
     ) -> WhatToPlayShareCodeMessageStyle {
