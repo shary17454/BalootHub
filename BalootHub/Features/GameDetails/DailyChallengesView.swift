@@ -142,7 +142,8 @@ struct DailyChallengesView: View {
                let focusKind = challenge.whatToPlayFocusKind,
                let gameMode = challenge.whatToPlayGameMode {
                 let trumpSuit = challenge.whatToPlayTrumpSuit
-                let nextSeed = whatToPlayProgress?.nextSeed
+                let nextSeedState = whatToPlayProgress?.nextSeedState ?? .fresh(seed)
+                let nextSeed = nextSeedState.seed
                 LazyVGrid(columns: [
                     GridItem(.flexible(), spacing: AppSpacing.xs),
                     GridItem(.flexible(), spacing: AppSpacing.xs)
@@ -171,7 +172,7 @@ struct DailyChallengesView: View {
                             tab: appEnvironment.selectedTab
                         )
                     } label: {
-                        Label(whatToPlayButtonTitle(progress: progress, whatToPlayProgress: whatToPlayProgress), systemImage: "brain.head.profile")
+                        Label(whatToPlayButtonTitle(progress: progress, nextSeedState: nextSeedState), systemImage: "brain.head.profile")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)
@@ -252,9 +253,9 @@ struct DailyChallengesView: View {
 
     private func whatToPlayButtonTitle(
         progress: BalootChallengeProgress?,
-        whatToPlayProgress: WhatToPlayChallengeProgress?
+        nextSeedState: WhatToPlayChallengeProgress.NextSeedState
     ) -> String {
-        if whatToPlayProgress?.hasAttemptedNextSeed == true {
+        if case .retry = nextSeedState {
             return "إعادة موقف اليوم".localized
         }
         if (progress?.completedCount ?? 0) > 0 {

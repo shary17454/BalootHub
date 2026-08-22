@@ -723,6 +723,7 @@ final class DailyChallengeCenterTests: XCTestCase {
 
         XCTAssertEqual(progress.base.completedCount, min(2, challenge.targetCount))
         XCTAssertEqual(progress.nextSeed, seed &+ 1)
+        XCTAssertEqual(progress.nextSeedState, .fresh(seed &+ 1))
         XCTAssertTrue(progress.completedSeeds.contains(seed))
         XCTAssertTrue(progress.completedSeeds.contains(skippedSeed))
         XCTAssertFalse(progress.completedSeeds.contains(seed &+ 1))
@@ -762,6 +763,7 @@ final class DailyChallengeCenterTests: XCTestCase {
         XCTAssertFalse(progress.completedSeeds.contains(seed))
         XCTAssertTrue(progress.attemptedSeeds.contains(seed))
         XCTAssertTrue(progress.hasAttemptedNextSeed)
+        XCTAssertEqual(progress.nextSeedState, .retry(seed))
     }
 
     func testWhatToPlayProgressDoesNotRepeatSeedAfterCompletion() throws {
@@ -795,6 +797,7 @@ final class DailyChallengeCenterTests: XCTestCase {
         XCTAssertTrue(progress.isComplete)
         XCTAssertEqual(progress.base.completedCount, challenge.targetCount)
         XCTAssertNil(progress.nextSeed)
+        XCTAssertEqual(progress.nextSeedState, .complete)
     }
 
     func testWhatToPlayProgressIgnoresMatchingTrainingOutsideChallengeSeedSeries() throws {

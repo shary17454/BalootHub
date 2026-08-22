@@ -89,6 +89,21 @@ struct BalootChallengeProgress: Equatable {
 }
 
 struct WhatToPlayChallengeProgress: Equatable {
+    enum NextSeedState: Equatable {
+        case fresh(UInt64)
+        case retry(UInt64)
+        case complete
+
+        var seed: UInt64? {
+            switch self {
+            case let .fresh(seed), let .retry(seed):
+                seed
+            case .complete:
+                nil
+            }
+        }
+    }
+
     let base: BalootChallengeProgress
     let seedSeries: [UInt64]
     let completedSeeds: Set<UInt64>
@@ -105,6 +120,11 @@ struct WhatToPlayChallengeProgress: Equatable {
     var hasAttemptedNextSeed: Bool {
         guard let nextSeed else { return false }
         return attemptedSeeds.contains(nextSeed)
+    }
+
+    var nextSeedState: NextSeedState {
+        guard let nextSeed else { return .complete }
+        return attemptedSeeds.contains(nextSeed) ? .retry(nextSeed) : .fresh(nextSeed)
     }
 }
 
