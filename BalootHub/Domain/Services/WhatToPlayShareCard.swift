@@ -12,6 +12,13 @@ struct WhatToPlayShareCardContent: Equatable {
         let reason: String
     }
 
+    struct LegalCardLine: Equatable {
+        let cardName: String
+        let expectedImpact: Int?
+        let projectedTeamPoints: Int?
+        let isExpertChoice: Bool
+    }
+
     let title: String
     let subtitle: String
     let scenarioCode: String
@@ -26,6 +33,7 @@ struct WhatToPlayShareCardContent: Equatable {
     let legalOptionCount: Int
     let playedCardCount: Int
     let tableCards: [PlayedCardLine]
+    let legalCards: [LegalCardLine]
     let legalCardNames: [String]
     let blockedCards: [BlockedCardLine]
     let checklistTitle: String
@@ -122,6 +130,8 @@ enum WhatToPlayShareCard {
         let checklist = WhatToPlayStatsAnalyzer.preDecisionChecklist(for: scenario)
         let tacticalReason = selectedOption.flatMap(tacticalReason(for:))
         let selectedSimulationDisplay = selectedOption.map { WhatToPlaySimulationFormatter.display(for: $0.simulation) }
+        let sortedLegalOptions = sortedOptions(scenario.options)
+        let shouldRevealOptionImpact = selectedOption != nil
         return WhatToPlayShareCardContent(
             title: "وش تلعب؟".localized,
             subtitle: selectedOption == nil
@@ -144,7 +154,15 @@ enum WhatToPlayShareCard {
                     cardName: playedCard.card.accessibilityName
                 )
             },
-            legalCardNames: sortedOptions(scenario.options).map { $0.card.accessibilityName },
+            legalCards: sortedLegalOptions.map { option in
+                WhatToPlayShareCardContent.LegalCardLine(
+                    cardName: option.card.accessibilityName,
+                    expectedImpact: shouldRevealOptionImpact ? option.expectedImpact : nil,
+                    projectedTeamPoints: shouldRevealOptionImpact ? option.projectedTeamPoints : nil,
+                    isExpertChoice: shouldRevealOptionImpact && option.isExpertChoice
+                )
+            },
+            legalCardNames: sortedLegalOptions.map { $0.card.accessibilityName },
             blockedCards: scenario.blockedCards.map { blocked in
                 WhatToPlayShareCardContent.BlockedCardLine(
                     cardName: blocked.card.accessibilityName,
@@ -234,8 +252,8 @@ enum WhatToPlayShareCard {
         }
 
         lines.append("\("الأوراق القانونية".localized):")
-        for cardName in content.legalCardNames {
-            lines.append("- \(cardName)")
+        for legalCard in content.legalCards {
+            lines.append("- \(legalCardText(legalCard))")
         }
 
         if !content.blockedCards.isEmpty {
@@ -527,6 +545,20 @@ enum WhatToPlayShareCard {
             }
             return lhs.card.rank.ordinal < rhs.card.rank.ordinal
         }
+    }
+
+    static func legalCardText(_ legalCard: WhatToPlayShareCardContent.LegalCardLine) -> String {
+        var parts = [legalCard.cardName]
+        if let expectedImpact = legalCard.expectedImpact {
+            parts.append("\("الأثر المتوقع".localized): \(impactText(expectedImpact))")
+        }
+        if let projectedTeamPoints = legalCard.projectedTeamPoints {
+            parts.append("\("نقاط فريقك بعد المحاكاة".localized): \(projectedTeamPoints)")
+        }
+        if legalCard.isExpertChoice {
+            parts.append("اختيار الخبير".localized)
+        }
+        return parts.joined(separator: " · ")
     }
 
     private static func positiveImprovement(_ value: Int?) -> Int? {

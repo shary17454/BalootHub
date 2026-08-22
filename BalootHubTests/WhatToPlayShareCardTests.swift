@@ -77,6 +77,10 @@ final class WhatToPlayShareCardTests: XCTestCase {
             }
             return $0.card.rank.ordinal < $1.card.rank.ordinal
         }.map { $0.card.accessibilityName })
+        XCTAssertEqual(content.legalCards.map(\.cardName), content.legalCardNames)
+        XCTAssertTrue(content.legalCards.allSatisfy { $0.expectedImpact == nil })
+        XCTAssertTrue(content.legalCards.allSatisfy { $0.projectedTeamPoints == nil })
+        XCTAssertFalse(content.legalCards.contains { $0.isExpertChoice })
         let checklist = WhatToPlayStatsAnalyzer.preDecisionChecklist(for: scenario)
         XCTAssertEqual(content.checklistTitle, checklist.title)
         XCTAssertEqual(content.checklistItems, checklist.items)
@@ -203,6 +207,17 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("ثاني محاكاة".localized): \(secondBestSimulation.card.accessibilityName)"))
         XCTAssertTrue(text.contains("\("ثاني نتيجة محاكاة".localized): \(secondBestSimulation.projectedTeamPoints)"))
         XCTAssertTrue(text.contains("\("فاقد ثاني محاكاة".localized): \(max(0, secondBestSimulation.projectedTeamPoints - selected.projectedTeamPoints))"))
+        for option in scenario.options {
+            let line = WhatToPlayShareCard.legalCardText(
+                .init(
+                    cardName: option.card.accessibilityName,
+                    expectedImpact: option.expectedImpact,
+                    projectedTeamPoints: option.projectedTeamPoints,
+                    isExpertChoice: option.isExpertChoice
+                )
+            )
+            XCTAssertTrue(text.contains("- \(line)"))
+        }
         XCTAssertTrue(text.contains("\("ترتيب اختياري".localized): \(selected.rank)"))
         XCTAssertTrue(text.contains("\("نقاط متوقعة ضائعة".localized): \(max(0, best.expectedImpact - selected.expectedImpact))"))
         XCTAssertTrue(text.contains("\("نقاط محاكاة ضائعة".localized): \(max(0, bestSimulation.projectedTeamPoints - selected.projectedTeamPoints))"))
@@ -319,6 +334,16 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(reviewed.selectedImpact, selected.expectedImpact)
         XCTAssertEqual(reviewed.selectedImpactDetail, WhatToPlayImpactFormatter.detail(for: selected.impactBreakdown))
         XCTAssertEqual(reviewed.selectedProjectedTeamPoints, selected.projectedTeamPoints)
+        let sortedOptions = scenario.options.sorted {
+            if $0.card.suit.ordinal != $1.card.suit.ordinal {
+                return $0.card.suit.ordinal < $1.card.suit.ordinal
+            }
+            return $0.card.rank.ordinal < $1.card.rank.ordinal
+        }
+        XCTAssertEqual(reviewed.legalCards.map(\.cardName), sortedOptions.map { $0.card.accessibilityName })
+        XCTAssertEqual(reviewed.legalCards.map(\.expectedImpact), sortedOptions.map { Optional($0.expectedImpact) })
+        XCTAssertEqual(reviewed.legalCards.map(\.projectedTeamPoints), sortedOptions.map { Optional($0.projectedTeamPoints) })
+        XCTAssertEqual(reviewed.legalCards.map(\.isExpertChoice), sortedOptions.map(\.isExpertChoice))
         XCTAssertNotNil(reviewed.selectedSimulationSummary)
         XCTAssertEqual(
             reviewed.selectedSimulationTeamResult,

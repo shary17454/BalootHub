@@ -4434,8 +4434,8 @@ struct WhatToPlayShareCardPreview: View {
                 .foregroundStyle(.white.opacity(0.86))
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppSpacing.xs) {
-                ForEach(content.legalCardNames, id: \.self) { cardName in
-                    shareChip(cardName)
+                ForEach(content.legalCards, id: \.cardName) { legalCard in
+                    shareChip(WhatToPlayShareCard.legalCardText(legalCard))
                 }
             }
         }
