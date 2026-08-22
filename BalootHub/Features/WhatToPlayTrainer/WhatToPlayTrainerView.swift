@@ -815,6 +815,12 @@ struct WhatToPlayTrainerView: View {
                         value: "\(progress.averageProjectedSecondBestGap)"
                     )
                 }
+                if progress.expectedImprovement > 0, let source = progress.expectedImprovementSource {
+                    miniPlanMetric(
+                        title: "مصدر التحسن".localized,
+                        value: WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: source)
+                    )
+                }
                 if let maxCostlyDecisions = progress.maxCostlyDecisions {
                     miniPlanMetric(
                         title: "قرارات مكلفة".localized,

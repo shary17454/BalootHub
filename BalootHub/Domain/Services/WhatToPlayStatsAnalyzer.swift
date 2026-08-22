@@ -617,6 +617,8 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let projectedSecondBestComparisonAttempts: Int
     let lostProjectedAgainstSecondBestPoints: Int
     let averageProjectedSecondBestGap: Int
+    let expectedImprovement: Int
+    let expectedImprovementSource: WhatToPlayExpectedImprovementSource?
     let valueCapturePercent: Int
     let valueCaptureAttempts: Int
     let impactTitle: String
@@ -2292,6 +2294,11 @@ enum WhatToPlayStatsAnalyzer {
             completedAttempts: progressMetrics.completedAttempts,
             averageExpectedImpact: progressMetrics.averageExpectedImpact
         )
+        let improvementMetrics = WhatToPlayExpectedImprovementMetrics.calculate(
+            lostExpectedPoints: sessionSummary.lostExpectedPoints,
+            lostProjectedTeamPoints: sessionSummary.lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: sessionSummary.lostProjectedAgainstSecondBestPoints
+        )
         let bestDecisionHighlight = bestDecisionHighlight(for: sessionAttempts)
         let worstDecisionHighlight = worstDecisionHighlight(for: sessionAttempts)
         let reviewItem = reviewQueue(for: sessionAttempts, limit: 1).first
@@ -2359,6 +2366,8 @@ enum WhatToPlayStatsAnalyzer {
                 projectedSecondBestComparisonAttempts: 0,
                 lostProjectedAgainstSecondBestPoints: 0,
                 averageProjectedSecondBestGap: 0,
+                expectedImprovement: 0,
+                expectedImprovementSource: nil,
                 valueCapturePercent: 0,
                 valueCaptureAttempts: 0,
                 impactTitle: impactReading.title,
@@ -2423,6 +2432,8 @@ enum WhatToPlayStatsAnalyzer {
                 projectedSecondBestComparisonAttempts: sessionSummary.projectedSecondBestComparisonAttempts,
                 lostProjectedAgainstSecondBestPoints: sessionSummary.lostProjectedAgainstSecondBestPoints,
                 averageProjectedSecondBestGap: sessionSummary.averageProjectedSecondBestGap,
+                expectedImprovement: improvementMetrics.points,
+                expectedImprovementSource: improvementMetrics.points > 0 ? improvementMetrics.source : nil,
                 valueCapturePercent: sessionSummary.valueCapturePercent,
                 valueCaptureAttempts: sessionSummary.valueCaptureAttempts,
                 impactTitle: impactReading.title,
@@ -2487,6 +2498,8 @@ enum WhatToPlayStatsAnalyzer {
                 projectedSecondBestComparisonAttempts: sessionSummary.projectedSecondBestComparisonAttempts,
                 lostProjectedAgainstSecondBestPoints: sessionSummary.lostProjectedAgainstSecondBestPoints,
                 averageProjectedSecondBestGap: sessionSummary.averageProjectedSecondBestGap,
+                expectedImprovement: improvementMetrics.points,
+                expectedImprovementSource: improvementMetrics.points > 0 ? improvementMetrics.source : nil,
                 valueCapturePercent: sessionSummary.valueCapturePercent,
                 valueCaptureAttempts: sessionSummary.valueCaptureAttempts,
                 impactTitle: impactReading.title,
@@ -2550,6 +2563,8 @@ enum WhatToPlayStatsAnalyzer {
             projectedSecondBestComparisonAttempts: sessionSummary.projectedSecondBestComparisonAttempts,
             lostProjectedAgainstSecondBestPoints: sessionSummary.lostProjectedAgainstSecondBestPoints,
             averageProjectedSecondBestGap: sessionSummary.averageProjectedSecondBestGap,
+            expectedImprovement: improvementMetrics.points,
+            expectedImprovementSource: improvementMetrics.points > 0 ? improvementMetrics.source : nil,
             valueCapturePercent: sessionSummary.valueCapturePercent,
             valueCaptureAttempts: sessionSummary.valueCaptureAttempts,
             impactTitle: impactReading.title,

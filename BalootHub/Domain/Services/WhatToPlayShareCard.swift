@@ -454,11 +454,6 @@ enum WhatToPlayShareCard {
     }
 
     static func trainingSessionProgressText(for progress: WhatToPlayTrainingSessionProgress) -> String {
-        let improvement = WhatToPlayExpectedImprovementMetrics.calculate(
-            lostExpectedPoints: progress.lostExpectedPoints,
-            lostProjectedTeamPoints: progress.lostProjectedTeamPoints,
-            lostProjectedAgainstSecondBestPoints: progress.lostProjectedAgainstSecondBestPoints
-        )
         var lines = [
             "تقدم جلسة وش تلعب؟".localized,
             progress.title,
@@ -498,8 +493,8 @@ enum WhatToPlayShareCard {
         if progress.lostProjectedAgainstSecondBestPoints > 0 {
             lines.append("\("فاقد ثاني محاكاة".localized): \(progress.lostProjectedAgainstSecondBestPoints)")
         }
-        if improvement.points > 0 {
-            lines.append("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: improvement.source))")
+        if progress.expectedImprovement > 0, let source = progress.expectedImprovementSource {
+            lines.append("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: source))")
         }
 
         lines.append("افتح مدرب وش تلعب وأكمل جلسة التدريب.".localized)

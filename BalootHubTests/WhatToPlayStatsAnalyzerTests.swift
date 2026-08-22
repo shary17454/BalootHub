@@ -3947,6 +3947,8 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.projectedSecondBestComparisonAttempts, 3)
         XCTAssertEqual(progress.lostProjectedAgainstSecondBestPoints, 20)
         XCTAssertEqual(progress.averageProjectedSecondBestGap, 7)
+        XCTAssertEqual(progress.expectedImprovement, 28)
+        XCTAssertEqual(progress.expectedImprovementSource, .projectedTeamPoints)
     }
 
     func testTrainingSessionGradePenalizesProjectedRoundLoss() {

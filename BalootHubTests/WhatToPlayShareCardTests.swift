@@ -679,6 +679,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
         let text = WhatToPlayShareCard.trainingSessionProgressText(for: progress)
 
         XCTAssertEqual(progress.lostProjectedAgainstSecondBestPoints, 32)
+        XCTAssertEqual(progress.expectedImprovement, 32)
+        XCTAssertEqual(progress.expectedImprovementSource, .projectedSecondBestPoints)
         XCTAssertTrue(text.contains("\("فاقد ثاني محاكاة".localized): 32"))
         XCTAssertTrue(text.contains("\("مصدر التحسن".localized): \("ثاني أفضل محاكاة".localized)"))
     }
