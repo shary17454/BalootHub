@@ -79,6 +79,7 @@ extension WhatToPlayTrainerView {
                 preferredTrumpSuit = parsed.trumpSuit ?? imported.scenario.state.trumpSuit
                 scenario = imported.scenario
                 selectedOption = imported.selectedOption
+                renderShareImageForCurrentScenario()
                 if let attempt = imported.attempt {
                     modelContext.insert(attempt)
                     do {

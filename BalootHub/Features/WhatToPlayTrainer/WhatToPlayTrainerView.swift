@@ -3703,7 +3703,7 @@ struct WhatToPlayTrainerView: View {
     }
 
     @MainActor
-    private func renderShareImageForCurrentScenario() {
+    func renderShareImageForCurrentScenario() {
         guard let scenario else {
             shareImageURL = nil
             isRenderingShareImage = false
