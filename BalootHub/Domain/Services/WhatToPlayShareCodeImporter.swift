@@ -15,15 +15,18 @@ struct WhatToPlayShareCodeImportResult {
     let canonicalScenarioCode: String
 
     var statusMessage: String {
+        let message: String
         switch kind {
         case .prompt:
-            return "تم تحميل الموقف. اختر الورقة الأفضل.".localized
+            message = "تم تحميل الموقف. اختر الورقة الأفضل.".localized
         case .reviewedDecision(let isDuplicate):
             if isDuplicate {
-                return "تم تحميل مراجعة القرار. هذه المحاولة موجودة في الإحصاءات.".localized
+                message = "تم تحميل مراجعة القرار. هذه المحاولة موجودة في الإحصاءات.".localized
+            } else {
+                message = "تم تحميل مراجعة القرار وإضافتها للإحصاءات.".localized
             }
-            return "تم تحميل مراجعة القرار وإضافتها للإحصاءات.".localized
         }
+        return "\(message)\n\("رمز الموقف".localized): \(canonicalScenarioCode)"
     }
 }
 

@@ -19,7 +19,8 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertNil(result.selectedOption)
         XCTAssertNil(result.attempt)
         XCTAssertEqual(result.canonicalScenarioCode, code)
-        XCTAssertEqual(result.statusMessage, "تم تحميل الموقف. اختر الورقة الأفضل.".localized)
+        XCTAssertTrue(result.statusMessage.contains("تم تحميل الموقف. اختر الورقة الأفضل.".localized))
+        XCTAssertTrue(result.statusMessage.contains("\("رمز الموقف".localized): \(code)"))
     }
 
     func testImporterLoadsReviewedDecisionAndCreatesAttempt() async throws {
@@ -38,7 +39,8 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.attempt?.selectedCard, selected.card)
         XCTAssertEqual(result.attempt?.scenarioCode, code)
         XCTAssertEqual(result.canonicalScenarioCode, code)
-        XCTAssertEqual(result.statusMessage, "تم تحميل مراجعة القرار وإضافتها للإحصاءات.".localized)
+        XCTAssertTrue(result.statusMessage.contains("تم تحميل مراجعة القرار وإضافتها للإحصاءات.".localized))
+        XCTAssertTrue(result.statusMessage.contains("\("رمز الموقف".localized): \(code)"))
     }
 
     func testImporterCanRunOffMainActor() async throws {
@@ -278,10 +280,8 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.kind, .reviewedDecision(isDuplicate: true))
         XCTAssertEqual(result.selectedOption?.card, selected.card)
         XCTAssertNil(result.attempt)
-        XCTAssertEqual(
-            result.statusMessage,
-            "تم تحميل مراجعة القرار. هذه المحاولة موجودة في الإحصاءات.".localized
-        )
+        XCTAssertTrue(result.statusMessage.contains("تم تحميل مراجعة القرار. هذه المحاولة موجودة في الإحصاءات.".localized))
+        XCTAssertTrue(result.statusMessage.contains("\("رمز الموقف".localized): \(code)"))
     }
 
     func testImporterDoesNotCreateDuplicateAttemptFromPercentEncodedSharedURL() async throws {
