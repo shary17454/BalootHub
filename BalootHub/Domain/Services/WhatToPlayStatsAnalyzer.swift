@@ -616,6 +616,7 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let impactIconName: String
     let reviewItem: WhatToPlayReviewItem?
     let remainingAttempts: Int
+    let nextSeed: UInt64?
     let title: String
     let detail: String
     let iconName: String
@@ -2279,6 +2280,9 @@ enum WhatToPlayStatsAnalyzer {
             targetAverageExpectedImpact: plan.targetAverageExpectedImpact,
             averageLostProjectedTeamPoints: sessionSummary.averageLostProjectedTeamPoints
         )
+        let nextSeed = progressMetrics.category == .achieved
+            ? nil
+            : nextTrainingSessionSeed(for: attempts, plan: plan)
 
         if progressMetrics.category == .notStarted {
             return WhatToPlayTrainingSessionProgress(
@@ -2322,6 +2326,7 @@ enum WhatToPlayStatsAnalyzer {
                 impactIconName: impactReading.iconName,
                 reviewItem: nil,
                 remainingAttempts: progressMetrics.remainingAttempts,
+                nextSeed: nextSeed,
                 title: "ابدأ الجلسة".localized,
                 detail: "لم تبدأ هذه الجلسة بعد؛ اضغط زر البدء لتوليد أول موقف.".localized,
                 iconName: "play.circle.fill",
@@ -2381,6 +2386,7 @@ enum WhatToPlayStatsAnalyzer {
                 impactIconName: impactReading.iconName,
                 reviewItem: reviewItem,
                 remainingAttempts: progressMetrics.remainingAttempts,
+                nextSeed: nextSeed,
                 title: "الجلسة قيد التنفيذ".localized,
                 detail: "أكمل بقية المواقف قبل الحكم على هدف الجلسة.".localized,
                 iconName: "timer.circle.fill",
@@ -2440,6 +2446,7 @@ enum WhatToPlayStatsAnalyzer {
                 impactIconName: impactReading.iconName,
                 reviewItem: reviewItem,
                 remainingAttempts: progressMetrics.remainingAttempts,
+                nextSeed: nextSeed,
                 title: "هدف الجلسة تحقق".localized,
                 detail: "أداؤك في هذه الدفعة وصل إلى هدف الخطة.".localized,
                 iconName: "checkmark.seal.fill",
@@ -2498,6 +2505,7 @@ enum WhatToPlayStatsAnalyzer {
             impactIconName: impactReading.iconName,
             reviewItem: reviewItem,
             remainingAttempts: progressMetrics.remainingAttempts,
+            nextSeed: nextSeed,
             title: "أعد الجلسة".localized,
             detail: trainingSessionRepeatDetail(
                 accuracyTargetMet: progressMetrics.accuracyTargetMet,

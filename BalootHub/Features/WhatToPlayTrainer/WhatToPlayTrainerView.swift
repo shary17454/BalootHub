@@ -717,6 +717,12 @@ struct WhatToPlayTrainerView: View {
                     title: "أفضل دقة ممكنة".localized,
                     value: "\(progress.bestPossibleAccuracyPercent)%"
                 )
+                if let nextSeed = progress.nextSeed {
+                    miniPlanMetric(
+                        title: "الموقف القادم".localized,
+                        value: "\(nextSeed)"
+                    )
+                }
                 miniPlanMetric(
                     title: "متوسط الأثر".localized,
                     value: impactText(progress.averageExpectedImpact)
