@@ -2571,7 +2571,7 @@ enum WhatToPlayStatsAnalyzer {
                 contextLine: trainingSessionReviewContext(difficulty: plan.difficulty, focusKind: plan.focusKind, gameMode: plan.gameMode, trumpSuit: plan.trumpSuit),
                 iconName: "play.circle.fill",
                 replaySeed: nil,
-                nextSeed: nextTrainingSessionSeed(for: attempts, plan: plan),
+                nextSeed: trainingSessionReviewNextSeed(progress: progress, attempts: attempts, plan: plan),
                 difficulty: plan.difficulty,
                 focusKind: plan.focusKind,
                 gameMode: plan.gameMode,
@@ -2580,7 +2580,7 @@ enum WhatToPlayStatsAnalyzer {
                 expectedImprovement: 0
             )
         case .continueSession:
-            let nextSeed = nextTrainingSessionSeed(for: attempts, plan: plan)
+            let nextSeed = trainingSessionReviewNextSeed(progress: progress, attempts: attempts, plan: plan)
             let retriesIncorrectNextSeed = trainingSessionRetriesIncorrectNextSeed(
                 nextSeed: nextSeed,
                 attempts: attempts,
@@ -2660,7 +2660,7 @@ enum WhatToPlayStatsAnalyzer {
                     expectedImprovement: microDrillExpectedImprovement(for: reviewItem)
                 )
             }
-            let nextSeed = nextTrainingSessionSeed(for: attempts, plan: plan)
+            let nextSeed = trainingSessionReviewNextSeed(progress: progress, attempts: attempts, plan: plan)
             let retriesIncorrectNextSeed = trainingSessionRetriesIncorrectNextSeed(
                 nextSeed: nextSeed,
                 attempts: attempts,
@@ -2692,7 +2692,7 @@ enum WhatToPlayStatsAnalyzer {
                 )
             )
         case .repeatSession:
-            let nextSeed = nextTrainingSessionSeed(for: attempts, plan: plan)
+            let nextSeed = trainingSessionReviewNextSeed(progress: progress, attempts: attempts, plan: plan)
             let retriesIncorrectNextSeed = trainingSessionRetriesIncorrectNextSeed(
                 nextSeed: nextSeed,
                 attempts: attempts,
@@ -2724,6 +2724,14 @@ enum WhatToPlayStatsAnalyzer {
                 )
             )
         }
+    }
+
+    private static func trainingSessionReviewNextSeed(
+        progress: WhatToPlayTrainingSessionProgress,
+        attempts: [WhatToPlayAttempt],
+        plan: WhatToPlayTrainingSessionPlan
+    ) -> UInt64 {
+        progress.nextSeed ?? nextTrainingSessionSeed(for: attempts, plan: plan)
     }
 
     private static func trainingSessionNextSeedDetail(

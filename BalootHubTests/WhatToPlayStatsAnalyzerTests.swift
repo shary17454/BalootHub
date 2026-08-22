@@ -4270,10 +4270,12 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
     func testTrainingSessionReviewStartsWithDeterministicPlanSeed() {
         let plan = sessionPlan(difficulty: .easy, focusKind: .openingLead, gameMode: .sun, count: 3, target: 67)
 
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: [], plan: plan)
         let review = WhatToPlayStatsAnalyzer.trainingSessionReview(for: [], plan: plan)
 
         XCTAssertEqual(review.action, .start)
         XCTAssertEqual(review.title, "ابدأ خطة المدرب".localized)
+        XCTAssertEqual(review.nextSeed, progress.nextSeed)
         XCTAssertEqual(review.nextSeed, WhatToPlayStatsAnalyzer.nextTrainingSessionSeed(for: [], plan: plan))
         XCTAssertEqual(review.difficulty, .easy)
         XCTAssertEqual(review.focusKind, .openingLead)
@@ -4303,6 +4305,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.nextSeedState, .retry(901))
         XCTAssertEqual(review.action, .continueSession)
         XCTAssertEqual(review.nextSeed, 901)
+        XCTAssertEqual(review.nextSeed, progress.nextSeed)
         XCTAssertTrue(review.retriesIncorrectNextSeed)
         XCTAssertEqual(review.statusLine, "\("إعادة محاولة".localized): 901")
         XCTAssertTrue(review.detail.contains("\("أعد موقف".localized) 901"))
