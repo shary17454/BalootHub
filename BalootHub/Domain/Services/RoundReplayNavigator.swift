@@ -73,6 +73,14 @@ enum RoundReplayShareSummary {
             }
         }
 
+        let projectDeclarationTimeline = GameEngine.projectDeclarationTimeline(state: finalState)
+        if !projectDeclarationTimeline.isEmpty {
+            lines.append("إعلانات المشاريع".localized)
+            for line in projectDeclarationTimeline {
+                lines.append("- \(line)")
+            }
+        }
+
         if !finalState.awardedProjects.isEmpty {
             lines.append("المشاريع المحتسَبة".localized)
             for project in finalState.awardedProjects.sorted(by: projectSort) {

@@ -131,6 +131,30 @@ public enum GameEngine {
         }
     }
 
+    /// خط زمني مقروء لإعلانات المشاريع من سجل الأفعال.
+    ///
+    /// `declaredProjects` يصف المشاريع التي انتهت معلنة، لكنه لا يصف مرور لاعب بلا
+    /// إعلان ولا ترتيب الإعلان بين اللاعبين. هذا الملخص يبقي توقيت الإعلان قابلًا
+    /// للعرض في Replay والتحليل من نفس سجل ``GameAction``.
+    public static func projectDeclarationTimeline(state: GameState) -> [String] {
+        state.actionHistory.compactMap { action in
+            guard case .declareProjects(let playerID, let projects) = action else { return nil }
+            let name = timelinePlayerName(playerID, in: state)
+            guard !projects.isEmpty else {
+                return "\(name) لم يعلن مشروعًا"
+            }
+            let projectNames = projects
+                .sorted { lhs, rhs in
+                    if lhs.points != rhs.points { return lhs.points > rhs.points }
+                    if lhs.kind.rawValue != rhs.kind.rawValue { return lhs.kind.rawValue < rhs.kind.rawValue }
+                    return lhs.id < rhs.id
+                }
+                .map { "\($0.kind.arabicName) +\($0.points)" }
+                .joined(separator: "، ")
+            return "\(name) أعلن \(projectNames)"
+        }
+    }
+
     private static func timelinePlayerName(_ id: Player.ID, in state: GameState) -> String {
         state.player(id: id)?.name ?? "لاعب"
     }

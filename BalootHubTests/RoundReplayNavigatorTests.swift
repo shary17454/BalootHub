@@ -109,6 +109,16 @@ final class RoundReplayNavigatorTests: XCTestCase {
         XCTAssertTrue(summary.contains("قفل المضاعفة"))
     }
 
+    func testReplayShareSummaryIncludesProjectDeclarationTimeline() throws {
+        let replay = try makeReplayWithProjectDeclaration()
+        let summary = RoundReplayShareSummary.text(initialState: replay.initial, actions: replay.actions)
+
+        XCTAssertTrue(summary.contains("إعلانات المشاريع".localized))
+        XCTAssertTrue(summary.contains("أعلن"))
+        XCTAssertTrue(summary.contains("بلوت"))
+        XCTAssertTrue(summary.contains("لم يعلن مشروعًا"))
+    }
+
     func testReplayShareSummaryIncludesBestProjectedCardWhenSimulationDiffers() throws {
         let replay = try makeReplayWithProjectedDecision()
         let summary = RoundReplayShareSummary.text(initialState: replay.initial, actions: replay.actions)
@@ -157,6 +167,27 @@ final class RoundReplayNavigatorTests: XCTestCase {
 
         XCTAssertEqual(state.bidding.multiplier, .double)
         XCTAssertTrue(state.bidding.isLocked)
+        return (initial, state.actionHistory)
+    }
+
+    private func makeReplayWithProjectDeclaration() throws -> (initial: GameState, actions: [GameAction]) {
+        var state = GameState.newLocalMatch(rules: .standard)
+        let firstPlayer = try XCTUnwrap(state.player(at: state.dealerSeat.next))
+        state.phase = .declaring
+        state.mode = .hokum
+        state.trumpSuit = .spades
+        state.currentTurnPlayerID = firstPlayer.id
+        state.originalHands[firstPlayer.id] = [
+            PlayingCard(suit: .spades, rank: .king),
+            PlayingCard(suit: .spades, rank: .queen),
+            PlayingCard(suit: .hearts, rank: .seven)
+        ]
+        let initial = state
+
+        let belot = try XCTUnwrap(GameEngine.declarableProjects(for: firstPlayer.id, state: state).first)
+        state = try GameEngine.apply(.declareProjects(playerID: firstPlayer.id, projects: [belot]), to: state)
+        state = try GameEngine.apply(.declareProjects(playerID: try XCTUnwrap(state.currentTurnPlayerID), projects: []), to: state)
+
         return (initial, state.actionHistory)
     }
 

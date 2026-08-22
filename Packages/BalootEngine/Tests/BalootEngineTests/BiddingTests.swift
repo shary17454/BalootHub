@@ -783,6 +783,36 @@ struct MultiplierTests {
         #expect(GameEngine.multiplierTimeline(state: replayed) == GameEngine.multiplierTimeline(state: state))
     }
 
+    @Test("خط إعلانات المشاريع الزمني يحفظ الإعلان والمرور بالترتيب")
+    func projectDeclarationTimelineComesFromActionHistory() throws {
+        var state = GameState.newLocalMatch(rules: .standard)
+        let firstPlayer = try #require(state.player(at: state.dealerSeat.next))
+        state.phase = .declaring
+        state.mode = .hokum
+        state.trumpSuit = .spades
+        state.currentTurnPlayerID = firstPlayer.id
+        state.originalHands[firstPlayer.id] = [
+            PlayingCard(suit: .spades, rank: .king),
+            PlayingCard(suit: .spades, rank: .queen),
+            PlayingCard(suit: .hearts, rank: .seven)
+        ]
+        let initial = state
+
+        let belot = try #require(GameEngine.declarableProjects(for: firstPlayer.id, state: state).first)
+        state = try GameEngine.apply(.declareProjects(playerID: firstPlayer.id, projects: [belot]), to: state)
+        let secondPlayerID = try #require(state.currentTurnPlayerID)
+        let secondPlayerName = try #require(state.player(id: secondPlayerID)?.name)
+        state = try GameEngine.apply(.declareProjects(playerID: secondPlayerID, projects: []), to: state)
+
+        #expect(GameEngine.projectDeclarationTimeline(state: state) == [
+            "\(firstPlayer.name) أعلن بلوت +20",
+            "\(secondPlayerName) لم يعلن مشروعًا"
+        ])
+
+        let replayed = try GameEngine.replay(initialState: initial, actions: state.actionHistory)
+        #expect(GameEngine.projectDeclarationTimeline(state: replayed) == GameEngine.projectDeclarationTimeline(state: state))
+    }
+
     @Test("المضاعف يضرب نتيجة الجولة بالمعامل المعرَّف في القواعد")
     func multiplierScalesRoundScore() {
         let teamA = Team(name: "أ")
