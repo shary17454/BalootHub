@@ -20,6 +20,7 @@ enum WhatToPlayOptionDisclosure {
         outcomeTitle: String? = nil,
         expectedImprovement: Int? = nil,
         expectedImprovementSourceTitle: String? = nil,
+        rationale: String? = nil,
         isSelected: Bool = false,
         isExpertChoice: Bool = false,
         isBestSimulationResult: Bool = false,
@@ -62,6 +63,9 @@ enum WhatToPlayOptionDisclosure {
         }
         if let outcomeTitle {
             parts.append("\("نتيجة القرار".localized) \(outcomeTitle)")
+        }
+        if let rationale, !rationale.isEmpty {
+            parts.append("\("سبب القرار".localized) \(rationale)")
         }
         if let expectedImprovement, expectedImprovement > 0 {
             parts.append("\("تحسن متوقع".localized) +\(expectedImprovement)")

@@ -1511,6 +1511,20 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "第二佳原因" } }
       }
     },
+    "سبب القرار" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Decision reason" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Decision reason" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Motivo de la decisión" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Raison de la décision" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "निर्णय का कारण" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Alasan keputusan" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Причина решения" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Karar nedeni" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "فیصلے کی وجہ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "决策原因" } }
+      }
+    },
     "نقاط فريقك بعد المحاكاة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Teampunkte nach Simulation" } },

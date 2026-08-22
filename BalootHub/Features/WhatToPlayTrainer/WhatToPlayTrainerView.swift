@@ -3084,6 +3084,7 @@ struct WhatToPlayTrainerView: View {
             expectedImprovementSourceTitle: improvement.flatMap {
                 $0.points > 0 ? WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: $0.source) : nil
             },
+            rationale: option.explanation,
             isSelected: selectedOption?.card == option.card,
             isExpertChoice: option.isExpertChoice,
             isBestSimulationResult: option.card == bestSimulationCard,

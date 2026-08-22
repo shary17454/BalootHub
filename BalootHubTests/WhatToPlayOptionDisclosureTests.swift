@@ -151,7 +151,8 @@ final class WhatToPlayOptionDisclosureTests: XCTestCase {
             lostProjectedAgainstSecondBestPoints: 8,
             outcomeTitle: "يكسب الأكلة".localized,
             expectedImprovement: 16,
-            expectedImprovementSourceTitle: "محاكاة الجولة".localized
+            expectedImprovementSourceTitle: "محاكاة الجولة".localized,
+            rationale: "اقطع الحكم لحماية الأكلة."
         )
 
         XCTAssertFalse(label.contains("فارق عن الأفضل".localized))
@@ -162,6 +163,20 @@ final class WhatToPlayOptionDisclosureTests: XCTestCase {
         XCTAssertFalse(label.contains("تحسن متوقع".localized))
         XCTAssertFalse(label.contains("مصدر التحسن".localized))
         XCTAssertFalse(label.contains("محاكاة الجولة".localized))
+        XCTAssertFalse(label.contains("سبب القرار".localized))
+        XCTAssertFalse(label.contains("اقطع الحكم لحماية الأكلة."))
+    }
+
+    func testAccessibilityIncludesRationaleAfterChoice() {
+        let label = WhatToPlayOptionDisclosure.accessibilityLabel(
+            cardName: "إكة سباتي",
+            rank: 1,
+            isRevealed: true,
+            rationale: "اقطع الحكم لحماية الأكلة."
+        )
+
+        XCTAssertTrue(label.contains("سبب القرار".localized))
+        XCTAssertTrue(label.contains("اقطع الحكم لحماية الأكلة."))
     }
 
     func testAccessibilityHidesNonpositiveImprovementAfterChoice() {
