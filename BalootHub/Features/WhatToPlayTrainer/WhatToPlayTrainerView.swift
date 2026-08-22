@@ -2974,6 +2974,10 @@ struct WhatToPlayTrainerView: View {
         let bestSimulationCard = scenario.flatMap { WhatToPlayTrainer.bestProjectedOption(in: $0.options)?.card }
         let secondBestSimulationCard = scenario.flatMap { WhatToPlayTrainer.secondBestProjectedOption(in: $0.options)?.card }
         let improvement = scenario.map { WhatToPlayOptionComparison.expectedImprovement(for: option, in: $0) }
+        let bestExpectedImpact = scenario.flatMap { $0.bestOption?.expectedImpact }
+        let lostExpectedPoints = bestExpectedImpact.map {
+            max(0, $0 - option.expectedImpact)
+        }
         let bestProjectedTeamPoints = scenario.flatMap { WhatToPlayTrainer.bestProjectedOption(in: $0.options)?.projectedTeamPoints }
         let secondBestProjectedTeamPoints = scenario.flatMap { WhatToPlayTrainer.secondBestProjectedOption(in: $0.options)?.projectedTeamPoints }
         let lostProjectedTeamPoints = bestProjectedTeamPoints.map {
@@ -2987,6 +2991,7 @@ struct WhatToPlayTrainerView: View {
             rank: option.rank,
             isRevealed: selectedOption != nil,
             expectedImpact: option.expectedImpact,
+            lostExpectedPoints: lostExpectedPoints,
             projectedTeamPoints: option.projectedTeamPoints,
             lostProjectedTeamPoints: lostProjectedTeamPoints,
             lostProjectedAgainstSecondBestPoints: lostProjectedAgainstSecondBestPoints,

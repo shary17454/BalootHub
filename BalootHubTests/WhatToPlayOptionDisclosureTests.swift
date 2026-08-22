@@ -71,6 +71,19 @@ final class WhatToPlayOptionDisclosureTests: XCTestCase {
         XCTAssertTrue(label.contains("42"))
     }
 
+    func testAccessibilityIncludesExpectedLossAfterChoice() {
+        let label = WhatToPlayOptionDisclosure.accessibilityLabel(
+            cardName: "إكة سباتي",
+            rank: 3,
+            isRevealed: true,
+            expectedImpact: -2,
+            lostExpectedPoints: 9
+        )
+
+        XCTAssertTrue(label.contains("فارق عن الأفضل".localized))
+        XCTAssertTrue(label.contains("9"))
+    }
+
     func testAccessibilityIncludesImprovementSourceAfterChoice() {
         let label = WhatToPlayOptionDisclosure.accessibilityLabel(
             cardName: "إكة سباتي",
@@ -121,12 +134,14 @@ final class WhatToPlayOptionDisclosureTests: XCTestCase {
             cardName: "إكة سباتي",
             rank: 3,
             isRevealed: false,
+            lostExpectedPoints: 9,
             lostProjectedTeamPoints: 12,
             lostProjectedAgainstSecondBestPoints: 8,
             expectedImprovement: 16,
             expectedImprovementSourceTitle: "محاكاة الجولة".localized
         )
 
+        XCTAssertFalse(label.contains("فارق عن الأفضل".localized))
         XCTAssertFalse(label.contains("نقاط محاكاة ضائعة".localized))
         XCTAssertFalse(label.contains("فاقد ثاني محاكاة".localized))
         XCTAssertFalse(label.contains("تحسن متوقع".localized))

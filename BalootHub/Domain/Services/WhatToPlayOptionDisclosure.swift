@@ -13,6 +13,7 @@ enum WhatToPlayOptionDisclosure {
         rank: Int,
         isRevealed: Bool,
         expectedImpact: Int? = nil,
+        lostExpectedPoints: Int? = nil,
         projectedTeamPoints: Int? = nil,
         lostProjectedTeamPoints: Int? = nil,
         lostProjectedAgainstSecondBestPoints: Int? = nil,
@@ -43,6 +44,9 @@ enum WhatToPlayOptionDisclosure {
         }
         if let expectedImpact {
             parts.append("\("أثر القرار".localized) \(WhatToPlayImpactFormatter.accessibilityValue(expectedImpact))")
+        }
+        if let lostExpectedPoints, lostExpectedPoints > 0 {
+            parts.append("\("فارق عن الأفضل".localized) \(lostExpectedPoints)")
         }
         if let projectedTeamPoints {
             parts.append("\("نقاط فريقك بعد المحاكاة".localized) \(projectedTeamPoints)")
