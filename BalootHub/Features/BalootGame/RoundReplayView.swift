@@ -319,6 +319,7 @@ struct RoundReplayView: View {
                 } label: {
                     Image(systemName: "backward.end.fill")
                 }
+                .accessibilityLabel("الأكلة السابقة")
                 .disabled(step == 0)
 
                 Button {
@@ -327,6 +328,7 @@ struct RoundReplayView: View {
                 } label: {
                     Image(systemName: "chevron.backward")
                 }
+                .accessibilityLabel("خطوة للخلف")
                 .disabled(step == 0)
 
                 Button {
@@ -335,6 +337,7 @@ struct RoundReplayView: View {
                     Image(systemName: isPlaying ? "pause.fill" : "play.fill")
                         .frame(width: 34)
                 }
+                .accessibilityLabel(isPlaying ? "إيقاف مؤقت" : "تشغيل")
                 .disabled(actions.isEmpty || step >= actions.count)
 
                 Button {
@@ -343,6 +346,7 @@ struct RoundReplayView: View {
                 } label: {
                     Image(systemName: "chevron.forward")
                 }
+                .accessibilityLabel("خطوة للأمام")
                 .disabled(step >= actions.count)
 
                 Button {
@@ -355,6 +359,7 @@ struct RoundReplayView: View {
                 } label: {
                     Image(systemName: "forward.end.fill")
                 }
+                .accessibilityLabel("الأكلة التالية")
                 .disabled(step >= actions.count)
             }
             .buttonStyle(.bordered)

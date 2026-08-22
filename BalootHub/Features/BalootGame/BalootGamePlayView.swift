@@ -8,6 +8,7 @@ struct BalootGamePlayView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.modelContext) private var modelContext
     @Environment(AppEnvironment.self) private var appEnvironment
     @State private var viewModel: BalootGameViewModel
@@ -183,6 +184,8 @@ struct BalootGamePlayView: View {
                     humanHandArea
                 }
             }
+        } else if horizontalSizeClass == .regular {
+            seatedTableLayout
         } else {
             VStack {
                 topBar
@@ -192,6 +195,79 @@ struct BalootGamePlayView: View {
                 trickArea
                 Spacer()
                 humanHandArea
+            }
+        }
+    }
+
+    /// تخطيط الشاشات الواسعة: المقاعد الأربعة موزّعة حول الطاولة.
+    ///
+    /// على الآيفون لا يتّسع العرض إلا لمقعد واحد أعلى الشاشة، فبقي التخطيط الضيّق
+    /// كما هو. أما على iPad فكان ذلك التخطيط يُمدّ رأسيًا ويترك الطاولة شبه فارغة
+    /// بينما ثلاثة لاعبين لا يظهرون أصلًا — وهو ما بدا واضحًا في أول لقطة فعلية.
+    ///
+    /// ترتيب المقاعد يتبع تسلسل الأدوار: أنت أسفل، ثم غرب، ثم شمال، ثم شرق. في
+    /// الاتجاه من اليمين لليسار يضع `HStack` «غرب» على اليمين، فتتبع العين تسلسل
+    /// الدور بشكل طبيعي.
+    private var seatedTableLayout: some View {
+        VStack(spacing: AppSpacing.md) {
+            tableStatusBar
+
+            seatView(.north)
+
+            HStack(alignment: .center, spacing: AppSpacing.md) {
+                seatView(.west)
+                Spacer(minLength: AppSpacing.sm)
+                VStack(spacing: AppSpacing.md) {
+                    centerPanel
+                    trickArea
+                }
+                Spacer(minLength: AppSpacing.sm)
+                seatView(.east)
+            }
+
+            humanHandArea
+        }
+    }
+
+    private func seatView(_ seat: SeatPosition) -> some View {
+        SeatIndicator(
+            name: playerName(seat),
+            seatIndex: seat.rawValue,
+            isCurrentTurn: isCurrentSeat(seat),
+            cardCount: cardCount(seat),
+            avatarStyle: appearance.avatar,
+            theme: appearance.theme,
+            contentColor: onFeltColor
+        )
+    }
+
+    /// شريط حالة الجولة (النمط · الأكلات · شارة صن/حكم) بلا مقعد.
+    private var tableStatusBar: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Label(viewModel.tableMode.title, systemImage: viewModel.tableMode.systemImage)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(onFeltSecondaryColor)
+                if viewModel.tableMode == .versusAI {
+                    Text(viewModel.selectedAIProfileTitle)
+                        .font(AppTypography.caption)
+                        .foregroundStyle(onFeltSecondaryColor)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                }
+            }
+            Spacer()
+            VStack(spacing: 2) {
+                Text("الأكلات")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(onFeltSecondaryColor)
+                Text("\(trickCount(for: .south)) - \(trickCount(for: .west))")
+                    .font(AppTypography.headline)
+                    .foregroundStyle(onFeltColor)
+            }
+            Spacer()
+            if let mode = viewModel.state.mode {
+                StatusBadge(mode.arabicName, systemImage: mode == .hokum ? "crown.fill" : "sun.max.fill", tint: AppColor.accent)
             }
         }
     }
@@ -849,32 +925,45 @@ struct BalootGamePlayView: View {
             if viewModel.requiresLocalHandoffConfirmation && viewModel.state.phase == .playing {
                 localHandoffCard
             }
-            ScrollView(.horizontal, showsIndicators: false) {
-                // تُحسب مرة واحدة لكل إعادة رسم بدل مرة لكل ورقة.
-                let legalCards = viewModel.legalCardIDsForHuman
-                let canAct = viewModel.canCurrentHumanAct
-                HStack(spacing: AppSpacing.xs) {
-                    ForEach(viewModel.visibleHumanHand) { card in
-                        let isPlayable = canAct && legalCards.contains(card)
-                        PlayingCardFaceView(card: card, style: appearance.cardFace, isHighlighted: isPlayable)
-                            .matchedGeometryEffect(id: card.id, in: cardNamespace)
-                            .opacity(isPlayable ? 1 : 0.4)
-                            .onTapGesture {
-                                // الضغط على ورقة ممنوعة يشرح السبب بدل أن يُتجاهل بصمت.
-                                if isPlayable {
-                                    viewModel.play(card)
-                                } else if canAct {
-                                    viewModel.explainIllegalMove(card)
-                                }
-                            }
-                            .accessibilityAddTraits(.isButton)
-                            .accessibilityHint(isPlayable ? "اضغط للعب هذه الورقة" : "لا يمكن لعب هذه الورقة الآن، اضغط لمعرفة السبب")
-                    }
+            // اليد ثماني أوراق كحد أقصى وتتّسع كاملةً على شاشة عريضة، فتُعرض
+            // متوسّطة بلا تمرير. الشريط الأفقي على الآيفون يبقى لأن العرض لا يكفي،
+            // وهو في الاتجاه من اليمين لليسار يبدأ من اليمين فيبدو مزاحًا على iPad.
+            if horizontalSizeClass == .regular {
+                handCards
+                    .frame(maxWidth: .infinity)
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    handCards
                 }
-                .padding(.vertical, AppSpacing.xs)
-                .animation(AppAnimation.spring(reduceMotion: reduceMotion), value: viewModel.visibleHumanHand.count)
             }
         }
+    }
+
+    /// أوراق يد اللاعب. مشتركة بين الشريط الأفقي على الآيفون والصف المتوسّط على iPad.
+    private var handCards: some View {
+        // تُحسب مرة واحدة لكل إعادة رسم بدل مرة لكل ورقة.
+        let legalCards = viewModel.legalCardIDsForHuman
+        let canAct = viewModel.canCurrentHumanAct
+        return HStack(spacing: AppSpacing.xs) {
+            ForEach(viewModel.visibleHumanHand) { card in
+                let isPlayable = canAct && legalCards.contains(card)
+                PlayingCardFaceView(card: card, style: appearance.cardFace, isHighlighted: isPlayable)
+                    .matchedGeometryEffect(id: card.id, in: cardNamespace)
+                    .opacity(isPlayable ? 1 : 0.4)
+                    .onTapGesture {
+                        // الضغط على ورقة ممنوعة يشرح السبب بدل أن يُتجاهل بصمت.
+                        if isPlayable {
+                            viewModel.play(card)
+                        } else if canAct {
+                            viewModel.explainIllegalMove(card)
+                        }
+                    }
+                    .accessibilityAddTraits(.isButton)
+                    .accessibilityHint(isPlayable ? "اضغط للعب هذه الورقة" : "لا يمكن لعب هذه الورقة الآن، اضغط لمعرفة السبب")
+            }
+        }
+        .padding(.vertical, AppSpacing.xs)
+        .animation(AppAnimation.spring(reduceMotion: reduceMotion), value: viewModel.visibleHumanHand.count)
     }
 
     private var localHandoffCard: some View {

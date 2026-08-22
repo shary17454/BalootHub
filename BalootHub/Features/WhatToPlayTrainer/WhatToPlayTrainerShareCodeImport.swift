@@ -30,6 +30,7 @@ extension WhatToPlayTrainerView {
                     Image(systemName: "arrow.down.doc.fill")
                         .frame(width: 34, height: 34)
                 }
+                .accessibilityLabel("تحميل الموقف من الرمز")
                 .buttonStyle(.borderedProminent)
                 .tint(AppColor.primary)
                 .disabled(
