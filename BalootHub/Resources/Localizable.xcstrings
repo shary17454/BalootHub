@@ -1511,6 +1511,20 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "平均模拟分数" } }
       }
     },
+    "نقاط المحاكاة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Simulationspunkte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Simulation points" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Puntos de simulación" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Points de simulation" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सिमुलेशन अंक" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Poin simulasi" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Очки симуляции" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Simülasyon puanları" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "سیمولیشن پوائنٹس" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "模拟分数" } }
+      }
+    },
     "متوسط فاقد المحاكاة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Durchschnittlicher Simulationsverlust" } },

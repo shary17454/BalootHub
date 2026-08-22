@@ -68,6 +68,29 @@ final class WhatToPlayShareCodeImportViewTests: XCTestCase {
         )
     }
 
+    func testOptionSummaryCardTextNamesProjectedSimulationPoints() {
+        let view = WhatToPlayTrainerView()
+        let card = PlayingCard(suit: .spades, rank: .ace)
+
+        let text = view.optionSummaryCardText(card: card, impact: 7, projectedTeamPoints: 58)
+
+        XCTAssertEqual(text, "\(card.accessibilityName) · +7 · \("نقاط المحاكاة".localized): 58")
+    }
+
+    func testOptionSummaryCardTextFallsBackWhenCardOrImpactIsMissing() {
+        let view = WhatToPlayTrainerView()
+        let card = PlayingCard(suit: .spades, rank: .ace)
+
+        XCTAssertEqual(
+            view.optionSummaryCardText(card: nil, impact: 7, projectedTeamPoints: 58),
+            "لا يوجد بديل".localized
+        )
+        XCTAssertEqual(
+            view.optionSummaryCardText(card: card, impact: nil, projectedTeamPoints: 58),
+            "لا يوجد بديل".localized
+        )
+    }
+
     func testShareCodeImportOmitsSimulationAlternativeLineForPrompt() async throws {
         let view = WhatToPlayTrainerView()
         let scenario = try await WhatToPlayScenarioLoader.generate(

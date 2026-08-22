@@ -3779,9 +3779,9 @@ struct WhatToPlayTrainerView: View {
         .accessibilityElement(children: .combine)
     }
 
-    private func optionSummaryCardText(card: PlayingCard?, impact: Int?, projectedTeamPoints: Int?) -> String {
+    func optionSummaryCardText(card: PlayingCard?, impact: Int?, projectedTeamPoints: Int?) -> String {
         guard let card, let impact else { return "لا يوجد بديل".localized }
-        let projection = projectedTeamPoints.map { " · \("محاكاة".localized): \($0)" } ?? ""
+        let projection = projectedTeamPoints.map { " · \("نقاط المحاكاة".localized): \($0)" } ?? ""
         return "\(card.accessibilityName) · \(impactText(impact))\(projection)"
     }
 
