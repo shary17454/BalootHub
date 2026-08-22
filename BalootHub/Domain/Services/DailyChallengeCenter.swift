@@ -98,7 +98,7 @@ struct WhatToPlayChallengeProgress: Equatable {
     }
 
     var nextSeed: UInt64? {
-        seedSeries.first { !completedSeeds.contains($0) } ?? seedSeries.last
+        seedSeries.first { !completedSeeds.contains($0) }
     }
 }
 

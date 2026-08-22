@@ -142,12 +142,12 @@ struct DailyChallengesView: View {
                let focusKind = challenge.whatToPlayFocusKind,
                let gameMode = challenge.whatToPlayGameMode {
                 let trumpSuit = challenge.whatToPlayTrumpSuit
-                let nextSeed = whatToPlayProgress?.nextSeed ?? seed
+                let nextSeed = whatToPlayProgress?.nextSeed
                 LazyVGrid(columns: [
                     GridItem(.flexible(), spacing: AppSpacing.xs),
                     GridItem(.flexible(), spacing: AppSpacing.xs)
                 ], spacing: AppSpacing.xs) {
-                    scoreBox(title: "موقف اليوم".localized, value: "\(nextSeed)")
+                    scoreBox(title: "موقف اليوم".localized, value: nextSeed.map(String.init) ?? "مكتمل".localized)
                     scoreBox(title: "المستوى".localized, value: difficultyTitle(difficulty))
                     scoreBox(title: "تركيز التدريب".localized, value: focusTitle(focusKind))
                     scoreBox(title: "النمط".localized, value: modeTitle(gameMode))
@@ -156,25 +156,33 @@ struct DailyChallengesView: View {
                     }
                 }
 
-                Button {
-                    appEnvironment.navigate(
-                        to: .whatToPlayTrainer(
-                            seed: nextSeed,
-                            seedBase: seed,
-                            difficulty: difficulty,
-                            focusKind: focusKind,
-                            gameMode: gameMode,
-                            trumpSuit: trumpSuit,
-                            targetCount: challenge.targetCount
-                        ),
-                        tab: appEnvironment.selectedTab
-                    )
-                } label: {
-                    Label((progress?.completedCount ?? 0) > 0 ? "متابعة مواقف اليوم".localized : "فتح موقف اليوم".localized, systemImage: "brain.head.profile")
+                if let nextSeed {
+                    Button {
+                        appEnvironment.navigate(
+                            to: .whatToPlayTrainer(
+                                seed: nextSeed,
+                                seedBase: seed,
+                                difficulty: difficulty,
+                                focusKind: focusKind,
+                                gameMode: gameMode,
+                                trumpSuit: trumpSuit,
+                                targetCount: challenge.targetCount
+                            ),
+                            tab: appEnvironment.selectedTab
+                        )
+                    } label: {
+                        Label((progress?.completedCount ?? 0) > 0 ? "متابعة مواقف اليوم".localized : "فتح موقف اليوم".localized, systemImage: "brain.head.profile")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(AppColor.primary)
+                } else {
+                    Label("اكتمل تحدي وش تلعب".localized, systemImage: "checkmark.seal.fill")
                         .frame(maxWidth: .infinity)
+                        .padding(.vertical, AppSpacing.sm)
+                        .foregroundStyle(AppColor.success)
+                        .background(AppColor.success.opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
                 }
-                .buttonStyle(.bordered)
-                .tint(AppColor.primary)
             }
 
             if challenge.category == .scoring {
