@@ -85,9 +85,13 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertEqual(bestSummary.decisionQualityDetail, WhatToPlayDecisionQuality.expertMatch.detail)
         XCTAssertFalse(bestSummary.decisionQuality?.systemImage.isEmpty ?? true)
         if (bestSummary.selectedLostProjectedTeamPoints ?? 0) >= 9 {
+            let recommendation = try XCTUnwrap(
+                WhatToPlayTrainer.nextActionRecommendation(in: scenario, selectedCard: best.card)
+            )
             XCTAssertEqual(bestSummary.nextActionTitle, "راجع المحاكاة".localized)
             XCTAssertTrue(bestSummary.nextActionDetail?.contains("اختيارك يطابق الخبير في الأكلة الحالية".localized) ?? false)
-            XCTAssertTrue(bestSummary.nextActionDetail?.contains("أفضل نتيجة محاكاة".localized) ?? false)
+            XCTAssertTrue(bestSummary.nextActionDetail?.contains("ورقة المراجعة".localized) ?? false)
+            XCTAssertTrue(bestSummary.nextActionDetail?.contains(recommendation.recommendedCard.accessibilityName) ?? false)
         } else {
             XCTAssertEqual(bestSummary.nextActionTitle, "ثبّت القراءة".localized)
             XCTAssertTrue(bestSummary.nextActionDetail?.contains(best.card.accessibilityName) ?? false)
@@ -143,13 +147,17 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
                 && max(0, bestSimulation.projectedTeamPoints - $0.projectedTeamPoints) >= 9
         })
         let summary = WhatToPlayOptionComparison.summary(for: scenario, selectedCard: selected.card)
+        let recommendation = try XCTUnwrap(
+            WhatToPlayTrainer.nextActionRecommendation(in: scenario, selectedCard: selected.card)
+        )
 
         XCTAssertEqual(summary.decisionQuality, .costly)
         XCTAssertEqual(summary.decisionQualityDetail, WhatToPlayDecisionQuality.costly.detail)
         XCTAssertEqual(summary.nextActionTitle, "راجع المحاكاة".localized)
         XCTAssertTrue(summary.nextActionDetail?.contains("بعد استكمال الجولة".localized) ?? false)
-        XCTAssertTrue(summary.nextActionDetail?.contains("أفضل نتيجة محاكاة".localized) ?? false)
-        XCTAssertTrue(summary.nextActionDetail?.contains(bestSimulation.card.accessibilityName) ?? false)
+        XCTAssertTrue(summary.nextActionDetail?.contains("ورقة المراجعة".localized) ?? false)
+        XCTAssertTrue(summary.nextActionDetail?.contains(recommendation.recommendedCard.accessibilityName) ?? false)
+        XCTAssertEqual(recommendation.recommendedCard, bestSimulation.card)
     }
 
     func testSummaryNamesSecondSimulationCardWhenItAddsContext() throws {
@@ -162,9 +170,14 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         })
 
         let summary = WhatToPlayOptionComparison.summary(for: scenario, selectedCard: selected.card)
+        let recommendation = try XCTUnwrap(
+            WhatToPlayTrainer.nextActionRecommendation(in: scenario, selectedCard: selected.card)
+        )
 
         XCTAssertTrue(summary.nextActionDetail?.contains("ثاني نتيجة محاكاة".localized) ?? false)
         XCTAssertTrue(summary.nextActionDetail?.contains(secondBestSimulation.card.accessibilityName) ?? false)
+        XCTAssertTrue(summary.nextActionDetail?.contains("ورقة المراجعة".localized) ?? false)
+        XCTAssertTrue(summary.nextActionDetail?.contains(recommendation.recommendedCard.accessibilityName) ?? false)
         XCTAssertEqual(
             summary.selectedLostProjectedAgainstSecondBestPoints,
             max(0, secondBestSimulation.projectedTeamPoints - selected.projectedTeamPoints)
@@ -179,12 +192,17 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(max(0, bestSimulation.projectedTeamPoints - expert.projectedTeamPoints), 9)
 
         let summary = WhatToPlayOptionComparison.summary(for: scenario, selectedCard: expert.card)
+        let recommendation = try XCTUnwrap(
+            WhatToPlayTrainer.nextActionRecommendation(in: scenario, selectedCard: expert.card)
+        )
 
         XCTAssertEqual(summary.decisionQuality, .expertMatch)
         XCTAssertEqual(summary.nextActionTitle, "راجع المحاكاة".localized)
         XCTAssertTrue(summary.nextActionDetail?.contains("اختيارك يطابق الخبير في الأكلة الحالية".localized) ?? false)
         XCTAssertTrue(summary.nextActionDetail?.contains("نقاط محاكاة ضائعة".localized) ?? false)
-        XCTAssertTrue(summary.nextActionDetail?.contains(bestSimulation.card.accessibilityName) ?? false)
+        XCTAssertTrue(summary.nextActionDetail?.contains("ورقة المراجعة".localized) ?? false)
+        XCTAssertTrue(summary.nextActionDetail?.contains(recommendation.recommendedCard.accessibilityName) ?? false)
+        XCTAssertEqual(recommendation.recommendedCard, bestSimulation.card)
     }
 
     func testRowsAreSortedByExpertRankAndMarkSelectedCard() throws {

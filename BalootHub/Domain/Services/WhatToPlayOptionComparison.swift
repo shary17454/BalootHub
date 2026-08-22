@@ -265,7 +265,7 @@ enum WhatToPlayOptionComparison {
             let secondSimulationText = secondSimulationText(for: recommendation)
             return (
                 "راجع المحاكاة".localized,
-                "\("اختيارك يطابق الخبير في الأكلة الحالية، لكن المحاكاة الكاملة تفضّل مراجعة مسار الجولة.".localized) \(simulationLossText(for: recommendation)). \("أفضل نتيجة محاكاة".localized): \(recommendation.bestProjectedOption.card.accessibilityName).\(secondSimulationText)"
+                "\("اختيارك يطابق الخبير في الأكلة الحالية، لكن المحاكاة الكاملة تفضّل مراجعة مسار الجولة.".localized) \(simulationLossText(for: recommendation)). \(reviewCardText(for: recommendation))\(secondSimulationText)"
             )
         case .reinforceRead:
             return (
@@ -276,7 +276,7 @@ enum WhatToPlayOptionComparison {
             let secondSimulationText = secondSimulationText(for: recommendation)
             return (
                 "راجع المحاكاة".localized,
-                "\("قرارك يخسر بعد استكمال الجولة؛ راجع Replay كامل قبل لعب موقف جديد.".localized) \(simulationLossText(for: recommendation)). \("أفضل نتيجة محاكاة".localized): \(recommendation.bestProjectedOption.card.accessibilityName).\(secondSimulationText)"
+                "\("قرارك يخسر بعد استكمال الجولة؛ راجع Replay كامل قبل لعب موقف جديد.".localized) \(simulationLossText(for: recommendation)). \(reviewCardText(for: recommendation))\(secondSimulationText)"
             )
         case .reviewSmallGap:
             let secondText = recommendation.secondBestOption.map { " \("ثاني أفضل".localized): \($0.card.accessibilityName)." } ?? ""
@@ -311,6 +311,10 @@ enum WhatToPlayOptionComparison {
         else { return "" }
 
         return " \("ثاني نتيجة محاكاة".localized): \(secondBestProjectedOption.card.accessibilityName)."
+    }
+
+    private static func reviewCardText(for recommendation: WhatToPlayNextActionRecommendation) -> String {
+        "\("ورقة المراجعة".localized): \(recommendation.recommendedCard.accessibilityName)."
     }
 
     private static func tacticalSummary(
