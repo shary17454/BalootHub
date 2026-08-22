@@ -43,6 +43,9 @@ struct WhatToPlayShareCodeImportResult {
                 for: scenario,
                 selectedCard: selectedOption.card
             )
+            let selectedComparisonRow = WhatToPlayOptionComparison
+                .rows(for: scenario, selectedCard: selectedOption.card)
+                .first { $0.card == selectedOption.card }
             lines.append("\("اختيارك".localized): \(selectedOption.card.accessibilityName)")
             if let bestOption = scenario.bestOption {
                 lines.append("\("أفضل ورقة".localized): \(bestOption.card.accessibilityName)")
@@ -60,6 +63,9 @@ struct WhatToPlayShareCodeImportResult {
             if let bestMoveConfidence = comparisonSummary.bestMoveConfidence {
                 lines.append("\("ثقة أفضل ورقة".localized): \(bestMoveConfidence.title)")
                 lines.append(bestMoveConfidence.detail)
+            }
+            if let selectedComparisonRow {
+                lines.append("\("سبب تكتيكي".localized): \(selectedComparisonRow.tacticalSummary)")
             }
             let simulationDisplay = WhatToPlaySimulationFormatter.display(for: selectedOption.simulation)
             lines.append("\("نتيجة المحاكاة".localized): \(simulationDisplay.summary)")
