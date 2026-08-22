@@ -420,6 +420,42 @@ enum WhatToPlayShareCard {
         return lines.joined(separator: "\n")
     }
 
+    static func trainingSessionProgressText(for progress: WhatToPlayTrainingSessionProgress) -> String {
+        var lines = [
+            "تقدم جلسة وش تلعب؟".localized,
+            progress.title,
+            progress.detail
+        ]
+
+        if let nextSeedGuidance = progress.nextSeedGuidance {
+            lines.append(nextSeedGuidance)
+        }
+
+        lines.append("\("المكتمل".localized): \(progress.completedAttempts) \("من".localized) \(progress.targetAttempts)")
+        lines.append("\("الدقة الحالية".localized): \(progress.accuracyPercent)%")
+        lines.append("\("أفضل دقة ممكنة".localized): \(progress.bestPossibleAccuracyPercent)%")
+        if let nextSeed = progress.nextSeed {
+            lines.append("\(trainingSessionNextSeedTitle(progress.nextSeedState)): \(nextSeed)")
+        }
+        lines.append("\("متوسط الأثر".localized): \(impactText(progress.averageExpectedImpact))")
+        lines.append("\("أثر الجلسة".localized): \(impactText(progress.totalExpectedImpact))")
+        lines.append("\("تقييم الجلسة".localized): \(progress.gradeTitle) · \(progress.gradePercent)/100")
+        lines.append(progress.gradeDetail)
+        lines.append("\(progress.gradeReasonTitle): \(progress.gradeReasonDetail)")
+        lines.append("\("الخطوة التالية".localized): \(progress.nextStepTitle)")
+        lines.append(progress.nextStepDetail)
+
+        if progress.lostExpectedPoints > 0 {
+            lines.append("\("نقاط ضائعة".localized): \(progress.lostExpectedPoints)")
+        }
+        if progress.lostProjectedTeamPoints > 0 {
+            lines.append("\("نقاط محاكاة ضائعة".localized): \(progress.lostProjectedTeamPoints)")
+        }
+
+        lines.append("افتح مدرب وش تلعب وأكمل جلسة التدريب.".localized)
+        return lines.joined(separator: "\n")
+    }
+
     private static func appendDecisionQualityLines(
         to lines: inout [String],
         content: WhatToPlayShareCardContent
@@ -510,6 +546,17 @@ enum WhatToPlayShareCard {
             return "ضغط الحكم".localized
         case .narrowChoice:
             return "خيارات محدودة".localized
+        }
+    }
+
+    private static func trainingSessionNextSeedTitle(_ state: WhatToPlayTrainingSessionNextSeedState) -> String {
+        switch state {
+        case .retry:
+            return "إعادة الموقف".localized
+        case .fresh:
+            return "الموقف القادم".localized
+        case .complete:
+            return "الجلسة مكتملة".localized
         }
     }
 

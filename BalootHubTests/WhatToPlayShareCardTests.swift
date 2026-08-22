@@ -497,6 +497,58 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertFalse(text.contains("تحسن متوقع".localized))
     }
 
+    func testTrainingSessionProgressShareTextContainsNextSeedGuidanceAndMetrics() throws {
+        let plan = WhatToPlayStatsAnalyzer.trainingSessionPlan(for: [])
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: [], plan: plan)
+
+        let text = WhatToPlayShareCard.trainingSessionProgressText(for: progress)
+
+        XCTAssertTrue(text.contains("تقدم جلسة وش تلعب؟".localized))
+        XCTAssertTrue(text.contains(progress.title))
+        XCTAssertTrue(text.contains(progress.detail))
+        XCTAssertTrue(text.contains(try XCTUnwrap(progress.nextSeedGuidance)))
+        XCTAssertTrue(text.contains("\("المكتمل".localized): 0 \("من".localized) \(progress.targetAttempts)"))
+        XCTAssertTrue(text.contains("\("الدقة الحالية".localized): 0%"))
+        XCTAssertTrue(text.contains("\("أفضل دقة ممكنة".localized): 100%"))
+        XCTAssertTrue(text.contains("\("الموقف القادم".localized): \(try XCTUnwrap(progress.nextSeed))"))
+        XCTAssertTrue(text.contains("\("تقييم الجلسة".localized): \(progress.gradeTitle) · \(progress.gradePercent)/100"))
+        XCTAssertTrue(text.contains("\("الخطوة التالية".localized): \(progress.nextStepTitle)"))
+        XCTAssertTrue(text.contains("افتح مدرب وش تلعب وأكمل جلسة التدريب.".localized))
+    }
+
+    func testTrainingSessionProgressShareTextOmitsNextSeedAfterCompletion() {
+        let plan = WhatToPlayTrainingSessionPlan(
+            difficulty: .easy,
+            seedBase: 700,
+            scenarioCount: 1,
+            targetAccuracyPercent: 100,
+            targetAverageExpectedImpact: 0,
+            title: "خطة اختبار",
+            detail: "تفاصيل اختبار",
+            successMetric: "هدف اختبار",
+            iconName: "target"
+        )
+        let attempt = WhatToPlayAttempt(
+            difficulty: .easy,
+            seed: 700,
+            selectedCard: PlayingCard(suit: .spades, rank: .ace),
+            bestCard: PlayingCard(suit: .spades, rank: .ace),
+            isCorrect: true,
+            expectedImpact: 4,
+            bestExpectedImpact: 4
+        )
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: [attempt], plan: plan)
+
+        let text = WhatToPlayShareCard.trainingSessionProgressText(for: progress)
+
+        XCTAssertEqual(progress.nextSeedState, .complete)
+        XCTAssertNil(progress.nextSeed)
+        XCTAssertNil(progress.nextSeedGuidance)
+        XCTAssertTrue(text.contains("\("تقييم الجلسة".localized): \(progress.gradeTitle) · \(progress.gradePercent)/100"))
+        XCTAssertFalse(text.contains("الموقف القادم".localized))
+        XCTAssertFalse(text.contains("إعادة الموقف".localized))
+    }
+
     func testShareCardImageFileNameUsesFullScenarioCode() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(
             seed: 2026,

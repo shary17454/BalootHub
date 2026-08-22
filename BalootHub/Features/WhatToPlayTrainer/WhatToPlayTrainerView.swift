@@ -924,6 +924,13 @@ struct WhatToPlayTrainerView: View {
             .tint(trainingSessionReviewTint(review))
             .disabled(isGeneratingScenario)
 
+            ShareLink(item: WhatToPlayShareCard.trainingSessionProgressText(for: progress)) {
+                Label("مشاركة تقدم الجلسة".localized, systemImage: "square.and.arrow.up")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .tint(AppColor.primary)
+
             if let reviewItem = progress.reviewItem {
                 VStack(alignment: .leading, spacing: AppSpacing.xs) {
                     Label("أهم موقف للمراجعة".localized, systemImage: reviewItem.iconName)
