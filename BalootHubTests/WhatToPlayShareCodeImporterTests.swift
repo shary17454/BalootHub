@@ -50,6 +50,8 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertFalse(result.statusMessage.contains("تدريب الإعادة".localized))
         XCTAssertFalse(result.statusMessage.contains("جرّب الورقة".localized))
         XCTAssertFalse(result.statusMessage.contains("ثقة أفضل ورقة".localized))
+        XCTAssertFalse(result.statusMessage.contains("سبب أفضل ورقة".localized))
+        XCTAssertFalse(result.statusMessage.contains("سبب ثاني أفضل".localized))
         XCTAssertFalse(result.statusMessage.contains("سبب تكتيكي".localized))
         XCTAssertFalse(result.statusMessage.contains("الترتيب".localized))
         XCTAssertFalse(result.statusMessage.contains("الأثر المتوقع".localized))
@@ -106,10 +108,13 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         )
         assertTableContext(from: contextContent, appearsIn: result.statusMessage)
         XCTAssertTrue(result.statusMessage.contains("\("اختيارك".localized): \(selected.card.accessibilityName)"))
-        XCTAssertTrue(result.statusMessage.contains("\("أفضل ورقة".localized): \(try XCTUnwrap(scenario.bestOption?.card.accessibilityName))"))
+        let bestOption = try XCTUnwrap(scenario.bestOption)
+        XCTAssertTrue(result.statusMessage.contains("\("أفضل ورقة".localized): \(bestOption.card.accessibilityName)"))
+        XCTAssertTrue(result.statusMessage.contains("\("سبب أفضل ورقة".localized): \(bestOption.explanation)"))
         if let secondBest = scenario.secondBestOption,
            secondBest.card != scenario.bestOption?.card {
             XCTAssertTrue(result.statusMessage.contains("\("ثاني أفضل".localized): \(secondBest.card.accessibilityName)"))
+            XCTAssertTrue(result.statusMessage.contains("\("سبب ثاني أفضل".localized): \(secondBest.explanation)"))
         }
         let comparisonSummary = WhatToPlayOptionComparison.summary(for: scenario, selectedCard: selected.card)
         if let decisionQuality = comparisonSummary.decisionQuality {

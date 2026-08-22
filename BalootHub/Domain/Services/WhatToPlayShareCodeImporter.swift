@@ -132,10 +132,12 @@ struct WhatToPlayShareCodeImportResult {
         ]
         if let bestOption = scenario.bestOption {
             lines.append("\("أفضل ورقة".localized): \(bestOption.card.accessibilityName)")
+            lines.append("\("سبب أفضل ورقة".localized): \(bestOption.explanation)")
         }
         if let secondBestOption = scenario.secondBestOption,
            secondBestOption.card != scenario.bestOption?.card {
             lines.append("\("ثاني أفضل".localized): \(secondBestOption.card.accessibilityName)")
+            lines.append("\("سبب ثاني أفضل".localized): \(secondBestOption.explanation)")
         }
         lines.append(contentsOf: decisionSummaryLines(comparisonSummary))
         if let selectedComparisonRow {
