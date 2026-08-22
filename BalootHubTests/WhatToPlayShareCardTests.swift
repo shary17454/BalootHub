@@ -370,7 +370,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(content.retryPromptDetail, prompt.detail)
         XCTAssertEqual(content.retryPromptRecommendedCardName, prompt.recommendedCard?.accessibilityName)
         XCTAssertEqual(content.retryPromptExpectedImprovement, prompt.expectedImprovement)
-        XCTAssertTrue(text.contains("\("أعد نفس الموقف".localized): \(prompt.title)"))
+        XCTAssertTrue(text.contains("\("تدريب الإعادة".localized): \(prompt.title)"))
         XCTAssertTrue(text.contains(prompt.detail))
         if let recommendedCard = prompt.recommendedCard {
             XCTAssertTrue(text.contains("\("جرّب الورقة".localized): \(recommendedCard.accessibilityName)"))

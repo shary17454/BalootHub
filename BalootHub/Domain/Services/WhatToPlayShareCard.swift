@@ -291,7 +291,7 @@ enum WhatToPlayShareCard {
                 lines.append(nextActionDetail)
             }
             if let retryPromptTitle = content.retryPromptTitle {
-                lines.append("\("أعد نفس الموقف".localized): \(retryPromptTitle)")
+                lines.append("\("تدريب الإعادة".localized): \(retryPromptTitle)")
             }
             if let retryPromptDetail = content.retryPromptDetail {
                 lines.append(retryPromptDetail)

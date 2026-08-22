@@ -4353,7 +4353,7 @@ struct WhatToPlayShareCardPreview: View {
                 shareNote(nextActionDetail)
             }
             if let retryPromptTitle = content.retryPromptTitle {
-                shareChip("\("أعد نفس الموقف".localized): \(retryPromptTitle)")
+                shareChip("\("تدريب الإعادة".localized): \(retryPromptTitle)")
             }
             if let retryPromptDetail = content.retryPromptDetail {
                 shareNote(retryPromptDetail)
