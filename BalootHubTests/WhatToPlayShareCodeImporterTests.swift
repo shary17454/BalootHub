@@ -25,6 +25,9 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertTrue(result.statusMessage.contains("\("رمز الموقف".localized): \(code)"))
         XCTAssertFalse(result.statusMessage.contains("اختيارك".localized))
         XCTAssertFalse(result.statusMessage.contains("أفضل ورقة".localized))
+        XCTAssertFalse(result.statusMessage.contains("نتيجة المحاكاة".localized))
+        XCTAssertFalse(result.statusMessage.contains("اتجاه الأكلة".localized))
+        XCTAssertFalse(result.statusMessage.contains("نقاط الأكلة".localized))
     }
 
     func testImporterLoadsReviewedDecisionAndCreatesAttempt() async throws {
@@ -51,6 +54,14 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         if let secondBest = scenario.secondBestOption,
            secondBest.card != scenario.bestOption?.card {
             XCTAssertTrue(result.statusMessage.contains("\("ثاني أفضل".localized): \(secondBest.card.accessibilityName)"))
+        }
+        let simulationDisplay = WhatToPlaySimulationFormatter.display(for: selected.simulation)
+        XCTAssertTrue(result.statusMessage.contains("\("نتيجة المحاكاة".localized): \(simulationDisplay.summary)"))
+        if let teamResult = simulationDisplay.teamResult {
+            XCTAssertTrue(result.statusMessage.contains("\("اتجاه الأكلة".localized): \(teamResult)"))
+        }
+        if let trickPoints = simulationDisplay.trickPoints {
+            XCTAssertTrue(result.statusMessage.contains("\("نقاط الأكلة".localized): \(trickPoints)"))
         }
     }
 

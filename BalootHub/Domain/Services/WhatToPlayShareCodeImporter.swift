@@ -47,6 +47,14 @@ struct WhatToPlayShareCodeImportResult {
                secondBestOption.card != scenario.bestOption?.card {
                 lines.append("\("ثاني أفضل".localized): \(secondBestOption.card.accessibilityName)")
             }
+            let simulationDisplay = WhatToPlaySimulationFormatter.display(for: selectedOption.simulation)
+            lines.append("\("نتيجة المحاكاة".localized): \(simulationDisplay.summary)")
+            if let teamResult = simulationDisplay.teamResult {
+                lines.append("\("اتجاه الأكلة".localized): \(teamResult)")
+            }
+            if let trickPoints = simulationDisplay.trickPoints {
+                lines.append("\("نقاط الأكلة".localized): \(trickPoints)")
+            }
         }
         if expectedImprovement > 0, let expectedImprovementSource {
             lines.append("\("تحسن متوقع".localized): +\(expectedImprovement)")
