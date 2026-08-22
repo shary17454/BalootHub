@@ -189,6 +189,7 @@ struct WhatToPlayCoachingTip: Equatable {
     let targetDifficulty: WhatToPlayDifficulty?
     let targetFocusKind: WhatToPlayScenarioFocusKind?
     let targetGameMode: GameMode?
+    let targetTrumpSuit: Suit?
 
     init(
         title: String,
@@ -197,7 +198,8 @@ struct WhatToPlayCoachingTip: Equatable {
         targetLine: String? = nil,
         targetDifficulty: WhatToPlayDifficulty? = nil,
         targetFocusKind: WhatToPlayScenarioFocusKind? = nil,
-        targetGameMode: GameMode? = nil
+        targetGameMode: GameMode? = nil,
+        targetTrumpSuit: Suit? = nil
     ) {
         self.title = title
         self.detail = detail
@@ -206,10 +208,11 @@ struct WhatToPlayCoachingTip: Equatable {
         self.targetDifficulty = targetDifficulty
         self.targetFocusKind = targetFocusKind
         self.targetGameMode = targetGameMode
+        self.targetTrumpSuit = targetTrumpSuit
     }
 
     var hasActionableTarget: Bool {
-        targetDifficulty != nil || targetFocusKind != nil || targetGameMode != nil
+        targetDifficulty != nil || targetFocusKind != nil || targetGameMode != nil || targetTrumpSuit != nil
     }
 }
 
@@ -4463,6 +4466,7 @@ enum WhatToPlayStatsAnalyzer {
     static func coachingTip(for attempts: [WhatToPlayAttempt]) -> WhatToPlayCoachingTip {
         let summary = summarize(attempts: attempts)
         let rankSummary = choiceRankSummary(for: attempts)
+        let trumpPriority = trumpSuitTrainingPriority(for: attempts)
         let metrics = WhatToPlayCoachingTipMetrics.classify(
             summary: WhatToPlayStatsSummaryMetrics(
                 attempts: summary.attempts,
@@ -4540,14 +4544,21 @@ enum WhatToPlayStatsAnalyzer {
                 targetFocusKind: .narrowChoice
             )
         case .strongStreak:
+            let targetTrumpSuit = trumpPriority?.suit
             return WhatToPlayCoachingTip(
                 title: "سلسلة ممتازة".localized,
                 detail: "أنت تكرر قرارات قريبة من الخبير. ارفع الصعوبة أو ركز على مواقف الحكم لاختبار قراءة أقوى.".localized,
                 iconName: "flame.fill",
-                targetLine: coachingTargetLine(difficulty: .hard, focusKind: .trumpPressure, gameMode: .hokum),
+                targetLine: coachingTargetLine(
+                    difficulty: .hard,
+                    focusKind: .trumpPressure,
+                    gameMode: .hokum,
+                    trumpSuit: targetTrumpSuit
+                ),
                 targetDifficulty: .hard,
                 targetFocusKind: .trumpPressure,
-                targetGameMode: .hokum
+                targetGameMode: .hokum,
+                targetTrumpSuit: targetTrumpSuit
             )
         case .compareChoices:
             return WhatToPlayCoachingTip(
@@ -4563,7 +4574,8 @@ enum WhatToPlayStatsAnalyzer {
     private static func coachingTargetLine(
         difficulty: WhatToPlayDifficulty,
         focusKind: WhatToPlayScenarioFocusKind?,
-        gameMode: GameMode?
+        gameMode: GameMode?,
+        trumpSuit: Suit? = nil
     ) -> String {
         var parts = [
             "\("المستوى".localized): \(difficultyTitle(difficulty))"
@@ -4573,6 +4585,9 @@ enum WhatToPlayStatsAnalyzer {
         }
         if let gameMode {
             parts.append("\("النمط".localized): \(gameModeTitle(gameMode))")
+        }
+        if let trumpSuit {
+            parts.append("\("لون الحكم".localized): \(trumpSuit.spokenName)")
         }
         return parts.joined(separator: " · ")
     }

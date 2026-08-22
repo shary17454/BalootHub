@@ -4281,6 +4281,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(tip.targetDifficulty, .easy)
         XCTAssertNil(tip.targetFocusKind)
         XCTAssertNil(tip.targetGameMode)
+        XCTAssertNil(tip.targetTrumpSuit)
     }
 
     func testCoachingTipForLowAccuracyFocusesOnSlowingDown() {
@@ -4372,6 +4373,26 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(tip.targetDifficulty, .hard)
         XCTAssertEqual(tip.targetFocusKind, .trumpPressure)
         XCTAssertEqual(tip.targetGameMode, .hokum)
+        XCTAssertNil(tip.targetTrumpSuit)
+    }
+
+    func testCoachingTipForCurrentStreakTargetsWeakTrumpSuitWhenAvailable() {
+        let attempts = [
+            attempt(daysAgo: 6, correct: true, impact: 4, bestImpact: 4),
+            attempt(daysAgo: 5, correct: true, impact: 3, bestImpact: 3),
+            attempt(daysAgo: 4, correct: true, impact: 2, bestImpact: 2),
+            attempt(daysAgo: 3, correct: true, impact: 3, bestImpact: 3, gameMode: .hokum, projectedTeamPoints: 44, bestProjectedTeamPoints: 70, scenarioContext: hokumContext(trumpSuit: .spades)),
+            attempt(daysAgo: 2, correct: true, impact: 3, bestImpact: 3, gameMode: .hokum, projectedTeamPoints: 62, bestProjectedTeamPoints: 62, scenarioContext: hokumContext(trumpSuit: .spades))
+        ]
+
+        let tip = WhatToPlayStatsAnalyzer.coachingTip(for: attempts)
+
+        XCTAssertEqual(tip.title, "سلسلة ممتازة".localized)
+        XCTAssertEqual(tip.targetTrumpSuit, .spades)
+        XCTAssertEqual(
+            tip.targetLine,
+            "\("المستوى".localized): \("صعب".localized) · \("تركيز التدريب".localized): \("ضغط الحكم".localized) · \("النمط".localized): \("حكم".localized) · \("لون الحكم".localized): \(Suit.spades.spokenName)"
+        )
     }
 
     private func sessionPlan(

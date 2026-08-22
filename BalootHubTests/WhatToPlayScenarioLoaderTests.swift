@@ -295,6 +295,38 @@ final class WhatToPlayScenarioLoaderTests: XCTestCase {
         XCTAssertEqual(target?.gameMode, .hokum)
         XCTAssertEqual(target?.focusRawValue, WhatToPlayScenarioFocusKind.trumpPressure.rawValue)
         XCTAssertEqual(target?.gameModeRawValue, GameMode.hokum.rawValue)
+        XCTAssertNil(target?.trumpSuit)
+    }
+
+    func testCoachingScenarioTargetUsesTipTrumpSuitAndSkipsMatchingSuitSeeds() {
+        let tip = WhatToPlayCoachingTip(
+            title: "اختبار",
+            detail: "اختبار",
+            iconName: "target",
+            targetLine: "اختبار",
+            targetDifficulty: .hard,
+            targetFocusKind: .trumpPressure,
+            targetGameMode: .hokum,
+            targetTrumpSuit: .spades
+        )
+        let attempts = [
+            attempt(seed: 2027, difficulty: .hard, focusKind: .trumpPressure, gameMode: .hokum, trumpSuit: .spades),
+            attempt(seed: 2028, difficulty: .hard, focusKind: .trumpPressure, gameMode: .hokum, trumpSuit: .spades),
+            attempt(seed: 2029, difficulty: .hard, focusKind: .trumpPressure, gameMode: .hokum, trumpSuit: .hearts)
+        ]
+
+        let target = WhatToPlayCoachingScenarioTarget.make(
+            from: tip,
+            after: 2026,
+            fallbackDifficulty: .easy,
+            attempts: attempts
+        )
+
+        XCTAssertEqual(target?.seed, 2029)
+        XCTAssertEqual(target?.difficulty, .hard)
+        XCTAssertEqual(target?.focusKind, .trumpPressure)
+        XCTAssertEqual(target?.gameMode, .hokum)
+        XCTAssertEqual(target?.trumpSuit, .spades)
     }
 
     func testCoachingScenarioTargetIgnoresNonActionableTip() {

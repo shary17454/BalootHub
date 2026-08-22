@@ -27,12 +27,13 @@ struct WhatToPlayCoachingScenarioTarget: Equatable {
         let difficulty = tip.targetDifficulty ?? fallbackDifficulty
         let focusKind = tip.targetFocusKind
         let gameMode = tip.targetGameMode
+        let trumpSuit = tip.targetTrumpSuit
         let seed = WhatToPlayScenarioLoader.nextUnattemptedSeed(
             after: currentSeed,
             difficulty: difficulty,
             preferredFocus: focusKind,
             preferredMode: gameMode,
-            preferredTrumpSuit: nil,
+            preferredTrumpSuit: trumpSuit,
             attempts: attempts
         )
 
@@ -41,7 +42,7 @@ struct WhatToPlayCoachingScenarioTarget: Equatable {
             difficulty: difficulty,
             focusKind: focusKind,
             gameMode: gameMode,
-            trumpSuit: nil
+            trumpSuit: trumpSuit
         )
     }
 }
