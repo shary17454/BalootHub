@@ -867,6 +867,12 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains(try XCTUnwrap(progress.worstDecisionHighlight?.scenarioCode)))
         XCTAssertTrue(text.contains("\("Seed".localized): 801"))
         XCTAssertTrue(text.contains("القيمة المتوقعة".localized))
+        let reviewItem = try XCTUnwrap(progress.reviewItem)
+        XCTAssertTrue(text.contains("\("أهم موقف للمراجعة".localized): \(reviewItem.title)"))
+        XCTAssertTrue(text.contains("\("رمز الموقف".localized): \(reviewItem.scenarioCode)"))
+        XCTAssertTrue(text.contains("\("اختيارك".localized): \(try XCTUnwrap(reviewItem.selectedCard).accessibilityName)"))
+        XCTAssertTrue(text.contains("\("أفضل ورقة".localized): \(try XCTUnwrap(reviewItem.bestCard).accessibilityName)"))
+        XCTAssertTrue(text.contains("\("سبب المراجعة".localized): \(reviewItem.detail)"))
     }
 
     func testTrainingSessionProgressShareTextIncludesSecondSimulationLossSource() {

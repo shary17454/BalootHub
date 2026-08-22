@@ -577,6 +577,9 @@ enum WhatToPlayShareCard {
         if let worstDecisionHighlight = progress.worstDecisionHighlight, worstDecisionHighlight.totalLoss > 0 {
             lines.append("\("أسوأ قرار في الجلسة".localized): \(decisionHighlightText(worstDecisionHighlight))")
         }
+        if let reviewItem = progress.reviewItem {
+            lines.append(contentsOf: trainingSessionReviewItemLines(reviewItem))
+        }
         lines.append("\("الخطوة التالية".localized): \(progress.nextStepTitle)")
         lines.append(progress.nextStepDetail)
 
@@ -737,6 +740,26 @@ enum WhatToPlayShareCard {
 
     private static func trainingSessionTargetText(title: String, isMet: Bool) -> String {
         "\(title): \(isMet ? "متحقق".localized : "غير متحقق".localized)"
+    }
+
+    private static func trainingSessionReviewItemLines(_ item: WhatToPlayReviewItem) -> [String] {
+        var lines = [
+            "\("أهم موقف للمراجعة".localized): \(item.title)",
+            "\("رمز الموقف".localized): \(item.scenarioCode)",
+            "\("اختيارك".localized): \(cardName(item.selectedCard))",
+            "\("أفضل ورقة".localized): \(cardName(item.bestCard))",
+            "\("سبب المراجعة".localized): \(item.detail)"
+        ]
+        if let secondBestCard = item.secondBestCard {
+            lines.append("\("ثاني أفضل".localized): \(secondBestCard.accessibilityName)")
+        }
+        if item.lostProjectedTeamPoints > 0 {
+            lines.append("\("نقاط محاكاة ضائعة".localized): \(item.lostProjectedTeamPoints)")
+        }
+        if item.lostProjectedAgainstSecondBestPoints > 0 {
+            lines.append("\("فاقد ثاني محاكاة".localized): \(item.lostProjectedAgainstSecondBestPoints)")
+        }
+        return lines
     }
 
     private static func decisionHighlightText(_ highlight: WhatToPlayDecisionHighlight) -> String {
