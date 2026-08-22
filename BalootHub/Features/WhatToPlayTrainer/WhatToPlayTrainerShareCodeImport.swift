@@ -44,6 +44,7 @@ extension WhatToPlayTrainerView {
                     .font(.caption2)
                     .foregroundStyle(shareCodeMessageColor(shareCodeMessageStyle))
                     .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityLabel(shareCodeStatusAccessibilityLabel(for: shareCodeMessage))
             }
 
             if let shareCodeSimulationAlternativeMessage {
@@ -162,6 +163,13 @@ extension WhatToPlayTrainerView {
         shareCodeMessage = nil
         shareCodeMessageStyle = .neutral
         shareCodeSimulationAlternativeMessage = nil
+    }
+
+    func shareCodeStatusAccessibilityLabel(for message: String) -> String {
+        message
+            .split(whereSeparator: \.isNewline)
+            .map(String.init)
+            .joined(separator: "، ")
     }
 
     func shareCodeMessageStyle(

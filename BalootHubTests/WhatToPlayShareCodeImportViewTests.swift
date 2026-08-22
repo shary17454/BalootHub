@@ -25,6 +25,22 @@ final class WhatToPlayShareCodeImportViewTests: XCTestCase {
         XCTAssertNil(view.shareCodeSimulationAlternativeMessage)
     }
 
+    func testShareCodeStatusAccessibilityLabelReadsMultilineMessageClearly() {
+        let view = WhatToPlayTrainerView()
+        let message = [
+            "تم تحميل مراجعة القرار".localized,
+            "\("رمز الموقف".localized): WTP-2026-medium-followSuit-auto-C37",
+            "\("ثاني نتيجة محاكاة".localized): 58"
+        ].joined(separator: "\n")
+
+        let label = view.shareCodeStatusAccessibilityLabel(for: message)
+
+        XCTAssertEqual(
+            label,
+            "\("تم تحميل مراجعة القرار".localized)، \("رمز الموقف".localized): WTP-2026-medium-followSuit-auto-C37، \("ثاني نتيجة محاكاة".localized): 58"
+        )
+    }
+
     func testShareCodeImportFormatsSimulationAlternativeLine() async throws {
         let view = WhatToPlayTrainerView()
         let result = try await importedResultWithSimulationAlternative()
