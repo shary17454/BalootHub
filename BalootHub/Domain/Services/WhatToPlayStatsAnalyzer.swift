@@ -660,6 +660,7 @@ struct WhatToPlayTrainingSessionReview: Equatable {
     let contextLine: String
     let iconName: String
     let replaySeed: UInt64?
+    let replayScenarioCode: String?
     let nextSeed: UInt64?
     let difficulty: WhatToPlayDifficulty?
     let focusKind: WhatToPlayScenarioFocusKind?
@@ -677,6 +678,7 @@ struct WhatToPlayTrainingSessionReview: Equatable {
         contextLine: String,
         iconName: String,
         replaySeed: UInt64?,
+        replayScenarioCode: String? = nil,
         nextSeed: UInt64?,
         difficulty: WhatToPlayDifficulty?,
         focusKind: WhatToPlayScenarioFocusKind?,
@@ -693,6 +695,7 @@ struct WhatToPlayTrainingSessionReview: Equatable {
         self.contextLine = contextLine
         self.iconName = iconName
         self.replaySeed = replaySeed
+        self.replayScenarioCode = replayScenarioCode
         self.nextSeed = nextSeed
         self.difficulty = difficulty
         self.focusKind = focusKind
@@ -2673,6 +2676,7 @@ enum WhatToPlayStatsAnalyzer {
                     contextLine: trainingSessionReviewContext(difficulty: reviewItem.difficulty, focusKind: reviewItem.focusKind, gameMode: reviewItem.gameMode, trumpSuit: reviewItem.contextTrumpSuit),
                     iconName: reviewItem.iconName,
                     replaySeed: reviewItem.seed,
+                    replayScenarioCode: reviewItem.scenarioCode,
                     nextSeed: reviewItem.seed,
                     difficulty: reviewItem.difficulty,
                     focusKind: reviewItem.focusKind,
