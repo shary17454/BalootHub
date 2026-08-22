@@ -169,8 +169,10 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         let worst = WhatToPlayStatsAnalyzer.worstDecisionHighlight(for: attempts)
 
         XCTAssertEqual(best?.selectedCard, bestCard)
+        XCTAssertEqual(best?.seed, 2)
         XCTAssertEqual(best?.expectedImpact, 9)
         XCTAssertEqual(worst?.selectedCard, secondSimulationWorstCard)
+        XCTAssertEqual(worst?.seed, 0)
         XCTAssertEqual(worst?.lostExpectedPoints, 1)
         XCTAssertEqual(worst?.lostProjectedTeamPoints, 2)
         XCTAssertEqual(worst?.lostProjectedAgainstSecondBestPoints, 30)
@@ -3898,8 +3900,10 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
 
         XCTAssertEqual(progress.bestDecisionHighlight?.selectedCard, bestCard)
+        XCTAssertEqual(progress.bestDecisionHighlight?.seed, 11)
         XCTAssertEqual(progress.bestDecisionHighlight?.expectedImpact, 6)
         XCTAssertEqual(progress.worstDecisionHighlight?.selectedCard, worstCard)
+        XCTAssertEqual(progress.worstDecisionHighlight?.seed, 12)
         XCTAssertEqual(progress.worstDecisionHighlight?.lostExpectedPoints, 8)
         XCTAssertEqual(progress.worstDecisionHighlight?.totalLoss, 8)
     }

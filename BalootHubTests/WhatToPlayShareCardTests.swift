@@ -589,8 +589,10 @@ final class WhatToPlayShareCardTests: XCTestCase {
 
         XCTAssertTrue(text.contains("\("أفضل قرار في الجلسة".localized): \(bestCard.accessibilityName)"))
         XCTAssertTrue(text.contains("\("أثر القرار".localized): +7"))
+        XCTAssertTrue(text.contains("\("Seed".localized): 800"))
         XCTAssertTrue(text.contains("\("أسوأ قرار في الجلسة".localized): \(worstCard.accessibilityName)"))
         XCTAssertTrue(text.contains("\("فاقد القرار".localized): 7"))
+        XCTAssertTrue(text.contains("\("Seed".localized): 801"))
         XCTAssertTrue(text.contains("القيمة المتوقعة".localized))
     }
 
