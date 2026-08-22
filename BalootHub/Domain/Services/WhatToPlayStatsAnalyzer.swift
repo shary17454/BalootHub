@@ -2819,6 +2819,7 @@ enum WhatToPlayStatsAnalyzer {
     private static func trainingSessionReviewMistakeDetail(_ item: WhatToPlayReviewItem) -> String {
         var parts = [
             "\("ابدأ بإعادة موقف".localized) \(item.seed)",
+            "\("رمز الموقف".localized): \(item.scenarioCode)",
             "قبل تكرار الجلسة؛ هذا يربط التدريب بسبب الخسارة لا بعدد المحاولات فقط.".localized
         ]
         parts.append(contentsOf: trainingSessionReviewMistakeContextParts(for: item))
