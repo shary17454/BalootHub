@@ -120,6 +120,49 @@ final class WhatToPlayTrainerViewReviewItemTests: XCTestCase {
         )
     }
 
+    func testTrainingSessionAccuracyPressureTextShowsReachableNeed() {
+        let plan = sessionPlan(count: 4, targetAccuracyPercent: 75)
+        let attempts = [
+            attempt(seed: 1, isCorrect: true),
+            attempt(seed: 2, isCorrect: false),
+            attempt(seed: 3, isCorrect: true)
+        ]
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+        let view = WhatToPlayTrainerView()
+
+        XCTAssertEqual(
+            view.trainingSessionAccuracyPressureText(for: progress),
+            "\("هدف الدقة ممكن".localized) · \("باقي للدقة".localized): 1"
+        )
+    }
+
+    func testTrainingSessionAccuracyPressureTextShowsUnreachableCeiling() {
+        let plan = sessionPlan(count: 4, targetAccuracyPercent: 75)
+        let attempts = [
+            attempt(seed: 1, isCorrect: false),
+            attempt(seed: 2, isCorrect: false),
+            attempt(seed: 3, isCorrect: true)
+        ]
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+        let view = WhatToPlayTrainerView()
+
+        XCTAssertEqual(
+            view.trainingSessionAccuracyPressureText(for: progress),
+            "\("هدف الدقة غير ممكن".localized) · \("أفضل دقة ممكنة".localized): 50%"
+        )
+    }
+
+    func testTrainingSessionAccuracyPressureTextShowsAchievedTarget() {
+        let plan = sessionPlan(count: 1, targetAccuracyPercent: 100)
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(
+            for: [attempt(seed: 1, isCorrect: true)],
+            plan: plan
+        )
+        let view = WhatToPlayTrainerView()
+
+        XCTAssertEqual(view.trainingSessionAccuracyPressureText(for: progress), "تحقق هدف الدقة".localized)
+    }
+
     private static let completeHand = [
         PlayingCard(suit: .spades, rank: .ace),
         PlayingCard(suit: .spades, rank: .king),
@@ -130,4 +173,35 @@ final class WhatToPlayTrainerViewReviewItemTests: XCTestCase {
         PlayingCard(suit: .diamonds, rank: .eight),
         PlayingCard(suit: .clubs, rank: .seven)
     ]
+
+    private func sessionPlan(
+        count: Int,
+        targetAccuracyPercent: Int
+    ) -> WhatToPlayTrainingSessionPlan {
+        WhatToPlayTrainingSessionPlan(
+            difficulty: .medium,
+            seedBase: 1,
+            scenarioCount: count,
+            targetAccuracyPercent: targetAccuracyPercent,
+            targetAverageExpectedImpact: 0,
+            title: "خطة اختبار",
+            detail: "تفاصيل اختبار",
+            successMetric: "هدف اختبار",
+            iconName: "target"
+        )
+    }
+
+    private func attempt(seed: UInt64, isCorrect: Bool) -> WhatToPlayAttempt {
+        let selected = PlayingCard(suit: .spades, rank: isCorrect ? .ace : .seven)
+        let best = PlayingCard(suit: .spades, rank: .ace)
+        return WhatToPlayAttempt(
+            difficulty: .medium,
+            seed: seed,
+            selectedCard: selected,
+            bestCard: best,
+            isCorrect: isCorrect,
+            expectedImpact: isCorrect ? 4 : -1,
+            bestExpectedImpact: 4
+        )
+    }
 }

@@ -704,6 +704,11 @@ struct WhatToPlayTrainerView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
 
+            Text(trainingSessionAccuracyPressureText(for: progress))
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(progress.accuracyTargetMet ? AppColor.success : AppColor.accent)
+                .fixedSize(horizontal: false, vertical: true)
+
             ProgressView(
                 value: Double(progress.completedAttempts),
                 total: Double(max(progress.targetAttempts, 1))
@@ -1161,6 +1166,16 @@ struct WhatToPlayTrainerView: View {
             parts.append("\("البذرة".localized) \(seed)")
         }
         return parts.joined(separator: " · ")
+    }
+
+    func trainingSessionAccuracyPressureText(for progress: WhatToPlayTrainingSessionProgress) -> String {
+        if progress.accuracyTargetMet {
+            return "تحقق هدف الدقة".localized
+        }
+        if progress.accuracyTargetReachable {
+            return "\("هدف الدقة ممكن".localized) · \("باقي للدقة".localized): \(progress.correctAttemptsNeededForTarget)"
+        }
+        return "\("هدف الدقة غير ممكن".localized) · \("أفضل دقة ممكنة".localized): \(progress.bestPossibleAccuracyPercent)%"
     }
 
     private func sessionImpactTint(_ averageImpact: Int, completed: Int) -> Color {
