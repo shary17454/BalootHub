@@ -259,6 +259,26 @@ final class WhatToPlayShareCardTests: XCTestCase {
         }
     }
 
+    func testLegalCardSummaryTextOmitsLongRationaleForVisualChips() {
+        let line = WhatToPlayShareCardContent.LegalCardLine(
+            cardName: "إكة سباتي",
+            expectedImpact: 8,
+            projectedTeamPoints: 42,
+            expectedImprovement: 5,
+            expectedImprovementSourceTitle: "محاكاة الجولة".localized,
+            rationale: "اقطع الحكم لحماية الأكلة.",
+            isExpertChoice: true
+        )
+
+        let fullText = WhatToPlayShareCard.legalCardText(line)
+        let summaryText = WhatToPlayShareCard.legalCardSummaryText(line)
+
+        XCTAssertTrue(fullText.contains("\("سبب الخيار".localized): اقطع الحكم لحماية الأكلة."))
+        XCTAssertFalse(summaryText.contains("سبب الخيار".localized))
+        XCTAssertFalse(summaryText.contains("اقطع الحكم لحماية الأكلة."))
+        XCTAssertTrue(summaryText.contains("اختيار الخبير".localized))
+    }
+
     func testShareCardContentMarksAnswerReviewOnlyAfterSelection() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 2026, difficulty: .medium)
         let selected = try XCTUnwrap(scenario.bestOption)

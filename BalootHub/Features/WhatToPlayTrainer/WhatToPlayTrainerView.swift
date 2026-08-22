@@ -4664,7 +4664,12 @@ struct WhatToPlayShareCardPreview: View {
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppSpacing.xs) {
                 ForEach(content.legalCards, id: \.cardName) { legalCard in
-                    shareChip(WhatToPlayShareCard.legalCardText(legalCard))
+                    VStack(alignment: .leading, spacing: 4) {
+                        shareChip(WhatToPlayShareCard.legalCardSummaryText(legalCard))
+                        if let rationale = legalCard.rationale, !rationale.isEmpty {
+                            shareNote("\("سبب الخيار".localized): \(rationale)")
+                        }
+                    }
                 }
             }
         }

@@ -639,6 +639,17 @@ enum WhatToPlayShareCard {
     }
 
     static func legalCardText(_ legalCard: WhatToPlayShareCardContent.LegalCardLine) -> String {
+        legalCardText(legalCard, includesRationale: true)
+    }
+
+    static func legalCardSummaryText(_ legalCard: WhatToPlayShareCardContent.LegalCardLine) -> String {
+        legalCardText(legalCard, includesRationale: false)
+    }
+
+    private static func legalCardText(
+        _ legalCard: WhatToPlayShareCardContent.LegalCardLine,
+        includesRationale: Bool
+    ) -> String {
         var parts = [legalCard.cardName]
         if let expectedImpact = legalCard.expectedImpact {
             parts.append("\("الأثر المتوقع".localized): \(impactText(expectedImpact))")
@@ -652,7 +663,7 @@ enum WhatToPlayShareCard {
         if let expectedImprovementSourceTitle = legalCard.expectedImprovementSourceTitle {
             parts.append("\("مصدر التحسن".localized): \(expectedImprovementSourceTitle)")
         }
-        if let rationale = legalCard.rationale, !rationale.isEmpty {
+        if includesRationale, let rationale = legalCard.rationale, !rationale.isEmpty {
             parts.append("\("سبب الخيار".localized): \(rationale)")
         }
         if legalCard.isExpertChoice {
