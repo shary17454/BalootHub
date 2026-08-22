@@ -111,6 +111,30 @@ public enum GameEngine {
         }
     }
 
+    /// خط زمني مقروء لقرارات المضاعفة كما وقعت في سجل الأفعال.
+    ///
+    /// المعلومة النهائية في ``BiddingState/multiplier`` تخبرنا أين استقر التصعيد،
+    /// لكنها لا تكفي للـReplay والتحليل: نحتاج معرفة من طلب الدبل، ومن مرّر، ومن قفل.
+    /// لذلك يُشتق هذا الملخص من ``GameState/actionHistory`` ليبقى قابلًا لإعادة التشغيل.
+    public static func multiplierTimeline(state: GameState) -> [String] {
+        state.actionHistory.compactMap { action in
+            switch action {
+            case .raiseMultiplier(let playerID, let level):
+                return "\(timelinePlayerName(playerID, in: state)) طلب \(level.arabicName)"
+            case .passMultiplier(let playerID):
+                return "\(timelinePlayerName(playerID, in: state)) قال بس في المضاعفة"
+            case .lockMultiplier(let playerID):
+                return "\(timelinePlayerName(playerID, in: state)) قفل المضاعفة"
+            case .dealCards, .chooseMode, .placeBid, .declareProjects, .playCard, .finishRound:
+                return nil
+            }
+        }
+    }
+
+    private static func timelinePlayerName(_ id: Player.ID, in state: GameState) -> String {
+        state.player(id: id)?.name ?? "لاعب"
+    }
+
     /// حركات المضاعفة القانونية للاعب محدد في لحظة المزايدة الحالية.
     public static func legalMultiplierActions(for playerID: Player.ID, state: GameState) -> [LegalMultiplierAction] {
         BiddingEngine.legalMultiplierActions(for: playerID, state: state)

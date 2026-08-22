@@ -100,6 +100,15 @@ final class RoundReplayNavigatorTests: XCTestCase {
         XCTAssertTrue(summary.contains("الفاقد المتوقع".localized))
     }
 
+    func testReplayShareSummaryIncludesMultiplierTimeline() throws {
+        let replay = try makeReplayWithLockedMultiplier()
+        let summary = RoundReplayShareSummary.text(initialState: replay.initial, actions: replay.actions)
+
+        XCTAssertTrue(summary.contains("المضاعفات".localized))
+        XCTAssertTrue(summary.contains("طلب دبل"))
+        XCTAssertTrue(summary.contains("قفل المضاعفة"))
+    }
+
     func testReplayShareSummaryIncludesBestProjectedCardWhenSimulationDiffers() throws {
         let replay = try makeReplayWithProjectedDecision()
         let summary = RoundReplayShareSummary.text(initialState: replay.initial, actions: replay.actions)
@@ -130,6 +139,24 @@ final class RoundReplayNavigatorTests: XCTestCase {
 
         XCTAssertEqual(state.phase, .finished)
         XCTAssertGreaterThanOrEqual(state.completedTricks.count, 1)
+        return (initial, state.actionHistory)
+    }
+
+    private func makeReplayWithLockedMultiplier() throws -> (initial: GameState, actions: [GameAction]) {
+        let initial = GameState.newLocalMatch(rules: .standard)
+        var state = try GameEngine.apply(.dealCards(seed: 17), to: initial)
+        let upSuit = try XCTUnwrap(state.bidding.upCard?.suit)
+        let buyerID = try XCTUnwrap(state.currentTurnPlayerID)
+        state = try GameEngine.apply(.placeBid(playerID: buyerID, bid: .hokum(suit: upSuit)), to: state)
+        for _ in 0..<3 {
+            state = try GameEngine.apply(.placeBid(playerID: try XCTUnwrap(state.currentTurnPlayerID), bid: .pass), to: state)
+        }
+        let doublerID = try XCTUnwrap(state.currentTurnPlayerID)
+        state = try GameEngine.apply(.raiseMultiplier(playerID: doublerID, level: .double), to: state)
+        state = try GameEngine.apply(.lockMultiplier(playerID: doublerID), to: state)
+
+        XCTAssertEqual(state.bidding.multiplier, .double)
+        XCTAssertTrue(state.bidding.isLocked)
         return (initial, state.actionHistory)
     }
 

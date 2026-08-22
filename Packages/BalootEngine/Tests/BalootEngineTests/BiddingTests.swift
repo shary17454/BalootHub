@@ -754,6 +754,35 @@ struct MultiplierTests {
         #expect(replayed.trumpSuit == state.trumpSuit)
     }
 
+    @Test("خط المضاعفات الزمني يُشتق من سجل الأفعال بالترتيب")
+    func multiplierTimelineComesFromActionHistory() throws {
+        let initial = GameState.newLocalMatch(rules: .standard)
+        var state = try GameEngine.apply(.dealCards(seed: 17), to: initial)
+        let upSuit = try #require(state.bidding.upCard?.suit)
+        let buyerID = try #require(state.currentTurnPlayerID)
+        state = try GameEngine.apply(.placeBid(playerID: buyerID, bid: .hokum(suit: upSuit)), to: state)
+        for _ in 0..<3 {
+            state = try GameEngine.apply(.placeBid(playerID: try #require(state.currentTurnPlayerID), bid: .pass), to: state)
+        }
+
+        let doublerID = try #require(state.currentTurnPlayerID)
+        let doublerName = try #require(state.player(id: doublerID)?.name)
+        state = try GameEngine.apply(.raiseMultiplier(playerID: doublerID, level: .double), to: state)
+        let raiserID = try #require(state.currentTurnPlayerID)
+        let raiserName = try #require(state.player(id: raiserID)?.name)
+        state = try GameEngine.apply(.passMultiplier(playerID: raiserID), to: state)
+        state = try GameEngine.apply(.lockMultiplier(playerID: doublerID), to: state)
+
+        #expect(GameEngine.multiplierTimeline(state: state) == [
+            "\(doublerName) طلب دبل",
+            "\(raiserName) قال بس في المضاعفة",
+            "\(doublerName) قفل المضاعفة"
+        ])
+
+        let replayed = try GameEngine.replay(initialState: initial, actions: state.actionHistory)
+        #expect(GameEngine.multiplierTimeline(state: replayed) == GameEngine.multiplierTimeline(state: state))
+    }
+
     @Test("المضاعف يضرب نتيجة الجولة بالمعامل المعرَّف في القواعد")
     func multiplierScalesRoundScore() {
         let teamA = Team(name: "أ")

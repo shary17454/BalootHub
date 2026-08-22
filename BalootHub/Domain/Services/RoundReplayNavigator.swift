@@ -65,6 +65,14 @@ enum RoundReplayShareSummary {
             }
         }
 
+        let multiplierTimeline = GameEngine.multiplierTimeline(state: finalState)
+        if !multiplierTimeline.isEmpty {
+            lines.append("المضاعفات".localized)
+            for line in multiplierTimeline {
+                lines.append("- \(line)")
+            }
+        }
+
         if !finalState.awardedProjects.isEmpty {
             lines.append("المشاريع المحتسَبة".localized)
             for project in finalState.awardedProjects.sorted(by: projectSort) {
