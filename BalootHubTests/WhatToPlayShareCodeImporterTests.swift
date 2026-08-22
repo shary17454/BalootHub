@@ -18,7 +18,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.parsed.seed, scenario.seed)
         XCTAssertEqual(result.scenario.seed, scenario.seed)
         XCTAssertNil(result.selectedOption)
-        XCTAssertNil(result.attempt)
+        XCTAssertNil(result.makeAttempt())
         XCTAssertEqual(result.canonicalScenarioCode, code)
         XCTAssertEqual(result.statusTone, .prompt)
         XCTAssertNil(result.secondBestSimulationCard)
@@ -91,8 +91,8 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
 
         XCTAssertEqual(result.kind, .reviewedDecision(isDuplicate: false))
         XCTAssertEqual(result.selectedOption?.card, selected.card)
-        XCTAssertEqual(result.attempt?.selectedCard, selected.card)
-        XCTAssertEqual(result.attempt?.scenarioCode, code)
+        XCTAssertEqual(result.makeAttempt()?.selectedCard, selected.card)
+        XCTAssertEqual(result.makeAttempt()?.scenarioCode, code)
         XCTAssertEqual(result.canonicalScenarioCode, code)
         XCTAssertEqual(result.statusTone, .savedReview)
         XCTAssertTrue(result.statusMessage.contains("تم تحميل مراجعة القرار وإضافتها للإحصاءات.".localized))
@@ -274,7 +274,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
             return (
                 kind: result.kind,
                 selectedCardName: result.selectedOption?.card.accessibilityName,
-                scenarioCode: result.attempt?.scenarioCode
+                scenarioCode: result.makeAttempt()?.scenarioCode
             )
         }.value
 
@@ -302,9 +302,9 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.scenario.state.mode, .hokum)
         XCTAssertEqual(result.scenario.state.trumpSuit, .spades)
         XCTAssertEqual(result.selectedOption?.card, selected.card)
-        XCTAssertEqual(result.attempt?.gameMode, .hokum)
-        XCTAssertEqual(result.attempt?.contextTrumpSuit, .spades)
-        XCTAssertEqual(result.attempt?.scenarioCode, code)
+        XCTAssertEqual(result.makeAttempt()?.gameMode, .hokum)
+        XCTAssertEqual(result.makeAttempt()?.contextTrumpSuit, .spades)
+        XCTAssertEqual(result.makeAttempt()?.scenarioCode, code)
         XCTAssertTrue(result.statusMessage.contains("\("لون الحكم".localized): \(Suit.spades.spokenName)"))
     }
 
@@ -322,7 +322,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.kind, .reviewedDecision(isDuplicate: false))
         XCTAssertEqual(result.selectedOption?.card, selected.card)
         let expectedCode = WhatToPlayShareCard.content(for: scenario, selectedOption: selected).scenarioCode
-        XCTAssertEqual(result.attempt?.scenarioCode, expectedCode)
+        XCTAssertEqual(result.makeAttempt()?.scenarioCode, expectedCode)
         XCTAssertEqual(result.canonicalScenarioCode, expectedCode)
     }
 
@@ -347,8 +347,8 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
 
         XCTAssertEqual(result.kind, .reviewedDecision(isDuplicate: false))
         XCTAssertEqual(result.selectedOption?.card, selected.card)
-        XCTAssertEqual(result.attempt?.selectedCard, selected.card)
-        XCTAssertEqual(result.attempt?.scenarioCode, reviewItem.scenarioCode)
+        XCTAssertEqual(result.makeAttempt()?.selectedCard, selected.card)
+        XCTAssertEqual(result.makeAttempt()?.scenarioCode, reviewItem.scenarioCode)
         XCTAssertEqual(result.canonicalScenarioCode, reviewItem.scenarioCode)
     }
 
@@ -376,7 +376,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
 
         XCTAssertEqual(result.kind, .reviewedDecision(isDuplicate: true))
         XCTAssertEqual(result.selectedOption?.card, selected.card)
-        XCTAssertNil(result.attempt)
+        XCTAssertNil(result.makeAttempt())
         XCTAssertEqual(result.canonicalScenarioCode, reviewItem.scenarioCode)
     }
 
@@ -390,8 +390,8 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertTrue(fixture.sharedText.contains("\("مصدر التحسن".localized):"))
         XCTAssertEqual(result.kind, .reviewedDecision(isDuplicate: false))
         XCTAssertEqual(result.selectedOption?.card, fixture.selected.card)
-        XCTAssertEqual(result.attempt?.selectedCard, fixture.selected.card)
-        XCTAssertEqual(result.attempt?.scenarioCode, fixture.replayScenarioCode)
+        XCTAssertEqual(result.makeAttempt()?.selectedCard, fixture.selected.card)
+        XCTAssertEqual(result.makeAttempt()?.scenarioCode, fixture.replayScenarioCode)
         XCTAssertEqual(result.canonicalScenarioCode, fixture.replayScenarioCode)
         XCTAssertEqual(result.expectedImprovement, fixture.review.expectedImprovement)
         XCTAssertEqual(result.expectedImprovementSource, fixture.review.expectedImprovementSource)
@@ -413,7 +413,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         )
 
         XCTAssertEqual(result.kind, .reviewedDecision(isDuplicate: true))
-        XCTAssertNil(result.attempt)
+        XCTAssertNil(result.makeAttempt())
         XCTAssertEqual(result.canonicalScenarioCode, fixture.replayScenarioCode)
         XCTAssertEqual(result.expectedImprovement, fixture.review.expectedImprovement)
         XCTAssertEqual(result.expectedImprovementSource, fixture.review.expectedImprovementSource)
@@ -444,7 +444,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.kind, .reviewedDecision(isDuplicate: false))
         XCTAssertEqual(result.parsed.trumpSuit, .spades)
         XCTAssertEqual(result.selectedOption?.card, selected.card)
-        XCTAssertEqual(result.attempt?.scenarioCode, code)
+        XCTAssertEqual(result.makeAttempt()?.scenarioCode, code)
     }
 
     func testImporterLoadsPercentEncodedSharedURL() async throws {
@@ -466,7 +466,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.kind, .reviewedDecision(isDuplicate: false))
         XCTAssertEqual(result.parsed.gameMode, .sun)
         XCTAssertEqual(result.selectedOption?.card, selected.card)
-        XCTAssertEqual(result.attempt?.scenarioCode, code)
+        XCTAssertEqual(result.makeAttempt()?.scenarioCode, code)
         XCTAssertEqual(result.canonicalScenarioCode, code)
     }
 
@@ -487,7 +487,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
 
         XCTAssertEqual(result.kind, .prompt)
         XCTAssertNil(result.selectedOption)
-        XCTAssertNil(result.attempt)
+        XCTAssertNil(result.makeAttempt())
         XCTAssertEqual(result.canonicalScenarioCode, code)
     }
 
@@ -504,7 +504,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
 
         XCTAssertEqual(result.kind, .reviewedDecision(isDuplicate: true))
         XCTAssertEqual(result.selectedOption?.card, selected.card)
-        XCTAssertNil(result.attempt)
+        XCTAssertNil(result.makeAttempt())
         XCTAssertEqual(result.statusTone, .duplicateReview)
         XCTAssertTrue(result.statusMessage.contains("تم تحميل مراجعة القرار. هذه المحاولة موجودة في الإحصاءات.".localized))
         XCTAssertTrue(result.statusMessage.contains("\("رمز الموقف".localized): \(code)"))
@@ -529,7 +529,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
 
         XCTAssertEqual(result.kind, .reviewedDecision(isDuplicate: true))
         XCTAssertEqual(result.selectedOption?.card, selected.card)
-        XCTAssertNil(result.attempt)
+        XCTAssertNil(result.makeAttempt())
     }
 
     func testImporterRejectsMalformedCode() async {

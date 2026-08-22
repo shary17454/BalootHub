@@ -104,7 +104,7 @@ extension WhatToPlayTrainerView {
                 scenario = imported.scenario
                 selectedOption = imported.selectedOption
                 renderShareImageForCurrentScenario()
-                if let attempt = imported.attempt {
+                if let attempt = imported.makeAttempt() {
                     modelContext.insert(attempt)
                     do {
                         try modelContext.save()

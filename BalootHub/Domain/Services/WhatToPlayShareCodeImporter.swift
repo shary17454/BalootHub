@@ -12,15 +12,29 @@ enum WhatToPlayShareCodeImportStatusTone: Equatable {
     case duplicateReview
 }
 
-struct WhatToPlayShareCodeImportResult {
+/// نتيجة استيراد رمز موقف.
+///
+/// `Sendable` عمدًا: الاستيراد يعمل خارج `MainActor` (توليد الموقف عملية ثقيلة)،
+/// وإرجاع نوع غير Sendable عبر حدّ العزل خطأ في وضع Swift 6. لذلك **لا يحمل هذا
+/// النوع نموذج SwiftData**؛ يبنيه المستدعي عبر ``makeAttempt()`` على الـMainActor
+/// حيث يعيش `ModelContext` أصلًا.
+struct WhatToPlayShareCodeImportResult: Sendable {
     let parsed: WhatToPlayScenarioCode.Parsed
     let scenario: WhatToPlayScenario
     let selectedOption: WhatToPlayOption?
-    let attempt: WhatToPlayAttempt?
     let kind: WhatToPlayShareCodeImportKind
     let canonicalScenarioCode: String
     let expectedImprovement: Int
     let expectedImprovementSource: WhatToPlayExpectedImprovementSource?
+
+    /// يبني محاولة قابلة للحفظ في الإحصاءات، أو `nil` إن لم يكن هناك ما يُحفظ
+    /// (موقف بلا قرار مختار، أو محاولة مكررة موجودة أصلًا).
+    func makeAttempt() -> WhatToPlayAttempt? {
+        guard case .reviewedDecision(let isDuplicate) = kind, !isDuplicate,
+              let selectedOption
+        else { return nil }
+        return WhatToPlayAttemptFactory.makeAttempt(scenario: scenario, evaluated: selectedOption)
+    }
 
     var bestSimulationCard: PlayingCard? {
         comparisonSummary?.bestSimulationCard
@@ -319,7 +333,6 @@ enum WhatToPlayShareCodeImporter {
                 parsed: parsed,
                 scenario: scenario,
                 selectedOption: nil,
-                attempt: nil,
                 kind: .prompt,
                 canonicalScenarioCode: WhatToPlayScenarioCode.make(
                     for: scenario,
@@ -345,7 +358,6 @@ enum WhatToPlayShareCodeImporter {
             parsed: parsed,
             scenario: scenario,
             selectedOption: selectedOption,
-            attempt: isDuplicate ? nil : attempt,
             kind: .reviewedDecision(isDuplicate: isDuplicate),
             canonicalScenarioCode: scenarioCode,
             expectedImprovement: improvement.points,

@@ -2,7 +2,7 @@ import Foundation
 import BalootEngine
 
 enum WhatToPlayScenarioCode {
-    struct Parsed: Equatable {
+    struct Parsed: Equatable, Sendable {
         let seed: UInt64
         let difficulty: WhatToPlayDifficulty
         let focusKind: WhatToPlayScenarioFocusKind?
