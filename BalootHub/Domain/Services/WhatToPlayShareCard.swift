@@ -336,6 +336,46 @@ enum WhatToPlayShareCard {
         return lines.joined(separator: "\n")
     }
 
+    static func reviewText(for item: WhatToPlayReviewItem) -> String {
+        var lines = [
+            "موقف للمراجعة في وش تلعب؟".localized,
+            "\("رمز الموقف".localized): \(item.scenarioCode)",
+            "\("الصعوبة".localized): \(difficultyText(item.difficulty))",
+            "\("اختيارك".localized): \(cardName(item.selectedCard))",
+            "\("أفضل ورقة".localized): \(cardName(item.bestCard))",
+            "\("نقاط متوقعة ضائعة".localized): \(item.lostExpectedPoints)",
+            "\("شدة خسارة القيمة".localized): \(item.valueLossTitle)"
+        ]
+
+        if let focusKind = item.focusKind {
+            lines.append("\("تركيز التدريب".localized): \(focusText(focusKind))")
+        }
+        lines.append(
+            "\("النمط".localized): \(modeText(mode: item.gameMode, trumpSuit: item.contextTrumpSuit))"
+        )
+        if let secondBestCard = item.secondBestCard {
+            lines.append("\("ثاني أفضل".localized): \(secondBestCard.accessibilityName)")
+        }
+        if item.lostProjectedTeamPoints > item.lostExpectedPoints {
+            lines.append("\("نقاط محاكاة ضائعة".localized): \(item.lostProjectedTeamPoints)")
+        }
+        if let simulationSummary = item.simulationSummary {
+            lines.append("\("نتيجة المحاكاة".localized): \(simulationSummary)")
+        }
+        if let simulationTeamResult = item.simulationTeamResult {
+            lines.append(simulationTeamResult)
+        }
+        if let tacticalReasonTitle = item.tacticalReasonTitle {
+            lines.append("\("سبب المراجعة".localized): \(tacticalReasonTitle)")
+        }
+        if let tacticalReasonDetail = item.tacticalReasonDetail {
+            lines.append(tacticalReasonDetail)
+        }
+
+        lines.append("أعد الموقف وحاول اختيار ورقة أفضل.".localized)
+        return lines.joined(separator: "\n")
+    }
+
     private static func appendDecisionQualityLines(
         to lines: inout [String],
         content: WhatToPlayShareCardContent
@@ -388,8 +428,12 @@ enum WhatToPlayShareCard {
     }
 
     private static func modeText(_ state: GameState) -> String {
-        guard let mode = state.mode else { return "غير محدد".localized }
-        if mode == .hokum, let suit = state.trumpSuit {
+        modeText(mode: state.mode, trumpSuit: state.trumpSuit)
+    }
+
+    private static func modeText(mode: GameMode?, trumpSuit: Suit?) -> String {
+        guard let mode else { return "غير محدد".localized }
+        if mode == .hokum, let suit = trumpSuit {
             return "\(mode.arabicName) \(suit.spokenName)"
         }
         return mode.arabicName
@@ -406,6 +450,10 @@ enum WhatToPlayShareCard {
         case .expert:
             return "خبير".localized
         }
+    }
+
+    private static func cardName(_ card: PlayingCard?) -> String {
+        card?.accessibilityName ?? "غير محدد".localized
     }
 
     private static func focusText(_ focusKind: WhatToPlayScenarioFocusKind) -> String {

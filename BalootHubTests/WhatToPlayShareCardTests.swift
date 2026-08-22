@@ -399,6 +399,29 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("شدة خسارة القيمة".localized): \("خسارة قيمة عالية".localized)"))
     }
 
+    func testReviewShareTextContainsReplayCodeAndDecisionSummary() throws {
+        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let selected = try XCTUnwrap(scenario.options.first { !$0.isExpertChoice })
+        let attempt = try XCTUnwrap(
+            WhatToPlayAttemptFactory.makeAttempt(scenario: scenario, evaluated: selected)
+        )
+        let reviewItem = try XCTUnwrap(WhatToPlayStatsAnalyzer.reviewQueue(for: [attempt], limit: 1).first)
+
+        let text = WhatToPlayShareCard.reviewText(for: reviewItem)
+
+        XCTAssertTrue(text.contains("موقف للمراجعة في وش تلعب؟".localized))
+        XCTAssertTrue(text.contains("\("رمز الموقف".localized): \(reviewItem.scenarioCode)"))
+        XCTAssertTrue(
+            text.contains("\("اختيارك".localized): \(try XCTUnwrap(reviewItem.selectedCard).accessibilityName)")
+        )
+        XCTAssertTrue(
+            text.contains("\("أفضل ورقة".localized): \(try XCTUnwrap(reviewItem.bestCard).accessibilityName)")
+        )
+        XCTAssertTrue(text.contains("\("نقاط متوقعة ضائعة".localized): \(reviewItem.lostExpectedPoints)"))
+        XCTAssertTrue(text.contains("\("شدة خسارة القيمة".localized): \(reviewItem.valueLossTitle)"))
+        XCTAssertTrue(text.contains("أعد الموقف وحاول اختيار ورقة أفضل.".localized))
+    }
+
     func testShareCardImageFileNameUsesFullScenarioCode() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(
             seed: 2026,

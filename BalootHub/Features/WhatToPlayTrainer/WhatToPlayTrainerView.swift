@@ -936,6 +936,13 @@ struct WhatToPlayTrainerView: View {
                     .buttonStyle(.bordered)
                     .tint(AppColor.primary)
                     .disabled(isGeneratingScenario)
+
+                    ShareLink(item: WhatToPlayShareCard.reviewText(for: reviewItem)) {
+                        Label("مشاركة موقف المراجعة".localized, systemImage: "square.and.arrow.up")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(AppColor.primary)
                 }
                 .padding(AppSpacing.sm)
                 .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
