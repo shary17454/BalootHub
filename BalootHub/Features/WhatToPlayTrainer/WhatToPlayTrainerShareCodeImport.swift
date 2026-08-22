@@ -180,7 +180,9 @@ extension WhatToPlayTrainerView {
         guard lines.count > maxLines else { return message }
 
         let priorityPrefixes = [
-            "\("لون الحكم".localized):"
+            "\("لون الحكم".localized):",
+            "\("الأوراق الممنوعة".localized):",
+            "افحص قبل اللعب".localized
         ]
         var selectedIndexes = Set(0..<min(maxLines, lines.count))
         let priorityIndexes = lines.indices.filter { index in

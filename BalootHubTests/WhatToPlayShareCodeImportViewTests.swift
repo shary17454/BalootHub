@@ -88,6 +88,33 @@ final class WhatToPlayShareCodeImportViewTests: XCTestCase {
         XCTAssertTrue(view.shareCodeStatusAccessibilityLabel(for: message).contains(trumpSuitLine))
     }
 
+    func testShareCodeStatusDisplayTextPreservesBlockedAndChecklistSections() {
+        let view = WhatToPlayTrainerView()
+        let blockedTitle = "\("الأوراق الممنوعة".localized):"
+        let checklistTitle = "افحص قبل اللعب".localized
+        let message = [
+            "تم تحميل الموقف. اختر الورقة الأفضل.".localized,
+            "\("رمز الموقف".localized): WTP-2026-medium-followSuit-auto-P",
+            "\("النمط".localized): صن",
+            "\("الصعوبة".localized): متوسط",
+            "\("نوع الموقف".localized): اتباع اللون",
+            "\("الأكلة".localized): 3 من 8",
+            "\("النقاط".localized): فريقنا 18 · الخصم 20 · -2",
+            "\("الدور".localized): أنت",
+            blockedTitle,
+            "- إكة هاص: يجب التلزيم.",
+            checklistTitle
+        ].joined(separator: "\n")
+
+        let display = view.shareCodeStatusDisplayText(for: message, maxLines: 8)
+
+        XCTAssertTrue(display.contains(blockedTitle))
+        XCTAssertTrue(display.contains(checklistTitle))
+        XCTAssertFalse(display.contains("\("الدور".localized): أنت"))
+        XCTAssertTrue(display.contains("+3 \("سطر إضافي في المراجعة".localized)"))
+        XCTAssertTrue(view.shareCodeStatusAccessibilityLabel(for: message).contains(checklistTitle))
+    }
+
     func testShareCodeImportFormatsSimulationAlternativeLine() async throws {
         let view = WhatToPlayTrainerView()
         let result = try await importedResultWithSimulationAlternative()
