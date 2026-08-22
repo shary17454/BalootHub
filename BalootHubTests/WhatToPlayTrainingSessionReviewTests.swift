@@ -36,6 +36,44 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
         XCTAssertNotNil(review.difficulty)
     }
 
+    func testTrainingSessionReviewCardSourceRequiresRecommendedCard() {
+        let recommended = WhatToPlayTrainingSessionReview(
+            action: .replayMistake,
+            title: "راجع الخطأ الأعلى أثرًا".localized,
+            detail: "راجع موقفًا مكلفًا.".localized,
+            contextLine: "متوسط",
+            iconName: "exclamationmark.triangle.fill",
+            replaySeed: 10,
+            nextSeed: 10,
+            difficulty: .medium,
+            focusKind: .followSuit,
+            gameMode: .sun,
+            trumpSuit: nil,
+            recommendedCard: PlayingCard(suit: .spades, rank: .ace),
+            expectedImprovement: 12,
+            expectedImprovementSource: .projectedTeamPoints
+        )
+        let withoutCard = WhatToPlayTrainingSessionReview(
+            action: .continueSession,
+            title: "أكمل نفس الجلسة".localized,
+            detail: "أكمل الخطة".localized,
+            contextLine: "متوسط",
+            iconName: "play.circle.fill",
+            replaySeed: nil,
+            nextSeed: 11,
+            difficulty: .medium,
+            focusKind: .followSuit,
+            gameMode: .sun,
+            trumpSuit: nil,
+            recommendedCard: nil,
+            expectedImprovement: 12,
+            expectedImprovementSource: .projectedTeamPoints
+        )
+
+        XCTAssertEqual(recommended.reviewCardSourceTitle, "محاكاة الجولة".localized)
+        XCTAssertNil(withoutCard.reviewCardSourceTitle)
+    }
+
     func testReplayMistakeDetailIncludesSecondBestAndSimulationLoss() throws {
         let selected = PlayingCard(suit: .clubs, rank: .seven)
         let best = PlayingCard(suit: .hearts, rank: .ace)

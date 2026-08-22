@@ -736,6 +736,11 @@ struct WhatToPlayTrainingSessionReview: Equatable {
         self.retriesIncorrectNextSeed = retriesIncorrectNextSeed
         self.statusLine = statusLine
     }
+
+    var reviewCardSourceTitle: String? {
+        guard recommendedCard != nil, let expectedImprovementSource else { return nil }
+        return WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: expectedImprovementSource)
+    }
 }
 
 enum WhatToPlayDecisionInsightKind: Equatable {

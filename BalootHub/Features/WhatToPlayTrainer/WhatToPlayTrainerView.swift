@@ -1047,8 +1047,8 @@ struct WhatToPlayTrainerView: View {
                             .foregroundStyle(AppColor.textPrimary)
                             .lineLimit(2)
                             .minimumScaleFactor(0.85)
-                        if let source = review.expectedImprovementSource {
-                            Text("\("سبب ورقة المراجعة".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: source))")
+                        if let reviewCardSourceTitle = review.reviewCardSourceTitle {
+                            Text("\("سبب ورقة المراجعة".localized): \(reviewCardSourceTitle)")
                                 .font(.caption2)
                                 .foregroundStyle(AppColor.textSecondary)
                                 .lineLimit(2)
