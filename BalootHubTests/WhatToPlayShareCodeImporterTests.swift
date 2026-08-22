@@ -160,6 +160,46 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.canonicalScenarioCode, reviewItem.scenarioCode)
     }
 
+    func testImporterLoadsTrainingSessionReviewShareTextReplayCode() async throws {
+        let scenario = try await WhatToPlayScenarioLoader.generate(
+            seed: 45,
+            difficulty: .hard,
+            preferredFocus: .trumpPressure,
+            preferredMode: .hokum,
+            preferredTrumpSuit: .spades
+        )
+        let selected = try XCTUnwrap(scenario.options.first { !$0.isExpertChoice })
+        let attempt = try XCTUnwrap(
+            WhatToPlayAttemptFactory.makeAttempt(scenario: scenario, evaluated: selected)
+        )
+        let plan = WhatToPlayTrainingSessionPlan(
+            difficulty: .hard,
+            focusKind: .trumpPressure,
+            gameMode: .hokum,
+            trumpSuit: .spades,
+            scenarioCount: 1,
+            targetAccuracyPercent: 100,
+            targetAverageExpectedImpact: 5,
+            title: "خطة مراجعة".localized,
+            detail: "تفصيل".localized,
+            successMetric: "هدف".localized,
+            iconName: "target"
+        )
+        let review = WhatToPlayStatsAnalyzer.trainingSessionReview(for: [attempt], plan: plan)
+        let replayScenarioCode = try XCTUnwrap(review.replayScenarioCode)
+        let sharedText = WhatToPlayShareCard.trainingSessionReviewText(for: review)
+
+        let result = try await WhatToPlayShareCodeImporter.import(code: sharedText, existingScenarioCodes: [])
+
+        XCTAssertEqual(review.action, .replayMistake)
+        XCTAssertTrue(sharedText.contains("\("رمز الموقف".localized): \(replayScenarioCode)"))
+        XCTAssertEqual(result.kind, .reviewedDecision(isDuplicate: false))
+        XCTAssertEqual(result.selectedOption?.card, selected.card)
+        XCTAssertEqual(result.attempt?.selectedCard, selected.card)
+        XCTAssertEqual(result.attempt?.scenarioCode, replayScenarioCode)
+        XCTAssertEqual(result.canonicalScenarioCode, replayScenarioCode)
+    }
+
     func testImporterLoadsCodeEmbeddedInURLPath() async throws {
         let scenario = try await WhatToPlayScenarioLoader.generate(
             seed: 2026,
