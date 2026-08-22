@@ -1047,6 +1047,13 @@ struct WhatToPlayTrainerView: View {
                             .lineLimit(2)
                             .minimumScaleFactor(0.85)
                     }
+                    if let secondBestCard = review.secondBestCard {
+                        Text("\("ثاني أفضل".localized): \(secondBestCard.accessibilityName)\(secondBestImpactSuffix(review.secondBestExpectedImpact))")
+                            .font(.caption2)
+                            .foregroundStyle(AppColor.textSecondary)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.85)
+                    }
                     if review.expectedImprovement > 0 {
                         Text("\("تحسن متوقع".localized): +\(review.expectedImprovement)")
                             .font(.caption2.weight(.semibold))

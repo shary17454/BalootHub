@@ -65,6 +65,8 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
         XCTAssertEqual(review.action, .replayMistake)
         XCTAssertEqual(review.replaySeed, 10)
         XCTAssertEqual(review.replayScenarioCode, reviewItem.scenarioCode)
+        XCTAssertEqual(review.secondBestCard, second)
+        XCTAssertEqual(review.secondBestExpectedImpact, 5)
         XCTAssertTrue(review.detail.contains("\("رمز الموقف".localized): \(reviewItem.scenarioCode)"))
         XCTAssertTrue(review.detail.contains("\("الأكلة".localized): 4"))
         XCTAssertTrue(review.detail.contains("\("أنت ترد بعد".localized) 2 \("ورقة".localized)"))

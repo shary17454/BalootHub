@@ -673,6 +673,8 @@ struct WhatToPlayTrainingSessionReview: Equatable {
     let gameMode: GameMode?
     let trumpSuit: Suit?
     let recommendedCard: PlayingCard?
+    let secondBestCard: PlayingCard?
+    let secondBestExpectedImpact: Int?
     let expectedImprovement: Int
     let expectedImprovementSource: WhatToPlayExpectedImprovementSource?
     let retriesIncorrectNextSeed: Bool
@@ -692,6 +694,8 @@ struct WhatToPlayTrainingSessionReview: Equatable {
         gameMode: GameMode?,
         trumpSuit: Suit?,
         recommendedCard: PlayingCard?,
+        secondBestCard: PlayingCard? = nil,
+        secondBestExpectedImpact: Int? = nil,
         expectedImprovement: Int,
         expectedImprovementSource: WhatToPlayExpectedImprovementSource? = nil,
         retriesIncorrectNextSeed: Bool = false,
@@ -710,6 +714,8 @@ struct WhatToPlayTrainingSessionReview: Equatable {
         self.gameMode = gameMode
         self.trumpSuit = trumpSuit
         self.recommendedCard = recommendedCard
+        self.secondBestCard = secondBestCard
+        self.secondBestExpectedImpact = secondBestCard == nil ? nil : secondBestExpectedImpact
         self.expectedImprovement = expectedImprovement
         self.expectedImprovementSource = expectedImprovement > 0 ? expectedImprovementSource : nil
         self.retriesIncorrectNextSeed = retriesIncorrectNextSeed
@@ -2794,6 +2800,8 @@ enum WhatToPlayStatsAnalyzer {
                     gameMode: reviewItem.gameMode,
                     trumpSuit: reviewItem.contextTrumpSuit,
                     recommendedCard: recommendedReviewCard(for: reviewItem),
+                    secondBestCard: reviewItem.secondBestCard,
+                    secondBestExpectedImpact: reviewItem.secondBestExpectedImpact,
                     expectedImprovement: improvement.points,
                     expectedImprovementSource: improvement.source,
                     statusLine: trainingSessionReviewMistakeStatusLine(reviewItem)

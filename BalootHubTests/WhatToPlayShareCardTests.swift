@@ -614,6 +614,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
             gameMode: .sun,
             trumpSuit: nil,
             recommendedCard: PlayingCard(suit: .clubs, rank: .ace),
+            secondBestCard: PlayingCard(suit: .spades, rank: .king),
+            secondBestExpectedImpact: 5,
             expectedImprovement: 9,
             expectedImprovementSource: .expectedPoints,
             statusLine: "\("مراجعة خطأ".localized): 202"
@@ -624,6 +626,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("مراجعة خطأ".localized): 202"))
         XCTAssertTrue(text.contains("\("رمز الموقف".localized): WTP-202-medium-followSuit-sun-C37"))
         XCTAssertTrue(text.contains("\("Seed".localized): 202"))
+        XCTAssertTrue(text.contains("\("ثاني أفضل".localized): \(PlayingCard(suit: .spades, rank: .king).accessibilityName)"))
+        XCTAssertTrue(text.contains("\("أثر ثاني أفضل".localized): +5"))
     }
 
     func testTrainingSessionProgressShareTextContainsNextSeedGuidanceAndMetrics() throws {

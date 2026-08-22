@@ -473,6 +473,12 @@ enum WhatToPlayShareCard {
         if let recommendedCard = review.recommendedCard {
             lines.append("\("ورقة المراجعة".localized): \(recommendedCard.accessibilityName)")
         }
+        if let secondBestCard = review.secondBestCard {
+            lines.append("\("ثاني أفضل".localized): \(secondBestCard.accessibilityName)")
+        }
+        if let secondBestExpectedImpact = review.secondBestExpectedImpact {
+            lines.append("\("أثر ثاني أفضل".localized): \(impactText(secondBestExpectedImpact))")
+        }
         if review.expectedImprovement > 0 {
             lines.append("\("تحسن متوقع".localized): +\(review.expectedImprovement)")
             if let source = review.expectedImprovementSource {
