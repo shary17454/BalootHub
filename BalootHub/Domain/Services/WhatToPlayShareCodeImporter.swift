@@ -65,6 +65,10 @@ struct WhatToPlayShareCodeImportResult {
                 lines.append(bestMoveConfidence.detail)
             }
             if let selectedComparisonRow {
+                lines.append("\("الترتيب".localized): \(selectedComparisonRow.rank) \("من".localized) \(scenario.options.count)")
+                lines.append("\("الأثر المتوقع".localized): \(impactText(selectedComparisonRow.expectedImpact))")
+                lines.append("\("أثر القرار".localized): \(selectedComparisonRow.impactDetail)")
+                lines.append("\("نقاط فريقك بعد المحاكاة".localized): \(selectedComparisonRow.projectedTeamPoints)")
                 lines.append("\("سبب تكتيكي".localized): \(selectedComparisonRow.tacticalSummary)")
             }
             let simulationDisplay = WhatToPlaySimulationFormatter.display(for: selectedOption.simulation)
@@ -86,6 +90,11 @@ struct WhatToPlayShareCodeImportResult {
             lines.append("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: expectedImprovementSource))")
         }
         return lines.joined(separator: "\n")
+    }
+
+    private func impactText(_ value: Int) -> String {
+        if value > 0 { return "+\(value)" }
+        return "\(value)"
     }
 
     var statusTone: WhatToPlayShareCodeImportStatusTone {

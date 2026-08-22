@@ -29,6 +29,10 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertFalse(result.statusMessage.contains("الخطوة التالية".localized))
         XCTAssertFalse(result.statusMessage.contains("ثقة أفضل ورقة".localized))
         XCTAssertFalse(result.statusMessage.contains("سبب تكتيكي".localized))
+        XCTAssertFalse(result.statusMessage.contains("الترتيب".localized))
+        XCTAssertFalse(result.statusMessage.contains("الأثر المتوقع".localized))
+        XCTAssertFalse(result.statusMessage.contains("أثر القرار".localized))
+        XCTAssertFalse(result.statusMessage.contains("نقاط فريقك بعد المحاكاة".localized))
         XCTAssertFalse(result.statusMessage.contains("نتيجة المحاكاة".localized))
         XCTAssertFalse(result.statusMessage.contains("اتجاه الأكلة".localized))
         XCTAssertFalse(result.statusMessage.contains("نقاط الأكلة".localized))
@@ -73,6 +77,18 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         let selectedComparisonRow = try XCTUnwrap(
             WhatToPlayOptionComparison.rows(for: scenario, selectedCard: selected.card).first { $0.card == selected.card }
         )
+        XCTAssertTrue(
+            result.statusMessage.contains(
+                "\("الترتيب".localized): \(selectedComparisonRow.rank) \("من".localized) \(scenario.options.count)"
+            )
+        )
+        XCTAssertTrue(
+            result.statusMessage.contains(
+                "\("الأثر المتوقع".localized): \(selectedComparisonRow.expectedImpact > 0 ? "+\(selectedComparisonRow.expectedImpact)" : "\(selectedComparisonRow.expectedImpact)")"
+            )
+        )
+        XCTAssertTrue(result.statusMessage.contains("\("أثر القرار".localized): \(selectedComparisonRow.impactDetail)"))
+        XCTAssertTrue(result.statusMessage.contains("\("نقاط فريقك بعد المحاكاة".localized): \(selectedComparisonRow.projectedTeamPoints)"))
         XCTAssertTrue(result.statusMessage.contains("\("سبب تكتيكي".localized): \(selectedComparisonRow.tacticalSummary)"))
         let simulationDisplay = WhatToPlaySimulationFormatter.display(for: selected.simulation)
         XCTAssertTrue(result.statusMessage.contains("\("نتيجة المحاكاة".localized): \(simulationDisplay.summary)"))
