@@ -245,6 +245,15 @@ struct WhatToPlayTrainerView: View {
         return WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: roundPracticeSessionPlan)
     }
 
+    private var roundPracticeSessionReview: WhatToPlayTrainingSessionReview? {
+        guard let roundPracticeSessionPlan, let roundPracticeSessionProgress else { return nil }
+        return WhatToPlayStatsAnalyzer.trainingSessionReview(
+            for: roundPracticeSessionProgress,
+            attempts: attempts,
+            plan: roundPracticeSessionPlan
+        )
+    }
+
     private var trainingSessionReview: WhatToPlayTrainingSessionReview {
         WhatToPlayStatsAnalyzer.trainingSessionReview(
             for: trainingSessionProgress,
@@ -541,12 +550,13 @@ struct WhatToPlayTrainerView: View {
             }
 
             if let progress = roundPracticeSessionProgress {
+                let review = roundPracticeSessionReview
                 trainingSessionProgressView(progress)
 
                 Button {
                     startRoundPracticeSessionPlan()
                 } label: {
-                    Label(roundPracticeActionTitle(for: progress), systemImage: "play.fill")
+                    Label(roundPracticeActionTitle(for: progress, review: review), systemImage: "play.fill")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
@@ -3811,8 +3821,14 @@ struct WhatToPlayTrainerView: View {
         }
     }
 
-    private func roundPracticeActionTitle(for progress: WhatToPlayTrainingSessionProgress) -> String {
-        switch progress.state {
+    private func roundPracticeActionTitle(
+        for progress: WhatToPlayTrainingSessionProgress,
+        review: WhatToPlayTrainingSessionReview?
+    ) -> String {
+        if review?.retriesIncorrectNextSeed == true {
+            return "إعادة الموقف الخاطئ".localized
+        }
+        return switch progress.state {
         case .notStarted:
             "ابدأ خطة الجولة".localized
         case .inProgress:

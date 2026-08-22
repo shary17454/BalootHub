@@ -4279,6 +4279,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertNil(review.replaySeed)
         XCTAssertNil(review.recommendedCard)
         XCTAssertEqual(review.expectedImprovement, 0)
+        XCTAssertFalse(review.retriesIncorrectNextSeed)
     }
 
     func testTrainingSessionReviewExplainsRetryingIncorrectNextSeed() {
@@ -4293,6 +4294,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(review.action, .continueSession)
         XCTAssertEqual(review.nextSeed, 901)
+        XCTAssertTrue(review.retriesIncorrectNextSeed)
         XCTAssertTrue(review.detail.contains("\("أعد موقف".localized) 901"))
         XCTAssertTrue(review.detail.contains("آخر محاولة عليه كانت غير صحيحة.".localized))
     }
