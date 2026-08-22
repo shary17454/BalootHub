@@ -23,6 +23,16 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.statusTone, .prompt)
         XCTAssertTrue(result.statusMessage.contains("تم تحميل الموقف. اختر الورقة الأفضل.".localized))
         XCTAssertTrue(result.statusMessage.contains("\("رمز الموقف".localized): \(code)"))
+        let contextContent = WhatToPlayShareCard.content(for: scenario)
+        XCTAssertTrue(result.statusMessage.contains("\("النمط".localized): \(contextContent.mode)"))
+        XCTAssertTrue(result.statusMessage.contains("\("الصعوبة".localized): \(contextContent.difficulty)"))
+        XCTAssertTrue(result.statusMessage.contains("\("نوع الموقف".localized): \(contextContent.focus)"))
+        XCTAssertTrue(result.statusMessage.contains("\("الدور".localized): \(contextContent.turnPlayerName)"))
+        XCTAssertTrue(
+            result.statusMessage.contains(
+                "\("خيارات".localized): \(contextContent.legalOptionCount) · \("على الطاولة".localized): \(contextContent.playedCardCount)"
+            )
+        )
         XCTAssertFalse(result.statusMessage.contains("اختيارك".localized))
         XCTAssertFalse(result.statusMessage.contains("أفضل ورقة".localized))
         XCTAssertFalse(result.statusMessage.contains("تقييم القرار".localized))
@@ -66,6 +76,16 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.statusTone, .savedReview)
         XCTAssertTrue(result.statusMessage.contains("تم تحميل مراجعة القرار وإضافتها للإحصاءات.".localized))
         XCTAssertTrue(result.statusMessage.contains("\("رمز الموقف".localized): \(code)"))
+        let contextContent = WhatToPlayShareCard.content(for: scenario)
+        XCTAssertTrue(result.statusMessage.contains("\("النمط".localized): \(contextContent.mode)"))
+        XCTAssertTrue(result.statusMessage.contains("\("الصعوبة".localized): \(contextContent.difficulty)"))
+        XCTAssertTrue(result.statusMessage.contains("\("نوع الموقف".localized): \(contextContent.focus)"))
+        XCTAssertTrue(result.statusMessage.contains("\("الدور".localized): \(contextContent.turnPlayerName)"))
+        XCTAssertTrue(
+            result.statusMessage.contains(
+                "\("خيارات".localized): \(contextContent.legalOptionCount) · \("على الطاولة".localized): \(contextContent.playedCardCount)"
+            )
+        )
         XCTAssertTrue(result.statusMessage.contains("\("اختيارك".localized): \(selected.card.accessibilityName)"))
         XCTAssertTrue(result.statusMessage.contains("\("أفضل ورقة".localized): \(try XCTUnwrap(scenario.bestOption?.card.accessibilityName))"))
         if let secondBest = scenario.secondBestOption,

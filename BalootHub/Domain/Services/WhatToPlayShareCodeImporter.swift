@@ -34,9 +34,15 @@ struct WhatToPlayShareCodeImportResult {
                 message = "تم تحميل مراجعة القرار وإضافتها للإحصاءات.".localized
             }
         }
+        let contextContent = WhatToPlayShareCard.content(for: scenario)
         var lines = [
             message,
-            "\("رمز الموقف".localized): \(canonicalScenarioCode)"
+            "\("رمز الموقف".localized): \(canonicalScenarioCode)",
+            "\("النمط".localized): \(contextContent.mode)",
+            "\("الصعوبة".localized): \(contextContent.difficulty)",
+            "\("نوع الموقف".localized): \(contextContent.focus)",
+            "\("الدور".localized): \(contextContent.turnPlayerName)",
+            "\("خيارات".localized): \(contextContent.legalOptionCount) · \("على الطاولة".localized): \(contextContent.playedCardCount)"
         ]
         if let selectedOption {
             let comparisonSummary = WhatToPlayOptionComparison.summary(
