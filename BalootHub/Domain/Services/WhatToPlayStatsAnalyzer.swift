@@ -758,6 +758,7 @@ struct WhatToPlayNextDecisionAction: Equatable {
     let iconName: String
     let recommendedCard: PlayingCard?
     let expectedImprovement: Int
+    let expectedImprovementSource: WhatToPlayExpectedImprovementSource?
 }
 
 struct WhatToPlayRetryPrompt: Equatable {
@@ -766,6 +767,7 @@ struct WhatToPlayRetryPrompt: Equatable {
     let iconName: String
     let recommendedCard: PlayingCard?
     let expectedImprovement: Int
+    let expectedImprovementSource: WhatToPlayExpectedImprovementSource?
 }
 
 struct WhatToPlayScenarioBrief: Equatable {
@@ -2258,7 +2260,7 @@ enum WhatToPlayStatsAnalyzer {
             scenarioCount: plan.scenarioCount,
             targetAccuracyPercent: plan.targetAccuracyPercent,
             targetAverageExpectedImpact: plan.targetAverageExpectedImpact,
-            matchingAttemptSeeds: matchingAttempts.filter(\.isCorrect).map(\.replaySeed)
+            matchingAttemptSeeds: matchingAttempts.map(\.replaySeed)
         ).nextSeed
     }
 
@@ -2313,7 +2315,8 @@ enum WhatToPlayStatsAnalyzer {
         )
         let nextSeed = progressMetrics.category == .achieved
             ? nil
-            : nextTrainingSessionSeed(for: attempts, plan: plan)
+            : trainingSessionRetrySeed(for: attempts, plan: plan)
+                ?? nextTrainingSessionSeed(for: attempts, plan: plan)
         let nextSeedState = trainingSessionNextSeedState(
             nextSeed: nextSeed,
             attempts: attempts,
@@ -3006,6 +3009,16 @@ enum WhatToPlayStatsAnalyzer {
             }
     }
 
+    private static func trainingSessionRetrySeed(
+        for attempts: [WhatToPlayAttempt],
+        plan: WhatToPlayTrainingSessionPlan
+    ) -> UInt64? {
+        guard let latest = uniqueMatchingTrainingAttempts(for: attempts, plan: plan).first,
+              !latest.isCorrect
+        else { return nil }
+        return latest.replaySeed
+    }
+
     private static func latestMatchingTrainingAttempt(
         seed: UInt64,
         attempts: [WhatToPlayAttempt],
@@ -3487,6 +3500,7 @@ enum WhatToPlayStatsAnalyzer {
             kind: recommendation.kind,
             bestCard: recommendation.recommendedCard,
             expectedImprovement: recommendation.expectedImprovement,
+            expectedImprovementSource: recommendation.improvementSource,
             detailSuffix: retryPromptSimulationDetail(
                 lostProjectedTeamPoints: recommendation.lostProjectedTeamPoints,
                 lostProjectedAgainstSecondBestPoints: recommendation.lostProjectedAgainstSecondBestPoints,
@@ -3539,6 +3553,7 @@ enum WhatToPlayStatsAnalyzer {
     ) -> WhatToPlayRetryPrompt? {
         guard insight.kind != .expertMatch else { return nil }
         let expectedImprovement = decisiveLoss(for: insight)
+        let improvementSource = expectedImprovementMetrics(for: insight).source
         guard let kind = WhatToPlayRetryRecommendationKind.classify(
             expectedImprovement: expectedImprovement
         ) else { return nil }
@@ -3547,6 +3562,7 @@ enum WhatToPlayStatsAnalyzer {
             kind: kind,
             bestCard: bestCard,
             expectedImprovement: expectedImprovement,
+            expectedImprovementSource: improvementSource,
             detailSuffix: retryPromptSimulationDetail(
                 lostProjectedTeamPoints: insight.lostProjectedTeamPoints,
                 lostProjectedAgainstSecondBestPoints: insight.lostProjectedAgainstSecondBestPoints,
@@ -3559,6 +3575,7 @@ enum WhatToPlayStatsAnalyzer {
         kind: WhatToPlayRetryRecommendationKind,
         bestCard: PlayingCard?,
         expectedImprovement: Int,
+        expectedImprovementSource: WhatToPlayExpectedImprovementSource?,
         detailSuffix: String? = nil
     ) -> WhatToPlayRetryPrompt? {
         guard expectedImprovement > 0 else { return nil }
@@ -3573,7 +3590,8 @@ enum WhatToPlayStatsAnalyzer {
                 ),
                 iconName: "arrow.counterclockwise.circle.fill",
                 recommendedCard: bestCard,
-                expectedImprovement: expectedImprovement
+                expectedImprovement: expectedImprovement,
+                expectedImprovementSource: expectedImprovementSource
             )
         case .replayUncounted:
             return WhatToPlayRetryPrompt(
@@ -3584,7 +3602,8 @@ enum WhatToPlayStatsAnalyzer {
                 ),
                 iconName: "arrow.counterclockwise.circle.fill",
                 recommendedCard: bestCard,
-                expectedImprovement: expectedImprovement
+                expectedImprovement: expectedImprovement,
+                expectedImprovementSource: expectedImprovementSource
             )
         }
     }
@@ -3703,6 +3722,7 @@ enum WhatToPlayStatsAnalyzer {
         focusKind: WhatToPlayScenarioFocusKind,
         bestCard: PlayingCard?
     ) -> WhatToPlayNextDecisionAction {
+        let improvementMetrics = expectedImprovementMetrics(for: insight)
         switch insight.kind {
         case .expertMatch:
             if simulationLoss(for: insight) >= 9 {
@@ -3711,7 +3731,8 @@ enum WhatToPlayStatsAnalyzer {
                     detail: "\("اختيارك صحيح في الأكلة الحالية، لكن نتيجة الجولة الكاملة تشير إلى مسار أقوى.".localized) \(simulationLossText(projectedLost: insight.lostProjectedTeamPoints, secondProjectedLost: insight.lostProjectedAgainstSecondBestPoints)).",
                     iconName: "chart.line.uptrend.xyaxis",
                     recommendedCard: bestCard,
-                    expectedImprovement: simulationLoss(for: insight)
+                    expectedImprovement: simulationLoss(for: insight),
+                    expectedImprovementSource: improvementMetrics.source
                 )
             }
             return WhatToPlayNextDecisionAction(
@@ -3719,7 +3740,8 @@ enum WhatToPlayStatsAnalyzer {
                 detail: focusSuccessAction(for: focusKind),
                 iconName: "checkmark.seal.fill",
                 recommendedCard: bestCard,
-                expectedImprovement: 0
+                expectedImprovement: 0,
+                expectedImprovementSource: nil
             )
         case .closeAlternative:
             return WhatToPlayNextDecisionAction(
@@ -3727,7 +3749,8 @@ enum WhatToPlayStatsAnalyzer {
                 detail: closeAlternativeActionDetail(insight: insight),
                 iconName: "equal.circle.fill",
                 recommendedCard: bestCard,
-                expectedImprovement: decisiveLoss(for: insight)
+                expectedImprovement: decisiveLoss(for: insight),
+                expectedImprovementSource: improvementMetrics.source
             )
         case .missedWinningChance:
             return WhatToPlayNextDecisionAction(
@@ -3735,7 +3758,8 @@ enum WhatToPlayStatsAnalyzer {
                 detail: "قبل اللعب، احسب هل عندك ورقة تنقل الأكلة لفريقك بدل الاكتفاء برمي ورقة قليلة الضرر.".localized,
                 iconName: "exclamationmark.triangle.fill",
                 recommendedCard: bestCard,
-                expectedImprovement: decisiveLoss(for: insight)
+                expectedImprovement: decisiveLoss(for: insight),
+                expectedImprovementSource: improvementMetrics.source
             )
         case .pointLeak:
             return WhatToPlayNextDecisionAction(
@@ -3743,7 +3767,8 @@ enum WhatToPlayStatsAnalyzer {
                 detail: pointLeakActionDetail(insight: insight),
                 iconName: "drop.fill",
                 recommendedCard: bestCard,
-                expectedImprovement: decisiveLoss(for: insight)
+                expectedImprovement: decisiveLoss(for: insight),
+                expectedImprovementSource: improvementMetrics.source
             )
         }
     }
@@ -3760,7 +3785,8 @@ enum WhatToPlayStatsAnalyzer {
                 detail: "\("اختيارك صحيح في الأكلة الحالية، لكن نتيجة الجولة الكاملة تشير إلى مسار أقوى.".localized) \(simulationLossText(projectedLost: recommendation.lostProjectedTeamPoints, secondProjectedLost: recommendation.lostProjectedAgainstSecondBestPoints)).",
                 iconName: "chart.line.uptrend.xyaxis",
                 recommendedCard: bestCard,
-                expectedImprovement: recommendation.expectedImprovement
+                expectedImprovement: recommendation.expectedImprovement,
+                expectedImprovementSource: recommendation.improvementSource
             )
         case .reinforceRead:
             return WhatToPlayNextDecisionAction(
@@ -3768,7 +3794,8 @@ enum WhatToPlayStatsAnalyzer {
                 detail: focusSuccessAction(for: focusKind),
                 iconName: "checkmark.seal.fill",
                 recommendedCard: bestCard,
-                expectedImprovement: 0
+                expectedImprovement: 0,
+                expectedImprovementSource: nil
             )
         case .reviewSimulation:
             return WhatToPlayNextDecisionAction(
@@ -3776,7 +3803,8 @@ enum WhatToPlayStatsAnalyzer {
                 detail: "\("قرارك بدا قريبًا في الأكلة، لكنه خسر بعد استكمال الجولة".localized). \(simulationLossText(projectedLost: recommendation.lostProjectedTeamPoints, secondProjectedLost: recommendation.lostProjectedAgainstSecondBestPoints)). \("شاهد Replay وقارن مسار أفضل ورقة.".localized)",
                 iconName: "drop.fill",
                 recommendedCard: bestCard,
-                expectedImprovement: recommendation.expectedImprovement
+                expectedImprovement: recommendation.expectedImprovement,
+                expectedImprovementSource: recommendation.improvementSource
             )
         case .reviewSmallGap:
             return WhatToPlayNextDecisionAction(
@@ -3784,7 +3812,8 @@ enum WhatToPlayStatsAnalyzer {
                 detail: "أعد قراءة نفس النوع من المواقف وركّز على سبب تفوق ورقة واحدة بنقطة أو نقطتين متوقعتين.".localized,
                 iconName: "equal.circle.fill",
                 recommendedCard: bestCard,
-                expectedImprovement: recommendation.expectedImprovement
+                expectedImprovement: recommendation.expectedImprovement,
+                expectedImprovementSource: recommendation.improvementSource
             )
         case .compareBeforePlay:
             return WhatToPlayNextDecisionAction(
@@ -3792,7 +3821,8 @@ enum WhatToPlayStatsAnalyzer {
                 detail: "\("الفارق عن اختيار الخبير".localized): \(recommendation.lostExpectedPoints). \("راجع سبب ارتفاع قيمة أفضل ورقة.".localized)",
                 iconName: "equal.circle.fill",
                 recommendedCard: bestCard,
-                expectedImprovement: recommendation.expectedImprovement
+                expectedImprovement: recommendation.expectedImprovement,
+                expectedImprovementSource: recommendation.improvementSource
             )
         case .replayScenario:
             return WhatToPlayNextDecisionAction(
@@ -3800,9 +3830,20 @@ enum WhatToPlayStatsAnalyzer {
                 detail: "قبل اللعب، احسب هل عندك ورقة تنقل الأكلة لفريقك بدل الاكتفاء برمي ورقة قليلة الضرر.".localized,
                 iconName: "exclamationmark.triangle.fill",
                 recommendedCard: bestCard,
-                expectedImprovement: recommendation.expectedImprovement
+                expectedImprovement: recommendation.expectedImprovement,
+                expectedImprovementSource: recommendation.improvementSource
             )
         }
+    }
+
+    private static func expectedImprovementMetrics(
+        for insight: WhatToPlayDecisionInsight
+    ) -> WhatToPlayExpectedImprovementMetrics {
+        WhatToPlayExpectedImprovementMetrics.calculate(
+            lostExpectedPoints: insight.lostExpectedPoints,
+            lostProjectedTeamPoints: insight.lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: insight.lostProjectedAgainstSecondBestPoints
+        )
     }
 
     private static func closeAlternativeActionTitle(insight: WhatToPlayDecisionInsight) -> String {

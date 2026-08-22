@@ -3187,11 +3187,7 @@ public struct WhatToPlayNextActionRecommendation: Sendable, Equatable {
     }
 
     public var recommendedCard: PlayingCard {
-        switch WhatToPlayExpectedImprovementMetrics.calculate(
-            lostExpectedPoints: lostExpectedPoints,
-            lostProjectedTeamPoints: lostProjectedTeamPoints,
-            lostProjectedAgainstSecondBestPoints: lostProjectedAgainstSecondBestPoints
-        ).source {
+        switch improvementSource {
         case .projectedTeamPoints:
             return bestProjectedOption.card
         case .projectedSecondBestPoints:
@@ -3199,6 +3195,14 @@ public struct WhatToPlayNextActionRecommendation: Sendable, Equatable {
         case .expectedPoints:
             return bestOption.card
         }
+    }
+
+    public var improvementSource: WhatToPlayExpectedImprovementSource {
+        WhatToPlayExpectedImprovementMetrics.calculate(
+            lostExpectedPoints: lostExpectedPoints,
+            lostProjectedTeamPoints: lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: lostProjectedAgainstSecondBestPoints
+        ).source
     }
 
     public var expectedImprovement: Int {

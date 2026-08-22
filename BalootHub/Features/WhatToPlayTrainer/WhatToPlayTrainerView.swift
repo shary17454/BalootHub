@@ -3205,6 +3205,12 @@ struct WhatToPlayTrainerView: View {
                     .foregroundStyle(AppColor.success)
             }
 
+            if let source = prompt.expectedImprovementSource {
+                Text("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: source))")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(AppColor.textSecondary)
+            }
+
             Button {
                 retryCurrentScenario()
             } label: {
@@ -3238,6 +3244,11 @@ struct WhatToPlayTrainerView: View {
                     Text("\("تحسن متوقع".localized): +\(action.expectedImprovement)")
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(AppColor.success)
+                }
+                if let source = action.expectedImprovementSource {
+                    Text("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: source))")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(AppColor.textSecondary)
                 }
             }
         } icon: {

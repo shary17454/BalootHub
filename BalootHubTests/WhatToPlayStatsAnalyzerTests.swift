@@ -2112,6 +2112,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertTrue(action.detail.contains("الحكم".localized))
         XCTAssertEqual(action.recommendedCard, bestCard)
         XCTAssertEqual(action.expectedImprovement, 0)
+        XCTAssertNil(action.expectedImprovementSource)
     }
 
     func testExpertMatchInsightKeepsLargeProjectedSimulationLoss() {
@@ -2138,6 +2139,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(action.title, "راجع المحاكاة".localized)
         XCTAssertTrue(action.detail.contains("نقاط محاكاة ضائعة".localized))
         XCTAssertEqual(action.expectedImprovement, 16)
+        XCTAssertEqual(action.expectedImprovementSource, .projectedTeamPoints)
     }
 
     func testScenarioDecisionActionRecommendsBestSimulationCardWhenExpertPickLeaksRoundValue() throws {
@@ -2155,6 +2157,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(action.title, "راجع المحاكاة".localized)
         XCTAssertEqual(action.recommendedCard, bestSimulation.card)
         XCTAssertEqual(action.expectedImprovement, insight.lostProjectedTeamPoints)
+        XCTAssertEqual(action.expectedImprovementSource, .projectedTeamPoints)
     }
 
     func testNextDecisionActionTargetsMissedWinningChance() {
@@ -2174,6 +2177,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(action.title, "ابحث عن الورقة الرابحة".localized)
         XCTAssertTrue(action.detail.contains("تنقل الأكلة لفريقك".localized))
         XCTAssertEqual(action.expectedImprovement, insight.lostExpectedPoints)
+        XCTAssertEqual(action.expectedImprovementSource, .expectedPoints)
     }
 
     func testNextDecisionActionKeepsSmallCloseAlternativeCoaching() {
@@ -2193,6 +2197,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(action.title, "درّب الفارق الصغير".localized)
         XCTAssertTrue(action.detail.contains("نقطة أو نقطتين"))
         XCTAssertEqual(action.expectedImprovement, 2)
+        XCTAssertEqual(action.expectedImprovementSource, .expectedPoints)
     }
 
     func testNextDecisionActionUsesProjectedLossWhenItIsLarger() {
@@ -2215,6 +2220,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertTrue(action.detail.contains("خسر بعد استكمال الجولة".localized))
         XCTAssertTrue(action.detail.contains("\("نقاط محاكاة ضائعة".localized): 16"))
         XCTAssertEqual(action.expectedImprovement, 16)
+        XCTAssertEqual(action.expectedImprovementSource, .projectedTeamPoints)
     }
 
     func testNextDecisionActionNamesSecondSimulationLossWhenItIsLarger() {
@@ -2239,6 +2245,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertTrue(action.detail.contains("\("فاقد ثاني محاكاة".localized): 16"))
         XCTAssertFalse(action.detail.contains("\("نقاط محاكاة ضائعة".localized): 2"))
         XCTAssertEqual(action.expectedImprovement, 16)
+        XCTAssertEqual(action.expectedImprovementSource, .projectedSecondBestPoints)
     }
 
     func testNextDecisionActionDoesNotCallLargeSecondBestGapSmall() {
@@ -2259,6 +2266,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertTrue(action.detail.contains("\("الفارق عن اختيار الخبير".localized): 7"))
         XCTAssertFalse(action.detail.contains("نقطة أو نقطتين"))
         XCTAssertEqual(action.expectedImprovement, 7)
+        XCTAssertEqual(action.expectedImprovementSource, .expectedPoints)
     }
 
     func testRetryPromptIsNilForExpertMatch() throws {
@@ -2289,6 +2297,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(prompt?.iconName, "arrow.counterclockwise.circle.fill")
         XCTAssertNil(prompt?.recommendedCard)
         XCTAssertEqual(prompt?.expectedImprovement, 10)
+        XCTAssertEqual(prompt?.expectedImprovementSource, .expectedPoints)
     }
 
     func testRetryPromptExplainsSmallGapPractice() {
@@ -2304,6 +2313,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(prompt?.title, "أعد نفس الموقف".localized)
         XCTAssertTrue(prompt?.detail.contains("الفرق بسيط".localized) == true)
         XCTAssertEqual(prompt?.expectedImprovement, 2)
+        XCTAssertEqual(prompt?.expectedImprovementSource, .expectedPoints)
     }
 
     func testRetryPromptUsesProjectedLossWhenItIsLarger() {
@@ -2322,6 +2332,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertTrue(prompt?.detail.contains("لن تُحسب الإعادة".localized) == true)
         XCTAssertFalse(prompt?.detail.contains("الفرق بسيط".localized) == true)
         XCTAssertEqual(prompt?.expectedImprovement, 16)
+        XCTAssertEqual(prompt?.expectedImprovementSource, .projectedTeamPoints)
     }
 
     func testRetryPromptUsesSecondProjectedLossWhenItIsLarger() {
@@ -2341,6 +2352,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertTrue(prompt?.detail.contains("لن تُحسب الإعادة".localized) == true)
         XCTAssertTrue(prompt?.detail.contains("فاقد ثاني محاكاة".localized) == true)
         XCTAssertEqual(prompt?.expectedImprovement, 16)
+        XCTAssertEqual(prompt?.expectedImprovementSource, .projectedSecondBestPoints)
     }
 
     func testRetryPromptForScenarioCarriesBestCardAndExpectedImprovement() throws {
@@ -2364,6 +2376,10 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(prompt.recommendedCard, expectedProjectedLost > expectedLost ? bestSimulation.card : best.card)
         XCTAssertEqual(prompt.expectedImprovement, expectedImprovement)
+        XCTAssertEqual(
+            prompt.expectedImprovementSource,
+            expectedProjectedLost >= expectedLost ? .projectedTeamPoints : .expectedPoints
+        )
     }
 
     func testReplayContextExplainsExpertChoice() throws {
