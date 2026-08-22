@@ -502,6 +502,9 @@ enum WhatToPlayShareCard {
             title: "هدف الدقة".localized,
             isMet: progress.accuracyTargetMet
         ))
+        if progress.correctAttemptsNeededForTarget > 0 {
+            lines.append("\("إجابات صحيحة مطلوبة".localized): \(progress.correctAttemptsNeededForTarget)")
+        }
         lines.append(trainingSessionTargetText(
             title: "إمكانية هدف الدقة".localized,
             isMet: progress.accuracyTargetReachable
@@ -515,6 +518,12 @@ enum WhatToPlayShareCard {
             title: "هدف الأثر".localized,
             isMet: progress.impactTargetMet
         ))
+        if progress.expectedImpactNeededForTarget > 0 {
+            lines.append("\("أثر مطلوب للوصول للهدف".localized): \(impactText(progress.expectedImpactNeededForTarget))")
+            if progress.expectedImpactNeededPerRemainingAttempt > 0 {
+                lines.append("\("أثر مطلوب لكل موقف متبقٍ".localized): \(impactText(progress.expectedImpactNeededPerRemainingAttempt))")
+            }
+        }
         if progress.expectedImpactNeededForTarget > 0 {
             lines.append(trainingSessionTargetText(
                 title: "ضغط الأثر".localized,
