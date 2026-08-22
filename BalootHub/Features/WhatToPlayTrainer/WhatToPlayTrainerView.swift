@@ -1169,13 +1169,7 @@ struct WhatToPlayTrainerView: View {
     }
 
     func trainingSessionAccuracyPressureText(for progress: WhatToPlayTrainingSessionProgress) -> String {
-        if progress.accuracyTargetMet {
-            return "تحقق هدف الدقة".localized
-        }
-        if progress.accuracyTargetReachable {
-            return "\("هدف الدقة ممكن".localized) · \("باقي للدقة".localized): \(progress.correctAttemptsNeededForTarget)"
-        }
-        return "\("هدف الدقة غير ممكن".localized) · \("أفضل دقة ممكنة".localized): \(progress.bestPossibleAccuracyPercent)%"
+        WhatToPlayShareCard.trainingSessionAccuracyPressureText(for: progress)
     }
 
     private func sessionImpactTint(_ averageImpact: Int, completed: Int) -> Color {

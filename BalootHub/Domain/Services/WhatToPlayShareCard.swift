@@ -552,6 +552,7 @@ enum WhatToPlayShareCard {
             title: "هدف الدقة".localized,
             isMet: progress.accuracyTargetMet
         ))
+        lines.append(trainingSessionAccuracyPressureText(for: progress))
         if progress.correctAttemptsNeededForTarget > 0 {
             lines.append("\("إجابات صحيحة مطلوبة".localized): \(progress.correctAttemptsNeededForTarget)")
         }
@@ -620,6 +621,16 @@ enum WhatToPlayShareCard {
 
         lines.append("افتح مدرب وش تلعب وأكمل جلسة التدريب.".localized)
         return lines.joined(separator: "\n")
+    }
+
+    static func trainingSessionAccuracyPressureText(for progress: WhatToPlayTrainingSessionProgress) -> String {
+        if progress.accuracyTargetMet {
+            return "تحقق هدف الدقة".localized
+        }
+        if progress.accuracyTargetReachable {
+            return "\("هدف الدقة ممكن".localized) · \("باقي للدقة".localized): \(progress.correctAttemptsNeededForTarget)"
+        }
+        return "\("هدف الدقة غير ممكن".localized) · \("أفضل دقة ممكنة".localized): \(progress.bestPossibleAccuracyPercent)%"
     }
 
     static func coachingTipText(for tip: WhatToPlayCoachingTip) -> String {

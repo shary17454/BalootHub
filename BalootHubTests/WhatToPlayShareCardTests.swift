@@ -732,6 +732,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("الدقة الحالية".localized): 0%"))
         XCTAssertTrue(text.contains("\("أفضل دقة ممكنة".localized): 100%"))
         XCTAssertTrue(text.contains("\("هدف الدقة".localized): \("غير متحقق".localized)"))
+        XCTAssertTrue(text.contains(WhatToPlayShareCard.trainingSessionAccuracyPressureText(for: progress)))
         XCTAssertTrue(text.contains("\("إجابات صحيحة مطلوبة".localized): \(progress.correctAttemptsNeededForTarget)"))
         XCTAssertTrue(text.contains("\("إمكانية هدف الدقة".localized): \("متحقق".localized)"))
         XCTAssertTrue(text.contains("\("الموقف القادم".localized): \(try XCTUnwrap(progress.nextSeed))"))

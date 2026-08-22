@@ -132,6 +132,10 @@ final class WhatToPlayTrainerViewReviewItemTests: XCTestCase {
 
         XCTAssertEqual(
             view.trainingSessionAccuracyPressureText(for: progress),
+            WhatToPlayShareCard.trainingSessionAccuracyPressureText(for: progress)
+        )
+        XCTAssertEqual(
+            WhatToPlayShareCard.trainingSessionAccuracyPressureText(for: progress),
             "\("هدف الدقة ممكن".localized) · \("باقي للدقة".localized): 1"
         )
     }
