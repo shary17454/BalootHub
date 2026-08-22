@@ -36,6 +36,45 @@ final class WhatToPlayRoundPracticeSessionTests: XCTestCase {
         XCTAssertEqual(seed, 1_201)
     }
 
+    func testRoundReviewSessionSourceBuildsRoundAnalysisPlanCopy() {
+        let plan = WhatToPlayTrainingSessionSource.roundReview.makePlan(
+            difficulty: .hard,
+            focusKind: .narrowChoice,
+            gameMode: .hokum,
+            trumpSuit: .hearts,
+            seedBase: 900,
+            scenarioCount: 3
+        )
+
+        XCTAssertEqual(plan.title, "خطة من تحليل الجولة".localized)
+        XCTAssertEqual(plan.rationaleTitle, "مصدر الخطة".localized)
+        XCTAssertEqual(plan.rationaleIconName, "doc.text.magnifyingglass")
+        XCTAssertEqual(plan.seedBase, 900)
+        XCTAssertEqual(plan.scenarioCount, 3)
+        XCTAssertEqual(plan.gameMode, .hokum)
+        XCTAssertEqual(plan.trumpSuit, .hearts)
+    }
+
+    func testChallengeSessionSourceBuildsChallengePlanCopy() {
+        let plan = WhatToPlayTrainingSessionSource.challenge.makePlan(
+            difficulty: .medium,
+            focusKind: .followSuit,
+            gameMode: .sun,
+            trumpSuit: nil,
+            seedBase: 7_000_000,
+            scenarioCount: 4
+        )
+
+        XCTAssertEqual(plan.title, "خطة تحدي وش تلعب".localized)
+        XCTAssertEqual(plan.rationaleTitle, "مصدر التحدي".localized)
+        XCTAssertEqual(plan.rationaleIconName, "calendar.badge.checkmark")
+        XCTAssertEqual(plan.iconName, "brain.head.profile")
+        XCTAssertEqual(plan.seedBase, 7_000_000)
+        XCTAssertEqual(plan.scenarioCount, 4)
+        XCTAssertEqual(plan.gameMode, .sun)
+        XCTAssertNil(plan.trumpSuit)
+    }
+
     private func sessionPlan(
         difficulty: WhatToPlayDifficulty,
         focusKind: WhatToPlayScenarioFocusKind? = nil,

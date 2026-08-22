@@ -48,7 +48,8 @@ enum AppRoute: Hashable {
         focusKind: WhatToPlayScenarioFocusKind? = nil,
         gameMode: GameMode? = nil,
         trumpSuit: Suit? = nil,
-        targetCount: Int? = nil
+        targetCount: Int? = nil,
+        sessionSource: WhatToPlayTrainingSessionSource = .roundReview
     )
     case scoringQuiz
     case dailyChallenges

@@ -94,6 +94,42 @@ final class AppRouteTests: XCTestCase {
         )
     }
 
+    func testWhatToPlayTrainerRouteCarriesSessionSource() {
+        let roundReviewRoute = AppRoute.whatToPlayTrainer(
+            seed: 123,
+            seedBase: 100,
+            difficulty: .medium,
+            focusKind: .openingLead,
+            gameMode: .sun,
+            targetCount: 3,
+            sessionSource: .roundReview
+        )
+        let challengeRoute = AppRoute.whatToPlayTrainer(
+            seed: 123,
+            seedBase: 100,
+            difficulty: .medium,
+            focusKind: .openingLead,
+            gameMode: .sun,
+            targetCount: 3,
+            sessionSource: .challenge
+        )
+
+        XCTAssertNotEqual(roundReviewRoute, challengeRoute)
+        XCTAssertEqual(
+            challengeRoute,
+            .whatToPlayTrainer(
+                seed: 123,
+                seedBase: 100,
+                difficulty: .medium,
+                focusKind: .openingLead,
+                gameMode: .sun,
+                trumpSuit: nil,
+                targetCount: 3,
+                sessionSource: .challenge
+            )
+        )
+    }
+
     @MainActor
     func testPracticeRecommendationNavigationOpensSeededWhatToPlayTrainer() {
         let appEnvironment = AppEnvironment()

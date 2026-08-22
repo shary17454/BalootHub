@@ -29,6 +29,7 @@ struct WhatToPlayTrainerView: View {
     private let routeSeed: UInt64?
     private let routeSeedBase: UInt64?
     private let targetCount: Int?
+    private let sessionSource: WhatToPlayTrainingSessionSource
 
     @Environment(\.modelContext) var modelContext
     @Environment(\.displayScale) private var displayScale
@@ -62,11 +63,13 @@ struct WhatToPlayTrainerView: View {
         preferredFocus: WhatToPlayScenarioFocusKind? = nil,
         preferredMode: GameMode? = nil,
         preferredTrumpSuit: Suit? = nil,
-        targetCount: Int? = nil
+        targetCount: Int? = nil,
+        sessionSource: WhatToPlayTrainingSessionSource = .roundReview
     ) {
         self.routeSeed = seed
         self.routeSeedBase = seedBase ?? seed
         self.targetCount = targetCount
+        self.sessionSource = sessionSource
         let storedPreferences = WhatToPlayTrainerPreferences.load()
         let initialMode = preferredMode ?? storedPreferences.preferredMode
         let initialTrumpSuit = initialMode == .hokum ? (preferredTrumpSuit ?? storedPreferences.preferredTrumpSuit) : nil
@@ -227,22 +230,13 @@ struct WhatToPlayTrainerView: View {
 
     private var roundPracticeSessionPlan: WhatToPlayTrainingSessionPlan? {
         guard let targetCount else { return nil }
-        return WhatToPlayTrainingSessionPlan(
+        return sessionSource.makePlan(
             difficulty: difficulty,
             focusKind: preferredFocus,
             gameMode: preferredMode,
             trumpSuit: preferredTrumpSuit,
             seedBase: routeSeedBase ?? seed,
-            scenarioCount: targetCount,
-            targetAccuracyPercent: 70,
-            targetAverageExpectedImpact: 0,
-            title: "خطة من تحليل الجولة".localized,
-            detail: "أكمل هذه المواقف بنفس البذرة والصعوبة المقترحة من تقرير الجولة السابقة.".localized,
-            successMetric: "هدف الجلسة: أنهي الدفعة بدقة 70% أو أعلى.".localized,
-            rationaleTitle: "مصدر الخطة".localized,
-            rationaleDetail: "هذه الخطة مبنية على تقرير الجولة السابقة، لذلك تُحسب منفصلة عن بقية تدريباتك.".localized,
-            rationaleIconName: "doc.text.magnifyingglass",
-            iconName: "target"
+            scenarioCount: targetCount
         )
     }
 
@@ -517,11 +511,13 @@ struct WhatToPlayTrainerView: View {
 
     private func roundPracticePlanCard(targetCount: Int) -> some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
-            Label("خطة من تحليل الجولة".localized, systemImage: "target")
+            let plan = roundPracticeSessionPlan
+
+            Label(plan?.title ?? "خطة من تحليل الجولة".localized, systemImage: plan?.iconName ?? "target")
                 .font(AppTypography.headline)
                 .foregroundStyle(AppColor.primary)
 
-            Text("أكمل هذه المواقف بنفس البذرة والصعوبة المقترحة من تقرير الجولة السابقة.".localized)
+            Text(plan?.detail ?? "أكمل هذه المواقف بنفس البذرة والصعوبة المقترحة من تقرير الجولة السابقة.".localized)
                 .font(AppTypography.caption)
                 .foregroundStyle(AppColor.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)

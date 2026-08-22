@@ -499,6 +499,59 @@ struct WhatToPlayTrainingSessionPlan: Equatable {
     }
 }
 
+enum WhatToPlayTrainingSessionSource: String, Hashable {
+    case roundReview
+    case challenge
+
+    func makePlan(
+        difficulty: WhatToPlayDifficulty,
+        focusKind: WhatToPlayScenarioFocusKind?,
+        gameMode: GameMode?,
+        trumpSuit: Suit?,
+        seedBase: UInt64,
+        scenarioCount: Int
+    ) -> WhatToPlayTrainingSessionPlan {
+        switch self {
+        case .roundReview:
+            return WhatToPlayTrainingSessionPlan(
+                difficulty: difficulty,
+                focusKind: focusKind,
+                gameMode: gameMode,
+                trumpSuit: trumpSuit,
+                seedBase: seedBase,
+                scenarioCount: scenarioCount,
+                targetAccuracyPercent: 70,
+                targetAverageExpectedImpact: 0,
+                title: "خطة من تحليل الجولة".localized,
+                detail: "أكمل هذه المواقف بنفس البذرة والصعوبة المقترحة من تقرير الجولة السابقة.".localized,
+                successMetric: "هدف الجلسة: أنهي الدفعة بدقة 70% أو أعلى.".localized,
+                rationaleTitle: "مصدر الخطة".localized,
+                rationaleDetail: "هذه الخطة مبنية على تقرير الجولة السابقة، لذلك تُحسب منفصلة عن بقية تدريباتك.".localized,
+                rationaleIconName: "doc.text.magnifyingglass",
+                iconName: "target"
+            )
+        case .challenge:
+            return WhatToPlayTrainingSessionPlan(
+                difficulty: difficulty,
+                focusKind: focusKind,
+                gameMode: gameMode,
+                trumpSuit: trumpSuit,
+                seedBase: seedBase,
+                scenarioCount: scenarioCount,
+                targetAccuracyPercent: 70,
+                targetAverageExpectedImpact: 0,
+                title: "خطة تحدي وش تلعب".localized,
+                detail: "أكمل مواقف التحدي المحددة بنفس البذرة حتى يحتسب تقدم التحديات اليومية أو الأسبوعية بدقة.".localized,
+                successMetric: "هدف التحدي: أنهي الدفعة بدقة 70% أو أعلى.".localized,
+                rationaleTitle: "مصدر التحدي".localized,
+                rationaleDetail: "هذه الخطة مرتبطة بتحديات البلوت المحلية، ولا تُحسب مكتملة إلا بالمواقف الصحيحة ضمن بذور التحدي.".localized,
+                rationaleIconName: "calendar.badge.checkmark",
+                iconName: "brain.head.profile"
+            )
+        }
+    }
+}
+
 private struct TrainingSessionPlanRationale {
     let title: String
     let detail: String

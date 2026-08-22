@@ -167,7 +167,8 @@ struct DailyChallengesView: View {
                                 focusKind: focusKind,
                                 gameMode: gameMode,
                                 trumpSuit: trumpSuit,
-                                targetCount: challenge.targetCount
+                                targetCount: challenge.targetCount,
+                                sessionSource: .challenge
                             ),
                             tab: appEnvironment.selectedTab
                         )
