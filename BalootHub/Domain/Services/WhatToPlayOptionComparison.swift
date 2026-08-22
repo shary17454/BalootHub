@@ -24,6 +24,7 @@ struct WhatToPlayOptionComparisonRow: Identifiable, Equatable {
     let rationale: String
     let isSelected: Bool
     let isExpertChoice: Bool
+    let isSecondBestExpertChoice: Bool
     let isBestSimulationResult: Bool
     let isSecondBestSimulationResult: Bool
 
@@ -220,6 +221,7 @@ enum WhatToPlayOptionComparison {
 
     static func rows(for scenario: WhatToPlayScenario, selectedCard: PlayingCard) -> [WhatToPlayOptionComparisonRow] {
         let secondBestSimulationCard = WhatToPlayTrainer.secondBestProjectedOption(in: scenario.options)?.card
+        let secondBestExpertCard = scenario.secondBestOption?.card
 
         return WhatToPlayTrainer.optionReviews(in: scenario)
             .map { review in
@@ -256,6 +258,7 @@ enum WhatToPlayOptionComparison {
                     rationale: option.explanation,
                     isSelected: option.card == selectedCard,
                     isExpertChoice: option.isExpertChoice,
+                    isSecondBestExpertChoice: option.card == secondBestExpertCard,
                     isBestSimulationResult: review.isBestProjectedResult,
                     isSecondBestSimulationResult: option.card == secondBestSimulationCard
                 )

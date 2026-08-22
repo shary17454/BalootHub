@@ -215,6 +215,8 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
         XCTAssertEqual(rows.first?.rank, 1)
         XCTAssertEqual(rows.filter(\.isSelected).map(\.card), [selected.card])
         XCTAssertEqual(rows.filter(\.isExpertChoice).count, 1)
+        XCTAssertEqual(rows.filter(\.isSecondBestExpertChoice).map(\.card), scenario.secondBestOption.map { [$0.card] } ?? [])
+        XCTAssertTrue(rows.filter(\.isSecondBestExpertChoice).allSatisfy { !$0.isExpertChoice })
     }
 
     func testRowsPreserveExpectedImpactForEveryOption() throws {

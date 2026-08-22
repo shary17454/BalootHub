@@ -3709,6 +3709,9 @@ struct WhatToPlayTrainerView: View {
                     if row.isExpertChoice {
                         StatusBadge("الأفضل".localized, systemImage: "star.fill", tint: AppColor.success)
                     }
+                    if row.isSecondBestExpertChoice && !row.isExpertChoice {
+                        StatusBadge("ثاني أفضل".localized, systemImage: "2.circle.fill", tint: AppColor.accent)
+                    }
                     if row.isBestSimulationResult && !row.isExpertChoice {
                         StatusBadge("أفضل محاكاة".localized, systemImage: "chart.line.uptrend.xyaxis", tint: AppColor.accent)
                     }
