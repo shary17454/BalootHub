@@ -115,6 +115,18 @@ final class WhatToPlayOptionDisclosureTests: XCTestCase {
         XCTAssertTrue(label.contains("8"))
     }
 
+    func testAccessibilityIncludesOutcomeAfterChoice() {
+        let label = WhatToPlayOptionDisclosure.accessibilityLabel(
+            cardName: "إكة سباتي",
+            rank: 2,
+            isRevealed: true,
+            outcomeTitle: "يكسب الأكلة".localized
+        )
+
+        XCTAssertTrue(label.contains("نتيجة القرار".localized))
+        XCTAssertTrue(label.contains("يكسب الأكلة".localized))
+    }
+
     func testAccessibilityOmitsDuplicateSecondSimulationLoss() {
         let label = WhatToPlayOptionDisclosure.accessibilityLabel(
             cardName: "إكة سباتي",
@@ -137,6 +149,7 @@ final class WhatToPlayOptionDisclosureTests: XCTestCase {
             lostExpectedPoints: 9,
             lostProjectedTeamPoints: 12,
             lostProjectedAgainstSecondBestPoints: 8,
+            outcomeTitle: "يكسب الأكلة".localized,
             expectedImprovement: 16,
             expectedImprovementSourceTitle: "محاكاة الجولة".localized
         )
@@ -144,6 +157,8 @@ final class WhatToPlayOptionDisclosureTests: XCTestCase {
         XCTAssertFalse(label.contains("فارق عن الأفضل".localized))
         XCTAssertFalse(label.contains("نقاط محاكاة ضائعة".localized))
         XCTAssertFalse(label.contains("فاقد ثاني محاكاة".localized))
+        XCTAssertFalse(label.contains("نتيجة القرار".localized))
+        XCTAssertFalse(label.contains("يكسب الأكلة".localized))
         XCTAssertFalse(label.contains("تحسن متوقع".localized))
         XCTAssertFalse(label.contains("مصدر التحسن".localized))
         XCTAssertFalse(label.contains("محاكاة الجولة".localized))

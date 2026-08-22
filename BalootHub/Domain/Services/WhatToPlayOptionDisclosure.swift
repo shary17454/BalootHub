@@ -17,6 +17,7 @@ enum WhatToPlayOptionDisclosure {
         projectedTeamPoints: Int? = nil,
         lostProjectedTeamPoints: Int? = nil,
         lostProjectedAgainstSecondBestPoints: Int? = nil,
+        outcomeTitle: String? = nil,
         expectedImprovement: Int? = nil,
         expectedImprovementSourceTitle: String? = nil,
         isSelected: Bool = false,
@@ -58,6 +59,9 @@ enum WhatToPlayOptionDisclosure {
            lostProjectedAgainstSecondBestPoints > 0,
            lostProjectedAgainstSecondBestPoints != lostProjectedTeamPoints {
             parts.append("\("فاقد ثاني محاكاة".localized) \(lostProjectedAgainstSecondBestPoints)")
+        }
+        if let outcomeTitle {
+            parts.append("\("نتيجة القرار".localized) \(outcomeTitle)")
         }
         if let expectedImprovement, expectedImprovement > 0 {
             parts.append("\("تحسن متوقع".localized) +\(expectedImprovement)")

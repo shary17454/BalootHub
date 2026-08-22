@@ -2995,6 +2995,7 @@ struct WhatToPlayTrainerView: View {
             projectedTeamPoints: option.projectedTeamPoints,
             lostProjectedTeamPoints: lostProjectedTeamPoints,
             lostProjectedAgainstSecondBestPoints: lostProjectedAgainstSecondBestPoints,
+            outcomeTitle: optionOutcomeText(option.outcome),
             expectedImprovement: improvement?.points,
             expectedImprovementSourceTitle: improvement.flatMap {
                 $0.points > 0 ? WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: $0.source) : nil
