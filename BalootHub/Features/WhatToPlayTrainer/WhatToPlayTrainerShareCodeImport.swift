@@ -1,6 +1,13 @@
 import SwiftUI
 import BalootEngine
 
+enum WhatToPlayShareCodeMessageStyle: Equatable {
+    case neutral
+    case success
+    case warning
+    case error
+}
+
 extension WhatToPlayTrainerView {
     var shareCodeImportView: some View {
         VStack(alignment: .leading, spacing: AppSpacing.xs) {
@@ -35,7 +42,7 @@ extension WhatToPlayTrainerView {
             if let shareCodeMessage {
                 Text(shareCodeMessage)
                     .font(.caption2)
-                    .foregroundStyle(AppColor.textSecondary)
+                    .foregroundStyle(shareCodeMessageColor(shareCodeMessageStyle))
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
@@ -50,6 +57,7 @@ extension WhatToPlayTrainerView {
               let parsed = WhatToPlayScenarioCode.parse(extractedCode)
         else {
             shareCodeMessage = "رمز الموقف غير صالح.".localized
+            shareCodeMessageStyle = .error
             return
         }
 
@@ -63,6 +71,7 @@ extension WhatToPlayTrainerView {
         scenario = nil
         isGeneratingScenario = true
         shareCodeMessage = "جارٍ تحميل الموقف من الرمز.".localized
+        shareCodeMessageStyle = .neutral
 
         generationTask = Task { @MainActor in
             do {
@@ -87,6 +96,7 @@ extension WhatToPlayTrainerView {
                     } catch {
                         modelContext.rollback()
                         shareCodeMessage = "تم تحميل مراجعة القرار، لكن تعذّر حفظها في الإحصاءات.".localized
+                        shareCodeMessageStyle = .warning
                         shareCodeInput = ""
                         saveTrainerPreferences()
                         Task { @MainActor in
@@ -97,6 +107,7 @@ extension WhatToPlayTrainerView {
                     }
                 }
                 shareCodeMessage = imported.statusMessage
+                shareCodeMessageStyle = shareCodeMessageStyle(for: imported.statusTone)
                 shareCodeInput = ""
                 saveTrainerPreferences()
                 Task { @MainActor in
@@ -108,20 +119,49 @@ extension WhatToPlayTrainerView {
                 guard !Task.isCancelled else { return }
                 scenario = nil
                 shareCodeMessage = "رمز الموقف غير صالح.".localized
+                shareCodeMessageStyle = .error
                 isApplyingImportedShareCode = false
             } catch WhatToPlayShareCodeImporter.ImportError.selectedCardUnavailable,
                     WhatToPlayAttemptFactory.ShareCodeAttemptError.selectedCardUnavailable {
                 guard !Task.isCancelled else { return }
                 scenario = nil
                 shareCodeMessage = "الورقة الموجودة في الرمز لا تنتمي لهذا الموقف.".localized
+                shareCodeMessageStyle = .error
                 isApplyingImportedShareCode = false
             } catch {
                 guard !Task.isCancelled else { return }
                 scenario = nil
                 shareCodeMessage = "تعذّر تحميل الموقف من الرمز.".localized
+                shareCodeMessageStyle = .error
                 isApplyingImportedShareCode = false
             }
             isGeneratingScenario = false
+        }
+    }
+
+    func shareCodeMessageStyle(
+        for tone: WhatToPlayShareCodeImportStatusTone
+    ) -> WhatToPlayShareCodeMessageStyle {
+        switch tone {
+        case .prompt:
+            return .neutral
+        case .savedReview:
+            return .success
+        case .duplicateReview:
+            return .warning
+        }
+    }
+
+    private func shareCodeMessageColor(_ style: WhatToPlayShareCodeMessageStyle) -> Color {
+        switch style {
+        case .neutral:
+            return AppColor.textSecondary
+        case .success:
+            return AppColor.success
+        case .warning:
+            return AppColor.warning
+        case .error:
+            return AppColor.danger
         }
     }
 }

@@ -19,6 +19,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertNil(result.selectedOption)
         XCTAssertNil(result.attempt)
         XCTAssertEqual(result.canonicalScenarioCode, code)
+        XCTAssertEqual(result.statusTone, .prompt)
         XCTAssertTrue(result.statusMessage.contains("تم تحميل الموقف. اختر الورقة الأفضل.".localized))
         XCTAssertTrue(result.statusMessage.contains("\("رمز الموقف".localized): \(code)"))
     }
@@ -39,6 +40,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.attempt?.selectedCard, selected.card)
         XCTAssertEqual(result.attempt?.scenarioCode, code)
         XCTAssertEqual(result.canonicalScenarioCode, code)
+        XCTAssertEqual(result.statusTone, .savedReview)
         XCTAssertTrue(result.statusMessage.contains("تم تحميل مراجعة القرار وإضافتها للإحصاءات.".localized))
         XCTAssertTrue(result.statusMessage.contains("\("رمز الموقف".localized): \(code)"))
     }
@@ -280,6 +282,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.kind, .reviewedDecision(isDuplicate: true))
         XCTAssertEqual(result.selectedOption?.card, selected.card)
         XCTAssertNil(result.attempt)
+        XCTAssertEqual(result.statusTone, .duplicateReview)
         XCTAssertTrue(result.statusMessage.contains("تم تحميل مراجعة القرار. هذه المحاولة موجودة في الإحصاءات.".localized))
         XCTAssertTrue(result.statusMessage.contains("\("رمز الموقف".localized): \(code)"))
     }

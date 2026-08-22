@@ -53,6 +53,7 @@ struct WhatToPlayTrainerView: View {
     @State var isRenderingShareImage = false
     @State var shareCodeInput = ""
     @State var shareCodeMessage: String?
+    @State var shareCodeMessageStyle: WhatToPlayShareCodeMessageStyle = .neutral
     @State var isApplyingImportedShareCode = false
     @State private var isSuppressingPreferredTrumpSuitChange = false
 

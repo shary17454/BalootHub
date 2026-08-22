@@ -6,6 +6,12 @@ enum WhatToPlayShareCodeImportKind: Equatable {
     case reviewedDecision(isDuplicate: Bool)
 }
 
+enum WhatToPlayShareCodeImportStatusTone: Equatable {
+    case prompt
+    case savedReview
+    case duplicateReview
+}
+
 struct WhatToPlayShareCodeImportResult {
     let parsed: WhatToPlayScenarioCode.Parsed
     let scenario: WhatToPlayScenario
@@ -27,6 +33,15 @@ struct WhatToPlayShareCodeImportResult {
             }
         }
         return "\(message)\n\("رمز الموقف".localized): \(canonicalScenarioCode)"
+    }
+
+    var statusTone: WhatToPlayShareCodeImportStatusTone {
+        switch kind {
+        case .prompt:
+            return .prompt
+        case .reviewedDecision(let isDuplicate):
+            return isDuplicate ? .duplicateReview : .savedReview
+        }
     }
 }
 
