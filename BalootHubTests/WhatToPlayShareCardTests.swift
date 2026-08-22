@@ -599,6 +599,33 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertFalse(text.contains("تحسن متوقع".localized))
     }
 
+    func testTrainingSessionReviewShareTextIncludesMistakeStatusLine() {
+        let review = WhatToPlayTrainingSessionReview(
+            action: .replayMistake,
+            title: "راجع الخطأ الأعلى أثرًا".localized,
+            detail: "ابدأ بإعادة موقف 202".localized,
+            contextLine: "متوسط · اتباع اللون",
+            iconName: "exclamationmark.triangle.fill",
+            replaySeed: 202,
+            replayScenarioCode: "WTP-202-medium-followSuit-sun-C37",
+            nextSeed: 202,
+            difficulty: .medium,
+            focusKind: .followSuit,
+            gameMode: .sun,
+            trumpSuit: nil,
+            recommendedCard: PlayingCard(suit: .clubs, rank: .ace),
+            expectedImprovement: 9,
+            expectedImprovementSource: .expectedPoints,
+            statusLine: "\("مراجعة خطأ".localized): 202"
+        )
+
+        let text = WhatToPlayShareCard.trainingSessionReviewText(for: review)
+
+        XCTAssertTrue(text.contains("\("مراجعة خطأ".localized): 202"))
+        XCTAssertTrue(text.contains("\("رمز الموقف".localized): WTP-202-medium-followSuit-sun-C37"))
+        XCTAssertTrue(text.contains("\("Seed".localized): 202"))
+    }
+
     func testTrainingSessionProgressShareTextContainsNextSeedGuidanceAndMetrics() throws {
         let plan = WhatToPlayStatsAnalyzer.trainingSessionPlan(for: [])
         let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: [], plan: plan)

@@ -4540,6 +4540,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(review.gameMode, .hokum)
         XCTAssertEqual(review.recommendedCard, PlayingCard(suit: .clubs, rank: .seven))
         XCTAssertEqual(review.expectedImprovement, 9)
+        XCTAssertEqual(review.statusLine, "\("مراجعة خطأ".localized): 202")
         XCTAssertTrue(["\("ابدأ بإعادة موقف".localized) 202", "\("اختيارك".localized): \(PlayingCard(suit: .clubs, rank: .seven).accessibilityName)", "\("أفضل ورقة".localized): \(PlayingCard(suit: .clubs, rank: .seven).accessibilityName)", "\("الفاقد".localized): 9"].allSatisfy { review.detail.contains($0) })
         XCTAssertEqual(
             review.contextLine,

@@ -2795,7 +2795,8 @@ enum WhatToPlayStatsAnalyzer {
                     trumpSuit: reviewItem.contextTrumpSuit,
                     recommendedCard: recommendedReviewCard(for: reviewItem),
                     expectedImprovement: improvement.points,
-                    expectedImprovementSource: improvement.source
+                    expectedImprovementSource: improvement.source,
+                    statusLine: trainingSessionReviewMistakeStatusLine(reviewItem)
                 )
             }
             let nextSeed = trainingSessionReviewNextSeed(progress: progress, attempts: attempts, plan: plan)
@@ -2930,6 +2931,10 @@ enum WhatToPlayStatsAnalyzer {
     ) -> String? {
         guard retriesIncorrectNextSeed else { return nil }
         return "\("إعادة محاولة".localized): \(nextSeed)"
+    }
+
+    private static func trainingSessionReviewMistakeStatusLine(_ item: WhatToPlayReviewItem) -> String {
+        "\("مراجعة خطأ".localized): \(item.seed)"
     }
 
     private static func trainingSessionReviewMistakeDetail(_ item: WhatToPlayReviewItem) -> String {
