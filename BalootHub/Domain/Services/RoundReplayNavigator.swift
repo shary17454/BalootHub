@@ -122,7 +122,7 @@ enum RoundReplayShareSummary {
 
         lines.append("سجل الأحداث".localized)
         for (index, action) in actions.enumerated() {
-            lines.append("\(index + 1). \(actionTitle(action, in: finalState))")
+            lines.append("\(index + 1). \(GameEngine.actionSummary(action, state: finalState))")
         }
 
         return lines.joined(separator: "\n")
@@ -205,33 +205,6 @@ enum RoundReplayShareSummary {
         return cardPoints + lastTrickBonus
     }
 
-    private static func actionTitle(_ action: GameAction, in state: GameState) -> String {
-        switch action {
-        case .dealCards:
-            return "تم توزيع الأوراق".localized
-        case .chooseMode(let playerID, let mode, let trumpSuit):
-            return "\(playerName(playerID, in: state)) \("اختار".localized) \(modeTitle(mode, trumpSuit: trumpSuit))"
-        case .placeBid(let playerID, let bid):
-            return "\(playerName(playerID, in: state)): \(bidTitle(bid))"
-        case .raiseMultiplier(let playerID, let level):
-            return "\(playerName(playerID, in: state)) \("طلب".localized) \(level.arabicName)"
-        case .passMultiplier(let playerID):
-            return "\(playerName(playerID, in: state)) \("قال بس في المضاعفة".localized)"
-        case .lockMultiplier(let playerID):
-            return "\(playerName(playerID, in: state)) \("قفل المضاعفة".localized)"
-        case .declareProjects(let playerID, let projects):
-            if projects.isEmpty {
-                return "\(playerName(playerID, in: state)) \("لم يعلن مشروعًا".localized)"
-            }
-            let projectNames = projects.map { $0.kind.arabicName }.joined(separator: "، ")
-            return "\(playerName(playerID, in: state)) \("أعلن".localized) \(projectNames)"
-        case .playCard(let playerID, let card):
-            return "\(playerName(playerID, in: state)) \("لعب".localized) \(card.accessibilityName)"
-        case .finishRound:
-            return "تم احتساب نتيجة الجولة".localized
-        }
-    }
-
     private static func phaseTitle(_ phase: GamePhase) -> String {
         switch phase {
         case .setup: return "تجهيز".localized
@@ -251,17 +224,6 @@ enum RoundReplayShareSummary {
             return "صن".localized
         case .hokum:
             return trumpSuit.map { "\("حكم".localized) \($0.spokenName)" } ?? "حكم".localized
-        }
-    }
-
-    private static func bidTitle(_ bid: Bid) -> String {
-        switch bid {
-        case .pass:
-            return "بس".localized
-        case .sun:
-            return "صن".localized
-        case .hokum(let suit):
-            return "\("حكم".localized) \(suit.spokenName)"
         }
     }
 

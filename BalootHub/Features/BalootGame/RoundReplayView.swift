@@ -270,7 +270,7 @@ struct RoundReplayView: View {
                     .font(AppTypography.caption.weight(.semibold))
                     .foregroundStyle(AppColor.textSecondary)
                 ForEach(Array(snapshot.bidding.bids.enumerated()), id: \.offset) { _, record in
-                    detailRow(playerName(record.playerID, in: snapshot), bidTitle(record.bid))
+                    detailRow(playerName(record.playerID, in: snapshot), record.bid.arabicName)
                 }
             }
             let multiplierTimeline = GameEngine.multiplierTimeline(state: snapshot)
@@ -469,27 +469,7 @@ struct RoundReplayView: View {
 
     private func actionTitle(_ action: GameAction?, in state: GameState) -> String {
         guard let action else { return "بداية الجولة" }
-        switch action {
-        case .dealCards:
-            return "تم توزيع الأوراق"
-        case .chooseMode(let playerID, let mode, let trumpSuit):
-            return "\(playerName(playerID, in: state)) اختار \(modeTitle(mode, trumpSuit: trumpSuit))"
-        case .placeBid(let playerID, let bid):
-            return "\(playerName(playerID, in: state)): \(bidTitle(bid))"
-        case .raiseMultiplier(let playerID, let level):
-            return "\(playerName(playerID, in: state)) طلب \(level.arabicName)"
-        case .passMultiplier(let playerID):
-            return "\(playerName(playerID, in: state)) قال بس في المضاعفة"
-        case .lockMultiplier(let playerID):
-            return "\(playerName(playerID, in: state)) قفل المضاعفة"
-        case .declareProjects(let playerID, let projects):
-            if projects.isEmpty { return "\(playerName(playerID, in: state)) لم يعلن مشروعًا" }
-            return "\(playerName(playerID, in: state)) أعلن \(projects.map { $0.kind.arabicName }.joined(separator: "، "))"
-        case .playCard(let playerID, let card):
-            return "\(playerName(playerID, in: state)) لعب \(card.displayLabel)"
-        case .finishRound:
-            return "تم احتساب نتيجة الجولة"
-        }
+        return GameEngine.actionSummary(action, state: state)
     }
 
     private func timelineStatusTitle(index: Int) -> String {
@@ -557,16 +537,6 @@ struct RoundReplayView: View {
         }
     }
 
-    private func bidTitle(_ bid: Bid) -> String {
-        switch bid {
-        case .pass:
-            return "بس"
-        case .sun:
-            return "صن"
-        case .hokum(let suit):
-            return "حكم \(suit.symbol)"
-        }
-    }
 }
 
 private enum ReplayPlaybackSpeed: String, CaseIterable, Identifiable {

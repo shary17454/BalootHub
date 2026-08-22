@@ -155,8 +155,64 @@ public enum GameEngine {
         }
     }
 
+    /// وصف مقروء لفعل واحد من أفعال المحرك.
+    ///
+    /// تستخدمه شاشة Replay وملخص المشاركة بدل أن تعيد كل طبقة صياغة الأفعال بنفسها.
+    /// يبقى النص مشتقًا من ``GameAction`` فقط، لذلك لا يغيّر الحالة ولا يؤثر في
+    /// الحتمية أو قابلية إعادة التشغيل.
+    public static func actionSummary(_ action: GameAction, state: GameState) -> String {
+        switch action {
+        case .dealCards:
+            return "تم توزيع الأوراق"
+        case .chooseMode(let playerID, let mode, let trumpSuit):
+            return "\(timelinePlayerName(playerID, in: state)) اختار \(timelineModeTitle(mode, trumpSuit: trumpSuit))"
+        case .placeBid(let playerID, let bid):
+            return "\(timelinePlayerName(playerID, in: state)): \(bid.arabicName)"
+        case .raiseMultiplier(let playerID, let level):
+            return "\(timelinePlayerName(playerID, in: state)) طلب \(level.arabicName)"
+        case .passMultiplier(let playerID):
+            return "\(timelinePlayerName(playerID, in: state)) قال بس في المضاعفة"
+        case .lockMultiplier(let playerID):
+            return "\(timelinePlayerName(playerID, in: state)) قفل المضاعفة"
+        case .declareProjects(let playerID, let projects):
+            if projects.isEmpty {
+                return "\(timelinePlayerName(playerID, in: state)) لم يعلن مشروعًا"
+            }
+            return "\(timelinePlayerName(playerID, in: state)) أعلن \(timelineProjectNames(projects))"
+        case .playCard(let playerID, let card):
+            return "\(timelinePlayerName(playerID, in: state)) لعب \(card.displayLabel)"
+        case .finishRound:
+            return "تم احتساب نتيجة الجولة"
+        }
+    }
+
+    /// سجل أحداث الجولة كاملًا كسطور مقروءة بالترتيب.
+    public static func actionTimeline(state: GameState) -> [String] {
+        state.actionHistory.map { actionSummary($0, state: state) }
+    }
+
     private static func timelinePlayerName(_ id: Player.ID, in state: GameState) -> String {
         state.player(id: id)?.name ?? "لاعب"
+    }
+
+    private static func timelineModeTitle(_ mode: GameMode, trumpSuit: Suit?) -> String {
+        switch mode {
+        case .sun:
+            return "صن"
+        case .hokum:
+            return trumpSuit.map { "حكم \($0.arabicName)" } ?? "حكم"
+        }
+    }
+
+    private static func timelineProjectNames(_ projects: [Project]) -> String {
+        projects
+            .sorted { lhs, rhs in
+                if lhs.points != rhs.points { return lhs.points > rhs.points }
+                if lhs.kind.rawValue != rhs.kind.rawValue { return lhs.kind.rawValue < rhs.kind.rawValue }
+                return lhs.id < rhs.id
+            }
+            .map { "\($0.kind.arabicName) +\($0.points)" }
+            .joined(separator: "، ")
     }
 
     /// حركات المضاعفة القانونية للاعب محدد في لحظة المزايدة الحالية.
