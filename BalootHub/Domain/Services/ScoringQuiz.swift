@@ -314,7 +314,7 @@ enum ScoringQuizGenerator {
         let targetProjects = targetTeam == .teamOne ? teamOneProjects : teamTwoProjects
         let answer = rules.finalScore(baseScore: targetBase, projects: targetProjects, multiplier: multiplier)
         let subtotal = max(0, targetBase) + max(0, targetProjects)
-        let factor = max(1, answer / max(1, subtotal))
+        let factor = rules.multiplierFactor(for: multiplier)
 
         return ScoringQuizQuestion(
             id: seed,

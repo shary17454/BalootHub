@@ -45,6 +45,24 @@ final class ScoringQuizTests: XCTestCase {
         )
     }
 
+    func testQuestionExplanationUsesConfiguredMultiplierFactor() throws {
+        let rules = ScoreRules.from(preset: .highStakes, coffeeEnabled: true)
+        var matchingQuestion: ScoringQuizQuestion?
+        for seed in 1...500 {
+            let question = ScoringQuizGenerator.generate(seed: UInt64(seed), difficulty: .hard, rules: rules)
+            if question.multiplier == .triple || question.multiplier == .quadruple || question.multiplier == .coffee {
+                matchingQuestion = question
+                break
+            }
+        }
+        let question = try XCTUnwrap(matchingQuestion)
+
+        XCTAssertTrue(
+            question.explanation.contains("×\(rules.multiplierFactor(for: question.multiplier))"),
+            "Expected explanation to use configured factor for \(question.multiplier), got: \(question.explanation)"
+        )
+    }
+
     func testAppSettingsScoreRulesDriveScoringQuizFormula() {
         let settings = AppSettings(
             enableCoffeeMultiplier: true,

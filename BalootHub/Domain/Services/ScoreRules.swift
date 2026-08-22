@@ -11,15 +11,24 @@ struct ScoreRules: Equatable {
 
     /// يحسب النتيجة النهائية لجولة: (النقاط الأساسية + المشاريع) × مضاعف الدبل المختار.
     func finalScore(baseScore: Int, projects: Int, multiplier: ScoreMultiplier) -> Int {
-        let factor: Int
-        switch multiplier {
-        case .none: factor = 1
-        case .double: factor = doubleFactor
-        case .triple: factor = tripleFactor
-        case .quadruple: factor = quadrupleFactor
-        case .coffee: factor = coffeeEnabled ? coffeeFactor : 1
-        }
+        let factor = multiplierFactor(for: multiplier)
         return (max(0, baseScore) + max(0, projects)) * factor
+    }
+
+    /// عامل المضاعف الفعلي حسب إعدادات المجلس الحالية.
+    func multiplierFactor(for multiplier: ScoreMultiplier) -> Int {
+        switch multiplier {
+        case .none:
+            return 1
+        case .double:
+            return doubleFactor
+        case .triple:
+            return tripleFactor
+        case .quadruple:
+            return quadrupleFactor
+        case .coffee:
+            return coffeeEnabled ? coffeeFactor : 1
+        }
     }
 
     static let standard = ScoreRules.from(preset: .standard, coffeeEnabled: false)
