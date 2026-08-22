@@ -38,6 +38,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
                 "\("الأوراق القانونية".localized): \(contextContent.legalCardNames.joined(separator: "، "))"
             )
         )
+        assertTableContext(from: contextContent, appearsIn: result.statusMessage)
         XCTAssertFalse(result.statusMessage.contains("اختيارك".localized))
         XCTAssertFalse(result.statusMessage.contains("أفضل ورقة".localized))
         XCTAssertFalse(result.statusMessage.contains("تقييم القرار".localized))
@@ -96,6 +97,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
                 "\("الأوراق القانونية".localized): \(contextContent.legalCardNames.joined(separator: "، "))"
             )
         )
+        assertTableContext(from: contextContent, appearsIn: result.statusMessage)
         XCTAssertTrue(result.statusMessage.contains("\("اختيارك".localized): \(selected.card.accessibilityName)"))
         XCTAssertTrue(result.statusMessage.contains("\("أفضل ورقة".localized): \(try XCTUnwrap(scenario.bestOption?.card.accessibilityName))"))
         if let secondBest = scenario.secondBestOption,
@@ -526,5 +528,26 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
 
         XCTFail("لم يتم العثور على مراجعة تدريب قابلة للاستيراد وفيها مصدر تحسن")
         throw NSError(domain: "WhatToPlayShareCodeImporterTests", code: 1)
+    }
+
+    private func assertTableContext(
+        from content: WhatToPlayShareCardContent,
+        appearsIn statusMessage: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        if content.isOpeningTrick {
+            XCTAssertTrue(statusMessage.contains("أنت تفتتح الأكلة.".localized), file: file, line: line)
+            XCTAssertFalse(statusMessage.contains("الأوراق على الطاولة".localized), file: file, line: line)
+        } else {
+            XCTAssertTrue(statusMessage.contains("\("الأوراق على الطاولة".localized):"), file: file, line: line)
+            for playedCard in content.tableCards {
+                XCTAssertTrue(
+                    statusMessage.contains("- \(playedCard.playerName): \(playedCard.cardName)"),
+                    file: file,
+                    line: line
+                )
+            }
+        }
     }
 }

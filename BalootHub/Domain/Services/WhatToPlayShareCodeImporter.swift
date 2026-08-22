@@ -45,6 +45,14 @@ struct WhatToPlayShareCodeImportResult {
             "\("خيارات".localized): \(contextContent.legalOptionCount) · \("على الطاولة".localized): \(contextContent.playedCardCount)",
             "\("الأوراق القانونية".localized): \(contextContent.legalCardNames.joined(separator: "، "))"
         ]
+        if contextContent.isOpeningTrick {
+            lines.append("أنت تفتتح الأكلة.".localized)
+        } else {
+            lines.append("\("الأوراق على الطاولة".localized):")
+            for playedCard in contextContent.tableCards {
+                lines.append("- \(playedCard.playerName): \(playedCard.cardName)")
+            }
+        }
         if let selectedOption {
             let comparisonSummary = WhatToPlayOptionComparison.summary(
                 for: scenario,
