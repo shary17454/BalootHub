@@ -67,6 +67,9 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
         XCTAssertEqual(review.replayScenarioCode, reviewItem.scenarioCode)
         XCTAssertEqual(review.secondBestCard, second)
         XCTAssertEqual(review.secondBestExpectedImpact, 5)
+        XCTAssertEqual(review.secondBestSimulationCard, second)
+        XCTAssertEqual(review.secondBestProjectedTeamPoints, 58)
+        XCTAssertEqual(review.lostProjectedAgainstSecondBestPoints, 8)
         XCTAssertTrue(review.detail.contains("\("رمز الموقف".localized): \(reviewItem.scenarioCode)"))
         XCTAssertTrue(review.detail.contains("\("الأكلة".localized): 4"))
         XCTAssertTrue(review.detail.contains("\("أنت ترد بعد".localized) 2 \("ورقة".localized)"))
@@ -263,6 +266,7 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
             bestCard: best,
             secondBestCard: second,
             bestSimulationCard: second == nil ? nil : PlayingCard(suit: .diamonds, rank: .ace),
+            secondBestSimulationCard: second,
             isCorrect: isCorrect,
             selectedRank: second == nil ? 3 : 4,
             expectedImpact: impact,

@@ -479,6 +479,15 @@ enum WhatToPlayShareCard {
         if let secondBestExpectedImpact = review.secondBestExpectedImpact {
             lines.append("\("أثر ثاني أفضل".localized): \(impactText(secondBestExpectedImpact))")
         }
+        if let secondBestSimulationCard = review.secondBestSimulationCard {
+            lines.append("\("ثاني محاكاة".localized): \(secondBestSimulationCard.accessibilityName)")
+        }
+        if let secondBestProjectedTeamPoints = review.secondBestProjectedTeamPoints {
+            lines.append("\("ثاني نتيجة محاكاة".localized): \(secondBestProjectedTeamPoints)")
+        }
+        if review.lostProjectedAgainstSecondBestPoints > 0 {
+            lines.append("\("فاقد ثاني محاكاة".localized): \(review.lostProjectedAgainstSecondBestPoints)")
+        }
         if review.expectedImprovement > 0 {
             lines.append("\("تحسن متوقع".localized): +\(review.expectedImprovement)")
             if let source = review.expectedImprovementSource {

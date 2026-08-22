@@ -675,6 +675,9 @@ struct WhatToPlayTrainingSessionReview: Equatable {
     let recommendedCard: PlayingCard?
     let secondBestCard: PlayingCard?
     let secondBestExpectedImpact: Int?
+    let secondBestSimulationCard: PlayingCard?
+    let secondBestProjectedTeamPoints: Int?
+    let lostProjectedAgainstSecondBestPoints: Int
     let expectedImprovement: Int
     let expectedImprovementSource: WhatToPlayExpectedImprovementSource?
     let retriesIncorrectNextSeed: Bool
@@ -696,6 +699,9 @@ struct WhatToPlayTrainingSessionReview: Equatable {
         recommendedCard: PlayingCard?,
         secondBestCard: PlayingCard? = nil,
         secondBestExpectedImpact: Int? = nil,
+        secondBestSimulationCard: PlayingCard? = nil,
+        secondBestProjectedTeamPoints: Int? = nil,
+        lostProjectedAgainstSecondBestPoints: Int = 0,
         expectedImprovement: Int,
         expectedImprovementSource: WhatToPlayExpectedImprovementSource? = nil,
         retriesIncorrectNextSeed: Bool = false,
@@ -716,6 +722,9 @@ struct WhatToPlayTrainingSessionReview: Equatable {
         self.recommendedCard = recommendedCard
         self.secondBestCard = secondBestCard
         self.secondBestExpectedImpact = secondBestCard == nil ? nil : secondBestExpectedImpact
+        self.secondBestSimulationCard = secondBestSimulationCard
+        self.secondBestProjectedTeamPoints = secondBestSimulationCard == nil ? nil : secondBestProjectedTeamPoints
+        self.lostProjectedAgainstSecondBestPoints = max(0, lostProjectedAgainstSecondBestPoints)
         self.expectedImprovement = expectedImprovement
         self.expectedImprovementSource = expectedImprovement > 0 ? expectedImprovementSource : nil
         self.retriesIncorrectNextSeed = retriesIncorrectNextSeed
@@ -2802,6 +2811,9 @@ enum WhatToPlayStatsAnalyzer {
                     recommendedCard: recommendedReviewCard(for: reviewItem),
                     secondBestCard: reviewItem.secondBestCard,
                     secondBestExpectedImpact: reviewItem.secondBestExpectedImpact,
+                    secondBestSimulationCard: reviewItem.secondBestSimulationCard,
+                    secondBestProjectedTeamPoints: reviewItem.secondBestProjectedTeamPoints,
+                    lostProjectedAgainstSecondBestPoints: reviewItem.lostProjectedAgainstSecondBestPoints,
                     expectedImprovement: improvement.points,
                     expectedImprovementSource: improvement.source,
                     statusLine: trainingSessionReviewMistakeStatusLine(reviewItem)
