@@ -19,6 +19,8 @@ struct WhatToPlayShareCodeImportResult {
     let attempt: WhatToPlayAttempt?
     let kind: WhatToPlayShareCodeImportKind
     let canonicalScenarioCode: String
+    let expectedImprovement: Int
+    let expectedImprovementSource: WhatToPlayExpectedImprovementSource?
 
     var statusMessage: String {
         let message: String
@@ -32,7 +34,15 @@ struct WhatToPlayShareCodeImportResult {
                 message = "تم تحميل مراجعة القرار وإضافتها للإحصاءات.".localized
             }
         }
-        return "\(message)\n\("رمز الموقف".localized): \(canonicalScenarioCode)"
+        var lines = [
+            message,
+            "\("رمز الموقف".localized): \(canonicalScenarioCode)"
+        ]
+        if expectedImprovement > 0, let expectedImprovementSource {
+            lines.append("\("تحسن متوقع".localized): +\(expectedImprovement)")
+            lines.append("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: expectedImprovementSource))")
+        }
+        return lines.joined(separator: "\n")
     }
 
     var statusTone: WhatToPlayShareCodeImportStatusTone {
@@ -72,7 +82,9 @@ enum WhatToPlayShareCodeImporter {
                 canonicalScenarioCode: WhatToPlayScenarioCode.make(
                     for: scenario,
                     selectedOption: nil
-                )
+                ),
+                expectedImprovement: 0,
+                expectedImprovementSource: nil
             )
         }
 
@@ -85,6 +97,7 @@ enum WhatToPlayShareCodeImporter {
         }
         let scenarioCode = attempt.scenarioCode
         let isDuplicate = existingScenarioCodes.contains(scenarioCode)
+        let improvement = expectedImprovement(for: attempt)
 
         return WhatToPlayShareCodeImportResult(
             parsed: parsed,
@@ -92,7 +105,17 @@ enum WhatToPlayShareCodeImporter {
             selectedOption: selectedOption,
             attempt: isDuplicate ? nil : attempt,
             kind: .reviewedDecision(isDuplicate: isDuplicate),
-            canonicalScenarioCode: scenarioCode
+            canonicalScenarioCode: scenarioCode,
+            expectedImprovement: improvement.points,
+            expectedImprovementSource: improvement.source
+        )
+    }
+
+    private static func expectedImprovement(for attempt: WhatToPlayAttempt) -> WhatToPlayExpectedImprovementMetrics {
+        WhatToPlayExpectedImprovementMetrics.calculate(
+            lostExpectedPoints: attempt.lostExpectedPoints,
+            lostProjectedTeamPoints: attempt.lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: attempt.lostProjectedAgainstSecondBestPoints
         )
     }
 }
