@@ -64,6 +64,7 @@ private struct AppearanceStudioContent: View {
                 upcomingSection
             }
             .padding(AppSpacing.md)
+            .adaptiveContentWidth()
         }
         .background(AppColor.background)
     }

@@ -26,6 +26,7 @@ struct RulesView: View {
                         }
                     }
                     .padding(AppSpacing.md)
+                    .adaptiveContentWidth()
                 }
                 .navigationTitle("قواعد \(item.displayTitle)")
                 .navigationBarTitleDisplayMode(.inline)

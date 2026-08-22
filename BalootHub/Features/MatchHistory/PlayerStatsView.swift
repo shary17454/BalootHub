@@ -50,6 +50,7 @@ struct PlayerStatsView: View {
                 }
             }
             .padding(AppSpacing.md)
+            .adaptiveContentWidth()
         }
         .background(AppColor.background)
         .navigationTitle("أسلوب لعبك".localized)

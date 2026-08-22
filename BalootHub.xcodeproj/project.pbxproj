@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D80DF04944529234006411A0 /* AdaptiveLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06009898129BB8065CC11A13 /* AdaptiveLayout.swift */; };
 		39F583E61C4AC38B792CDB44 /* LocalizationIntegrityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6856E2DF90C47FBDD0E1935 /* LocalizationIntegrityTests.swift */; };
 		1F189928C3380FDEAA710B33 /* MultiplayerReadinessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E0075F3F8003E05672826A /* MultiplayerReadinessTests.swift */; };
 		E68B3EC1EE36F91C9393C0A3 /* GameFeedbackResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94E961FC1CA8C9D2E027BF41 /* GameFeedbackResolverTests.swift */; };
@@ -158,6 +159,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		06009898129BB8065CC11A13 /* AdaptiveLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveLayout.swift; sourceTree = "<group>"; };
 		A6856E2DF90C47FBDD0E1935 /* LocalizationIntegrityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationIntegrityTests.swift; sourceTree = "<group>"; };
 		30E0075F3F8003E05672826A /* MultiplayerReadinessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerReadinessTests.swift; sourceTree = "<group>"; };
 		94E961FC1CA8C9D2E027BF41 /* GameFeedbackResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameFeedbackResolverTests.swift; sourceTree = "<group>"; };
@@ -580,6 +582,7 @@
 		CF9F773079864F468AFEE357 /* DesignSystem */ = {
 			isa = PBXGroup;
 			children = (
+				06009898129BB8065CC11A13 /* AdaptiveLayout.swift */,
 				DFF9C186BE68436C98B58E07 /* Components */,
 				C6A859FD332A4FD6AB73A004 /* AppAnimation.swift */,
 				F5D71A9DE92544918B40B712 /* AppColor.swift */,
@@ -781,6 +784,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D80DF04944529234006411A0 /* AdaptiveLayout.swift in Sources */,
 				FC4B3AFAB9A0B26CF0ED9EDC /* MultiplayerReadinessView.swift in Sources */,
 				5D92A7779512B3D7A7F5681A /* AppearanceStudioView.swift in Sources */,
 				7389DCB3AC07E44F30C2EDD3 /* CareerProgressContainer.swift in Sources */,
@@ -1017,9 +1021,9 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1029,7 +1033,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -1046,7 +1050,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BalootHub.app/BalootHub";
 			};
 			name = Release;
@@ -1064,7 +1068,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BalootHub.app/BalootHub";
 			};
 			name = Debug;
@@ -1142,9 +1146,9 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1154,7 +1158,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};

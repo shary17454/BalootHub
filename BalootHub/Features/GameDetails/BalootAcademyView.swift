@@ -54,6 +54,7 @@ struct BalootAcademyView: View {
                 }
             }
             .padding(AppSpacing.md)
+            .adaptiveContentWidth()
         }
         .background(AppColor.background)
         .navigationTitle("أكاديمية البلوت")

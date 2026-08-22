@@ -30,6 +30,7 @@ struct RareCaseLibraryView: View {
                         }
                     }
                     .padding(AppSpacing.md)
+                    .adaptiveContentWidth()
                 }
             }
         }

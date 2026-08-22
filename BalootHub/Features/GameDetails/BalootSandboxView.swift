@@ -58,6 +58,7 @@ struct BalootSandboxView: View {
                 }
             }
             .padding(AppSpacing.md)
+            .adaptiveContentWidth()
         }
         .background(AppColor.background)
         .navigationTitle("مختبر البلوت".localized)

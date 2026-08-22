@@ -41,6 +41,7 @@ struct ScoringQuizView: View {
                 }
             }
             .padding(AppSpacing.md)
+            .adaptiveContentWidth()
         }
         .background(AppColor.background)
         .navigationTitle("تحدي حساب النقاط")

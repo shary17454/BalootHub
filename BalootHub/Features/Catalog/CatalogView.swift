@@ -56,6 +56,7 @@ struct CatalogView: View {
                         }
                     }
                     .padding(AppSpacing.md)
+                    .adaptiveContentWidth()
                 }
             }
         }

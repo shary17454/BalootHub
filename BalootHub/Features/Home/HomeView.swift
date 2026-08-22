@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct HomeView: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(AppEnvironment.self) private var appEnvironment
     @Environment(\.modelContext) private var modelContext
 
@@ -46,6 +47,7 @@ struct HomeView: View {
                 }
             }
             .padding(AppSpacing.md)
+            .adaptiveContentWidth()
         }
         .background(AppColor.background)
         .navigationTitle("البلوت")
@@ -117,23 +119,39 @@ struct HomeView: View {
                 Text("لا توجد عناصر بعد في هذا القسم.")
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
+            } else if horizontalSizeClass == .regular {
+                // على الشاشات العريضة يملأ العرضُ شبكةً تلتف تلقائيًا. الشريط الأفقي
+                // ببطاقات ثابتة العرض كان يترك فراغًا كبيرًا في قسم فيه بطاقة واحدة،
+                // لأن 220 نقطة تملأ شاشة الآيفون ولا تملأ ربع شاشة iPad.
+                LazyVGrid(
+                    columns: [GridItem(.adaptive(minimum: 220), spacing: AppSpacing.md)],
+                    spacing: AppSpacing.md
+                ) {
+                    ForEach(items) { item in
+                        catalogCard(item)
+                    }
+                }
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: AppSpacing.md) {
                         ForEach(items) { item in
-                            Button {
-                                appEnvironment.openGameDetails(slug: item.slug, from: .home)
-                            } label: {
-                                GameCardView(item: item, onToggleFavorite: { toggleFavorite(item) })
-                                    .frame(width: 220)
-                            }
-                            .buttonStyle(.plain)
+                            catalogCard(item)
+                                .frame(width: 220)
                         }
                     }
                     .padding(.vertical, AppSpacing.xxs)
                 }
             }
         }
+    }
+
+    private func catalogCard(_ item: GameCatalogItem) -> some View {
+        Button {
+            appEnvironment.openGameDetails(slug: item.slug, from: .home)
+        } label: {
+            GameCardView(item: item, onToggleFavorite: { toggleFavorite(item) })
+        }
+        .buttonStyle(.plain)
     }
 
     private var searchResultsSection: some View {

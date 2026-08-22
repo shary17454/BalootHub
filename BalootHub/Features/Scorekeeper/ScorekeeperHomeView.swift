@@ -47,6 +47,7 @@ struct ScorekeeperHomeView: View {
                 }
             }
             .padding(AppSpacing.md)
+            .adaptiveContentWidth()
         }
         .background(AppColor.background)
         .navigationTitle("تسجيل البلوت")

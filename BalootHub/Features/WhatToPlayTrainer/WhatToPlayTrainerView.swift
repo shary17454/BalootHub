@@ -323,6 +323,7 @@ struct WhatToPlayTrainerView: View {
                 }
             }
             .padding(AppSpacing.md)
+            .adaptiveContentWidth()
         }
         .background(AppColor.background)
         .navigationTitle("وش تلعب؟")

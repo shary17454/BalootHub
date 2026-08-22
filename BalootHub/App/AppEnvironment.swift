@@ -31,6 +31,38 @@ final class AppEnvironment {
         navigate(to: .gameDetails(slug: slug), tab: tab)
     }
 
+#if DEBUG
+    /// يفتح شاشة محددة عند الإقلاع حسب وسيط سطر أوامر، للتحقق البصري من الشاشات
+    /// العميقة (طاولة اللعب مثلًا) على مقاسات وأجهزة مختلفة.
+    ///
+    /// موجودة في Debug فقط: التحقق البصري كان يتطلب الوصول يدويًا لكل شاشة، فتُترك
+    /// الشاشات العميقة بلا فحص على مقاسات iPad. مع هذا الوسيط تصير لقطة أي شاشة
+    /// أمرًا واحدًا:
+    /// `xcrun simctl launch <device> app.balooThub.ios -BalootHubStartRoute balootGamePlay`
+    func applyDebugStartRouteIfNeeded(
+        arguments: [String] = ProcessInfo.processInfo.arguments
+    ) {
+        guard let index = arguments.firstIndex(of: "-BalootHubStartRoute"),
+              arguments.indices.contains(index + 1)
+        else { return }
+
+        switch arguments[index + 1] {
+        case "balootGamePlay":
+            navigate(to: .balootGamePlay(slug: "baloot-classic"), tab: .home)
+        case "whatToPlay":
+            navigate(to: .whatToPlayTrainer(), tab: .home)
+        case "settings":
+            selectedTab = .settings
+        case "scorekeeper":
+            selectedTab = .scorekeeper
+        case "careerMode":
+            navigate(to: .careerMode, tab: .home)
+        default:
+            break
+        }
+    }
+#endif
+
     func openPracticeRecommendation(_ recommendation: RoundPracticeRecommendation, from tab: AppTab) {
         navigate(
             to: .whatToPlayTrainer(

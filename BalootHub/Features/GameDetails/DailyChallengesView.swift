@@ -56,6 +56,7 @@ struct DailyChallengesView: View {
                 }
             }
             .padding(AppSpacing.md)
+            .adaptiveContentWidth()
         }
         .background(AppColor.background)
         .navigationTitle("تحديات البلوت")

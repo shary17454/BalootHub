@@ -56,6 +56,7 @@ struct GameDetailsView: View {
                 actionButtons(item)
             }
             .padding(AppSpacing.md)
+            .adaptiveContentWidth()
         }
     }
 

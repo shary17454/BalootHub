@@ -30,6 +30,7 @@ struct BalootEncyclopediaView: View {
                         }
                     }
                     .padding(AppSpacing.md)
+                    .adaptiveContentWidth()
                 }
             }
         }

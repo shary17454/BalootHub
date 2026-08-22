@@ -7,6 +7,7 @@ struct BalootGamePlayView: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.modelContext) private var modelContext
     @Environment(AppEnvironment.self) private var appEnvironment
     @State private var viewModel: BalootGameViewModel
@@ -22,6 +23,15 @@ struct BalootGamePlayView: View {
     private var appearance: TableAppearance {
         AppearanceCatalog.resolveTrusted(settingsList.first?.appearanceSelection ?? .standard)
     }
+
+    /// لون النص المقروء فوق لبس الطاولة.
+    ///
+    /// ألوان النظام (`textSecondary` وأخواتها) مصمَّمة لخلفية فاتحة. بعد أن صار سطح
+    /// الطاولة لبسًا ملوّنًا داكنًا، صارت تلك الألوان باهتة فوقه إلى حد يصعب قراءته —
+    /// وهو ما ظهر فور تشغيل التطبيق فعليًا على المحاكي ولم يظهر في أي اختبار.
+    private var onFeltColor: Color { appearance.felt.contentColor }
+
+    private var onFeltSecondaryColor: Color { appearance.felt.contentColor.opacity(0.75) }
 
     /// هل تُعرض مؤثرات المشاريع والكبوت؟ إطفاء الحركة من إعدادات النظام يلغيها دائمًا.
     private var showsCelebrations: Bool {
@@ -43,22 +53,12 @@ struct BalootGamePlayView: View {
         ZStack {
             table
 
-            VStack {
-                topBar
-                Spacer()
-                if viewModel.state.phase == .bidding {
-                    fullBiddingPanel
-                } else if viewModel.state.phase == .declaring {
-                    declarationPanel
-                } else if viewModel.state.phase == .finished {
-                    resultPanel
-                }
-                Spacer()
-                trickArea
-                Spacer()
-                humanHandArea
-            }
-            .padding(AppSpacing.md)
+            tableLayout
+                .padding(AppSpacing.md)
+                // على iPad كانت العناصر تتناثر إلى الزوايا لأن `Spacer` يوزّع فراغًا
+                // هائلًا؛ تحديد العرض يُبقي الطاولة مقروءة ويترك اللبس يملأ الخلفية.
+                .adaptiveContentWidth(AppLayout.wideContentWidth)
+                .adaptiveContentHeight()
         }
         .background(AppColor.background)
         .overlay {
@@ -166,6 +166,54 @@ struct BalootGamePlayView: View {
         .accessibilityLabel("اختيار الخصم الآلي")
     }
 
+    /// تخطيط الطاولة.
+    ///
+    /// عند مقاسات خط الوصولية يصير المحتوى أطول من الشاشة، فتُدفع أزرار المزايدة
+    /// خارجها بلا أي وسيلة للوصول إليها — أي أن اللاعب لا يستطيع المزايدة أصلًا.
+    /// لذلك يتحوّل التخطيط عندها إلى تمرير رأسي كامل بلا `Spacer`، ويبقى التوزيع
+    /// الثابت على المقاسات العادية حيث يتّسع كل شيء.
+    @ViewBuilder
+    private var tableLayout: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            ScrollView {
+                VStack(spacing: AppSpacing.lg) {
+                    topBar
+                    centerPanel
+                    trickArea
+                    humanHandArea
+                }
+            }
+        } else {
+            VStack {
+                topBar
+                Spacer()
+                centerPanel
+                Spacer()
+                trickArea
+                Spacer()
+                humanHandArea
+            }
+        }
+    }
+
+    /// لوحة المرحلة الحالية (مزايدة · إعلان مشاريع · نتيجة).
+    ///
+    /// التمرير عند مقاسات الوصولية تتكفّل به ``tableLayout``.
+    @ViewBuilder
+    private var centerPanel: some View {
+        let hasPanel = viewModel.state.phase == .bidding
+            || viewModel.state.phase == .declaring
+            || viewModel.state.phase == .finished
+        if hasPanel {
+            switch viewModel.state.phase {
+            case .bidding: fullBiddingPanel
+            case .declaring: declarationPanel
+            case .finished: resultPanel
+            default: EmptyView()
+            }
+        }
+    }
+
     private var table: some View {
         ZStack {
             // الخلفية تتجاوز الحواف الآمنة بنفسها، أما سطح الطاولة فيبقى داخلها
@@ -184,25 +232,27 @@ struct BalootGamePlayView: View {
                 isCurrentTurn: isCurrentSeat(.north),
                 cardCount: cardCount(.north),
                 avatarStyle: appearance.avatar,
-                theme: appearance.theme
+                theme: appearance.theme,
+                contentColor: onFeltColor
             )
             Spacer()
             VStack {
                 Label(viewModel.tableMode.title, systemImage: viewModel.tableMode.systemImage)
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColor.textSecondary)
+                    .foregroundStyle(onFeltSecondaryColor)
                 if viewModel.tableMode == .versusAI {
                     Text(viewModel.selectedAIProfileTitle)
                         .font(AppTypography.caption)
-                        .foregroundStyle(AppColor.textSecondary)
+                        .foregroundStyle(onFeltSecondaryColor)
                         .lineLimit(1)
                         .minimumScaleFactor(0.75)
                 }
                 Text("الأكلات")
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColor.textSecondary)
+                    .foregroundStyle(onFeltSecondaryColor)
                 Text("\(trickCount(for: .south)) - \(trickCount(for: .west))")
                     .font(AppTypography.headline)
+                    .foregroundStyle(onFeltColor)
             }
             Spacer()
             if let mode = viewModel.state.mode {
@@ -231,6 +281,9 @@ struct BalootGamePlayView: View {
             Text(biddingStageTitle)
                 .font(AppTypography.headline)
                 .multilineTextAlignment(.center)
+                // بدونه يُقصّ سطر التعليمات على عرض الآيفون («…حكم على الورقة المكشوفة أو ص»)
+                // لأن التخطيط الرأسي يقترح ارتفاعًا لا يتسع لسطرين.
+                .fixedSize(horizontal: false, vertical: true)
 
             if viewModel.currentMultiplier != .none {
                 StatusBadge(viewModel.currentMultiplier.arabicName, systemImage: "flame.fill", tint: AppColor.danger)
@@ -769,7 +822,7 @@ struct BalootGamePlayView: View {
                 } else if viewModel.state.phase == .playing {
                     Text("بانتظار أول ورقة في الأكلة")
                         .font(AppTypography.caption)
-                        .foregroundStyle(AppColor.textSecondary)
+                        .foregroundStyle(onFeltSecondaryColor)
                 }
             }
             // إظهار من فاز بالأكلة بعد حسمها، وإلا اختفت الأوراق دون تفسير.
@@ -791,7 +844,7 @@ struct BalootGamePlayView: View {
             if viewModel.state.phase == .playing {
                 Text(turnStatusText)
                     .font(AppTypography.subheadline)
-                    .foregroundStyle(viewModel.isHumanTurn ? AppColor.success : AppColor.textSecondary)
+                    .foregroundStyle(viewModel.isHumanTurn ? AppColor.success : onFeltSecondaryColor)
             }
             if viewModel.requiresLocalHandoffConfirmation && viewModel.state.phase == .playing {
                 localHandoffCard
@@ -925,6 +978,8 @@ private struct SeatIndicator: View {
     let cardCount: Int
     var avatarStyle: AvatarStyle = .person
     var theme: TableThemeStyle = .baloot
+    /// لون النص فوق لبس الطاولة؛ ألوان النظام الرمادية تختفي على الجوخ الداكن.
+    var contentColor: Color = AppColor.textPrimary
 
     var body: some View {
         VStack(spacing: AppSpacing.xxs) {
@@ -935,8 +990,8 @@ private struct SeatIndicator: View {
                 theme: theme,
                 isCurrentTurn: isCurrentTurn
             )
-            Text(name).font(AppTypography.caption)
-            Text("\(cardCount) أوراق").font(.caption2).foregroundStyle(AppColor.textSecondary)
+            Text(name).font(AppTypography.caption).foregroundStyle(contentColor)
+            Text("\(cardCount) أوراق").font(.caption2).foregroundStyle(contentColor.opacity(0.75))
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(name)\(isCurrentTurn ? "، دوره الآن" : "")")

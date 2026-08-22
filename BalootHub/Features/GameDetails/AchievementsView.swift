@@ -56,6 +56,7 @@ struct AchievementsView: View {
                 }
             }
             .padding(AppSpacing.md)
+            .adaptiveContentWidth()
         }
         .background(AppColor.background)
         .navigationTitle("الإنجازات والألقاب")

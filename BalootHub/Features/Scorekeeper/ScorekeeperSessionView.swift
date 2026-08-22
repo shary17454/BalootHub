@@ -89,6 +89,7 @@ struct ScorekeeperSessionView: View {
                 .controlSize(.large)
             }
             .padding(AppSpacing.md)
+            .adaptiveContentWidth()
         }
         .sheet(isPresented: $isPresentingAddRound) {
             NavigationStack {
