@@ -719,7 +719,7 @@ struct WhatToPlayTrainerView: View {
                 )
                 if let nextSeed = progress.nextSeed {
                     miniPlanMetric(
-                        title: "الموقف القادم".localized,
+                        title: trainingSessionNextSeedTitle(progress.nextSeedState),
                         value: "\(nextSeed)"
                     )
                 }
@@ -1043,6 +1043,17 @@ struct WhatToPlayTrainerView: View {
                 (isMet ? AppColor.success : AppColor.danger).opacity(0.12),
                 in: RoundedRectangle(cornerRadius: AppRadius.small)
             )
+    }
+
+    private func trainingSessionNextSeedTitle(_ state: WhatToPlayTrainingSessionNextSeedState) -> String {
+        switch state {
+        case .retry:
+            return "إعادة الموقف".localized
+        case .fresh:
+            return "الموقف القادم".localized
+        case .complete:
+            return "الجلسة مكتملة".localized
+        }
     }
 
     private func sessionImpactExtremeText(_ impact: Int, card: PlayingCard?, seed: UInt64?) -> String {

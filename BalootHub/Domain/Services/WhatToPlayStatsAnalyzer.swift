@@ -575,6 +575,12 @@ enum WhatToPlayTrainingSessionProgressState: Equatable {
     case needsRepeat
 }
 
+enum WhatToPlayTrainingSessionNextSeedState: Equatable {
+    case fresh(UInt64)
+    case retry(UInt64)
+    case complete
+}
+
 struct WhatToPlayTrainingSessionProgress: Equatable {
     let state: WhatToPlayTrainingSessionProgressState
     let completedAttempts: Int
@@ -617,6 +623,7 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let reviewItem: WhatToPlayReviewItem?
     let remainingAttempts: Int
     let nextSeed: UInt64?
+    let nextSeedState: WhatToPlayTrainingSessionNextSeedState
     let title: String
     let detail: String
     let iconName: String
@@ -2283,6 +2290,11 @@ enum WhatToPlayStatsAnalyzer {
         let nextSeed = progressMetrics.category == .achieved
             ? nil
             : nextTrainingSessionSeed(for: attempts, plan: plan)
+        let nextSeedState = trainingSessionNextSeedState(
+            nextSeed: nextSeed,
+            attempts: attempts,
+            plan: plan
+        )
 
         if progressMetrics.category == .notStarted {
             return WhatToPlayTrainingSessionProgress(
@@ -2327,6 +2339,7 @@ enum WhatToPlayStatsAnalyzer {
                 reviewItem: nil,
                 remainingAttempts: progressMetrics.remainingAttempts,
                 nextSeed: nextSeed,
+                nextSeedState: nextSeedState,
                 title: "ابدأ الجلسة".localized,
                 detail: "لم تبدأ هذه الجلسة بعد؛ اضغط زر البدء لتوليد أول موقف.".localized,
                 iconName: "play.circle.fill",
@@ -2387,6 +2400,7 @@ enum WhatToPlayStatsAnalyzer {
                 reviewItem: reviewItem,
                 remainingAttempts: progressMetrics.remainingAttempts,
                 nextSeed: nextSeed,
+                nextSeedState: nextSeedState,
                 title: "الجلسة قيد التنفيذ".localized,
                 detail: "أكمل بقية المواقف قبل الحكم على هدف الجلسة.".localized,
                 iconName: "timer.circle.fill",
@@ -2447,6 +2461,7 @@ enum WhatToPlayStatsAnalyzer {
                 reviewItem: reviewItem,
                 remainingAttempts: progressMetrics.remainingAttempts,
                 nextSeed: nextSeed,
+                nextSeedState: nextSeedState,
                 title: "هدف الجلسة تحقق".localized,
                 detail: "أداؤك في هذه الدفعة وصل إلى هدف الخطة.".localized,
                 iconName: "checkmark.seal.fill",
@@ -2506,6 +2521,7 @@ enum WhatToPlayStatsAnalyzer {
             reviewItem: reviewItem,
             remainingAttempts: progressMetrics.remainingAttempts,
             nextSeed: nextSeed,
+            nextSeedState: nextSeedState,
             title: "أعد الجلسة".localized,
             detail: trainingSessionRepeatDetail(
                 accuracyTargetMet: progressMetrics.accuracyTargetMet,
@@ -2735,6 +2751,18 @@ enum WhatToPlayStatsAnalyzer {
             return false
         }
         return !latest.isCorrect
+    }
+
+    private static func trainingSessionNextSeedState(
+        nextSeed: UInt64?,
+        attempts: [WhatToPlayAttempt],
+        plan: WhatToPlayTrainingSessionPlan
+    ) -> WhatToPlayTrainingSessionNextSeedState {
+        guard let nextSeed else { return .complete }
+        if trainingSessionRetriesIncorrectNextSeed(nextSeed: nextSeed, attempts: attempts, plan: plan) {
+            return .retry(nextSeed)
+        }
+        return .fresh(nextSeed)
     }
 
     private static func trainingSessionReviewStatusLine(
