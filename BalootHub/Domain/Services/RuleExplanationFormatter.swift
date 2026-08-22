@@ -14,7 +14,8 @@ enum RuleExplanationFormatter {
             let suitName = trumpSuit.map { " (\($0.spokenName))" } ?? ""
             return "\("أنت لا تملك اللون المطلوب ويجب عليك القطع بالحكم وفق القاعدة الحالية.".localized)\(suitName)"
         case .mustOvertrump:
-            return "يجب أن تعلو على أعلى حكم مطروح ما دام لديك ما يعلوه.".localized
+            let suitName = trumpSuit.map { " (\($0.spokenName))" } ?? ""
+            return "\("يجب أن تعلو على أعلى حكم مطروح ما دام لديك ما يعلوه.".localized)\(suitName)"
         case .cardNotInHand:
             return "هذه الورقة ليست في يدك.".localized
         case .notPlayersTurn:

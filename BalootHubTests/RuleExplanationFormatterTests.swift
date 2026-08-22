@@ -32,6 +32,7 @@ final class RuleExplanationFormatterTests: XCTestCase {
 
         XCTAssertTrue(explanation.contains(card.accessibilityName))
         XCTAssertTrue(explanation.contains("يجب أن تعلو على أعلى حكم مطروح ما دام لديك ما يعلوه.".localized))
+        XCTAssertTrue(explanation.contains(Suit.clubs.spokenName))
     }
 
     func testFollowSuitExplanationMatchesRuleLanguage() {
