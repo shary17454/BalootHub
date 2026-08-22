@@ -3035,10 +3035,26 @@ struct WhatToPlayTrainerView: View {
             VStack(spacing: AppSpacing.xs) {
                 InfoRow(icon: "hand.point.up.left.fill", title: "اختيارك", value: option.card.accessibilityName)
                 if let best = scenario.bestOption {
-                    InfoRow(icon: "star.fill", title: "أفضل ورقة", value: best.card.accessibilityName)
+                    InfoRow(
+                        icon: "star.fill",
+                        title: "أفضل ورقة",
+                        value: optionSummaryCardText(
+                            card: best.card,
+                            impact: best.expectedImpact,
+                            projectedTeamPoints: best.projectedTeamPoints
+                        )
+                    )
                 }
                 if let second = scenario.secondBestOption {
-                    InfoRow(icon: "2.circle.fill", title: "ثاني أفضل", value: second.card.accessibilityName)
+                    InfoRow(
+                        icon: "2.circle.fill",
+                        title: "ثاني أفضل",
+                        value: optionSummaryCardText(
+                            card: second.card,
+                            impact: second.expectedImpact,
+                            projectedTeamPoints: second.projectedTeamPoints
+                        )
+                    )
                 }
                 InfoRow(icon: "chart.line.uptrend.xyaxis", title: "الأثر المتوقع", value: impactText(option.expectedImpact))
                 InfoRow(icon: "chart.bar.xaxis", title: "نقاط فريقك بعد المحاكاة".localized, value: "\(option.projectedTeamPoints)")
