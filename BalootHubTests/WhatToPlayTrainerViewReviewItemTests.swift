@@ -103,6 +103,23 @@ final class WhatToPlayTrainerViewReviewItemTests: XCTestCase {
         XCTAssertNil(view.reviewCardSourceText(for: item))
     }
 
+    func testDecisionPatternStatsTextIncludesAffectedRate() {
+        let pattern = WhatToPlayDecisionPattern(
+            kind: .trumpPressureMistake,
+            inspectedAttempts: 8,
+            affectedAttempts: 3,
+            title: "ضغط الحكم يربك قرارك".localized,
+            detail: "راجع قوة الحكم المتبقية قبل القطع.".localized,
+            iconName: "crown.fill"
+        )
+        let view = WhatToPlayTrainerView()
+
+        XCTAssertEqual(
+            view.decisionPatternStatsText(for: pattern),
+            "\("محاولات مفحوصة".localized): 8 · \("محاولات متأثرة".localized): 3 · \("نسبة التأثر".localized): 38%"
+        )
+    }
+
     private static let completeHand = [
         PlayingCard(suit: .spades, rank: .ace),
         PlayingCard(suit: .spades, rank: .king),

@@ -1717,7 +1717,7 @@ struct WhatToPlayTrainerView: View {
                         .font(AppTypography.caption)
                         .foregroundStyle(AppColor.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
-                    Text("\("محاولات مفحوصة".localized): \(pattern.inspectedAttempts) · \("محاولات متأثرة".localized): \(pattern.affectedAttempts)")
+                    Text(decisionPatternStatsText(for: pattern))
                         .font(.caption2.weight(.semibold))
                         .foregroundStyle(decisionPatternTint(pattern.kind))
                 }
@@ -1770,6 +1770,14 @@ struct WhatToPlayTrainerView: View {
         case .pointLeaks, .opponentTrickClosure, .unprotectedPointDump, .costlyOpeningLead, .followSuitMistake, .trumpPressureMistake:
             AppColor.danger
         }
+    }
+
+    func decisionPatternStatsText(for pattern: WhatToPlayDecisionPattern) -> String {
+        [
+            "\("محاولات مفحوصة".localized): \(pattern.inspectedAttempts)",
+            "\("محاولات متأثرة".localized): \(pattern.affectedAttempts)",
+            "\("نسبة التأثر".localized): \(pattern.affectedPercent)%"
+        ].joined(separator: " · ")
     }
 
     private func playStyleView(_ style: WhatToPlayPlayStyle) -> some View {
