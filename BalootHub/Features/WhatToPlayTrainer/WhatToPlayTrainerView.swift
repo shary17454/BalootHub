@@ -4353,6 +4353,9 @@ struct WhatToPlayShareCardPreview: View {
             if let bestProjectedTeamPoints = content.bestProjectedTeamPoints {
                 shareChip("\("أفضل نتيجة محاكاة".localized): \(bestProjectedTeamPoints)")
             }
+            if let bestMoveRationale = content.bestMoveRationale {
+                shareNote("\("سبب أفضل ورقة".localized): \(bestMoveRationale)")
+            }
             if let secondBestSimulationCardName = content.secondBestSimulationCardName {
                 shareChip("\("ثاني محاكاة".localized): \(secondBestSimulationCardName)")
             }

@@ -33,6 +33,7 @@ struct WhatToPlayShareCardContent: Equatable {
     let selectedCardName: String?
     let bestCardName: String?
     let bestExpectedImpact: Int?
+    let bestMoveRationale: String?
     let secondBestCardName: String?
     let secondBestExpectedImpact: Int?
     let bestSimulationCardName: String?
@@ -152,6 +153,7 @@ enum WhatToPlayShareCard {
             selectedCardName: selectedOption?.card.accessibilityName,
             bestCardName: best?.card.accessibilityName,
             bestExpectedImpact: best?.expectedImpact,
+            bestMoveRationale: selectedOption == nil ? nil : best?.explanation,
             secondBestCardName: secondBest?.card.accessibilityName,
             secondBestExpectedImpact: secondBest?.expectedImpact,
             bestSimulationCardName: bestProjected?.card.accessibilityName,
@@ -243,6 +245,9 @@ enum WhatToPlayShareCard {
             }
             if let bestExpectedImpact = content.bestExpectedImpact {
                 lines.append("\("أثر الأفضل".localized): \(impactText(bestExpectedImpact))")
+            }
+            if let bestMoveRationale = content.bestMoveRationale {
+                lines.append("\("سبب أفضل ورقة".localized): \(bestMoveRationale)")
             }
             if let secondBestCardName = content.secondBestCardName {
                 lines.append("\("ثاني أفضل".localized): \(secondBestCardName)")

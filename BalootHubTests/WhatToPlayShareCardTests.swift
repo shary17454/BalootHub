@@ -179,6 +179,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertFalse(text.contains("ثاني نتيجة محاكاة".localized))
         XCTAssertFalse(text.contains("فاقد ثاني محاكاة".localized))
         XCTAssertFalse(text.contains("ثقة أفضل ورقة".localized))
+        XCTAssertFalse(text.contains("سبب أفضل ورقة".localized))
     }
 
     func testShareTextIncludesAnswerReviewAfterSelection() throws {
@@ -194,6 +195,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("اختياري".localized): \(selected.card.accessibilityName)"))
         XCTAssertTrue(text.contains("\("أفضل ورقة".localized): \(best.card.accessibilityName)"))
         XCTAssertTrue(text.contains("\("أثر الأفضل".localized): \(best.expectedImpact >= 0 ? "+\(best.expectedImpact)" : "\(best.expectedImpact)")"))
+        XCTAssertTrue(text.contains("\("سبب أفضل ورقة".localized): \(best.explanation)"))
         XCTAssertTrue(text.contains("\("ثاني أفضل".localized): \(secondBest.card.accessibilityName)"))
         XCTAssertTrue(text.contains("\("أثر ثاني أفضل".localized): \(secondBest.expectedImpact >= 0 ? "+\(secondBest.expectedImpact)" : "\(secondBest.expectedImpact)")"))
         XCTAssertTrue(text.contains("\("أفضل محاكاة".localized): \(bestSimulation.card.accessibilityName)"))
@@ -234,6 +236,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).tacticalReasonTitle)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).secondBestCardName)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).bestExpectedImpact)
+        XCTAssertNil(WhatToPlayShareCard.content(for: scenario).bestMoveRationale)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).secondBestExpectedImpact)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).bestSimulationCardName)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).bestProjectedTeamPoints)
@@ -274,6 +277,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(reviewed.selectedCardName, selected.card.accessibilityName)
         XCTAssertEqual(reviewed.bestCardName, review.bestOption?.card.accessibilityName)
         XCTAssertEqual(reviewed.bestExpectedImpact, review.bestOption?.expectedImpact)
+        XCTAssertEqual(reviewed.bestMoveRationale, review.bestOption?.explanation)
         XCTAssertEqual(reviewed.secondBestCardName, secondBest.card.accessibilityName)
         XCTAssertEqual(reviewed.secondBestExpectedImpact, secondBest.expectedImpact)
         XCTAssertEqual(reviewed.bestSimulationCardName, review.bestProjectedOption?.card.accessibilityName)
