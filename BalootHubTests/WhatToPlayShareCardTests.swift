@@ -591,6 +591,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("أثر القرار".localized): +7"))
         XCTAssertTrue(text.contains("\("أسوأ قرار في الجلسة".localized): \(worstCard.accessibilityName)"))
         XCTAssertTrue(text.contains("\("فاقد القرار".localized): 7"))
+        XCTAssertTrue(text.contains("القيمة المتوقعة".localized))
     }
 
     func testShareCardImageFileNameUsesFullScenarioCode() throws {

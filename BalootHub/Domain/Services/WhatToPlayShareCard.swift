@@ -569,9 +569,19 @@ enum WhatToPlayShareCard {
     private static func decisionHighlightText(_ highlight: WhatToPlayDecisionHighlight) -> String {
         let cardName = highlight.selectedCard?.accessibilityName ?? "غير محدد".localized
         if highlight.totalLoss > 0 {
-            return "\(cardName) · \("فاقد القرار".localized): \(highlight.totalLoss)"
+            return "\(cardName) · \("فاقد القرار".localized): \(highlight.totalLoss) · \(decisionHighlightLossSource(highlight))"
         }
         return "\(cardName) · \("أثر القرار".localized): \(impactText(highlight.expectedImpact))"
+    }
+
+    private static func decisionHighlightLossSource(_ highlight: WhatToPlayDecisionHighlight) -> String {
+        if highlight.lostProjectedTeamPoints == highlight.totalLoss {
+            return "محاكاة الجولة".localized
+        }
+        if highlight.lostProjectedAgainstSecondBestPoints == highlight.totalLoss {
+            return "ثاني محاكاة".localized
+        }
+        return "القيمة المتوقعة".localized
     }
 
     private static func impactText(_ value: Int) -> String {
