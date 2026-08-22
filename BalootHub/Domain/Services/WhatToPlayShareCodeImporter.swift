@@ -68,12 +68,20 @@ struct WhatToPlayShareCodeImportResult {
                 lines.append("\("الترتيب".localized): \(selectedComparisonRow.rank) \("من".localized) \(scenario.options.count)")
                 lines.append("\("الأثر المتوقع".localized): \(impactText(selectedComparisonRow.expectedImpact))")
                 lines.append("\("أثر القرار".localized): \(selectedComparisonRow.impactDetail)")
+                if let selectedLostExpectedPoints = comparisonSummary.selectedLostExpectedPoints,
+                   selectedLostExpectedPoints > 0 {
+                    lines.append("\("النقاط الضائعة".localized): \(selectedLostExpectedPoints)")
+                }
                 lines.append("\("نقاط فريقك بعد المحاكاة".localized): \(selectedComparisonRow.projectedTeamPoints)")
                 if let bestSimulationCard = comparisonSummary.bestSimulationCard {
                     lines.append("\("أفضل محاكاة".localized): \(bestSimulationCard.accessibilityName)")
                 }
                 if let bestSimulationProjectedTeamPoints = comparisonSummary.bestSimulationProjectedTeamPoints {
                     lines.append("\("أفضل نتيجة محاكاة".localized): \(bestSimulationProjectedTeamPoints)")
+                }
+                if let selectedLostProjectedTeamPoints = comparisonSummary.selectedLostProjectedTeamPoints,
+                   selectedLostProjectedTeamPoints > 0 {
+                    lines.append("\("نقاط محاكاة ضائعة".localized): \(selectedLostProjectedTeamPoints)")
                 }
                 if let secondBestSimulationCard = comparisonSummary.secondBestSimulationCard,
                    secondBestSimulationCard != comparisonSummary.bestSimulationCard {
@@ -82,6 +90,10 @@ struct WhatToPlayShareCodeImportResult {
                 if let secondBestSimulationProjectedTeamPoints = comparisonSummary.secondBestSimulationProjectedTeamPoints,
                    comparisonSummary.secondBestSimulationCard != comparisonSummary.bestSimulationCard {
                     lines.append("\("ثاني نتيجة محاكاة".localized): \(secondBestSimulationProjectedTeamPoints)")
+                }
+                if let selectedLostProjectedAgainstSecondBestPoints = comparisonSummary.selectedLostProjectedAgainstSecondBestPoints,
+                   selectedLostProjectedAgainstSecondBestPoints > 0 {
+                    lines.append("\("فاقد ثاني محاكاة".localized): \(selectedLostProjectedAgainstSecondBestPoints)")
                 }
                 lines.append("\("سبب تكتيكي".localized): \(selectedComparisonRow.tacticalSummary)")
             }

@@ -32,11 +32,14 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertFalse(result.statusMessage.contains("الترتيب".localized))
         XCTAssertFalse(result.statusMessage.contains("الأثر المتوقع".localized))
         XCTAssertFalse(result.statusMessage.contains("أثر القرار".localized))
+        XCTAssertFalse(result.statusMessage.contains("النقاط الضائعة".localized))
         XCTAssertFalse(result.statusMessage.contains("نقاط فريقك بعد المحاكاة".localized))
         XCTAssertFalse(result.statusMessage.contains("أفضل محاكاة".localized))
         XCTAssertFalse(result.statusMessage.contains("أفضل نتيجة محاكاة".localized))
+        XCTAssertFalse(result.statusMessage.contains("نقاط محاكاة ضائعة".localized))
         XCTAssertFalse(result.statusMessage.contains("ثاني محاكاة".localized))
         XCTAssertFalse(result.statusMessage.contains("ثاني نتيجة محاكاة".localized))
+        XCTAssertFalse(result.statusMessage.contains("فاقد ثاني محاكاة".localized))
         XCTAssertFalse(result.statusMessage.contains("نتيجة المحاكاة".localized))
         XCTAssertFalse(result.statusMessage.contains("اتجاه الأكلة".localized))
         XCTAssertFalse(result.statusMessage.contains("نقاط الأكلة".localized))
@@ -92,12 +95,20 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
             )
         )
         XCTAssertTrue(result.statusMessage.contains("\("أثر القرار".localized): \(selectedComparisonRow.impactDetail)"))
+        if let selectedLostExpectedPoints = comparisonSummary.selectedLostExpectedPoints,
+           selectedLostExpectedPoints > 0 {
+            XCTAssertTrue(result.statusMessage.contains("\("النقاط الضائعة".localized): \(selectedLostExpectedPoints)"))
+        }
         XCTAssertTrue(result.statusMessage.contains("\("نقاط فريقك بعد المحاكاة".localized): \(selectedComparisonRow.projectedTeamPoints)"))
         if let bestSimulationCard = comparisonSummary.bestSimulationCard {
             XCTAssertTrue(result.statusMessage.contains("\("أفضل محاكاة".localized): \(bestSimulationCard.accessibilityName)"))
         }
         if let bestSimulationProjectedTeamPoints = comparisonSummary.bestSimulationProjectedTeamPoints {
             XCTAssertTrue(result.statusMessage.contains("\("أفضل نتيجة محاكاة".localized): \(bestSimulationProjectedTeamPoints)"))
+        }
+        if let selectedLostProjectedTeamPoints = comparisonSummary.selectedLostProjectedTeamPoints,
+           selectedLostProjectedTeamPoints > 0 {
+            XCTAssertTrue(result.statusMessage.contains("\("نقاط محاكاة ضائعة".localized): \(selectedLostProjectedTeamPoints)"))
         }
         if let secondBestSimulationCard = comparisonSummary.secondBestSimulationCard,
            secondBestSimulationCard != comparisonSummary.bestSimulationCard {
@@ -106,6 +117,10 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         if let secondBestSimulationProjectedTeamPoints = comparisonSummary.secondBestSimulationProjectedTeamPoints,
            comparisonSummary.secondBestSimulationCard != comparisonSummary.bestSimulationCard {
             XCTAssertTrue(result.statusMessage.contains("\("ثاني نتيجة محاكاة".localized): \(secondBestSimulationProjectedTeamPoints)"))
+        }
+        if let selectedLostProjectedAgainstSecondBestPoints = comparisonSummary.selectedLostProjectedAgainstSecondBestPoints,
+           selectedLostProjectedAgainstSecondBestPoints > 0 {
+            XCTAssertTrue(result.statusMessage.contains("\("فاقد ثاني محاكاة".localized): \(selectedLostProjectedAgainstSecondBestPoints)"))
         }
         XCTAssertTrue(result.statusMessage.contains("\("سبب تكتيكي".localized): \(selectedComparisonRow.tacticalSummary)"))
         let simulationDisplay = WhatToPlaySimulationFormatter.display(for: selected.simulation)
