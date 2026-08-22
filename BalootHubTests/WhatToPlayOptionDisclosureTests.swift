@@ -71,6 +71,48 @@ final class WhatToPlayOptionDisclosureTests: XCTestCase {
         XCTAssertTrue(label.contains("42"))
     }
 
+    func testAccessibilityIncludesImprovementSourceAfterChoice() {
+        let label = WhatToPlayOptionDisclosure.accessibilityLabel(
+            cardName: "إكة سباتي",
+            rank: 3,
+            isRevealed: true,
+            expectedImprovement: 16,
+            expectedImprovementSourceTitle: "محاكاة الجولة".localized
+        )
+
+        XCTAssertTrue(label.contains("تحسن متوقع".localized))
+        XCTAssertTrue(label.contains("+16"))
+        XCTAssertTrue(label.contains("مصدر التحسن".localized))
+        XCTAssertTrue(label.contains("محاكاة الجولة".localized))
+    }
+
+    func testAccessibilityHidesImprovementBeforeChoice() {
+        let label = WhatToPlayOptionDisclosure.accessibilityLabel(
+            cardName: "إكة سباتي",
+            rank: 3,
+            isRevealed: false,
+            expectedImprovement: 16,
+            expectedImprovementSourceTitle: "محاكاة الجولة".localized
+        )
+
+        XCTAssertFalse(label.contains("تحسن متوقع".localized))
+        XCTAssertFalse(label.contains("مصدر التحسن".localized))
+        XCTAssertFalse(label.contains("محاكاة الجولة".localized))
+    }
+
+    func testAccessibilityHidesNonpositiveImprovementAfterChoice() {
+        let label = WhatToPlayOptionDisclosure.accessibilityLabel(
+            cardName: "إكة سباتي",
+            rank: 1,
+            isRevealed: true,
+            expectedImprovement: 0,
+            expectedImprovementSourceTitle: "محاكاة الجولة".localized
+        )
+
+        XCTAssertFalse(label.contains("تحسن متوقع".localized))
+        XCTAssertFalse(label.contains("مصدر التحسن".localized))
+    }
+
     func testAccessibilityIdentifiesBestSimulationResultAfterChoice() {
         let label = WhatToPlayOptionDisclosure.accessibilityLabel(
             cardName: "إكة سباتي",

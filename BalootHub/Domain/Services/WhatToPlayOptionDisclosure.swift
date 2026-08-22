@@ -14,6 +14,8 @@ enum WhatToPlayOptionDisclosure {
         isRevealed: Bool,
         expectedImpact: Int? = nil,
         projectedTeamPoints: Int? = nil,
+        expectedImprovement: Int? = nil,
+        expectedImprovementSourceTitle: String? = nil,
         isSelected: Bool = false,
         isExpertChoice: Bool = false,
         isBestSimulationResult: Bool = false,
@@ -42,6 +44,12 @@ enum WhatToPlayOptionDisclosure {
         }
         if let projectedTeamPoints {
             parts.append("\("نقاط فريقك بعد المحاكاة".localized) \(projectedTeamPoints)")
+        }
+        if let expectedImprovement, expectedImprovement > 0 {
+            parts.append("\("تحسن متوقع".localized) +\(expectedImprovement)")
+            if let expectedImprovementSourceTitle {
+                parts.append("\("مصدر التحسن".localized) \(expectedImprovementSourceTitle)")
+            }
         }
         return parts.joined(separator: "، ")
     }
