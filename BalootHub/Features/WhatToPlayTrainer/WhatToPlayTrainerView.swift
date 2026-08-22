@@ -2456,6 +2456,13 @@ struct WhatToPlayTrainerView: View {
                     .tint(AppColor.accent)
                     .disabled(isGeneratingScenario)
                 }
+
+                ShareLink(item: WhatToPlayShareCard.reviewText(for: item)) {
+                    Label("مشاركة موقف المراجعة".localized, systemImage: "square.and.arrow.up")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .tint(AppColor.primary)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

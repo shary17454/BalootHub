@@ -400,7 +400,13 @@ final class WhatToPlayShareCardTests: XCTestCase {
     }
 
     func testReviewShareTextContainsReplayCodeAndDecisionSummary() throws {
-        let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
+        let scenario = try WhatToPlayTrainer.generateScenario(
+            seed: 45,
+            difficulty: .hard,
+            preferredFocus: .trumpPressure,
+            preferredMode: .hokum,
+            preferredTrumpSuit: .spades
+        )
         let selected = try XCTUnwrap(scenario.options.first { !$0.isExpertChoice })
         let attempt = try XCTUnwrap(
             WhatToPlayAttemptFactory.makeAttempt(scenario: scenario, evaluated: selected)
@@ -419,6 +425,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
         )
         XCTAssertTrue(text.contains("\("نقاط متوقعة ضائعة".localized): \(reviewItem.lostExpectedPoints)"))
         XCTAssertTrue(text.contains("\("شدة خسارة القيمة".localized): \(reviewItem.valueLossTitle)"))
+        XCTAssertTrue(text.contains("\("تركيز التدريب".localized): \("ضغط الحكم".localized)"))
+        XCTAssertTrue(text.contains("\("النمط".localized): \(GameMode.hokum.arabicName) \(Suit.spades.spokenName)"))
         XCTAssertTrue(text.contains("أعد الموقف وحاول اختيار ورقة أفضل.".localized))
     }
 
