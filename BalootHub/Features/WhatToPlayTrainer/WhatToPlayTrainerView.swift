@@ -4411,6 +4411,10 @@ struct HandAnalyzerView: View {
                     .font(AppTypography.subheadline)
                     .foregroundStyle(AppColor.textPrimary)
                     .fixedSize(horizontal: false, vertical: true)
+                Text(sunHokumGapExplanation(for: analysis.sunHokumScoreGap))
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .padding(AppSpacing.md)
             .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.medium))
@@ -4539,6 +4543,16 @@ struct HandAnalyzerView: View {
 
     func signedScoreText(_ value: Int) -> String {
         value > 0 ? "+\(value)" : "\(value)"
+    }
+
+    func sunHokumGapExplanation(for value: Int) -> String {
+        if value > 0 {
+            return "الفارق الموجب يعني أن الصن أعلى من أفضل حكم في هذا التحليل.".localized
+        }
+        if value < 0 {
+            return "الفارق السالب يعني أن أفضل حكم أعلى من الصن في هذا التحليل.".localized
+        }
+        return "الفارق صفر، لذلك القرار قريب جدًا ويعتمد على سياق المزايدة.".localized
     }
 
 }

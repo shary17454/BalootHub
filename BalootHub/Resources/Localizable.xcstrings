@@ -3213,6 +3213,36 @@
         }
       }
     },
+    "الفارق الموجب يعني أن الصن أعلى من أفضل حكم في هذا التحليل." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A positive gap means sun is higher than the best hokum suit in this analysis."
+          }
+        }
+      }
+    },
+    "الفارق السالب يعني أن أفضل حكم أعلى من الصن في هذا التحليل." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A negative gap means the best hokum suit is higher than sun in this analysis."
+          }
+        }
+      }
+    },
+    "الفارق صفر، لذلك القرار قريب جدًا ويعتمد على سياق المزايدة." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The gap is zero, so the decision is very close and depends on bidding context."
+          }
+        }
+      }
+    },
     "التقاط القيمة يتحسن" : {
       "localizations" : {
         "en" : {

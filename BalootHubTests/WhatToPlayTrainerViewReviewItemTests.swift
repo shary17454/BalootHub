@@ -46,6 +46,23 @@ final class WhatToPlayTrainerViewReviewItemTests: XCTestCase {
         XCTAssertEqual(view.signedScoreText(-7), "-7")
     }
 
+    func testHandAnalyzerGapExplanationDescribesSignMeaning() {
+        let view = HandAnalyzerView()
+
+        XCTAssertEqual(
+            view.sunHokumGapExplanation(for: 12),
+            "الفارق الموجب يعني أن الصن أعلى من أفضل حكم في هذا التحليل.".localized
+        )
+        XCTAssertEqual(
+            view.sunHokumGapExplanation(for: -7),
+            "الفارق السالب يعني أن أفضل حكم أعلى من الصن في هذا التحليل.".localized
+        )
+        XCTAssertEqual(
+            view.sunHokumGapExplanation(for: 0),
+            "الفارق صفر، لذلك القرار قريب جدًا ويعتمد على سياق المزايدة.".localized
+        )
+    }
+
     func testReviewCardSourceTextExplainsWhyReviewCardWasChosen() throws {
         let selected = PlayingCard(suit: .spades, rank: .seven)
         let best = PlayingCard(suit: .hearts, rank: .ace)
