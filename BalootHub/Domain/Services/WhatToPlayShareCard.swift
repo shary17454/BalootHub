@@ -418,6 +418,22 @@ enum WhatToPlayShareCard {
         if item.lostProjectedTeamPoints > item.lostExpectedPoints {
             lines.append("\("نقاط محاكاة ضائعة".localized): \(item.lostProjectedTeamPoints)")
         }
+        if let bestSimulationCard = item.bestSimulationCard {
+            lines.append("\("أفضل محاكاة".localized): \(bestSimulationCard.accessibilityName)")
+        }
+        if let projectedTeamPoints = item.projectedTeamPoints,
+           item.lostProjectedTeamPoints > 0 {
+            lines.append("\("أفضل نتيجة محاكاة".localized): \(projectedTeamPoints + item.lostProjectedTeamPoints)")
+        }
+        if let secondBestSimulationCard = item.secondBestSimulationCard {
+            lines.append("\("ثاني محاكاة".localized): \(secondBestSimulationCard.accessibilityName)")
+        }
+        if let secondBestProjectedTeamPoints = item.secondBestProjectedTeamPoints {
+            lines.append("\("ثاني نتيجة محاكاة".localized): \(secondBestProjectedTeamPoints)")
+        }
+        if item.lostProjectedAgainstSecondBestPoints > 0 {
+            lines.append("\("فاقد ثاني محاكاة".localized): \(item.lostProjectedAgainstSecondBestPoints)")
+        }
         if improvement.points > 0 {
             lines.append("\("تحسن متوقع".localized): +\(improvement.points)")
             lines.append("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: improvement.source))")
@@ -426,7 +442,7 @@ enum WhatToPlayShareCard {
             lines.append("\("نتيجة المحاكاة".localized): \(simulationSummary)")
         }
         if let simulationTeamResult = item.simulationTeamResult {
-            lines.append(simulationTeamResult)
+            lines.append("\("اتجاه الأكلة".localized): \(simulationTeamResult)")
         }
         if let tacticalReasonTitle = item.tacticalReasonTitle {
             lines.append("\("سبب المراجعة".localized): \(tacticalReasonTitle)")

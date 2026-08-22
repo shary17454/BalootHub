@@ -532,6 +532,53 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("أعد الموقف وحاول اختيار ورقة أفضل.".localized))
     }
 
+    func testReviewShareTextIncludesSimulationAlternativesAndOutcomeLabels() throws {
+        let selected = PlayingCard(suit: .clubs, rank: .seven)
+        let best = PlayingCard(suit: .spades, rank: .ace)
+        let secondBest = PlayingCard(suit: .hearts, rank: .king)
+        let bestSimulation = PlayingCard(suit: .diamonds, rank: .ace)
+        let secondBestSimulation = PlayingCard(suit: .hearts, rank: .jack)
+        let attempt = WhatToPlayAttempt(
+            difficulty: .hard,
+            seed: 920,
+            selectedCard: selected,
+            bestCard: best,
+            secondBestCard: secondBest,
+            bestSimulationCard: bestSimulation,
+            secondBestSimulationCard: secondBestSimulation,
+            isCorrect: false,
+            expectedImpact: 2,
+            bestExpectedImpact: 4,
+            secondBestExpectedImpact: 3,
+            projectedTeamPoints: 50,
+            bestProjectedTeamPoints: 68,
+            secondBestProjectedTeamPoints: 62,
+            focusKind: .trumpPressure,
+            gameMode: .hokum,
+            simulation: WhatToPlayOptionSimulation(
+                phaseAfterPlay: .playing,
+                currentTrickCardCount: 0,
+                completedTrickWinnerID: UUID(),
+                completedTrickWinnerTeamID: UUID(),
+                completedTrickWonByPlayerTeam: false,
+                completedTrickPoints: 12,
+                nextTurnPlayerID: UUID(),
+                playerRemainingCards: 4,
+                actionHistoryCount: 20
+            )
+        )
+        let item = try XCTUnwrap(WhatToPlayStatsAnalyzer.reviewQueue(for: [attempt]).first)
+
+        let text = WhatToPlayShareCard.reviewText(for: item)
+
+        XCTAssertTrue(text.contains("\("أفضل محاكاة".localized): \(bestSimulation.accessibilityName)"))
+        XCTAssertTrue(text.contains("\("أفضل نتيجة محاكاة".localized): 68"))
+        XCTAssertTrue(text.contains("\("ثاني محاكاة".localized): \(secondBestSimulation.accessibilityName)"))
+        XCTAssertTrue(text.contains("\("ثاني نتيجة محاكاة".localized): 62"))
+        XCTAssertTrue(text.contains("\("فاقد ثاني محاكاة".localized): 12"))
+        XCTAssertTrue(text.contains("\("اتجاه الأكلة".localized): \("للخصم".localized)"))
+    }
+
     func testTrainingSessionReviewShareTextContainsRetryStatusAndReviewDetails() throws {
         let recommendedCard = PlayingCard(suit: .spades, rank: .jack)
         let review = WhatToPlayTrainingSessionReview(
