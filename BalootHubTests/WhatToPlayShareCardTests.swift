@@ -391,10 +391,12 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(content.retryPromptTitle, prompt.title)
         XCTAssertEqual(content.retryPromptDetail, prompt.detail)
         XCTAssertEqual(content.retryPromptRecommendedCardName, prompt.recommendedCard?.accessibilityName)
-        XCTAssertEqual(content.retryPromptExpectedImprovement, prompt.expectedImprovement)
+        XCTAssertEqual(content.retryPromptExpectedImprovement, prompt.expectedImprovement > 0 ? prompt.expectedImprovement : nil)
         XCTAssertEqual(
             content.retryPromptExpectedImprovementSourceTitle,
-            prompt.expectedImprovementSource.map(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle)
+            prompt.expectedImprovement > 0
+                ? prompt.expectedImprovementSource.map(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle)
+                : nil
         )
         XCTAssertTrue(text.contains("\("تدريب الإعادة".localized): \(prompt.title)"))
         XCTAssertTrue(text.contains(prompt.detail))

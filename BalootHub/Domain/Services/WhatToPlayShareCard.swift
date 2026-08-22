@@ -178,12 +178,18 @@ enum WhatToPlayShareCard {
             nextActionTitle: comparisonSummary?.nextActionTitle,
             nextActionDetail: comparisonSummary?.nextActionDetail,
             nextActionExpectedImprovement: positiveImprovement(nextAction?.expectedImprovement),
-            nextActionExpectedImprovementSourceTitle: improvementSourceTitle(nextAction?.expectedImprovementSource),
+            nextActionExpectedImprovementSourceTitle: improvementSourceTitle(
+                improvement: nextAction?.expectedImprovement,
+                source: nextAction?.expectedImprovementSource
+            ),
             retryPromptTitle: retryPrompt?.title,
             retryPromptDetail: retryPrompt?.detail,
             retryPromptRecommendedCardName: retryPrompt?.recommendedCard?.accessibilityName,
-            retryPromptExpectedImprovement: retryPrompt?.expectedImprovement,
-            retryPromptExpectedImprovementSourceTitle: improvementSourceTitle(retryPrompt?.expectedImprovementSource),
+            retryPromptExpectedImprovement: positiveImprovement(retryPrompt?.expectedImprovement),
+            retryPromptExpectedImprovementSourceTitle: improvementSourceTitle(
+                improvement: retryPrompt?.expectedImprovement,
+                source: retryPrompt?.expectedImprovementSource
+            ),
             selectedRank: selectedOption?.rank,
             selectedImpact: selectedOption?.expectedImpact,
             selectedImpactDetail: selectedOption.map { WhatToPlayImpactFormatter.detail(for: $0.impactBreakdown) },
@@ -529,9 +535,10 @@ enum WhatToPlayShareCard {
     }
 
     private static func improvementSourceTitle(
-        _ source: WhatToPlayExpectedImprovementSource?
+        improvement: Int?,
+        source: WhatToPlayExpectedImprovementSource?
     ) -> String? {
-        guard let source else { return nil }
+        guard positiveImprovement(improvement) != nil, let source else { return nil }
         return WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: source)
     }
 
