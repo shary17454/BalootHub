@@ -759,6 +759,32 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("افتح مدرب وش تلعب وابدأ التدريب المقترح.".localized))
     }
 
+    func testDecisionPatternShareTextContainsSuggestedTraining() throws {
+        let pattern = WhatToPlayDecisionPattern(
+            kind: .trumpPressureMistake,
+            inspectedAttempts: 8,
+            affectedAttempts: 3,
+            title: "ضغط الحكم يربك قرارك".localized,
+            detail: "راجع قوة الحكم المتبقية قبل القطع.".localized,
+            iconName: "crown.fill",
+            targetLine: "\("المستوى".localized): \("صعب".localized) · \("النمط".localized): \("حكم".localized) · \("لون الحكم".localized): \(Suit.spades.spokenName)",
+            targetDifficulty: .hard,
+            targetFocusKind: .trumpPressure,
+            targetGameMode: .hokum,
+            targetTrumpSuit: .spades
+        )
+
+        let text = WhatToPlayShareCard.decisionPatternText(for: pattern)
+
+        XCTAssertTrue(text.contains("نمط قرارات وش تلعب؟".localized))
+        XCTAssertTrue(text.contains(pattern.title))
+        XCTAssertTrue(text.contains(pattern.detail))
+        XCTAssertTrue(text.contains("\("محاولات مفحوصة".localized): 8"))
+        XCTAssertTrue(text.contains("\("محاولات متأثرة".localized): 3"))
+        XCTAssertTrue(text.contains("\("التدريب المقترح".localized): \(try XCTUnwrap(pattern.targetLine))"))
+        XCTAssertTrue(text.contains("افتح مدرب وش تلعب وراجع نمط قراراتك.".localized))
+    }
+
     func testTrainingSessionProgressShareTextOmitsNextSeedAfterCompletion() {
         let plan = WhatToPlayTrainingSessionPlan(
             difficulty: .easy,

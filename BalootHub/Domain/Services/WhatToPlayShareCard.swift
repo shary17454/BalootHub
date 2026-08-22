@@ -634,6 +634,23 @@ enum WhatToPlayShareCard {
         return lines.joined(separator: "\n")
     }
 
+    static func decisionPatternText(for pattern: WhatToPlayDecisionPattern) -> String {
+        var lines = [
+            "نمط قرارات وش تلعب؟".localized,
+            pattern.title,
+            pattern.detail,
+            "\("محاولات مفحوصة".localized): \(pattern.inspectedAttempts)",
+            "\("محاولات متأثرة".localized): \(pattern.affectedAttempts)"
+        ]
+
+        if let targetLine = pattern.targetLine {
+            lines.append("\("التدريب المقترح".localized): \(targetLine)")
+        }
+
+        lines.append("افتح مدرب وش تلعب وراجع نمط قراراتك.".localized)
+        return lines.joined(separator: "\n")
+    }
+
     private static func appendDecisionQualityLines(
         to lines: inout [String],
         content: WhatToPlayShareCardContent

@@ -1744,6 +1744,13 @@ struct WhatToPlayTrainerView: View {
                 .buttonStyle(.bordered)
                 .disabled(isGeneratingScenario)
             }
+
+            ShareLink(item: WhatToPlayShareCard.decisionPatternText(for: pattern)) {
+                Label("مشاركة نمط القرار".localized, systemImage: "square.and.arrow.up")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .tint(decisionPatternTint(pattern.kind))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppSpacing.sm)
