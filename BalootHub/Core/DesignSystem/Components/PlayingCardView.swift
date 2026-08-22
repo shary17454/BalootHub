@@ -129,11 +129,27 @@ struct PlayingCardFaceView: View {
     private var content: some View {
         switch style {
         case .classic:
-            VStack(spacing: 2) {
-                Text(rankLabel)
-                    .font(.system(.body, design: .rounded).weight(.bold))
+            // ورقة لعب حقيقية: فهرس في الزاوية (قيمة فوق رمز) ورمز أكبر في المنتصف.
+            // كان النمط سابقًا قيمة ورمزًا في المنتصف فقط، فبدت الورقة رقعةً لا ورقة،
+            // ويصعب تمييزها حين تتجاور الأوراق في اليد.
+            ZStack {
                 Image(systemName: symbolName)
-                    .font(.caption)
+                    .font(.system(size: 20))
+                    .opacity(0.9)
+                VStack {
+                    HStack {
+                        VStack(spacing: -1) {
+                            Text(rankLabel)
+                                .font(.system(size: 11, design: .rounded).weight(.heavy))
+                            Image(systemName: symbolName)
+                                .font(.system(size: 7))
+                        }
+                        Spacer(minLength: 0)
+                    }
+                    Spacer(minLength: 0)
+                }
+                .padding(.horizontal, 3)
+                .padding(.top, 3)
             }
         case .bold:
             VStack(spacing: 0) {

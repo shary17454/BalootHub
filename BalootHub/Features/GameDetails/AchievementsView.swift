@@ -151,6 +151,7 @@ struct CareerModeView: View {
 /// فُصل عن ``CareerModeView`` لأن الاستعلامات انتقلت إلى ``CareerProgressContainer``
 /// بعد أن صارت شاشة التخصيص تحتاج نفس الرتبة.
 private struct CareerModeContent: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let summary: CareerProgressSummary
 
     var body: some View {
@@ -198,7 +199,7 @@ private struct CareerModeContent: View {
     }
 
     private func statsGrid(_ summary: CareerProgressSummary) -> some View {
-        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppSpacing.sm) {
+        LazyVGrid(columns: AppLayout.columns(2, for: dynamicTypeSize, spacing: AppSpacing.sm), spacing: AppSpacing.sm) {
             careerMetric("المباريات".localized, "\(summary.completedMatches)", "suit.spade.fill")
             careerMetric("قرارات صحيحة".localized, "\(summary.correctTrainingAttempts)/\(summary.trainingAttempts)", "brain.head.profile")
             careerMetric("إجابات الحساب".localized, "\(summary.correctScoringAnswers)", "function")
@@ -221,6 +222,8 @@ private struct CareerModeContent: View {
             Text(title)
                 .font(AppTypography.caption)
                 .foregroundStyle(AppColor.textSecondary)
+                // بدونه يُقصّ الاسم في منتصف الكلمة عند مقاسات الخط الكبيرة.
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppSpacing.md)

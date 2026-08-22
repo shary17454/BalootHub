@@ -4598,6 +4598,7 @@ struct HandAnalyzerView: View {
 }
 
 struct WhatToPlayShareCardPreview: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let content: WhatToPlayShareCardContent
 
     var body: some View {
@@ -4683,7 +4684,7 @@ struct WhatToPlayShareCardPreview: View {
                     .font(AppTypography.caption)
                     .foregroundStyle(.white.opacity(0.78))
             } else {
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppSpacing.xs) {
+                LazyVGrid(columns: AppLayout.columns(2, for: dynamicTypeSize, spacing: AppSpacing.xs), spacing: AppSpacing.xs) {
                     ForEach(Array(content.tableCards.enumerated()), id: \.offset) { _, line in
                         shareChip("\(line.playerName): \(line.cardName)")
                     }
@@ -4698,7 +4699,7 @@ struct WhatToPlayShareCardPreview: View {
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.white.opacity(0.86))
 
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppSpacing.xs) {
+            LazyVGrid(columns: AppLayout.columns(2, for: dynamicTypeSize, spacing: AppSpacing.xs), spacing: AppSpacing.xs) {
                 ForEach(content.legalCards, id: \.cardName) { legalCard in
                     VStack(alignment: .leading, spacing: 4) {
                         shareChip(WhatToPlayShareCard.legalCardSummaryText(legalCard))

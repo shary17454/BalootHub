@@ -894,6 +894,10 @@ struct BalootGamePlayView: View {
                         PlayingCardFaceView(card: played.card, style: appearance.cardFace)
                             .matchedGeometryEffect(id: played.card.id, in: cardNamespace)
                             .transition(reduceMotion ? .identity : .scale.combined(with: .opacity))
+                            // بلا اسم اللاعب يسمع مستخدم VoiceOver أربع أوراق بلا
+                            // معرفة من لعب أيًّا منها — وهي المعلومة التي تُبنى عليها
+                            // قراءة الأكلة كلها.
+                            .accessibilityLabel(trickCardAccessibilityLabel(played))
                     }
                 } else if viewModel.state.phase == .playing {
                     Text("بانتظار أول ورقة في الأكلة")
@@ -1018,6 +1022,13 @@ struct BalootGamePlayView: View {
         FeedbackPlayer.shared.play(signal.event)
         guard showsCelebrations, let kind = signal.celebration else { return }
         celebration = kind
+    }
+
+    /// وصف ورقة على الطاولة لـVoiceOver: اسم اللاعب ثم الورقة.
+    private func trickCardAccessibilityLabel(_ played: PlayedCard) -> String {
+        let name = viewModel.state.player(id: played.playerID)?.name
+        guard let name, !name.isEmpty else { return played.card.accessibilityName }
+        return "\(name)، \(played.card.accessibilityName)"
     }
 
     private func playerName(_ seat: SeatPosition) -> String {

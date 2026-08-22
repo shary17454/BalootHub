@@ -2,6 +2,7 @@ import SwiftUI
 import BalootEngine
 
 struct BalootSandboxView: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var configuration = BalootSandbox.defaultConfiguration
     @State private var selectedCard: PlayingCard?
     @State private var preview: BalootSandboxPlayPreview?
@@ -149,7 +150,7 @@ struct BalootSandboxView: View {
                 .font(AppTypography.headline)
                 .foregroundStyle(AppColor.primary)
 
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppSpacing.sm) {
+            LazyVGrid(columns: AppLayout.columns(2, for: dynamicTypeSize, spacing: AppSpacing.sm), spacing: AppSpacing.sm) {
                 metric("النمط".localized, modeText, icon: "crown.fill")
                 metric("المضاعف".localized, configuration.multiplier.arabicName.localized, icon: "multiply.circle.fill")
                 metric("الدور".localized, seatTitle(configuration.currentTurnSeat), icon: "person.crop.circle.badge.checkmark")

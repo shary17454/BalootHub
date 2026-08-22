@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct ScoringQuizView: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \ScoringQuizAttempt.createdAt, order: .reverse) private var attempts: [ScoringQuizAttempt]
     @Query private var settingsList: [AppSettings]
@@ -88,7 +89,7 @@ struct ScoringQuizView: View {
                     .font(AppTypography.subheadline)
                     .foregroundStyle(AppColor.textSecondary)
             } else {
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppSpacing.xs) {
+                LazyVGrid(columns: AppLayout.columns(2, for: dynamicTypeSize, spacing: AppSpacing.xs), spacing: AppSpacing.xs) {
                     metric("المحاولات".localized, "\(statsSummary.attempts)", icon: "number")
                     metric("الدقة".localized, "\(statsSummary.accuracyPercent)%", icon: "target")
                     metric("إجابات صحيحة".localized, "\(statsSummary.correctAnswers)", icon: "checkmark.seal.fill")
@@ -220,7 +221,7 @@ struct ScoringQuizView: View {
                 .font(AppTypography.title)
                 .foregroundStyle(AppColor.textPrimary)
 
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppSpacing.sm) {
+            LazyVGrid(columns: AppLayout.columns(2, for: dynamicTypeSize, spacing: AppSpacing.sm), spacing: AppSpacing.sm) {
                 metric("نوع السؤال".localized, question.category.title, icon: "tag.fill")
                 metric("النمط", question.mode.title, icon: question.mode == .sun ? "sun.max.fill" : "suit.spade.fill")
                 metric("المضاعف", question.multiplier.title, icon: "multiply")

@@ -3,6 +3,7 @@ import SwiftData
 import BalootEngine
 
 struct PlayerStatsView: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Query(sort: \ScoreSession.updatedAt, order: .reverse) private var sessions: [ScoreSession]
     @Query(sort: \WhatToPlayAttempt.createdAt, order: .reverse) private var whatToPlayAttempts: [WhatToPlayAttempt]
     @Query(sort: \ScoringQuizAttempt.createdAt, order: .reverse) private var scoringQuizAttempts: [ScoringQuizAttempt]
@@ -71,7 +72,7 @@ struct PlayerStatsView: View {
     }
 
     private var statsGrid: some View {
-        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppSpacing.sm) {
+        LazyVGrid(columns: AppLayout.columns(2, for: dynamicTypeSize, spacing: AppSpacing.sm), spacing: AppSpacing.sm) {
             metric("المباريات".localized, "\(summary.finishedMatches)", "rectangle.stack.fill")
             metric("الفوز".localized, "\(summary.wins)", "checkmark.seal.fill")
             metric("الخسارة".localized, "\(summary.losses)", "xmark.seal.fill")

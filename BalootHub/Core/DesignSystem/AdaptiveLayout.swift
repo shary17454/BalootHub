@@ -68,4 +68,18 @@ enum AppLayout {
 
     /// أقصى ارتفاع لطاولة اللعب على الشاشات الطويلة، قريب من ارتفاع آيفون كبير.
     static let compactTableHeight: CGFloat = 880
+
+    /// أعمدة شبكة تنهار إلى عمود واحد عند مقاسات خط الوصولية.
+    ///
+    /// شبكة بعمودين ثابتين تعطي كل بطاقة نحو 170 نقطة على الآيفون، وهو عرض لا يكفي
+    /// لكلمة مثل «المباريات» عند أكبر مقاس خط، فتُقصّ في منتصفها («المباريا»).
+    /// الانهيار لعمود واحد يعيد للنص عرضه الكامل.
+    static func columns(
+        _ count: Int,
+        for dynamicTypeSize: DynamicTypeSize,
+        spacing: CGFloat? = nil
+    ) -> [GridItem] {
+        let effectiveCount = dynamicTypeSize.isAccessibilitySize ? 1 : max(1, count)
+        return Array(repeating: GridItem(.flexible(), spacing: spacing), count: effectiveCount)
+    }
 }
