@@ -23,21 +23,33 @@ struct WhatToPlayShareCodeImportResult {
     let expectedImprovementSource: WhatToPlayExpectedImprovementSource?
 
     var statusMessage: String {
-        let message: String
+        var lines = [
+            statusTitle,
+            "\("رمز الموقف".localized): \(canonicalScenarioCode)"
+        ]
+        lines.append(contentsOf: scenarioContextLines())
+        if let selectedOption {
+            lines.append(contentsOf: reviewedDecisionLines(for: selectedOption))
+        }
+        lines.append(contentsOf: expectedImprovementLines(points: expectedImprovement, source: expectedImprovementSource))
+        return lines.joined(separator: "\n")
+    }
+
+    private var statusTitle: String {
         switch kind {
         case .prompt:
-            message = "تم تحميل الموقف. اختر الورقة الأفضل.".localized
+            return "تم تحميل الموقف. اختر الورقة الأفضل.".localized
         case .reviewedDecision(let isDuplicate):
             if isDuplicate {
-                message = "تم تحميل مراجعة القرار. هذه المحاولة موجودة في الإحصاءات.".localized
-            } else {
-                message = "تم تحميل مراجعة القرار وإضافتها للإحصاءات.".localized
+                return "تم تحميل مراجعة القرار. هذه المحاولة موجودة في الإحصاءات.".localized
             }
+            return "تم تحميل مراجعة القرار وإضافتها للإحصاءات.".localized
         }
+    }
+
+    private func scenarioContextLines() -> [String] {
         let contextContent = WhatToPlayShareCard.content(for: scenario)
         var lines = [
-            message,
-            "\("رمز الموقف".localized): \(canonicalScenarioCode)",
             "\("النمط".localized): \(contextContent.mode)",
             "\("الصعوبة".localized): \(contextContent.difficulty)",
             "\("نوع الموقف".localized): \(contextContent.focus)",
@@ -53,98 +65,147 @@ struct WhatToPlayShareCodeImportResult {
                 lines.append("- \(playedCard.playerName): \(playedCard.cardName)")
             }
         }
-        if let selectedOption {
-            let comparisonSummary = WhatToPlayOptionComparison.summary(
-                for: scenario,
-                selectedCard: selectedOption.card
+        return lines
+    }
+
+    private func reviewedDecisionLines(for selectedOption: WhatToPlayOption) -> [String] {
+        let comparisonSummary = WhatToPlayOptionComparison.summary(
+            for: scenario,
+            selectedCard: selectedOption.card
+        )
+        let selectedComparisonRow = WhatToPlayOptionComparison
+            .rows(for: scenario, selectedCard: selectedOption.card)
+            .first { $0.card == selectedOption.card }
+        var lines = [
+            "\("اختيارك".localized): \(selectedOption.card.accessibilityName)"
+        ]
+        if let bestOption = scenario.bestOption {
+            lines.append("\("أفضل ورقة".localized): \(bestOption.card.accessibilityName)")
+        }
+        if let secondBestOption = scenario.secondBestOption,
+           secondBestOption.card != scenario.bestOption?.card {
+            lines.append("\("ثاني أفضل".localized): \(secondBestOption.card.accessibilityName)")
+        }
+        lines.append(contentsOf: decisionSummaryLines(comparisonSummary))
+        if let selectedComparisonRow {
+            lines.append(contentsOf: selectedComparisonLines(row: selectedComparisonRow, summary: comparisonSummary))
+        }
+        lines.append(contentsOf: simulationLines(for: selectedOption))
+        lines.append(contentsOf: nextActionLines(comparisonSummary))
+        if let retryPrompt = WhatToPlayStatsAnalyzer.retryPrompt(for: selectedOption, in: scenario) {
+            lines.append(contentsOf: retryPromptLines(retryPrompt))
+        }
+        return lines
+    }
+
+    private func decisionSummaryLines(_ summary: WhatToPlayOptionComparisonSummary) -> [String] {
+        var lines: [String] = []
+        if let decisionQuality = summary.decisionQuality {
+            lines.append("\("تقييم القرار".localized): \(decisionQuality.title)")
+        }
+        if let decisionQualityDetail = summary.decisionQualityDetail {
+            lines.append(decisionQualityDetail)
+        }
+        if let bestMoveConfidence = summary.bestMoveConfidence {
+            lines.append("\("ثقة أفضل ورقة".localized): \(bestMoveConfidence.title)")
+            lines.append(bestMoveConfidence.detail)
+        }
+        return lines
+    }
+
+    private func selectedComparisonLines(
+        row: WhatToPlayOptionComparisonRow,
+        summary: WhatToPlayOptionComparisonSummary
+    ) -> [String] {
+        var lines = [
+            "\("الترتيب".localized): \(row.rank) \("من".localized) \(scenario.options.count)",
+            "\("الأثر المتوقع".localized): \(impactText(row.expectedImpact))",
+            "\("أثر القرار".localized): \(row.impactDetail)"
+        ]
+        if let selectedLostExpectedPoints = summary.selectedLostExpectedPoints,
+           selectedLostExpectedPoints > 0 {
+            lines.append("\("النقاط الضائعة".localized): \(selectedLostExpectedPoints)")
+        }
+        lines.append("\("نقاط فريقك بعد المحاكاة".localized): \(row.projectedTeamPoints)")
+        if let bestSimulationCard = summary.bestSimulationCard {
+            lines.append("\("أفضل محاكاة".localized): \(bestSimulationCard.accessibilityName)")
+        }
+        if let bestSimulationProjectedTeamPoints = summary.bestSimulationProjectedTeamPoints {
+            lines.append("\("أفضل نتيجة محاكاة".localized): \(bestSimulationProjectedTeamPoints)")
+        }
+        if let selectedLostProjectedTeamPoints = summary.selectedLostProjectedTeamPoints,
+           selectedLostProjectedTeamPoints > 0 {
+            lines.append("\("نقاط محاكاة ضائعة".localized): \(selectedLostProjectedTeamPoints)")
+        }
+        if let secondBestSimulationCard = summary.secondBestSimulationCard,
+           secondBestSimulationCard != summary.bestSimulationCard {
+            lines.append("\("ثاني محاكاة".localized): \(secondBestSimulationCard.accessibilityName)")
+        }
+        if let secondBestSimulationProjectedTeamPoints = summary.secondBestSimulationProjectedTeamPoints,
+           summary.secondBestSimulationCard != summary.bestSimulationCard {
+            lines.append("\("ثاني نتيجة محاكاة".localized): \(secondBestSimulationProjectedTeamPoints)")
+        }
+        if let selectedLostProjectedAgainstSecondBestPoints = summary.selectedLostProjectedAgainstSecondBestPoints,
+           selectedLostProjectedAgainstSecondBestPoints > 0 {
+            lines.append("\("فاقد ثاني محاكاة".localized): \(selectedLostProjectedAgainstSecondBestPoints)")
+        }
+        lines.append("\("سبب تكتيكي".localized): \(row.tacticalSummary)")
+        return lines
+    }
+
+    private func simulationLines(for selectedOption: WhatToPlayOption) -> [String] {
+        let simulationDisplay = WhatToPlaySimulationFormatter.display(for: selectedOption.simulation)
+        var lines = [
+            "\("نتيجة المحاكاة".localized): \(simulationDisplay.summary)"
+        ]
+        if let teamResult = simulationDisplay.teamResult {
+            lines.append("\("اتجاه الأكلة".localized): \(teamResult)")
+        }
+        if let trickPoints = simulationDisplay.trickPoints {
+            lines.append("\("نقاط الأكلة".localized): \(trickPoints)")
+        }
+        return lines
+    }
+
+    private func nextActionLines(_ summary: WhatToPlayOptionComparisonSummary) -> [String] {
+        guard let nextActionTitle = summary.nextActionTitle,
+              let nextActionDetail = summary.nextActionDetail
+        else { return [] }
+        return [
+            "\("الخطوة التالية".localized): \(nextActionTitle)",
+            nextActionDetail
+        ]
+    }
+
+    private func retryPromptLines(_ retryPrompt: WhatToPlayRetryPrompt) -> [String] {
+        var lines = [
+            "\("تدريب الإعادة".localized): \(retryPrompt.title)",
+            retryPrompt.detail
+        ]
+        if let recommendedCard = retryPrompt.recommendedCard {
+            lines.append("\("جرّب الورقة".localized): \(recommendedCard.accessibilityName)")
+        }
+        lines.append(
+            contentsOf: expectedImprovementLines(
+                points: retryPrompt.expectedImprovement,
+                source: retryPrompt.expectedImprovementSource
             )
-            let retryPrompt = WhatToPlayStatsAnalyzer.retryPrompt(for: selectedOption, in: scenario)
-            let selectedComparisonRow = WhatToPlayOptionComparison
-                .rows(for: scenario, selectedCard: selectedOption.card)
-                .first { $0.card == selectedOption.card }
-            lines.append("\("اختيارك".localized): \(selectedOption.card.accessibilityName)")
-            if let bestOption = scenario.bestOption {
-                lines.append("\("أفضل ورقة".localized): \(bestOption.card.accessibilityName)")
-            }
-            if let secondBestOption = scenario.secondBestOption,
-               secondBestOption.card != scenario.bestOption?.card {
-                lines.append("\("ثاني أفضل".localized): \(secondBestOption.card.accessibilityName)")
-            }
-            if let decisionQuality = comparisonSummary.decisionQuality {
-                lines.append("\("تقييم القرار".localized): \(decisionQuality.title)")
-            }
-            if let decisionQualityDetail = comparisonSummary.decisionQualityDetail {
-                lines.append(decisionQualityDetail)
-            }
-            if let bestMoveConfidence = comparisonSummary.bestMoveConfidence {
-                lines.append("\("ثقة أفضل ورقة".localized): \(bestMoveConfidence.title)")
-                lines.append(bestMoveConfidence.detail)
-            }
-            if let selectedComparisonRow {
-                lines.append("\("الترتيب".localized): \(selectedComparisonRow.rank) \("من".localized) \(scenario.options.count)")
-                lines.append("\("الأثر المتوقع".localized): \(impactText(selectedComparisonRow.expectedImpact))")
-                lines.append("\("أثر القرار".localized): \(selectedComparisonRow.impactDetail)")
-                if let selectedLostExpectedPoints = comparisonSummary.selectedLostExpectedPoints,
-                   selectedLostExpectedPoints > 0 {
-                    lines.append("\("النقاط الضائعة".localized): \(selectedLostExpectedPoints)")
-                }
-                lines.append("\("نقاط فريقك بعد المحاكاة".localized): \(selectedComparisonRow.projectedTeamPoints)")
-                if let bestSimulationCard = comparisonSummary.bestSimulationCard {
-                    lines.append("\("أفضل محاكاة".localized): \(bestSimulationCard.accessibilityName)")
-                }
-                if let bestSimulationProjectedTeamPoints = comparisonSummary.bestSimulationProjectedTeamPoints {
-                    lines.append("\("أفضل نتيجة محاكاة".localized): \(bestSimulationProjectedTeamPoints)")
-                }
-                if let selectedLostProjectedTeamPoints = comparisonSummary.selectedLostProjectedTeamPoints,
-                   selectedLostProjectedTeamPoints > 0 {
-                    lines.append("\("نقاط محاكاة ضائعة".localized): \(selectedLostProjectedTeamPoints)")
-                }
-                if let secondBestSimulationCard = comparisonSummary.secondBestSimulationCard,
-                   secondBestSimulationCard != comparisonSummary.bestSimulationCard {
-                    lines.append("\("ثاني محاكاة".localized): \(secondBestSimulationCard.accessibilityName)")
-                }
-                if let secondBestSimulationProjectedTeamPoints = comparisonSummary.secondBestSimulationProjectedTeamPoints,
-                   comparisonSummary.secondBestSimulationCard != comparisonSummary.bestSimulationCard {
-                    lines.append("\("ثاني نتيجة محاكاة".localized): \(secondBestSimulationProjectedTeamPoints)")
-                }
-                if let selectedLostProjectedAgainstSecondBestPoints = comparisonSummary.selectedLostProjectedAgainstSecondBestPoints,
-                   selectedLostProjectedAgainstSecondBestPoints > 0 {
-                    lines.append("\("فاقد ثاني محاكاة".localized): \(selectedLostProjectedAgainstSecondBestPoints)")
-                }
-                lines.append("\("سبب تكتيكي".localized): \(selectedComparisonRow.tacticalSummary)")
-            }
-            let simulationDisplay = WhatToPlaySimulationFormatter.display(for: selectedOption.simulation)
-            lines.append("\("نتيجة المحاكاة".localized): \(simulationDisplay.summary)")
-            if let teamResult = simulationDisplay.teamResult {
-                lines.append("\("اتجاه الأكلة".localized): \(teamResult)")
-            }
-            if let trickPoints = simulationDisplay.trickPoints {
-                lines.append("\("نقاط الأكلة".localized): \(trickPoints)")
-            }
-            if let nextActionTitle = comparisonSummary.nextActionTitle,
-               let nextActionDetail = comparisonSummary.nextActionDetail {
-                lines.append("\("الخطوة التالية".localized): \(nextActionTitle)")
-                lines.append(nextActionDetail)
-            }
-            if let retryPrompt {
-                lines.append("\("تدريب الإعادة".localized): \(retryPrompt.title)")
-                lines.append(retryPrompt.detail)
-                if let recommendedCard = retryPrompt.recommendedCard {
-                    lines.append("\("جرّب الورقة".localized): \(recommendedCard.accessibilityName)")
-                }
-                if retryPrompt.expectedImprovement > 0 {
-                    lines.append("\("تحسن متوقع".localized): +\(retryPrompt.expectedImprovement)")
-                }
-                if let expectedImprovementSource = retryPrompt.expectedImprovementSource {
-                    lines.append("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: expectedImprovementSource))")
-                }
-            }
+        )
+        return lines
+    }
+
+    private func expectedImprovementLines(
+        points: Int,
+        source: WhatToPlayExpectedImprovementSource?
+    ) -> [String] {
+        guard points > 0 else { return [] }
+        var lines = [
+            "\("تحسن متوقع".localized): +\(points)"
+        ]
+        if let source {
+            lines.append("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: source))")
         }
-        if expectedImprovement > 0, let expectedImprovementSource {
-            lines.append("\("تحسن متوقع".localized): +\(expectedImprovement)")
-            lines.append("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: expectedImprovementSource))")
-        }
-        return lines.joined(separator: "\n")
+        return lines
     }
 
     private func impactText(_ value: Int) -> String {
