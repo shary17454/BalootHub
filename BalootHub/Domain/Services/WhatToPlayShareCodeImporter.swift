@@ -139,6 +139,11 @@ struct WhatToPlayShareCodeImportResult {
             lines.append("\("ثاني أفضل".localized): \(secondBestOption.card.accessibilityName)")
             lines.append("\("سبب ثاني أفضل".localized): \(secondBestOption.explanation)")
         }
+        let reviewedContent = WhatToPlayShareCard.content(for: scenario, selectedOption: selectedOption)
+        lines.append("\("الأوراق القانونية".localized):")
+        for legalCard in reviewedContent.legalCards {
+            lines.append("- \(WhatToPlayShareCard.legalCardText(legalCard))")
+        }
         lines.append(contentsOf: decisionSummaryLines(comparisonSummary))
         if let selectedComparisonRow {
             lines.append(contentsOf: selectedComparisonLines(row: selectedComparisonRow, summary: comparisonSummary))

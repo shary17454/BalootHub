@@ -52,6 +52,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertFalse(result.statusMessage.contains("ثقة أفضل ورقة".localized))
         XCTAssertFalse(result.statusMessage.contains("سبب أفضل ورقة".localized))
         XCTAssertFalse(result.statusMessage.contains("سبب ثاني أفضل".localized))
+        XCTAssertFalse(result.statusMessage.contains("سبب الخيار".localized))
         XCTAssertFalse(result.statusMessage.contains("سبب تكتيكي".localized))
         XCTAssertFalse(result.statusMessage.contains("الترتيب".localized))
         XCTAssertFalse(result.statusMessage.contains("الأثر المتوقع".localized))
@@ -115,6 +116,11 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
            secondBest.card != scenario.bestOption?.card {
             XCTAssertTrue(result.statusMessage.contains("\("ثاني أفضل".localized): \(secondBest.card.accessibilityName)"))
             XCTAssertTrue(result.statusMessage.contains("\("سبب ثاني أفضل".localized): \(secondBest.explanation)"))
+        }
+        let reviewedContent = WhatToPlayShareCard.content(for: scenario, selectedOption: selected)
+        for legalCard in reviewedContent.legalCards {
+            let line = "- \(WhatToPlayShareCard.legalCardText(legalCard))"
+            XCTAssertTrue(result.statusMessage.contains(line))
         }
         let comparisonSummary = WhatToPlayOptionComparison.summary(for: scenario, selectedCard: selected.card)
         if let decisionQuality = comparisonSummary.decisionQuality {
