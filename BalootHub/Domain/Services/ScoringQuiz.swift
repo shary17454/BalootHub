@@ -210,6 +210,20 @@ enum ScoringQuizStatsAnalyzer {
             )
         }
 
+        if let weakestCategory = weakestCategory(in: attempts),
+           weakestCategory.accuracyPercent < summary.accuracyPercent {
+            return ScoringQuizCoachingInsight(
+                title: "يحتاج تدريب".localized,
+                detail: String(
+                    format: "أضعف نوع في إجاباتك هو %@ بدقة %d%%؛ كرر هذا النوع قبل رفع مستوى التحدي.".localized,
+                    weakestCategory.category.title,
+                    weakestCategory.accuracyPercent
+                ),
+                recommendedDifficulty: summary.hardestSolvedDifficulty ?? .medium,
+                iconName: "target"
+            )
+        }
+
         if summary.averageRemainingSeconds <= 5 {
             return ScoringQuizCoachingInsight(
                 title: "خفف ضغط الوقت".localized,
@@ -257,6 +271,29 @@ enum ScoringQuizStatsAnalyzer {
             .max { lhs, rhs in
                 difficultyWeight(lhs) < difficultyWeight(rhs)
             }
+    }
+
+    private static func weakestCategory(in attempts: [ScoringQuizAttempt]) -> ScoringQuizCategorySummary? {
+        let summaries = summariesByCategory(attempts).filter { $0.attempts > 0 }
+        guard summaries.count > 1 else { return nil }
+        return summaries.min { lhs, rhs in
+            if lhs.accuracyPercent != rhs.accuracyPercent {
+                return lhs.accuracyPercent < rhs.accuracyPercent
+            }
+            if lhs.attempts != rhs.attempts {
+                return lhs.attempts > rhs.attempts
+            }
+            return categoryWeight(lhs.category) < categoryWeight(rhs.category)
+        }
+    }
+
+    private static func categoryWeight(_ category: ScoringQuizQuestionCategory) -> Int {
+        switch category {
+        case .basics: 1
+        case .projects: 2
+        case .multipliers: 3
+        case .coffee: 4
+        }
     }
 
     private static func difficultyWeight(_ difficulty: ScoringQuizDifficulty) -> Int {

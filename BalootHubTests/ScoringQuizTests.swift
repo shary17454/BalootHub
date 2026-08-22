@@ -257,6 +257,21 @@ final class ScoringQuizTests: XCTestCase {
         XCTAssertEqual(insight.recommendedDifficulty, .easy)
     }
 
+    func testCoachingInsightTargetsWeakestScoringCategory() throws {
+        let attempts = [
+            try makeAttempt(category: .projects, isCorrect: false),
+            try makeAttempt(category: .projects, isCorrect: false),
+            try makeAttempt(category: .multipliers, isCorrect: true),
+            try makeAttempt(category: .coffee, isCorrect: true)
+        ]
+
+        let insight = ScoringQuizStatsAnalyzer.coachingInsight(for: attempts)
+
+        XCTAssertEqual(insight.title, "يحتاج تدريب".localized)
+        XCTAssertTrue(insight.detail.contains(ScoringQuizQuestionCategory.projects.title))
+        XCTAssertEqual(insight.recommendedDifficulty, .hard)
+    }
+
     private func makeAttempt(
         seed: UInt64,
         difficulty: ScoringQuizDifficulty,
