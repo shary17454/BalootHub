@@ -30,14 +30,14 @@ final class WhatToPlayShareCodeImportViewTests: XCTestCase {
         let message = [
             "تم تحميل مراجعة القرار".localized,
             "\("رمز الموقف".localized): WTP-2026-medium-followSuit-auto-C37",
-            "\("ثاني نتيجة محاكاة".localized): 58"
+            "\("ثاني نتيجة محاكاة".localized): 58 · \("فاقد ثاني محاكاة".localized): 8"
         ].joined(separator: "\n")
 
         let label = view.shareCodeStatusAccessibilityLabel(for: message)
 
         XCTAssertEqual(
             label,
-            "\("تم تحميل مراجعة القرار".localized)، \("رمز الموقف".localized): WTP-2026-medium-followSuit-auto-C37، \("ثاني نتيجة محاكاة".localized): 58"
+            "\("تم تحميل مراجعة القرار".localized)، \("رمز الموقف".localized): WTP-2026-medium-followSuit-auto-C37، \("ثاني نتيجة محاكاة".localized): 58، \("فاقد ثاني محاكاة".localized): 8"
         )
     }
 

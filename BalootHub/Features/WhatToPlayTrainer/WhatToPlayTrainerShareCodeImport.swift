@@ -170,6 +170,7 @@ extension WhatToPlayTrainerView {
             .split(whereSeparator: \.isNewline)
             .map(String.init)
             .joined(separator: "، ")
+            .replacingOccurrences(of: " · ", with: "، ")
     }
 
     func shareCodeMessageStyle(
