@@ -1040,6 +1040,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("احتمال الشراء".localized): \(analysis.bidConfidencePercent)%"))
         XCTAssertTrue(text.contains("\("مقارنة الصن والحكم".localized): \(analysis.modeComparisonTitle)"))
         XCTAssertTrue(text.contains("\("فارق الصن والحكم".localized): \(analysis.sunHokumScoreGap > 0 ? "+\(analysis.sunHokumScoreGap)" : "\(analysis.sunHokumScoreGap)")"))
+        XCTAssertTrue(text.contains("\("تفسير الفارق".localized):"))
         XCTAssertTrue(text.contains(analysis.modeComparisonDetail))
         XCTAssertTrue(text.contains("\("ترتيب خيارات المزايدة".localized):"))
         XCTAssertTrue(text.contains("\("موصى به".localized)"))

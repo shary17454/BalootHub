@@ -833,7 +833,8 @@ enum HandAnalysisShareSummary {
             "\("احتمال الصن".localized): \(analysis.sunConfidencePercent)% · \(analysis.evaluation.sunScore)",
             "\("احتمال الحكم".localized): \(analysis.hokumConfidencePercent)%",
             "\("مقارنة الصن والحكم".localized): \(analysis.modeComparisonTitle)",
-            "\("فارق الصن والحكم".localized): \(signedScoreText(analysis.sunHokumScoreGap))"
+            "\("فارق الصن والحكم".localized): \(signedScoreText(analysis.sunHokumScoreGap))",
+            "\("تفسير الفارق".localized): \(sunHokumGapExplanation(for: analysis.sunHokumScoreGap))"
         ]
 
         if let best = analysis.evaluation.bestHokum {
@@ -925,6 +926,16 @@ enum HandAnalysisShareSummary {
 
     private static func signedScoreText(_ value: Int) -> String {
         value > 0 ? "+\(value)" : "\(value)"
+    }
+
+    private static func sunHokumGapExplanation(for value: Int) -> String {
+        if value > 0 {
+            return "الفارق الموجب يعني أن الصن أعلى من أفضل حكم في هذا التحليل.".localized
+        }
+        if value < 0 {
+            return "الفارق السالب يعني أن أفضل حكم أعلى من الصن في هذا التحليل.".localized
+        }
+        return "الفارق صفر، لذلك القرار قريب جدًا ويعتمد على سياق المزايدة.".localized
     }
 
     private static func projectSort(_ lhs: Project, _ rhs: Project) -> Bool {

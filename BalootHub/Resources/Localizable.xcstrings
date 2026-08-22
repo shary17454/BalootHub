@@ -3213,6 +3213,16 @@
         }
       }
     },
+    "تفسير الفارق" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gap explanation"
+          }
+        }
+      }
+    },
     "الفارق الموجب يعني أن الصن أعلى من أفضل حكم في هذا التحليل." : {
       "localizations" : {
         "en" : {
