@@ -382,6 +382,44 @@ enum WhatToPlayShareCard {
         return lines.joined(separator: "\n")
     }
 
+    static func trainingSessionReviewText(for review: WhatToPlayTrainingSessionReview) -> String {
+        var lines = [
+            "مراجعة جلسة وش تلعب؟".localized,
+            review.title
+        ]
+
+        if let statusLine = review.statusLine {
+            lines.append(statusLine)
+        }
+
+        lines.append(review.detail)
+        lines.append(review.contextLine)
+
+        if let difficulty = review.difficulty {
+            lines.append("\("الصعوبة".localized): \(difficultyText(difficulty))")
+        }
+        if let focusKind = review.focusKind {
+            lines.append("\("تركيز التدريب".localized): \(focusText(focusKind))")
+        }
+        if review.gameMode != nil || review.trumpSuit != nil {
+            lines.append(
+                "\("النمط".localized): \(modeText(mode: review.gameMode, trumpSuit: review.trumpSuit))"
+            )
+        }
+        if let seed = review.replaySeed ?? review.nextSeed {
+            lines.append("\("Seed".localized): \(seed)")
+        }
+        if let recommendedCard = review.recommendedCard {
+            lines.append("\("ورقة المراجعة".localized): \(recommendedCard.accessibilityName)")
+        }
+        if review.expectedImprovement > 0 {
+            lines.append("\("تحسن متوقع".localized): +\(review.expectedImprovement)")
+        }
+
+        lines.append("افتح مدرب وش تلعب وأكمل جلسة التدريب.".localized)
+        return lines.joined(separator: "\n")
+    }
+
     private static func appendDecisionQualityLines(
         to lines: inout [String],
         content: WhatToPlayShareCardContent

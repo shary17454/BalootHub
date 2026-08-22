@@ -435,6 +435,68 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("أعد الموقف وحاول اختيار ورقة أفضل.".localized))
     }
 
+    func testTrainingSessionReviewShareTextContainsRetryStatusAndReviewDetails() throws {
+        let recommendedCard = PlayingCard(suit: .spades, rank: .jack)
+        let review = WhatToPlayTrainingSessionReview(
+            action: .continueSession,
+            title: "إعادة الموقف الخاطئ".localized,
+            detail: "أعد موقف 901 قبل الانتقال؛ آخر محاولة عليه كانت غير صحيحة.".localized,
+            contextLine: "صعب · ضغط الحكم · حكم سباتي",
+            iconName: "arrow.clockwise.circle.fill",
+            replaySeed: nil,
+            nextSeed: 901,
+            difficulty: .hard,
+            focusKind: .trumpPressure,
+            gameMode: .hokum,
+            trumpSuit: .spades,
+            recommendedCard: recommendedCard,
+            expectedImprovement: 12,
+            retriesIncorrectNextSeed: true,
+            statusLine: "\("إعادة محاولة".localized): 901"
+        )
+
+        let text = WhatToPlayShareCard.trainingSessionReviewText(for: review)
+
+        XCTAssertTrue(text.contains("مراجعة جلسة وش تلعب؟".localized))
+        XCTAssertTrue(text.contains(review.title))
+        XCTAssertTrue(text.contains(try XCTUnwrap(review.statusLine)))
+        XCTAssertTrue(text.contains(review.detail))
+        XCTAssertTrue(text.contains(review.contextLine))
+        XCTAssertTrue(text.contains("\("الصعوبة".localized): \("صعب".localized)"))
+        XCTAssertTrue(text.contains("\("تركيز التدريب".localized): \("ضغط الحكم".localized)"))
+        XCTAssertTrue(text.contains("\("النمط".localized): \(GameMode.hokum.arabicName) \(Suit.spades.spokenName)"))
+        XCTAssertTrue(text.contains("\("Seed".localized): 901"))
+        XCTAssertTrue(text.contains("\("ورقة المراجعة".localized): \(recommendedCard.accessibilityName)"))
+        XCTAssertTrue(text.contains("\("تحسن متوقع".localized): +12"))
+        XCTAssertTrue(text.contains("افتح مدرب وش تلعب وأكمل جلسة التدريب.".localized))
+    }
+
+    func testTrainingSessionReviewShareTextOmitsRetryStatusWhenStartingSession() {
+        let review = WhatToPlayTrainingSessionReview(
+            action: .start,
+            title: "ابدأ جلسة تدريب".localized,
+            detail: "ابدأ بثلاث مواقف متدرجة.".localized,
+            contextLine: "متوسط · التلزيم",
+            iconName: "play.circle.fill",
+            replaySeed: nil,
+            nextSeed: 2026,
+            difficulty: .medium,
+            focusKind: .followSuit,
+            gameMode: nil,
+            trumpSuit: nil,
+            recommendedCard: nil,
+            expectedImprovement: 0
+        )
+
+        let text = WhatToPlayShareCard.trainingSessionReviewText(for: review)
+
+        XCTAssertTrue(text.contains("مراجعة جلسة وش تلعب؟".localized))
+        XCTAssertTrue(text.contains("\("Seed".localized): 2026"))
+        XCTAssertFalse(text.contains("إعادة محاولة".localized))
+        XCTAssertFalse(text.contains("ورقة المراجعة".localized))
+        XCTAssertFalse(text.contains("تحسن متوقع".localized))
+    }
+
     func testShareCardImageFileNameUsesFullScenarioCode() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(
             seed: 2026,

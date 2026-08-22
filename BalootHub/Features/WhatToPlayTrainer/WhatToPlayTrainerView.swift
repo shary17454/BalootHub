@@ -970,49 +970,58 @@ struct WhatToPlayTrainerView: View {
     }
 
     private func trainingSessionReviewView(_ review: WhatToPlayTrainingSessionReview) -> some View {
-        Label {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(review.title)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(AppColor.textPrimary)
-                Text(review.detail)
-                    .font(.caption2)
-                    .foregroundStyle(AppColor.textSecondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                Text(review.contextLine)
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(AppColor.accent)
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.85)
-                if let statusLine = review.statusLine {
-                    Text(statusLine)
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(AppColor.warning)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.85)
-                }
-                if let recommendedCard = review.recommendedCard {
-                    Text("\("ورقة المراجعة".localized): \(recommendedCard.accessibilityName)")
-                        .font(.caption2.weight(.semibold))
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Label {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(review.title)
+                        .font(.caption.weight(.semibold))
                         .foregroundStyle(AppColor.textPrimary)
+                    Text(review.detail)
+                        .font(.caption2)
+                        .foregroundStyle(AppColor.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text(review.contextLine)
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(AppColor.accent)
                         .lineLimit(2)
                         .minimumScaleFactor(0.85)
+                    if let statusLine = review.statusLine {
+                        Text(statusLine)
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(AppColor.warning)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.85)
+                    }
+                    if let recommendedCard = review.recommendedCard {
+                        Text("\("ورقة المراجعة".localized): \(recommendedCard.accessibilityName)")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(AppColor.textPrimary)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.85)
+                    }
+                    if review.expectedImprovement > 0 {
+                        Text("\("تحسن متوقع".localized): +\(review.expectedImprovement)")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(AppColor.success)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.85)
+                    }
                 }
-                if review.expectedImprovement > 0 {
-                    Text("\("تحسن متوقع".localized): +\(review.expectedImprovement)")
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(AppColor.success)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.85)
-                }
+            } icon: {
+                Image(systemName: review.iconName)
+                    .foregroundStyle(AppColor.accent)
             }
-        } icon: {
-            Image(systemName: review.iconName)
-                .foregroundStyle(AppColor.accent)
+
+            ShareLink(item: WhatToPlayShareCard.trainingSessionReviewText(for: review)) {
+                Label("مشاركة مراجعة الجلسة".localized, systemImage: "square.and.arrow.up")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .tint(AppColor.primary)
         }
         .padding(AppSpacing.sm)
         .background(AppColor.accent.opacity(0.10), in: RoundedRectangle(cornerRadius: AppRadius.medium))
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .contain)
     }
 
     private func sessionTargetBadge(title: String, isMet: Bool) -> some View {
