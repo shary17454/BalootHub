@@ -69,7 +69,23 @@ final class WhatToPlayRoundPracticeSessionTests: XCTestCase {
         XCTAssertEqual(progress.correctAttempts, 1)
         XCTAssertEqual(progress.totalExpectedImpact, 2)
         XCTAssertEqual(progress.remainingAttempts, 1)
-        XCTAssertEqual(nextSeed, 902)
+        XCTAssertEqual(nextSeed, 900)
+    }
+
+    func testNextSeedRepeatsLatestIncorrectSeedBeforeAdvancing() {
+        let plan = sessionPlan(difficulty: .hard, focusKind: .narrowChoice, seedBase: 900, count: 3)
+        let attempts = [
+            attempt(daysAgo: 3, difficulty: .hard, correct: true, impact: 4, focusKind: .narrowChoice, seed: 900),
+            attempt(daysAgo: 2, difficulty: .hard, correct: false, impact: -2, focusKind: .narrowChoice, seed: 901)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+        let nextSeed = WhatToPlayStatsAnalyzer.nextTrainingSessionSeed(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.completedAttempts, 2)
+        XCTAssertEqual(progress.correctAttempts, 1)
+        XCTAssertEqual(progress.remainingAttempts, 1)
+        XCTAssertEqual(nextSeed, 901)
     }
 
     func testRoundReviewSessionSourceBuildsRoundAnalysisPlanCopy() {

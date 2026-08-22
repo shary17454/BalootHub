@@ -2192,7 +2192,7 @@ enum WhatToPlayStatsAnalyzer {
             scenarioCount: plan.scenarioCount,
             targetAccuracyPercent: plan.targetAccuracyPercent,
             targetAverageExpectedImpact: plan.targetAverageExpectedImpact,
-            matchingAttemptSeeds: matchingAttempts.map(\.replaySeed)
+            matchingAttemptSeeds: matchingAttempts.filter(\.isCorrect).map(\.replaySeed)
         ).nextSeed
     }
 
