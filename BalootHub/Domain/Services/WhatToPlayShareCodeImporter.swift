@@ -12,6 +12,7 @@ struct WhatToPlayShareCodeImportResult {
     let selectedOption: WhatToPlayOption?
     let attempt: WhatToPlayAttempt?
     let kind: WhatToPlayShareCodeImportKind
+    let canonicalScenarioCode: String
 
     var statusMessage: String {
         switch kind {
@@ -49,7 +50,11 @@ enum WhatToPlayShareCodeImporter {
                 scenario: scenario,
                 selectedOption: nil,
                 attempt: nil,
-                kind: .prompt
+                kind: .prompt,
+                canonicalScenarioCode: WhatToPlayScenarioCode.make(
+                    for: scenario,
+                    selectedOption: nil
+                )
             )
         }
 
@@ -68,7 +73,8 @@ enum WhatToPlayShareCodeImporter {
             scenario: scenario,
             selectedOption: selectedOption,
             attempt: isDuplicate ? nil : attempt,
-            kind: .reviewedDecision(isDuplicate: isDuplicate)
+            kind: .reviewedDecision(isDuplicate: isDuplicate),
+            canonicalScenarioCode: scenarioCode
         )
     }
 }

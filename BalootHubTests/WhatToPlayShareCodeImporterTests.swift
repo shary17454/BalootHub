@@ -18,6 +18,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.scenario.seed, scenario.seed)
         XCTAssertNil(result.selectedOption)
         XCTAssertNil(result.attempt)
+        XCTAssertEqual(result.canonicalScenarioCode, code)
         XCTAssertEqual(result.statusMessage, "تم تحميل الموقف. اختر الورقة الأفضل.".localized)
     }
 
@@ -36,6 +37,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.selectedOption?.card, selected.card)
         XCTAssertEqual(result.attempt?.selectedCard, selected.card)
         XCTAssertEqual(result.attempt?.scenarioCode, code)
+        XCTAssertEqual(result.canonicalScenarioCode, code)
         XCTAssertEqual(result.statusMessage, "تم تحميل مراجعة القرار وإضافتها للإحصاءات.".localized)
     }
 
@@ -99,7 +101,9 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
 
         XCTAssertEqual(result.kind, .reviewedDecision(isDuplicate: false))
         XCTAssertEqual(result.selectedOption?.card, selected.card)
-        XCTAssertEqual(result.attempt?.scenarioCode, WhatToPlayShareCard.content(for: scenario, selectedOption: selected).scenarioCode)
+        let expectedCode = WhatToPlayShareCard.content(for: scenario, selectedOption: selected).scenarioCode
+        XCTAssertEqual(result.attempt?.scenarioCode, expectedCode)
+        XCTAssertEqual(result.canonicalScenarioCode, expectedCode)
     }
 
     func testImporterLoadsCodeEmbeddedInURLPath() async throws {
@@ -142,6 +146,28 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.parsed.gameMode, .sun)
         XCTAssertEqual(result.selectedOption?.card, selected.card)
         XCTAssertEqual(result.attempt?.scenarioCode, code)
+        XCTAssertEqual(result.canonicalScenarioCode, code)
+    }
+
+    func testImporterCanonicalizesPercentEncodedPromptURL() async throws {
+        let scenario = try await WhatToPlayScenarioLoader.generate(
+            seed: 2026,
+            difficulty: .medium,
+            preferredFocus: .followSuit,
+            preferredMode: .sun
+        )
+        let code = WhatToPlayShareCard.content(for: scenario).scenarioCode
+        let urlText = "https://baloothub.local/share/\(code)/open"
+        let encodedURL = try XCTUnwrap(
+            urlText.addingPercentEncoding(withAllowedCharacters: CharacterSet.alphanumerics)
+        )
+
+        let result = try await WhatToPlayShareCodeImporter.import(code: encodedURL, existingScenarioCodes: [])
+
+        XCTAssertEqual(result.kind, .prompt)
+        XCTAssertNil(result.selectedOption)
+        XCTAssertNil(result.attempt)
+        XCTAssertEqual(result.canonicalScenarioCode, code)
     }
 
     func testImporterDoesNotCreateDuplicateAttempt() async throws {

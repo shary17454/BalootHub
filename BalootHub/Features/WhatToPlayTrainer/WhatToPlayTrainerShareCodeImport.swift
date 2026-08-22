@@ -86,6 +86,7 @@ extension WhatToPlayTrainerView {
                     } catch {
                         modelContext.rollback()
                         shareCodeMessage = "تم تحميل مراجعة القرار، لكن تعذّر حفظها في الإحصاءات.".localized
+                        shareCodeInput = ""
                         saveTrainerPreferences()
                         Task { @MainActor in
                             isApplyingImportedShareCode = false
@@ -95,6 +96,7 @@ extension WhatToPlayTrainerView {
                     }
                 }
                 shareCodeMessage = imported.statusMessage
+                shareCodeInput = ""
                 saveTrainerPreferences()
                 Task { @MainActor in
                     isApplyingImportedShareCode = false
