@@ -47,6 +47,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         )
         assertTableContext(from: contextContent, appearsIn: result.statusMessage)
         assertBlockedCards(from: contextContent, appearIn: result.statusMessage)
+        assertPreDecisionChecklist(from: contextContent, appearsIn: result.statusMessage)
         XCTAssertFalse(result.statusMessage.contains("اختيارك".localized))
         XCTAssertFalse(result.statusMessage.contains("أفضل ورقة".localized))
         XCTAssertFalse(result.statusMessage.contains("تقييم القرار".localized))
@@ -116,6 +117,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         )
         assertTableContext(from: contextContent, appearsIn: result.statusMessage)
         assertBlockedCards(from: contextContent, appearIn: result.statusMessage)
+        assertPreDecisionChecklist(from: contextContent, appearsIn: result.statusMessage)
         XCTAssertTrue(result.statusMessage.contains("\("اختيارك".localized): \(selected.card.accessibilityName)"))
         let bestOption = try XCTUnwrap(scenario.bestOption)
         XCTAssertTrue(result.statusMessage.contains("\("أفضل ورقة".localized): \(bestOption.card.accessibilityName)"))
@@ -614,6 +616,18 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
                 file: file,
                 line: line
             )
+        }
+    }
+
+    private func assertPreDecisionChecklist(
+        from content: WhatToPlayShareCardContent,
+        appearsIn statusMessage: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        XCTAssertTrue(statusMessage.contains(content.checklistTitle), file: file, line: line)
+        for item in content.checklistItems {
+            XCTAssertTrue(statusMessage.contains("- \(item)"), file: file, line: line)
         }
     }
 }

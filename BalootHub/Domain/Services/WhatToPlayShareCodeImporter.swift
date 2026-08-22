@@ -128,6 +128,10 @@ struct WhatToPlayShareCodeImportResult {
                 lines.append("- \(blockedCard.cardName): \(blockedCard.reason)")
             }
         }
+        lines.append(contextContent.checklistTitle)
+        for item in contextContent.checklistItems {
+            lines.append("- \(item)")
+        }
         return lines
     }
 
