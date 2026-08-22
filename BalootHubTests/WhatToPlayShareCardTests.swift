@@ -1074,6 +1074,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("ترتيب خيارات المزايدة".localized):"))
         XCTAssertTrue(text.contains("\("موصى به".localized)"))
         XCTAssertTrue(text.contains("\("الهامش".localized)"))
+        XCTAssertTrue(analysis.bidOptions.allSatisfy { text.contains($0.rationale) })
         XCTAssertTrue(text.contains("\("نقاط القوة".localized):"))
         XCTAssertTrue(text.contains("\("نقاط الضعف".localized):"))
         XCTAssertTrue(text.contains("\("النصيحة التكتيكية".localized):"))

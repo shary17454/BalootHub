@@ -25,6 +25,8 @@ public struct HandAnalysis: Sendable, Equatable {
         public let isRecommended: Bool
         public let title: String
         public let detail: String
+        /// سبب تدريبي مختصر يشرح لماذا هذا الخيار مناسب أو خطر.
+        public let rationale: String
     }
 
     public let hand: [PlayingCard]
@@ -345,6 +347,12 @@ public enum HandAnalyzer {
                     margin: margin,
                     confidencePercent: confidence,
                     recommendedBid: recommendedBid
+                ),
+                rationale: bidOptionRationale(
+                    bid: bid,
+                    margin: margin,
+                    confidencePercent: confidence,
+                    recommendedBid: recommendedBid
                 )
             )
         }
@@ -416,6 +424,35 @@ public enum HandAnalyzer {
             return "\(status): ثقة \(confidencePercent)%، هامش أمان \(margin)."
         }
         return "\(status): تقييم \(score)، العتبة \(threshold)، الهامش \(margin)، الثقة \(confidencePercent)%."
+    }
+
+    private static func bidOptionRationale(
+        bid: Bid,
+        margin: Int,
+        confidencePercent: Int,
+        recommendedBid: Bid
+    ) -> String {
+        if bid == recommendedBid {
+            switch bid {
+            case .pass:
+                return "موصى بالبس لأن خيارات الشراء المتاحة لا تملك هامش أمان كافيًا."
+            case .sun:
+                return "موصى بالصن لأن تقييم اليد يتجاوز عتبة الصن بهامش أفضل من البدائل."
+            case .hokum(let suit):
+                return "موصى بحكم \(suit.arabicName) لأنه يملك أفضل هامش شراء بين ألوان الحكم المتاحة."
+            }
+        }
+
+        if bid == .pass {
+            return "التمرير أقل أولوية لأن خيار الشراء الموصى به يملك هامشًا أقوى."
+        }
+
+        if margin >= 0 {
+            return "الخيار قابل للشراء، لكنه أدنى من التوصية الحالية في الهامش أو الثقة."
+        }
+
+        let missing = abs(margin)
+        return "ينقص هذا الخيار \(missing) عن عتبة الشراء، وثقته الحالية \(confidencePercent)% لذلك يحمل مخاطرة أعلى."
     }
 
     private static func normalizedBidOptions(_ legalBids: [Bid]?) -> [Bid] {

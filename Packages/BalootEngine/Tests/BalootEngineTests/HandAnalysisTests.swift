@@ -30,6 +30,8 @@ struct HandAnalysisTests {
         #expect(analysis.bidOptions.first?.bid == .hokum(suit: .spades))
         #expect(analysis.bidOptions.first?.isRecommended == true)
         #expect(analysis.bidOptions.first?.margin ?? -1 >= 0)
+        #expect(analysis.bidOptions.first?.rationale.contains("موصى") == true)
+        #expect(analysis.bidOptions.first?.rationale.contains("سباتي") == true)
         #expect(analysis.nextActionTitle.contains("شراء"))
         #expect(analysis.nextActionDetail.contains("حكم سباتي"))
         #expect(analysis.sunHokumScoreGap < 0)
@@ -126,6 +128,8 @@ struct HandAnalysisTests {
         #expect(analysis.strengthPercent < 50)
         #expect(analysis.bidConfidencePercent < 50)
         #expect(analysis.decisionGrade == .clearPass)
+        #expect(analysis.bidOptions.first?.bid == .pass)
+        #expect(analysis.bidOptions.first?.rationale.contains("بس") == true)
         #expect(analysis.nextActionTitle.contains("مرّر"))
         #expect(analysis.nextActionDetail.contains("تقليل خسارة"))
         #expect(analysis.weaknesses.contains { $0.contains("تقييم الصن") })
@@ -234,6 +238,7 @@ struct HandAnalysisTests {
         #expect(analysis.bidOptions.first?.isRecommended == true)
         #expect(analysis.bidOptions.contains { $0.bid == .pass })
         #expect(analysis.bidOptions.contains { $0.bid == .hokum(suit: .spades) })
+        #expect(analysis.bidOptions.allSatisfy { !$0.rationale.isEmpty })
         #expect(analysis.bidOptions == HandAnalyzer.analyze(hand: hand.reversed()).bidOptions)
     }
 

@@ -909,7 +909,7 @@ enum HandAnalysisShareSummary {
 
     private static func bidOptionText(_ option: HandAnalysis.BidOption) -> String {
         let recommended = option.isRecommended ? " · \("موصى به".localized)" : ""
-        return "\(option.title): \(option.confidencePercent)% · \("الهامش".localized) \(option.margin)\(recommended)"
+        return "\(option.title): \(option.confidencePercent)% · \("الهامش".localized) \(option.margin)\(recommended) · \(option.rationale)"
     }
 
     private static func recommendationText(_ bid: Bid) -> String {

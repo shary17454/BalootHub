@@ -4471,6 +4471,10 @@ struct HandAnalyzerView: View {
                         .font(.caption2)
                         .foregroundStyle(AppColor.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
+                    Text(option.rationale)
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(option.isRecommended ? AppColor.success : AppColor.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(AppSpacing.xs)
                 .background(
