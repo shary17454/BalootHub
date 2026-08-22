@@ -663,6 +663,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
             recommendedCard: PlayingCard(suit: .clubs, rank: .ace),
             secondBestCard: PlayingCard(suit: .spades, rank: .king),
             secondBestExpectedImpact: 5,
+            bestSimulationCard: PlayingCard(suit: .hearts, rank: .ace),
+            bestProjectedTeamPoints: 66,
             secondBestSimulationCard: PlayingCard(suit: .diamonds, rank: .queen),
             secondBestProjectedTeamPoints: 58,
             lostProjectedAgainstSecondBestPoints: 8,
@@ -678,6 +680,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("Seed".localized): 202"))
         XCTAssertTrue(text.contains("\("ثاني أفضل".localized): \(PlayingCard(suit: .spades, rank: .king).accessibilityName)"))
         XCTAssertTrue(text.contains("\("أثر ثاني أفضل".localized): +5"))
+        XCTAssertTrue(text.contains("\("أفضل محاكاة".localized): \(PlayingCard(suit: .hearts, rank: .ace).accessibilityName)"))
+        XCTAssertTrue(text.contains("\("أفضل نتيجة محاكاة".localized): 66"))
         XCTAssertTrue(text.contains("\("ثاني محاكاة".localized): \(PlayingCard(suit: .diamonds, rank: .queen).accessibilityName)"))
         XCTAssertTrue(text.contains("\("ثاني نتيجة محاكاة".localized): 58"))
         XCTAssertTrue(text.contains("\("فاقد ثاني محاكاة".localized): 8"))

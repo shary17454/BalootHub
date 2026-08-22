@@ -495,6 +495,12 @@ enum WhatToPlayShareCard {
         if let secondBestExpectedImpact = review.secondBestExpectedImpact {
             lines.append("\("أثر ثاني أفضل".localized): \(impactText(secondBestExpectedImpact))")
         }
+        if let bestSimulationCard = review.bestSimulationCard {
+            lines.append("\("أفضل محاكاة".localized): \(bestSimulationCard.accessibilityName)")
+        }
+        if let bestProjectedTeamPoints = review.bestProjectedTeamPoints {
+            lines.append("\("أفضل نتيجة محاكاة".localized): \(bestProjectedTeamPoints)")
+        }
         if let secondBestSimulationCard = review.secondBestSimulationCard {
             lines.append("\("ثاني محاكاة".localized): \(secondBestSimulationCard.accessibilityName)")
         }

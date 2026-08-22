@@ -675,6 +675,8 @@ struct WhatToPlayTrainingSessionReview: Equatable {
     let recommendedCard: PlayingCard?
     let secondBestCard: PlayingCard?
     let secondBestExpectedImpact: Int?
+    let bestSimulationCard: PlayingCard?
+    let bestProjectedTeamPoints: Int?
     let secondBestSimulationCard: PlayingCard?
     let secondBestProjectedTeamPoints: Int?
     let lostProjectedAgainstSecondBestPoints: Int
@@ -699,6 +701,8 @@ struct WhatToPlayTrainingSessionReview: Equatable {
         recommendedCard: PlayingCard?,
         secondBestCard: PlayingCard? = nil,
         secondBestExpectedImpact: Int? = nil,
+        bestSimulationCard: PlayingCard? = nil,
+        bestProjectedTeamPoints: Int? = nil,
         secondBestSimulationCard: PlayingCard? = nil,
         secondBestProjectedTeamPoints: Int? = nil,
         lostProjectedAgainstSecondBestPoints: Int = 0,
@@ -722,6 +726,8 @@ struct WhatToPlayTrainingSessionReview: Equatable {
         self.recommendedCard = recommendedCard
         self.secondBestCard = secondBestCard
         self.secondBestExpectedImpact = secondBestCard == nil ? nil : secondBestExpectedImpact
+        self.bestSimulationCard = bestSimulationCard
+        self.bestProjectedTeamPoints = bestSimulationCard == nil ? nil : bestProjectedTeamPoints
         self.secondBestSimulationCard = secondBestSimulationCard
         self.secondBestProjectedTeamPoints = secondBestSimulationCard == nil ? nil : secondBestProjectedTeamPoints
         self.lostProjectedAgainstSecondBestPoints = max(0, lostProjectedAgainstSecondBestPoints)
@@ -2811,6 +2817,8 @@ enum WhatToPlayStatsAnalyzer {
                     recommendedCard: recommendedReviewCard(for: reviewItem),
                     secondBestCard: reviewItem.secondBestCard,
                     secondBestExpectedImpact: reviewItem.secondBestExpectedImpact,
+                    bestSimulationCard: reviewItem.bestSimulationCard,
+                    bestProjectedTeamPoints: reviewItem.projectedTeamPoints.map { $0 + reviewItem.lostProjectedTeamPoints },
                     secondBestSimulationCard: reviewItem.secondBestSimulationCard,
                     secondBestProjectedTeamPoints: reviewItem.secondBestProjectedTeamPoints,
                     lostProjectedAgainstSecondBestPoints: reviewItem.lostProjectedAgainstSecondBestPoints,

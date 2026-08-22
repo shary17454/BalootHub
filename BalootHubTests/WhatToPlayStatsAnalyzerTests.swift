@@ -4548,6 +4548,41 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         )
     }
 
+    func testTrainingSessionReviewCarriesBestSimulationRecommendation() {
+        let bestSimulation = PlayingCard(suit: .diamonds, rank: .ace)
+        let secondSimulation = PlayingCard(suit: .hearts, rank: .jack)
+        let plan = sessionPlan(difficulty: .medium, focusKind: .trumpPressure, gameMode: .hokum, count: 2, target: 100)
+        let attempts = [
+            attempt(
+                daysAgo: 1,
+                difficulty: .medium,
+                correct: false,
+                impact: 2,
+                bestImpact: 4,
+                focusKind: .trumpPressure,
+                gameMode: .hokum,
+                selectedCard: PlayingCard(suit: .clubs, rank: .seven),
+                bestSimulationCard: bestSimulation,
+                secondBestSimulationCard: secondSimulation,
+                projectedTeamPoints: 50,
+                bestProjectedTeamPoints: 68,
+                secondBestProjectedTeamPoints: 62,
+                seed: 920
+            )
+        ]
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        let review = WhatToPlayStatsAnalyzer.trainingSessionReview(for: progress, attempts: attempts, plan: plan)
+
+        XCTAssertEqual(review.action, .replayMistake)
+        XCTAssertEqual(review.bestSimulationCard, bestSimulation)
+        XCTAssertEqual(review.bestProjectedTeamPoints, 68)
+        XCTAssertEqual(review.secondBestSimulationCard, secondSimulation)
+        XCTAssertEqual(review.secondBestProjectedTeamPoints, 62)
+        XCTAssertEqual(review.lostProjectedAgainstSecondBestPoints, 12)
+        XCTAssertEqual(review.recommendedCard, bestSimulation)
+    }
+
     func testTrainingSessionReviewMovesToNextChallengeAfterAchievement() {
         let plan = sessionPlan(difficulty: .easy, count: 3, target: 67, impactTarget: 1)
         let attempts = [

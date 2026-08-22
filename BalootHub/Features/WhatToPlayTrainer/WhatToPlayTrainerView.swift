@@ -1055,6 +1055,13 @@ struct WhatToPlayTrainerView: View {
                             .lineLimit(2)
                             .minimumScaleFactor(0.85)
                     }
+                    if let bestSimulationCard = review.bestSimulationCard {
+                        Text("\("أفضل محاكاة".localized): \(bestSimulationCard.accessibilityName)\(bestSimulationSuffix(review))")
+                            .font(.caption2)
+                            .foregroundStyle(AppColor.textSecondary)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.85)
+                    }
                     if let secondBestSimulationCard = review.secondBestSimulationCard {
                         Text("\("ثاني محاكاة".localized): \(secondBestSimulationCard.accessibilityName)\(secondBestSimulationSuffix(review))")
                             .font(.caption2)
@@ -2673,6 +2680,11 @@ struct WhatToPlayTrainerView: View {
             parts.append("\("فاقد ثاني محاكاة".localized): \(review.lostProjectedAgainstSecondBestPoints)")
         }
         return parts.isEmpty ? "" : " · \(parts.joined(separator: " · "))"
+    }
+
+    private func bestSimulationSuffix(_ review: WhatToPlayTrainingSessionReview) -> String {
+        guard let projectedTeamPoints = review.bestProjectedTeamPoints else { return "" }
+        return " · \("أفضل نتيجة محاكاة".localized): \(projectedTeamPoints)"
     }
 
     private func simulationPointsSuffix(_ points: Int?) -> String {
