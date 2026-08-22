@@ -3486,6 +3486,13 @@ struct WhatToPlayTrainerView: View {
                 Label("\("نقاط محاكاة ضائعة".localized): \(projectedLoss)", systemImage: "chart.bar.doc.horizontal.fill")
                     .font(.caption2.weight(.semibold)).foregroundStyle(AppColor.danger)
             }
+            if let secondSimulationLoss = summary.selectedLostProjectedAgainstSecondBestPoints,
+               secondSimulationLoss > 0,
+               secondSimulationLoss != summary.selectedLostProjectedTeamPoints {
+                Label("\("فاقد ثاني محاكاة".localized): \(secondSimulationLoss)", systemImage: "2.circle.fill")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(AppColor.warning)
+            }
             if let simulationGap = summary.expertToBestSimulationGap,
                simulationGap > 0,
                let simulationCard = summary.bestSimulationCard,
