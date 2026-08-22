@@ -3613,34 +3613,25 @@ struct WhatToPlayTrainerView: View {
     }
 
     private func startCoachingTipTarget(_ tip: WhatToPlayCoachingTip) {
-        guard tip.hasActionableTarget else { return }
-
-        let targetDifficulty = tip.targetDifficulty ?? difficulty
-        let targetFocus = tip.targetFocusKind
-        let targetMode = tip.targetGameMode
-        let targetFocusRaw = targetFocus?.rawValue ?? "auto"
-        let targetModeRaw = targetMode?.rawValue ?? "auto"
-        let targetSeed = WhatToPlayScenarioLoader.nextUnattemptedSeed(
+        guard let target = WhatToPlayCoachingScenarioTarget.make(
+            from: tip,
             after: seed,
-            difficulty: targetDifficulty,
-            preferredFocus: targetFocus,
-            preferredMode: targetMode,
-            preferredTrumpSuit: nil,
+            fallbackDifficulty: difficulty,
             attempts: attempts
-        )
+        ) else { return }
 
-        seed = targetSeed
+        seed = target.seed
         isRetryingCurrentScenario = false
-        if difficulty == targetDifficulty,
-           preferredFocusRaw == targetFocusRaw,
-           preferredModeRaw == targetModeRaw,
-           preferredTrumpSuit == nil {
+        if difficulty == target.difficulty,
+           preferredFocusRaw == target.focusRawValue,
+           preferredModeRaw == target.gameModeRawValue,
+           preferredTrumpSuit == target.trumpSuit {
             generateScenario()
         } else {
-            difficulty = targetDifficulty
-            preferredFocusRaw = targetFocusRaw
-            preferredModeRaw = targetModeRaw
-            setPreferredTrumpSuitWithoutRegeneration(nil)
+            difficulty = target.difficulty
+            preferredFocusRaw = target.focusRawValue
+            preferredModeRaw = target.gameModeRawValue
+            setPreferredTrumpSuitWithoutRegeneration(target.trumpSuit)
             generateScenario()
         }
     }

@@ -266,6 +266,54 @@ final class WhatToPlayScenarioLoaderTests: XCTestCase {
         }
     }
 
+    func testCoachingScenarioTargetUsesTipTargetAndSkipsAttemptedSeeds() {
+        let tip = WhatToPlayCoachingTip(
+            title: "اختبار",
+            detail: "اختبار",
+            iconName: "target",
+            targetLine: "اختبار",
+            targetDifficulty: .hard,
+            targetFocusKind: .trumpPressure,
+            targetGameMode: .hokum
+        )
+        let attempts = [
+            attempt(seed: 2027, difficulty: .hard, focusKind: .trumpPressure, gameMode: .hokum),
+            attempt(seed: 2028, difficulty: .hard, focusKind: .trumpPressure, gameMode: .hokum),
+            attempt(seed: 2029, difficulty: .hard, focusKind: .followSuit, gameMode: .hokum)
+        ]
+
+        let target = WhatToPlayCoachingScenarioTarget.make(
+            from: tip,
+            after: 2026,
+            fallbackDifficulty: .easy,
+            attempts: attempts
+        )
+
+        XCTAssertEqual(target?.seed, 2029)
+        XCTAssertEqual(target?.difficulty, .hard)
+        XCTAssertEqual(target?.focusKind, .trumpPressure)
+        XCTAssertEqual(target?.gameMode, .hokum)
+        XCTAssertEqual(target?.focusRawValue, WhatToPlayScenarioFocusKind.trumpPressure.rawValue)
+        XCTAssertEqual(target?.gameModeRawValue, GameMode.hokum.rawValue)
+    }
+
+    func testCoachingScenarioTargetIgnoresNonActionableTip() {
+        let tip = WhatToPlayCoachingTip(
+            title: "اختبار",
+            detail: "اختبار",
+            iconName: "target"
+        )
+
+        let target = WhatToPlayCoachingScenarioTarget.make(
+            from: tip,
+            after: 2026,
+            fallbackDifficulty: .easy,
+            attempts: []
+        )
+
+        XCTAssertNil(target)
+    }
+
     private func attempt(
         seed: UInt64,
         difficulty: WhatToPlayDifficulty,
