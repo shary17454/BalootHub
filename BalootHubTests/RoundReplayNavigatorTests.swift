@@ -73,6 +73,8 @@ final class RoundReplayNavigatorTests: XCTestCase {
     func testReplayShareSummaryIncludesRoundEventsAndScore() throws {
         let replay = try makeCompletedReplay(seed: 1_445)
         let summary = RoundReplayShareSummary.text(initialState: replay.initial, actions: replay.actions)
+        let finalState = try GameEngine.replay(initialState: replay.initial, actions: replay.actions)
+        let actionTimeline = GameEngine.actionTimeline(state: finalState)
 
         XCTAssertTrue(summary.contains("Replay"))
         XCTAssertTrue(summary.contains("الجولة") || summary.contains("Round"))
@@ -88,6 +90,8 @@ final class RoundReplayNavigatorTests: XCTestCase {
         XCTAssertTrue(summary.contains("فريقنا"))
         XCTAssertTrue(summary.contains("الخصم"))
         XCTAssertTrue(summary.contains("لعب") || summary.contains("played"))
+        XCTAssertFalse(actionTimeline.isEmpty)
+        XCTAssertTrue(summary.contains("1. \(actionTimeline[0])"))
         XCTAssertTrue(summary.contains("تحليل قرارات الخبير".localized))
     }
 

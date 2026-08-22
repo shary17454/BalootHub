@@ -121,8 +121,8 @@ enum RoundReplayShareSummary {
         )
 
         lines.append("سجل الأحداث".localized)
-        for (index, action) in actions.enumerated() {
-            lines.append("\(index + 1). \(GameEngine.actionSummary(action, state: finalState))")
+        for (index, line) in GameEngine.actionTimeline(state: finalState).enumerated() {
+            lines.append("\(index + 1). \(line)")
         }
 
         return lines.joined(separator: "\n")
