@@ -20232,6 +20232,86 @@
         }
       }
     },
+    "أزل" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove"
+          }
+        }
+      }
+    },
+    "أزل الأوراق المكررة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove duplicate cards"
+          }
+        }
+      }
+    },
+    "التحليل جاهز" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analysis ready"
+          }
+        }
+      }
+    },
+    "بعد اكتمال اليد يعرض التطبيق تقييم القوة، أفضل شراء، المشاريع، ونصيحة تكتيكية." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "After the hand is complete, the app shows strength, best bid, projects, and tactical advice."
+          }
+        }
+      }
+    },
+    "كل ورقة يجب أن تظهر مرة واحدة فقط في اليد." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Each card must appear only once in the hand."
+          }
+        }
+      }
+    },
+    "من الأوراق" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "cards"
+          }
+        }
+      }
+    },
+    "ورقة إضافية لإظهار التحليل." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "additional card(s) to show the analysis."
+          }
+        }
+      }
+    },
+    "ورقة حتى تبقى 8 أوراق فقط." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "card(s) so only 8 cards remain."
+          }
+        }
+      }
+    },
     "غير محدد" : {
       "localizations" : {
         "en" : {

@@ -4225,9 +4225,13 @@ struct HandAnalyzerView: View {
         }
     }
 
+    private var inputValidation: HandAnalysisInputValidation {
+        HandAnalyzer.inputValidation(for: sortedSelectedCards)
+    }
+
     private var analysis: HandAnalysis? {
         let hand = sortedSelectedCards
-        guard HandAnalyzer.inputValidation(for: hand).isValid else { return nil }
+        guard inputValidation.isValid else { return nil }
         return HandAnalyzer.analyze(hand: hand)
     }
 
@@ -4242,8 +4246,8 @@ struct HandAnalyzerView: View {
                 } else {
                     EmptyStateView(
                         systemImage: "hand.draw.fill",
-                        title: "اختر 8 أوراق",
-                        message: "بعد اكتمال اليد يعرض التطبيق تقييم القوة، أفضل شراء، المشاريع، ونصيحة تكتيكية."
+                        title: inputStatusTitle(for: inputValidation),
+                        message: inputStatusMessage(for: inputValidation)
                     )
                 }
             }
@@ -4345,6 +4349,32 @@ struct HandAnalyzerView: View {
         } else if selectedCards.count < 8 {
             selectedCards.insert(card)
         }
+    }
+
+    func inputStatusTitle(for validation: HandAnalysisInputValidation) -> String {
+        if validation.missingCardCount > 0 {
+            return "\("باقي".localized) \(validation.missingCardCount) \("من الأوراق".localized)"
+        }
+        if validation.extraCardCount > 0 {
+            return "\("أزل".localized) \(validation.extraCardCount) \("من الأوراق".localized)"
+        }
+        if !validation.duplicateCards.isEmpty {
+            return "أزل الأوراق المكررة".localized
+        }
+        return "التحليل جاهز".localized
+    }
+
+    func inputStatusMessage(for validation: HandAnalysisInputValidation) -> String {
+        if validation.isValid {
+            return "بعد اكتمال اليد يعرض التطبيق تقييم القوة، أفضل شراء، المشاريع، ونصيحة تكتيكية.".localized
+        }
+        if validation.missingCardCount > 0 {
+            return "\("اختر".localized) \(validation.missingCardCount) \("ورقة إضافية لإظهار التحليل.".localized)"
+        }
+        if validation.extraCardCount > 0 {
+            return "\("أزل".localized) \(validation.extraCardCount) \("ورقة حتى تبقى 8 أوراق فقط.".localized)"
+        }
+        return "كل ورقة يجب أن تظهر مرة واحدة فقط في اليد.".localized
     }
 
     private func analysisSummary(_ analysis: HandAnalysis) -> some View {
