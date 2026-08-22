@@ -4962,6 +4962,7 @@ enum WhatToPlayStatsAnalyzer {
                 targetFocusKind: .followSuit
             )
         case .trumpPressureMistake:
+            let targetTrumpSuit = decisionPatternTrumpSuitTarget(from: recent)
             return WhatToPlayDecisionPattern(
                 kind: .trumpPressureMistake,
                 inspectedAttempts: metrics.inspectedAttempts,
@@ -4969,10 +4970,16 @@ enum WhatToPlayStatsAnalyzer {
                 title: "ضغط الحكم يربك قرارك".localized,
                 detail: "أكثر من خطأ حديث جاء في مواقف حكم أو وفيها حكم على الطاولة. راقب قوة الحكم المتبقية ولا تقطع إلا إذا كان القطع يربح الأكلة أو يحمي نقاط الفريق.".localized,
                 iconName: "crown.fill",
-                targetLine: decisionPatternTargetLine(difficulty: .hard, focusKind: .trumpPressure, gameMode: .hokum),
+                targetLine: decisionPatternTargetLine(
+                    difficulty: .hard,
+                    focusKind: .trumpPressure,
+                    gameMode: .hokum,
+                    trumpSuit: targetTrumpSuit
+                ),
                 targetDifficulty: .hard,
                 targetFocusKind: .trumpPressure,
-                targetGameMode: .hokum
+                targetGameMode: .hokum,
+                targetTrumpSuit: targetTrumpSuit
             )
 
         case .usefulAlternatives:
@@ -5003,13 +5010,37 @@ enum WhatToPlayStatsAnalyzer {
     private static func decisionPatternTargetLine(
         difficulty: WhatToPlayDifficulty,
         focusKind: WhatToPlayScenarioFocusKind?,
-        gameMode: GameMode?
+        gameMode: GameMode?,
+        trumpSuit: Suit? = nil
     ) -> String {
         coachingTargetLine(
             difficulty: difficulty,
             focusKind: focusKind,
-            gameMode: gameMode
+            gameMode: gameMode,
+            trumpSuit: trumpSuit
         )
+    }
+
+    private static func decisionPatternTrumpSuitTarget(from attempts: [WhatToPlayAttempt]) -> Suit? {
+        let counts = attempts.reduce(into: [Suit: Int]()) { partialResult, attempt in
+            guard !attempt.isCorrect,
+                  attempt.gameMode == .hokum,
+                  let trumpSuit = attempt.contextTrumpSuit
+            else { return }
+
+            partialResult[trumpSuit, default: 0] += 1
+        }
+
+        return counts
+            .filter { $0.value >= 2 }
+            .sorted {
+                if $0.value != $1.value {
+                    return $0.value > $1.value
+                }
+                return $0.key.ordinal < $1.key.ordinal
+            }
+            .first?
+            .key
     }
 
     static func coachingTip(for attempts: [WhatToPlayAttempt]) -> WhatToPlayCoachingTip {

@@ -3471,6 +3471,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(pattern.targetDifficulty, .hard)
         XCTAssertEqual(pattern.targetFocusKind, .trumpPressure)
         XCTAssertEqual(pattern.targetGameMode, .hokum)
+        XCTAssertEqual(pattern.targetTrumpSuit, .spades)
     }
 
     func testDecisionPatternCleanHasNoActionableTarget() {
@@ -3508,6 +3509,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(target?.difficulty, .hard)
         XCTAssertEqual(target?.focusKind, .trumpPressure)
         XCTAssertEqual(target?.gameMode, .hokum)
+        XCTAssertEqual(target?.trumpSuit, .spades)
         XCTAssertNotEqual(target?.seed, 42)
         XCTAssertNotEqual(target?.seed, 43)
     }
@@ -3522,7 +3524,10 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         let pattern = WhatToPlayStatsAnalyzer.decisionPattern(for: attempts)
 
         XCTAssertEqual(pattern.kind, .trumpPressureMistake)
-        XCTAssertEqual(pattern.targetLine, "\("المستوى".localized): \("صعب".localized) · \("تركيز التدريب".localized): \("ضغط الحكم".localized) · \("النمط".localized): \("حكم".localized)")
+        XCTAssertEqual(
+            pattern.targetLine,
+            "\("المستوى".localized): \("صعب".localized) · \("تركيز التدريب".localized): \("ضغط الحكم".localized) · \("النمط".localized): \("حكم".localized) · \("لون الحكم".localized): \(Suit.spades.spokenName)"
+        )
     }
 
     func testDecisionPatternUsesRecentLimit() {
