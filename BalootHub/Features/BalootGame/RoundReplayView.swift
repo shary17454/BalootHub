@@ -273,6 +273,16 @@ struct RoundReplayView: View {
                     detailRow(playerName(record.playerID, in: snapshot), bidTitle(record.bid))
                 }
             }
+            let multiplierTimeline = GameEngine.multiplierTimeline(state: snapshot)
+            if !multiplierTimeline.isEmpty {
+                Divider()
+                timelineList(title: "المضاعفات", lines: multiplierTimeline)
+            }
+            let projectDeclarationTimeline = GameEngine.projectDeclarationTimeline(state: snapshot)
+            if !projectDeclarationTimeline.isEmpty {
+                Divider()
+                timelineList(title: "إعلانات المشاريع", lines: projectDeclarationTimeline)
+            }
             if !snapshot.declaredProjects.isEmpty || !snapshot.awardedProjects.isEmpty {
                 Divider()
                 projectList(title: "المشاريع المعلنة", projects: snapshot.declaredProjects, state: snapshot)
@@ -428,6 +438,17 @@ struct RoundReplayView: View {
                 .multilineTextAlignment(.trailing)
         }
         .accessibilityElement(children: .combine)
+    }
+
+    private func timelineList(title: String, lines: [String]) -> some View {
+        Group {
+            Text(title.localized)
+                .font(AppTypography.caption.weight(.semibold))
+                .foregroundStyle(AppColor.textSecondary)
+            ForEach(Array(lines.enumerated()), id: \.offset) { index, line in
+                detailRow("#\(index + 1)", line)
+            }
+        }
     }
 
     private func projectList(title: String, projects: [Project], state: GameState) -> some View {

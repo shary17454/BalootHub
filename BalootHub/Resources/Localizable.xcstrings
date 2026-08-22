@@ -1,6 +1,36 @@
 {
   "sourceLanguage" : "ar",
   "strings" : {
+    "إعلانات المشاريع" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Project declarations"
+          }
+        }
+      }
+    },
+    "المضاعفات" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Multipliers"
+          }
+        }
+      }
+    },
+    "المزايدة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bidding"
+          }
+        }
+      }
+    },
     "أسلوب لعبك" : {
       "localizations" : {
         "en" : {
