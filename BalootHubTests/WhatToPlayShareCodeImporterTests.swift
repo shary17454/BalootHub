@@ -27,6 +27,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertFalse(result.statusMessage.contains("أفضل ورقة".localized))
         XCTAssertFalse(result.statusMessage.contains("تقييم القرار".localized))
         XCTAssertFalse(result.statusMessage.contains("الخطوة التالية".localized))
+        XCTAssertFalse(result.statusMessage.contains("ثقة أفضل ورقة".localized))
         XCTAssertFalse(result.statusMessage.contains("نتيجة المحاكاة".localized))
         XCTAssertFalse(result.statusMessage.contains("اتجاه الأكلة".localized))
         XCTAssertFalse(result.statusMessage.contains("نقاط الأكلة".localized))
@@ -63,6 +64,10 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         }
         if let decisionQualityDetail = comparisonSummary.decisionQualityDetail {
             XCTAssertTrue(result.statusMessage.contains(decisionQualityDetail))
+        }
+        if let bestMoveConfidence = comparisonSummary.bestMoveConfidence {
+            XCTAssertTrue(result.statusMessage.contains("\("ثقة أفضل ورقة".localized): \(bestMoveConfidence.title)"))
+            XCTAssertTrue(result.statusMessage.contains(bestMoveConfidence.detail))
         }
         let simulationDisplay = WhatToPlaySimulationFormatter.display(for: selected.simulation)
         XCTAssertTrue(result.statusMessage.contains("\("نتيجة المحاكاة".localized): \(simulationDisplay.summary)"))

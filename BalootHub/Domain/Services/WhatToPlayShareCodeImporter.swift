@@ -57,6 +57,10 @@ struct WhatToPlayShareCodeImportResult {
             if let decisionQualityDetail = comparisonSummary.decisionQualityDetail {
                 lines.append(decisionQualityDetail)
             }
+            if let bestMoveConfidence = comparisonSummary.bestMoveConfidence {
+                lines.append("\("ثقة أفضل ورقة".localized): \(bestMoveConfidence.title)")
+                lines.append(bestMoveConfidence.detail)
+            }
             let simulationDisplay = WhatToPlaySimulationFormatter.display(for: selectedOption.simulation)
             lines.append("\("نتيجة المحاكاة".localized): \(simulationDisplay.summary)")
             if let teamResult = simulationDisplay.teamResult {
