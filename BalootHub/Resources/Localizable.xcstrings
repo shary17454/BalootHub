@@ -3203,6 +3203,16 @@
         }
       }
     },
+    "فارق الصن والحكم" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sun-hokum gap"
+          }
+        }
+      }
+    },
     "التقاط القيمة يتحسن" : {
       "localizations" : {
         "en" : {

@@ -38,6 +38,14 @@ final class WhatToPlayTrainerViewReviewItemTests: XCTestCase {
         )
     }
 
+    func testHandAnalyzerSignedScoreTextKeepsPositiveSign() {
+        let view = HandAnalyzerView()
+
+        XCTAssertEqual(view.signedScoreText(12), "+12")
+        XCTAssertEqual(view.signedScoreText(0), "0")
+        XCTAssertEqual(view.signedScoreText(-7), "-7")
+    }
+
     func testReviewCardSourceTextExplainsWhyReviewCardWasChosen() throws {
         let selected = PlayingCard(suit: .spades, rank: .seven)
         let best = PlayingCard(suit: .hearts, rank: .ace)

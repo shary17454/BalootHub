@@ -832,7 +832,8 @@ enum HandAnalysisShareSummary {
             "\("الثقة".localized): \(confidenceText(analysis.confidence))",
             "\("احتمال الصن".localized): \(analysis.sunConfidencePercent)% · \(analysis.evaluation.sunScore)",
             "\("احتمال الحكم".localized): \(analysis.hokumConfidencePercent)%",
-            "\("مقارنة الصن والحكم".localized): \(analysis.modeComparisonTitle)"
+            "\("مقارنة الصن والحكم".localized): \(analysis.modeComparisonTitle)",
+            "\("فارق الصن والحكم".localized): \(signedScoreText(analysis.sunHokumScoreGap))"
         ]
 
         if let best = analysis.evaluation.bestHokum {
@@ -920,6 +921,10 @@ enum HandAnalysisShareSummary {
         case .clearPass:
             return "تمرير واضح".localized
         }
+    }
+
+    private static func signedScoreText(_ value: Int) -> String {
+        value > 0 ? "+\(value)" : "\(value)"
     }
 
     private static func projectSort(_ lhs: Project, _ rhs: Project) -> Bool {

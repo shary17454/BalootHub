@@ -4395,6 +4395,7 @@ struct HandAnalyzerView: View {
                     InfoRow(icon: "crown.fill", title: "أفضل حكم", value: "\(best.suit.spokenName) · \(analysis.hokumConfidencePercent)% · \(best.score)")
                 }
                 InfoRow(icon: "arrow.left.arrow.right", title: "مقارنة الصن والحكم".localized, value: analysis.modeComparisonTitle)
+                InfoRow(icon: "plusminus", title: "فارق الصن والحكم".localized, value: signedScoreText(analysis.sunHokumScoreGap))
                 InfoRow(icon: "star.fill", title: "المشاريع", value: projectsText(analysis.projects))
             }
 
@@ -4534,6 +4535,10 @@ struct HandAnalyzerView: View {
         return projects
             .map { "\($0.kind.arabicName) \($0.points)" }
             .joined(separator: " · ")
+    }
+
+    func signedScoreText(_ value: Int) -> String {
+        value > 0 ? "+\(value)" : "\(value)"
     }
 
 }
