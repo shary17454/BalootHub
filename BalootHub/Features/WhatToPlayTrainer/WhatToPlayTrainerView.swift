@@ -974,6 +974,13 @@ struct WhatToPlayTrainerView: View {
                         .foregroundStyle(AppColor.textSecondary)
                         .lineLimit(2)
                         .minimumScaleFactor(0.85)
+                    if let reviewCardSourceText = reviewCardSourceText(for: reviewItem) {
+                        Text(reviewCardSourceText)
+                            .font(.caption2)
+                            .foregroundStyle(AppColor.textSecondary)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.85)
+                    }
                     if let secondBestCard = reviewItem.secondBestCard {
                         Text("\("ثاني أفضل".localized): \(cardName(secondBestCard))\(secondBestImpactSuffix(reviewItem.secondBestExpectedImpact))")
                             .font(.caption2)
@@ -2522,6 +2529,13 @@ struct WhatToPlayTrainerView: View {
                     .foregroundStyle(AppColor.textSecondary)
                     .lineLimit(2)
                     .minimumScaleFactor(0.85)
+                if let reviewCardSourceText = reviewCardSourceText(for: item) {
+                    Text(reviewCardSourceText)
+                        .font(.caption2)
+                        .foregroundStyle(AppColor.textSecondary)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.85)
+                }
                 if let bestSimulationText = bestSimulationCardText(
                     item.bestSimulationCard,
                     expertCard: item.bestCard,
@@ -2708,6 +2722,11 @@ struct WhatToPlayTrainerView: View {
     private func bestSimulationCardText(_ card: PlayingCard?, expertCard: PlayingCard?, lostProjectedTeamPoints: Int) -> String? {
         guard let card, lostProjectedTeamPoints > 0 || card != expertCard else { return nil }
         return "\("أفضل محاكاة".localized): \(cardName(card))"
+    }
+
+    func reviewCardSourceText(for item: WhatToPlayReviewItem) -> String? {
+        guard let sourceTitle = WhatToPlayStatsAnalyzer.reviewCardSourceTitle(for: item) else { return nil }
+        return "\("سبب ورقة المراجعة".localized): \(sourceTitle)"
     }
 
     private func secondSimulationReviewText(
