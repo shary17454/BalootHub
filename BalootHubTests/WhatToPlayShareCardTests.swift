@@ -80,6 +80,8 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(content.legalCards.map(\.cardName), content.legalCardNames)
         XCTAssertTrue(content.legalCards.allSatisfy { $0.expectedImpact == nil })
         XCTAssertTrue(content.legalCards.allSatisfy { $0.projectedTeamPoints == nil })
+        XCTAssertTrue(content.legalCards.allSatisfy { $0.expectedImprovement == nil })
+        XCTAssertTrue(content.legalCards.allSatisfy { $0.expectedImprovementSourceTitle == nil })
         XCTAssertFalse(content.legalCards.contains { $0.isExpertChoice })
         let checklist = WhatToPlayStatsAnalyzer.preDecisionChecklist(for: scenario)
         XCTAssertEqual(content.checklistTitle, checklist.title)
@@ -213,6 +215,14 @@ final class WhatToPlayShareCardTests: XCTestCase {
                     cardName: option.card.accessibilityName,
                     expectedImpact: option.expectedImpact,
                     projectedTeamPoints: option.projectedTeamPoints,
+                    expectedImprovement: expectedLegalCardImprovement(for: option, in: scenario).points > 0
+                        ? expectedLegalCardImprovement(for: option, in: scenario).points
+                        : nil,
+                    expectedImprovementSourceTitle: expectedLegalCardImprovement(for: option, in: scenario).points > 0
+                        ? WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(
+                            for: expectedLegalCardImprovement(for: option, in: scenario).source
+                        )
+                        : nil,
                     isExpertChoice: option.isExpertChoice
                 )
             )
@@ -343,6 +353,22 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(reviewed.legalCards.map(\.cardName), sortedOptions.map { $0.card.accessibilityName })
         XCTAssertEqual(reviewed.legalCards.map(\.expectedImpact), sortedOptions.map { Optional($0.expectedImpact) })
         XCTAssertEqual(reviewed.legalCards.map(\.projectedTeamPoints), sortedOptions.map { Optional($0.projectedTeamPoints) })
+        XCTAssertEqual(
+            reviewed.legalCards.map(\.expectedImprovement),
+            sortedOptions.map {
+                let improvement = expectedLegalCardImprovement(for: $0, in: scenario)
+                return improvement.points > 0 ? improvement.points : nil
+            }
+        )
+        XCTAssertEqual(
+            reviewed.legalCards.map(\.expectedImprovementSourceTitle),
+            sortedOptions.map {
+                let improvement = expectedLegalCardImprovement(for: $0, in: scenario)
+                return improvement.points > 0
+                    ? WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: improvement.source)
+                    : nil
+            }
+        )
         XCTAssertEqual(reviewed.legalCards.map(\.isExpertChoice), sortedOptions.map(\.isExpertChoice))
         XCTAssertNotNil(reviewed.selectedSimulationSummary)
         XCTAssertEqual(
@@ -875,6 +901,22 @@ final class WhatToPlayShareCardTests: XCTestCase {
             return "\("اللون المطلوب".localized): \(requiredSuit.arabicName)"
         }
         return "الأوراق على الطاولة".localized
+    }
+
+    private func expectedLegalCardImprovement(
+        for option: WhatToPlayOption,
+        in scenario: WhatToPlayScenario
+    ) -> WhatToPlayExpectedImprovementMetrics {
+        let bestExpectedImpact = scenario.bestOption?.expectedImpact ?? option.expectedImpact
+        let bestProjectedTeamPoints = WhatToPlayTrainer.bestProjectedOption(in: scenario.options)?.projectedTeamPoints
+            ?? option.projectedTeamPoints
+        let secondBestProjectedTeamPoints = WhatToPlayTrainer.secondBestProjectedOption(in: scenario.options)?.projectedTeamPoints
+            ?? option.projectedTeamPoints
+        return WhatToPlayExpectedImprovementMetrics.calculate(
+            lostExpectedPoints: max(0, bestExpectedImpact - option.expectedImpact),
+            lostProjectedTeamPoints: max(0, bestProjectedTeamPoints - option.projectedTeamPoints),
+            lostProjectedAgainstSecondBestPoints: max(0, secondBestProjectedTeamPoints - option.projectedTeamPoints)
+        )
     }
 
     private func strongHokumHand() -> [PlayingCard] {

@@ -16,6 +16,8 @@ struct WhatToPlayShareCardContent: Equatable {
         let cardName: String
         let expectedImpact: Int?
         let projectedTeamPoints: Int?
+        let expectedImprovement: Int?
+        let expectedImprovementSourceTitle: String?
         let isExpertChoice: Bool
     }
 
@@ -155,10 +157,15 @@ enum WhatToPlayShareCard {
                 )
             },
             legalCards: sortedLegalOptions.map { option in
-                WhatToPlayShareCardContent.LegalCardLine(
+                let improvement = legalCardImprovement(for: option, in: scenario)
+                return WhatToPlayShareCardContent.LegalCardLine(
                     cardName: option.card.accessibilityName,
                     expectedImpact: shouldRevealOptionImpact ? option.expectedImpact : nil,
                     projectedTeamPoints: shouldRevealOptionImpact ? option.projectedTeamPoints : nil,
+                    expectedImprovement: shouldRevealOptionImpact ? positiveImprovement(improvement.points) : nil,
+                    expectedImprovementSourceTitle: shouldRevealOptionImpact
+                        ? improvementSourceTitle(improvement: improvement.points, source: improvement.source)
+                        : nil,
                     isExpertChoice: shouldRevealOptionImpact && option.isExpertChoice
                 )
             },
@@ -555,10 +562,32 @@ enum WhatToPlayShareCard {
         if let projectedTeamPoints = legalCard.projectedTeamPoints {
             parts.append("\("نقاط فريقك بعد المحاكاة".localized): \(projectedTeamPoints)")
         }
+        if let expectedImprovement = legalCard.expectedImprovement {
+            parts.append("\("تحسن متوقع".localized): +\(expectedImprovement)")
+        }
+        if let expectedImprovementSourceTitle = legalCard.expectedImprovementSourceTitle {
+            parts.append("\("مصدر التحسن".localized): \(expectedImprovementSourceTitle)")
+        }
         if legalCard.isExpertChoice {
             parts.append("اختيار الخبير".localized)
         }
         return parts.joined(separator: " · ")
+    }
+
+    private static func legalCardImprovement(
+        for option: WhatToPlayOption,
+        in scenario: WhatToPlayScenario
+    ) -> WhatToPlayExpectedImprovementMetrics {
+        let bestExpectedImpact = scenario.bestOption?.expectedImpact ?? option.expectedImpact
+        let bestProjectedTeamPoints = WhatToPlayTrainer.bestProjectedOption(in: scenario.options)?.projectedTeamPoints
+            ?? option.projectedTeamPoints
+        let secondBestProjectedTeamPoints = WhatToPlayTrainer.secondBestProjectedOption(in: scenario.options)?.projectedTeamPoints
+            ?? option.projectedTeamPoints
+        return WhatToPlayExpectedImprovementMetrics.calculate(
+            lostExpectedPoints: max(0, bestExpectedImpact - option.expectedImpact),
+            lostProjectedTeamPoints: max(0, bestProjectedTeamPoints - option.projectedTeamPoints),
+            lostProjectedAgainstSecondBestPoints: max(0, secondBestProjectedTeamPoints - option.projectedTeamPoints)
+        )
     }
 
     private static func positiveImprovement(_ value: Int?) -> Int? {
