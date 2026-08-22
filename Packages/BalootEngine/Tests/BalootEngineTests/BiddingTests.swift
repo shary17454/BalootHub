@@ -59,6 +59,27 @@ struct BiddingCycleTests {
         #expect(record.summary(playerName: "سالم") == "الجولة 2: سالم - حكم هارت")
     }
 
+    @Test("خط المزايدة الزمني يستخدم أسماء اللاعبين ورقم الجولة")
+    func biddingTimelineUsesPlayerNamesAndRoundNumbers() throws {
+        var rules = BalootRulesConfiguration.standard
+        rules.multipliersEnabled = false
+        rules.projectsRequireDeclaration = false
+        var state = GameState.newLocalMatch(rules: rules)
+        state = try GameEngine.apply(.dealCards(seed: 5), to: state)
+
+        let firstPlayer = try #require(state.currentTurnPlayerID.flatMap { state.player(id: $0) })
+        state = try GameEngine.apply(.placeBid(playerID: firstPlayer.id, bid: .pass), to: state)
+
+        let secondPlayer = try #require(state.currentTurnPlayerID.flatMap { state.player(id: $0) })
+        let upSuit = try #require(state.bidding.upCard?.suit)
+        state = try GameEngine.apply(.placeBid(playerID: secondPlayer.id, bid: .hokum(suit: upSuit)), to: state)
+
+        #expect(GameEngine.biddingTimeline(state: state) == [
+            "الجولة 1: \(firstPlayer.name) - بس",
+            "الجولة 1: \(secondPlayer.name) - حكم \(upSuit.arabicName)"
+        ])
+    }
+
     @Test("التوزيع الافتتاحي يعطي خمس أوراق لكل لاعب وورقة مكشوفة وأحد عشر مؤجلة")
     func openingDealMatchesFullBiddingStyle() throws {
         var state = GameState.newLocalMatch(rules: .standard)

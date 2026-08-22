@@ -57,10 +57,11 @@ enum RoundReplayShareSummary {
             lines.append("\("المضاعفة".localized): \(finalState.bidding.multiplier.arabicName)")
         }
 
-        if !finalState.bidding.bids.isEmpty {
+        let biddingTimeline = GameEngine.biddingTimeline(state: finalState)
+        if !biddingTimeline.isEmpty {
             lines.append("المزايدة".localized)
-            for record in finalState.bidding.bids {
-                lines.append("- \(playerName(record.playerID, in: finalState)): \(bidTitle(record.bid))")
+            for line in biddingTimeline {
+                lines.append("- \(line)")
             }
         }
 

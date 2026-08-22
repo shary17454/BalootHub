@@ -100,6 +100,17 @@ public enum GameEngine {
         legalBids(for: playerID, state: state).map { .placeBid(playerID: playerID, bid: $0) }
     }
 
+    /// خط زمني مقروء لكل قرارات المزايدة المسجلة في الجولة.
+    ///
+    /// يبقى التلخيص داخل المحرك حتى تستخدمه الواجهة والـReplay والتحليل من نفس
+    /// سجل ``BiddingState/bids`` بدل إعادة تركيب سطور مختلفة في كل طبقة.
+    public static func biddingTimeline(state: GameState) -> [String] {
+        state.bidding.bids.map { record in
+            let name = state.player(id: record.playerID)?.name ?? "لاعب"
+            return record.summary(playerName: name)
+        }
+    }
+
     /// حركات المضاعفة القانونية للاعب محدد في لحظة المزايدة الحالية.
     public static func legalMultiplierActions(for playerID: Player.ID, state: GameState) -> [LegalMultiplierAction] {
         BiddingEngine.legalMultiplierActions(for: playerID, state: state)
