@@ -46,6 +46,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
             )
         )
         assertTableContext(from: contextContent, appearsIn: result.statusMessage)
+        assertBlockedCards(from: contextContent, appearIn: result.statusMessage)
         XCTAssertFalse(result.statusMessage.contains("اختيارك".localized))
         XCTAssertFalse(result.statusMessage.contains("أفضل ورقة".localized))
         XCTAssertFalse(result.statusMessage.contains("تقييم القرار".localized))
@@ -114,6 +115,7 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
             )
         )
         assertTableContext(from: contextContent, appearsIn: result.statusMessage)
+        assertBlockedCards(from: contextContent, appearIn: result.statusMessage)
         XCTAssertTrue(result.statusMessage.contains("\("اختيارك".localized): \(selected.card.accessibilityName)"))
         let bestOption = try XCTUnwrap(scenario.bestOption)
         XCTAssertTrue(result.statusMessage.contains("\("أفضل ورقة".localized): \(bestOption.card.accessibilityName)"))
@@ -591,6 +593,27 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
                     line: line
                 )
             }
+        }
+    }
+
+    private func assertBlockedCards(
+        from content: WhatToPlayShareCardContent,
+        appearIn statusMessage: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        guard !content.blockedCards.isEmpty else {
+            XCTAssertFalse(statusMessage.contains("الأوراق الممنوعة".localized), file: file, line: line)
+            return
+        }
+
+        XCTAssertTrue(statusMessage.contains("\("الأوراق الممنوعة".localized):"), file: file, line: line)
+        for blockedCard in content.blockedCards {
+            XCTAssertTrue(
+                statusMessage.contains("- \(blockedCard.cardName): \(blockedCard.reason)"),
+                file: file,
+                line: line
+            )
         }
     }
 }

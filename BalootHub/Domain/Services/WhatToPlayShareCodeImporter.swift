@@ -122,6 +122,12 @@ struct WhatToPlayShareCodeImportResult {
                 lines.append("- \(playedCard.playerName): \(playedCard.cardName)")
             }
         }
+        if !contextContent.blockedCards.isEmpty {
+            lines.append("\("الأوراق الممنوعة".localized):")
+            for blockedCard in contextContent.blockedCards {
+                lines.append("- \(blockedCard.cardName): \(blockedCard.reason)")
+            }
+        }
         return lines
     }
 
