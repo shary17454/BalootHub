@@ -27,6 +27,8 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertFalse(result.statusMessage.contains("أفضل ورقة".localized))
         XCTAssertFalse(result.statusMessage.contains("تقييم القرار".localized))
         XCTAssertFalse(result.statusMessage.contains("الخطوة التالية".localized))
+        XCTAssertFalse(result.statusMessage.contains("تدريب الإعادة".localized))
+        XCTAssertFalse(result.statusMessage.contains("جرّب الورقة".localized))
         XCTAssertFalse(result.statusMessage.contains("ثقة أفضل ورقة".localized))
         XCTAssertFalse(result.statusMessage.contains("سبب تكتيكي".localized))
         XCTAssertFalse(result.statusMessage.contains("الترتيب".localized))
@@ -135,6 +137,23 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
            let nextActionDetail = comparisonSummary.nextActionDetail {
             XCTAssertTrue(result.statusMessage.contains("\("الخطوة التالية".localized): \(nextActionTitle)"))
             XCTAssertTrue(result.statusMessage.contains(nextActionDetail))
+        }
+        if let retryPrompt = WhatToPlayStatsAnalyzer.retryPrompt(for: selected, in: scenario) {
+            XCTAssertTrue(result.statusMessage.contains("\("تدريب الإعادة".localized): \(retryPrompt.title)"))
+            XCTAssertTrue(result.statusMessage.contains(retryPrompt.detail))
+            if let recommendedCard = retryPrompt.recommendedCard {
+                XCTAssertTrue(result.statusMessage.contains("\("جرّب الورقة".localized): \(recommendedCard.accessibilityName)"))
+            }
+            if retryPrompt.expectedImprovement > 0 {
+                XCTAssertTrue(result.statusMessage.contains("\("تحسن متوقع".localized): +\(retryPrompt.expectedImprovement)"))
+            }
+            if let expectedImprovementSource = retryPrompt.expectedImprovementSource {
+                XCTAssertTrue(
+                    result.statusMessage.contains(
+                        "\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: expectedImprovementSource))"
+                    )
+                )
+            }
         }
     }
 

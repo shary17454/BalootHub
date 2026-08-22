@@ -43,6 +43,7 @@ struct WhatToPlayShareCodeImportResult {
                 for: scenario,
                 selectedCard: selectedOption.card
             )
+            let retryPrompt = WhatToPlayStatsAnalyzer.retryPrompt(for: selectedOption, in: scenario)
             let selectedComparisonRow = WhatToPlayOptionComparison
                 .rows(for: scenario, selectedCard: selectedOption.card)
                 .first { $0.card == selectedOption.card }
@@ -109,6 +110,19 @@ struct WhatToPlayShareCodeImportResult {
                let nextActionDetail = comparisonSummary.nextActionDetail {
                 lines.append("\("الخطوة التالية".localized): \(nextActionTitle)")
                 lines.append(nextActionDetail)
+            }
+            if let retryPrompt {
+                lines.append("\("تدريب الإعادة".localized): \(retryPrompt.title)")
+                lines.append(retryPrompt.detail)
+                if let recommendedCard = retryPrompt.recommendedCard {
+                    lines.append("\("جرّب الورقة".localized): \(recommendedCard.accessibilityName)")
+                }
+                if retryPrompt.expectedImprovement > 0 {
+                    lines.append("\("تحسن متوقع".localized): +\(retryPrompt.expectedImprovement)")
+                }
+                if let expectedImprovementSource = retryPrompt.expectedImprovementSource {
+                    lines.append("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: expectedImprovementSource))")
+                }
             }
         }
         if expectedImprovement > 0, let expectedImprovementSource {
