@@ -360,6 +360,11 @@ enum WhatToPlayShareCard {
     }
 
     static func reviewText(for item: WhatToPlayReviewItem) -> String {
+        let improvement = WhatToPlayExpectedImprovementMetrics.calculate(
+            lostExpectedPoints: item.lostExpectedPoints,
+            lostProjectedTeamPoints: item.lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: item.lostProjectedAgainstSecondBestPoints
+        )
         var lines = [
             "موقف للمراجعة في وش تلعب؟".localized,
             "\("رمز الموقف".localized): \(item.scenarioCode)",
@@ -381,6 +386,10 @@ enum WhatToPlayShareCard {
         }
         if item.lostProjectedTeamPoints > item.lostExpectedPoints {
             lines.append("\("نقاط محاكاة ضائعة".localized): \(item.lostProjectedTeamPoints)")
+        }
+        if improvement.points > 0 {
+            lines.append("\("تحسن متوقع".localized): +\(improvement.points)")
+            lines.append("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: improvement.source))")
         }
         if let simulationSummary = item.simulationSummary {
             lines.append("\("نتيجة المحاكاة".localized): \(simulationSummary)")

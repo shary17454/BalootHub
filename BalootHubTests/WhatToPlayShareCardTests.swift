@@ -436,11 +436,25 @@ final class WhatToPlayShareCardTests: XCTestCase {
             preferredMode: .hokum,
             preferredTrumpSuit: .spades
         )
-        let selected = try XCTUnwrap(scenario.options.first { !$0.isExpertChoice })
-        let attempt = try XCTUnwrap(
-            WhatToPlayAttemptFactory.makeAttempt(scenario: scenario, evaluated: selected)
+        let reviewItem = try XCTUnwrap(
+            scenario.options.lazy.compactMap { option -> WhatToPlayReviewItem? in
+                guard !option.isExpertChoice,
+                      let attempt = WhatToPlayAttemptFactory.makeAttempt(scenario: scenario, evaluated: option),
+                      let item = WhatToPlayStatsAnalyzer.reviewQueue(for: [attempt], limit: 1).first
+                else { return nil }
+                let improvement = WhatToPlayExpectedImprovementMetrics.calculate(
+                    lostExpectedPoints: item.lostExpectedPoints,
+                    lostProjectedTeamPoints: item.lostProjectedTeamPoints,
+                    lostProjectedAgainstSecondBestPoints: item.lostProjectedAgainstSecondBestPoints
+                )
+                return improvement.points > 0 ? item : nil
+            }.first
         )
-        let reviewItem = try XCTUnwrap(WhatToPlayStatsAnalyzer.reviewQueue(for: [attempt], limit: 1).first)
+        let improvement = WhatToPlayExpectedImprovementMetrics.calculate(
+            lostExpectedPoints: reviewItem.lostExpectedPoints,
+            lostProjectedTeamPoints: reviewItem.lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: reviewItem.lostProjectedAgainstSecondBestPoints
+        )
 
         let text = WhatToPlayShareCard.reviewText(for: reviewItem)
 
@@ -454,6 +468,10 @@ final class WhatToPlayShareCardTests: XCTestCase {
         )
         XCTAssertTrue(text.contains("\("نقاط متوقعة ضائعة".localized): \(reviewItem.lostExpectedPoints)"))
         XCTAssertTrue(text.contains("\("شدة خسارة القيمة".localized): \(reviewItem.valueLossTitle)"))
+        XCTAssertTrue(text.contains("\("تحسن متوقع".localized): +\(improvement.points)"))
+        XCTAssertTrue(
+            text.contains("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: improvement.source))")
+        )
         XCTAssertTrue(text.contains("\("تركيز التدريب".localized): \("ضغط الحكم".localized)"))
         XCTAssertTrue(text.contains("\("النمط".localized): \(GameMode.hokum.arabicName) \(Suit.spades.spokenName)"))
         XCTAssertTrue(text.contains("افتح مدرب وش تلعب واستورد رمز الموقف.".localized))
