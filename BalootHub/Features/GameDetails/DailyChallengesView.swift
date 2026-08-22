@@ -171,7 +171,7 @@ struct DailyChallengesView: View {
                             tab: appEnvironment.selectedTab
                         )
                     } label: {
-                        Label((progress?.completedCount ?? 0) > 0 ? "متابعة مواقف اليوم".localized : "فتح موقف اليوم".localized, systemImage: "brain.head.profile")
+                        Label(whatToPlayButtonTitle(progress: progress, whatToPlayProgress: whatToPlayProgress), systemImage: "brain.head.profile")
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)
@@ -248,6 +248,19 @@ struct DailyChallengesView: View {
             return "فتح أكاديمية البلوت".localized
         }
         return "\("متابعة درس".localized): \(lesson.title)"
+    }
+
+    private func whatToPlayButtonTitle(
+        progress: BalootChallengeProgress?,
+        whatToPlayProgress: WhatToPlayChallengeProgress?
+    ) -> String {
+        if whatToPlayProgress?.hasAttemptedNextSeed == true {
+            return "إعادة موقف اليوم".localized
+        }
+        if (progress?.completedCount ?? 0) > 0 {
+            return "متابعة مواقف اليوم".localized
+        }
+        return "فتح موقف اليوم".localized
     }
 
     private func difficultyTitle(_ difficulty: WhatToPlayDifficulty) -> String {

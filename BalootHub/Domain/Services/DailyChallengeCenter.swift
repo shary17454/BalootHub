@@ -92,6 +92,7 @@ struct WhatToPlayChallengeProgress: Equatable {
     let base: BalootChallengeProgress
     let seedSeries: [UInt64]
     let completedSeeds: Set<UInt64>
+    let attemptedSeeds: Set<UInt64>
 
     var isComplete: Bool {
         base.isComplete
@@ -99,6 +100,11 @@ struct WhatToPlayChallengeProgress: Equatable {
 
     var nextSeed: UInt64? {
         seedSeries.first { !completedSeeds.contains($0) }
+    }
+
+    var hasAttemptedNextSeed: Bool {
+        guard let nextSeed else { return false }
+        return attemptedSeeds.contains(nextSeed)
     }
 }
 
@@ -432,6 +438,15 @@ enum DailyChallengeCenter {
             trumpSuit: challenge.whatToPlayTrumpSuit,
             challengeSeeds: Set(seedSeries)
         )
+        let attemptedSeeds = attemptedWhatToPlaySeeds(
+            attempts: attempts,
+            interval: interval,
+            difficulty: difficulty,
+            focusKind: focusKind,
+            gameMode: gameMode,
+            trumpSuit: challenge.whatToPlayTrumpSuit,
+            challengeSeeds: Set(seedSeries)
+        )
         let base = BalootChallengeProgress(
             completedCount: min(completedSeeds.count, challenge.targetCount),
             targetCount: challenge.targetCount
@@ -440,7 +455,8 @@ enum DailyChallengeCenter {
         return WhatToPlayChallengeProgress(
             base: base,
             seedSeries: seedSeries,
-            completedSeeds: completedSeeds
+            completedSeeds: completedSeeds,
+            attemptedSeeds: attemptedSeeds
         )
     }
 
@@ -518,6 +534,29 @@ enum DailyChallengeCenter {
                   attempt.gameMode == gameMode,
                   trumpSuit == nil || attempt.contextTrumpSuit == trumpSuit,
                   attempt.isCorrect,
+                  challengeSeeds.contains(attempt.replaySeed)
+            else { return nil }
+
+            return attempt.replaySeed
+        })
+    }
+
+    private static func attemptedWhatToPlaySeeds(
+        attempts: [WhatToPlayAttempt],
+        interval: DateInterval,
+        difficulty: WhatToPlayDifficulty,
+        focusKind: WhatToPlayScenarioFocusKind,
+        gameMode: GameMode,
+        trumpSuit: Suit?,
+        challengeSeeds: Set<UInt64>
+    ) -> Set<UInt64> {
+        Set(attempts.compactMap { attempt -> UInt64? in
+            guard attempt.createdAt >= interval.start,
+                  attempt.createdAt < interval.end,
+                  attempt.difficulty == difficulty,
+                  attempt.focusKind == focusKind,
+                  attempt.gameMode == gameMode,
+                  trumpSuit == nil || attempt.contextTrumpSuit == trumpSuit,
                   challengeSeeds.contains(attempt.replaySeed)
             else { return nil }
 
