@@ -42,6 +42,15 @@ struct WhatToPlayShareCodeImportResult {
         max(0, comparisonSummary?.selectedLostProjectedAgainstSecondBestPoints ?? 0)
     }
 
+    var reviewCardSourceTitle: String? {
+        guard selectedOption != nil,
+              expectedImprovement > 0,
+              let expectedImprovementSource
+        else { return nil }
+
+        return WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: expectedImprovementSource)
+    }
+
     private var comparisonSummary: WhatToPlayOptionComparisonSummary? {
         guard let selectedOption else { return nil }
         return WhatToPlayOptionComparison.summary(for: scenario, selectedCard: selectedOption.card)
@@ -57,6 +66,9 @@ struct WhatToPlayShareCodeImportResult {
             lines.append(contentsOf: reviewedDecisionLines(for: selectedOption))
         }
         lines.append(contentsOf: expectedImprovementLines(points: expectedImprovement, source: expectedImprovementSource))
+        if let reviewCardSourceTitle {
+            lines.append("\("سبب ورقة المراجعة".localized): \(reviewCardSourceTitle)")
+        }
         return lines.joined(separator: "\n")
     }
 

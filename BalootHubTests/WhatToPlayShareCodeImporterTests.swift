@@ -64,6 +64,8 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertFalse(result.statusMessage.contains("نتيجة المحاكاة".localized))
         XCTAssertFalse(result.statusMessage.contains("اتجاه الأكلة".localized))
         XCTAssertFalse(result.statusMessage.contains("نقاط الأكلة".localized))
+        XCTAssertNil(result.reviewCardSourceTitle)
+        XCTAssertFalse(result.statusMessage.contains("سبب ورقة المراجعة".localized))
     }
 
     func testImporterLoadsReviewedDecisionAndCreatesAttempt() async throws {
@@ -350,8 +352,13 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.canonicalScenarioCode, fixture.replayScenarioCode)
         XCTAssertEqual(result.expectedImprovement, fixture.review.expectedImprovement)
         XCTAssertEqual(result.expectedImprovementSource, fixture.review.expectedImprovementSource)
+        XCTAssertEqual(
+            result.reviewCardSourceTitle,
+            fixture.review.expectedImprovementSource.map(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle)
+        )
         XCTAssertTrue(result.statusMessage.contains("\("تحسن متوقع".localized): +\(fixture.review.expectedImprovement)"))
         XCTAssertTrue(result.statusMessage.contains("\("مصدر التحسن".localized):"))
+        XCTAssertTrue(result.statusMessage.contains("\("سبب ورقة المراجعة".localized): \(try XCTUnwrap(result.reviewCardSourceTitle))"))
     }
 
     func testImporterKeepsExpectedImprovementContextForDuplicateTrainingReview() async throws {
@@ -367,9 +374,14 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.canonicalScenarioCode, fixture.replayScenarioCode)
         XCTAssertEqual(result.expectedImprovement, fixture.review.expectedImprovement)
         XCTAssertEqual(result.expectedImprovementSource, fixture.review.expectedImprovementSource)
+        XCTAssertEqual(
+            result.reviewCardSourceTitle,
+            fixture.review.expectedImprovementSource.map(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle)
+        )
         XCTAssertTrue(result.statusMessage.contains("تم تحميل مراجعة القرار. هذه المحاولة موجودة في الإحصاءات.".localized))
         XCTAssertTrue(result.statusMessage.contains("\("تحسن متوقع".localized): +\(fixture.review.expectedImprovement)"))
         XCTAssertTrue(result.statusMessage.contains("\("مصدر التحسن".localized):"))
+        XCTAssertTrue(result.statusMessage.contains("\("سبب ورقة المراجعة".localized): \(try XCTUnwrap(result.reviewCardSourceTitle))"))
     }
 
     func testImporterLoadsCodeEmbeddedInURLPath() async throws {
