@@ -28,6 +28,9 @@ struct PlayerStatsSummary: Equatable {
     let trainingStrength: String
     let trainingWeakness: String
     let trainingAdvice: String
+    let trainingTargetTitle: String
+    let trainingTargetDetail: String
+    let trainingTargetLine: String?
     let decisionPatternTitle: String
     let decisionPatternDetail: String
     let decisionPatternAffectedAttempts: Int
@@ -55,6 +58,7 @@ enum PlayerStatsAnalyzer {
         let qualitySummary = WhatToPlayStatsAnalyzer.decisionQualitySummary(for: whatToPlayAttempts)
         let trainingStyle = WhatToPlayStatsAnalyzer.playStyle(for: whatToPlayAttempts)
         let decisionPattern = WhatToPlayStatsAnalyzer.decisionPattern(for: whatToPlayAttempts)
+        let trainingTarget = WhatToPlayStatsAnalyzer.coachingTip(for: whatToPlayAttempts)
         let scoringSummary = ScoringQuizStatsAnalyzer.summarize(attempts: scoringQuizAttempts)
         let scoringCategoryFocus = scoringCategoryFocus(for: scoringQuizAttempts)
 
@@ -148,6 +152,9 @@ enum PlayerStatsAnalyzer {
             trainingStrength: trainingStyle.strength,
             trainingWeakness: trainingStyle.weakness,
             trainingAdvice: trainingStyle.advice,
+            trainingTargetTitle: trainingTarget.title,
+            trainingTargetDetail: trainingTarget.detail,
+            trainingTargetLine: trainingTarget.targetLine,
             decisionPatternTitle: decisionPattern.title,
             decisionPatternDetail: decisionPattern.detail,
             decisionPatternAffectedAttempts: decisionPattern.affectedAttempts,

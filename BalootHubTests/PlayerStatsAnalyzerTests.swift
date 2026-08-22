@@ -117,6 +117,22 @@ final class PlayerStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(summary.decisionPatternInspectedAttempts, 5)
     }
 
+    func testPlayerStatsIncludesActionableTrainingTargetFromWhatToPlayRecord() {
+        let attempts = (0..<8).map { index in
+            makeTrainingAttempt(seed: UInt64(index), isCorrect: false)
+        }
+
+        let summary = PlayerStatsAnalyzer.summarize(
+            sessions: [],
+            whatToPlayAttempts: attempts,
+            rules: .standard
+        )
+
+        XCTAssertEqual(summary.trainingTargetTitle, "خفف السرعة".localized)
+        XCTAssertTrue(summary.trainingTargetDetail.contains("راجع اللون المطلوب".localized))
+        XCTAssertEqual(summary.trainingTargetLine, "\("المستوى".localized): \("سهل".localized) · \("تركيز التدريب".localized): \("اتباع اللون".localized)")
+    }
+
     func testIncludesScoringQuizCategoryStrengthAndWeakness() throws {
         let scoringAttempts = [
             try makeScoringQuizAttempt(category: .coffee, seedOffset: 0, isCorrect: true),

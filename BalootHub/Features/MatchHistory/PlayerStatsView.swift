@@ -186,6 +186,7 @@ struct PlayerStatsView: View {
             insightRow("نقطة قوة".localized, summary.trainingStrength, "checkmark.circle.fill")
             insightRow("نقطة ضعف".localized, summary.trainingWeakness, "exclamationmark.circle.fill")
             insightRow("نصيحة التدريب".localized, summary.trainingAdvice, "lightbulb.fill")
+            trainingTargetRow
 
             Divider()
 
@@ -206,6 +207,33 @@ struct PlayerStatsView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+    }
+
+    private var trainingTargetRow: some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(summary.trainingTargetTitle)
+                    .font(AppTypography.caption.weight(.semibold))
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(summary.trainingTargetDetail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                if let targetLine = summary.trainingTargetLine, !targetLine.isEmpty {
+                    Text(targetLine)
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(AppColor.primary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+        } icon: {
+            Image(systemName: "scope")
+                .foregroundStyle(AppColor.primary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.sm)
+        .background(AppColor.primary.opacity(0.10), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
     }
 
     private func insightRow(_ title: String, _ detail: String, _ icon: String) -> some View {
