@@ -444,6 +444,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
             contextLine: "صعب · ضغط الحكم · حكم سباتي",
             iconName: "arrow.clockwise.circle.fill",
             replaySeed: nil,
+            replayScenarioCode: "WTP-901-hard-trumpPressure-hokum.3-C37",
             nextSeed: 901,
             difficulty: .hard,
             focusKind: .trumpPressure,
@@ -465,6 +466,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("الصعوبة".localized): \("صعب".localized)"))
         XCTAssertTrue(text.contains("\("تركيز التدريب".localized): \("ضغط الحكم".localized)"))
         XCTAssertTrue(text.contains("\("النمط".localized): \(GameMode.hokum.arabicName) \(Suit.spades.spokenName)"))
+        XCTAssertTrue(text.contains("\("رمز الموقف".localized): \(try XCTUnwrap(review.replayScenarioCode))"))
         XCTAssertTrue(text.contains("\("Seed".localized): 901"))
         XCTAssertTrue(text.contains("\("ورقة المراجعة".localized): \(recommendedCard.accessibilityName)"))
         XCTAssertTrue(text.contains("\("تحسن متوقع".localized): +12"))
@@ -493,6 +495,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("مراجعة جلسة وش تلعب؟".localized))
         XCTAssertTrue(text.contains("\("Seed".localized): 2026"))
         XCTAssertFalse(text.contains("إعادة محاولة".localized))
+        XCTAssertFalse(text.contains("رمز الموقف".localized))
         XCTAssertFalse(text.contains("ورقة المراجعة".localized))
         XCTAssertFalse(text.contains("تحسن متوقع".localized))
     }

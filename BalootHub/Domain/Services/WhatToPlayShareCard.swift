@@ -406,6 +406,9 @@ enum WhatToPlayShareCard {
                 "\("النمط".localized): \(modeText(mode: review.gameMode, trumpSuit: review.trumpSuit))"
             )
         }
+        if let scenarioCode = review.replayScenarioCode {
+            lines.append("\("رمز الموقف".localized): \(scenarioCode)")
+        }
         if let seed = review.replaySeed ?? review.nextSeed {
             lines.append("\("Seed".localized): \(seed)")
         }
