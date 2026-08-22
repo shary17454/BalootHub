@@ -117,6 +117,19 @@ struct WhatToPlayChallengeProgress: Equatable {
         seedSeries.first { !completedSeeds.contains($0) }
     }
 
+    var remainingSeeds: [UInt64] {
+        seedSeries.filter { !completedSeeds.contains($0) }
+    }
+
+    var remainingSeedSummary: String {
+        let remaining = remainingSeeds
+        guard !remaining.isEmpty else { return "مكتمل".localized }
+        let preview = remaining.prefix(3).map(String.init).joined(separator: "، ")
+        let hiddenCount = remaining.count - min(remaining.count, 3)
+        guard hiddenCount > 0 else { return preview }
+        return "\(preview) +\(hiddenCount)"
+    }
+
     var hasAttemptedNextSeed: Bool {
         guard let nextSeed else { return false }
         return attemptedSeeds.contains(nextSeed)

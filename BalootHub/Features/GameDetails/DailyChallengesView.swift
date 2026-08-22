@@ -149,6 +149,9 @@ struct DailyChallengesView: View {
                     GridItem(.flexible(), spacing: AppSpacing.xs)
                 ], spacing: AppSpacing.xs) {
                     scoreBox(title: "موقف اليوم".localized, value: nextSeed.map(String.init) ?? "مكتمل".localized)
+                    if let whatToPlayProgress {
+                        scoreBox(title: "باقي".localized, value: whatToPlayProgress.remainingSeedSummary)
+                    }
                     scoreBox(title: "المستوى".localized, value: difficultyTitle(difficulty))
                     scoreBox(title: "تركيز التدريب".localized, value: focusTitle(focusKind))
                     scoreBox(title: "النمط".localized, value: modeTitle(gameMode))

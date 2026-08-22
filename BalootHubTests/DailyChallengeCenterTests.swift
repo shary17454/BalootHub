@@ -729,6 +729,32 @@ final class DailyChallengeCenterTests: XCTestCase {
         XCTAssertFalse(progress.completedSeeds.contains(seed &+ 1))
     }
 
+    func testWhatToPlayProgressSummarizesRemainingChallengeSeeds() throws {
+        let calendar = Calendar(identifier: .gregorian)
+        let date = Date(timeIntervalSince1970: 1_785_888_000)
+        let challenge = challengeWithWhatToPlaySeed(targetCount: 6)
+        let difficulty = try XCTUnwrap(challenge.whatToPlayDifficulty)
+        let focusKind = try XCTUnwrap(challenge.whatToPlayFocusKind)
+        let gameMode = try XCTUnwrap(challenge.whatToPlayGameMode)
+        let trumpSuit = challenge.whatToPlayTrumpSuit
+        let seed = try XCTUnwrap(challenge.whatToPlaySeed)
+        let dayStart = calendar.startOfDay(for: date)
+        let attempts = [
+            attempt(at: dayStart.addingTimeInterval(60), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, trumpSuit: trumpSuit, seed: seed),
+            attempt(at: dayStart.addingTimeInterval(120), difficulty: difficulty, focusKind: focusKind, gameMode: gameMode, trumpSuit: trumpSuit, seed: seed &+ 2)
+        ]
+
+        let progress = try XCTUnwrap(DailyChallengeCenter.whatToPlayProgress(
+            for: challenge,
+            attempts: attempts,
+            now: date,
+            calendar: calendar
+        ))
+
+        XCTAssertEqual(progress.remainingSeeds, [seed &+ 1, seed &+ 3, seed &+ 4, seed &+ 5])
+        XCTAssertEqual(progress.remainingSeedSummary, "\(seed &+ 1)، \(seed &+ 3)، \(seed &+ 4) +1")
+    }
+
     func testWhatToPlayProgressTracksWrongAttemptWithoutCompletingSeed() throws {
         let calendar = Calendar(identifier: .gregorian)
         let date = Date(timeIntervalSince1970: 1_785_888_000)
