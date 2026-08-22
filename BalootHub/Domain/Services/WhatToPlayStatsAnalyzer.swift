@@ -4706,6 +4706,15 @@ enum WhatToPlayStatsAnalyzer {
         }
     }
 
+    static func reviewCardSourceTitle(for reviewItem: WhatToPlayReviewItem) -> String? {
+        let improvement = microDrillExpectedImprovementMetrics(for: reviewItem)
+        guard improvement.points > 0,
+              recommendedReviewCard(for: reviewItem) != nil
+        else { return nil }
+
+        return expectedImprovementSourceTitle(for: improvement.source)
+    }
+
     private static func recommendedReviewCard(for reviewItem: WhatToPlayReviewItem) -> PlayingCard? {
         let improvement = WhatToPlayExpectedImprovementMetrics.calculate(
             lostExpectedPoints: reviewItem.lostExpectedPoints,

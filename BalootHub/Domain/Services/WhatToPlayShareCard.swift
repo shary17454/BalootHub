@@ -759,6 +759,9 @@ enum WhatToPlayShareCard {
             "\("أفضل ورقة".localized): \(cardName(item.bestCard))",
             "\("سبب المراجعة".localized): \(item.detail)"
         ]
+        if let reviewCardSourceTitle = WhatToPlayStatsAnalyzer.reviewCardSourceTitle(for: item) {
+            lines.append("\("سبب ورقة المراجعة".localized): \(reviewCardSourceTitle)")
+        }
         if let secondBestCard = item.secondBestCard {
             lines.append("\("ثاني أفضل".localized): \(secondBestCard.accessibilityName)")
         }
