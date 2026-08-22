@@ -82,6 +82,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(content.legalCards.allSatisfy { $0.projectedTeamPoints == nil })
         XCTAssertTrue(content.legalCards.allSatisfy { $0.expectedImprovement == nil })
         XCTAssertTrue(content.legalCards.allSatisfy { $0.expectedImprovementSourceTitle == nil })
+        XCTAssertTrue(content.legalCards.allSatisfy { $0.rationale == nil })
         XCTAssertFalse(content.legalCards.contains { $0.isExpertChoice })
         let checklist = WhatToPlayStatsAnalyzer.preDecisionChecklist(for: scenario)
         XCTAssertEqual(content.checklistTitle, checklist.title)
@@ -226,10 +227,12 @@ final class WhatToPlayShareCardTests: XCTestCase {
                             for: improvement.source
                         )
                         : nil,
+                    rationale: option.explanation,
                     isExpertChoice: option.isExpertChoice
                 )
             )
             XCTAssertTrue(text.contains("- \(line)"))
+            XCTAssertTrue(text.contains("\("سبب الخيار".localized): \(option.explanation)"))
         }
         XCTAssertTrue(text.contains("\("ترتيب اختياري".localized): \(selected.rank)"))
         XCTAssertTrue(text.contains("\("نقاط متوقعة ضائعة".localized): \(max(0, best.expectedImpact - selected.expectedImpact))"))

@@ -18,6 +18,7 @@ struct WhatToPlayShareCardContent: Equatable {
         let projectedTeamPoints: Int?
         let expectedImprovement: Int?
         let expectedImprovementSourceTitle: String?
+        let rationale: String?
         let isExpertChoice: Bool
     }
 
@@ -167,6 +168,7 @@ enum WhatToPlayShareCard {
                     expectedImprovementSourceTitle: shouldRevealOptionImpact
                         ? improvementSourceTitle(improvement: improvement.points, source: improvement.source)
                         : nil,
+                    rationale: shouldRevealOptionImpact ? option.explanation : nil,
                     isExpertChoice: shouldRevealOptionImpact && option.isExpertChoice
                 )
             },
@@ -649,6 +651,9 @@ enum WhatToPlayShareCard {
         }
         if let expectedImprovementSourceTitle = legalCard.expectedImprovementSourceTitle {
             parts.append("\("مصدر التحسن".localized): \(expectedImprovementSourceTitle)")
+        }
+        if let rationale = legalCard.rationale, !rationale.isEmpty {
+            parts.append("\("سبب الخيار".localized): \(rationale)")
         }
         if legalCard.isExpertChoice {
             parts.append("اختيار الخبير".localized)
