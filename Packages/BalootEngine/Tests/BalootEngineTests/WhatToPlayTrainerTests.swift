@@ -1779,7 +1779,29 @@ struct WhatToPlayTrainerTests {
         #expect(secondProjectionRecommendation.lostProjectedTeamPoints == 2)
         #expect(secondProjectionRecommendation.lostProjectedAgainstSecondBestPoints == 16)
         #expect(secondProjectionRecommendation.expectedImprovement == 16)
-        #expect(secondProjectionRecommendation.recommendedCard == bestProjectedOption.card)
+        #expect(secondProjectionRecommendation.recommendedCard == secondBestProjectedOption.card)
+    }
+
+    @Test("توصية الإجراء التالي ترجح ثاني أفضل محاكاة عندما تكون أعلى فاقد")
+    func nextActionRecommendationRecommendedCardUsesSecondProjectionLoss() {
+        let selected = projectedOption(card: .init(suit: .clubs, rank: .seven), rank: 4, expectedImpact: 4, projectedTeamPoints: 50)
+        let best = projectedOption(card: .init(suit: .hearts, rank: .ace), rank: 1, expectedImpact: 7, projectedTeamPoints: 54)
+        let bestProjected = projectedOption(card: .init(suit: .spades, rank: .ace), rank: 2, expectedImpact: 6, projectedTeamPoints: 57)
+        let secondBestProjected = projectedOption(card: .init(suit: .diamonds, rank: .jack), rank: 3, expectedImpact: 5, projectedTeamPoints: 68)
+        let recommendation = WhatToPlayNextActionRecommendation(
+            kind: .reviewSimulation,
+            selectedOption: selected,
+            bestOption: best,
+            bestProjectedOption: bestProjected,
+            secondBestOption: bestProjected,
+            secondBestProjectedOption: secondBestProjected,
+            lostExpectedPoints: 3,
+            lostProjectedTeamPoints: 7,
+            lostProjectedAgainstSecondBestPoints: 18
+        )
+
+        #expect(recommendation.expectedImprovement == 18)
+        #expect(recommendation.recommendedCard == secondBestProjected.card)
     }
 
     @Test("أرقام Replay لقرار وش تلعب تأتي من مراجعة خيارات المحرك")

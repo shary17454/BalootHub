@@ -3186,9 +3186,18 @@ public struct WhatToPlayNextActionRecommendation: Sendable, Equatable {
     }
 
     public var recommendedCard: PlayingCard {
-        max(lostProjectedTeamPoints, lostProjectedAgainstSecondBestPoints) > lostExpectedPoints
-            ? bestProjectedOption.card
-            : bestOption.card
+        switch WhatToPlayExpectedImprovementMetrics.calculate(
+            lostExpectedPoints: lostExpectedPoints,
+            lostProjectedTeamPoints: lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: lostProjectedAgainstSecondBestPoints
+        ).source {
+        case .projectedTeamPoints:
+            return bestProjectedOption.card
+        case .projectedSecondBestPoints:
+            return secondBestProjectedOption?.card ?? bestProjectedOption.card
+        case .expectedPoints:
+            return bestOption.card
+        }
     }
 
     public var expectedImprovement: Int {
