@@ -64,6 +64,30 @@ final class WhatToPlayShareCodeImportViewTests: XCTestCase {
         XCTAssertEqual(view.shareCodeStatusAccessibilityLabel(for: message), (1...11).map { "سطر \($0)" }.joined(separator: "، "))
     }
 
+    func testShareCodeStatusDisplayTextPreservesImportedTrumpSuitLine() {
+        let view = WhatToPlayTrainerView()
+        let trumpSuitLine = "\("لون الحكم".localized): \(Suit.spades.spokenName)"
+        let message = [
+            "تم تحميل مراجعة القرار".localized,
+            "\("رمز الموقف".localized): WTP-2026-medium-trumpPressure-hokum-spades-C37",
+            "السياق: حكم",
+            "الدور: اللاعب 1",
+            "الأفضل: إكة سباتي",
+            "اختيارك: عشرة هاص",
+            "الأثر المتوقع: -8",
+            "تفسير: قطع الحكم هنا يحمي الأكلة",
+            trumpSuitLine,
+            "نهاية المراجعة"
+        ].joined(separator: "\n")
+
+        let display = view.shareCodeStatusDisplayText(for: message, maxLines: 8)
+
+        XCTAssertTrue(display.contains(trumpSuitLine))
+        XCTAssertFalse(display.contains("تفسير: قطع الحكم هنا يحمي الأكلة"))
+        XCTAssertTrue(display.contains("+2 \("سطر إضافي في المراجعة".localized)"))
+        XCTAssertTrue(view.shareCodeStatusAccessibilityLabel(for: message).contains(trumpSuitLine))
+    }
+
     func testShareCodeImportFormatsSimulationAlternativeLine() async throws {
         let view = WhatToPlayTrainerView()
         let result = try await importedResultWithSimulationAlternative()

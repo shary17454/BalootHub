@@ -178,8 +178,31 @@ extension WhatToPlayTrainerView {
             .split(whereSeparator: \.isNewline)
             .map(String.init)
         guard lines.count > maxLines else { return message }
-        let hiddenCount = lines.count - maxLines
-        return (Array(lines.prefix(maxLines)) + ["+\(hiddenCount) \("سطر إضافي في المراجعة".localized)"])
+
+        let priorityPrefixes = [
+            "\("لون الحكم".localized):"
+        ]
+        var selectedIndexes = Set(0..<min(maxLines, lines.count))
+        let priorityIndexes = lines.indices.filter { index in
+            priorityPrefixes.contains { prefix in
+                lines[index].hasPrefix(prefix)
+            }
+        }
+        for index in priorityIndexes {
+            selectedIndexes.insert(index)
+        }
+        while selectedIndexes.count > maxLines,
+              let removableIndex = selectedIndexes
+                .filter({ $0 != 0 && !priorityIndexes.contains($0) })
+                .max() {
+            selectedIndexes.remove(removableIndex)
+        }
+
+        let visibleLines = selectedIndexes
+            .sorted()
+            .map { lines[$0] }
+        let hiddenCount = lines.count - visibleLines.count
+        return (visibleLines + ["+\(hiddenCount) \("سطر إضافي في المراجعة".localized)"])
             .joined(separator: "\n")
     }
 
