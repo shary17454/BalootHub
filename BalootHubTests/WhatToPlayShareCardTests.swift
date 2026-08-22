@@ -549,6 +549,50 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertFalse(text.contains("إعادة الموقف".localized))
     }
 
+    func testTrainingSessionProgressShareTextIncludesSessionDecisionHighlights() {
+        let bestCard = PlayingCard(suit: .hearts, rank: .ace)
+        let worstCard = PlayingCard(suit: .spades, rank: .seven)
+        let plan = WhatToPlayTrainingSessionPlan(
+            difficulty: .medium,
+            seedBase: 800,
+            scenarioCount: 2,
+            targetAccuracyPercent: 50,
+            targetAverageExpectedImpact: 0,
+            title: "خطة اختبار",
+            detail: "تفاصيل اختبار",
+            successMetric: "هدف اختبار",
+            iconName: "target"
+        )
+        let attempts = [
+            WhatToPlayAttempt(
+                difficulty: .medium,
+                seed: 800,
+                selectedCard: bestCard,
+                bestCard: bestCard,
+                isCorrect: true,
+                expectedImpact: 7,
+                bestExpectedImpact: 7
+            ),
+            WhatToPlayAttempt(
+                difficulty: .medium,
+                seed: 801,
+                selectedCard: worstCard,
+                bestCard: PlayingCard(suit: .clubs, rank: .ace),
+                isCorrect: false,
+                expectedImpact: -2,
+                bestExpectedImpact: 5
+            )
+        ]
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        let text = WhatToPlayShareCard.trainingSessionProgressText(for: progress)
+
+        XCTAssertTrue(text.contains("\("أفضل قرار في الجلسة".localized): \(bestCard.accessibilityName)"))
+        XCTAssertTrue(text.contains("\("أثر القرار".localized): +7"))
+        XCTAssertTrue(text.contains("\("أسوأ قرار في الجلسة".localized): \(worstCard.accessibilityName)"))
+        XCTAssertTrue(text.contains("\("فاقد القرار".localized): 7"))
+    }
+
     func testShareCardImageFileNameUsesFullScenarioCode() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(
             seed: 2026,

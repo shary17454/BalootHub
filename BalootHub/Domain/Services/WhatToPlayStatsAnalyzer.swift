@@ -620,6 +620,8 @@ struct WhatToPlayTrainingSessionProgress: Equatable {
     let impactTitle: String
     let impactDetail: String
     let impactIconName: String
+    let bestDecisionHighlight: WhatToPlayDecisionHighlight?
+    let worstDecisionHighlight: WhatToPlayDecisionHighlight?
     let reviewItem: WhatToPlayReviewItem?
     let remainingAttempts: Int
     let nextSeed: UInt64?
@@ -2269,6 +2271,8 @@ enum WhatToPlayStatsAnalyzer {
             completedAttempts: progressMetrics.completedAttempts,
             averageExpectedImpact: progressMetrics.averageExpectedImpact
         )
+        let bestDecisionHighlight = bestDecisionHighlight(for: sessionAttempts)
+        let worstDecisionHighlight = worstDecisionHighlight(for: sessionAttempts)
         let reviewItem = reviewQueue(for: sessionAttempts, limit: 1).first
         let nextStep = trainingSessionNextStep(
             state: progressState,
@@ -2338,6 +2342,8 @@ enum WhatToPlayStatsAnalyzer {
                 impactTitle: impactReading.title,
                 impactDetail: impactReading.detail,
                 impactIconName: impactReading.iconName,
+                bestDecisionHighlight: nil,
+                worstDecisionHighlight: nil,
                 reviewItem: nil,
                 remainingAttempts: progressMetrics.remainingAttempts,
                 nextSeed: nextSeed,
@@ -2400,6 +2406,8 @@ enum WhatToPlayStatsAnalyzer {
                 impactTitle: impactReading.title,
                 impactDetail: impactReading.detail,
                 impactIconName: impactReading.iconName,
+                bestDecisionHighlight: bestDecisionHighlight,
+                worstDecisionHighlight: worstDecisionHighlight,
                 reviewItem: reviewItem,
                 remainingAttempts: progressMetrics.remainingAttempts,
                 nextSeed: nextSeed,
@@ -2462,6 +2470,8 @@ enum WhatToPlayStatsAnalyzer {
                 impactTitle: impactReading.title,
                 impactDetail: impactReading.detail,
                 impactIconName: impactReading.iconName,
+                bestDecisionHighlight: bestDecisionHighlight,
+                worstDecisionHighlight: worstDecisionHighlight,
                 reviewItem: reviewItem,
                 remainingAttempts: progressMetrics.remainingAttempts,
                 nextSeed: nextSeed,
@@ -2523,6 +2533,8 @@ enum WhatToPlayStatsAnalyzer {
             impactTitle: impactReading.title,
             impactDetail: impactReading.detail,
             impactIconName: impactReading.iconName,
+            bestDecisionHighlight: bestDecisionHighlight,
+            worstDecisionHighlight: worstDecisionHighlight,
             reviewItem: reviewItem,
             remainingAttempts: progressMetrics.remainingAttempts,
             nextSeed: nextSeed,

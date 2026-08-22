@@ -3883,6 +3883,27 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(progress.remainingAttempts, 1)
     }
 
+    func testTrainingSessionProgressHighlightsBestAndWorstSessionDecisionsOnly() {
+        let plan = sessionPlan(difficulty: .medium, count: 3, target: 67)
+        let ignoredBestCard = PlayingCard(suit: .clubs, rank: .ace)
+        let bestCard = PlayingCard(suit: .hearts, rank: .ace)
+        let worstCard = PlayingCard(suit: .spades, rank: .seven)
+        let attempts = [
+            attempt(daysAgo: 4, difficulty: .hard, correct: true, impact: 20, bestImpact: 20, selectedCard: ignoredBestCard, seed: 500),
+            attempt(daysAgo: 3, difficulty: .medium, correct: true, impact: 6, bestImpact: 6, selectedCard: bestCard, seed: 11),
+            attempt(daysAgo: 2, difficulty: .medium, correct: false, impact: -3, bestImpact: 5, selectedCard: worstCard, seed: 12),
+            attempt(daysAgo: 1, difficulty: .medium, correct: true, impact: 2, bestImpact: 2, seed: 13)
+        ]
+
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        XCTAssertEqual(progress.bestDecisionHighlight?.selectedCard, bestCard)
+        XCTAssertEqual(progress.bestDecisionHighlight?.expectedImpact, 6)
+        XCTAssertEqual(progress.worstDecisionHighlight?.selectedCard, worstCard)
+        XCTAssertEqual(progress.worstDecisionHighlight?.lostExpectedPoints, 8)
+        XCTAssertEqual(progress.worstDecisionHighlight?.totalLoss, 8)
+    }
+
     func testTrainingSessionProgressTracksProjectedLossForSessionAttemptsOnly() {
         let plan = sessionPlan(difficulty: .medium, count: 3, target: 67)
         let attempts = [

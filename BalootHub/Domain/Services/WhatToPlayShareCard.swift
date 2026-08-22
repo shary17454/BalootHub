@@ -442,6 +442,12 @@ enum WhatToPlayShareCard {
         lines.append("\("تقييم الجلسة".localized): \(progress.gradeTitle) · \(progress.gradePercent)/100")
         lines.append(progress.gradeDetail)
         lines.append("\(progress.gradeReasonTitle): \(progress.gradeReasonDetail)")
+        if let bestDecisionHighlight = progress.bestDecisionHighlight {
+            lines.append("\("أفضل قرار في الجلسة".localized): \(decisionHighlightText(bestDecisionHighlight))")
+        }
+        if let worstDecisionHighlight = progress.worstDecisionHighlight, worstDecisionHighlight.totalLoss > 0 {
+            lines.append("\("أسوأ قرار في الجلسة".localized): \(decisionHighlightText(worstDecisionHighlight))")
+        }
         lines.append("\("الخطوة التالية".localized): \(progress.nextStepTitle)")
         lines.append(progress.nextStepDetail)
 
@@ -558,6 +564,14 @@ enum WhatToPlayShareCard {
         case .complete:
             return "الجلسة مكتملة".localized
         }
+    }
+
+    private static func decisionHighlightText(_ highlight: WhatToPlayDecisionHighlight) -> String {
+        let cardName = highlight.selectedCard?.accessibilityName ?? "غير محدد".localized
+        if highlight.totalLoss > 0 {
+            return "\(cardName) · \("فاقد القرار".localized): \(highlight.totalLoss)"
+        }
+        return "\(cardName) · \("أثر القرار".localized): \(impactText(highlight.expectedImpact))"
     }
 
     private static func impactText(_ value: Int) -> String {

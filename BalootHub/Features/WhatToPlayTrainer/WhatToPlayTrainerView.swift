@@ -881,6 +881,23 @@ struct WhatToPlayTrainerView: View {
                 .foregroundStyle(AppColor.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
 
+            if let highlight = progress.bestDecisionHighlight {
+                decisionHighlightView(
+                    title: "أفضل قرار في الجلسة".localized,
+                    icon: "sparkles",
+                    highlight: highlight,
+                    tint: AppColor.success
+                )
+            }
+            if let highlight = progress.worstDecisionHighlight, highlight.totalLoss > 0 {
+                decisionHighlightView(
+                    title: "أسوأ قرار في الجلسة".localized,
+                    icon: "exclamationmark.triangle.fill",
+                    highlight: highlight,
+                    tint: AppColor.danger
+                )
+            }
+
             Label {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(progress.impactTitle)
