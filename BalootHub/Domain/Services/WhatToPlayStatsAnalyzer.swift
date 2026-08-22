@@ -5075,13 +5075,21 @@ enum WhatToPlayStatsAnalyzer {
                 targetFocusKind: .narrowChoice
             )
         case .secondSimulationReview:
+            let targetTrumpSuit = trumpPriority?.suit
             return WhatToPlayCoachingTip(
                 title: "راجع المحاكاة".localized,
                 detail: "\("متوسط فاقد ثاني محاكاة".localized): \(metrics.averageProjectedSecondBestGap). \("راجع ثاني أفضل محاكاة قبل اعتماد قرار يبدو صحيحًا.".localized)",
                 iconName: "chart.bar.xaxis",
-                targetLine: coachingTargetLine(difficulty: .hard, focusKind: .trumpPressure, gameMode: nil),
+                targetLine: coachingTargetLine(
+                    difficulty: .hard,
+                    focusKind: .trumpPressure,
+                    gameMode: targetTrumpSuit == nil ? nil : .hokum,
+                    trumpSuit: targetTrumpSuit
+                ),
                 targetDifficulty: .hard,
-                targetFocusKind: .trumpPressure
+                targetFocusKind: .trumpPressure,
+                targetGameMode: targetTrumpSuit == nil ? nil : .hokum,
+                targetTrumpSuit: targetTrumpSuit
             )
         case .narrowChoices:
             return WhatToPlayCoachingTip(

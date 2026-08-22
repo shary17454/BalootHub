@@ -4687,6 +4687,24 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertNil(tip.targetGameMode)
     }
 
+    func testCoachingTipForSecondSimulationLossTargetsWeakTrumpSuitWhenAvailable() {
+        let attempts = [
+            attempt(daysAgo: 3, correct: true, impact: 3, selectedRank: 1, gameMode: .hokum, projectedTeamPoints: 42, secondBestProjectedTeamPoints: 50, scenarioContext: hokumContext(trumpSuit: .hearts)),
+            attempt(daysAgo: 2, correct: true, impact: 2, selectedRank: 1, gameMode: .hokum, projectedTeamPoints: 44, secondBestProjectedTeamPoints: 52, scenarioContext: hokumContext(trumpSuit: .hearts)),
+            attempt(daysAgo: 1, correct: true, impact: 4, selectedRank: 1, gameMode: .hokum, projectedTeamPoints: 46, secondBestProjectedTeamPoints: 54, scenarioContext: hokumContext(trumpSuit: .hearts))
+        ]
+
+        let tip = WhatToPlayStatsAnalyzer.coachingTip(for: attempts)
+
+        XCTAssertEqual(tip.title, "راجع المحاكاة".localized)
+        XCTAssertEqual(tip.targetGameMode, .hokum)
+        XCTAssertEqual(tip.targetTrumpSuit, .hearts)
+        XCTAssertEqual(
+            tip.targetLine,
+            "\("المستوى".localized): \("صعب".localized) · \("تركيز التدريب".localized): \("ضغط الحكم".localized) · \("النمط".localized): \("حكم".localized) · \("لون الحكم".localized): \(Suit.hearts.spokenName)"
+        )
+    }
+
     func testCoachingTipForCurrentStreakEncouragesHarderPractice() {
         let attempts = [
             attempt(daysAgo: 3, correct: true, impact: 4),
