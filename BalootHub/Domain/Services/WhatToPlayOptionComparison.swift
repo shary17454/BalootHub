@@ -331,7 +331,7 @@ enum WhatToPlayOptionComparison {
               secondBestProjectedOption.card != recommendation.bestProjectedOption.card
         else { return "" }
 
-        return " \("ثاني نتيجة محاكاة".localized): \(secondBestProjectedOption.card.accessibilityName)."
+        return " \("ثاني محاكاة".localized): \(secondBestProjectedOption.card.accessibilityName). \("ثاني نتيجة محاكاة".localized): \(secondBestProjectedOption.projectedTeamPoints)."
     }
 
     private static func reviewCardText(for recommendation: WhatToPlayNextActionRecommendation) -> String {

@@ -174,8 +174,8 @@ final class WhatToPlayOptionComparisonTests: XCTestCase {
             WhatToPlayTrainer.nextActionRecommendation(in: scenario, selectedCard: selected.card)
         )
 
-        XCTAssertTrue(summary.nextActionDetail?.contains("ثاني نتيجة محاكاة".localized) ?? false)
-        XCTAssertTrue(summary.nextActionDetail?.contains(secondBestSimulation.card.accessibilityName) ?? false)
+        XCTAssertTrue(summary.nextActionDetail?.contains("\("ثاني محاكاة".localized): \(secondBestSimulation.card.accessibilityName)") ?? false)
+        XCTAssertTrue(summary.nextActionDetail?.contains("\("ثاني نتيجة محاكاة".localized): \(secondBestSimulation.projectedTeamPoints)") ?? false)
         XCTAssertTrue(summary.nextActionDetail?.contains("ورقة المراجعة".localized) ?? false)
         XCTAssertTrue(summary.nextActionDetail?.contains(recommendation.recommendedCard.accessibilityName) ?? false)
         XCTAssertEqual(
