@@ -107,7 +107,7 @@ enum WhatToPlayShareCodeImporter {
             kind: .reviewedDecision(isDuplicate: isDuplicate),
             canonicalScenarioCode: scenarioCode,
             expectedImprovement: improvement.points,
-            expectedImprovementSource: improvement.source
+            expectedImprovementSource: improvement.points > 0 ? improvement.source : nil
         )
     }
 

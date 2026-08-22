@@ -46,6 +46,25 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertTrue(result.statusMessage.contains("\("رمز الموقف".localized): \(code)"))
     }
 
+    func testImporterOmitsImprovementContextForExpertReviewedDecision() async throws {
+        let scenario = try await WhatToPlayScenarioLoader.generate(
+            seed: 2026,
+            difficulty: .easy,
+            preferredFocus: .followSuit
+        )
+        let selected = try XCTUnwrap(scenario.options.first { $0.isExpertChoice })
+        let code = WhatToPlayShareCard.content(for: scenario, selectedOption: selected).scenarioCode
+
+        let result = try await WhatToPlayShareCodeImporter.import(code: code, existingScenarioCodes: [])
+
+        XCTAssertEqual(result.kind, .reviewedDecision(isDuplicate: false))
+        XCTAssertEqual(result.selectedOption?.card, selected.card)
+        XCTAssertEqual(result.expectedImprovement, 0)
+        XCTAssertNil(result.expectedImprovementSource)
+        XCTAssertFalse(result.statusMessage.contains("تحسن متوقع".localized))
+        XCTAssertFalse(result.statusMessage.contains("مصدر التحسن".localized))
+    }
+
     func testImporterCanRunOffMainActor() async throws {
         let scenario = try await WhatToPlayScenarioLoader.generate(
             seed: 2026,
