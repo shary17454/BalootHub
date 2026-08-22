@@ -23,6 +23,8 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.statusTone, .prompt)
         XCTAssertTrue(result.statusMessage.contains("تم تحميل الموقف. اختر الورقة الأفضل.".localized))
         XCTAssertTrue(result.statusMessage.contains("\("رمز الموقف".localized): \(code)"))
+        XCTAssertFalse(result.statusMessage.contains("اختيارك".localized))
+        XCTAssertFalse(result.statusMessage.contains("أفضل ورقة".localized))
     }
 
     func testImporterLoadsReviewedDecisionAndCreatesAttempt() async throws {
@@ -44,6 +46,12 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertEqual(result.statusTone, .savedReview)
         XCTAssertTrue(result.statusMessage.contains("تم تحميل مراجعة القرار وإضافتها للإحصاءات.".localized))
         XCTAssertTrue(result.statusMessage.contains("\("رمز الموقف".localized): \(code)"))
+        XCTAssertTrue(result.statusMessage.contains("\("اختيارك".localized): \(selected.card.accessibilityName)"))
+        XCTAssertTrue(result.statusMessage.contains("\("أفضل ورقة".localized): \(try XCTUnwrap(scenario.bestOption?.card.accessibilityName))"))
+        if let secondBest = scenario.secondBestOption,
+           secondBest.card != scenario.bestOption?.card {
+            XCTAssertTrue(result.statusMessage.contains("\("ثاني أفضل".localized): \(secondBest.card.accessibilityName)"))
+        }
     }
 
     func testImporterOmitsImprovementContextForExpertReviewedDecision() async throws {

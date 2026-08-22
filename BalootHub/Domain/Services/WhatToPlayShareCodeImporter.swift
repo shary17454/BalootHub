@@ -38,6 +38,16 @@ struct WhatToPlayShareCodeImportResult {
             message,
             "\("رمز الموقف".localized): \(canonicalScenarioCode)"
         ]
+        if let selectedOption {
+            lines.append("\("اختيارك".localized): \(selectedOption.card.accessibilityName)")
+            if let bestOption = scenario.bestOption {
+                lines.append("\("أفضل ورقة".localized): \(bestOption.card.accessibilityName)")
+            }
+            if let secondBestOption = scenario.secondBestOption,
+               secondBestOption.card != scenario.bestOption?.card {
+                lines.append("\("ثاني أفضل".localized): \(secondBestOption.card.accessibilityName)")
+            }
+        }
         if expectedImprovement > 0, let expectedImprovementSource {
             lines.append("\("تحسن متوقع".localized): +\(expectedImprovement)")
             lines.append("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: expectedImprovementSource))")
