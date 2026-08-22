@@ -817,6 +817,10 @@ struct WhatToPlayTrainerView: View {
                 }
                 if progress.expectedImprovement > 0, let source = progress.expectedImprovementSource {
                     miniPlanMetric(
+                        title: "تحسن متوقع".localized,
+                        value: "+\(progress.expectedImprovement)"
+                    )
+                    miniPlanMetric(
                         title: "مصدر التحسن".localized,
                         value: WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: source)
                     )

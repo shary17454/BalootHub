@@ -494,6 +494,7 @@ enum WhatToPlayShareCard {
             lines.append("\("فاقد ثاني محاكاة".localized): \(progress.lostProjectedAgainstSecondBestPoints)")
         }
         if progress.expectedImprovement > 0, let source = progress.expectedImprovementSource {
+            lines.append("\("تحسن متوقع".localized): +\(progress.expectedImprovement)")
             lines.append("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: source))")
         }
 
