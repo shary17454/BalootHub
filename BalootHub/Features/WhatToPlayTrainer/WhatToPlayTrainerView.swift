@@ -4513,6 +4513,12 @@ struct WhatToPlayShareCardPreview: View {
             if let nextActionDetail = content.nextActionDetail {
                 shareNote(nextActionDetail)
             }
+            if let nextActionExpectedImprovement = content.nextActionExpectedImprovement {
+                shareChip("\("تحسن متوقع".localized): +\(nextActionExpectedImprovement)")
+            }
+            if let nextActionExpectedImprovementSourceTitle = content.nextActionExpectedImprovementSourceTitle {
+                shareChip("\("مصدر التحسن".localized): \(nextActionExpectedImprovementSourceTitle)")
+            }
             if let retryPromptTitle = content.retryPromptTitle {
                 shareChip("\("تدريب الإعادة".localized): \(retryPromptTitle)")
             }
@@ -4524,6 +4530,9 @@ struct WhatToPlayShareCardPreview: View {
             }
             if let retryPromptExpectedImprovement = content.retryPromptExpectedImprovement {
                 shareChip("\("تحسن متوقع".localized): +\(retryPromptExpectedImprovement)")
+            }
+            if let retryPromptExpectedImprovementSourceTitle = content.retryPromptExpectedImprovementSourceTitle {
+                shareChip("\("مصدر التحسن".localized): \(retryPromptExpectedImprovementSourceTitle)")
             }
             if let lostAgainstSecondBestPoints = content.lostAgainstSecondBestPoints {
                 shareChip("\("فارق عن ثاني أفضل".localized): \(lostAgainstSecondBestPoints)")

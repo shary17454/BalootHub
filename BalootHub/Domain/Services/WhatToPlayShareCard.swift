@@ -51,10 +51,13 @@ struct WhatToPlayShareCardContent: Equatable {
     let bestMoveConfidenceDetail: String?
     let nextActionTitle: String?
     let nextActionDetail: String?
+    let nextActionExpectedImprovement: Int?
+    let nextActionExpectedImprovementSourceTitle: String?
     let retryPromptTitle: String?
     let retryPromptDetail: String?
     let retryPromptRecommendedCardName: String?
     let retryPromptExpectedImprovement: Int?
+    let retryPromptExpectedImprovementSourceTitle: String?
     let selectedRank: Int?
     let selectedImpact: Int?
     let selectedImpactDetail: String?
@@ -109,6 +112,9 @@ enum WhatToPlayShareCard {
         let decisionQualityTitle = review?.decisionQuality?.title
         let comparisonSummary = selectedOption.map {
             WhatToPlayOptionComparison.summary(for: scenario, selectedCard: $0.card)
+        }
+        let nextAction = selectedOption.flatMap {
+            WhatToPlayStatsAnalyzer.nextDecisionAction(for: $0, in: scenario)
         }
         let retryPrompt = selectedOption.flatMap {
             WhatToPlayStatsAnalyzer.retryPrompt(for: $0, in: scenario)
@@ -171,10 +177,13 @@ enum WhatToPlayShareCard {
             bestMoveConfidenceDetail: comparisonSummary?.bestMoveConfidence?.detail,
             nextActionTitle: comparisonSummary?.nextActionTitle,
             nextActionDetail: comparisonSummary?.nextActionDetail,
+            nextActionExpectedImprovement: positiveImprovement(nextAction?.expectedImprovement),
+            nextActionExpectedImprovementSourceTitle: improvementSourceTitle(nextAction?.expectedImprovementSource),
             retryPromptTitle: retryPrompt?.title,
             retryPromptDetail: retryPrompt?.detail,
             retryPromptRecommendedCardName: retryPrompt?.recommendedCard?.accessibilityName,
             retryPromptExpectedImprovement: retryPrompt?.expectedImprovement,
+            retryPromptExpectedImprovementSourceTitle: improvementSourceTitle(retryPrompt?.expectedImprovementSource),
             selectedRank: selectedOption?.rank,
             selectedImpact: selectedOption?.expectedImpact,
             selectedImpactDetail: selectedOption.map { WhatToPlayImpactFormatter.detail(for: $0.impactBreakdown) },
@@ -295,6 +304,12 @@ enum WhatToPlayShareCard {
             if let nextActionDetail = content.nextActionDetail {
                 lines.append(nextActionDetail)
             }
+            if let nextActionExpectedImprovement = content.nextActionExpectedImprovement {
+                lines.append("\("تحسن متوقع".localized): +\(nextActionExpectedImprovement)")
+            }
+            if let nextActionExpectedImprovementSourceTitle = content.nextActionExpectedImprovementSourceTitle {
+                lines.append("\("مصدر التحسن".localized): \(nextActionExpectedImprovementSourceTitle)")
+            }
             if let retryPromptTitle = content.retryPromptTitle {
                 lines.append("\("تدريب الإعادة".localized): \(retryPromptTitle)")
             }
@@ -306,6 +321,9 @@ enum WhatToPlayShareCard {
             }
             if let retryPromptExpectedImprovement = content.retryPromptExpectedImprovement {
                 lines.append("\("تحسن متوقع".localized): +\(retryPromptExpectedImprovement)")
+            }
+            if let retryPromptExpectedImprovementSourceTitle = content.retryPromptExpectedImprovementSourceTitle {
+                lines.append("\("مصدر التحسن".localized): \(retryPromptExpectedImprovementSourceTitle)")
             }
             if let lostAgainstSecondBestPoints = content.lostAgainstSecondBestPoints {
                 lines.append("\("فارق عن ثاني أفضل".localized): \(lostAgainstSecondBestPoints)")
@@ -487,6 +505,18 @@ enum WhatToPlayShareCard {
             }
             return lhs.card.rank.ordinal < rhs.card.rank.ordinal
         }
+    }
+
+    private static func positiveImprovement(_ value: Int?) -> Int? {
+        guard let value, value > 0 else { return nil }
+        return value
+    }
+
+    private static func improvementSourceTitle(
+        _ source: WhatToPlayExpectedImprovementSource?
+    ) -> String? {
+        guard let source else { return nil }
+        return WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: source)
     }
 
     private static func tacticalReason(for option: WhatToPlayOption) -> WhatToPlayShareTacticalReason? {

@@ -252,10 +252,13 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).bestMoveConfidenceDetail)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).nextActionTitle)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).nextActionDetail)
+        XCTAssertNil(WhatToPlayShareCard.content(for: scenario).nextActionExpectedImprovement)
+        XCTAssertNil(WhatToPlayShareCard.content(for: scenario).nextActionExpectedImprovementSourceTitle)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).retryPromptTitle)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).retryPromptDetail)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).retryPromptRecommendedCardName)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).retryPromptExpectedImprovement)
+        XCTAssertNil(WhatToPlayShareCard.content(for: scenario).retryPromptExpectedImprovementSourceTitle)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).selectedSimulationSummary)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).selectedSimulationTeamResult)
         XCTAssertNil(WhatToPlayShareCard.content(for: scenario).selectedSimulationTrickPoints)
@@ -306,10 +309,13 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(reviewed.bestMoveConfidenceDetail, confidence.detail)
         XCTAssertEqual(reviewed.nextActionTitle, "ثبّت القراءة".localized)
         XCTAssertTrue(reviewed.nextActionDetail?.contains(selected.card.accessibilityName) ?? false)
+        XCTAssertNil(reviewed.nextActionExpectedImprovement)
+        XCTAssertNil(reviewed.nextActionExpectedImprovementSourceTitle)
         XCTAssertNil(reviewed.retryPromptTitle)
         XCTAssertNil(reviewed.retryPromptDetail)
         XCTAssertNil(reviewed.retryPromptRecommendedCardName)
         XCTAssertNil(reviewed.retryPromptExpectedImprovement)
+        XCTAssertNil(reviewed.retryPromptExpectedImprovementSourceTitle)
         XCTAssertEqual(reviewed.selectedImpact, selected.expectedImpact)
         XCTAssertEqual(reviewed.selectedImpactDetail, WhatToPlayImpactFormatter.detail(for: selected.impactBreakdown))
         XCTAssertEqual(reviewed.selectedProjectedTeamPoints, selected.projectedTeamPoints)
@@ -347,6 +353,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
     func testShareTextIncludesDecisionQualityAfterSelection() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(seed: 45, difficulty: .hard)
         let selected = try XCTUnwrap(scenario.options.last)
+        let action = try XCTUnwrap(WhatToPlayStatsAnalyzer.nextDecisionAction(for: selected, in: scenario))
         let content = WhatToPlayShareCard.content(for: scenario, selectedOption: selected)
         let text = WhatToPlayShareCard.text(for: scenario, selectedOption: selected)
 
@@ -354,10 +361,21 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertNotNil(content.decisionQualityDetail)
         XCTAssertNotNil(content.nextActionTitle)
         XCTAssertNotNil(content.nextActionDetail)
+        XCTAssertEqual(content.nextActionExpectedImprovement, action.expectedImprovement > 0 ? action.expectedImprovement : nil)
+        XCTAssertEqual(
+            content.nextActionExpectedImprovementSourceTitle,
+            action.expectedImprovementSource.map(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle)
+        )
         XCTAssertTrue(text.contains("\("تقييم القرار".localized): \(try XCTUnwrap(content.decisionQualityTitle))"))
         XCTAssertTrue(text.contains(try XCTUnwrap(content.decisionQualityDetail)))
         XCTAssertTrue(text.contains("\("الإجراء التالي".localized): \(try XCTUnwrap(content.nextActionTitle))"))
         XCTAssertTrue(text.contains(try XCTUnwrap(content.nextActionDetail)))
+        if action.expectedImprovement > 0 {
+            XCTAssertTrue(text.contains("\("تحسن متوقع".localized): +\(action.expectedImprovement)"))
+        }
+        if let source = action.expectedImprovementSource {
+            XCTAssertTrue(text.contains("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: source))"))
+        }
     }
 
     func testShareTextIncludesRetryPromptAfterCostlySelection() throws {
@@ -374,12 +392,19 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertEqual(content.retryPromptDetail, prompt.detail)
         XCTAssertEqual(content.retryPromptRecommendedCardName, prompt.recommendedCard?.accessibilityName)
         XCTAssertEqual(content.retryPromptExpectedImprovement, prompt.expectedImprovement)
+        XCTAssertEqual(
+            content.retryPromptExpectedImprovementSourceTitle,
+            prompt.expectedImprovementSource.map(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle)
+        )
         XCTAssertTrue(text.contains("\("تدريب الإعادة".localized): \(prompt.title)"))
         XCTAssertTrue(text.contains(prompt.detail))
         if let recommendedCard = prompt.recommendedCard {
             XCTAssertTrue(text.contains("\("جرّب الورقة".localized): \(recommendedCard.accessibilityName)"))
         }
         XCTAssertTrue(text.contains("\("تحسن متوقع".localized): +\(prompt.expectedImprovement)"))
+        if let source = prompt.expectedImprovementSource {
+            XCTAssertTrue(text.contains("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: source))"))
+        }
     }
 
     func testShareDecisionQualityUsesProjectedLossWhenLarger() throws {
