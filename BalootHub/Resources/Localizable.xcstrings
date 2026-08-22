@@ -1539,6 +1539,20 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "选项原因" } }
       }
     },
+    "سطر إضافي في المراجعة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "additional review line" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "additional review line" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "línea adicional de revisión" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "ligne de révision supplémentaire" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "अतिरिक्त समीक्षा पंक्ति" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "baris tinjauan tambahan" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "дополнительная строка разбора" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "ek inceleme satırı" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "اضافی جائزہ سطر" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "条额外复盘行" } }
+      }
+    },
     "نقاط فريقك بعد المحاكاة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Teampunkte nach Simulation" } },

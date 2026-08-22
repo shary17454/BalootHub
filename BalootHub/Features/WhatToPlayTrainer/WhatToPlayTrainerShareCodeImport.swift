@@ -40,7 +40,7 @@ extension WhatToPlayTrainerView {
             }
 
             if let shareCodeMessage {
-                Text(shareCodeMessage)
+                Text(shareCodeStatusDisplayText(for: shareCodeMessage))
                     .font(.caption2)
                     .foregroundStyle(shareCodeMessageColor(shareCodeMessageStyle))
                     .fixedSize(horizontal: false, vertical: true)
@@ -171,6 +171,16 @@ extension WhatToPlayTrainerView {
             .map(String.init)
             .joined(separator: "، ")
             .replacingOccurrences(of: " · ", with: "، ")
+    }
+
+    func shareCodeStatusDisplayText(for message: String, maxLines: Int = 8) -> String {
+        let lines = message
+            .split(whereSeparator: \.isNewline)
+            .map(String.init)
+        guard lines.count > maxLines else { return message }
+        let hiddenCount = lines.count - maxLines
+        return (Array(lines.prefix(maxLines)) + ["+\(hiddenCount) \("سطر إضافي في المراجعة".localized)"])
+            .joined(separator: "\n")
     }
 
     func shareCodeMessageStyle(

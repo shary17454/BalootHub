@@ -41,6 +41,29 @@ final class WhatToPlayShareCodeImportViewTests: XCTestCase {
         )
     }
 
+    func testShareCodeStatusDisplayTextKeepsShortMessageWhole() {
+        let view = WhatToPlayTrainerView()
+        let message = [
+            "تم تحميل مراجعة القرار".localized,
+            "\("رمز الموقف".localized): WTP-2026-medium-followSuit-auto-C37"
+        ].joined(separator: "\n")
+
+        XCTAssertEqual(view.shareCodeStatusDisplayText(for: message), message)
+    }
+
+    func testShareCodeStatusDisplayTextCondensesLongImportedReview() {
+        let view = WhatToPlayTrainerView()
+        let message = (1...11).map { "سطر \($0)" }.joined(separator: "\n")
+
+        let display = view.shareCodeStatusDisplayText(for: message, maxLines: 8)
+
+        XCTAssertTrue(display.contains("سطر 1"))
+        XCTAssertTrue(display.contains("سطر 8"))
+        XCTAssertFalse(display.contains("سطر 9"))
+        XCTAssertTrue(display.contains("+3 \("سطر إضافي في المراجعة".localized)"))
+        XCTAssertEqual(view.shareCodeStatusAccessibilityLabel(for: message), (1...11).map { "سطر \($0)" }.joined(separator: "، "))
+    }
+
     func testShareCodeImportFormatsSimulationAlternativeLine() async throws {
         let view = WhatToPlayTrainerView()
         let result = try await importedResultWithSimulationAlternative()
