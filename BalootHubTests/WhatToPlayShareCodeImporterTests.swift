@@ -33,6 +33,10 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertFalse(result.statusMessage.contains("الأثر المتوقع".localized))
         XCTAssertFalse(result.statusMessage.contains("أثر القرار".localized))
         XCTAssertFalse(result.statusMessage.contains("نقاط فريقك بعد المحاكاة".localized))
+        XCTAssertFalse(result.statusMessage.contains("أفضل محاكاة".localized))
+        XCTAssertFalse(result.statusMessage.contains("أفضل نتيجة محاكاة".localized))
+        XCTAssertFalse(result.statusMessage.contains("ثاني محاكاة".localized))
+        XCTAssertFalse(result.statusMessage.contains("ثاني نتيجة محاكاة".localized))
         XCTAssertFalse(result.statusMessage.contains("نتيجة المحاكاة".localized))
         XCTAssertFalse(result.statusMessage.contains("اتجاه الأكلة".localized))
         XCTAssertFalse(result.statusMessage.contains("نقاط الأكلة".localized))
@@ -89,6 +93,20 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         )
         XCTAssertTrue(result.statusMessage.contains("\("أثر القرار".localized): \(selectedComparisonRow.impactDetail)"))
         XCTAssertTrue(result.statusMessage.contains("\("نقاط فريقك بعد المحاكاة".localized): \(selectedComparisonRow.projectedTeamPoints)"))
+        if let bestSimulationCard = comparisonSummary.bestSimulationCard {
+            XCTAssertTrue(result.statusMessage.contains("\("أفضل محاكاة".localized): \(bestSimulationCard.accessibilityName)"))
+        }
+        if let bestSimulationProjectedTeamPoints = comparisonSummary.bestSimulationProjectedTeamPoints {
+            XCTAssertTrue(result.statusMessage.contains("\("أفضل نتيجة محاكاة".localized): \(bestSimulationProjectedTeamPoints)"))
+        }
+        if let secondBestSimulationCard = comparisonSummary.secondBestSimulationCard,
+           secondBestSimulationCard != comparisonSummary.bestSimulationCard {
+            XCTAssertTrue(result.statusMessage.contains("\("ثاني محاكاة".localized): \(secondBestSimulationCard.accessibilityName)"))
+        }
+        if let secondBestSimulationProjectedTeamPoints = comparisonSummary.secondBestSimulationProjectedTeamPoints,
+           comparisonSummary.secondBestSimulationCard != comparisonSummary.bestSimulationCard {
+            XCTAssertTrue(result.statusMessage.contains("\("ثاني نتيجة محاكاة".localized): \(secondBestSimulationProjectedTeamPoints)"))
+        }
         XCTAssertTrue(result.statusMessage.contains("\("سبب تكتيكي".localized): \(selectedComparisonRow.tacticalSummary)"))
         let simulationDisplay = WhatToPlaySimulationFormatter.display(for: selected.simulation)
         XCTAssertTrue(result.statusMessage.contains("\("نتيجة المحاكاة".localized): \(simulationDisplay.summary)"))

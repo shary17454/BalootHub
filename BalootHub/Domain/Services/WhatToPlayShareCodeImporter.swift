@@ -69,6 +69,20 @@ struct WhatToPlayShareCodeImportResult {
                 lines.append("\("الأثر المتوقع".localized): \(impactText(selectedComparisonRow.expectedImpact))")
                 lines.append("\("أثر القرار".localized): \(selectedComparisonRow.impactDetail)")
                 lines.append("\("نقاط فريقك بعد المحاكاة".localized): \(selectedComparisonRow.projectedTeamPoints)")
+                if let bestSimulationCard = comparisonSummary.bestSimulationCard {
+                    lines.append("\("أفضل محاكاة".localized): \(bestSimulationCard.accessibilityName)")
+                }
+                if let bestSimulationProjectedTeamPoints = comparisonSummary.bestSimulationProjectedTeamPoints {
+                    lines.append("\("أفضل نتيجة محاكاة".localized): \(bestSimulationProjectedTeamPoints)")
+                }
+                if let secondBestSimulationCard = comparisonSummary.secondBestSimulationCard,
+                   secondBestSimulationCard != comparisonSummary.bestSimulationCard {
+                    lines.append("\("ثاني محاكاة".localized): \(secondBestSimulationCard.accessibilityName)")
+                }
+                if let secondBestSimulationProjectedTeamPoints = comparisonSummary.secondBestSimulationProjectedTeamPoints,
+                   comparisonSummary.secondBestSimulationCard != comparisonSummary.bestSimulationCard {
+                    lines.append("\("ثاني نتيجة محاكاة".localized): \(secondBestSimulationProjectedTeamPoints)")
+                }
                 lines.append("\("سبب تكتيكي".localized): \(selectedComparisonRow.tacticalSummary)")
             }
             let simulationDisplay = WhatToPlaySimulationFormatter.display(for: selectedOption.simulation)
