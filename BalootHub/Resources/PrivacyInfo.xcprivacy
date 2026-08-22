@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	  بيان الخصوصية. مطلوب لأن التطبيق يستخدم UserDefaults عبر @AppStorage،
+	  وهي ضمن "Required Reason APIs" التي تشترط أبل الإفصاح عن سبب استخدامها،
+	  وإلا رُفض الرفع برسالة ITMS-91053: Missing API declaration.
+
+	  التطبيق لا يجمع أي بيانات ولا يتتبّع المستخدم ولا يفتح أي اتصال شبكة،
+	  لذلك تبقى قائمتا البيانات المجمَّعة ونطاقات التتبّع فارغتين.
+	-->
+	<key>NSPrivacyTracking</key>
+	<false/>
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<!--
+				  CA92.1: الوصول إلى UserDefaults لقراءة وكتابة بيانات لا يصل إليها
+				  إلا التطبيق نفسه — وهو الاستخدام الوحيد هنا (تقدّم الأكاديمية،
+				  التحديات المكتملة، الإنجازات، أفضل سلسلة في تحدي النقاط).
+				-->
+				<string>CA92.1</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

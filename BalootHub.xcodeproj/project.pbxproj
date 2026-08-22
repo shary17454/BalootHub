@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AE8D2AED780B745D3FB41C69 /* PrivacyManifestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89D1D12621991C946A4E6D8B /* PrivacyManifestTests.swift */; };
+		37129F95B2F77324B92143CD /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5AF289556F8FADC8ACDCAEED /* PrivacyInfo.xcprivacy */; };
 		D80DF04944529234006411A0 /* AdaptiveLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06009898129BB8065CC11A13 /* AdaptiveLayout.swift */; };
 		39F583E61C4AC38B792CDB44 /* LocalizationIntegrityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6856E2DF90C47FBDD0E1935 /* LocalizationIntegrityTests.swift */; };
 		1F189928C3380FDEAA710B33 /* MultiplayerReadinessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E0075F3F8003E05672826A /* MultiplayerReadinessTests.swift */; };
@@ -159,6 +161,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		89D1D12621991C946A4E6D8B /* PrivacyManifestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyManifestTests.swift; sourceTree = "<group>"; };
+		5AF289556F8FADC8ACDCAEED /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		06009898129BB8065CC11A13 /* AdaptiveLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveLayout.swift; sourceTree = "<group>"; };
 		A6856E2DF90C47FBDD0E1935 /* LocalizationIntegrityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationIntegrityTests.swift; sourceTree = "<group>"; };
 		30E0075F3F8003E05672826A /* MultiplayerReadinessTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiplayerReadinessTests.swift; sourceTree = "<group>"; };
@@ -444,6 +448,7 @@
 		5F4072C18FD744E4A0DBA308 /* BalootHubTests */ = {
 			isa = PBXGroup;
 			children = (
+				89D1D12621991C946A4E6D8B /* PrivacyManifestTests.swift */,
 				A6856E2DF90C47FBDD0E1935 /* LocalizationIntegrityTests.swift */,
 				30E0075F3F8003E05672826A /* MultiplayerReadinessTests.swift */,
 				94E961FC1CA8C9D2E027BF41 /* GameFeedbackResolverTests.swift */,
@@ -530,6 +535,7 @@
 		90E3EACA277A409DABA0EA4C /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				5AF289556F8FADC8ACDCAEED /* PrivacyInfo.xcprivacy */,
 				20E0FBBD7CE549F2A3856DB6 /* Assets.xcassets */,
 				E32D73CAC888412DAEE3DF83 /* Localizable.xcstrings */,
 			);
@@ -773,6 +779,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				48D369A5FB1E459C8B133283 /* Assets.xcassets in Resources */,
+				37129F95B2F77324B92143CD /* PrivacyInfo.xcprivacy in Resources */,
 				166C8047BAEC44568A030D73 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -888,6 +895,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AE8D2AED780B745D3FB41C69 /* PrivacyManifestTests.swift in Sources */,
 				39F583E61C4AC38B792CDB44 /* LocalizationIntegrityTests.swift in Sources */,
 				1F189928C3380FDEAA710B33 /* MultiplayerReadinessTests.swift in Sources */,
 				E68B3EC1EE36F91C9393C0A3 /* GameFeedbackResolverTests.swift in Sources */,
