@@ -2981,6 +2981,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(drill.focusKind, .followSuit)
         XCTAssertEqual(drill.recommendedCard, PlayingCard(suit: .clubs, rank: .seven))
         XCTAssertEqual(drill.expectedImprovement, 15)
+        XCTAssertEqual(drill.expectedImprovementSource, .projectedTeamPoints)
     }
 
     func testMicroDrillUsesSecondSimulationLossWhenItExplainsReview() {
@@ -3014,6 +3015,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(drill.seed, 45)
         XCTAssertEqual(drill.recommendedCard, simulationCard)
         XCTAssertEqual(drill.expectedImprovement, 9)
+        XCTAssertEqual(drill.expectedImprovementSource, .projectedSecondBestPoints)
     }
 
     func testMicroDrillTargetsCostlyDecisionPatternBeforeCoverage() {

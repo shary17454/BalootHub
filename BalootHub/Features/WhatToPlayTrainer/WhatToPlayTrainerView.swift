@@ -1195,6 +1195,12 @@ struct WhatToPlayTrainerView: View {
                             title: "تحسن متوقع".localized,
                             value: "+\(microDrill.expectedImprovement)"
                         )
+                        if let source = microDrill.expectedImprovementSource {
+                            miniPlanMetric(
+                                title: "مصدر التحسن".localized,
+                                value: WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: source)
+                            )
+                        }
                     }
                 }
                 .accessibilityElement(children: .combine)

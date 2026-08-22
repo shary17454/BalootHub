@@ -884,6 +884,15 @@ struct WhatToPlayMicroDrill: Equatable {
     let recommendedCard: PlayingCard?
     let expectedImprovement: Int
 
+    var expectedImprovementSource: WhatToPlayExpectedImprovementSource? {
+        guard let reviewItem, expectedImprovement > 0 else { return nil }
+        return WhatToPlayExpectedImprovementMetrics.calculate(
+            lostExpectedPoints: reviewItem.lostExpectedPoints,
+            lostProjectedTeamPoints: reviewItem.lostProjectedTeamPoints,
+            lostProjectedAgainstSecondBestPoints: reviewItem.lostProjectedAgainstSecondBestPoints
+        ).source
+    }
+
     var canStartScenario: Bool {
         seed != nil && difficulty != nil
     }
