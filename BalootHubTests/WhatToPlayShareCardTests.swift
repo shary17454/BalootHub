@@ -614,6 +614,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("رمز الموقف".localized): \(try XCTUnwrap(review.replayScenarioCode))"))
         XCTAssertTrue(text.contains("\("Seed".localized): 901"))
         XCTAssertTrue(text.contains("\("ورقة المراجعة".localized): \(recommendedCard.accessibilityName)"))
+        XCTAssertTrue(text.contains("\("سبب ورقة المراجعة".localized): \("محاكاة الجولة".localized)"))
         XCTAssertTrue(text.contains("\("تحسن متوقع".localized): +12"))
         XCTAssertTrue(text.contains("\("مصدر التحسن".localized): \("محاكاة الجولة".localized)"))
         XCTAssertTrue(text.contains("افتح مدرب وش تلعب وأكمل جلسة التدريب.".localized))
@@ -643,6 +644,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertFalse(text.contains("إعادة محاولة".localized))
         XCTAssertFalse(text.contains("رمز الموقف".localized))
         XCTAssertFalse(text.contains("ورقة المراجعة".localized))
+        XCTAssertFalse(text.contains("سبب ورقة المراجعة".localized))
         XCTAssertFalse(text.contains("تحسن متوقع".localized))
     }
 

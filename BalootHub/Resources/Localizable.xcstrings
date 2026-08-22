@@ -21040,6 +21040,16 @@
         }
       }
     },
+    "سبب ورقة المراجعة" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review card reason"
+          }
+        }
+      }
+    },
     "عندما تكون الخيارات قليلة، رتّبها حسب أقل خسارة لا حسب أعلى ورقة." : {
       "localizations" : {
         "en" : {

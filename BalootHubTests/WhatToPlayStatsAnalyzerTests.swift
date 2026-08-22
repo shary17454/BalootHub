@@ -4581,6 +4581,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(review.secondBestProjectedTeamPoints, 62)
         XCTAssertEqual(review.lostProjectedAgainstSecondBestPoints, 12)
         XCTAssertEqual(review.recommendedCard, bestSimulation)
+        XCTAssertEqual(review.expectedImprovementSource, .projectedTeamPoints)
     }
 
     func testTrainingSessionReviewMovesToNextChallengeAfterAchievement() {
