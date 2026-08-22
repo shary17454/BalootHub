@@ -3484,6 +3484,7 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
 
         XCTAssertEqual(pattern.kind, .clean)
         XCTAssertFalse(pattern.hasActionableTarget)
+        XCTAssertNil(pattern.targetLine)
         XCTAssertNil(pattern.targetDifficulty)
         XCTAssertNil(pattern.targetFocusKind)
         XCTAssertNil(pattern.targetGameMode)
@@ -3509,6 +3510,19 @@ final class WhatToPlayStatsAnalyzerTests: XCTestCase {
         XCTAssertEqual(target?.gameMode, .hokum)
         XCTAssertNotEqual(target?.seed, 42)
         XCTAssertNotEqual(target?.seed, 43)
+    }
+
+    func testDecisionPatternTargetLineDescribesSuggestedTraining() {
+        let context = hokumContext(trumpSuit: .spades)
+        let attempts = [
+            attempt(daysAgo: 3, correct: false, impact: -7, scenarioContext: context),
+            attempt(daysAgo: 2, correct: false, impact: -3, scenarioContext: context)
+        ]
+
+        let pattern = WhatToPlayStatsAnalyzer.decisionPattern(for: attempts)
+
+        XCTAssertEqual(pattern.kind, .trumpPressureMistake)
+        XCTAssertEqual(pattern.targetLine, "\("المستوى".localized): \("صعب".localized) · \("تركيز التدريب".localized): \("ضغط الحكم".localized) · \("النمط".localized): \("حكم".localized)")
     }
 
     func testDecisionPatternUsesRecentLimit() {

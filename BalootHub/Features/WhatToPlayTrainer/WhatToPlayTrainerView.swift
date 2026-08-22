@@ -1685,10 +1685,17 @@ struct WhatToPlayTrainerView: View {
             .accessibilityElement(children: .combine)
 
             if pattern.hasActionableTarget {
+                if let targetLine = pattern.targetLine {
+                    Text("\("التدريب المقترح".localized): \(targetLine)")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(decisionPatternTint(pattern.kind))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
                 Button {
                     startDecisionPatternTarget(pattern)
                 } label: {
-                    Label("ابدأ".localized, systemImage: "play.fill")
+                    Label("ابدأ تدريب النمط".localized, systemImage: "play.fill")
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)

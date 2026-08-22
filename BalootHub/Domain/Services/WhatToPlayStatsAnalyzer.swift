@@ -976,6 +976,7 @@ struct WhatToPlayDecisionPattern: Equatable {
     let title: String
     let detail: String
     let iconName: String
+    let targetLine: String?
     let targetDifficulty: WhatToPlayDifficulty?
     let targetFocusKind: WhatToPlayScenarioFocusKind?
     let targetGameMode: GameMode?
@@ -988,6 +989,7 @@ struct WhatToPlayDecisionPattern: Equatable {
         title: String,
         detail: String,
         iconName: String,
+        targetLine: String? = nil,
         targetDifficulty: WhatToPlayDifficulty? = nil,
         targetFocusKind: WhatToPlayScenarioFocusKind? = nil,
         targetGameMode: GameMode? = nil,
@@ -999,6 +1001,7 @@ struct WhatToPlayDecisionPattern: Equatable {
         self.title = title
         self.detail = detail
         self.iconName = iconName
+        self.targetLine = targetLine
         self.targetDifficulty = targetDifficulty
         self.targetFocusKind = targetFocusKind
         self.targetGameMode = targetGameMode
@@ -4824,6 +4827,7 @@ enum WhatToPlayStatsAnalyzer {
                 title: "نمط قراراتك غير معروف".localized,
                 detail: "حل مواقف أكثر حتى يحدد المدرب هل أخطاؤك قريبة من الأفضل أم تخسر نقاطًا واضحة.".localized,
                 iconName: "questionmark.circle.fill",
+                targetLine: decisionPatternTargetLine(difficulty: .easy, focusKind: nil, gameMode: nil),
                 targetDifficulty: .easy
             )
 
@@ -4845,6 +4849,7 @@ enum WhatToPlayStatsAnalyzer {
                 title: "تبتعد عن أفضل خيارين".localized,
                 detail: "الأخطاء الأخيرة ليست حول ثاني أفضل ورقة فقط؛ أكثر من اختيار جاء خارج أول خيارين. قبل اللعب، احذف الخيارات الضعيفة أولًا ثم قارن الأفضل والثاني.".localized,
                 iconName: "list.bullet.clipboard.fill",
+                targetLine: decisionPatternTargetLine(difficulty: .medium, focusKind: .narrowChoice, gameMode: nil),
                 targetDifficulty: .medium,
                 targetFocusKind: .narrowChoice
             )
@@ -4857,6 +4862,7 @@ enum WhatToPlayStatsAnalyzer {
                 title: "أخطاء مكلفة".localized,
                 detail: "معظم الأخطاء الأخيرة خفضت الأثر المتوقع؛ توقف قبل اللعب واسأل: هل أحمي النقاط أم أرمي ورقة رابحة؟".localized,
                 iconName: "exclamationmark.triangle.fill",
+                targetLine: decisionPatternTargetLine(difficulty: .medium, focusKind: nil, gameMode: nil),
                 targetDifficulty: .medium
             )
 
@@ -4868,6 +4874,7 @@ enum WhatToPlayStatsAnalyzer {
                 title: "تغلق الأكلة للخصم".localized,
                 detail: "أكثر من خطأ حديث أعطى الأكلة المكتملة للفريق الخصم. قبل الرمي، احسب من يربح الأكلة بعد ورقتك وهل تستحق النقاط التي ستضيفها.".localized,
                 iconName: "flag.slash.fill",
+                targetLine: decisionPatternTargetLine(difficulty: .hard, focusKind: .followSuit, gameMode: nil),
                 targetDifficulty: .hard,
                 targetFocusKind: .followSuit
             )
@@ -4879,6 +4886,7 @@ enum WhatToPlayStatsAnalyzer {
                 title: "ترمي نقاطًا بلا حماية".localized,
                 detail: "تكرر رمي أوراق عليها نقاط قبل أن تُحسم الأكلة. لا تضف العشرة أو الآس إلا إذا كنت تكسب الأكلة أو شريكك غالبًا سيحميها.".localized,
                 iconName: "drop.triangle.fill",
+                targetLine: decisionPatternTargetLine(difficulty: .medium, focusKind: .narrowChoice, gameMode: nil),
                 targetDifficulty: .medium,
                 targetFocusKind: .narrowChoice
             )
@@ -4890,6 +4898,7 @@ enum WhatToPlayStatsAnalyzer {
                 title: "افتتاحاتك مكلفة".localized,
                 detail: "بعض أخطائك جاءت من بداية الأكلة بورقة تخفض الأثر المتوقع. عند الافتتاح، اختر ورقة تكشف أقل قدر من قوتك أو تسحب الحكم لغرض واضح.".localized,
                 iconName: "arrow.up.forward.circle.fill",
+                targetLine: decisionPatternTargetLine(difficulty: .medium, focusKind: .openingLead, gameMode: nil),
                 targetDifficulty: .medium,
                 targetFocusKind: .openingLead
             )
@@ -4901,6 +4910,7 @@ enum WhatToPlayStatsAnalyzer {
                 title: "أخطاء عند التلزيم".localized,
                 detail: "تكررت أخطاء مكلفة عندما كان على الطاولة لون مطلوب. قبل اختيار الورقة، احصر أوراق اللون أولًا ثم قارن هل تلعب للحماية أو لتخفيف الخسارة.".localized,
                 iconName: "rectangle.stack.badge.play.fill",
+                targetLine: decisionPatternTargetLine(difficulty: .medium, focusKind: .followSuit, gameMode: nil),
                 targetDifficulty: .medium,
                 targetFocusKind: .followSuit
             )
@@ -4912,6 +4922,7 @@ enum WhatToPlayStatsAnalyzer {
                 title: "ضغط الحكم يربك قرارك".localized,
                 detail: "أكثر من خطأ حديث جاء في مواقف حكم أو وفيها حكم على الطاولة. راقب قوة الحكم المتبقية ولا تقطع إلا إذا كان القطع يربح الأكلة أو يحمي نقاط الفريق.".localized,
                 iconName: "crown.fill",
+                targetLine: decisionPatternTargetLine(difficulty: .hard, focusKind: .trumpPressure, gameMode: .hokum),
                 targetDifficulty: .hard,
                 targetFocusKind: .trumpPressure,
                 targetGameMode: .hokum
@@ -4925,6 +4936,7 @@ enum WhatToPlayStatsAnalyzer {
                 title: "اختيارات قريبة من الأفضل".localized,
                 detail: "أغلب أخطائك ليست مدمرة، لكنها تفوّت أفضلية صغيرة. ركز على الفرق بين أفضل وثاني أفضل ورقة.".localized,
                 iconName: "2.circle.fill",
+                targetLine: decisionPatternTargetLine(difficulty: .medium, focusKind: .narrowChoice, gameMode: nil),
                 targetDifficulty: .medium,
                 targetFocusKind: .narrowChoice
             )
@@ -4938,6 +4950,18 @@ enum WhatToPlayStatsAnalyzer {
             expectedImpact: attempt.expectedImpact,
             impactBreakdown: attempt.impactBreakdown,
             scenarioContext: attempt.scenarioContext
+        )
+    }
+
+    private static func decisionPatternTargetLine(
+        difficulty: WhatToPlayDifficulty,
+        focusKind: WhatToPlayScenarioFocusKind?,
+        gameMode: GameMode?
+    ) -> String {
+        coachingTargetLine(
+            difficulty: difficulty,
+            focusKind: focusKind,
+            gameMode: gameMode
         )
     }
 
