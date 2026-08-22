@@ -123,6 +123,7 @@ final class WhatToPlayTrainingSessionReviewTests: XCTestCase {
         XCTAssertEqual(review.action, .replayMistake)
         XCTAssertEqual(review.recommendedCard, bestSimulation)
         XCTAssertEqual(review.expectedImprovement, 12)
+        XCTAssertEqual(review.expectedImprovementSource, .projectedTeamPoints)
         XCTAssertEqual(drill.recommendedCard, bestSimulation)
         XCTAssertEqual(drill.expectedImprovement, 12)
     }

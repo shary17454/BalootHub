@@ -668,6 +668,7 @@ struct WhatToPlayTrainingSessionReview: Equatable {
     let trumpSuit: Suit?
     let recommendedCard: PlayingCard?
     let expectedImprovement: Int
+    let expectedImprovementSource: WhatToPlayExpectedImprovementSource?
     let retriesIncorrectNextSeed: Bool
     let statusLine: String?
 
@@ -686,6 +687,7 @@ struct WhatToPlayTrainingSessionReview: Equatable {
         trumpSuit: Suit?,
         recommendedCard: PlayingCard?,
         expectedImprovement: Int,
+        expectedImprovementSource: WhatToPlayExpectedImprovementSource? = nil,
         retriesIncorrectNextSeed: Bool = false,
         statusLine: String? = nil
     ) {
@@ -703,6 +705,7 @@ struct WhatToPlayTrainingSessionReview: Equatable {
         self.trumpSuit = trumpSuit
         self.recommendedCard = recommendedCard
         self.expectedImprovement = expectedImprovement
+        self.expectedImprovementSource = expectedImprovementSource
         self.retriesIncorrectNextSeed = retriesIncorrectNextSeed
         self.statusLine = statusLine
     }
@@ -2669,6 +2672,7 @@ enum WhatToPlayStatsAnalyzer {
             )
         case .replayMistake:
             if let reviewItem = progress.reviewItem {
+                let improvement = microDrillExpectedImprovementMetrics(for: reviewItem)
                 return WhatToPlayTrainingSessionReview(
                     action: .replayMistake,
                     title: "راجع الخطأ الأعلى أثرًا".localized,
@@ -2683,7 +2687,8 @@ enum WhatToPlayStatsAnalyzer {
                     gameMode: reviewItem.gameMode,
                     trumpSuit: reviewItem.contextTrumpSuit,
                     recommendedCard: recommendedReviewCard(for: reviewItem),
-                    expectedImprovement: microDrillExpectedImprovement(for: reviewItem)
+                    expectedImprovement: improvement.points,
+                    expectedImprovementSource: improvement.source
                 )
             }
             let nextSeed = trainingSessionReviewNextSeed(progress: progress, attempts: attempts, plan: plan)
@@ -4492,11 +4497,30 @@ enum WhatToPlayStatsAnalyzer {
     }
 
     private static func microDrillExpectedImprovement(for reviewItem: WhatToPlayReviewItem) -> Int {
+        microDrillExpectedImprovementMetrics(for: reviewItem).points
+    }
+
+    private static func microDrillExpectedImprovementMetrics(
+        for reviewItem: WhatToPlayReviewItem
+    ) -> WhatToPlayExpectedImprovementMetrics {
         WhatToPlayExpectedImprovementMetrics.calculate(
             lostExpectedPoints: reviewItem.lostExpectedPoints,
             lostProjectedTeamPoints: reviewItem.lostProjectedTeamPoints,
             lostProjectedAgainstSecondBestPoints: reviewItem.lostProjectedAgainstSecondBestPoints
-        ).points
+        )
+    }
+
+    static func expectedImprovementSourceTitle(
+        for source: WhatToPlayExpectedImprovementSource
+    ) -> String {
+        switch source {
+        case .expectedPoints:
+            "الأثر المتوقع".localized
+        case .projectedTeamPoints:
+            "محاكاة الجولة".localized
+        case .projectedSecondBestPoints:
+            "ثاني أفضل محاكاة".localized
+        }
     }
 
     private static func recommendedReviewCard(for reviewItem: WhatToPlayReviewItem) -> PlayingCard? {

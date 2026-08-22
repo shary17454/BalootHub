@@ -452,6 +452,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
             trumpSuit: .spades,
             recommendedCard: recommendedCard,
             expectedImprovement: 12,
+            expectedImprovementSource: .projectedTeamPoints,
             retriesIncorrectNextSeed: true,
             statusLine: "\("إعادة محاولة".localized): 901"
         )
@@ -470,6 +471,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("Seed".localized): 901"))
         XCTAssertTrue(text.contains("\("ورقة المراجعة".localized): \(recommendedCard.accessibilityName)"))
         XCTAssertTrue(text.contains("\("تحسن متوقع".localized): +12"))
+        XCTAssertTrue(text.contains("\("مصدر التحسن".localized): \("محاكاة الجولة".localized)"))
         XCTAssertTrue(text.contains("افتح مدرب وش تلعب وأكمل جلسة التدريب.".localized))
     }
 

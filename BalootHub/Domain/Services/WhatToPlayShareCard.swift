@@ -417,6 +417,9 @@ enum WhatToPlayShareCard {
         }
         if review.expectedImprovement > 0 {
             lines.append("\("تحسن متوقع".localized): +\(review.expectedImprovement)")
+            if let source = review.expectedImprovementSource {
+                lines.append("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: source))")
+            }
         }
 
         lines.append("افتح مدرب وش تلعب وأكمل جلسة التدريب.".localized)

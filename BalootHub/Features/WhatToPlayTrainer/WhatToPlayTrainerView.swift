@@ -1043,6 +1043,13 @@ struct WhatToPlayTrainerView: View {
                             .foregroundStyle(AppColor.success)
                             .lineLimit(1)
                             .minimumScaleFactor(0.85)
+                        if let source = review.expectedImprovementSource {
+                            Text("\("مصدر التحسن".localized): \(WhatToPlayStatsAnalyzer.expectedImprovementSourceTitle(for: source))")
+                                .font(.caption2.weight(.semibold))
+                                .foregroundStyle(AppColor.textSecondary)
+                                .lineLimit(2)
+                                .minimumScaleFactor(0.85)
+                        }
                     }
                 }
             } icon: {
