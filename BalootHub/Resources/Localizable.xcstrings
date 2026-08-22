@@ -1483,6 +1483,34 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "第二佳影响" } }
       }
     },
+    "سبب أفضل ورقة" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Grund für die beste Karte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Best-card reason" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Motivo de la mejor carta" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Raison de la meilleure carte" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सर्वश्रेष्ठ कार्ड का कारण" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Alasan kartu terbaik" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Причина лучшей карты" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "En iyi kart nedeni" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "بہترین کارڈ کی وجہ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "最佳牌原因" } }
+      }
+    },
+    "سبب ثاني أفضل" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Grund für die zweitbeste Karte" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Second-best reason" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Motivo de la segunda mejor" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Raison de la deuxième meilleure" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "दूसरे सर्वश्रेष्ठ का कारण" } },
+        "id" : { "stringUnit" : { "state" : "translated", "value" : "Alasan terbaik kedua" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Причина второй лучшей карты" } },
+        "tr" : { "stringUnit" : { "state" : "translated", "value" : "İkinci en iyi kart nedeni" } },
+        "ur" : { "stringUnit" : { "state" : "translated", "value" : "دوسرے بہترین کی وجہ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "第二佳原因" } }
+      }
+    },
     "نقاط فريقك بعد المحاكاة" : {
       "localizations" : {
         "de" : { "stringUnit" : { "state" : "translated", "value" : "Teampunkte nach Simulation" } },

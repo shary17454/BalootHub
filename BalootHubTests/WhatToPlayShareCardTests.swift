@@ -186,6 +186,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertFalse(text.contains("فاقد ثاني محاكاة".localized))
         XCTAssertFalse(text.contains("ثقة أفضل ورقة".localized))
         XCTAssertFalse(text.contains("سبب أفضل ورقة".localized))
+        XCTAssertFalse(text.contains("سبب ثاني أفضل".localized))
     }
 
     func testShareTextIncludesAnswerReviewAfterSelection() throws {
@@ -204,6 +205,7 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("\("سبب أفضل ورقة".localized): \(best.explanation)"))
         XCTAssertTrue(text.contains("\("ثاني أفضل".localized): \(secondBest.card.accessibilityName)"))
         XCTAssertTrue(text.contains("\("أثر ثاني أفضل".localized): \(secondBest.expectedImpact >= 0 ? "+\(secondBest.expectedImpact)" : "\(secondBest.expectedImpact)")"))
+        XCTAssertTrue(text.contains("\("سبب ثاني أفضل".localized): \(secondBest.explanation)"))
         XCTAssertTrue(text.contains("\("أفضل محاكاة".localized): \(bestSimulation.card.accessibilityName)"))
         XCTAssertTrue(text.contains("\("أفضل نتيجة محاكاة".localized): \(bestSimulation.projectedTeamPoints)"))
         XCTAssertTrue(text.contains("\("ثاني محاكاة".localized): \(secondBestSimulation.card.accessibilityName)"))

@@ -4706,6 +4706,9 @@ struct WhatToPlayShareCardPreview: View {
             if let secondBestExpectedImpact = content.secondBestExpectedImpact {
                 shareChip("\("أثر ثاني أفضل".localized): \(impactText(secondBestExpectedImpact))")
             }
+            if let secondBestMoveRationale = content.secondBestMoveRationale {
+                shareNote("\("سبب ثاني أفضل".localized): \(secondBestMoveRationale)")
+            }
             if let bestSimulationCardName = content.bestSimulationCardName {
                 shareChip("\("أفضل محاكاة".localized): \(bestSimulationCardName)")
             }
