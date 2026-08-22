@@ -646,6 +646,43 @@ final class WhatToPlayShareCardTests: XCTestCase {
         XCTAssertTrue(text.contains("القيمة المتوقعة".localized))
     }
 
+    func testTrainingSessionProgressShareTextIncludesSecondSimulationLossSource() {
+        let selectedCard = PlayingCard(suit: .spades, rank: .seven)
+        let plan = WhatToPlayTrainingSessionPlan(
+            difficulty: .medium,
+            seedBase: 820,
+            scenarioCount: 2,
+            targetAccuracyPercent: 50,
+            targetAverageExpectedImpact: 0,
+            title: "خطة اختبار",
+            detail: "تفاصيل اختبار",
+            successMetric: "هدف اختبار",
+            iconName: "target"
+        )
+        let attempts = [
+            WhatToPlayAttempt(
+                difficulty: .medium,
+                seed: 820,
+                selectedCard: selectedCard,
+                bestCard: PlayingCard(suit: .clubs, rank: .ace),
+                secondBestSimulationCard: PlayingCard(suit: .diamonds, rank: .jack),
+                isCorrect: false,
+                expectedImpact: 2,
+                bestExpectedImpact: 4,
+                projectedTeamPoints: 50,
+                bestProjectedTeamPoints: 52,
+                secondBestProjectedTeamPoints: 82
+            )
+        ]
+        let progress = WhatToPlayStatsAnalyzer.trainingSessionProgress(for: attempts, plan: plan)
+
+        let text = WhatToPlayShareCard.trainingSessionProgressText(for: progress)
+
+        XCTAssertEqual(progress.lostProjectedAgainstSecondBestPoints, 32)
+        XCTAssertTrue(text.contains("\("فاقد ثاني محاكاة".localized): 32"))
+        XCTAssertTrue(text.contains("\("مصدر التحسن".localized): \("ثاني أفضل محاكاة".localized)"))
+    }
+
     func testShareCardImageFileNameUsesFullScenarioCode() throws {
         let scenario = try WhatToPlayTrainer.generateScenario(
             seed: 2026,
