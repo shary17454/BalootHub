@@ -25,6 +25,8 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         XCTAssertTrue(result.statusMessage.contains("\("رمز الموقف".localized): \(code)"))
         XCTAssertFalse(result.statusMessage.contains("اختيارك".localized))
         XCTAssertFalse(result.statusMessage.contains("أفضل ورقة".localized))
+        XCTAssertFalse(result.statusMessage.contains("تقييم القرار".localized))
+        XCTAssertFalse(result.statusMessage.contains("الخطوة التالية".localized))
         XCTAssertFalse(result.statusMessage.contains("نتيجة المحاكاة".localized))
         XCTAssertFalse(result.statusMessage.contains("اتجاه الأكلة".localized))
         XCTAssertFalse(result.statusMessage.contains("نقاط الأكلة".localized))
@@ -55,6 +57,13 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
            secondBest.card != scenario.bestOption?.card {
             XCTAssertTrue(result.statusMessage.contains("\("ثاني أفضل".localized): \(secondBest.card.accessibilityName)"))
         }
+        let comparisonSummary = WhatToPlayOptionComparison.summary(for: scenario, selectedCard: selected.card)
+        if let decisionQuality = comparisonSummary.decisionQuality {
+            XCTAssertTrue(result.statusMessage.contains("\("تقييم القرار".localized): \(decisionQuality.title)"))
+        }
+        if let decisionQualityDetail = comparisonSummary.decisionQualityDetail {
+            XCTAssertTrue(result.statusMessage.contains(decisionQualityDetail))
+        }
         let simulationDisplay = WhatToPlaySimulationFormatter.display(for: selected.simulation)
         XCTAssertTrue(result.statusMessage.contains("\("نتيجة المحاكاة".localized): \(simulationDisplay.summary)"))
         if let teamResult = simulationDisplay.teamResult {
@@ -62,6 +71,11 @@ final class WhatToPlayShareCodeImporterTests: XCTestCase {
         }
         if let trickPoints = simulationDisplay.trickPoints {
             XCTAssertTrue(result.statusMessage.contains("\("نقاط الأكلة".localized): \(trickPoints)"))
+        }
+        if let nextActionTitle = comparisonSummary.nextActionTitle,
+           let nextActionDetail = comparisonSummary.nextActionDetail {
+            XCTAssertTrue(result.statusMessage.contains("\("الخطوة التالية".localized): \(nextActionTitle)"))
+            XCTAssertTrue(result.statusMessage.contains(nextActionDetail))
         }
     }
 

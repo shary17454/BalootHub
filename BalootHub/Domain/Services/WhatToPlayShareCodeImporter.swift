@@ -39,6 +39,10 @@ struct WhatToPlayShareCodeImportResult {
             "\("رمز الموقف".localized): \(canonicalScenarioCode)"
         ]
         if let selectedOption {
+            let comparisonSummary = WhatToPlayOptionComparison.summary(
+                for: scenario,
+                selectedCard: selectedOption.card
+            )
             lines.append("\("اختيارك".localized): \(selectedOption.card.accessibilityName)")
             if let bestOption = scenario.bestOption {
                 lines.append("\("أفضل ورقة".localized): \(bestOption.card.accessibilityName)")
@@ -47,6 +51,12 @@ struct WhatToPlayShareCodeImportResult {
                secondBestOption.card != scenario.bestOption?.card {
                 lines.append("\("ثاني أفضل".localized): \(secondBestOption.card.accessibilityName)")
             }
+            if let decisionQuality = comparisonSummary.decisionQuality {
+                lines.append("\("تقييم القرار".localized): \(decisionQuality.title)")
+            }
+            if let decisionQualityDetail = comparisonSummary.decisionQualityDetail {
+                lines.append(decisionQualityDetail)
+            }
             let simulationDisplay = WhatToPlaySimulationFormatter.display(for: selectedOption.simulation)
             lines.append("\("نتيجة المحاكاة".localized): \(simulationDisplay.summary)")
             if let teamResult = simulationDisplay.teamResult {
@@ -54,6 +64,11 @@ struct WhatToPlayShareCodeImportResult {
             }
             if let trickPoints = simulationDisplay.trickPoints {
                 lines.append("\("نقاط الأكلة".localized): \(trickPoints)")
+            }
+            if let nextActionTitle = comparisonSummary.nextActionTitle,
+               let nextActionDetail = comparisonSummary.nextActionDetail {
+                lines.append("\("الخطوة التالية".localized): \(nextActionTitle)")
+                lines.append(nextActionDetail)
             }
         }
         if expectedImprovement > 0, let expectedImprovementSource {
