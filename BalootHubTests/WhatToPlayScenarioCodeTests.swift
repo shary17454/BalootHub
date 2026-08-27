@@ -162,4 +162,41 @@ final class WhatToPlayScenarioCodeTests: XCTestCase {
         XCTAssertNil(WhatToPlayScenarioCode.parse("WTP-2026-medium-openingLead-unknown-P"))
         XCTAssertNil(WhatToPlayScenarioCode.parse("WTP-2026-medium-openingLead-hokum.9-P"))
     }
+
+    /// حارس انحدار لعطل تجميد الواجهة.
+    ///
+    /// كان استخراج الرمز يمسح *بقية النص كاملًا* عند كل مطابقة لـ`WTP-`، فيصير المسح
+    /// تربيعيًا على نص بلا محارف إنهاء: قيس ١٠٫٥ ثانية عند ٣٢ ألف محرف و٤٠٫٧ ثانية عند
+    /// ٦٤ ألفًا. وبما أن `loadShareCode()` تستدعيه على الـ`MainActor` قبل أي `Task`،
+    /// كان لصق نص طويل يجمّد الواجهة حتى يقتل حارسُ النظام التطبيق.
+    ///
+    /// السقف المختار سخيّ عمدًا (ثانية واحدة مقابل ٤٠ ثانية سابقًا) حتى لا يتحول
+    /// الاختبار إلى مصدر تذبذب على عامل بناء مزدحم، ومع ذلك يسقط فورًا لو عاد
+    /// السلوك التربيعي.
+    func testScenarioCodeExtractionStaysFastOnLongTextWithoutTerminators() {
+        let hostileText = String(repeating: "WTP-", count: 16_000) // ٦٤ ألف محرف بلا فواصل
+
+        let start = Date()
+        let extracted = WhatToPlayScenarioCode.extractCode(from: hostileText)
+        let elapsed = Date().timeIntervalSince(start)
+
+        XCTAssertNil(extracted, "لا يوجد رمز صالح في النص، فالمتوقع لا شيء")
+        XCTAssertLessThan(
+            elapsed,
+            1.0,
+            "استخراج الرمز تجاوز ثانية على نص ٦٤ ألف محرف — عاد المسح التربيعي"
+        )
+    }
+
+    /// السقف يقصّ المرشحات الطويلة، فلا بد أن يبقى الرمز الصالح مستخرَجًا
+    /// حتى لو سبقته سلسلة `WTP-` طويلة لا تنتهي بفاصل.
+    func testScenarioCodeExtractionStillFindsValidCodeAfterOverlongCandidate() {
+        let noise = String(repeating: "WTP-", count: 200)
+        let text = "\(noise) WTP-2026-hard-trumpPressure-hokum.3-C37"
+
+        XCTAssertEqual(
+            WhatToPlayScenarioCode.extractCode(from: text),
+            "WTP-2026-hard-trumpPressure-hokum.3-C37"
+        )
+    }
 }

@@ -95,7 +95,7 @@ enum WhatToPlayScenarioCode {
         }
 
         for source in candidateSources(from: text) {
-            for candidate in codeCandidates(in: source) where parse(candidate) != nil {
+            if let candidate = firstCode(in: source, where: { parse($0) != nil }) {
                 return candidate
             }
         }
@@ -169,26 +169,52 @@ enum WhatToPlayScenarioCode {
         }
     }
 
-    private static func codeCandidates(in text: String) -> [String] {
-        let terminators = CharacterSet.whitespacesAndNewlines
-            .union(CharacterSet(charactersIn: "،,:;؟!?()[]{}<>\"'&=#/\\"))
-        var candidates: [String] = []
+    /// أقصى طول لرمز موقف صالح.
+    ///
+    /// أطول صياغة ممكنة: `WTP-` + بذرة `UInt64` (٢٠ رقمًا) + أطول صعوبة (`medium`)
+    /// + أطول نوع موقف (`trumpPressure`) + أطول نمط (`hokum.3`) + أطول ورقة (`C37`)
+    /// مع فواصلها = ٥٨ محرفًا. السقف هنا أكثر من الضعف احتياطًا لأي رمز أطول لاحقًا،
+    /// ومع ذلك يبقى ثابتًا صغيرًا لا يعتمد على طول النص الملصوق إطلاقًا.
+    private static let maxCandidateLength = 128
+
+    /// محارف إنهاء الرمز، تُبنى مرة واحدة لا عند كل استدعاء.
+    private static let codeTerminators = CharacterSet.whitespacesAndNewlines
+        .union(CharacterSet(charactersIn: "،,:;؟!?()[]{}<>\"'&=#/\\"))
+
+    /// يبحث عن أول رمز موقف صالح داخل نص حر (رسالة مشاركة أو محتوى حافظة).
+    ///
+    /// **لماذا سقف الطول ولماذا الخروج المبكر:** النسخة السابقة كانت تمسح *بقية النص
+    /// كاملًا* عند كل مطابقة لـ`WTP-` بحثًا عن محرف إنهاء، ثم تبني قائمة المرشحات كلها
+    /// قبل فحص أيٍّ منها. على نص بلا محارف إنهاء (نص مُرمَّز، أو لصق طويل بلا مسافات)
+    /// يصير المسح **تربيعيًا**: قيس فعليًا ١٠٫٥ ثانية عند ٣٢ ألف محرف و٤٠٫٧ ثانية عند
+    /// ٦٤ ألفًا. وبما أن ``extractCode(from:)`` تُستدعى من `loadShareCode()` على
+    /// الـ`MainActor` قبل أي `Task`، كان ذلك يجمّد الواجهة حتى يقتل حارسُ النظام التطبيق.
+    /// السقف يجعل تكلفة كل مطابقة ثابتة، والخروج المبكر يوقف المسح عند أول رمز صالح.
+    ///
+    /// القصّ عند السقف لا يُضيّع أي رمز صحيح: الرمز الصالح لا يتجاوز ٥٨ محرفًا أصلًا،
+    /// وأي سلسلة أطول من ذلك ما كانت لتُحلَّل بنجاح في النسخة السابقة كذلك.
+    private static func firstCode(in text: String, where isValid: (String) -> Bool) -> String? {
         var searchRange = text.startIndex..<text.endIndex
 
         while let range = text.range(of: "WTP-", range: searchRange) {
-            let suffix = text[range.lowerBound...]
-            var code = ""
-            for scalar in suffix.unicodeScalars {
-                if terminators.contains(scalar) { break }
-                code.unicodeScalars.append(scalar)
-            }
-            let normalized = code.trimmingCharacters(in: .punctuationCharacters)
-            if !normalized.isEmpty {
-                candidates.append(normalized)
+            // نافذة محدودة الطول بدل بقية النص: هذا ما يكسر النمو التربيعي.
+            let limit = text.index(
+                range.lowerBound,
+                offsetBy: maxCandidateLength,
+                limitedBy: text.endIndex
+            ) ?? text.endIndex
+            let window = text[range.lowerBound..<limit].unicodeScalars
+            // تقطيعة واحدة بدل `append` لكل محرف — الإلحاق المتكرر على
+            // `unicodeScalars` كان يستهلك وحده أضعاف زمن البحث نفسه.
+            let stop = window.firstIndex(where: { codeTerminators.contains($0) }) ?? window.endIndex
+            let normalized = String(window[window.startIndex..<stop])
+                .trimmingCharacters(in: .punctuationCharacters)
+            if !normalized.isEmpty, isValid(normalized) {
+                return normalized
             }
             searchRange = range.upperBound..<text.endIndex
         }
 
-        return candidates
+        return nil
     }
 }
