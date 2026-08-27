@@ -6587,7 +6587,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Matches"
+            "value" : "Partien"
           }
         },
         "tr" : {
@@ -13739,7 +13739,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Decision reason"
+            "value" : "Entscheidungsgrund"
           }
         },
         "en" : {
@@ -13803,7 +13803,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Option reason"
+            "value" : "Optionsgrund"
           }
         },
         "en" : {
@@ -13867,7 +13867,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "additional review line"
+            "value" : "zusätzliche Überprüfungszeile"
           }
         },
         "en" : {
@@ -15531,7 +15531,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Scenario code"
+            "value" : "Szenariocode"
           }
         },
         "en" : {
@@ -21738,8 +21738,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Declare all"
+            "state" : "translated",
+            "value" : "Alle ansagen"
           }
         },
         "en" : {
@@ -21750,14 +21750,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Declare all"
+            "state" : "translated",
+            "value" : "Cantar todo"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Declare all"
+            "state" : "translated",
+            "value" : "Tout annoncer"
           }
         },
         "hi" : {
@@ -21768,8 +21768,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Declare all"
+            "state" : "translated",
+            "value" : "Umumkan semua"
           }
         },
         "ru" : {
@@ -21780,8 +21780,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Declare all"
+            "state" : "translated",
+            "value" : "Hepsini beyan et"
           }
         },
         "ur" : {
@@ -22127,8 +22127,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You don't hold the required suit, so you must trump under the current rules."
+            "state" : "translated",
+            "value" : "Du hast die verlangte Farbe nicht, daher musst du nach den aktuellen Regeln trumpfen."
           }
         },
         "en" : {
@@ -22139,14 +22139,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You don't hold the required suit, so you must trump under the current rules."
+            "state" : "translated",
+            "value" : "No tienes el palo requerido, así que debes fallar según las reglas actuales."
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You don't hold the required suit, so you must trump under the current rules."
+            "state" : "translated",
+            "value" : "Vous n'avez pas la couleur demandée, vous devez donc couper selon les règles actuelles."
           }
         },
         "hi" : {
@@ -22157,8 +22157,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You don't hold the required suit, so you must trump under the current rules."
+            "state" : "translated",
+            "value" : "Anda tidak memegang warna yang diminta, jadi Anda harus memotong dengan truf sesuai aturan saat ini."
           }
         },
         "ru" : {
@@ -22169,8 +22169,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You don't hold the required suit, so you must trump under the current rules."
+            "state" : "translated",
+            "value" : "İstenen renge sahip değilsin, bu yüzden mevcut kurallara göre koz kesmelisin."
           }
         },
         "ur" : {
@@ -22577,8 +22577,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Declare projects"
+            "state" : "translated",
+            "value" : "Projekte ansagen"
           }
         },
         "en" : {
@@ -22589,14 +22589,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Declare projects"
+            "state" : "translated",
+            "value" : "Cantar proyectos"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Declare projects"
+            "state" : "translated",
+            "value" : "Annoncer les projets"
           }
         },
         "hi" : {
@@ -22607,8 +22607,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Declare projects"
+            "state" : "translated",
+            "value" : "Umumkan proyek"
           }
         },
         "ru" : {
@@ -22619,8 +22619,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Declare projects"
+            "state" : "translated",
+            "value" : "Projeleri beyan et"
           }
         },
         "ur" : {
@@ -24528,8 +24528,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Round 1: Hokum on the face-up card, Sun, or Pass"
+            "state" : "translated",
+            "value" : "Runde 1: Hokum auf die offene Karte, Sun oder Passen"
           }
         },
         "en" : {
@@ -24540,14 +24540,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Round 1: Hokum on the face-up card, Sun, or Pass"
+            "state" : "translated",
+            "value" : "Ronda 1: Hokum sobre la carta descubierta, Sun o Paso"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Round 1: Hokum on the face-up card, Sun, or Pass"
+            "state" : "translated",
+            "value" : "Tour 1 : Hokum sur la carte retournée, Sun ou Passe"
           }
         },
         "hi" : {
@@ -24558,8 +24558,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Round 1: Hokum on the face-up card, Sun, or Pass"
+            "state" : "translated",
+            "value" : "Ronde 1: Hokum pada kartu terbuka, Sun, atau Pas"
           }
         },
         "ru" : {
@@ -24570,8 +24570,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Round 1: Hokum on the face-up card, Sun, or Pass"
+            "state" : "translated",
+            "value" : "1. tur: Açık karta Hokum, Sun veya Pas"
           }
         },
         "ur" : {
@@ -27433,8 +27433,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Counted projects"
+            "state" : "translated",
+            "value" : "Gewertete Projekte"
           }
         },
         "en" : {
@@ -27445,14 +27445,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Counted projects"
+            "state" : "translated",
+            "value" : "Proyectos contabilizados"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Counted projects"
+            "state" : "translated",
+            "value" : "Projets comptabilisés"
           }
         },
         "hi" : {
@@ -27463,8 +27463,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Counted projects"
+            "state" : "translated",
+            "value" : "Proyek yang dihitung"
           }
         },
         "ru" : {
@@ -27475,8 +27475,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Counted projects"
+            "state" : "translated",
+            "value" : "Sayılan projeler"
           }
         },
         "ur" : {
@@ -27562,8 +27562,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Declarer: %@"
+            "state" : "translated",
+            "value" : "Alleinspieler: %@"
           }
         },
         "en" : {
@@ -27574,14 +27574,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Declarer: %@"
+            "state" : "translated",
+            "value" : "Declarante: %@"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Declarer: %@"
+            "state" : "translated",
+            "value" : "Preneur : %@"
           }
         },
         "hi" : {
@@ -27592,8 +27592,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Declarer: %@"
+            "state" : "translated",
+            "value" : "Pengambil: %@"
           }
         },
         "ru" : {
@@ -27604,8 +27604,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Declarer: %@"
+            "state" : "translated",
+            "value" : "İhaleyi alan: %@"
           }
         },
         "ur" : {
@@ -28143,8 +28143,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Face-up card"
+            "state" : "translated",
+            "value" : "Offene Karte"
           }
         },
         "en" : {
@@ -28155,14 +28155,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Face-up card"
+            "state" : "translated",
+            "value" : "Carta descubierta"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Face-up card"
+            "state" : "translated",
+            "value" : "Carte retournée"
           }
         },
         "hi" : {
@@ -28173,8 +28173,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Face-up card"
+            "state" : "translated",
+            "value" : "Kartu terbuka"
           }
         },
         "ru" : {
@@ -28185,8 +28185,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Face-up card"
+            "state" : "translated",
+            "value" : "Açık kart"
           }
         },
         "ur" : {
@@ -28337,8 +28337,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bidding finished"
+            "state" : "translated",
+            "value" : "Reizen beendet"
           }
         },
         "en" : {
@@ -28349,14 +28349,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bidding finished"
+            "state" : "translated",
+            "value" : "Subasta finalizada"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bidding finished"
+            "state" : "translated",
+            "value" : "Enchères terminées"
           }
         },
         "hi" : {
@@ -28367,8 +28367,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bidding finished"
+            "state" : "translated",
+            "value" : "Penawaran selesai"
           }
         },
         "ru" : {
@@ -28379,8 +28379,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bidding finished"
+            "state" : "translated",
+            "value" : "İhale bitti"
           }
         },
         "ur" : {
@@ -28787,8 +28787,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pass"
+            "state" : "translated",
+            "value" : "Passen"
           }
         },
         "en" : {
@@ -28799,14 +28799,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pass"
+            "state" : "translated",
+            "value" : "Paso"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pass"
+            "state" : "translated",
+            "value" : "Passe"
           }
         },
         "hi" : {
@@ -28817,8 +28817,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pass"
+            "state" : "translated",
+            "value" : "Pas"
           }
         },
         "ru" : {
@@ -28829,8 +28829,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pass"
+            "state" : "translated",
+            "value" : "Pas"
           }
         },
         "ur" : {
@@ -28852,8 +28852,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pass your turn"
+            "state" : "translated",
+            "value" : "Zug passen"
           }
         },
         "en" : {
@@ -28864,14 +28864,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pass your turn"
+            "state" : "translated",
+            "value" : "Pasar turno"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pass your turn"
+            "state" : "translated",
+            "value" : "Passer son tour"
           }
         },
         "hi" : {
@@ -28882,8 +28882,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pass your turn"
+            "state" : "translated",
+            "value" : "Lewati giliran"
           }
         },
         "ru" : {
@@ -28894,8 +28894,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Pass your turn"
+            "state" : "translated",
+            "value" : "Sırayı pas geç"
           }
         },
         "ur" : {
@@ -29058,8 +29058,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Other players are bidding…"
+            "state" : "translated",
+            "value" : "Andere Spieler reizen …"
           }
         },
         "en" : {
@@ -29070,14 +29070,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Other players are bidding…"
+            "state" : "translated",
+            "value" : "Los demás jugadores están pujando…"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Other players are bidding…"
+            "state" : "translated",
+            "value" : "Les autres joueurs enchérissent…"
           }
         },
         "hi" : {
@@ -29088,8 +29088,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Other players are bidding…"
+            "state" : "translated",
+            "value" : "Pemain lain sedang menawar…"
           }
         },
         "ru" : {
@@ -29100,8 +29100,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Other players are bidding…"
+            "state" : "translated",
+            "value" : "Diğer oyuncular ihale veriyor…"
           }
         },
         "ur" : {
@@ -29123,8 +29123,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Other players are declaring their projects…"
+            "state" : "translated",
+            "value" : "Andere Spieler sagen ihre Projekte an …"
           }
         },
         "en" : {
@@ -29135,14 +29135,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Other players are declaring their projects…"
+            "state" : "translated",
+            "value" : "Los demás jugadores están cantando sus proyectos…"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Other players are declaring their projects…"
+            "state" : "translated",
+            "value" : "Les autres joueurs annoncent leurs projets…"
           }
         },
         "hi" : {
@@ -29153,8 +29153,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Other players are declaring their projects…"
+            "state" : "translated",
+            "value" : "Pemain lain sedang mengumumkan proyek mereka…"
           }
         },
         "ru" : {
@@ -29165,8 +29165,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Other players are declaring their projects…"
+            "state" : "translated",
+            "value" : "Diğer oyuncular projelerini beyan ediyor…"
           }
         },
         "ur" : {
@@ -34450,8 +34450,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ashkal round: choose any Hokum suit, Sun, or Pass"
+            "state" : "translated",
+            "value" : "Ashkal-Runde: beliebige Hokum-Farbe, Sun oder Passen"
           }
         },
         "en" : {
@@ -34462,14 +34462,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ashkal round: choose any Hokum suit, Sun, or Pass"
+            "state" : "translated",
+            "value" : "Ronda Ashkal: elige cualquier palo de Hokum, Sun o Paso"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ashkal round: choose any Hokum suit, Sun, or Pass"
+            "state" : "translated",
+            "value" : "Tour Ashkal : choisissez une couleur de Hokum, Sun ou Passe"
           }
         },
         "hi" : {
@@ -34480,8 +34480,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ashkal round: choose any Hokum suit, Sun, or Pass"
+            "state" : "translated",
+            "value" : "Ronde Ashkal: pilih warna Hokum mana pun, Sun, atau Pas"
           }
         },
         "ru" : {
@@ -34492,8 +34492,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Ashkal round: choose any Hokum suit, Sun, or Pass"
+            "state" : "translated",
+            "value" : "Ashkal turu: herhangi bir Hokum rengi, Sun veya Pas seç"
           }
         },
         "ur" : {
@@ -34579,8 +34579,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Doubling round"
+            "state" : "translated",
+            "value" : "Verdopplungsrunde"
           }
         },
         "en" : {
@@ -34591,14 +34591,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Doubling round"
+            "state" : "translated",
+            "value" : "Ronda de doblaje"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Doubling round"
+            "state" : "translated",
+            "value" : "Tour de contre"
           }
         },
         "hi" : {
@@ -34609,8 +34609,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Doubling round"
+            "state" : "translated",
+            "value" : "Ronde penggandaan"
           }
         },
         "ru" : {
@@ -34621,8 +34621,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Doubling round"
+            "state" : "translated",
+            "value" : "Katlama turu"
           }
         },
         "ur" : {
@@ -35809,8 +35809,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bidding log"
+            "state" : "translated",
+            "value" : "Reizverlauf"
           }
         },
         "en" : {
@@ -35821,14 +35821,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bidding log"
+            "state" : "translated",
+            "value" : "Registro de la subasta"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bidding log"
+            "state" : "translated",
+            "value" : "Historique des enchères"
           }
         },
         "hi" : {
@@ -35839,8 +35839,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bidding log"
+            "state" : "translated",
+            "value" : "Catatan penawaran"
           }
         },
         "ru" : {
@@ -35851,8 +35851,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bidding log"
+            "state" : "translated",
+            "value" : "İhale kaydı"
           }
         },
         "ur" : {
@@ -36144,8 +36144,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bid Hokum"
+            "state" : "translated",
+            "value" : "Hokum ansagen"
           }
         },
         "en" : {
@@ -36156,14 +36156,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bid Hokum"
+            "state" : "translated",
+            "value" : "Pujar Hokum"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bid Hokum"
+            "state" : "translated",
+            "value" : "Annoncer Hokum"
           }
         },
         "hi" : {
@@ -36174,8 +36174,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bid Hokum"
+            "state" : "translated",
+            "value" : "Tawar Hokum"
           }
         },
         "ru" : {
@@ -36186,8 +36186,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bid Hokum"
+            "state" : "translated",
+            "value" : "Hokum al"
           }
         },
         "ur" : {
@@ -36209,8 +36209,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bid Sun"
+            "state" : "translated",
+            "value" : "Sun ansagen"
           }
         },
         "en" : {
@@ -36221,14 +36221,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bid Sun"
+            "state" : "translated",
+            "value" : "Pujar Sun"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bid Sun"
+            "state" : "translated",
+            "value" : "Annoncer Sun"
           }
         },
         "hi" : {
@@ -36239,8 +36239,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bid Sun"
+            "state" : "translated",
+            "value" : "Tawar Sun"
           }
         },
         "ru" : {
@@ -36251,8 +36251,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Bid Sun"
+            "state" : "translated",
+            "value" : "Sun al"
           }
         },
         "ur" : {
@@ -36606,8 +36606,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Declarer failed: all points go to the opponents"
+            "state" : "translated",
+            "value" : "Alleinspieler gescheitert: alle Punkte gehen an die Gegner"
           }
         },
         "en" : {
@@ -36618,14 +36618,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Declarer failed: all points go to the opponents"
+            "state" : "translated",
+            "value" : "El declarante falló: todos los puntos van a los oponentes"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Declarer failed: all points go to the opponents"
+            "state" : "translated",
+            "value" : "Le preneur a chuté : tous les points vont aux adversaires"
           }
         },
         "hi" : {
@@ -36636,8 +36636,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Declarer failed: all points go to the opponents"
+            "state" : "translated",
+            "value" : "Pengambil gagal: semua poin untuk lawan"
           }
         },
         "ru" : {
@@ -36648,8 +36648,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Declarer failed: all points go to the opponents"
+            "state" : "translated",
+            "value" : "İhaleyi alan battı: tüm puanlar rakiplere"
           }
         },
         "ur" : {
@@ -38158,8 +38158,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Lock"
+            "state" : "translated",
+            "value" : "Sperren"
           }
         },
         "en" : {
@@ -38170,14 +38170,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Lock"
+            "state" : "translated",
+            "value" : "Bloquear"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Lock"
+            "state" : "translated",
+            "value" : "Verrouiller"
           }
         },
         "hi" : {
@@ -38188,8 +38188,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Lock"
+            "state" : "translated",
+            "value" : "Kunci"
           }
         },
         "ru" : {
@@ -38200,8 +38200,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Lock"
+            "state" : "translated",
+            "value" : "Kilitle"
           }
         },
         "ur" : {
@@ -38481,8 +38481,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kaboot for %@"
+            "state" : "translated",
+            "value" : "Kaboot für %@"
           }
         },
         "en" : {
@@ -38493,14 +38493,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kaboot for %@"
+            "state" : "translated",
+            "value" : "Kaboot para %@"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kaboot for %@"
+            "state" : "translated",
+            "value" : "Kaboot pour %@"
           }
         },
         "hi" : {
@@ -38511,8 +38511,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kaboot for %@"
+            "state" : "translated",
+            "value" : "Kaboot untuk %@"
           }
         },
         "ru" : {
@@ -38523,8 +38523,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Kaboot for %@"
+            "state" : "translated",
+            "value" : "%@ için Kaboot"
           }
         },
         "ur" : {
@@ -38868,8 +38868,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Don't declare"
+            "state" : "translated",
+            "value" : "Nicht ansagen"
           }
         },
         "en" : {
@@ -38880,14 +38880,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Don't declare"
+            "state" : "translated",
+            "value" : "No cantar"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Don't declare"
+            "state" : "translated",
+            "value" : "Ne pas annoncer"
           }
         },
         "hi" : {
@@ -38898,8 +38898,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Don't declare"
+            "state" : "translated",
+            "value" : "Jangan umumkan"
           }
         },
         "ru" : {
@@ -38910,8 +38910,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Don't declare"
+            "state" : "translated",
+            "value" : "Beyan etme"
           }
         },
         "ur" : {
@@ -39786,8 +39786,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You can't play this card now. Tap to see why"
+            "state" : "translated",
+            "value" : "Du kannst diese Karte jetzt nicht spielen. Tippen für den Grund"
           }
         },
         "en" : {
@@ -39798,14 +39798,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You can't play this card now. Tap to see why"
+            "state" : "translated",
+            "value" : "No puedes jugar esta carta ahora. Toca para ver por qué"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You can't play this card now. Tap to see why"
+            "state" : "translated",
+            "value" : "Vous ne pouvez pas jouer cette carte maintenant. Touchez pour savoir pourquoi"
           }
         },
         "hi" : {
@@ -39816,8 +39816,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You can't play this card now. Tap to see why"
+            "state" : "translated",
+            "value" : "Anda tidak bisa memainkan kartu ini sekarang. Ketuk untuk tahu alasannya"
           }
         },
         "ru" : {
@@ -39828,8 +39828,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You can't play this card now. Tap to see why"
+            "state" : "translated",
+            "value" : "Bu kartı şimdi oynayamazsın. Nedenini görmek için dokun"
           }
         },
         "ur" : {
@@ -39851,8 +39851,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You can't play a card at this stage."
+            "state" : "translated",
+            "value" : "In dieser Phase kannst du keine Karte spielen."
           }
         },
         "en" : {
@@ -39863,14 +39863,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You can't play a card at this stage."
+            "state" : "translated",
+            "value" : "No puedes jugar una carta en esta fase."
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You can't play a card at this stage."
+            "state" : "translated",
+            "value" : "Vous ne pouvez pas jouer de carte à ce stade."
           }
         },
         "hi" : {
@@ -39881,8 +39881,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You can't play a card at this stage."
+            "state" : "translated",
+            "value" : "Anda tidak bisa memainkan kartu pada tahap ini."
           }
         },
         "ru" : {
@@ -39893,8 +39893,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You can't play a card at this stage."
+            "state" : "translated",
+            "value" : "Bu aşamada kart oynayamazsın."
           }
         },
         "ur" : {
@@ -39980,8 +39980,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You can't play this card because you hold the required suit and must follow suit."
+            "state" : "translated",
+            "value" : "Du kannst diese Karte nicht spielen, weil du die verlangte Farbe hast und bedienen musst."
           }
         },
         "en" : {
@@ -39992,14 +39992,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You can't play this card because you hold the required suit and must follow suit."
+            "state" : "translated",
+            "value" : "No puedes jugar esta carta porque tienes el palo requerido y debes asistir."
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You can't play this card because you hold the required suit and must follow suit."
+            "state" : "translated",
+            "value" : "Vous ne pouvez pas jouer cette carte car vous avez la couleur demandée et devez fournir."
           }
         },
         "hi" : {
@@ -40010,8 +40010,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You can't play this card because you hold the required suit and must follow suit."
+            "state" : "translated",
+            "value" : "Anda tidak bisa memainkan kartu ini karena Anda memegang warna yang diminta dan harus mengikutinya."
           }
         },
         "ru" : {
@@ -40022,8 +40022,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You can't play this card because you hold the required suit and must follow suit."
+            "state" : "translated",
+            "value" : "Bu kartı oynayamazsın çünkü istenen renge sahipsin ve renk vermek zorundasın."
           }
         },
         "ur" : {
@@ -40120,8 +40120,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "No project in your hand"
+            "state" : "translated",
+            "value" : "Kein Projekt auf deiner Hand"
           }
         },
         "en" : {
@@ -40132,14 +40132,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "No project in your hand"
+            "state" : "translated",
+            "value" : "No hay proyecto en tu mano"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "No project in your hand"
+            "state" : "translated",
+            "value" : "Aucun projet dans votre main"
           }
         },
         "hi" : {
@@ -40150,8 +40150,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "No project in your hand"
+            "state" : "translated",
+            "value" : "Tidak ada proyek di tangan Anda"
           }
         },
         "ru" : {
@@ -40162,8 +40162,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "No project in your hand"
+            "state" : "translated",
+            "value" : "Elinde proje yok"
           }
         },
         "ur" : {
@@ -40780,8 +40780,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "It's not your turn."
+            "state" : "translated",
+            "value" : "Du bist nicht am Zug."
           }
         },
         "en" : {
@@ -40792,14 +40792,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "It's not your turn."
+            "state" : "translated",
+            "value" : "No es tu turno."
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "It's not your turn."
+            "state" : "translated",
+            "value" : "Ce n'est pas votre tour."
           }
         },
         "hi" : {
@@ -40810,8 +40810,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "It's not your turn."
+            "state" : "translated",
+            "value" : "Sekarang bukan giliran Anda."
           }
         },
         "ru" : {
@@ -40822,8 +40822,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "It's not your turn."
+            "state" : "translated",
+            "value" : "Sıra sende değil."
           }
         },
         "ur" : {
@@ -40844,8 +40844,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Continue"
+            "state" : "translated",
+            "value" : "Weiter"
           }
         },
         "en" : {
@@ -40856,14 +40856,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Continue"
+            "state" : "translated",
+            "value" : "Continuar"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Continue"
+            "state" : "translated",
+            "value" : "Continuer"
           }
         },
         "hi" : {
@@ -40874,8 +40874,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Continue"
+            "state" : "translated",
+            "value" : "Lanjutkan"
           }
         },
         "ru" : {
@@ -40886,8 +40886,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Continue"
+            "state" : "translated",
+            "value" : "Devam"
           }
         },
         "ur" : {
@@ -41274,8 +41274,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Everyone passed both rounds — dead round, no points"
+            "state" : "translated",
+            "value" : "Alle haben in beiden Runden gepasst – tote Runde, keine Punkte"
           }
         },
         "en" : {
@@ -41286,14 +41286,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Everyone passed both rounds — dead round, no points"
+            "state" : "translated",
+            "value" : "Todos pasaron en las dos rondas: ronda muerta, sin puntos"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Everyone passed both rounds — dead round, no points"
+            "state" : "translated",
+            "value" : "Tout le monde a passé aux deux tours — tour mort, aucun point"
           }
         },
         "hi" : {
@@ -41304,8 +41304,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Everyone passed both rounds — dead round, no points"
+            "state" : "translated",
+            "value" : "Semua pemain pas di kedua ronde — ronde mati, tanpa poin"
           }
         },
         "ru" : {
@@ -41316,8 +41316,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Everyone passed both rounds — dead round, no points"
+            "state" : "translated",
+            "value" : "Herkes iki turda da pas geçti — ölü tur, puan yok"
           }
         },
         "ur" : {
@@ -42374,8 +42374,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "This card is not in your hand."
+            "state" : "translated",
+            "value" : "Diese Karte ist nicht auf deiner Hand."
           }
         },
         "en" : {
@@ -42386,14 +42386,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "This card is not in your hand."
+            "state" : "translated",
+            "value" : "Esta carta no está en tu mano."
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "This card is not in your hand."
+            "state" : "translated",
+            "value" : "Cette carte n'est pas dans votre main."
           }
         },
         "hi" : {
@@ -42404,8 +42404,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "This card is not in your hand."
+            "state" : "translated",
+            "value" : "Kartu ini tidak ada di tangan Anda."
           }
         },
         "ru" : {
@@ -42416,8 +42416,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "This card is not in your hand."
+            "state" : "translated",
+            "value" : "Bu kart elinde değil."
           }
         },
         "ur" : {
@@ -43214,8 +43214,8 @@
       "localizations" : {
         "de" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You must overtrump the highest trump played while you still can."
+            "state" : "translated",
+            "value" : "Du musst den höchsten gespielten Trumpf übertrumpfen, solange du kannst."
           }
         },
         "en" : {
@@ -43226,14 +43226,14 @@
         },
         "es" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You must overtrump the highest trump played while you still can."
+            "state" : "translated",
+            "value" : "Debes superar el triunfo más alto jugado mientras puedas."
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You must overtrump the highest trump played while you still can."
+            "state" : "translated",
+            "value" : "Vous devez surcouper l'atout le plus haut joué tant que vous le pouvez."
           }
         },
         "hi" : {
@@ -43244,8 +43244,8 @@
         },
         "id" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You must overtrump the highest trump played while you still can."
+            "state" : "translated",
+            "value" : "Anda harus melebihi truf tertinggi yang sudah dimainkan selama masih bisa."
           }
         },
         "ru" : {
@@ -43256,8 +43256,8 @@
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "You must overtrump the highest trump played while you still can."
+            "state" : "translated",
+            "value" : "Elinde varken oynanan en yüksek kozu geçmek zorundasın."
           }
         },
         "ur" : {

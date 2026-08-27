@@ -100,6 +100,88 @@ final class LocalizationIntegrityTests: XCTestCase {
         )
     }
 
+    /// قيم يصحّ أن تتطابق مع الإنجليزية: أسماء عَلَم لألعاب ومصطلحات البلوت
+    /// (موثّقة في README)، وكلمات متطابقة فعلًا في تلك اللغة (`Options` بالفرنسية،
+    /// `System` بالألمانية، `Risk` بالتركية)، وسلاسل رمزية/رقمية بلا كلمات مترجَمة.
+    ///
+    /// القائمة مضبوطة على الوضع الحالي: أي تطابق **جديد** يسقط الاختبار ويفرض قرارًا
+    /// صريحًا — إمّا ترجمته أو إضافته هنا بمبرّر.
+    private static let allowedEnglishIdenticalValues: Set<String> = [
+        "%d points", "10–20 minutes", "20–30 minutes",
+        "Baloot", "Baloot Sandbox", "Baloot – Double",
+        "Coffee", "Double",
+        "Double ×2 · Triple ×3 · Quadruple ×4 · Coffee ×4",
+        "Double ×2 · Triple ×4 · Quadruple ×6 · Coffee ×8",
+        "Edit", "Expert", "Hand", "Hokum", "Jack", "Kaboot", "Kaboot!",
+        "Kout Bou Sitta", "Level", "Minimal", "Mode", "Name", "OK", "Options",
+        "Partner", "Pro", "Quadruple", "Risk", "Saad", "Sadu", "Sand", "Score",
+        "Seed", "Session", "Simulation", "Sun", "System", "Tarneeb", "Teams",
+        "Triple", "Trix", "Version", "point"
+    ]
+
+    /// يمنع **تسرّب الإنجليزية للغات اللاتينية**.
+    ///
+    /// فحص نظام الكتابة أعلاه يكشف الإزاحة في الروسية والهندية والأردية والصينية،
+    /// لكنه **عاجز بنيويًا** عن الألمانية والإسبانية والفرنسية والإندونيسية والتركية:
+    /// كلها لاتينية مثل الإنجليزية، فنصٌّ إنجليزي منسوخ فيها يمرّ من كل الفحوصات
+    /// ويظهر للمستخدم إنجليزيًا وهو معلَّم `translated`.
+    ///
+    /// وقع هذا فعلًا: ٣٠ نصًا من صميم شاشة اللعب (المزايدة، إعلان المشاريع، تفسير
+    /// المخالفات) كانت تحمل الإنجليزية حرفيًا في هذه اللغات الخمس، وخمسة نصوص ألمانية
+    /// إضافية كانت معلَّمة `translated` وهي إنجليزية.
+    func testLatinLanguagesDoNotShipEnglishVerbatim() throws {
+        let catalog = try Self.loadCatalog()
+        var offenders: [String] = []
+
+        for (key, localizations) in catalog {
+            guard let english = localizations["en"], !english.isEmpty else { continue }
+            guard !Self.allowedEnglishIdenticalValues.contains(english) else { continue }
+
+            for language in Self.latinLanguages where language != "en" {
+                guard let value = localizations[language], value == english else { continue }
+                offenders.append("[\(language)] \(key) -> \(value)")
+            }
+        }
+
+        XCTAssertTrue(
+            offenders.isEmpty,
+            "لغة لاتينية تعرض النص الإنجليزي حرفيًا (ترجمة زائفة):\n"
+                + offenders.prefix(20).joined(separator: "\n")
+        )
+    }
+
+    /// `needs_review` تعني ترجمة غير مؤكَّدة. كانت ٣٠ نصًا بهذه الحالة وكلها إنجليزية
+    /// منسوخة، فوجودها مؤشر مبكر على دفعة ترجمة ناقصة قبل أن يراها مستخدم.
+    func testNoLocalizationIsLeftNeedingReview() throws {
+        let states = try Self.loadStates()
+        let pending = states.filter { $0.value == "needs_review" }.map { $0.key }
+
+        XCTAssertTrue(
+            pending.isEmpty,
+            "ترجمات ما زالت بحالة needs_review:\n" + pending.sorted().prefix(20).joined(separator: "\n")
+        )
+    }
+
+    private static func loadStates() throws -> [String: String] {
+        let url = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .appendingPathComponent("BalootHub/Resources/Localizable.xcstrings")
+        let object = try JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [String: Any]
+        let strings = object?["strings"] as? [String: [String: Any]] ?? [:]
+
+        var states: [String: String] = [:]
+        for (key, entry) in strings {
+            let localizations = entry["localizations"] as? [String: [String: Any]] ?? [:]
+            for (language, localization) in localizations {
+                guard let state = (localization["stringUnit"] as? [String: Any])?["state"] as? String
+                else { continue }
+                states["[\(language)] \(key)"] = state
+            }
+        }
+        return states
+    }
+
     // MARK: - أدوات
 
     private static func containsScalar(_ value: String, in ranges: [ClosedRange<UInt32>]) -> Bool {
@@ -117,8 +199,8 @@ final class LocalizationIntegrityTests: XCTestCase {
             .appendingPathComponent("Resources")
             .appendingPathComponent("Localizable.xcstrings")
         let data = try Data(contentsOf: url)
-        let root_ = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-        let strings = root_?["strings"] as? [String: [String: Any]] ?? [:]
+        let object = try JSONSerialization.jsonObject(with: data) as? [String: Any]
+        let strings = object?["strings"] as? [String: [String: Any]] ?? [:]
 
         return strings.mapValues { entry in
             let localizations = entry["localizations"] as? [String: [String: Any]] ?? [:]
