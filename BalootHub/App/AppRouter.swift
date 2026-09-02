@@ -14,7 +14,7 @@ enum AppTab: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .home: "الرئيسية".localized
-        case .catalog: "الألعاب".localized
+        case .catalog: "المكتبة".localized
         case .scorekeeper: "تسجيل البلوت".localized
         case .history: "السجل".localized
         case .settings: "الإعدادات".localized
@@ -24,7 +24,7 @@ enum AppTab: String, CaseIterable, Identifiable {
     var iconName: String {
         switch self {
         case .home: "house.fill"
-        case .catalog: "square.grid.2x2.fill"
+        case .catalog: "books.vertical.fill"
         case .scorekeeper: "list.clipboard.fill"
         case .history: "clock.arrow.circlepath"
         case .settings: "gearshape.fill"

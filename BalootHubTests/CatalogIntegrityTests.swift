@@ -290,6 +290,28 @@ final class CatalogIntegrityTests: XCTestCase {
         }
     }
 
+    /// فرز الواجهة يجب أن يوجّه المستخدم أولًا إلى طاولة البلوت الحقيقية، ثم يفصل
+    /// التدريب والتقدم والمراجع عن ألعاب الورق الأخرى. هذا يمنع رجوع الشاشة لقائمة
+    /// عشوائية توهم أن الصن والحكم ألعاب مستقلة.
+    func testCatalogPresentationGroupsBalootByUserWorkflow() throws {
+        let items = try allItems().sorted { $0.sortOrder < $1.sortOrder }
+        let homeSections = CatalogPresentation.homeSections(from: items)
+
+        XCTAssertEqual(homeSections.map(\.id), ["play", "training", "management", "references"])
+        XCTAssertEqual(homeSections.first?.items.map(\.slug), ["baloot-classic"])
+        XCTAssertEqual(CatalogPresentation.workflowActions.first?.route, .balootGamePlay(slug: "baloot-classic"))
+
+        let references = try XCTUnwrap(homeSections.first { $0.id == "references" })
+        XCTAssertTrue(references.items.contains { $0.slug == "baloot-sun" })
+        XCTAssertTrue(references.items.contains { $0.slug == "baloot-hokum" })
+        XCTAssertFalse(references.items.contains { $0.isPlayable })
+
+        let catalogSections = CatalogPresentation.catalogSections(from: items)
+        let otherGames = try XCTUnwrap(catalogSections.first { $0.id == "other-card-games" })
+        XCTAssertEqual(otherGames.items.map(\.category).uniqueValues, [.otherCardGame])
+        XCTAssertEqual(otherGames.items.map(\.slug), ["kout-bou-sitta", "tarneeb", "trex", "hand"])
+    }
+
     /// الرتب والأيقونات يجب أن تكون فريدة/مرتبة حتى لا تتكرر البطاقات أو تختل الترتيب.
     func testSlugsAreUniqueAndSortOrdersAreDistinct() throws {
         let items = try allItems()
@@ -344,5 +366,11 @@ final class CatalogIntegrityTests: XCTestCase {
             url = next
         }
         return url.deletingLastPathComponent()
+    }
+}
+
+private extension Array where Element: Hashable {
+    var uniqueValues: [Element] {
+        Array(Set(self)).sorted { String(describing: $0) < String(describing: $1) }
     }
 }

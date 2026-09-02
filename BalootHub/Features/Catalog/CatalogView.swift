@@ -13,6 +13,14 @@ struct CatalogView: View {
         CatalogSearch.apply(filter: selectedFilter, query: searchText, to: allItems)
     }
 
+    private var groupedSections: [CatalogPresentationSection] {
+        CatalogPresentation.catalogSections(from: filteredItems)
+    }
+
+    private var usesGroupedLayout: Bool {
+        selectedFilter == .all && searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
     private let columns = [GridItem(.adaptive(minimum: 165), spacing: AppSpacing.md)]
 
     var body: some View {
@@ -45,14 +53,17 @@ struct CatalogView: View {
                 .frame(maxHeight: .infinity)
             } else {
                 ScrollView {
-                    LazyVGrid(columns: columns, spacing: AppSpacing.md) {
-                        ForEach(filteredItems) { item in
-                            Button {
-                                appEnvironment.openGameDetails(slug: item.slug, from: .catalog)
-                            } label: {
-                                GameCardView(item: item, onToggleFavorite: { toggleFavorite(item) })
+                    VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                        if usesGroupedLayout {
+                            ForEach(groupedSections) { section in
+                                catalogSection(section)
                             }
-                            .buttonStyle(.plain)
+                        } else {
+                            LazyVGrid(columns: columns, spacing: AppSpacing.md) {
+                                ForEach(filteredItems) { item in
+                                    catalogCard(item)
+                                }
+                            }
                         }
                     }
                     .padding(AppSpacing.md)
@@ -61,7 +72,35 @@ struct CatalogView: View {
             }
         }
         .background(AppColor.background)
-        .navigationTitle("الألعاب")
+        .navigationTitle("المكتبة")
+    }
+
+    private func catalogSection(_ section: CatalogPresentationSection) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                Text(section.title)
+                    .font(AppTypography.title)
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(section.detail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+            }
+
+            LazyVGrid(columns: columns, spacing: AppSpacing.md) {
+                ForEach(section.items) { item in
+                    catalogCard(item)
+                }
+            }
+        }
+    }
+
+    private func catalogCard(_ item: GameCatalogItem) -> some View {
+        Button {
+            appEnvironment.openGameDetails(slug: item.slug, from: .catalog)
+        } label: {
+            GameCardView(item: item, onToggleFavorite: { toggleFavorite(item) })
+        }
+        .buttonStyle(.plain)
     }
 
     private var searchBar: some View {

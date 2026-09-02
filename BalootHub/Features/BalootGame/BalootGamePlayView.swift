@@ -921,6 +921,7 @@ struct BalootGamePlayView: View {
 
     private var humanHandArea: some View {
         VStack(spacing: AppSpacing.xs) {
+            tableGuidanceCard
             if viewModel.state.phase == .playing {
                 Text(turnStatusText)
                     .font(AppTypography.subheadline)
@@ -940,6 +941,61 @@ struct BalootGamePlayView: View {
                     handCards
                 }
             }
+        }
+    }
+
+    private var tableGuidanceCard: some View {
+        let guidance = viewModel.tableGuidance
+        return VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Label(guidance.title, systemImage: guidanceIconName)
+                .font(AppTypography.subheadline.weight(.semibold))
+                .foregroundStyle(AppColor.primary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+
+            Text(guidance.detail)
+                .font(AppTypography.caption)
+                .foregroundStyle(AppColor.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if !guidance.facts.isEmpty {
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: AppSpacing.xs) {
+                        guidanceFacts(guidance.facts)
+                    }
+                    VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                        guidanceFacts(guidance.facts)
+                    }
+                }
+            }
+        }
+        .padding(AppSpacing.sm)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(AppColor.surface.opacity(0.94), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .accessibilityElement(children: .combine)
+    }
+
+    @ViewBuilder
+    private func guidanceFacts(_ facts: [String]) -> some View {
+        ForEach(Array(facts.prefix(3).enumerated()), id: \.offset) { _, fact in
+            Text(fact)
+                .font(.caption2)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .padding(.horizontal, AppSpacing.xs)
+                .padding(.vertical, 3)
+                .background(AppColor.surfaceElevated, in: Capsule())
+                .foregroundStyle(AppColor.textSecondary)
+        }
+    }
+
+    private var guidanceIconName: String {
+        switch viewModel.state.phase {
+        case .bidding: "hand.raised.fill"
+        case .declaring: "sparkles"
+        case .playing: viewModel.isHumanTurn ? "hand.point.up.left.fill" : "eye.fill"
+        case .scoring, .finished: "chart.bar.doc.horizontal"
+        case .setup, .dealing: "rectangle.stack.fill"
         }
     }
 

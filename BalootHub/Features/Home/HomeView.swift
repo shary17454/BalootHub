@@ -18,6 +18,10 @@ struct HomeView: View {
         CatalogSearch.apply(filter: .all, query: searchText, to: allItems)
     }
 
+    private var homeSections: [CatalogPresentationSection] {
+        CatalogPresentation.homeSections(from: allItems)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
@@ -35,13 +39,22 @@ struct HomeView: View {
                     if allItems.isEmpty {
                         LoadingStateView(message: "جارِ تجهيز الكتالوج…")
                     } else {
-                        catalogSection(title: GameCategory.balootGame.title, items: allItems.filter { $0.category == .balootGame })
-                        catalogSection(title: GameCategory.balootTool.title, items: allItems.filter { $0.category == .balootTool })
-                        catalogSection(title: GameCategory.otherCardGame.title, items: allItems.filter { $0.category == .otherCardGame })
+                        workflowSection
+
+                        ForEach(homeSections) { section in
+                            catalogSection(section)
+                        }
 
                         let favorites = allItems.filter(\.isFavorite)
                         if !favorites.isEmpty {
-                            catalogSection(title: "المفضلة", items: favorites)
+                            catalogSection(
+                                CatalogPresentationSection(
+                                    id: "favorites",
+                                    title: "المفضلة".localized,
+                                    detail: "العناصر التي اخترتها للوصول السريع.".localized,
+                                    items: favorites
+                                )
+                            )
                         }
                     }
                 }
@@ -109,13 +122,90 @@ struct HomeView: View {
         .accessibilityLabel("متابعة آخر جلسة، \(session.teamOneName) ضد \(session.teamTwoName)")
     }
 
-    private func catalogSection(title: String, items: [GameCatalogItem]) -> some View {
+    private var workflowSection: some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
-            Text(title)
-                .font(AppTypography.title)
-                .foregroundStyle(AppColor.textPrimary)
+            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                Text("وش تبغى تسوي؟")
+                    .font(AppTypography.title)
+                    .foregroundStyle(AppColor.textPrimary)
+                Text("اختر مسارًا واضحًا بدل البحث بين كل عناصر التطبيق.")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+            }
 
-            if items.isEmpty {
+            if horizontalSizeClass == .regular {
+                LazyVGrid(
+                    columns: [GridItem(.adaptive(minimum: 230), spacing: AppSpacing.md)],
+                    spacing: AppSpacing.md
+                ) {
+                    ForEach(CatalogPresentation.workflowActions) { action in
+                        workflowActionButton(action)
+                    }
+                }
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: AppSpacing.md) {
+                        ForEach(CatalogPresentation.workflowActions) { action in
+                            workflowActionButton(action)
+                                .frame(width: 230)
+                        }
+                    }
+                    .padding(.vertical, AppSpacing.xxs)
+                }
+            }
+        }
+    }
+
+    private func workflowActionButton(_ action: CatalogWorkflowAction) -> some View {
+        Button {
+            if let route = action.route {
+                appEnvironment.navigate(to: route, tab: action.tab)
+            } else {
+                appEnvironment.selectedTab = action.tab
+            }
+        } label: {
+            HStack(alignment: .top, spacing: AppSpacing.sm) {
+                Image(systemName: action.iconName)
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(AppColor.accent)
+                    .frame(width: 34, height: 34)
+                    .background(AppColor.accent.opacity(0.14), in: Circle())
+
+                VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                    Text(action.title)
+                        .font(AppTypography.headline)
+                        .foregroundStyle(AppColor.textPrimary)
+                        .lineLimit(2)
+                    Text(action.detail)
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColor.textSecondary)
+                        .lineLimit(3)
+                }
+
+                Spacer(minLength: 0)
+            }
+            .padding(AppSpacing.md)
+            .frame(maxWidth: .infinity, minHeight: 118, alignment: .topLeading)
+            .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+            .overlay(RoundedRectangle(cornerRadius: AppRadius.medium).stroke(AppColor.border, lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(action.title)
+        .accessibilityHint(action.detail)
+    }
+
+    private func catalogSection(_ section: CatalogPresentationSection) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                Text(section.title)
+                    .font(AppTypography.title)
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(section.detail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+            }
+
+            if section.items.isEmpty {
                 Text("لا توجد عناصر بعد في هذا القسم.")
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
@@ -127,14 +217,14 @@ struct HomeView: View {
                     columns: [GridItem(.adaptive(minimum: 220), spacing: AppSpacing.md)],
                     spacing: AppSpacing.md
                 ) {
-                    ForEach(items) { item in
+                    ForEach(section.items) { item in
                         catalogCard(item)
                     }
                 }
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: AppSpacing.md) {
-                        ForEach(items) { item in
+                        ForEach(section.items) { item in
                             catalogCard(item)
                                 .frame(width: 220)
                         }

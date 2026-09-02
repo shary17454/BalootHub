@@ -30,6 +30,7 @@
 		0BAEE16832A14DD0AC8A0111 /* MatchHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027593F2A63A4966AC066FDE /* MatchHistoryView.swift */; };
 		0F25653820F7429F931B4AF2 /* CatalogSeederTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DA4313DC03409888B1B43F /* CatalogSeederTests.swift */; };
 		10F7E300CEB243B0A5B5531F /* CatalogFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774F64E2FF1449F4BFBB8528 /* CatalogFilter.swift */; };
+		CA7A10000000000000000002 /* CatalogPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7A10000000000000000001 /* CatalogPresentation.swift */; };
 		11DB90A3C4F54107B6920FA9 /* GameDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69C0BE86F2246FB8D1A7E46 /* GameDetailsView.swift */; };
 		1534A5689A6145759E26A22A /* ScoreRulesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE9E72237F624BCFAA8EE59D /* ScoreRulesTests.swift */; };
 		166C8047BAEC44568A030D73 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = E32D73CAC888412DAEE3DF83 /* Localizable.xcstrings */; };
@@ -220,6 +221,7 @@
 		7173E22B6806A36935F07399 /* SelectableChip.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SelectableChip.swift; sourceTree = "<group>"; };
 		74199DC881014B42882FE6C3 /* AppTypography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTypography.swift; sourceTree = "<group>"; };
 		774F64E2FF1449F4BFBB8528 /* CatalogFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogFilter.swift; sourceTree = "<group>"; };
+		CA7A10000000000000000001 /* CatalogPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogPresentation.swift; sourceTree = "<group>"; };
 		77B10AC6CA684350A7089C28 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		7E31630790994E7BB9617012 /* BalootGamePlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootGamePlayView.swift; sourceTree = "<group>"; };
 		821BF8DC70D1422390424FDB /* BalootAcademyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootAcademyTests.swift; sourceTree = "<group>"; };
@@ -371,6 +373,7 @@
 				508FDBB01244CAEE420E21D8 /* GameFeedbackResolver.swift */,
 				2B9FC931056262892C4D6C43 /* AppearanceCatalog.swift */,
 				774F64E2FF1449F4BFBB8528 /* CatalogFilter.swift */,
+				CA7A10000000000000000001 /* CatalogPresentation.swift */,
 				A7F43B2E6742474EAC83E071 /* AchievementCenter.swift */,
 				C3A58DE91B234B9A8D2E7781 /* BalootAcademy.swift */,
 				F88C1D026EA1418FA1FEC017 /* DailyChallengeCenter.swift */,
@@ -831,6 +834,7 @@
 				8C9A6F2E1B174E8AB13B4702 /* AcademyLessonProgress.swift in Sources */,
 				41C5D46DD8114F4EA837279D /* SettingsRepository.swift in Sources */,
 				10F7E300CEB243B0A5B5531F /* CatalogFilter.swift in Sources */,
+				CA7A10000000000000000002 /* CatalogPresentation.swift in Sources */,
 				DDA37C25EA9445F6A7AF6F6F /* ScoreRules.swift in Sources */,
 				91C0E4D6FA8D491CA2A82F43 /* AchievementCenter.swift in Sources */,
 				77D2F8E6A63B4F0E94D2A15C /* BalootAcademy.swift in Sources */,

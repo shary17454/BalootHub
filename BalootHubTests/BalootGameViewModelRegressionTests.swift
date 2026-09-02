@@ -238,4 +238,38 @@ final class BalootGameViewModelRegressionTests: XCTestCase {
         XCTAssertTrue(viewModel.state.declaredProjects.isEmpty)
         XCTAssertNil(viewModel.errorMessage)
     }
+
+    @MainActor
+    func testTableGuidanceExplainsBiddingOptions() throws {
+        let viewModel = BalootGameViewModel(tableMode: .localHumans, rules: .standard)
+        viewModel.deal(seed: 14)
+        viewModel.revealLocalHumanHand()
+
+        let guidance = viewModel.tableGuidance
+
+        XCTAssertEqual(guidance.title, "دورك في المزايدة".localized)
+        XCTAssertTrue(guidance.detail.contains("بس".localized))
+        XCTAssertTrue(guidance.facts.contains { $0.contains("الخيارات المتاحة".localized) })
+    }
+
+    @MainActor
+    func testTableGuidanceExplainsPlayableCardsDuringPlay() throws {
+        let viewModel = BalootGameViewModel(tableMode: .localHumans, rules: .standard)
+        viewModel.deal(seed: 9)
+
+        try advanceBoughtRoundToDeclaration(viewModel)
+        while viewModel.state.phase != .playing {
+            viewModel.revealLocalHumanHand()
+            if viewModel.state.phase == .declaring {
+                viewModel.skipDeclaration()
+            }
+        }
+        viewModel.revealLocalHumanHand()
+
+        let guidance = viewModel.tableGuidance
+
+        XCTAssertFalse(guidance.title.isEmpty)
+        XCTAssertFalse(guidance.detail.isEmpty)
+        XCTAssertTrue(guidance.facts.contains { $0.contains("الأوراق المسموحة".localized) })
+    }
 }

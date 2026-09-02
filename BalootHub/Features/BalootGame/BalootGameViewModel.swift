@@ -46,6 +46,12 @@ enum BalootTableMode: String, CaseIterable, Identifiable {
     }
 }
 
+struct BalootTableGuidance: Equatable {
+    let title: String
+    let detail: String
+    let facts: [String]
+}
+
 @Observable
 @MainActor
 final class BalootGameViewModel {
@@ -334,6 +340,158 @@ final class BalootGameViewModel {
     /// `Set` ثابت الزمن.
     var legalCardIDsForHuman: Set<PlayingCard> {
         Set(legalCardsForHuman)
+    }
+
+    /// شرح مختصر لما يحدث الآن على الطاولة. يعتمد على حالة المحرك والـlegal moves
+    /// بدل أن تخمّن الواجهة قواعد البلوت بنفسها.
+    var tableGuidance: BalootTableGuidance {
+        switch state.phase {
+        case .setup, .dealing:
+            return BalootTableGuidance(
+                title: "تجهيز الجولة".localized,
+                detail: "انتظر توزيع الأوراق ثم تبدأ المزايدة بين اللاعبين الأربعة.".localized,
+                facts: ["الصن والحكم يحددهما الشراء داخل نفس لعبة البلوت.".localized]
+            )
+        case .bidding:
+            return biddingGuidance
+        case .declaring:
+            return declarationGuidance
+        case .playing:
+            return playingGuidance
+        case .scoring:
+            return BalootTableGuidance(
+                title: "احتساب الجولة".localized,
+                detail: "يحسب المحرك الأكلات والمشاريع والمضاعفات ثم يعلن نتيجة الجولة.".localized,
+                facts: []
+            )
+        case .finished:
+            return BalootTableGuidance(
+                title: "انتهت الجولة".localized,
+                detail: "راجع النتيجة والتحليل، أو افتح Replay لمعرفة تسلسل المزايدة واللعب.".localized,
+                facts: []
+            )
+        }
+    }
+
+    private var biddingGuidance: BalootTableGuidance {
+        let stage: String
+        switch state.bidding.stage {
+        case .firstRound:
+            stage = "الجولة الأولى".localized
+        case .secondRound:
+            stage = "جولة الأشكال".localized
+        case .doubling:
+            stage = "جولة المضاعفة".localized
+        case .completed:
+            stage = "اكتملت المزايدة".localized
+        case .voided:
+            stage = "دورة ميتة".localized
+        }
+
+        if canCurrentHumanAct {
+            return BalootTableGuidance(
+                title: "دورك في المزايدة".localized,
+                detail: "اختر صن أو حكم إذا كانت يدك قوية، أو اضغط بس لتمرير الدور.".localized,
+                facts: [stage, "\("الخيارات المتاحة".localized): \(legalBidsForHuman.count)"]
+            )
+        }
+
+        return BalootTableGuidance(
+            title: "المزايدة جارية".localized,
+            detail: "\("الدور عند".localized) \(currentTurnPlayerName). \("انتظر حتى يشتري لاعب أو تمر الجولة بلا شراء.".localized)",
+            facts: [stage]
+        )
+    }
+
+    private var declarationGuidance: BalootTableGuidance {
+        guard canCurrentHumanAct else {
+            return BalootTableGuidance(
+                title: "إعلان المشاريع".localized,
+                detail: "\("الدور عند".localized) \(currentTurnPlayerName). \("كل لاعب يعلن مشاريعه قبل أول ورقة.".localized)",
+                facts: []
+            )
+        }
+
+        let projects = declarableProjectsForHuman
+        if projects.isEmpty {
+            return BalootTableGuidance(
+                title: "لا يوجد مشروع".localized,
+                detail: "لا توجد سرا أو خمسين أو مية أو بلوت قابلة للإعلان في يدك الآن.".localized,
+                facts: ["اضغط متابعة للانتقال إلى اللعب.".localized]
+            )
+        }
+
+        return BalootTableGuidance(
+            title: "أعلن مشاريعك".localized,
+            detail: "راجع المشاريع المكتشفة ثم أعلنها الآن؛ لا يمكن إعلانها بعد بدء اللعب.".localized,
+            facts: projects.map { "\($0.kind.arabicName) +\($0.points)" }
+        )
+    }
+
+    private var playingGuidance: BalootTableGuidance {
+        guard canCurrentHumanAct else {
+            return BalootTableGuidance(
+                title: "انتظار الدور".localized,
+                detail: currentTurnPlayerName.isEmpty
+                    ? "انتظر حتى يعود الدور إليك.".localized
+                    : "\("الدور عند".localized) \(currentTurnPlayerName). \("راقب اللون المطلوب والأوراق التي خرجت.".localized)",
+                facts: modeFacts
+            )
+        }
+
+        let legalCards = legalCardsForHuman
+        let blockedCount = max(visibleHumanHand.count - legalCards.count, 0)
+        var facts = modeFacts
+        facts.append("\("الأوراق المسموحة".localized): \(legalCards.count)")
+        if blockedCount > 0 {
+            facts.append("\("الأوراق الممنوعة".localized): \(blockedCount)")
+        }
+
+        guard let requiredSuit = state.currentTrick?.requiredSuit else {
+            return BalootTableGuidance(
+                title: "أنت تبدأ الأكلة".localized,
+                detail: "اختر ورقة افتتاحية تناسب خطتك؛ الورق المضاع هو القابل للعب الآن.".localized,
+                facts: facts
+            )
+        }
+
+        if visibleHumanHand.contains(where: { $0.suit == requiredSuit }) {
+            return BalootTableGuidance(
+                title: "التزم باللون المطلوب".localized,
+                detail: "\("اللون المطلوب".localized): \(requiredSuit.spokenName). \("يجب لعب ورقة من هذا اللون ما دامت موجودة في يدك.".localized)",
+                facts: facts
+            )
+        }
+
+        if moveValidationsForHuman.contains(where: { $0.invalidReason == .mustPlayTrumpWhenVoidOfSuit }) {
+            return BalootTableGuidance(
+                title: "اقطع بالحكم".localized,
+                detail: RuleExplanationFormatter.illegalMoveExplanation(for: .mustPlayTrumpWhenVoidOfSuit, trumpSuit: state.trumpSuit),
+                facts: facts
+            )
+        }
+
+        if moveValidationsForHuman.contains(where: { $0.invalidReason == .mustOvertrump }) {
+            return BalootTableGuidance(
+                title: "علّ على الحكم".localized,
+                detail: RuleExplanationFormatter.illegalMoveExplanation(for: .mustOvertrump, trumpSuit: state.trumpSuit),
+                facts: facts
+            )
+        }
+
+        return BalootTableGuidance(
+            title: "لا تملك اللون المطلوب".localized,
+            detail: "\("اللون المطلوب".localized): \(requiredSuit.spokenName). \("العب أفضل ورقة قانونية حسب الموقف، أو اضغط الورق المعتم لمعرفة سبب منعه.".localized)",
+            facts: facts
+        )
+    }
+
+    private var modeFacts: [String] {
+        guard let mode = state.mode else { return [] }
+        if mode == .hokum, let trumpSuit = state.trumpSuit {
+            return ["\("النمط".localized): \("حكم".localized) \(trumpSuit.spokenName)"]
+        }
+        return ["\("النمط".localized): \(mode.arabicName)"]
     }
 
     func startNewMatch() {
