@@ -53,6 +53,12 @@ extension AppearanceOption where Self: CaseIterable {
 enum CardFaceStyle: String, CaseIterable, AppearanceOption {
     /// رمز وسط ورقم أعلى — الشكل الأصلي للتطبيق.
     case classic
+    /// ورقة بيضاء بإطار وفهارس زوايا مثل أوراق اللعب الواقعية.
+    case casino
+    /// ورقة كريمية بإطار ذهبي وخامة خفيفة تناسب طاولة المجلس.
+    case majlis
+    /// فهارس كبيرة في الزوايا الأربع لقراءة أسرع أثناء اللعب.
+    case largeIndex
     /// أرقام عريضة كبيرة تُقرأ من بعيد، مناسب لطاولة المجلس.
     case bold
     /// أرقام عربية-هندية (٧ ٨ ٩ ١٠) بطابع تراثي.
@@ -65,6 +71,9 @@ enum CardFaceStyle: String, CaseIterable, AppearanceOption {
     var title: String {
         switch self {
         case .classic: "كلاسيكي".localized
+        case .casino: "كازينو".localized
+        case .majlis: "مجلس".localized
+        case .largeIndex: "فهرس كبير".localized
         case .bold: "عريض".localized
         case .heritage: "تراثي".localized
         case .minimal: "بسيط".localized
@@ -74,6 +83,9 @@ enum CardFaceStyle: String, CaseIterable, AppearanceOption {
     var detail: String {
         switch self {
         case .classic: "رقم فوق ورمز تحت، الشكل المعتاد للتطبيق.".localized
+        case .casino: "وجه أبيض واضح بإطار وفهارس زوايا مثل الورق الحقيقي.".localized
+        case .majlis: "خامة كريمية وإطار ذهبي بطابع جلسات البلوت.".localized
+        case .largeIndex: "أرقام ورموز كبيرة في الزوايا الأربع للقراءة السريعة.".localized
         case .bold: "أرقام كبيرة تُقرأ بسهولة من بعد الذراع.".localized
         case .heritage: "أرقام عربية-هندية بطابع المجالس القديمة.".localized
         case .minimal: "زاوية واحدة بلا زخرفة، أهدأ شكل ممكن.".localized
@@ -85,9 +97,9 @@ enum CardFaceStyle: String, CaseIterable, AppearanceOption {
 
     var requiredRank: CareerRank {
         switch self {
-        case .classic, .minimal: .newcomer
-        case .bold: .majlisRegular
-        case .heritage: .tableReader
+        case .classic, .casino, .minimal: .newcomer
+        case .largeIndex, .bold: .majlisRegular
+        case .majlis, .heritage: .tableReader
         }
     }
 }

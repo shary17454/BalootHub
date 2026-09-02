@@ -28,6 +28,15 @@ final class AppearanceCatalogTests: XCTestCase {
         }
     }
 
+    func testCardFaceCatalogIncludesRealisticVariants() {
+        let faces = Set(CardFaceStyle.allCases)
+
+        XCTAssertTrue(faces.contains(.casino), "لازم يتوفر وجه أبيض قريب من ورق اللعب الحقيقي")
+        XCTAssertTrue(faces.contains(.majlis), "لازم يتوفر وجه بطابع مجلس البلوت")
+        XCTAssertTrue(faces.contains(.largeIndex), "لازم يتوفر وجه بفهرس كبير للقراءة السريعة")
+        XCTAssertGreaterThanOrEqual(faces.count, 7, "شكل الورقة لازم يكون متنوعًا لا مجرد خيارين أو ثلاثة")
+    }
+
     func testSheikhRankUnlocksEverything() {
         let progress = AppearanceCatalog.unlockProgress(at: .balootSheikh)
         XCTAssertEqual(progress.unlocked, progress.total, "أعلى رتبة يفترض تفتح كل الأنماط")
@@ -177,5 +186,12 @@ final class AppearanceCatalogTests: XCTestCase {
                 XCTAssertFalse(style.label(for: rank).isEmpty, "\(style.rawValue)/\(rank.rawValue): نص فارغ")
             }
         }
+    }
+
+    func testRealisticFaceStylesResolveAtExpectedRanks() {
+        XCTAssertEqual(CardFaceStyle.resolve(CardFaceStyle.casino.rawValue, at: .newcomer), .casino)
+        XCTAssertEqual(CardFaceStyle.resolve(CardFaceStyle.largeIndex.rawValue, at: .majlisRegular), .largeIndex)
+        XCTAssertEqual(CardFaceStyle.resolve(CardFaceStyle.majlis.rawValue, at: .tableReader), .majlis)
+        XCTAssertEqual(CardFaceStyle.resolve(CardFaceStyle.majlis.rawValue, at: .newcomer), .classic)
     }
 }

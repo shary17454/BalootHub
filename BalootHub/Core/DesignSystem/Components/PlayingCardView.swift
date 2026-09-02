@@ -114,13 +114,14 @@ struct PlayingCardFaceView: View {
 
     var body: some View {
         content
-            .foregroundStyle(isRed ? AppColor.danger : AppColor.textPrimary)
+            .foregroundStyle(inkColor)
             .minimumScaleFactor(0.55)
             .frame(width: cardWidth, height: cardHeight)
-            .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.small))
+            .background(faceBackground)
+            .overlay(faceTexture)
             .overlay(
                 RoundedRectangle(cornerRadius: AppRadius.small)
-                    .stroke(isHighlighted ? AppColor.accent : AppColor.border, lineWidth: isHighlighted ? 2 : 1)
+                    .stroke(borderColor, lineWidth: isHighlighted ? 2 : 1)
             )
             .accessibilityLabel(card.accessibilityName)
     }
@@ -129,27 +130,72 @@ struct PlayingCardFaceView: View {
     private var content: some View {
         switch style {
         case .classic:
-            // ورقة لعب حقيقية: فهرس في الزاوية (قيمة فوق رمز) ورمز أكبر في المنتصف.
-            // كان النمط سابقًا قيمة ورمزًا في المنتصف فقط، فبدت الورقة رقعةً لا ورقة،
-            // ويصعب تمييزها حين تتجاور الأوراق في اليد.
             ZStack {
                 Image(systemName: symbolName)
                     .font(.system(size: 20))
                     .opacity(0.9)
-                VStack {
-                    HStack {
-                        VStack(spacing: -1) {
-                            Text(rankLabel)
-                                .font(.system(size: 11, design: .rounded).weight(.heavy))
-                            Image(systemName: symbolName)
-                                .font(.system(size: 7))
-                        }
-                        Spacer(minLength: 0)
-                    }
-                    Spacer(minLength: 0)
+                cornerIndex(size: 11, symbolSize: 7)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    .padding(.horizontal, 3)
+                    .padding(.top, 3)
+            }
+        case .casino:
+            ZStack {
+                VStack(spacing: 4) {
+                    Image(systemName: symbolName)
+                        .font(.system(size: 18, weight: .semibold))
+                    Image(systemName: symbolName)
+                        .font(.system(size: 12, weight: .medium))
+                        .opacity(0.72)
                 }
-                .padding(.horizontal, 3)
-                .padding(.top, 3)
+                cornerIndex(size: 10, symbolSize: 7)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    .padding(4)
+                cornerIndex(size: 10, symbolSize: 7)
+                    .rotationEffect(.degrees(180))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                    .padding(4)
+            }
+        case .majlis:
+            ZStack {
+                RoundedRectangle(cornerRadius: AppRadius.small - 2)
+                    .stroke(AppColor.accent.opacity(0.45), lineWidth: 1)
+                    .padding(4)
+                VStack(spacing: 2) {
+                    Image(systemName: symbolName)
+                        .font(.system(size: 18, weight: .semibold))
+                    Text(rankLabel)
+                        .font(.system(size: 13, design: .serif).weight(.semibold))
+                }
+                cornerIndex(size: 10, symbolSize: 7, design: .serif)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    .padding(5)
+                cornerIndex(size: 10, symbolSize: 7, design: .serif)
+                    .rotationEffect(.degrees(180))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                    .padding(5)
+            }
+        case .largeIndex:
+            ZStack {
+                HStack {
+                    cornerIndex(size: 13, symbolSize: 8)
+                    Spacer(minLength: 0)
+                    cornerIndex(size: 13, symbolSize: 8)
+                        .rotationEffect(.degrees(180))
+                }
+                .frame(maxHeight: .infinity, alignment: .top)
+                .padding(4)
+                HStack {
+                    cornerIndex(size: 13, symbolSize: 8)
+                    Spacer(minLength: 0)
+                    cornerIndex(size: 13, symbolSize: 8)
+                        .rotationEffect(.degrees(180))
+                }
+                .frame(maxHeight: .infinity, alignment: .bottom)
+                .padding(4)
+                Image(systemName: symbolName)
+                    .font(.system(size: 16, weight: .medium))
+                    .opacity(0.50)
             }
         case .bold:
             VStack(spacing: 0) {
@@ -177,6 +223,97 @@ struct PlayingCardFaceView: View {
             .padding(.horizontal, AppSpacing.xxs)
             .padding(.top, AppSpacing.xxs)
         }
+    }
+
+    private var inkColor: Color {
+        switch style {
+        case .casino, .majlis, .largeIndex:
+            isRed ? Color(red: 0.70, green: 0.06, blue: 0.05) : Color(red: 0.08, green: 0.08, blue: 0.07)
+        case .classic, .bold, .heritage, .minimal:
+            isRed ? AppColor.danger : AppColor.textPrimary
+        }
+    }
+
+    private var borderColor: Color {
+        if isHighlighted { return AppColor.accent }
+        switch style {
+        case .casino:
+            return Color(red: 0.72, green: 0.70, blue: 0.64)
+        case .majlis:
+            return AppColor.accent.opacity(0.70)
+        case .largeIndex:
+            return Color(red: 0.58, green: 0.58, blue: 0.54)
+        case .classic, .bold, .heritage, .minimal:
+            return AppColor.border
+        }
+    }
+
+    @ViewBuilder
+    private var faceBackground: some View {
+        switch style {
+        case .casino, .largeIndex:
+            RoundedRectangle(cornerRadius: AppRadius.small)
+                .fill(
+                    LinearGradient(
+                        colors: [Color(red: 0.99, green: 0.985, blue: 0.96), Color(red: 0.92, green: 0.90, blue: 0.84)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+        case .majlis:
+            RoundedRectangle(cornerRadius: AppRadius.small)
+                .fill(
+                    LinearGradient(
+                        colors: [Color(red: 0.98, green: 0.88, blue: 0.65), Color(red: 0.82, green: 0.66, blue: 0.42)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+        case .classic, .bold, .heritage, .minimal:
+            RoundedRectangle(cornerRadius: AppRadius.small)
+                .fill(AppColor.surfaceElevated)
+        }
+    }
+
+    @ViewBuilder
+    private var faceTexture: some View {
+        switch style {
+        case .casino, .largeIndex:
+            RoundedRectangle(cornerRadius: AppRadius.small)
+                .stroke(Color.white.opacity(0.65), lineWidth: 0.7)
+                .padding(2)
+        case .majlis:
+            ZStack {
+                RoundedRectangle(cornerRadius: AppRadius.small)
+                    .stroke(Color.white.opacity(0.25), lineWidth: 0.8)
+                    .padding(2)
+                VStack(spacing: 5) {
+                    ForEach(0..<5, id: \.self) { index in
+                        Capsule()
+                            .fill(AppColor.accent.opacity(index.isMultiple(of: 2) ? 0.15 : 0.07))
+                            .frame(height: 1)
+                    }
+                }
+                .padding(.horizontal, 9)
+            }
+        case .classic, .bold, .heritage, .minimal:
+            EmptyView()
+        }
+    }
+
+    private func cornerIndex(
+        size: CGFloat,
+        symbolSize: CGFloat,
+        design: Font.Design = .rounded
+    ) -> some View {
+        VStack(spacing: -1) {
+            Text(rankLabel)
+                .font(.system(size: size, design: design).weight(.heavy))
+            Image(systemName: symbolName)
+                .font(.system(size: symbolSize, weight: .bold))
+        }
+        .lineLimit(1)
+        .minimumScaleFactor(0.7)
     }
 
     private var rankLabel: String { style.label(for: card.rank) }

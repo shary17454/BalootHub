@@ -76426,6 +76426,48 @@
         }
       }
     },
+    "كازينو": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Casino" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Style casino" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Estilo casino" } },
+        "de": { "stringUnit": { "state": "translated", "value": "Kasino-Stil" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Kumarhane" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Казино" } },
+        "ur": { "stringUnit": { "state": "translated", "value": "کیسینو" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "कैसिनो" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Kasino" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "赌场" } }
+      }
+    },
+    "مجلس": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Majlis" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Salon majlis" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Sala majlis" } },
+        "de": { "stringUnit": { "state": "translated", "value": "Majlis-Stil" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Meclis" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Маджлис" } },
+        "ur": { "stringUnit": { "state": "translated", "value": "مجلس" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "मजलिस" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Ruang majlis" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "会客厅" } }
+      }
+    },
+    "فهرس كبير": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Large Index" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Grand index" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Índice grande" } },
+        "de": { "stringUnit": { "state": "translated", "value": "Großer Index" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Büyük indeks" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Крупный индекс" } },
+        "ur": { "stringUnit": { "state": "translated", "value": "بڑا انڈیکس" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "बड़ा इंडेक्स" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Indeks besar" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "大索引" } }
+      }
+    },
     "عريض": {
       "localizations": {
         "en": {
@@ -76680,6 +76722,48 @@
             "value": "上方点数、下方花色 —— 应用的常规外观。"
           }
         }
+      }
+    },
+    "وجه أبيض واضح بإطار وفهارس زوايا مثل الورق الحقيقي.": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "A clean white face with a frame and corner indexes like real playing cards." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Une face blanche nette avec cadre et index d'angle comme de vraies cartes." } },
+        "es": { "stringUnit": { "state": "translated", "value": "Una cara blanca clara con marco e índices de esquina como cartas reales." } },
+        "de": { "stringUnit": { "state": "translated", "value": "Eine klare weiße Vorderseite mit Rahmen und Eckindizes wie echte Spielkarten." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Gerçek oyun kartları gibi çerçeveli ve köşe indeksli net beyaz yüz." } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Чистая белая лицевая сторона с рамкой и угловыми индексами, как у настоящих карт." } },
+        "ur": { "stringUnit": { "state": "translated", "value": "اصلی تاش کی طرح فریم اور کونے کے انڈیکس کے ساتھ صاف سفید چہرہ۔" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "असली ताश जैसे फ्रेम और कोने के इंडेक्स वाला साफ सफेद चेहरा।" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Wajah putih jelas dengan bingkai dan indeks sudut seperti kartu sungguhan." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "清晰白色牌面，带边框和角标，像真实纸牌。" } }
+      }
+    },
+    "خامة كريمية وإطار ذهبي بطابع جلسات البلوت.": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "A cream paper texture with a gold frame for a Baloot majlis feel." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Une texture papier crème avec cadre doré pour une ambiance majlis de Baloot." } },
+        "es": { "stringUnit": { "state": "translated", "value": "Textura de papel crema con marco dorado para un ambiente de majlis de Baloot." } },
+        "de": { "stringUnit": { "state": "translated", "value": "Cremefarbene Papiertextur mit Goldrahmen für Baloot-Majlis-Stimmung." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Baloot meclisi havası için altın çerçeveli krem kağıt dokusu." } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Кремовая бумажная текстура с золотой рамкой в духе маджлиса Балута." } },
+        "ur": { "stringUnit": { "state": "translated", "value": "بلوت مجلس کے انداز کے لیے سنہری فریم کے ساتھ کریمی کاغذی بناوٹ۔" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "बलूत मजलिस जैसा एहसास देने वाली सुनहरे फ्रेम की क्रीम पेपर बनावट।" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Tekstur kertas krem dengan bingkai emas untuk nuansa majlis Baloot." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "奶油色纸张质感配金色边框，呈现 Baloot 会客厅氛围。" } }
+      }
+    },
+    "أرقام ورموز كبيرة في الزوايا الأربع للقراءة السريعة.": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Large ranks and suits in all four corners for quick reading." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Grandes valeurs et couleurs aux quatre coins pour une lecture rapide." } },
+        "es": { "stringUnit": { "state": "translated", "value": "Valores y palos grandes en las cuatro esquinas para lectura rápida." } },
+        "de": { "stringUnit": { "state": "translated", "value": "Große Werte und Farben in allen vier Ecken für schnelles Lesen." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Hızlı okuma için dört köşede büyük değer ve semboller." } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Крупные значения и масти во всех четырех углах для быстрого чтения." } },
+        "ur": { "stringUnit": { "state": "translated", "value": "تیز پڑھنے کے لیے چاروں کونوں میں بڑے نمبر اور نشان۔" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "तेजी से पढ़ने के लिए चारों कोनों में बड़े मान और चिह्न।" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Nilai dan simbol besar di keempat sudut untuk dibaca cepat." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "四角显示大号点数和花色，便于快速识别。" } }
       }
     },
     "أرقام كبيرة تُقرأ بسهولة من بعد الذراع.": {

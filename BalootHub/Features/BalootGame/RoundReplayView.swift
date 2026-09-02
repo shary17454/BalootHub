@@ -581,19 +581,11 @@ private struct ReplayCardView: View {
     /// حتى لا تختلف قراءة الورقة بين شاشة اللعب وشاشة الإعادة.
     var style: CardFaceStyle = .classic
 
-    private var isRed: Bool { card.suit.isRed }
-
     var body: some View {
-        VStack(spacing: 1) {
-            Text(style.label(for: card.rank))
-                .font(.caption.weight(.bold))
-            Text(card.suit.symbol)
-                .font(.caption2.weight(.bold))
-        }
-        .foregroundStyle(isRed ? AppColor.danger : AppColor.textPrimary)
+        PlayingCardFaceView(card: card, style: style)
+            .scaleEffect(0.78)
+            .frame(width: 38, height: 50)
         .frame(width: 38, height: 50)
-        .background(AppColor.surfaceElevated, in: RoundedRectangle(cornerRadius: AppRadius.small))
-        .overlay(RoundedRectangle(cornerRadius: AppRadius.small).stroke(AppColor.border, lineWidth: 1))
         .accessibilityLabel(card.accessibilityName)
     }
 }
