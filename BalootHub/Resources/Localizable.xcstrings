@@ -1,6 +1,118 @@
 {
   "sourceLanguage": "ar",
   "strings": {
+    "لعبة قابلة للعب": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Playable game" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Jeu jouable" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Juego jugable" } },
+        "de": { "stringUnit": { "state": "translated", "value": "Spielbar" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Oynanabilir oyun" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Играбельная игра" } },
+        "ur": { "stringUnit": { "state": "translated", "value": "کھیلنے کے قابل گیم" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "खेलने योग्य खेल" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Game yang bisa dimainkan" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "可玩的游戏" } }
+      }
+    },
+    "شرح نمط داخل البلوت": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Baloot mode guide" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Guide de mode Baloot" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Guía de modo Baloot" } },
+        "de": { "stringUnit": { "state": "translated", "value": "Baloot-Modusleitfaden" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Baloot mod rehberi" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Руководство по режиму Балут" } },
+        "ur": { "stringUnit": { "state": "translated", "value": "بلوت موڈ رہنما" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "बलूत मोड गाइड" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Panduan mode Baloot" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "Baloot 模式指南" } }
+      }
+    },
+    "مرجع لعبة ورق": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Card game reference" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Référence de jeu de cartes" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Referencia de juego de cartas" } },
+        "de": { "stringUnit": { "state": "translated", "value": "Kartenspielreferenz" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Kart oyunu başvuru" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Справочник карточной игры" } },
+        "ur": { "stringUnit": { "state": "translated", "value": "تاش کھیل حوالہ" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "ताश खेल संदर्भ" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Referensi permainan kartu" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "纸牌游戏参考" } }
+      }
+    },
+    "مرجع بلوت": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Baloot reference" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Référence Baloot" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Referencia de Baloot" } },
+        "de": { "stringUnit": { "state": "translated", "value": "Baloot-Referenz" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Baloot başvuru" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Справочник Балут" } },
+        "ur": { "stringUnit": { "state": "translated", "value": "بلوت حوالہ" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "बलूत संदर्भ" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Referensi Baloot" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "Baloot 参考" } }
+      }
+    },
+    "اضغط بدء اللعب. الصن والحكم يجيان داخل مزايدة واحدة مثل الواقع.": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Tap Start Playing. Sun and Hokum are chosen inside one real bidding flow." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Touchez Commencer. Sun et Hokum se choisissent dans une seule enchère réelle." } },
+        "es": { "stringUnit": { "state": "translated", "value": "Toca Empezar. Sun y Hokum se eligen dentro de una sola subasta real." } },
+        "de": { "stringUnit": { "state": "translated", "value": "Tippe auf Spiel starten. Sun und Hokum werden in einer echten Reizrunde gewählt." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Oynamaya başla düğmesine dokun. Sun ve Hokum tek gerçek artırmada seçilir." } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Нажмите Начать игру. Sun и Hokum выбираются в одном реальном торге." } },
+        "ur": { "stringUnit": { "state": "translated", "value": "کھیل شروع کریں دبائیں۔ سن اور حکم ایک ہی حقیقی بولی میں چنے جاتے ہیں۔" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "खेल शुरू करें दबाएँ। Sun और Hokum एक ही वास्तविक बोली में चुने जाते हैं।" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Ketuk Mulai Bermain. Sun dan Hokum dipilih dalam satu alur penawaran nyata." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "点按开始游戏。Sun 和 Hokum 会在同一真实叫牌流程中选择。" } }
+      }
+    },
+    "اقرأ القاعدة هنا، ثم العبها من طاولة البلوت الكاملة.": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Read the rule here, then play it from the full Baloot table." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Lisez la règle ici, puis jouez-la depuis la table Baloot complète." } },
+        "es": { "stringUnit": { "state": "translated", "value": "Lee la regla aquí y luego juégala desde la mesa completa de Baloot." } },
+        "de": { "stringUnit": { "state": "translated", "value": "Lies hier die Regel und spiele sie dann am vollständigen Baloot-Tisch." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Kuralı burada oku, sonra tam Baloot masasından oyna." } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Прочитайте правило здесь, затем играйте за полным столом Балут." } },
+        "ur": { "stringUnit": { "state": "translated", "value": "یہاں قاعدہ پڑھیں، پھر مکمل بلوت میز سے کھیلیں۔" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "यहाँ नियम पढ़ें, फिर पूरी बलूत मेज से खेलें।" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Baca aturan di sini, lalu mainkan dari meja Baloot lengkap." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "先在这里阅读规则，再从完整 Baloot 牌桌中游玩。" } }
+      }
+    },
+    "اقرأ القواعد وطريقة اللعب فقط؛ لم تُبنَ لها طاولة لعب كاملة بعد.": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Read rules and how to play only; a full playable table is not built yet." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Lisez seulement les règles et la méthode; aucune table jouable complète n'est encore créée." } },
+        "es": { "stringUnit": { "state": "translated", "value": "Lee solo reglas y modo de juego; aún no hay una mesa jugable completa." } },
+        "de": { "stringUnit": { "state": "translated", "value": "Nur Regeln und Spielweise lesen; ein vollständiger Spieltisch ist noch nicht gebaut." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Yalnızca kuralları ve oynanışı oku; tam oynanabilir masa henüz yapılmadı." } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Читайте только правила и ход игры; полноценный игровой стол еще не создан." } },
+        "ur": { "stringUnit": { "state": "translated", "value": "صرف قواعد اور کھیلنے کا طریقہ پڑھیں؛ مکمل کھیلنے والی میز ابھی نہیں بنی۔" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "सिर्फ नियम और खेलने का तरीका पढ़ें; पूरी खेलने योग्य मेज अभी बनी नहीं है।" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Baca aturan dan cara bermain saja; meja bermain lengkap belum dibuat." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "仅阅读规则和玩法；完整可玩的牌桌尚未构建。" } }
+      }
+    },
+    "هذه الصفحة لا تشغّل مباراة لهذه اللعبة الآن؛ فائدتها الحالية شرح القواعد بسرعة وفصلها عن أدوات البلوت.": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "This page does not start a match for this game now; it currently explains the rules quickly and keeps them separate from Baloot tools." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Cette page ne lance pas de partie pour ce jeu pour l'instant; elle explique vite les règles et les sépare des outils Baloot." } },
+        "es": { "stringUnit": { "state": "translated", "value": "Esta página no inicia una partida de este juego ahora; explica rápido las reglas y las separa de las herramientas de Baloot." } },
+        "de": { "stringUnit": { "state": "translated", "value": "Diese Seite startet derzeit keine Partie dieses Spiels; sie erklärt die Regeln kurz und trennt sie von den Baloot-Werkzeugen." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Bu sayfa şu anda bu oyun için maç başlatmaz; kuralları hızlıca açıklar ve Baloot araçlarından ayırır." } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Эта страница сейчас не запускает матч этой игры; она кратко объясняет правила и отделяет их от инструментов Балут." } },
+        "ur": { "stringUnit": { "state": "translated", "value": "یہ صفحہ ابھی اس کھیل کا میچ شروع نہیں کرتا؛ فی الحال یہ قواعد جلدی سمجھاتا ہے اور انہیں بلوت ٹولز سے الگ رکھتا ہے۔" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "यह पेज अभी इस खेल का मैच शुरू नहीं करता; यह नियम जल्दी समझाता है और उन्हें बलूत टूल्स से अलग रखता है।" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Halaman ini belum memulai pertandingan untuk game ini; saat ini hanya menjelaskan aturan dengan cepat dan memisahkannya dari alat Baloot." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "此页面目前不会启动该游戏的对局；它用于快速说明规则，并将其与 Baloot 工具分开。" } }
+      }
+    },
     "إعلانات المشاريع": {
       "localizations": {
         "en": {

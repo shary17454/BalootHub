@@ -119,6 +119,82 @@ final class GameCatalogItem {
         return "book.fill"
     }
 
+    /// وصف عملي قصير يشرح للمستخدم ماذا يفعل بهذا العنصر الآن.
+    var displayUseTitle: String {
+        if isPlayable { return "لعبة قابلة للعب".localized }
+        if isBalootModeReference { return "شرح نمط داخل البلوت".localized }
+        if category == .otherCardGame { return "مرجع لعبة ورق".localized }
+
+        switch slug {
+        case "baloot-training":
+            return "أكاديمية تفاعلية".localized
+        case "what-to-play-trainer":
+            return "مدرب قرار".localized
+        case "hand-analyzer":
+            return "تحليل يد".localized
+        case "score-calculation-challenge":
+            return "اختبار حساب".localized
+        case "baloot-sandbox":
+            return "مختبر مواقف".localized
+        case "baloot-scorekeeper":
+            return "مسجل نقاط".localized
+        case "daily-baloot-challenges":
+            return "تحديات يومية".localized
+        case "baloot-career-mode":
+            return "مسيرة وتقدم".localized
+        case "offline-tournaments":
+            return "تنظيم بطولة".localized
+        case "baloot-achievements":
+            return "إنجازات وألقاب".localized
+        case "baloot-encyclopedia", "baloot-rare-cases", "baloot-bidding-guide", "baloot-projects-reference", "baloot-multiplayer-voice-guide":
+            return "مرجع بلوت".localized
+        default:
+            return displayAvailabilityTitle
+        }
+    }
+
+    /// خطوة الاستخدام المختصرة التي تظهر في بطاقة الكتالوج وصفحة التفاصيل.
+    var displayUseDescription: String {
+        if isPlayable {
+            return "اضغط بدء اللعب. الصن والحكم يجيان داخل مزايدة واحدة مثل الواقع.".localized
+        }
+        if isBalootModeReference {
+            return "اقرأ القاعدة هنا، ثم العبها من طاولة البلوت الكاملة.".localized
+        }
+        if category == .otherCardGame {
+            return "اقرأ القواعد وطريقة اللعب فقط؛ لم تُبنَ لها طاولة لعب كاملة بعد.".localized
+        }
+
+        switch slug {
+        case "baloot-training":
+            return "افتح الأكاديمية واختر درسًا؛ كل درس فيه شرح ومثال وموقف عملي.".localized
+        case "what-to-play-trainer":
+            return "افتح المدرب واختر ورقة من الخيارات القانونية ثم قارن قرارك بالخبير.".localized
+        case "hand-analyzer":
+            return "أدخل أوراق يدك، وسيقترح التطبيق شراء صن أو حكم أو بس.".localized
+        case "score-calculation-challenge":
+            return "ابدأ الاختبار واحسب نتيجة الصكة قبل انتهاء المؤقت.".localized
+        case "baloot-sandbox":
+            return "افتح المختبر وجرب أثر الورقة على موقف محدد من المحرك.".localized
+        case "baloot-scorekeeper":
+            return "استخدمه أثناء مجلس حقيقي لتسجيل الصكات والمشاريع والمضاعفات.".localized
+        case "daily-baloot-challenges":
+            return "اختر تحدي اليوم أو الأسبوع وتابع تقدمك المحلي.".localized
+        case "baloot-career-mode":
+            return "تابع رتبتك وXP وما فُتح لك من محتوى تدريبي وتجميلي.".localized
+        case "offline-tournaments":
+            return "أنشئ بطولة محلية وأدخل الفرق وجدول المباريات بدون إنترنت.".localized
+        case "baloot-achievements":
+            return "راجع الألقاب وشروط فتحها من اللعب والتدريب.".localized
+        case "baloot-encyclopedia":
+            return "ابحث عن مصطلح بلوت واقرأ تعريفه ومثاله بسرعة.".localized
+        case "baloot-rare-cases":
+            return "افتح الحالات المختلف عليها واقرأ الحكم وسبب الحكم.".localized
+        default:
+            return displayDescription
+        }
+    }
+
     /// يبحث عن قسم قواعد بترتيبه المعياري الثابت (انظر ``StandardRuleSectionKind``).
     func ruleSection(_ kind: StandardRuleSectionKind) -> GameRuleSection? {
         sortedRules.first { $0.order == kind.order }

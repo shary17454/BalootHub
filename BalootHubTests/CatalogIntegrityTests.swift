@@ -22,7 +22,7 @@ final class CatalogIntegrityTests: XCTestCase {
     /// كل عنصر يجب أن يملك الحقول التي تعرضها صفحة التفاصيل، وإلا ظهرت فراغات.
     func testEveryCatalogItemHasCompleteDisplayData() throws {
         let items = try allItems()
-        XCTAssertEqual(items.count, 27)
+        XCTAssertEqual(items.count, 53)
 
         for item in items {
             XCTAssertFalse(item.slug.isEmpty, "slug فارغ")
@@ -337,7 +337,74 @@ final class CatalogIntegrityTests: XCTestCase {
         XCTAssertEqual(catalogSections.map(\.id), ["play", "training", "management", "references", "other-card-games"])
         let otherGames = try XCTUnwrap(catalogSections.first { $0.id == "other-card-games" })
         XCTAssertEqual(otherGames.items.map(\.category).uniqueValues, [.otherCardGame])
-        XCTAssertEqual(otherGames.items.map(\.slug), ["kout-bou-sitta", "tarneeb", "trex", "hand"])
+        XCTAssertEqual(
+            otherGames.items.map(\.slug),
+            [
+                "kout-bou-sitta",
+                "tarneeb",
+                "trex",
+                "hand",
+                "bridge",
+                "poker-texas-holdem",
+                "blackjack",
+                "rummy",
+                "gin-rummy",
+                "hearts",
+                "spades",
+                "whist",
+                "euchre",
+                "canasta",
+                "solitaire-klondike",
+                "freecell",
+                "spider-solitaire",
+                "crazy-eights",
+                "old-maid",
+                "go-fish",
+                "war",
+                "president",
+                "durak",
+                "pinochle",
+                "cribbage",
+                "skat",
+                "belote",
+                "hokm",
+                "estimation",
+                "basra"
+            ]
+        )
+        XCTAssertTrue(otherGames.items.allSatisfy { !$0.isPlayable }, "ألعاب الورق الأخرى مراجع فقط وليست طاولات لعب فعلية")
+    }
+
+    func testKnownCardGameReferencesHaveUnderstandableRules() throws {
+        let items = try allItems().filter { $0.category == .otherCardGame }
+
+        XCTAssertGreaterThanOrEqual(items.count, 30)
+        for item in items {
+            let combinedRules = item.rules.map(\.body).joined(separator: "\n")
+            XCTAssertFalse(combinedRules.contains("سيُضاف"), "\(item.slug): يحتوي نصًا مؤجلًا")
+            XCTAssertFalse(combinedRules.contains("غير مفهوم"), "\(item.slug): يحتوي وصفًا غير صالح")
+            XCTAssertEqual(item.displayAvailabilityTitle, "قواعد فقط".localized)
+            XCTAssertFalse(item.isPlayable, "\(item.slug): لا يوجد محرك لعب كامل لهذه اللعبة بعد")
+        }
+    }
+
+    func testEveryCatalogItemExplainsHowToUseItNow() throws {
+        for item in try allItems() {
+            XCTAssertFalse(item.displayUseTitle.isEmpty, "\(item.slug): عنوان الاستخدام فارغ")
+            XCTAssertFalse(item.displayUseDescription.isEmpty, "\(item.slug): شرح الاستخدام فارغ")
+            XCTAssertFalse(item.displayUseDescription.contains("TODO"), "\(item.slug): شرح الاستخدام غير مكتمل")
+            XCTAssertFalse(item.displayUseDescription.contains("قريبًا"), "\(item.slug): شرح الاستخدام يوحي بميزة ناقصة بدل شرح الوضع الحالي")
+        }
+
+        let baloot = try XCTUnwrap(try allItems().first { $0.slug == "baloot-classic" })
+        XCTAssertEqual(baloot.displayUseTitle, "لعبة قابلة للعب".localized)
+        XCTAssertTrue(baloot.displayUseDescription.contains("الصن"))
+        XCTAssertTrue(baloot.displayUseDescription.contains("الحكم"))
+
+        let tarneeb = try XCTUnwrap(try allItems().first { $0.slug == "tarneeb" })
+        XCTAssertEqual(tarneeb.displayUseTitle, "مرجع لعبة ورق".localized)
+        XCTAssertTrue(tarneeb.displayUseDescription.contains("قواعد"))
+        XCTAssertFalse(tarneeb.isPlayable)
     }
 
     /// الرتب والأيقونات يجب أن تكون فريدة/مرتبة حتى لا تتكرر البطاقات أو تختل الترتيب.

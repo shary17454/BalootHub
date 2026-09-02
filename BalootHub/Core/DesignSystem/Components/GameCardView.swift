@@ -44,6 +44,19 @@ struct GameCardView: View {
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
 
+            HStack(alignment: .top, spacing: AppSpacing.xxs) {
+                Image(systemName: item.isPlayable ? "play.circle.fill" : "info.circle.fill")
+                    .font(.caption)
+                    .foregroundStyle(item.isPlayable ? AppColor.success : accentColor)
+                Text(item.displayUseDescription)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textPrimary)
+                    .lineLimit(3)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(AppSpacing.xs)
+            .background(accentColor.opacity(0.10), in: RoundedRectangle(cornerRadius: AppRadius.small))
+
             HStack(spacing: AppSpacing.xs) {
                 StatusBadge(item.category.shortBadgeTitle, systemImage: item.category.iconName, tint: accentColor)
                 StatusBadge(
@@ -59,7 +72,7 @@ struct GameCardView: View {
         .appShadow(AppShadow.card)
         .contentShape(RoundedRectangle(cornerRadius: AppRadius.large))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(item.displayTitle)، \(item.category.title)، \(item.displayAvailabilityTitle)")
+        .accessibilityLabel("\(item.displayTitle)، \(item.category.title)، \(item.displayAvailabilityTitle)، \(item.displayUseDescription)")
         .accessibilityHint("اضغط مرتين لعرض التفاصيل والقواعد")
     }
 }

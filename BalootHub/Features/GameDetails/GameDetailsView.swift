@@ -37,11 +37,13 @@ struct GameDetailsView: View {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
                 heroCard(item)
 
+                infoGrid(item)
+                useCard(item)
+                actionButtons(item)
+
                 Text(item.displayDescription)
                     .font(AppTypography.body)
                     .foregroundStyle(AppColor.textPrimary)
-
-                infoGrid(item)
 
                 if let howToPlay = item.ruleSection(.howToPlay) {
                     summaryCard(section: howToPlay)
@@ -52,8 +54,6 @@ struct GameDetailsView: View {
                 if let mistakes = item.ruleSection(.commonMistakes) {
                     summaryCard(section: mistakes)
                 }
-
-                actionButtons(item)
             }
             .padding(AppSpacing.md)
             .adaptiveContentWidth()
@@ -95,6 +95,33 @@ struct GameDetailsView: View {
         }
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+    }
+
+    private func useCard(_ item: GameCatalogItem) -> some View {
+        let accent = AppColor.categoryColor(for: item.category)
+        return VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Label(item.displayUseTitle, systemImage: item.isPlayable ? "play.circle.fill" : "info.circle.fill")
+                .font(AppTypography.headline)
+                .foregroundStyle(accent)
+            Text(item.displayUseDescription)
+                .font(AppTypography.subheadline)
+                .foregroundStyle(AppColor.textPrimary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if item.category == .otherCardGame {
+                Text("هذه الصفحة لا تشغّل مباراة لهذه اللعبة الآن؛ فائدتها الحالية شرح القواعد بسرعة وفصلها عن أدوات البلوت.".localized)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.md)
+        .background(accent.opacity(0.12), in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppRadius.medium)
+                .stroke(accent.opacity(0.35), lineWidth: 1)
+        )
     }
 
     private func summaryCard(section: GameRuleSection) -> some View {
