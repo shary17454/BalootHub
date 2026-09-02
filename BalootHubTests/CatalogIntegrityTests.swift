@@ -301,12 +301,40 @@ final class CatalogIntegrityTests: XCTestCase {
         XCTAssertEqual(homeSections.first?.items.map(\.slug), ["baloot-classic"])
         XCTAssertEqual(CatalogPresentation.workflowActions.first?.route, .balootGamePlay(slug: "baloot-classic"))
 
+        let training = try XCTUnwrap(homeSections.first { $0.id == "training" })
+        XCTAssertEqual(
+            training.items.map(\.slug),
+            ["baloot-training", "what-to-play-trainer", "hand-analyzer", "score-calculation-challenge", "baloot-sandbox"]
+        )
+
+        let management = try XCTUnwrap(homeSections.first { $0.id == "management" })
+        XCTAssertEqual(
+            management.items.map(\.slug),
+            ["baloot-scorekeeper", "daily-baloot-challenges", "baloot-career-mode", "offline-tournaments", "baloot-achievements"]
+        )
+
         let references = try XCTUnwrap(homeSections.first { $0.id == "references" })
-        XCTAssertTrue(references.items.contains { $0.slug == "baloot-sun" })
-        XCTAssertTrue(references.items.contains { $0.slug == "baloot-hokum" })
+        XCTAssertEqual(
+            references.items.map(\.slug),
+            [
+                "baloot-encyclopedia",
+                "baloot-bidding-guide",
+                "baloot-sun",
+                "baloot-hokum",
+                "baloot-projects",
+                "baloot-projects-reference",
+                "baloot-double",
+                "baloot-ashkal",
+                "baloot-gahwa-lock",
+                "baloot-kaboot",
+                "baloot-rare-cases",
+                "baloot-multiplayer-voice-guide"
+            ]
+        )
         XCTAssertFalse(references.items.contains { $0.isPlayable })
 
         let catalogSections = CatalogPresentation.catalogSections(from: items)
+        XCTAssertEqual(catalogSections.map(\.id), ["play", "training", "management", "references", "other-card-games"])
         let otherGames = try XCTUnwrap(catalogSections.first { $0.id == "other-card-games" })
         XCTAssertEqual(otherGames.items.map(\.category).uniqueValues, [.otherCardGame])
         XCTAssertEqual(otherGames.items.map(\.slug), ["kout-bou-sitta", "tarneeb", "trex", "hand"])

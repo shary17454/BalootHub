@@ -85,8 +85,8 @@ enum CatalogPresentation {
             slugs: [
                 "baloot-training",
                 "what-to-play-trainer",
-                "score-calculation-challenge",
                 "hand-analyzer",
+                "score-calculation-challenge",
                 "baloot-sandbox"
             ],
             from: items
@@ -103,17 +103,18 @@ enum CatalogPresentation {
         )
         let references = orderedItems(
             slugs: [
+                "baloot-encyclopedia",
+                "baloot-bidding-guide",
                 "baloot-sun",
                 "baloot-hokum",
-                "baloot-bidding-guide",
                 "baloot-projects",
                 "baloot-projects-reference",
                 "baloot-double",
                 "baloot-ashkal",
                 "baloot-gahwa-lock",
                 "baloot-kaboot",
-                "baloot-encyclopedia",
-                "baloot-rare-cases"
+                "baloot-rare-cases",
+                "baloot-multiplayer-voice-guide"
             ],
             from: items
         )
@@ -128,19 +129,19 @@ enum CatalogPresentation {
             CatalogPresentationSection(
                 id: "training",
                 title: "تعلّم وتدرّب".localized,
-                detail: "دروس، مواقف، تحليل يد، واختبارات نقاط لتحسين قراراتك.".localized,
+                detail: "أكاديمية، مدرب قرارات، تحليل يد، اختبار نقاط، ومختبر مواقف.".localized,
                 items: training
             ),
             CatalogPresentationSection(
                 id: "management",
                 title: "تابع تقدمك".localized,
-                detail: "سجّل النقاط، التحديات، المسيرة، البطولات، والإنجازات.".localized,
+                detail: "تسجيل نقاط المجلس، تحديات، مسيرة، بطولات، وإنجازات.".localized,
                 items: management
             ),
             CatalogPresentationSection(
                 id: "references",
                 title: "مراجع البلوت".localized,
-                detail: "شرح الأنماط والقواعد والحالات التي تسبب خلافًا بين اللاعبين.".localized,
+                detail: "موسوعة، مزايدة، صن وحكم، مشاريع، مضاعفات، وحالات خلاف.".localized,
                 items: references
             )
         ].filter { !$0.items.isEmpty }

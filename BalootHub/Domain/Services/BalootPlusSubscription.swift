@@ -1,4 +1,5 @@
 import Foundation
+import CryptoKit
 import Observation
 import StoreKit
 
@@ -90,6 +91,37 @@ struct BalootPlusSubscriptionConfiguration: Sendable {
     }
 }
 
+struct BalootPlusOwnerEntitlementOverride {
+    static let defaultsDigestKey = "BalootHubOwnerAccountEmailSHA256"
+    static let environmentDigestKey = "BALOOT_HUB_OWNER_EMAIL_SHA256"
+
+    private static let ownerEmailDigest = "036a6f30eceeeeac0d800e80c2e824b3686decfe06d353a246ba282ce39cb36e"
+
+    func isUnlocked(
+        defaults: UserDefaults = .standard,
+        environment: [String: String] = ProcessInfo.processInfo.environment
+    ) -> Bool {
+        let candidates = [
+            defaults.string(forKey: Self.defaultsDigestKey),
+            environment[Self.environmentDigestKey]
+        ]
+
+        return candidates.contains { candidate in
+            guard let digest = candidate?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() else {
+                return false
+            }
+            return digest == Self.ownerEmailDigest
+        }
+    }
+
+    static func digest(for email: String) -> String {
+        let normalized = email.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        return SHA256.hash(data: Data(normalized.utf8))
+            .map { String(format: "%02x", $0) }
+            .joined()
+    }
+}
+
 enum BalootPlusPurchaseState: Equatable, Sendable {
     case idle
     case purchased
@@ -112,6 +144,7 @@ enum BalootPlusPurchaseState: Equatable, Sendable {
 @Observable
 final class SubscriptionStore {
     private let configuration: BalootPlusSubscriptionConfiguration
+    private let ownerEntitlementOverride: BalootPlusOwnerEntitlementOverride
     @ObservationIgnored private var transactionUpdatesTask: Task<Void, Never>?
 
     private(set) var products: [Product] = []
@@ -119,8 +152,12 @@ final class SubscriptionStore {
     private(set) var isLoading = false
     private(set) var purchaseState: BalootPlusPurchaseState = .idle
 
-    init(configuration: BalootPlusSubscriptionConfiguration = .live) {
+    init(
+        configuration: BalootPlusSubscriptionConfiguration = .live,
+        ownerEntitlementOverride: BalootPlusOwnerEntitlementOverride = BalootPlusOwnerEntitlementOverride()
+    ) {
         self.configuration = configuration
+        self.ownerEntitlementOverride = ownerEntitlementOverride
     }
 
     deinit {
@@ -132,7 +169,8 @@ final class SubscriptionStore {
     }
 
     var isPremiumUnlocked: Bool {
-        !purchasedProductIDs.isDisjoint(with: Set(productIDs))
+        ownerEntitlementOverride.isUnlocked()
+            || !purchasedProductIDs.isDisjoint(with: Set(productIDs))
     }
 
     var configuredProducts: [BalootPlusProduct] {

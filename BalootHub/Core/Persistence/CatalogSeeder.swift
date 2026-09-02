@@ -146,7 +146,7 @@ private extension CatalogSeeder {
             iconName: "sun.max.fill",
             accentToken: "accent",
             isPlayable: false,
-            sortOrder: 1,
+            sortOrder: 32,
             sections: [
                 .objective: "الفوز بأكبر عدد من نقاط الأوراق خلال الجولة دون وجود نوع حكم يفضَّل على البقية.",
                 .playerCount: "أربعة لاعبين في فريقين متقابلين، كما في البلوت الكلاسيكي.",
@@ -172,7 +172,7 @@ private extension CatalogSeeder {
             iconName: "crown.fill",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 2,
+            sortOrder: 33,
             sections: [
                 .objective: "جمع أكبر عدد من نقاط الأوراق باستخدام نوع الحكم المُختار للتفوق حتى عند عدم امتلاك النوع المطلوب.",
                 .playerCount: "أربعة لاعبين في فريقين متقابلين.",
@@ -198,7 +198,7 @@ private extension CatalogSeeder {
             iconName: "star.circle.fill",
             accentToken: "accent",
             isPlayable: false,
-            sortOrder: 3,
+            sortOrder: 34,
             sections: [
                 .objective: "تعظيم نقاط الفريق عبر إعلان المشاريع الصحيحة إضافة إلى نقاط الأكلات المعتادة.",
                 .playerCount: "أربعة لاعبين في فريقين متقابلين.",
@@ -224,7 +224,7 @@ private extension CatalogSeeder {
             iconName: "multiply.circle.fill",
             accentToken: "warning",
             isPlayable: false,
-            sortOrder: 4,
+            sortOrder: 36,
             sections: [
                 .objective: "رفع قيمة نتيجة الجولة عبر تحدّي الفريق الخصم بمضاعفة الرهان قبل بدء اللعب، مع تحمّل مخاطرة أعلى عند الخسارة.",
                 .playerCount: "أربعة لاعبين في فريقين متقابلين.",
@@ -250,7 +250,7 @@ private extension CatalogSeeder {
             iconName: "arrow.triangle.branch",
             accentToken: "warning",
             isPlayable: false,
-            sortOrder: 5,
+            sortOrder: 37,
             sections: [
                 .objective: "إتقان متى يظهر خيار \"أشكال\" في المزايدة، وكيف يغيّر مَن يأخذ الورقة المكشوفة دون أن يغيّر طبيعة اللعب لاحقًا.",
                 .playerCount: "أربعة لاعبين في فريقين، ويظهر الحكم على صحة الأشكل بحسب ترتيب الجلوس حول الموزّع.",
@@ -276,7 +276,7 @@ private extension CatalogSeeder {
             iconName: "lock.shield.fill",
             accentToken: "warning",
             isPlayable: false,
-            sortOrder: 6,
+            sortOrder: 38,
             sections: [
                 .objective: "فهم متى تتحول الجولة إلى مخاطرة عالية عبر الدبل والثري والفور والقهوة، ومتى يصبح الحكم مقفلًا بقيود إضافية.",
                 .playerCount: "أربعة لاعبين في فريقين. إعلان القهوة أو القفل يؤثر على الفريقين معًا لا على لاعب منفرد.",
@@ -302,7 +302,7 @@ private extension CatalogSeeder {
             iconName: "flag.checkered.2.crossed",
             accentToken: "accent",
             isPlayable: false,
-            sortOrder: 7,
+            sortOrder: 39,
             sections: [
                 .objective: "شرح معنى الكبوت وكيف يختلف احتسابه عن الفوز العادي بالجولة.",
                 .playerCount: "أربعة لاعبين في فريقين؛ الكبوت يُنسب للفريق الذي يأخذ كل الأكلات.",
@@ -331,7 +331,7 @@ private extension CatalogSeeder {
             iconName: "graduationcap.fill",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 8,
+            sortOrder: 10,
             sections: [
                 .objective: "تحويل التعلم من قراءة ثابتة إلى تدريب عملي: شرح، مثال، موقف، اختيار، نتيجة، ثم تفسير سبب صحة أو خطأ القرار.",
                 .playerCount: "مخصصة للتعلّم الفردي، وتستخدم قرارات قريبة من مواقف اللعب الحقيقية.",
@@ -357,7 +357,7 @@ private extension CatalogSeeder {
             iconName: "function",
             accentToken: "accent",
             isPlayable: false,
-            sortOrder: 9,
+            sortOrder: 13,
             sections: [
                 .objective: "إتقان طريقة جمع نقاط الأوراق والمشاريع والمضاعفات يدويًا دون أخطاء.",
                 .playerCount: "تحدي فردي يولّد أسئلة حسابية محلية بثلاث مستويات صعوبة.",
@@ -383,7 +383,7 @@ private extension CatalogSeeder {
             iconName: "wand.and.stars",
             accentToken: "accent",
             isPlayable: false,
-            sortOrder: 10,
+            sortOrder: 12,
             sections: [
                 .objective: "مساعدة اللاعب على فهم قوة يده قبل الشراء: هل يمر، يشتري صن، أو يختار حكمًا بلون محدد.",
                 .playerCount: "الأداة فردية، لكنها تحلل يد لاعب واحد ضمن منطق جولة بلوت كاملة.",
@@ -435,7 +435,7 @@ private extension CatalogSeeder {
             iconName: "slider.horizontal.3",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 12,
+            sortOrder: 14,
             sections: [
                 .objective: "تمكين اللاعب من تجربة سؤال: ماذا يحدث لو لعبت هذه الورقة؟ من داخل محرك البلوت نفسه.",
                 .playerCount: "الأداة فردية، لكنها تبني طاولة بأربعة مقاعد وفريقين حتى تبقى القواعد مطابقة للعبة.",
@@ -461,7 +461,7 @@ private extension CatalogSeeder {
             iconName: "calendar.badge.checkmark",
             accentToken: "accent",
             isPlayable: false,
-            sortOrder: 13,
+            sortOrder: 21,
             sections: [
                 .objective: "تقديم أهداف تدريب قصيرة ومتجددة تساعد اللاعب على ممارسة البلوت بانتظام دون الحاجة إلى اتصال أو خادم.",
                 .playerCount: "التحديات فردية، لكنها تحيل اللاعب إلى اللعب ضد الذكاء أو أدوات التدريب الموجودة داخل التطبيق.",
@@ -487,7 +487,7 @@ private extension CatalogSeeder {
             iconName: "trophy.fill",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 14,
+            sortOrder: 24,
             sections: [
                 .objective: "إعطاء اللاعب أهدافًا طويلة المدى مثل أول كبوت، ملك الصن، شيخ الحكم، وحل تحديات الحساب.",
                 .playerCount: "الإنجازات فردية ومحفوظة محليًا، ولا تحتاج حسابًا أو اتصالًا بالإنترنت في النسخة الحالية.",
@@ -513,7 +513,7 @@ private extension CatalogSeeder {
             iconName: "flag.checkered",
             accentToken: "warning",
             isPlayable: false,
-            sortOrder: 15,
+            sortOrder: 22,
             sections: [
                 .objective: "تحويل تقدم اللاعب إلى مسار واضح يبدأ من لاعب مبتدئ ويتدرج حتى شيخ البلوت عبر اللعب والتدريب.",
                 .playerCount: "المسيرة فردية وتعمل دون إنترنت، وتقرأ بيانات اللاعب المحلية من السجل والتدريب والأكاديمية.",
@@ -539,7 +539,7 @@ private extension CatalogSeeder {
             iconName: "trophy.fill",
             accentToken: "accent",
             isPlayable: false,
-            sortOrder: 17,
+            sortOrder: 23,
             sections: [
                 .objective: "تنظيم بطولة بلوت تعمل دون إنترنت، مع حفظ الجدول والتاريخ والبطل محليًا.",
                 .playerCount: "تدعم البطولة 4 أو 8 فرق، ويمكن استخدامها لجلسات المجلس أو التدريب ضد خصوم محليين.",
@@ -565,7 +565,7 @@ private extension CatalogSeeder {
             iconName: "list.clipboard.fill",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 16,
+            sortOrder: 20,
             sections: [
                 .objective: "تتبّع نقاط جلسة بلوت حقيقية بدقة، وإعلان الفريق الفائز فور بلوغ الهدف المتفق عليه.",
                 .playerCount: "يُسجَّل باسم فريقين، كل فريق من لاعبين على الطاولة.",
@@ -591,7 +591,7 @@ private extension CatalogSeeder {
             iconName: "quote.bubble.fill",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 18,
+            sortOrder: 31,
             sections: [
                 .objective: "توضيح قرارات المزايدة قبل اللعب حتى يعرف اللاعب متى يمر، ومتى يطلب صن أو حكم، ومتى تكون المضاعفة منطقية.",
                 .playerCount: "المزايدة تُفهم حول طاولة من أربعة لاعبين، لكن الدليل مخصص للتعلم الفردي.",
@@ -617,7 +617,7 @@ private extension CatalogSeeder {
             iconName: "rectangle.stack.badge.plus",
             accentToken: "accent",
             isPlayable: false,
-            sortOrder: 19,
+            sortOrder: 35,
             sections: [
                 .objective: "جمع أسماء المشاريع المشهورة وشروطها في مكان واحد ليسهل الرجوع إليها أثناء التعلم أو قبل الجلسة.",
                 .playerCount: "المشاريع تخص يد لاعب ضمن فريقين من أربعة لاعبين، لكن المرجع فردي.",
@@ -643,7 +643,7 @@ private extension CatalogSeeder {
             iconName: "mic.and.signal.meter.fill",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 20,
+            sortOrder: 41,
             sections: [
                 .objective: "توضيح الفروق بين اللعب ضد الذكاء الاصطناعي، اللعب المحلي بين الأشخاص، واللعب الشبكي بالصوت حتى يعرف اللاعب ما المتاح الآن وما يحتاج اتصالًا آمنًا.",
                 .playerCount: "اللعب ضد الذكاء يدعم لاعبًا واحدًا مع ثلاثة آليين. اللعب المحلي يدعم أربعة أشخاص على نفس الجهاز بتمريره حسب الدور. اللعب الصوتي عن بعد يحتاج غرفة Online لأربعة لاعبين.",
@@ -672,7 +672,7 @@ private extension CatalogSeeder {
             iconName: "6.circle.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 21,
+            sortOrder: 50,
             sections: [
                 .objective: "تحقيق أفضل نتيجة عبر تجنّب أوراق أو أكلات معيّنة تخسر نقاطًا، بحسب الصيغة المعتمدة من اللاعبين.",
                 .playerCount: "تُلعب غالبًا بأربعة لاعبين، وتختلف التفاصيل بين المجالس.",
@@ -698,7 +698,7 @@ private extension CatalogSeeder {
             iconName: "suit.club.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 22,
+            sortOrder: 51,
             sections: [
                 .objective: "تحقيق عدد الأكلات الذي التزم به اللاعب أو الفريق أثناء المزايدة، أو أكثر.",
                 .playerCount: "أربعة لاعبين، إما كل لاعب لنفسه أو في فريقين متقابلين حسب الصيغة المعتمدة.",
@@ -724,7 +724,7 @@ private extension CatalogSeeder {
             iconName: "suit.diamond.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 23,
+            sortOrder: 52,
             sections: [
                 .objective: "تحقيق أقل عدد نقاط سلبية (أو أعلى نقاط إيجابية حسب الجولة) عبر دورة من عدة أنماط لعب مختلفة.",
                 .playerCount: "أربعة لاعبين، كل لاعب يلعب لحسابه الخاص دون فرق ثابتة.",
@@ -750,7 +750,7 @@ private extension CatalogSeeder {
             iconName: "book.closed.fill",
             accentToken: "accent",
             isPlayable: false,
-            sortOrder: 25,
+            sortOrder: 30,
             sections: [
                 .objective: "تجميع كل مصطلحات البلوت المتفرقة في القواعد والتدريب في مرجع واحد قابل للبحث.",
                 .playerCount: "أداة مرجعية فردية، لا علاقة لها بعدد لاعبي الطاولة.",
@@ -776,7 +776,7 @@ private extension CatalogSeeder {
             iconName: "questionmark.folder.fill",
             accentToken: "primary",
             isPlayable: false,
-            sortOrder: 26,
+            sortOrder: 40,
             sections: [
                 .objective: "حسم الخلافات الشائعة على طاولة البلوت الحقيقية بحكم واضح مبني على نفس منطق BalootEngine.",
                 .playerCount: "أداة مرجعية فردية، تفيد أي عدد من لاعبي المجلس عند الاختلاف على قاعدة.",
@@ -802,7 +802,7 @@ private extension CatalogSeeder {
             iconName: "hand.raised.fill",
             accentToken: "otherGames",
             isPlayable: false,
-            sortOrder: 24,
+            sortOrder: 53,
             sections: [
                 .objective: "التخلص من كل الأوراق في يد اللاعب قبل بقية اللاعبين، أو تحقيق أقل عدد نقاط متبقية بحسب الصيغة.",
                 .playerCount: "من لاعبين حتى أربعة لاعبين، أفرادًا أو في فرق صغيرة.",

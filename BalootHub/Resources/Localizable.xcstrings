@@ -86090,6 +86090,198 @@
         }
       }
     },
+    "أكاديمية، مدرب قرارات، تحليل يد، اختبار نقاط، ومختبر مواقف.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Akademie, Entscheidungstrainer, Handanalyse, Punkttest und Situationslabor."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Academy, decision trainer, hand analysis, scoring quiz, and scenario lab."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Academia, entrenador de decisiones, análisis de mano, prueba de puntuación y laboratorio de situaciones."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Académie, entraîneur de décisions, analyse de main, quiz de score et laboratoire de situations."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "अकादमी, निर्णय प्रशिक्षक, हाथ विश्लेषण, स्कोर क्विज और स्थिति प्रयोगशाला।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Akademi, pelatih keputusan, analisis tangan, kuis skor, dan lab situasi."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Академия, тренер решений, анализ руки, викторина по счету и лаборатория ситуаций."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Akademi, karar antrenörü, el analizi, puan testi ve durum laboratuvarı."
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اکیڈمی، فیصلوں کا ٹرینر، ہاتھ کا تجزیہ، اسکور کوئز، اور صورتحال لیب۔"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "学院、决策训练、手牌分析、计分测验和局面实验室。"
+          }
+        }
+      }
+    },
+    "تسجيل نقاط المجلس، تحديات، مسيرة، بطولات، وإنجازات.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Majlis-Punkte, Herausforderungen, Karriere, Turniere und Erfolge."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Majlis scoring, challenges, career, tournaments, and achievements."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marcador del majlis, desafíos, carrera, torneos y logros."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Score du majlis, défis, carrière, tournois et succès."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "मजलिस स्कोरिंग, चुनौतियां, करियर, टूर्नामेंट और उपलब्धियां।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skor majlis, tantangan, karier, turnamen, dan pencapaian."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Счет маджлиса, испытания, карьера, турниры и достижения."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meclis skoru, görevler, kariyer, turnuvalar ve başarımlar."
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مجلس اسکورنگ، چیلنجز، کیریئر، ٹورنامنٹس، اور کامیابیاں۔"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "牌局计分、挑战、生涯、锦标赛和成就。"
+          }
+        }
+      }
+    },
+    "موسوعة، مزايدة، صن وحكم، مشاريع، مضاعفات، وحالات خلاف.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enzyklopädie, Bieten, Sun und Hokum, Projekte, Multiplikatoren und Streitfälle."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Encyclopedia, bidding, Sun and Hokum, projects, multipliers, and disputed cases."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enciclopedia, subasta, Sun y Hokum, proyectos, multiplicadores y casos debatidos."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Encyclopédie, enchères, Sun et Hokum, projets, multiplicateurs et cas discutés."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "विश्वकोश, बोली, सन और हुकुम, प्रोजेक्ट, गुणक और विवादित स्थितियां।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ensiklopedia, bidding, Sun dan Hokum, proyek, pengganda, dan kasus sengketa."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Энциклопедия, торги, Sun и Hokum, проекты, множители и спорные случаи."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ansiklopedi, artırma, Sun ve Hokum, projeler, çarpanlar ve tartışmalı durumlar."
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انسائیکلوپیڈیا، بولی، سن اور حکم، پروجیکٹس، ضربیں، اور اختلافی حالات۔"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "百科、叫牌、Sun 与 Hokum、项目、倍数和争议局面。"
+          }
+        }
+      }
+    },
     "المكتبة": {
       "localizations": {
         "de": {
