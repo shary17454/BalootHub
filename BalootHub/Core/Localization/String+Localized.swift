@@ -35,10 +35,10 @@ extension Suit {
     /// الاسم المنطوق للنوع، مترجمًا.
     var spokenName: String {
         switch self {
-        case .hearts: "هارت".localized
-        case .diamonds: "ديناري".localized
-        case .clubs: "كلوب".localized
-        case .spades: "سباتي".localized
+        case .hearts: "هاص".localized
+        case .diamonds: "ديمن".localized
+        case .clubs: "شريا".localized
+        case .spades: "سبيت".localized
         }
     }
 }
@@ -47,7 +47,7 @@ extension PlayingCard {
     /// وصف الورقة لقارئ الشاشة.
     ///
     /// ``displayLabel`` مختصر بصري مثل "A♠"، وVoiceOver ينطقه حرفًا ورمزًا بلا معنى،
-    /// فتُبنى هنا صيغة منطوقة مثل "إكة سباتي".
+    /// فتُبنى هنا صيغة منطوقة مثل "إكة سبيت".
     var accessibilityName: String {
         "\(rank.spokenName) \(suit.spokenName)"
     }

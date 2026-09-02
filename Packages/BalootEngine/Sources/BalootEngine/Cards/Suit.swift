@@ -35,10 +35,10 @@ public enum Suit: String, CaseIterable, Codable, Sendable, Identifiable {
     /// الاسم العربي لنوع الورقة.
     public var arabicName: String {
         switch self {
-        case .hearts: "هارت"
-        case .diamonds: "ديناري"
-        case .clubs: "كلوب"
-        case .spades: "سباتي"
+        case .hearts: "هاص"
+        case .diamonds: "ديمن"
+        case .clubs: "شريا"
+        case .spades: "سبيت"
         }
     }
 

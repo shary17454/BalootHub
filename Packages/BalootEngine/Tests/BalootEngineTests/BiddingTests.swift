@@ -45,7 +45,7 @@ struct BiddingCycleTests {
     func bidArabicNamesAreStable() {
         #expect(Bid.pass.arabicName == "بس")
         #expect(Bid.sun.arabicName == "صن")
-        #expect(Bid.hokum(suit: .spades).arabicName == "حكم سباتي")
+        #expect(Bid.hokum(suit: .spades).arabicName == "حكم سبيت")
     }
 
     @Test("ملخص سجل المزايدة ثابت للـReplay")
@@ -56,7 +56,7 @@ struct BiddingCycleTests {
             round: 2
         )
 
-        #expect(record.summary(playerName: "سالم") == "الجولة 2: سالم - حكم هارت")
+        #expect(record.summary(playerName: "سالم") == "الجولة 2: سالم - حكم هاص")
     }
 
     @Test("خط المزايدة الزمني يستخدم أسماء اللاعبين ورقم الجولة")
