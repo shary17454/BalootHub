@@ -29,8 +29,18 @@ struct NewScorekeeperSessionView: View {
             Section("الحد المستهدف") {
                 Toggle("تخصيص الحد المستهدف", isOn: $useCustomTarget.animation())
                 if useCustomTarget {
-                    Stepper(value: $customTarget, in: AppSettings.allowedTargetScoreRange, step: 1) {
-                        Text("\(customTarget) نقطة")
+                    Stepper(value: customTargetBinding, in: AppSettings.allowedTargetScoreRange, step: 1) {
+                        HStack(spacing: AppSpacing.xs) {
+                            TextField("الحد المستهدف", value: customTargetBinding, format: .number)
+                                .keyboardType(.numberPad)
+                                .multilineTextAlignment(.trailing)
+                                .frame(minWidth: 72, idealWidth: 88, maxWidth: 110)
+                                .textFieldStyle(.roundedBorder)
+                                .accessibilityLabel("الحد المستهدف")
+                                .accessibilityValue("\(customTarget) نقطة")
+                            Text("نقطة")
+                                .foregroundStyle(AppColor.textSecondary)
+                        }
                     }
                 } else {
                     HStack {
@@ -51,6 +61,18 @@ struct NewScorekeeperSessionView: View {
             }
         }
         .onAppear { customTarget = defaultTarget }
+    }
+
+    private var customTargetBinding: Binding<Int> {
+        Binding(
+            get: { customTarget },
+            set: { newValue in
+                customTarget = min(
+                    max(newValue, AppSettings.allowedTargetScoreRange.lowerBound),
+                    AppSettings.allowedTargetScoreRange.upperBound
+                )
+            }
+        )
     }
 
     private func createSession() {
