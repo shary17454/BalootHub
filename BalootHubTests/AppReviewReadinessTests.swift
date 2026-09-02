@@ -1,7 +1,21 @@
 import XCTest
 
 final class AppReviewReadinessTests: XCTestCase {
-    func testAppResourcesDoNotReferenceUnsubmittedDigitalPurchases() throws {
+    func testSubscriptionProductsAreDeclaredForAppStoreReview() throws {
+        let projectRoot = try Self.projectRoot()
+        let subscriptionSource = projectRoot
+            .appendingPathComponent("BalootHub/Domain/Services/BalootPlusSubscription.swift")
+        let text = try String(contentsOf: subscriptionSource, encoding: .utf8)
+
+        XCTAssertTrue(text.contains("app.balooThub.ios.plus.monthly"))
+        XCTAssertTrue(text.contains("app.balooThub.ios.plus.yearly"))
+        XCTAssertTrue(text.contains("Baloot Plus"))
+        XCTAssertTrue(text.contains("Product.products(for: productIDs)"))
+        XCTAssertTrue(text.contains("AppStore.sync()"))
+        XCTAssertTrue(text.contains("Transaction.currentEntitlements"))
+    }
+
+    func testAppDoesNotReferenceExternalDigitalPurchasePaths() throws {
         let projectRoot = try Self.projectRoot()
         let scannedRelativePaths = [
             "BalootHub",
@@ -10,16 +24,14 @@ final class AppReviewReadinessTests: XCTestCase {
             "AppStore/PRIVACY_POLICY.md"
         ]
         let forbiddenTerms = [
-            "StoreKit",
-            "In-App Purchase",
-            "in-app purchase",
-            "paywall",
-            "subscription",
             "digital purchase",
             "digital purchases",
-            "منتجات شراء",
-            "عملية شراء داخل التطبيق",
-            "اشتراكات"
+            "external purchase",
+            "outside the app",
+            "web purchase",
+            "شراء خارجي",
+            "خارج التطبيق",
+            "دفع خارجي"
         ]
 
         var matches: [String] = []
@@ -35,7 +47,7 @@ final class AppReviewReadinessTests: XCTestCase {
 
         XCTAssertTrue(
             matches.isEmpty,
-            "App Review-sensitive purchase references found:\n\(matches.joined(separator: "\n"))"
+            "External purchase references found:\n\(matches.joined(separator: "\n"))"
         )
     }
 

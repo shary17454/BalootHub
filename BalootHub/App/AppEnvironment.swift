@@ -4,12 +4,14 @@ import BalootEngine
 
 /// حالة التنقّل والتبويب المشتركة عبر التطبيق. لا تحتوي منطق أعمال، فقط تنسيق واجهة.
 @Observable
+@MainActor
 final class AppEnvironment {
     var selectedTab: AppTab = .home
     var homePath: [AppRoute] = []
     var catalogPath: [AppRoute] = []
     var scorekeeperPath: [AppRoute] = []
     var historyPath: [AppRoute] = []
+    let subscriptionStore = SubscriptionStore()
 
     /// ينتقل إلى تبويب معيّن ويضيف وجهة جديدة إلى مساره.
     func navigate(to route: AppRoute, tab: AppTab) {
@@ -57,6 +59,8 @@ final class AppEnvironment {
             selectedTab = .scorekeeper
         case "careerMode":
             navigate(to: .careerMode, tab: .home)
+        case "balootPlus":
+            navigate(to: .balootPlus, tab: .home)
         default:
             break
         }

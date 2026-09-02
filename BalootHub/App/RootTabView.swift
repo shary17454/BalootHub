@@ -98,6 +98,8 @@ struct RootTabView: View {
             OfflineTournamentsView()
         case .balootSandbox:
             BalootSandboxView()
+        case .balootPlus:
+            BalootPlusView()
         case .trainingIntro:
             RulesView(slug: "baloot-training")
         case .balootEncyclopedia:

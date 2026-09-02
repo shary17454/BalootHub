@@ -108,14 +108,14 @@ final class LocalizationIntegrityTests: XCTestCase {
     /// صريحًا — إمّا ترجمته أو إضافته هنا بمبرّر.
     private static let allowedEnglishIdenticalValues: Set<String> = [
         "%d points", "10–20 minutes", "20–30 minutes",
-        "Baloot", "Baloot Sandbox", "Baloot – Double",
+        "Baloot", "Baloot Plus", "Baloot Sandbox", "Baloot – Double",
         "Coffee", "Double",
         "Double ×2 · Triple ×3 · Quadruple ×4 · Coffee ×4",
         "Double ×2 · Triple ×4 · Quadruple ×6 · Coffee ×8",
         "Edit", "Expert", "Hand", "Hokum", "Jack", "Kaboot", "Kaboot!",
         "Kout Bou Sitta", "Level", "Minimal", "Mode", "Name", "OK", "Options",
         "Partner", "Pro", "Quadruple", "Risk", "Saad", "Sadu", "Sand", "Score",
-        "Seed", "Session", "Simulation", "Sun", "System", "Tarneeb", "Teams",
+        "Seed", "Session", "Simulation", "Status", "Sun", "System", "Tarneeb", "Teams",
         "Triple", "Trix", "Version", "point"
     ]
 

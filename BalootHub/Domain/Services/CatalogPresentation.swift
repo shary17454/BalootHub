@@ -59,6 +59,14 @@ enum CatalogPresentation {
             tab: .home
         ),
         CatalogWorkflowAction(
+            id: "plus",
+            title: "بلوت بلس".localized,
+            detail: "اشتراك اختياري للتدريب والتحليل والتخصيص المتقدم.".localized,
+            iconName: "crown.fill",
+            route: .balootPlus,
+            tab: .home
+        ),
+        CatalogWorkflowAction(
             id: "rules",
             title: "افهم القواعد".localized,
             detail: "موسوعة ومراجع للحالات النادرة والمشاريع والمضاعفات.".localized,

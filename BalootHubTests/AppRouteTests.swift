@@ -130,6 +130,10 @@ final class AppRouteTests: XCTestCase {
         )
     }
 
+    func testBalootPlusRouteIsStable() {
+        XCTAssertEqual(AppRoute.balootPlus, .balootPlus)
+    }
+
     @MainActor
     func testPracticeRecommendationNavigationOpensSeededWhatToPlayTrainer() {
         let appEnvironment = AppEnvironment()

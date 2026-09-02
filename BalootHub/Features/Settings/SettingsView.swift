@@ -3,6 +3,7 @@ import SwiftData
 
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(AppEnvironment.self) private var appEnvironment
     @Query private var settingsList: [AppSettings]
 
     /// سجل الإعدادات إن وُجد.
@@ -59,6 +60,23 @@ struct SettingsView: View {
                     Label("تخصيص الطاولة", systemImage: "paintbrush.pointed")
                 }
                 Text("أشكال الأوراق وظهرها ولبس الطاولة والخلفية وصورة اللاعب والثيم. تُفتح الأنماط بالتقدّم في نمط المسيرة، بلا أي شراء.")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+            }
+
+            Section("بلوت بلس") {
+                NavigationLink {
+                    BalootPlusView()
+                } label: {
+                    Label("إدارة الاشتراك", systemImage: "crown.fill")
+                }
+                HStack {
+                    Text("الحالة")
+                    Spacer()
+                    Text(appEnvironment.subscriptionStore.isPremiumUnlocked ? "مفعّل".localized : "غير مفعّل".localized)
+                        .foregroundStyle(AppColor.textSecondary)
+                }
+                Text("اشتراك اختياري يربط خدمات التدريب والتحليل والتخصيص المتقدمة عبر StoreKit 2 ويدعم الاستعادة من حساب Apple.")
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
             }

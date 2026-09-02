@@ -12,6 +12,7 @@ struct BalootHubApp: App {
             // بدل تثبيتهما، حتى يعمل التطبيق فعليًا بالإنجليزية عند من يختارها.
             RootTabView()
                 .environment(appEnvironment)
+                .task { await appEnvironment.subscriptionStore.configure() }
 #if DEBUG
                 .task { appEnvironment.applyDebugStartRouteIfNeeded() }
 #endif
