@@ -16,63 +16,78 @@ struct CatalogPresentationSection: Identifiable {
     let items: [GameCatalogItem]
 }
 
+struct CatalogUsageGuideItem: Identifiable, Equatable {
+    let id: String
+    let title: String
+    let detail: String
+    let iconName: String
+    let tintToken: String
+}
+
 enum CatalogPresentation {
     static let workflowActions: [CatalogWorkflowAction] = [
         CatalogWorkflowAction(
             id: "play",
-            title: "ابدأ لعب البلوت".localized,
-            detail: "طاولة واحدة تجمع الصن والحكم عبر المزايدة مثل الواقع.".localized,
+            title: "العب البلوت".localized,
+            detail: "طاولة البلوت الكاملة: المزايدة تحدد صن أو حكم داخل نفس اللعبة.".localized,
             iconName: "play.fill",
             route: .balootGamePlay(slug: "baloot-classic"),
             tab: .home
         ),
         CatalogWorkflowAction(
-            id: "learn",
-            title: "تعلّم خطوة بخطوة".localized,
-            detail: "أكاديمية تشرح ثم تعرض مثالًا وموقفًا عمليًا.".localized,
-            iconName: "graduationcap.fill",
-            route: .balootAcademy(),
-            tab: .home
-        ),
-        CatalogWorkflowAction(
-            id: "practice",
-            title: "تدرّب: وش تلعب؟".localized,
-            detail: "مواقف حقيقية تقارن اختيارك بقرار الخبير.".localized,
-            iconName: "brain.head.profile",
-            route: .whatToPlayTrainer(),
-            tab: .home
-        ),
-        CatalogWorkflowAction(
             id: "score",
-            title: "سجّل نقاط المجلس".localized,
-            detail: "جلسات ونتائج ومضاعفات ومشاريع بدون اتصال.".localized,
+            title: "سجل البلوت".localized,
+            detail: "استخدم مسجل المجلس للصكات والمشاريع والمضاعفات والهدف.".localized,
             iconName: "list.clipboard.fill",
             route: nil,
             tab: .scorekeeper
         ),
         CatalogWorkflowAction(
-            id: "analyze",
-            title: "حلّل يدك".localized,
-            detail: "أدخل أوراقك واعرف هل تشتري صن أو حكم أو تمرّر.".localized,
-            iconName: "wand.and.stars",
-            route: .handAnalyzer,
+            id: "learn",
+            title: "تعلّم وتدرّب".localized,
+            detail: "الأكاديمية ومدرب وش تلعب وتحليل اليد واختبار النقاط.".localized,
+            iconName: "graduationcap.fill",
+            route: .balootAcademy(),
             tab: .home
         ),
         CatalogWorkflowAction(
-            id: "plus",
-            title: "بلوت بلس".localized,
-            detail: "اشتراك اختياري للتدريب والتحليل والتخصيص المتقدم.".localized,
-            iconName: "crown.fill",
-            route: .balootPlus,
-            tab: .home
+            id: "library",
+            title: "مكتبة ألعاب الورق".localized,
+            detail: "قواعد البلوت والألعاب الأخرى مفصولة وواضحة: لعب، تدريب، أو مرجع.".localized,
+            iconName: "books.vertical.fill",
+            route: nil,
+            tab: .catalog
+        )
+    ]
+
+    static let usageGuideItems: [CatalogUsageGuideItem] = [
+        CatalogUsageGuideItem(
+            id: "playable",
+            title: "قابل للعب الآن".localized,
+            detail: "البلوت الكلاسيكي هو الطاولة الحقيقية؛ الصن والحكم يختارهما اللاعب من المزايدة.".localized,
+            iconName: "play.circle.fill",
+            tintToken: "success"
         ),
-        CatalogWorkflowAction(
-            id: "rules",
-            title: "افهم القواعد".localized,
-            detail: "موسوعة ومراجع للحالات النادرة والمشاريع والمضاعفات.".localized,
+        CatalogUsageGuideItem(
+            id: "training",
+            title: "تدريب وأدوات".localized,
+            detail: "الأكاديمية، وش تلعب، تحليل اليد، اختبار النقاط، والمختبر أدوات منفصلة عن طاولة اللعب.".localized,
+            iconName: "graduationcap.fill",
+            tintToken: "accent"
+        ),
+        CatalogUsageGuideItem(
+            id: "baloot-reference",
+            title: "مرجع بلوت".localized,
+            detail: "الصن والحكم والمشاريع والدبل صفحات شرح لأنماط داخل لعبة البلوت، وليست ألعابًا مستقلة.".localized,
             iconName: "book.closed.fill",
-            route: .balootEncyclopedia,
-            tab: .home
+            tintToken: "primary"
+        ),
+        CatalogUsageGuideItem(
+            id: "card-reference",
+            title: "ألعاب ورق أخرى".localized,
+            detail: "طرنيب وتركس وهاند وبقية الألعاب تظهر كمراجع قواعد فقط إلى أن تُبنى لها طاولات كاملة.".localized,
+            iconName: "rectangle.stack.fill",
+            tintToken: "secondary"
         )
     ]
 
@@ -134,7 +149,7 @@ enum CatalogPresentation {
             ),
             CatalogPresentationSection(
                 id: "management",
-                title: "تابع تقدمك".localized,
+                title: "سجل وتابع".localized,
                 detail: "تسجيل نقاط المجلس، تحديات، مسيرة، بطولات، وإنجازات.".localized,
                 items: management
             ),

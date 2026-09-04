@@ -40,6 +40,7 @@ struct HomeView: View {
                         LoadingStateView(message: "جارِ تجهيز الكتالوج…")
                     } else {
                         workflowSection
+                        appMapSection
 
                         ForEach(homeSections) { section in
                             catalogSection(section)
@@ -125,10 +126,10 @@ struct HomeView: View {
     private var workflowSection: some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                Text("وش تبغى تسوي؟")
+                Text("اختر مسارك")
                     .font(AppTypography.title)
                     .foregroundStyle(AppColor.textPrimary)
-                Text("اختر مسارًا واضحًا بدل البحث بين كل عناصر التطبيق.")
+                Text("أربع بوابات تفصل اللعب، التسجيل، التدريب، ومكتبة القواعد.")
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
             }
@@ -192,6 +193,64 @@ struct HomeView: View {
         .buttonStyle(.plain)
         .accessibilityLabel(action.title)
         .accessibilityHint(action.detail)
+    }
+
+    private var appMapSection: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                Text("كيف تستخدم التطبيق؟")
+                    .font(AppTypography.title)
+                    .foregroundStyle(AppColor.textPrimary)
+                Text("كل بطاقة في التطبيق توضح هل هي لعب فعلي، تدريب، أو مرجع قواعد فقط.")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+            }
+
+            LazyVGrid(
+                columns: [GridItem(.adaptive(minimum: 230), spacing: AppSpacing.md)],
+                spacing: AppSpacing.md
+            ) {
+                ForEach(CatalogPresentation.usageGuideItems) { item in
+                    usageGuideCard(item)
+                }
+            }
+        }
+    }
+
+    private func usageGuideCard(_ item: CatalogUsageGuideItem) -> some View {
+        let tint = guideTint(for: item.tintToken)
+        return HStack(alignment: .top, spacing: AppSpacing.sm) {
+            Image(systemName: item.iconName)
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(tint)
+                .frame(width: 32, height: 32)
+                .background(tint.opacity(0.14), in: Circle())
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                Text(item.title)
+                    .font(AppTypography.headline)
+                    .foregroundStyle(AppColor.textPrimary)
+                Text(item.detail)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .overlay(RoundedRectangle(cornerRadius: AppRadius.medium).stroke(AppColor.border, lineWidth: 1))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func guideTint(for token: String) -> Color {
+        switch token {
+        case "success": AppColor.success
+        case "accent": AppColor.accent
+        case "primary": AppColor.primary
+        default: AppColor.textSecondary
+        }
     }
 
     private func catalogSection(_ section: CatalogPresentationSection) -> some View {

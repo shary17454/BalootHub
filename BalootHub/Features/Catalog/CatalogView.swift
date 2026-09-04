@@ -55,6 +55,7 @@ struct CatalogView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: AppSpacing.lg) {
                         if usesGroupedLayout {
+                            usageGuide
                             ForEach(groupedSections) { section in
                                 catalogSection(section)
                             }
@@ -73,6 +74,54 @@ struct CatalogView: View {
         }
         .background(AppColor.background)
         .navigationTitle("المكتبة")
+    }
+
+    private var usageGuide: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                Text("ترتيب المكتبة")
+                    .font(AppTypography.title)
+                    .foregroundStyle(AppColor.textPrimary)
+                Text("ابدأ بالبلوت إذا تريد اللعب، واستخدم بقية الأقسام للتدريب أو قراءة القواعد.")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+            }
+
+            LazyVGrid(columns: columns, spacing: AppSpacing.md) {
+                ForEach(CatalogPresentation.usageGuideItems) { item in
+                    usageGuideCard(item)
+                }
+            }
+        }
+    }
+
+    private func usageGuideCard(_ item: CatalogUsageGuideItem) -> some View {
+        let tint = guideTint(for: item.tintToken)
+        return VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Label(item.title, systemImage: item.iconName)
+                .font(AppTypography.headline)
+                .foregroundStyle(tint)
+                .lineLimit(2)
+            Text(item.detail)
+                .font(AppTypography.caption)
+                .foregroundStyle(AppColor.textSecondary)
+                .lineLimit(4)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, minHeight: 118, alignment: .topLeading)
+        .padding(AppSpacing.md)
+        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.medium))
+        .overlay(RoundedRectangle(cornerRadius: AppRadius.medium).stroke(tint.opacity(0.28), lineWidth: 1))
+        .accessibilityElement(children: .combine)
+    }
+
+    private func guideTint(for token: String) -> Color {
+        switch token {
+        case "success": AppColor.success
+        case "accent": AppColor.accent
+        case "primary": AppColor.primary
+        default: AppColor.textSecondary
+        }
     }
 
     private func catalogSection(_ section: CatalogPresentationSection) -> some View {

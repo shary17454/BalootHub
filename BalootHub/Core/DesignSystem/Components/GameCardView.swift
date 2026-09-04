@@ -44,17 +44,20 @@ struct GameCardView: View {
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
 
-            HStack(alignment: .top, spacing: AppSpacing.xxs) {
-                Image(systemName: item.isPlayable ? "play.circle.fill" : "info.circle.fill")
-                    .font(.caption)
+            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                Label(item.displayUseTitle, systemImage: item.isPlayable ? "play.circle.fill" : "info.circle.fill")
+                    .font(AppTypography.caption.weight(.semibold))
                     .foregroundStyle(item.isPlayable ? AppColor.success : accentColor)
+                    .lineLimit(1)
+
                 Text(item.displayUseDescription)
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textPrimary)
-                    .lineLimit(3)
+                    .lineLimit(4)
                     .fixedSize(horizontal: false, vertical: true)
             }
             .padding(AppSpacing.xs)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .background(accentColor.opacity(0.10), in: RoundedRectangle(cornerRadius: AppRadius.small))
 
             HStack(spacing: AppSpacing.xs) {

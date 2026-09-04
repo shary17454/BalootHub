@@ -53,8 +53,40 @@ final class CatalogFilterTests: XCTestCase {
         XCTAssertTrue(result.isEmpty)
     }
 
-    func testCatalogHasExactlyTwentyFiveSeedItems() {
-        XCTAssertEqual(makeItems().count, 27)
+    func testCatalogHasExpectedSeedItems() {
+        XCTAssertEqual(makeItems().count, 53)
+    }
+
+    func testHomeWorkflowUsesFourClearEntryPoints() {
+        let actions = CatalogPresentation.workflowActions
+
+        XCTAssertEqual(actions.map(\.id), ["play", "score", "learn", "library"])
+        XCTAssertEqual(actions.first?.route, .balootGamePlay(slug: "baloot-classic"))
+        XCTAssertEqual(actions.first?.tab, .home)
+        XCTAssertEqual(actions[1].tab, .scorekeeper)
+        XCTAssertEqual(actions[2].route, .balootAcademy())
+        XCTAssertEqual(actions[3].tab, .catalog)
+        XCTAssertFalse(actions.contains { $0.id == "plus" })
+    }
+
+    func testUsageGuideExplainsPlayableTrainingReferenceAndOtherGames() {
+        let guide = CatalogPresentation.usageGuideItems
+
+        XCTAssertEqual(guide.map(\.id), ["playable", "training", "baloot-reference", "card-reference"])
+        XCTAssertTrue(guide[0].detail.contains("الصن والحكم"))
+        XCTAssertTrue(guide[1].detail.contains("وش تلعب"))
+        XCTAssertTrue(guide[2].detail.contains("ليست ألعابًا مستقلة"))
+        XCTAssertTrue(guide[3].detail.contains("مراجع قواعد فقط"))
+    }
+
+    func testCatalogSectionsKeepOtherCardGamesAwayFromBalootPlay() {
+        let sections = CatalogPresentation.catalogSections(from: makeItems())
+        let play = sections.first { $0.id == "play" }
+        let other = sections.first { $0.id == "other-card-games" }
+
+        XCTAssertEqual(play?.items.map(\.slug), ["baloot-classic"])
+        XCTAssertNotNil(other)
+        XCTAssertTrue(other?.items.allSatisfy { $0.category == .otherCardGame && !$0.isPlayable } ?? false)
     }
 
     func testCatalogIncludesAdvancedBalootReferences() {
