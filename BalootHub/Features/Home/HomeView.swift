@@ -201,7 +201,7 @@ struct HomeView: View {
                 Text("كيف تستخدم التطبيق؟")
                     .font(AppTypography.title)
                     .foregroundStyle(AppColor.textPrimary)
-                Text("كل بطاقة في التطبيق توضح هل هي لعب فعلي، تدريب، أو مرجع قواعد فقط.")
+                Text("كل بطاقة في التطبيق توضح هل هي طاولة لعب، تدريب، أو مرجع قواعد.")
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
             }

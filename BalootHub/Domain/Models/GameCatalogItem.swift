@@ -123,7 +123,7 @@ final class GameCatalogItem {
     var displayUseTitle: String {
         if isPlayable { return "لعبة قابلة للعب".localized }
         if isBalootModeReference { return "شرح نمط داخل البلوت".localized }
-        if category == .otherCardGame { return "مرجع لعبة ورق".localized }
+        if category == .otherCardGame { return "لعبة ورق قابلة للعب".localized }
 
         switch slug {
         case "baloot-training":
@@ -162,7 +162,7 @@ final class GameCatalogItem {
             return "اقرأ القاعدة هنا، ثم العبها من طاولة البلوت الكاملة.".localized
         }
         if category == .otherCardGame {
-            return "اقرأ القواعد وطريقة اللعب فقط؛ لم تُبنَ لها طاولة لعب كاملة بعد.".localized
+            return "اضغط بدء اللعب لفتح طاولة سريعة لهذه اللعبة، أو اقرأ القواعد قبل البداية.".localized
         }
 
         switch slug {

@@ -84,8 +84,8 @@ enum CatalogPresentation {
         ),
         CatalogUsageGuideItem(
             id: "card-reference",
-            title: "ألعاب ورق أخرى".localized,
-            detail: "طرنيب وتركس وهاند وبقية الألعاب تظهر كمراجع قواعد فقط إلى أن تُبنى لها طاولات كاملة.".localized,
+            title: "ألعاب ورق قابلة للعب".localized,
+            detail: "طرنيب وتركس وهاند وبقية ألعاب الورق لها طاولات لعب سريعة، مع بقاء القواعد مفصولة عن البلوت.".localized,
             iconName: "rectangle.stack.fill",
             tintToken: "secondary"
         )
@@ -177,7 +177,7 @@ enum CatalogPresentation {
                 CatalogPresentationSection(
                     id: "other-card-games",
                     title: "ألعاب ورق أخرى".localized,
-                    detail: "مراجع منفصلة عن البلوت؛ ليست جزءًا من طاولة البلوت الحالية.".localized,
+                    detail: "ألعاب مستقلة قابلة للعب، مفصولة عن طاولة البلوت حتى لا تختلط القواعد.".localized,
                     items: otherGames
                 ),
                 CatalogPresentationSection(

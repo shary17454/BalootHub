@@ -31,7 +31,10 @@ final class CatalogFilterTests: XCTestCase {
         let items = makeItems()
         let result = CatalogSearch.apply(filter: .playable, query: "", to: items)
         XCTAssertTrue(result.allSatisfy(\.isPlayable))
-        XCTAssertEqual(result.map(\.slug), ["baloot-classic"])
+        XCTAssertTrue(result.map(\.slug).starts(with: ["baloot-classic"]))
+        XCTAssertTrue(result.contains { $0.slug == "tarneeb" })
+        XCTAssertTrue(result.contains { $0.slug == "trex" })
+        XCTAssertTrue(result.contains { $0.slug == "hand" })
     }
 
     func testRulesOnlyFilterExcludesPlayableItems() {
@@ -76,7 +79,7 @@ final class CatalogFilterTests: XCTestCase {
         XCTAssertTrue(guide[0].detail.contains("الصن والحكم"))
         XCTAssertTrue(guide[1].detail.contains("وش تلعب"))
         XCTAssertTrue(guide[2].detail.contains("ليست ألعابًا مستقلة"))
-        XCTAssertTrue(guide[3].detail.contains("مراجع قواعد فقط"))
+        XCTAssertTrue(guide[3].detail.contains("طاولات لعب"))
     }
 
     func testCatalogSectionsKeepOtherCardGamesAwayFromBalootPlay() {
@@ -86,7 +89,7 @@ final class CatalogFilterTests: XCTestCase {
 
         XCTAssertEqual(play?.items.map(\.slug), ["baloot-classic"])
         XCTAssertNotNil(other)
-        XCTAssertTrue(other?.items.allSatisfy { $0.category == .otherCardGame && !$0.isPlayable } ?? false)
+        XCTAssertTrue(other?.items.allSatisfy { $0.category == .otherCardGame && $0.isPlayable } ?? false)
     }
 
     func testCatalogIncludesAdvancedBalootReferences() {

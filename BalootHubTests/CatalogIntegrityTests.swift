@@ -372,7 +372,7 @@ final class CatalogIntegrityTests: XCTestCase {
                 "basra"
             ]
         )
-        XCTAssertTrue(otherGames.items.allSatisfy { !$0.isPlayable }, "ألعاب الورق الأخرى مراجع فقط وليست طاولات لعب فعلية")
+        XCTAssertTrue(otherGames.items.allSatisfy(\.isPlayable), "ألعاب الورق الأخرى يجب أن تفتح طاولة لعب فعلية")
     }
 
     func testKnownCardGameReferencesHaveUnderstandableRules() throws {
@@ -383,8 +383,8 @@ final class CatalogIntegrityTests: XCTestCase {
             let combinedRules = item.rules.map(\.body).joined(separator: "\n")
             XCTAssertFalse(combinedRules.contains("سيُضاف"), "\(item.slug): يحتوي نصًا مؤجلًا")
             XCTAssertFalse(combinedRules.contains("غير مفهوم"), "\(item.slug): يحتوي وصفًا غير صالح")
-            XCTAssertEqual(item.displayAvailabilityTitle, "قواعد فقط".localized)
-            XCTAssertFalse(item.isPlayable, "\(item.slug): لا يوجد محرك لعب كامل لهذه اللعبة بعد")
+            XCTAssertEqual(item.displayAvailabilityTitle, "متاح للعب".localized)
+            XCTAssertTrue(item.isPlayable, "\(item.slug): يجب أن يكون قابلًا للعب من صفحة التفاصيل")
         }
     }
 

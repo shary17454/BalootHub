@@ -109,7 +109,7 @@ struct GameDetailsView: View {
                 .fixedSize(horizontal: false, vertical: true)
 
             if item.category == .otherCardGame {
-                Text("هذه الصفحة لا تشغّل مباراة لهذه اللعبة الآن؛ فائدتها الحالية شرح القواعد بسرعة وفصلها عن أدوات البلوت.".localized)
+                Text("هذه اللعبة لها طاولة لعب سريعة داخل التطبيق، وتبقى صفحة القواعد هنا لشرح الطريقة قبل البدء.".localized)
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -284,7 +284,11 @@ struct GameDetailsView: View {
 
             if item.isPlayable {
                 Button {
-                    appEnvironment.navigate(to: .balootGamePlay(slug: item.slug), tab: appEnvironment.selectedTab)
+                    if item.category == .otherCardGame {
+                        appEnvironment.navigate(to: .otherCardGamePlay(slug: item.slug), tab: appEnvironment.selectedTab)
+                    } else {
+                        appEnvironment.navigate(to: .balootGamePlay(slug: item.slug), tab: appEnvironment.selectedTab)
+                    }
                 } label: {
                     Label("بدء اللعب", systemImage: "play.fill")
                         .frame(maxWidth: .infinity)

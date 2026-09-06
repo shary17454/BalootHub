@@ -31,6 +31,9 @@
 		0F25653820F7429F931B4AF2 /* CatalogSeederTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DA4313DC03409888B1B43F /* CatalogSeederTests.swift */; };
 		10F7E300CEB243B0A5B5531F /* CatalogFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 774F64E2FF1449F4BFBB8528 /* CatalogFilter.swift */; };
 		CA7A10000000000000000002 /* CatalogPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7A10000000000000000001 /* CatalogPresentation.swift */; };
+		CAFEBABE0000000000000101 /* OtherCardGameEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAFEBABE0000000000000100 /* OtherCardGameEngine.swift */; };
+		CAFEBABE0000000000000201 /* OtherCardGamePlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAFEBABE0000000000000200 /* OtherCardGamePlayView.swift */; };
+		CAFEBABE0000000000000301 /* OtherCardGameEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAFEBABE0000000000000300 /* OtherCardGameEngineTests.swift */; };
 		CA7A20000000000000000002 /* BalootPlusSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7A20000000000000000001 /* BalootPlusSubscription.swift */; };
 		CA7A20000000000000000004 /* BalootPlusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7A20000000000000000003 /* BalootPlusView.swift */; };
 		CA7A20000000000000000006 /* BalootPlusSubscriptionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7A20000000000000000005 /* BalootPlusSubscriptionTests.swift */; };
@@ -230,6 +233,9 @@
 		74199DC881014B42882FE6C3 /* AppTypography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTypography.swift; sourceTree = "<group>"; };
 		774F64E2FF1449F4BFBB8528 /* CatalogFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogFilter.swift; sourceTree = "<group>"; };
 		CA7A10000000000000000001 /* CatalogPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogPresentation.swift; sourceTree = "<group>"; };
+		CAFEBABE0000000000000100 /* OtherCardGameEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherCardGameEngine.swift; sourceTree = "<group>"; };
+		CAFEBABE0000000000000200 /* OtherCardGamePlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherCardGamePlayView.swift; sourceTree = "<group>"; };
+		CAFEBABE0000000000000300 /* OtherCardGameEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherCardGameEngineTests.swift; sourceTree = "<group>"; };
 		77B10AC6CA684350A7089C28 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		7E31630790994E7BB9617012 /* BalootGamePlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootGamePlayView.swift; sourceTree = "<group>"; };
 		821BF8DC70D1422390424FDB /* BalootAcademyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootAcademyTests.swift; sourceTree = "<group>"; };
@@ -382,6 +388,7 @@
 				2B9FC931056262892C4D6C43 /* AppearanceCatalog.swift */,
 				774F64E2FF1449F4BFBB8528 /* CatalogFilter.swift */,
 				CA7A10000000000000000001 /* CatalogPresentation.swift */,
+				CAFEBABE0000000000000100 /* OtherCardGameEngine.swift */,
 				CA7A20000000000000000001 /* BalootPlusSubscription.swift */,
 				A7F43B2E6742474EAC83E071 /* AchievementCenter.swift */,
 				C3A58DE91B234B9A8D2E7781 /* BalootAcademy.swift */,
@@ -498,6 +505,7 @@
 				C2B3D4E5F60718293A4B5C63 /* WhatToPlayStatsAnalyzerTests.swift */,
 				AB12CD34EF56789012345672 /* WhatToPlayTrainerPreferencesTests.swift */,
 				A0B0C0D0E0F0112233445567 /* AppRouteTests.swift */,
+				CAFEBABE0000000000000300 /* OtherCardGameEngineTests.swift */,
 				EE9E72237F624BCFAA8EE59D /* ScoreRulesTests.swift */,
 				09DAF1F1F27B4D3FB87ACC84 /* ScoreSessionTests.swift */,
 				A118D65D0C193EC4C802174D /* ProjectStatsAnalyzerTests.swift */,
@@ -580,6 +588,7 @@
 			isa = PBXGroup;
 			children = (
 				C69C0BE86F2246FB8D1A7E46 /* GameDetailsView.swift */,
+				CAFEBABE0000000000000200 /* OtherCardGamePlayView.swift */,
 				8F7992AFC7994C918BD99B64 /* AchievementsView.swift */,
 				B12F4C7E2B5849279DE053AA /* BalootAcademyView.swift */,
 				A0B10123456789ABCDEF0100 /* BalootSandboxView.swift */,
@@ -855,6 +864,7 @@
 				41C5D46DD8114F4EA837279D /* SettingsRepository.swift in Sources */,
 				10F7E300CEB243B0A5B5531F /* CatalogFilter.swift in Sources */,
 				CA7A10000000000000000002 /* CatalogPresentation.swift in Sources */,
+				CAFEBABE0000000000000101 /* OtherCardGameEngine.swift in Sources */,
 				CA7A20000000000000000002 /* BalootPlusSubscription.swift in Sources */,
 				DDA37C25EA9445F6A7AF6F6F /* ScoreRules.swift in Sources */,
 				91C0E4D6FA8D491CA2A82F43 /* AchievementCenter.swift in Sources */,
@@ -884,6 +894,7 @@
 				9B68F276832B4D0191D79F10 /* RoundReplayView.swift in Sources */,
 				5C3207CE093746BEA8914BDB /* CatalogView.swift in Sources */,
 				11DB90A3C4F54107B6920FA9 /* GameDetailsView.swift in Sources */,
+				CAFEBABE0000000000000201 /* OtherCardGamePlayView.swift in Sources */,
 				760B33B8E4CF45069E83A1F8 /* AchievementsView.swift in Sources */,
 				2F5DAB8C1A664481B5A2F9E0 /* BalootAcademyView.swift in Sources */,
 				A0B10123456789ABCDEF0101 /* BalootSandboxView.swift in Sources */,
@@ -958,6 +969,7 @@
 				C2B3D4E5F60718293A4B5C64 /* WhatToPlayStatsAnalyzerTests.swift in Sources */,
 				AB12CD34EF56789012345673 /* WhatToPlayTrainerPreferencesTests.swift in Sources */,
 				A0B0C0D0E0F0112233445568 /* AppRouteTests.swift in Sources */,
+				CAFEBABE0000000000000301 /* OtherCardGameEngineTests.swift in Sources */,
 				1534A5689A6145759E26A22A /* ScoreRulesTests.swift in Sources */,
 				F5E7838995964BF181779782 /* ScoreSessionTests.swift in Sources */,
 				8562A90A1A02EAFDFCA320F2 /* ProjectStatsAnalyzerTests.swift in Sources */,

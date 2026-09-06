@@ -137,7 +137,7 @@ private struct CardGameReferenceDefinition {
             estimatedDuration: estimatedDuration,
             iconName: iconName,
             accentToken: "otherGames",
-            isPlayable: false,
+            isPlayable: true,
             sortOrder: sortOrder,
             sections: [
                 .objective: objective,
@@ -722,7 +722,7 @@ private extension CatalogSeeder {
             estimatedDuration: "20–30 دقيقة",
             iconName: "6.circle.fill",
             accentToken: "otherGames",
-            isPlayable: false,
+            isPlayable: true,
             sortOrder: 50,
             sections: [
                 .objective: "تحقيق أفضل نتيجة عبر تجنّب أوراق أو أكلات معيّنة تخسر نقاطًا، بحسب الصيغة المعتمدة من اللاعبين.",
@@ -748,7 +748,7 @@ private extension CatalogSeeder {
             estimatedDuration: "20–30 دقيقة للجولة",
             iconName: "suit.club.fill",
             accentToken: "otherGames",
-            isPlayable: false,
+            isPlayable: true,
             sortOrder: 51,
             sections: [
                 .objective: "تحقيق عدد الأكلات الذي التزم به اللاعب أو الفريق أثناء المزايدة، أو أكثر.",
@@ -774,7 +774,7 @@ private extension CatalogSeeder {
             estimatedDuration: "25–40 دقيقة للدورة الكاملة",
             iconName: "suit.diamond.fill",
             accentToken: "otherGames",
-            isPlayable: false,
+            isPlayable: true,
             sortOrder: 52,
             sections: [
                 .objective: "تحقيق أقل عدد نقاط سلبية (أو أعلى نقاط إيجابية حسب الجولة) عبر دورة من عدة أنماط لعب مختلفة.",
@@ -852,7 +852,7 @@ private extension CatalogSeeder {
             estimatedDuration: "10–20 دقيقة",
             iconName: "hand.raised.fill",
             accentToken: "otherGames",
-            isPlayable: false,
+            isPlayable: true,
             sortOrder: 53,
             sections: [
                 .objective: "التخلص من كل الأوراق في يد اللاعب قبل بقية اللاعبين، أو تحقيق أقل عدد نقاط متبقية بحسب الصيغة.",

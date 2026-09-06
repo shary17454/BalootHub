@@ -60,8 +60,14 @@ final class CatalogSeederTests: XCTestCase {
         XCTAssertTrue(updatedSun.isFavorite)
         XCTAssertEqual(updatedSun.rules.count, StandardRuleSectionKind.allCases.count)
 
-        let playable = try context.fetch(FetchDescriptor<GameCatalogItem>()).filter(\.isPlayable).map(\.slug)
-        XCTAssertEqual(playable, ["baloot-classic"])
+        let allItems = try context.fetch(FetchDescriptor<GameCatalogItem>())
+        let playable = allItems.filter(\.isPlayable).map(\.slug)
+        XCTAssertTrue(playable.contains("baloot-classic"))
+        XCTAssertTrue(playable.contains("tarneeb"))
+        XCTAssertTrue(playable.contains("trex"))
+        XCTAssertTrue(playable.contains("hand"))
+        XCTAssertFalse(playable.contains("baloot-sun"))
+        XCTAssertFalse(playable.contains("baloot-hokum"))
     }
 
     func testSettingsRepositoryCreatesSingletonOnce() throws {
