@@ -14,6 +14,7 @@ struct AddEditRoundView: View {
     @State private var teamTwoScoreText = ""
     @State private var teamOneProjectsText = "0"
     @State private var teamTwoProjectsText = "0"
+    @State private var autoFillOpponentScore = true
     @State private var multiplier: ScoreMultiplier = .none
     @State private var notes = ""
     @State private var validationMessage: String?
@@ -37,20 +38,31 @@ struct AddEditRoundView: View {
                 }
                 .pickerStyle(.segmented)
             }
+            .onChange(of: mode) { _, _ in
+                refreshAutomaticScoreFromCurrentInput()
+            }
 
             Section("النقاط") {
+                Toggle("احتساب الفريق الآخر تلقائيًا", isOn: $autoFillOpponentScore.animation())
+                    .onChange(of: autoFillOpponentScore) { _, isEnabled in
+                        if isEnabled { refreshAutomaticScoreFromCurrentInput() }
+                    }
+
                 LabeledContent(session.teamOneName) {
-                    TextField("0", text: $teamOneScoreText)
+                    TextField("0", text: scoreBinding(for: .teamOne))
                         .keyboardType(.numberPad)
                         .multilineTextAlignment(.trailing)
                         .focused($isEditingNumber)
                 }
                 LabeledContent(session.teamTwoName) {
-                    TextField("0", text: $teamTwoScoreText)
+                    TextField("0", text: scoreBinding(for: .teamTwo))
                         .keyboardType(.numberPad)
                         .multilineTextAlignment(.trailing)
                         .focused($isEditingNumber)
                 }
+                Text("اكتب نقاط فريق واحد، وسيكمل التطبيق الفريق الآخر من مجموع \(ScoreRoundAutofill.basePointTotal(for: mode)) نقطة.")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
             }
 
             Section("المشاريع") {
@@ -112,8 +124,63 @@ struct AddEditRoundView: View {
         teamTwoScoreText = String(roundToEdit.teamTwoBaseScore)
         teamOneProjectsText = String(roundToEdit.teamOneProjects)
         teamTwoProjectsText = String(roundToEdit.teamTwoProjects)
+        autoFillOpponentScore = false
         multiplier = roundToEdit.multiplier
         notes = roundToEdit.notes ?? ""
+    }
+
+    private enum ScoreTeam {
+        case teamOne
+        case teamTwo
+    }
+
+    private func scoreBinding(for team: ScoreTeam) -> Binding<String> {
+        Binding(
+            get: {
+                switch team {
+                case .teamOne: teamOneScoreText
+                case .teamTwo: teamTwoScoreText
+                }
+            },
+            set: { newValue in
+                let filtered = newValue.filter(\.isNumber)
+                switch team {
+                case .teamOne:
+                    teamOneScoreText = filtered
+                    applyAutomaticScore(from: .teamOne)
+                case .teamTwo:
+                    teamTwoScoreText = filtered
+                    applyAutomaticScore(from: .teamTwo)
+                }
+            }
+        )
+    }
+
+    private func refreshAutomaticScoreFromCurrentInput() {
+        if !teamOneScoreText.isEmpty {
+            applyAutomaticScore(from: .teamOne)
+        } else if !teamTwoScoreText.isEmpty {
+            applyAutomaticScore(from: .teamTwo)
+        }
+    }
+
+    private func applyAutomaticScore(from sourceTeam: ScoreTeam) {
+        guard autoFillOpponentScore else { return }
+        switch sourceTeam {
+        case .teamOne:
+            guard let teamOneScore = Int(teamOneScoreText) else {
+                teamTwoScoreText = ""
+                return
+            }
+            teamTwoScoreText = String(ScoreRoundAutofill.complementaryScore(for: teamOneScore, mode: mode))
+        case .teamTwo:
+            guard let teamTwoScore = Int(teamTwoScoreText) else {
+                teamOneScoreText = ""
+                return
+            }
+            teamOneScoreText = String(ScoreRoundAutofill.complementaryScore(for: teamTwoScore, mode: mode))
+        }
+        validationMessage = nil
     }
 
     private func save() {

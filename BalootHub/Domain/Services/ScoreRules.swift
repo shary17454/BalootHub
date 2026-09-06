@@ -43,6 +43,25 @@ struct ScoreRules: Equatable {
     }
 }
 
+/// قواعد مساعدة لتسريع إدخال صكة البلوت في المسجل.
+///
+/// تحتسب النقاط الأساسية فقط، أما المشاريع والمضاعفات فتظل حقولًا مستقلة حتى
+/// لا تختلط نقاط الأوراق بنقاط المشاريع عند تعديل الصكة لاحقًا.
+enum ScoreRoundAutofill {
+    static func basePointTotal(for mode: BalootMode) -> Int {
+        switch mode {
+        case .sun:
+            return 130
+        case .hokum:
+            return 162
+        }
+    }
+
+    static func complementaryScore(for enteredScore: Int, mode: BalootMode) -> Int {
+        max(basePointTotal(for: mode) - max(0, enteredScore), 0)
+    }
+}
+
 /// أسماء صيغ التسجيل المتاحة للاختيار من الإعدادات.
 enum ScoreRulePreset: String, Codable, CaseIterable, Identifiable {
     /// الصيغة الشائعة: دبل ×2، ثري ×3، فور ×4، قهوة ×4.

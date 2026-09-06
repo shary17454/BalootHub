@@ -38,4 +38,18 @@ final class ScoreRulesTests: XCTestCase {
         let rules = ScoreRules.standard
         XCTAssertEqual(rules.finalScore(baseScore: -10, projects: -5, multiplier: .none), 0)
     }
+
+    func testRoundAutofillUsesHokumBaseTotal() {
+        XCTAssertEqual(ScoreRoundAutofill.basePointTotal(for: .hokum), 162)
+        XCTAssertEqual(ScoreRoundAutofill.complementaryScore(for: 100, mode: .hokum), 62)
+    }
+
+    func testRoundAutofillUsesSunBaseTotal() {
+        XCTAssertEqual(ScoreRoundAutofill.basePointTotal(for: .sun), 130)
+        XCTAssertEqual(ScoreRoundAutofill.complementaryScore(for: 14, mode: .sun), 116)
+    }
+
+    func testRoundAutofillDoesNotReturnNegativeComplement() {
+        XCTAssertEqual(ScoreRoundAutofill.complementaryScore(for: 200, mode: .hokum), 0)
+    }
 }
