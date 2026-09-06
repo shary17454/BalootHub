@@ -57,7 +57,7 @@ final class CatalogFilterTests: XCTestCase {
     }
 
     func testCatalogHasExpectedSeedItems() {
-        XCTAssertEqual(makeItems().count, 53)
+        XCTAssertEqual(makeItems().count, 66)
     }
 
     func testHomeWorkflowUsesFourClearEntryPoints() {

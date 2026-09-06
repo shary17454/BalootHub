@@ -22,7 +22,7 @@ final class CatalogIntegrityTests: XCTestCase {
     /// كل عنصر يجب أن يملك الحقول التي تعرضها صفحة التفاصيل، وإلا ظهرت فراغات.
     func testEveryCatalogItemHasCompleteDisplayData() throws {
         let items = try allItems()
-        XCTAssertEqual(items.count, 53)
+        XCTAssertEqual(items.count, 66)
 
         for item in items {
             XCTAssertFalse(item.slug.isEmpty, "slug فارغ")
@@ -81,10 +81,10 @@ final class CatalogIntegrityTests: XCTestCase {
         for item in try allItems() {
             XCTAssertFalse(item.slug.isEmpty)
             if item.isPlayable {
-                // الألعاب القابلة للعب يجب أن تكون من فئة ألعاب البلوت حصرًا،
-                // لأن شاشة اللعب مبنية على محرك البلوت وحده.
-                XCTAssertEqual(item.category, .balootGame,
-                               "\(item.slug): معلَّم كقابل للعب لكنه ليس لعبة بلوت")
+                XCTAssertTrue(
+                    item.category == .balootGame || item.category == .otherCardGame,
+                    "\(item.slug): معلَّم كقابل للعب لكنه ليس لعبة أو لعبة ورق"
+                )
             }
         }
     }
@@ -92,8 +92,8 @@ final class CatalogIntegrityTests: XCTestCase {
     /// البلوت لعبة واحدة في الواقع: الصن والحكم يُختاران داخل المزايدة، وليسا مدخلين
     /// منفصلين لطاولتين مختلفتين.
     func testPlayableBalootIsSingleClassicEntry() throws {
-        let playable = try allItems().filter(\.isPlayable).map(\.slug).sorted()
-        XCTAssertEqual(playable, ["baloot-classic"])
+        let playableBaloot = try allItems().filter { $0.isPlayable && $0.category == .balootGame }.map(\.slug).sorted()
+        XCTAssertEqual(playableBaloot, ["baloot-classic"])
 
         XCTAssertEqual(BalootGameVariant(slug: "baloot-classic"), .free)
         XCTAssertEqual(BalootGameVariant(slug: "baloot-sun"), .free)
@@ -369,7 +369,20 @@ final class CatalogIntegrityTests: XCTestCase {
                 "belote",
                 "hokm",
                 "estimation",
-                "basra"
+                "basra",
+                "seven-diamonds",
+                "queen-spades",
+                "sahbiya",
+                "jack-clubs",
+                "king-hearts",
+                "diamonds-collector",
+                "hearts-penalty",
+                "queens-penalty",
+                "last-two",
+                "no-tricks",
+                "no-hearts-no-queens",
+                "sequence",
+                "memory-pairs"
             ]
         )
         XCTAssertTrue(otherGames.items.allSatisfy(\.isPlayable), "ألعاب الورق الأخرى يجب أن تفتح طاولة لعب فعلية")
@@ -402,9 +415,9 @@ final class CatalogIntegrityTests: XCTestCase {
         XCTAssertTrue(baloot.displayUseDescription.contains("الحكم"))
 
         let tarneeb = try XCTUnwrap(try allItems().first { $0.slug == "tarneeb" })
-        XCTAssertEqual(tarneeb.displayUseTitle, "مرجع لعبة ورق".localized)
-        XCTAssertTrue(tarneeb.displayUseDescription.contains("قواعد"))
-        XCTAssertFalse(tarneeb.isPlayable)
+        XCTAssertEqual(tarneeb.displayUseTitle, "لعبة قابلة للعب".localized)
+        XCTAssertTrue(tarneeb.displayUseDescription.contains("طاولة"))
+        XCTAssertTrue(tarneeb.isPlayable)
     }
 
     /// الرتب والأيقونات يجب أن تكون فريدة/مرتبة حتى لا تتكرر البطاقات أو تختل الترتيب.

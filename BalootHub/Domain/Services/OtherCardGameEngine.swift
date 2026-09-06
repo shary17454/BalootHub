@@ -76,6 +76,11 @@ struct OtherCardGameRules: Equatable {
         case trickTaking
         case avoidPenalty
         case matchingDiscard
+        case fishing
+        case pairMatching
+        case meldCollection
+        case solitaireFoundation
+        case pokerShowdown
         case blackjack
         case war
     }
@@ -87,6 +92,9 @@ struct OtherCardGameRules: Equatable {
     let cardsPerPlayer: Int
     let allowsTrump: Bool
     let penaltySuit: OtherCardGameCard.Suit?
+    let setupText: String
+    let playText: String
+    let scoringText: String
 
     var goalText: String {
         switch mode {
@@ -96,6 +104,16 @@ struct OtherCardGameRules: Equatable {
             "تجنب أوراق العقوبة، خصوصًا الهاص والملكات."
         case .matchingDiscard:
             "تخلص من أوراقك بمطابقة الرقم أو النوع، والثمانية ورقة حرة."
+        case .fishing:
+            "اطلب رتبة من لاعب آخر. إذا لم يجدها، اسحب من الحزمة واجمع الأزواج والمجموعات."
+        case .pairMatching:
+            "اجمع الأزواج وتخلص منها. الخطر في الورقة الوحيدة التي لا تجد لها زوجًا."
+        case .meldCollection:
+            "كوّن مجموعات أو سلاسل صحيحة ثم أنزلها لتقليل أوراقك."
+        case .solitaireFoundation:
+            "ابنِ الأساسات من A إلى K لكل نوع، وحاول إنهاء أوراقك."
+        case .pokerShowdown:
+            "كوّن أقوى يد ممكنة من أوراقك وأوراق الوسط ثم اكشف النتيجة."
         case .blackjack:
             "اقترب من 21 دون تجاوزها وتغلب على يد الموزع."
         case .war:
@@ -104,19 +122,103 @@ struct OtherCardGameRules: Equatable {
     }
 
     static func rules(for slug: String, title: String) -> OtherCardGameRules {
-        switch slug {
-        case "hand", "crazy-eights", "old-maid", "go-fish", "rummy", "gin-rummy", "canasta", "president", "durak", "basra":
-            OtherCardGameRules(slug: slug, title: title, mode: .matchingDiscard, playerCount: 4, cardsPerPlayer: 7, allowsTrump: false, penaltySuit: nil)
-        case "blackjack", "poker-texas-holdem":
-            OtherCardGameRules(slug: slug, title: title, mode: .blackjack, playerCount: 2, cardsPerPlayer: 2, allowsTrump: false, penaltySuit: nil)
-        case "war", "solitaire-klondike", "freecell", "spider-solitaire":
-            OtherCardGameRules(slug: slug, title: title, mode: .war, playerCount: 2, cardsPerPlayer: 26, allowsTrump: false, penaltySuit: nil)
-        case "hearts", "kout-bou-sitta":
-            OtherCardGameRules(slug: slug, title: title, mode: .avoidPenalty, playerCount: 4, cardsPerPlayer: 13, allowsTrump: false, penaltySuit: .heart)
-        case "tarneeb", "spades", "bridge", "hokm", "estimation":
-            OtherCardGameRules(slug: slug, title: title, mode: .trickTaking, playerCount: 4, cardsPerPlayer: 13, allowsTrump: true, penaltySuit: nil)
+        func make(
+            mode: Mode,
+            playerCount: Int = 4,
+            cardsPerPlayer: Int,
+            allowsTrump: Bool = false,
+            penaltySuit: OtherCardGameCard.Suit? = nil,
+            setup: String,
+            play: String,
+            scoring: String
+        ) -> OtherCardGameRules {
+            OtherCardGameRules(
+                slug: slug,
+                title: title,
+                mode: mode,
+                playerCount: playerCount,
+                cardsPerPlayer: cardsPerPlayer,
+                allowsTrump: allowsTrump,
+                penaltySuit: penaltySuit,
+                setupText: setup,
+                playText: play,
+                scoringText: scoring
+            )
+        }
+
+        return switch slug {
+        case "seven-diamonds":
+            make(mode: .avoidPenalty, cardsPerPlayer: 13, penaltySuit: .diamond, setup: "سبعة الديمن: ورقة 7 ديمن هي العقوبة الأساسية.", play: "اتبع النوع المطلوب وحاول ألا تكسب الأكلة التي تحمل 7 ديمن.", scoring: "تسجل العقوبة على صاحب أكلة 7 ديمن، والأقل عقوبات يفوز.")
+        case "queen-spades":
+            make(mode: .avoidPenalty, cardsPerPlayer: 13, penaltySuit: .spade, setup: "بنت السبيت: Q سبيت هي الورقة الأخطر.", play: "اتبع النوع المطلوب وتخلص من بنت السبيت عندما تكون الأكلة للخصم.", scoring: "من يأخذ Q سبيت يتحمل عقوبة كبيرة.")
+        case "jack-clubs":
+            make(mode: .avoidPenalty, cardsPerPlayer: 13, penaltySuit: .club, setup: "ولد الشريا: J شريا ورقة عقوبة مرصودة.", play: "راقب الشريا العالي قبل رمي ولد الشريا أو إجبار الخصم عليه.", scoring: "تسجل العقوبة على من يأخذ J شريا.")
+        case "king-hearts":
+            make(mode: .avoidPenalty, cardsPerPlayer: 13, penaltySuit: .heart, setup: "شايب الهاص: K هاص هو هدف العقوبة.", play: "اتبع النوع وتجنب أخذ الأكلة التي تحمل شايب الهاص.", scoring: "من يأخذ K هاص تُضاف عليه عقوبة.")
+        case "diamonds-collector":
+            make(mode: .trickTaking, cardsPerPlayer: 13, setup: "تجميع الديمن: الديمن مصدر النقاط.", play: "اكسب الأكلات التي تحتوي ديمنًا عندما تستطيع.", scoring: "كل ديمن في أكلاتك يرفع نتيجتك.")
+        case "hearts-penalty", "queens-penalty", "no-tricks", "no-hearts-no-queens":
+            make(mode: .avoidPenalty, cardsPerPlayer: 13, penaltySuit: .heart, setup: "\(title): نمط تجنب عقوبات.", play: "اتبع النوع المطلوب وتجنب أخذ الأكلات التي تحمل الأوراق المرصودة.", scoring: "الأقل عقوبات بعد نهاية اليد يفوز.")
+        case "sahbiya":
+            make(mode: .matchingDiscard, cardsPerPlayer: 7, setup: "السحبية: ورقة مفتوحة وحزمة سحب.", play: "طابق الرقم أو النوع، واسحب عندما لا تملك حركة قانونية.", scoring: "من ينهي أوراقه أولًا يفوز.")
+        case "sequence", "memory-pairs":
+            make(mode: .meldCollection, cardsPerPlayer: 7, setup: "\(title): بناء أزواج أو سلاسل.", play: "العب زوجًا أو سلسلة قانونية، واسحب عندما لا تتوفر حركة.", scoring: "كل تركيب صحيح يمنح نقاطًا، والفوز لمن ينهي أوراقه.")
+        case "last-two":
+            make(mode: .trickTaking, cardsPerPlayer: 13, setup: "آخر ورقتين: نهاية الجولة لها قيمة خاصة.", play: "اتبع النوع واحتفظ بأوراق السيطرة للأكلات الأخيرة.", scoring: "آخر الأكلات تمنح نقاطًا إضافية أو عقوبة حسب الاتفاق.")
+        case "tarneeb":
+            make(mode: .trickTaking, cardsPerPlayer: 13, allowsTrump: true, setup: "طرنيب: أربعة لاعبين، الفريقان متقابلان، والحكم يحدد قوة الأكلات.", play: "اتبع النوع المطلوب إن كان عندك. إذا لم تملك النوع تستطيع القطع بالحكم. الهدف كسب الأكلات التي تعهد بها الفريق.", scoring: "تزيد نقاط الفريق بعدد الأكلات، وتخسر الجولة إذا لم تحقق التعهد.")
+        case "trex":
+            make(mode: .avoidPenalty, cardsPerPlayer: 13, setup: "تركس: أربع مملكات. هذه الطاولة تشغّل نمط العقوبات الأساسي لتتعلم تجنب الأوراق الخطرة.", play: "اتبع النوع المطلوب. حاول التخلص من أوراق العقوبة في الوقت المناسب ولا تأخذ أكلة تحمل هاص أو بنت.", scoring: "الأقل عقوبات هو الأفضل. الهاص والملكات ترفع الخسارة.")
+        case "hand":
+            make(mode: .meldCollection, cardsPerPlayer: 10, setup: "هاند: الهدف ترتيب اليد إلى مجموعات وسلاسل.", play: "العب ورقة تنتمي لمجموعة رتبة أو سلسلة من نفس النوع، أو اسحب حتى تجد ورقة تساعدك على الإنزال.", scoring: "الفائز من ينهي أوراقه أولًا، وبقية الأوراق تُحسب ضد أصحابها.")
+        case "kout-bou-sitta":
+            make(mode: .avoidPenalty, cardsPerPlayer: 13, setup: "كوت بو ستة: لعبة أكلات وشراكة، وهذه الطاولة تركّز على تجنب الأكلات المكلفة.", play: "اتبع النوع المطلوب، وخطط متى تأخذ الأكلة ومتى تتركها حسب الأوراق الخطرة.", scoring: "الأوراق الخطرة تزيد العقوبة، والأفضلية للأقل نقاط عقوبة.")
+        case "bridge":
+            make(mode: .trickTaking, cardsPerPlayer: 13, allowsTrump: true, setup: "بريدج: أربعة لاعبين وشراكة، الحكم يمثل العقد المختار.", play: "اتبع النوع المطلوب. استخدم الحكم لكسب الأكلات عند نفاد النوع، ووازن بين حماية الشريك وتحقيق العقد.", scoring: "كل أكلة تقرّب الفريق من العقد؛ الفشل في تحقيقه يعطي الأفضلية للخصم.")
+        case "poker-texas-holdem":
+            make(mode: .pokerShowdown, playerCount: 2, cardsPerPlayer: 2, setup: "تكساس هولدم: ورقتان لك وخمس أوراق مشتركة في الوسط.", play: "اضغط اكشف لتقييم أقوى خمس أوراق من يدك وأوراق الوسط ضد الخصم.", scoring: "الأعلى حسب ترتيب البوكر يفوز: زوج، زوجان، ثلاثي، ستريت، فلاش، فل هاوس، رباعي.")
+        case "blackjack":
+            make(mode: .blackjack, playerCount: 2, cardsPerPlayer: 2, setup: "بلاك جاك: أنت ضد الموزع.", play: "اسحب إذا كان مجموعك منخفضًا، أو توقف إذا اقتربت من 21.", scoring: "من يقترب من 21 دون تجاوزها يفوز.")
+        case "rummy", "gin-rummy", "canasta":
+            make(mode: .meldCollection, cardsPerPlayer: slug == "canasta" ? 11 : 10, setup: "\(title): لعبة مجموعات وسلاسل.", play: "العب أوراقًا تكوّن ثلاثيات من نفس الرتبة أو سلاسل متتابعة من نفس النوع، واسحب عند عدم وجود حركة مفيدة.", scoring: "الفائز من ينهي يده أو يبقى بأقل نقاط غير منزلة.")
+        case "hearts":
+            make(mode: .avoidPenalty, cardsPerPlayer: 13, penaltySuit: .heart, setup: "هارتس: تجنب الهاص وبنت السبيت.", play: "اتبع النوع المطلوب ولا تأخذ أكلة فيها هاص إلا إذا كانت خطتك محسوبة.", scoring: "كل هاص عقوبة، وبنت السبيت عقوبة كبيرة.")
+        case "spades":
+            make(mode: .trickTaking, cardsPerPlayer: 13, allowsTrump: true, setup: "سبيت: السبيت دائمًا حكم.", play: "اتبع النوع المطلوب، وإذا انقطع النوع استخدم السبيت لكسب الأكلة.", scoring: "تحقيق عدد الأكلات المتوقعة أهم من جمع كل شيء.")
+        case "whist":
+            make(mode: .trickTaking, cardsPerPlayer: 13, setup: "ويست: لعبة أكلات مباشرة بلا مزايدة معقدة.", play: "اتبع النوع المطلوب وحاول قراءة الأوراق الخارجة لاختيار أعلى توقيت للأخذ.", scoring: "كل أكلة تكسبها ترفع نتيجتك.")
+        case "euchre":
+            make(mode: .trickTaking, cardsPerPlayer: 5, allowsTrump: true, setup: "يوكر: خمس أوراق لكل لاعب وحكم قوي.", play: "اتبع النوع. ركز على أوراق الحكم العالية لأن عدد الأكلات قليل.", scoring: "الأكثر أكلات في اليد القصيرة يفوز.")
+        case "solitaire-klondike", "freecell", "spider-solitaire":
+            make(mode: .solitaireFoundation, playerCount: 1, cardsPerPlayer: 28, setup: "\(title): ترتيب فردي للأساسات.", play: "ابدأ بالآسات ثم ابنِ كل نوع تصاعديًا. الورقة القانونية ترفع أساس نوعها خطوة واحدة.", scoring: "تفوز عندما تنتقل كل الأوراق إلى الأساسات.")
+        case "crazy-eights":
+            make(mode: .matchingDiscard, cardsPerPlayer: 7, setup: "الثمانية المجنونة: كرت مفتوح وحزمة سحب.", play: "طابق النوع أو الرقم مع الورقة المفتوحة. رقم 8 حر ويمكن لعبه على أي ورقة.", scoring: "من يتخلص من أوراقه أولًا يفوز.")
+        case "old-maid":
+            make(mode: .pairMatching, cardsPerPlayer: 7, setup: "العجوز: اجمع الأزواج وتجنب بقاء ورقة وحيدة في يدك.", play: "العب أي زوج من نفس الرتبة. إذا لم يوجد زوج اسحب وانتظر فرصة المطابقة.", scoring: "الفائز من ينهي أزواجه، والخاسر من تبقى معه الورقة الوحيدة.")
+        case "go-fish":
+            make(mode: .fishing, cardsPerPlayer: 7, setup: "جو فش: اجمع أربع أوراق من نفس الرتبة.", play: "اختر رتبة عندك. إن لم تجد طلبًا ناجحًا اسحب من البحر حتى تكمل مجموعة.", scoring: "كل مجموعة مكتملة من أربع أوراق تمنح نقطة.")
+        case "war":
+            make(mode: .war, playerCount: 2, cardsPerPlayer: 26, setup: "حرب: الحزمة مقسمة بين لاعبين.", play: "اكشف ورقة؛ الأعلى رتبة يكسب المواجهة.", scoring: "كل مواجهة نقطة، والأكثر نقاطًا عند نهاية الحزمة يفوز.")
+        case "president":
+            make(mode: .matchingDiscard, cardsPerPlayer: 13, setup: "الرئيس: تخلص من أوراقك قبل الآخرين.", play: "العب ورقة مساوية أو أعلى من الورقة المفتوحة، وابدأ بسلسلة جديدة عند الحاجة.", scoring: "أول من ينهي أوراقه يصبح الرئيس.")
+        case "durak":
+            make(mode: .trickTaking, cardsPerPlayer: 6, allowsTrump: true, setup: "دوراك: هجوم ودفاع بحكم ظاهر.", play: "اتبع النوع إن أمكن أو استخدم الحكم للدفاع. لا تكدس أوراقًا كثيرة في يدك.", scoring: "آخر لاعب تبقى معه أوراق هو الخاسر.")
+        case "pinochle":
+            make(mode: .trickTaking, cardsPerPlayer: 12, allowsTrump: true, setup: "بينوكل: أكلات مع مكافآت مجموعات.", play: "اتبع النوع والحكم، وحافظ على التركيبات العالية قبل رميها.", scoring: "الأكلات والمجموعات العالية ترفع النتيجة.")
+        case "cribbage":
+            make(mode: .meldCollection, playerCount: 2, cardsPerPlayer: 6, setup: "كريبج: كوّن تركيبات مجموعها 15 وأزواجًا وسلاسل.", play: "اختر الأوراق التي تصنع أكبر قيمة تركيبية، ثم تخلص من الأقل فائدة.", scoring: "النقاط من 15، الأزواج، السلاسل، والفلاش.")
+        case "skat":
+            make(mode: .trickTaking, playerCount: 3, cardsPerPlayer: 10, allowsTrump: true, setup: "سكات: ثلاثة لاعبين، لاعب ضد اثنين وحكم حسب العقد.", play: "اتبع النوع واستخدم الحكم لتحقيق عقد اللاعب المنفرد أو إفشاله.", scoring: "نجاح العقد أو فشله يحدد الفائز.")
+        case "belote":
+            make(mode: .trickTaking, cardsPerPlayer: 8, allowsTrump: true, setup: "بيلوت: قريبة من البلوت الأوروبي بحكم و8 أوراق.", play: "اتبع النوع، واقطع بالحكم عند الحاجة، واستفد من الشايب والبنت في الحكم.", scoring: "نقاط الأوراق والحكم تحدد الفريق الفائز.")
+        case "hokm":
+            make(mode: .trickTaking, cardsPerPlayer: 13, allowsTrump: true, setup: "حكم: لاعب يختار نوع الحكم بعد رؤية يده.", play: "اتبع النوع المطلوب. عند نفاد النوع يمكن القطع بالحكم لكسب الأكلة.", scoring: "كل أكلة للفريق، والفريق الذي يحقق المطلوب أولًا يفوز.")
+        case "estimation":
+            make(mode: .trickTaking, cardsPerPlayer: 13, allowsTrump: true, setup: "استيميشن: كل لاعب يقدّر عدد الأكلات قبل اللعب.", play: "العب لتحقيق تقديرك بدقة، لا أكثر ولا أقل عند القواعد الصارمة.", scoring: "مطابقة التقدير تمنح نقاطًا، والفشل يخصم.")
+        case "basra":
+            make(mode: .fishing, playerCount: 2, cardsPerPlayer: 4, setup: "بسرة: أوراق على الأرض وتلتقط بالمطابقة أو المجموع.", play: "العب ورقة تلتقط نفس الرتبة أو مجموعًا مناسبًا من أوراق الأرض، وإلا تُضاف للأرض.", scoring: "البسرة واللقطات تزيد النتيجة.")
         default:
-            OtherCardGameRules(slug: slug, title: title, mode: .trickTaking, playerCount: 4, cardsPerPlayer: 13, allowsTrump: false, penaltySuit: nil)
+            make(mode: .trickTaking, cardsPerPlayer: 13, setup: "\(title): طاولة أكلات قياسية.", play: "اتبع النوع المطلوب وحاول كسب الأكلات المناسبة.", scoring: "الأكثر أكلات يفوز بالجولة.")
         }
     }
 }
@@ -137,6 +239,9 @@ struct OtherCardGameTableState {
     var currentTrick: [(playerID: Int, card: OtherCardGameCard)]
     var currentPlayerID: Int
     var trumpSuit: OtherCardGameCard.Suit?
+    var communityCards: [OtherCardGameCard]
+    var foundations: [OtherCardGameCard.Suit: OtherCardGameCard.Rank]
+    var completedSets: [OtherCardGameCard.Rank]
     var message: String
     var roundFinished: Bool
     var userStand: Bool
@@ -168,8 +273,15 @@ enum OtherCardGameEngine {
         }
 
         var discardPile: [OtherCardGameCard] = []
-        if rules.mode == .matchingDiscard, !deck.isEmpty {
+        if (rules.mode == .matchingDiscard || rules.mode == .fishing) && !deck.isEmpty {
             discardPile.append(deck.removeFirst())
+        }
+        let communityCards: [OtherCardGameCard]
+        if rules.mode == .pokerShowdown {
+            communityCards = Array(deck.prefix(5))
+            deck.removeFirst(min(5, deck.count))
+        } else {
+            communityCards = []
         }
 
         return OtherCardGameTableState(
@@ -180,6 +292,9 @@ enum OtherCardGameEngine {
             currentTrick: [],
             currentPlayerID: 0,
             trumpSuit: trump,
+            communityCards: communityCards,
+            foundations: [:],
+            completedSets: [],
             message: rules.goalText,
             roundFinished: false,
             userStand: false
@@ -190,9 +305,28 @@ enum OtherCardGameEngine {
         switch state.rules.mode {
         case .matchingDiscard:
             guard let top = state.discardPile.last else { return player.hand }
-            let legal = player.hand.filter { $0.suit == top.suit || $0.rank == top.rank || $0.rank == .eight }
+            let legal = state.rules.slug == "president"
+                ? player.hand.filter { $0.rank.rawValue >= top.rank.rawValue }
+                : player.hand.filter { $0.suit == top.suit || $0.rank == top.rank || $0.rank == .eight }
             return legal.isEmpty ? [] : legal
-        case .blackjack, .war:
+        case .fishing:
+            return player.hand.filter { card in
+                player.hand.filter { $0.rank == card.rank }.count >= 2 || card.rank == state.discardPile.last?.rank
+            }
+        case .pairMatching:
+            return player.hand.filter { card in
+                player.hand.filter { $0.rank == card.rank }.count >= 2
+            }
+        case .meldCollection:
+            return player.hand.filter { card in
+                hasRankMeld(card, in: player.hand) || hasSuitRun(card, in: player.hand)
+            }
+        case .solitaireFoundation:
+            return player.hand.filter { card in
+                let current = state.foundations[card.suit]
+                return current == nil ? card.rank == .ace : card.rank.rawValue == (current?.rawValue ?? 0) + 1
+            }
+        case .blackjack, .war, .pokerShowdown:
             return player.hand
         case .trickTaking, .avoidPenalty:
             guard let leadSuit = state.currentTrick.first?.card.suit else { return player.hand }
@@ -218,8 +352,22 @@ enum OtherCardGameEngine {
             state.message = "لعبت \(card.rank.title) \(card.suit.title)."
             state.currentPlayerID = nextPlayer(after: 0, in: state)
             advanceAI(in: &state)
+        case .fishing:
+            playFishing(card, playerIndex: 0, in: &state)
+            state.currentPlayerID = nextPlayer(after: 0, in: state)
+            advanceAI(in: &state)
+        case .pairMatching:
+            playPair(card, playerIndex: 0, in: &state)
+            state.currentPlayerID = nextPlayer(after: 0, in: state)
+            advanceAI(in: &state)
+        case .meldCollection:
+            playMeld(card, playerIndex: 0, in: &state)
+        case .solitaireFoundation:
+            playFoundation(card, in: &state)
         case .blackjack:
             state.message = "اختر اسحب أو توقف في بلاك جاك."
+        case .pokerShowdown:
+            resolvePokerShowdown(in: &state)
         case .war:
             resolveWarTurn(in: &state)
         case .trickTaking, .avoidPenalty:
@@ -234,11 +382,11 @@ enum OtherCardGameEngine {
     static func drawForUser(in state: inout OtherCardGameTableState) {
         guard !state.drawPile.isEmpty, !state.roundFinished else { return }
         switch state.rules.mode {
-        case .matchingDiscard:
+        case .matchingDiscard, .fishing, .pairMatching, .meldCollection, .solitaireFoundation:
             let card = state.drawPile.removeFirst()
             state.players[0].hand.append(card)
             state.players[0].hand.sort()
-            state.message = "سحبت ورقة. إذا أصبحت لديك ورقة قانونية العبها."
+            state.message = "سحبت \(card.rank.title) \(card.suit.title). إذا أصبحت لديك حركة قانونية العبها."
         case .blackjack:
             let card = state.drawPile.removeFirst()
             state.players[0].hand.append(card)
@@ -287,6 +435,35 @@ enum OtherCardGameEngine {
                     state.message = "\(state.players[playerIndex].name) سحب ورقة."
                 }
                 state.currentPlayerID = nextPlayer(after: playerIndex, in: state)
+            case .fishing:
+                let legal = legalCards(for: state.players[playerIndex], in: state)
+                if let card = legal.sorted().first {
+                    playFishing(card, playerIndex: playerIndex, in: &state)
+                } else if !state.drawPile.isEmpty {
+                    state.players[playerIndex].hand.append(state.drawPile.removeFirst())
+                    state.players[playerIndex].hand.sort()
+                }
+                state.currentPlayerID = nextPlayer(after: playerIndex, in: state)
+            case .pairMatching:
+                let legal = legalCards(for: state.players[playerIndex], in: state)
+                if let card = legal.sorted().first {
+                    playPair(card, playerIndex: playerIndex, in: &state)
+                } else if !state.drawPile.isEmpty {
+                    state.players[playerIndex].hand.append(state.drawPile.removeFirst())
+                    state.players[playerIndex].hand.sort()
+                }
+                state.currentPlayerID = nextPlayer(after: playerIndex, in: state)
+            case .meldCollection:
+                let legal = legalCards(for: state.players[playerIndex], in: state)
+                if let card = legal.sorted().first {
+                    playMeld(card, playerIndex: playerIndex, in: &state)
+                } else if !state.drawPile.isEmpty {
+                    state.players[playerIndex].hand.append(state.drawPile.removeFirst())
+                    state.players[playerIndex].hand.sort()
+                }
+                state.currentPlayerID = nextPlayer(after: playerIndex, in: state)
+            case .solitaireFoundation:
+                state.currentPlayerID = 0
             case .trickTaking, .avoidPenalty:
                 let legal = legalCards(for: state.players[playerIndex], in: state)
                 guard let card = aiCard(from: legal, state: state), let handIndex = state.players[playerIndex].hand.firstIndex(of: card) else {
@@ -299,7 +476,7 @@ enum OtherCardGameEngine {
                 } else {
                     state.currentPlayerID = nextPlayer(after: playerIndex, in: state)
                 }
-            case .blackjack, .war:
+            case .blackjack, .war, .pokerShowdown:
                 state.currentPlayerID = 0
             }
             finishIfNeeded(&state)
@@ -312,9 +489,7 @@ enum OtherCardGameEngine {
         state.players[winner].wonCards += cards
         switch state.rules.mode {
         case .avoidPenalty:
-            state.players[winner].score += cards.reduce(0) { partial, card in
-                partial + ((card.suit == state.rules.penaltySuit) ? 1 : 0) + (card.rank == .queen ? 5 : 0)
-            }
+            state.players[winner].score += cards.reduce(0) { $0 + penaltyValue(for: $1, rules: state.rules) }
         default:
             state.players[winner].score += 1
         }
@@ -342,10 +517,15 @@ enum OtherCardGameEngine {
 
     private static func finishIfNeeded(_ state: inout OtherCardGameTableState) {
         switch state.rules.mode {
-        case .matchingDiscard:
+        case .matchingDiscard, .fishing, .pairMatching, .meldCollection:
             if let winner = state.players.first(where: { $0.hand.isEmpty }) {
                 state.roundFinished = true
                 state.message = "\(winner.name) أنهى أوراقه وفاز بالجولة."
+            }
+        case .solitaireFoundation:
+            if state.players[0].hand.isEmpty {
+                state.roundFinished = true
+                state.message = "اكتملت الأساسات وفزت بجولة \(state.rules.title)."
             }
         case .trickTaking, .avoidPenalty:
             if state.players.allSatisfy({ $0.hand.isEmpty }) && state.currentTrick.isEmpty {
@@ -358,6 +538,8 @@ enum OtherCardGameEngine {
                 }
             }
         case .blackjack:
+            break
+        case .pokerShowdown:
             break
         case .war:
             if state.players[0].hand.isEmpty || state.players[1].hand.isEmpty {
@@ -382,6 +564,27 @@ enum OtherCardGameEngine {
         return base
     }
 
+    private static func penaltyValue(for card: OtherCardGameCard, rules: OtherCardGameRules) -> Int {
+        switch rules.slug {
+        case "seven-diamonds":
+            card.suit == .diamond && card.rank == .seven ? 10 : 0
+        case "queen-spades":
+            card.suit == .spade && card.rank == .queen ? 13 : 0
+        case "jack-clubs":
+            card.suit == .club && card.rank == .jack ? 8 : 0
+        case "king-hearts":
+            card.suit == .heart && card.rank == .king ? 8 : 0
+        case "queens-penalty":
+            card.rank == .queen ? (card.suit == .spade ? 13 : 5) : 0
+        case "no-tricks":
+            1
+        case "no-hearts-no-queens":
+            (card.suit == .heart ? 1 : 0) + (card.rank == .queen ? 5 : 0)
+        default:
+            ((card.suit == rules.penaltySuit) ? 1 : 0) + (card.rank == .queen ? 5 : 0)
+        }
+    }
+
     private static func aiCard(from cards: [OtherCardGameCard], state: OtherCardGameTableState) -> OtherCardGameCard? {
         switch state.rules.mode {
         case .avoidPenalty:
@@ -389,6 +592,127 @@ enum OtherCardGameEngine {
         default:
             cards.sorted().first
         }
+    }
+
+    private static func playFishing(_ card: OtherCardGameCard, playerIndex: Int, in state: inout OtherCardGameTableState) {
+        let matchingIndices = state.players[playerIndex].hand.indices.filter { state.players[playerIndex].hand[$0].rank == card.rank }
+        guard matchingIndices.count >= 2 || state.discardPile.last?.rank == card.rank else { return }
+        let removed = removeCards(rank: card.rank, maxCount: matchingIndices.count >= 2 ? 2 : 1, from: &state.players[playerIndex].hand)
+        state.players[playerIndex].wonCards += removed
+        if removed.count >= 2 || state.players[playerIndex].wonCards.filter({ $0.rank == card.rank }).count >= 4 {
+            state.players[playerIndex].score += 1
+            state.completedSets.append(card.rank)
+        }
+        state.message = "\(state.players[playerIndex].name) جمع \(card.rank.title)."
+    }
+
+    private static func playPair(_ card: OtherCardGameCard, playerIndex: Int, in state: inout OtherCardGameTableState) {
+        let removed = removeCards(rank: card.rank, maxCount: 2, from: &state.players[playerIndex].hand)
+        state.players[playerIndex].wonCards += removed
+        state.players[playerIndex].score += removed.count == 2 ? 1 : 0
+        state.message = "\(state.players[playerIndex].name) أنزل زوج \(card.rank.title)."
+    }
+
+    private static func playMeld(_ card: OtherCardGameCard, playerIndex: Int, in state: inout OtherCardGameTableState) {
+        if hasRankMeld(card, in: state.players[playerIndex].hand) {
+            let removed = removeCards(rank: card.rank, maxCount: 3, from: &state.players[playerIndex].hand)
+            state.players[playerIndex].wonCards += removed
+            state.players[playerIndex].score += 3
+            state.message = "\(state.players[playerIndex].name) أنزل مجموعة \(card.rank.title)."
+        } else if let run = suitRun(containing: card, in: state.players[playerIndex].hand) {
+            for runCard in run {
+                if let index = state.players[playerIndex].hand.firstIndex(of: runCard) {
+                    state.players[playerIndex].wonCards.append(state.players[playerIndex].hand.remove(at: index))
+                }
+            }
+            state.players[playerIndex].score += run.count
+            state.message = "\(state.players[playerIndex].name) أنزل سلسلة \(card.suit.title)."
+        }
+        state.players[playerIndex].hand.sort()
+    }
+
+    private static func playFoundation(_ card: OtherCardGameCard, in state: inout OtherCardGameTableState) {
+        guard let index = state.players[0].hand.firstIndex(of: card) else { return }
+        state.players[0].hand.remove(at: index)
+        state.foundations[card.suit] = card.rank
+        state.players[0].score += 1
+        state.message = "رفعت \(card.rank.title) \(card.suit.title) إلى الأساس."
+    }
+
+    private static func resolvePokerShowdown(in state: inout OtherCardGameTableState) {
+        let userScore = pokerScore(cards: state.players[0].hand + state.communityCards)
+        let opponentScore = pokerScore(cards: state.players[1].hand + state.communityCards)
+        if userScore >= opponentScore {
+            state.players[0].score += 1
+            state.message = "فزت بكشف البوكر. تقييم يدك \(userScore)، الخصم \(opponentScore)."
+        } else {
+            state.players[1].score += 1
+            state.message = "خسرت كشف البوكر. تقييم يدك \(userScore)، الخصم \(opponentScore)."
+        }
+        state.roundFinished = true
+    }
+
+    private static func hasRankMeld(_ card: OtherCardGameCard, in hand: [OtherCardGameCard]) -> Bool {
+        hand.filter { $0.rank == card.rank }.count >= 3
+    }
+
+    private static func hasSuitRun(_ card: OtherCardGameCard, in hand: [OtherCardGameCard]) -> Bool {
+        suitRun(containing: card, in: hand) != nil
+    }
+
+    private static func suitRun(containing card: OtherCardGameCard, in hand: [OtherCardGameCard]) -> [OtherCardGameCard]? {
+        let suited = hand.filter { $0.suit == card.suit }.sorted()
+        for windowStart in suited.indices {
+            var run = [suited[windowStart]]
+            for candidate in suited.dropFirst(windowStart + 1) {
+                if candidate.rank.rawValue == (run.last?.rank.rawValue ?? 0) + 1 {
+                    run.append(candidate)
+                    if run.count >= 3, run.contains(card) {
+                        return run
+                    }
+                } else if candidate.rank.rawValue > (run.last?.rank.rawValue ?? 0) + 1 {
+                    run = [candidate]
+                }
+            }
+        }
+        return nil
+    }
+
+    private static func removeCards(rank: OtherCardGameCard.Rank, maxCount: Int, from hand: inout [OtherCardGameCard]) -> [OtherCardGameCard] {
+        var removed: [OtherCardGameCard] = []
+        while removed.count < maxCount, let index = hand.firstIndex(where: { $0.rank == rank }) {
+            removed.append(hand.remove(at: index))
+        }
+        return removed
+    }
+
+    private static func pokerScore(cards: [OtherCardGameCard]) -> Int {
+        let ranks = Dictionary(grouping: cards, by: \.rank).mapValues(\.count)
+        let suits = Dictionary(grouping: cards, by: \.suit).mapValues(\.count)
+        let counts = ranks.values.sorted(by: >)
+        let isFlush = suits.values.contains { $0 >= 5 }
+        let sortedRanks = Set(cards.map { $0.rank.rawValue }).sorted()
+        let isStraight = containsStraight(sortedRanks)
+        if isStraight && isFlush { return 800 }
+        if counts.first == 4 { return 700 }
+        if counts.first == 3 && counts.dropFirst().first == 2 { return 600 }
+        if isFlush { return 500 }
+        if isStraight { return 400 }
+        if counts.first == 3 { return 300 }
+        if counts.prefix(2).allSatisfy({ $0 == 2 }) { return 200 }
+        if counts.first == 2 { return 100 }
+        return cards.map(\.rank.rawValue).max() ?? 0
+    }
+
+    private static func containsStraight(_ sortedRanks: [Int]) -> Bool {
+        guard sortedRanks.count >= 5 else { return false }
+        for index in 0...(sortedRanks.count - 5) {
+            let slice = sortedRanks[index..<(index + 5)]
+            if let first = slice.first, let last = slice.last, last - first == 4 {
+                return true
+            }
+        }
+        return Set(sortedRanks).isSuperset(of: [14, 2, 3, 4, 5])
     }
 
     private static func nextPlayer(after playerID: Int, in state: OtherCardGameTableState) -> Int {

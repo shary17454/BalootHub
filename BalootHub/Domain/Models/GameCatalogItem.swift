@@ -156,7 +156,7 @@ final class GameCatalogItem {
     /// خطوة الاستخدام المختصرة التي تظهر في بطاقة الكتالوج وصفحة التفاصيل.
     var displayUseDescription: String {
         if isPlayable {
-            return "اضغط بدء اللعب. الصن والحكم يجيان داخل مزايدة واحدة مثل الواقع.".localized
+            return "اضغط بدء اللعب لفتح الطاولة. الصن والحكم يجيان داخل مزايدة واحدة مثل الواقع.".localized
         }
         if isBalootModeReference {
             return "اقرأ القاعدة هنا، ثم العبها من طاولة البلوت الكاملة.".localized

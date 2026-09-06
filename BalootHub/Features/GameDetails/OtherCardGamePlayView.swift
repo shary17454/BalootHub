@@ -57,6 +57,15 @@ struct OtherCardGamePlayView: View {
                 .font(AppTypography.subheadline)
                 .foregroundStyle(AppColor.textPrimary)
 
+            VStack(alignment: .leading, spacing: 4) {
+                Label(state.rules.setupText.localized, systemImage: "rectangle.on.rectangle")
+                Label(state.rules.playText.localized, systemImage: "hand.point.up.left.fill")
+                Label(state.rules.scoringText.localized, systemImage: "number.circle.fill")
+            }
+            .font(AppTypography.caption)
+            .foregroundStyle(AppColor.textSecondary)
+            .fixedSize(horizontal: false, vertical: true)
+
             if let trump = state.trumpSuit {
                 Label("الحكم: \(trump.title)", systemImage: trump.symbolName)
                     .font(AppTypography.caption.weight(.semibold))
@@ -116,6 +125,10 @@ struct OtherCardGamePlayView: View {
                 }
             } else if state.rules.mode == .blackjack {
                 blackjackHands
+            } else if state.rules.mode == .pokerShowdown {
+                pokerShowdownArea
+            } else if state.rules.mode == .solitaireFoundation {
+                foundationArea
             }
         }
         .padding(AppSpacing.md)
@@ -141,6 +154,38 @@ struct OtherCardGamePlayView: View {
                         otherCardView(card, highlighted: false)
                     }
                 }
+            }
+        }
+    }
+
+    private var pokerShowdownArea: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Text("أوراق الوسط".localized)
+                .font(AppTypography.caption)
+                .foregroundStyle(AppColor.textSecondary)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack {
+                    ForEach(state.communityCards) { card in
+                        otherCardView(card, highlighted: false)
+                    }
+                }
+            }
+            blackjackHand(title: "يدك", cards: state.players[0].hand)
+        }
+    }
+
+    private var foundationArea: some View {
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 72))], spacing: AppSpacing.sm) {
+            ForEach(OtherCardGameCard.Suit.allCases, id: \.self) { suit in
+                VStack(spacing: AppSpacing.xs) {
+                    Image(systemName: suit.symbolName)
+                        .font(.title3)
+                    Text(state.foundations[suit]?.title ?? "A")
+                        .font(AppTypography.caption.weight(.semibold))
+                }
+                .foregroundStyle(suit.isRed ? AppColor.danger : AppColor.textPrimary)
+                .frame(width: 66, height: 72)
+                .background(AppColor.background, in: RoundedRectangle(cornerRadius: AppRadius.small))
             }
         }
     }
@@ -191,6 +236,18 @@ struct OtherCardGamePlayView: View {
                 .disabled(state.roundFinished || state.players[0].hand.isEmpty)
                 .controlSize(.large)
             }
+
+            if state.rules.mode == .pokerShowdown {
+                Button {
+                    OtherCardGameEngine.playUserCard(state.players[0].hand.first ?? OtherCardGameCard(suit: .spade, rank: .two), in: &state)
+                } label: {
+                    Label("اكشف", systemImage: "eye.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(state.roundFinished)
+                .controlSize(.large)
+            }
         }
     }
 
@@ -209,7 +266,7 @@ struct OtherCardGamePlayView: View {
                         otherCardView(card, highlighted: legal.contains(card))
                     }
                     .buttonStyle(.plain)
-                    .disabled(state.roundFinished || state.rules.mode == .blackjack || state.rules.mode == .war)
+                    .disabled(state.roundFinished || state.rules.mode == .blackjack || state.rules.mode == .war || state.rules.mode == .pokerShowdown)
                     .opacity(legal.isEmpty || legal.contains(card) ? 1 : 0.45)
                     .accessibilityHint(legal.contains(card) ? "ورقة قانونية الآن".localized : "ليست من الخيارات القانونية الآن".localized)
                 }
