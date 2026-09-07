@@ -83,4 +83,32 @@ final class CatalogSeederTests: XCTestCase {
         let count = try context.fetchCount(FetchDescriptor<AppSettings>())
         XCTAssertEqual(count, 1)
     }
+
+    @MainActor
+    func testHomeRefreshCoordinatorRefreshesLocalDataAndStoresTimestamp() async throws {
+        UserDefaults.standard.removeObject(forKey: HomeRefreshCoordinator.lastRefreshDefaultsKey)
+
+        let configuration = ModelConfiguration(schema: PersistenceController.appSchema, isStoredInMemoryOnly: true)
+        let container = try ModelContainer(for: PersistenceController.appSchema, configurations: [configuration])
+        let context = ModelContext(container)
+        let coordinator = HomeRefreshCoordinator()
+        let subscriptionStore = SubscriptionStore()
+
+        await coordinator.refresh(
+            modelContext: context,
+            subscriptionStore: subscriptionStore,
+            stageDelayNanoseconds: 0
+        )
+
+        let count = try context.fetchCount(FetchDescriptor<GameCatalogItem>())
+        XCTAssertEqual(count, CatalogSeeder.previewItems().count)
+        XCTAssertFalse(coordinator.isRefreshing)
+        XCTAssertTrue(coordinator.didFinishSuccessfully)
+        XCTAssertEqual(coordinator.progress, 1)
+        XCTAssertGreaterThan(coordinator.lastRefreshTimestamp, 0)
+        XCTAssertEqual(
+            UserDefaults.standard.double(forKey: HomeRefreshCoordinator.lastRefreshDefaultsKey),
+            coordinator.lastRefreshTimestamp
+        )
+    }
 }

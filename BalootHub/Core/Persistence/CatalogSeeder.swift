@@ -6,6 +6,10 @@ import SwiftData
 enum CatalogSeeder {
     static func seedIfNeeded(container: ModelContainer) {
         let context = ModelContext(container)
+        try? refresh(context: context)
+    }
+
+    static func refresh(context: ModelContext, saveImmediately: Bool = true) throws {
         let descriptor = FetchDescriptor<GameCatalogItem>()
         let existingItems = (try? context.fetch(descriptor)) ?? []
         var existingBySlug: [String: GameCatalogItem] = [:]
@@ -25,8 +29,8 @@ enum CatalogSeeder {
             }
         }
 
-        if didChange {
-            try? context.save()
+        if didChange && saveImmediately {
+            try context.save()
         }
     }
 

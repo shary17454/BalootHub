@@ -10,4 +10,5 @@ enum AppLogger {
 
     static let persistence = Logger(subsystem: subsystem, category: "persistence")
     static let game = Logger(subsystem: subsystem, category: "game")
+    static let refresh = Logger(subsystem: subsystem, category: "refresh")
 }
