@@ -66,11 +66,20 @@ struct BalootPlusView: View {
             Button {
                 Task { await subscriptionStore.restorePurchases() }
             } label: {
-                Label("استعادة المشتريات", systemImage: "arrow.clockwise")
-                    .frame(maxWidth: .infinity)
+                HStack(spacing: AppSpacing.xs) {
+                    if subscriptionStore.isRestoringPurchases {
+                        ProgressView()
+                            .controlSize(.small)
+                    } else {
+                        Image(systemName: "arrow.clockwise")
+                    }
+
+                    Text("استعادة المشتريات")
+                }
+                .frame(maxWidth: .infinity)
             }
             .buttonStyle(.bordered)
-            .disabled(subscriptionStore.isLoading)
+            .disabled(subscriptionStore.isBusy)
         }
     }
 
@@ -104,7 +113,7 @@ struct BalootPlusView: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
-            .disabled(storeProduct == nil || subscriptionStore.isLoading || subscriptionStore.isPremiumUnlocked)
+            .disabled(storeProduct == nil || subscriptionStore.isBusy || subscriptionStore.isPremiumUnlocked)
 
             if storeProduct == nil {
                 Text("السعر أعلاه هو السعر المقترح. السعر النهائي يظهر من App Store بعد إنشاء المنتج وإتاحته.")

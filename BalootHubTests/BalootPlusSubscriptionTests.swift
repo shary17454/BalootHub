@@ -28,4 +28,8 @@ final class BalootPlusSubscriptionTests: XCTestCase {
             "visualCustomizationPacks"
         ])
     }
+
+    func testRestoreStateShowsProgressMessage() {
+        XCTAssertEqual(BalootPlusPurchaseState.restoring.message, "جارِ التحميل…")
+    }
 }

@@ -124,6 +124,7 @@ struct BalootPlusOwnerEntitlementOverride {
 
 enum BalootPlusPurchaseState: Equatable, Sendable {
     case idle
+    case restoring
     case purchased
     case pending
     case cancelled
@@ -132,6 +133,7 @@ enum BalootPlusPurchaseState: Equatable, Sendable {
     var message: String? {
         switch self {
         case .idle: nil
+        case .restoring: "جارِ التحميل…".localized
         case .purchased: "تم تفعيل بلوت بلس على هذا الجهاز.".localized
         case .pending: "عملية الشراء بانتظار موافقة Apple أو إكمال الدفع.".localized
         case .cancelled: "أُلغيت عملية الشراء.".localized
@@ -150,6 +152,7 @@ final class SubscriptionStore {
     private(set) var products: [Product] = []
     private(set) var purchasedProductIDs: Set<String> = []
     private(set) var isLoading = false
+    private(set) var isRestoringPurchases = false
     private(set) var purchaseState: BalootPlusPurchaseState = .idle
 
     init(
@@ -171,6 +174,10 @@ final class SubscriptionStore {
     var isPremiumUnlocked: Bool {
         ownerEntitlementOverride.isUnlocked()
             || !purchasedProductIDs.isDisjoint(with: Set(productIDs))
+    }
+
+    var isBusy: Bool {
+        isLoading || isRestoringPurchases
     }
 
     var configuredProducts: [BalootPlusProduct] {
@@ -235,16 +242,29 @@ final class SubscriptionStore {
     }
 
     func restorePurchases() async {
-        purchaseState = .idle
+        guard !isRestoringPurchases else { return }
+
+        isRestoringPurchases = true
+        purchaseState = .restoring
+        defer { isRestoringPurchases = false }
 
         do {
+            await refreshEntitlements()
+            if isPremiumUnlocked {
+                purchaseState = .purchased
+                return
+            }
+
             try await AppStore.sync()
             await refreshEntitlements()
             purchaseState = isPremiumUnlocked
                 ? .purchased
                 : .failed("لا توجد اشتراكات بلوت بلس فعالة على هذا الحساب.".localized)
         } catch {
-            purchaseState = .failed("تعذر استعادة المشتريات من App Store.".localized)
+            await refreshEntitlements()
+            purchaseState = isPremiumUnlocked
+                ? .purchased
+                : .failed("تعذر استعادة المشتريات من App Store.".localized)
         }
     }
 
