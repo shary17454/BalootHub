@@ -21,7 +21,7 @@ struct CatalogView: View {
         selectedFilter == .all && searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
-    private let columns = [GridItem(.adaptive(minimum: 165), spacing: AppSpacing.md)]
+    private let columns = [GridItem(.adaptive(minimum: 260), spacing: AppSpacing.md)]
 
     var body: some View {
         VStack(spacing: 0) {
@@ -101,14 +101,13 @@ struct CatalogView: View {
             Label(item.title, systemImage: item.iconName)
                 .font(AppTypography.headline)
                 .foregroundStyle(tint)
-                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
             Text(item.detail)
                 .font(AppTypography.caption)
                 .foregroundStyle(AppColor.textSecondary)
-                .lineLimit(4)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .frame(maxWidth: .infinity, minHeight: 118, alignment: .topLeading)
+        .frame(maxWidth: .infinity, alignment: .topLeading)
         .padding(AppSpacing.md)
         .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.medium))
         .overlay(RoundedRectangle(cornerRadius: AppRadius.medium).stroke(tint.opacity(0.28), lineWidth: 1))

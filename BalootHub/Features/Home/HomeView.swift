@@ -246,17 +246,17 @@ struct HomeView: View {
                     Text(action.title)
                         .font(AppTypography.headline)
                         .foregroundStyle(AppColor.textPrimary)
-                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
                     Text(action.detail)
                         .font(AppTypography.caption)
                         .foregroundStyle(AppColor.textSecondary)
-                        .lineLimit(3)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
 
                 Spacer(minLength: 0)
             }
             .padding(AppSpacing.md)
-            .frame(maxWidth: .infinity, minHeight: 118, alignment: .topLeading)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
             .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.medium))
             .overlay(RoundedRectangle(cornerRadius: AppRadius.medium).stroke(AppColor.border, lineWidth: 1))
         }

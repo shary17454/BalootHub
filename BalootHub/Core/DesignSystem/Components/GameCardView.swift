@@ -36,31 +36,29 @@ struct GameCardView: View {
             Text(item.displayTitle)
                 .font(AppTypography.headline)
                 .foregroundStyle(AppColor.textPrimary)
-                .lineLimit(1)
+                .fixedSize(horizontal: false, vertical: true)
 
             Text(item.displayDescription)
                 .font(AppTypography.caption)
                 .foregroundStyle(AppColor.textSecondary)
-                .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
 
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                 Label(item.displayUseTitle, systemImage: item.isPlayable ? "play.circle.fill" : "info.circle.fill")
                     .font(AppTypography.caption.weight(.semibold))
                     .foregroundStyle(item.isPlayable ? AppColor.success : accentColor)
-                    .lineLimit(1)
+                    .fixedSize(horizontal: false, vertical: true)
 
                 Text(item.displayUseDescription)
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textPrimary)
-                    .lineLimit(4)
                     .fixedSize(horizontal: false, vertical: true)
             }
             .padding(AppSpacing.xs)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(accentColor.opacity(0.10), in: RoundedRectangle(cornerRadius: AppRadius.small))
 
-            HStack(spacing: AppSpacing.xs) {
+            VStack(alignment: .leading, spacing: AppSpacing.xs) {
                 StatusBadge(item.category.shortBadgeTitle, systemImage: item.category.iconName, tint: accentColor)
                 StatusBadge(
                     item.displayAvailabilityTitle,

@@ -106,10 +106,11 @@ struct BalootAcademyView: View {
                             Text(lesson.title)
                                 .font(AppTypography.caption.weight(.semibold))
                                 .foregroundStyle(AppColor.textPrimary)
-                                .lineLimit(2)
                                 .multilineTextAlignment(.leading)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
-                        .frame(width: 150, height: 86, alignment: .leading)
+                        .frame(width: 170, alignment: .leading)
+                        .frame(minHeight: 86, alignment: .leading)
                         .padding(AppSpacing.sm)
                         .background(
                             selectedLessonID == lesson.id ? AppColor.primary.opacity(0.14) : AppColor.surface,
