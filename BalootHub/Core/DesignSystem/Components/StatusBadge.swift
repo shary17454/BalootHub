@@ -25,8 +25,8 @@ struct StatusBadge: View {
         .font(AppTypography.badge)
         .padding(.horizontal, AppSpacing.sm)
         .padding(.vertical, AppSpacing.xxs)
-        .background(tint.opacity(0.16), in: Capsule())
         .foregroundStyle(tint)
+        .appGlassChip(isSelected: false, tint: tint)
     }
 }
 

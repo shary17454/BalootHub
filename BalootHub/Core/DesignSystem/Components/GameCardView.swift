@@ -56,7 +56,7 @@ struct GameCardView: View {
             }
             .padding(AppSpacing.xs)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(accentColor.opacity(0.10), in: RoundedRectangle(cornerRadius: AppRadius.small))
+            .appGlassCard(cornerRadius: AppRadius.small, tint: accentColor)
 
             VStack(alignment: .leading, spacing: AppSpacing.xs) {
                 StatusBadge(item.category.shortBadgeTitle, systemImage: item.category.iconName, tint: accentColor)
@@ -69,7 +69,7 @@ struct GameCardView: View {
         }
         .padding(AppSpacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.large))
+        .appInteractiveGlassCard(cornerRadius: AppRadius.large, tint: accentColor)
         .appShadow(AppShadow.card)
         .contentShape(RoundedRectangle(cornerRadius: AppRadius.large))
         .accessibilityElement(children: .combine)

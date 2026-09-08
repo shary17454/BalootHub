@@ -74,6 +74,7 @@ struct CatalogView: View {
         }
         .background(AppColor.background)
         .navigationTitle("المكتبة")
+        .appGlassNavigationChrome()
     }
 
     private var usageGuide: some View {
@@ -109,8 +110,7 @@ struct CatalogView: View {
         }
         .frame(maxWidth: .infinity, alignment: .topLeading)
         .padding(AppSpacing.md)
-        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.medium))
-        .overlay(RoundedRectangle(cornerRadius: AppRadius.medium).stroke(tint.opacity(0.28), lineWidth: 1))
+        .appGlassCard(cornerRadius: AppRadius.medium, tint: tint)
         .accessibilityElement(children: .combine)
     }
 
@@ -165,8 +165,7 @@ struct CatalogView: View {
             }
         }
         .padding(AppSpacing.sm)
-        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.medium))
-        .overlay(RoundedRectangle(cornerRadius: AppRadius.medium).stroke(AppColor.border, lineWidth: 1))
+        .appGlassCard(cornerRadius: AppRadius.medium)
         .padding(.horizontal, AppSpacing.md)
         .padding(.top, AppSpacing.sm)
     }

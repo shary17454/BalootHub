@@ -30,6 +30,7 @@ struct EmptyStateView: View {
         }
         .padding(AppSpacing.xl)
         .frame(maxWidth: .infinity)
+        .appGlassCard(cornerRadius: AppRadius.large)
         .accessibilityElement(children: .combine)
     }
 }
@@ -49,6 +50,7 @@ struct LoadingStateView: View {
         }
         .padding(AppSpacing.xl)
         .frame(maxWidth: .infinity)
+        .appGlassCard(cornerRadius: AppRadius.large)
         .accessibilityElement(children: .combine)
     }
 }
@@ -79,6 +81,7 @@ struct ErrorStateView: View {
         }
         .padding(AppSpacing.xl)
         .frame(maxWidth: .infinity)
+        .appGlassCard(cornerRadius: AppRadius.large, tint: AppColor.danger)
         .accessibilityElement(children: .combine)
     }
 }

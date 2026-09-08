@@ -47,6 +47,7 @@ struct RootTabView: View {
             .tag(AppTab.settings)
         }
         .tint(AppColor.primary)
+        .appGlassNavigationChrome()
         .preferredColorScheme(colorScheme)
     }
 

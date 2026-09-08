@@ -66,6 +66,7 @@
 		5F0C8B4A7D6E4B3EB15C229A /* DailyChallengeCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F88C1D026EA1418FA1FEC017 /* DailyChallengeCenter.swift */; };
 		5F6247EDBCD44AB7BCDDE0FB /* ScoreSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = D580074AC68348148D5DC26D /* ScoreSession.swift */; };
 		61F13B5488C84DEAA09C1DF3 /* AppShadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848EDA40DF184CF781C61A94 /* AppShadow.swift */; };
+		61F13B5488C84DEAA09C1DF4 /* AppGlass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848EDA40DF184CF781C61A95 /* AppGlass.swift */; };
 		6B5655E03DEC17338A9D5AD1 /* SelectableChip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7173E22B6806A36935F07399 /* SelectableChip.swift */; };
 		6B91A47E26184C3FA73A0E58 /* ScoringQuizTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A7C2D6F5E9A4B6D9C3E1F82 /* ScoringQuizTests.swift */; };
 		6C2FA0C2E1164F27A7C0D751 /* BalootPlusOwnerEntitlementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C2FA0C2E1164F27A7C0D750 /* BalootPlusOwnerEntitlementTests.swift */; };
@@ -241,6 +242,7 @@
 		821BF8DC70D1422390424FDB /* BalootAcademyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootAcademyTests.swift; sourceTree = "<group>"; };
 		84754BC8F6B844649CF3D023 /* CatalogFilterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogFilterTests.swift; sourceTree = "<group>"; };
 		848EDA40DF184CF781C61A94 /* AppShadow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppShadow.swift; sourceTree = "<group>"; };
+		848EDA40DF184CF781C61A95 /* AppGlass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGlass.swift; sourceTree = "<group>"; };
 		8656E5E144954110A70861C4 /* ScorekeeperHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScorekeeperHomeView.swift; sourceTree = "<group>"; };
 		8F7992AFC7994C918BD99B64 /* AchievementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementsView.swift; sourceTree = "<group>"; };
 		8FEAB8A9EE094A00B96258EF /* AppSpacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSpacing.swift; sourceTree = "<group>"; };
@@ -624,6 +626,7 @@
 				DFF9C186BE68436C98B58E07 /* Components */,
 				C6A859FD332A4FD6AB73A004 /* AppAnimation.swift */,
 				F5D71A9DE92544918B40B712 /* AppColor.swift */,
+				848EDA40DF184CF781C61A95 /* AppGlass.swift */,
 				CD327F6E506640BCBCF86B90 /* AppRadius.swift */,
 				848EDA40DF184CF781C61A94 /* AppShadow.swift */,
 				8FEAB8A9EE094A00B96258EF /* AppSpacing.swift */,
@@ -840,6 +843,7 @@
 				529EF7EDF1804FBC82FED2EC /* RootTabView.swift in Sources */,
 				003F12B7AF1147CFA775C624 /* AppAnimation.swift in Sources */,
 				8030A3C195BA457F83922533 /* AppColor.swift in Sources */,
+				61F13B5488C84DEAA09C1DF4 /* AppGlass.swift in Sources */,
 				230B93AF93A34D21B23D548F /* AppRadius.swift in Sources */,
 				61F13B5488C84DEAA09C1DF3 /* AppShadow.swift in Sources */,
 				F6E8C7E46DD04AEE950922F9 /* AppSpacing.swift in Sources */,

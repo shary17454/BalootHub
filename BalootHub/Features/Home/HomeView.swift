@@ -112,6 +112,7 @@ struct HomeView: View {
             .padding(AppSpacing.md)
         }
         .clipShape(RoundedRectangle(cornerRadius: AppRadius.large))
+        .appGlassCard(cornerRadius: AppRadius.large)
         .accessibilityElement(children: .combine)
         .accessibilityLabel("صورة مجلس بلوت مع أوراق لعب وقهوة عربية")
     }
@@ -163,8 +164,7 @@ struct HomeView: View {
                 }
             }
             .padding(AppSpacing.md)
-            .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.medium))
-            .overlay(RoundedRectangle(cornerRadius: AppRadius.medium).stroke(AppColor.border, lineWidth: 1))
+            .appGlassCard(cornerRadius: AppRadius.medium, tint: refreshCoordinator.statusTint)
             .accessibilityElement(children: .combine)
         }
     }
@@ -188,7 +188,7 @@ struct HomeView: View {
                     .foregroundStyle(AppColor.textOnPrimary)
             }
             .padding(AppSpacing.md)
-            .background(AppColor.primary, in: RoundedRectangle(cornerRadius: AppRadius.large))
+            .appInteractiveGlassCard(cornerRadius: AppRadius.large, tint: AppColor.primary)
         }
         .accessibilityLabel("متابعة آخر جلسة، \(session.teamOneName) ضد \(session.teamTwoName)")
     }
@@ -257,8 +257,7 @@ struct HomeView: View {
             }
             .padding(AppSpacing.md)
             .frame(maxWidth: .infinity, alignment: .topLeading)
-            .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.medium))
-            .overlay(RoundedRectangle(cornerRadius: AppRadius.medium).stroke(AppColor.border, lineWidth: 1))
+            .appInteractiveGlassCard(cornerRadius: AppRadius.medium, tint: AppColor.accent)
         }
         .buttonStyle(.plain)
         .accessibilityLabel(action.title)
@@ -309,8 +308,7 @@ struct HomeView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppSpacing.md)
-        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.medium))
-        .overlay(RoundedRectangle(cornerRadius: AppRadius.medium).stroke(AppColor.border, lineWidth: 1))
+        .appGlassCard(cornerRadius: AppRadius.medium, tint: tint)
         .accessibilityElement(children: .combine)
     }
 
@@ -602,8 +600,7 @@ private struct QuickSearchField: View {
             }
         }
         .padding(AppSpacing.sm)
-        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.medium))
-        .overlay(RoundedRectangle(cornerRadius: AppRadius.medium).stroke(AppColor.border, lineWidth: 1))
+        .appGlassCard(cornerRadius: AppRadius.medium)
         .accessibilityElement(children: .combine)
     }
 }

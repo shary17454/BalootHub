@@ -14,9 +14,8 @@ struct SelectableChip: View {
                 .padding(.horizontal, AppSpacing.md)
                 .padding(.vertical, AppSpacing.xs)
                 .frame(minHeight: 44)
-                .background(isSelected ? AppColor.primary : AppColor.surface, in: Capsule())
                 .foregroundStyle(isSelected ? AppColor.textOnPrimary : AppColor.textPrimary)
-                .overlay(Capsule().stroke(isSelected ? .clear : AppColor.border, lineWidth: 1))
+                .appGlassChip(isSelected: isSelected, tint: AppColor.primary)
         }
         .accessibilityAddTraits(isSelected ? [.isSelected] : [])
     }
