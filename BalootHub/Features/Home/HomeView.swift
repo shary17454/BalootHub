@@ -145,6 +145,7 @@ struct HomeView: View {
                 if refreshCoordinator.isRefreshing {
                     ProgressView(value: refreshCoordinator.progress)
                         .tint(AppColor.accent)
+                        .environment(\.layoutDirection, .leftToRight)
                         .accessibilityLabel("تقدم التحديث")
                         .accessibilityValue(refreshCoordinator.progressPercentage)
 
