@@ -113,6 +113,62 @@
         "zh-Hans": { "stringUnit": { "state": "translated", "value": "此页面目前不会启动该游戏的对局；它用于快速说明规则，并将其与 Baloot 工具分开。" } }
       }
     },
+    "إحصائيات التدريب": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Training statistics" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Statistiques d'entraînement" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Estadísticas de entrenamiento" } },
+        "de": { "stringUnit": { "state": "translated", "value": "Trainingsstatistiken" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Antrenman istatistikleri" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Статистика тренировки" } },
+        "ur": { "stringUnit": { "state": "translated", "value": "تربیتی اعداد و شمار" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "प्रशिक्षण आँकड़े" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Statistik latihan" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "训练统计" } }
+      }
+    },
+    "افتحها عند الحاجة حتى تبقى صفحة اللعب سريعة.": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Open it only when needed so the play screen stays fast." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Ouvrez-les seulement au besoin afin que l'écran de jeu reste rapide." } },
+        "es": { "stringUnit": { "state": "translated", "value": "Ábrelo solo cuando haga falta para que la pantalla de juego siga rápida." } },
+        "de": { "stringUnit": { "state": "translated", "value": "Öffne es nur bei Bedarf, damit der Spielbildschirm schnell bleibt." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Oyun ekranı hızlı kalsın diye yalnızca gerektiğinde aç." } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Открывайте только при необходимости, чтобы экран игры оставался быстрым." } },
+        "ur": { "stringUnit": { "state": "translated", "value": "اسے صرف ضرورت پر کھولیں تاکہ کھیل کی اسکرین تیز رہے۔" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "इसे जरूरत पर ही खोलें ताकि खेल स्क्रीन तेज रहे।" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Buka hanya saat perlu agar layar bermain tetap cepat." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "仅在需要时打开，让游玩页面保持流畅。" } }
+      }
+    },
+    "إخفاء الإحصائيات": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Hide statistics" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Masquer les statistiques" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Ocultar estadísticas" } },
+        "de": { "stringUnit": { "state": "translated", "value": "Statistiken ausblenden" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "İstatistikleri gizle" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Скрыть статистику" } },
+        "ur": { "stringUnit": { "state": "translated", "value": "اعداد و شمار چھپائیں" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "आँकड़े छिपाएँ" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Sembunyikan statistik" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "隐藏统计" } }
+      }
+    },
+    "عرض الإحصائيات": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Show statistics" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Afficher les statistiques" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Mostrar estadísticas" } },
+        "de": { "stringUnit": { "state": "translated", "value": "Statistiken anzeigen" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "İstatistikleri göster" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Показать статистику" } },
+        "ur": { "stringUnit": { "state": "translated", "value": "اعداد و شمار دکھائیں" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "आँकड़े दिखाएँ" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Tampilkan statistik" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "显示统计" } }
+      }
+    },
     "إعلانات المشاريع": {
       "localizations": {
         "en": {

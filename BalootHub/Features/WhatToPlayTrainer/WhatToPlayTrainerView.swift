@@ -57,6 +57,7 @@ struct WhatToPlayTrainerView: View {
     @State var shareCodeSimulationAlternativeMessage: String?
     @State var isApplyingImportedShareCode = false
     @State private var isSuppressingPreferredTrumpSuitChange = false
+    @State private var showsTrainingDashboard = false
 
     init(
         seed: UInt64? = nil,
@@ -289,37 +290,12 @@ struct WhatToPlayTrainerView: View {
                 if let targetCount {
                     roundPracticePlanCard(targetCount: targetCount)
                 }
-                practiceRecommendationCard
-                microDrillCard
-                statsCard
-                difficultyStatsCard
-                scenarioFocusStatsCard
-                recentAttemptsCard
-                reviewQueueCard
 
-            if let scenario {
-                scenarioSummary(scenario)
-                shareCardPreview(scenario)
-                legalOptions(scenario)
-                blockedCardsView(scenario)
-                if let selectedOption {
-                    resultCard(selectedOption, scenario: scenario)
-                    optionComparisonCard(selectedOption: selectedOption, scenario: scenario)
-                }
-                } else if isGeneratingScenario {
-                    EmptyStateView(
-                        systemImage: "brain.head.profile",
-                        title: "جارٍ تجهيز موقف".localized,
-                        message: "يحلل المحرك موقفًا حقيقيًا في الخلفية بدون إيقاف الواجهة.".localized
-                    )
-                } else if let errorMessage {
-                    ErrorStateView(message: errorMessage)
-                } else {
-                    EmptyStateView(
-                        systemImage: "brain.head.profile",
-                        title: "جارٍ تجهيز موقف".localized,
-                        message: "يولّد المحرك جولة بلوت حقيقية ثم يوقفها عند دورك.".localized
-                    )
+                currentScenarioSection
+                trainingDashboardToggle
+
+                if showsTrainingDashboard {
+                    trainingDashboardSection
                 }
             }
             .padding(AppSpacing.md)
@@ -456,6 +432,77 @@ struct WhatToPlayTrainerView: View {
                 .accessibilityLabel("موقف جديد")
             }
         }
+    }
+
+    @ViewBuilder
+    private var currentScenarioSection: some View {
+        if let scenario {
+            scenarioSummary(scenario)
+            legalOptions(scenario)
+            blockedCardsView(scenario)
+            if let selectedOption {
+                resultCard(selectedOption, scenario: scenario)
+                optionComparisonCard(selectedOption: selectedOption, scenario: scenario)
+                shareCardPreview(scenario)
+            }
+        } else if isGeneratingScenario {
+            EmptyStateView(
+                systemImage: "brain.head.profile",
+                title: "جارٍ تجهيز موقف".localized,
+                message: "يحلل المحرك موقفًا حقيقيًا في الخلفية بدون إيقاف الواجهة.".localized
+            )
+        } else if let errorMessage {
+            ErrorStateView(message: errorMessage)
+        } else {
+            EmptyStateView(
+                systemImage: "brain.head.profile",
+                title: "جارٍ تجهيز موقف".localized,
+                message: "يولّد المحرك جولة بلوت حقيقية ثم يوقفها عند دورك.".localized
+            )
+        }
+    }
+
+    private var trainingDashboardToggle: some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                showsTrainingDashboard.toggle()
+            }
+        } label: {
+            HStack(spacing: AppSpacing.sm) {
+                Image(systemName: showsTrainingDashboard ? "chart.bar.xaxis" : "chart.bar.xaxis.ascending")
+                    .foregroundStyle(AppColor.primary)
+                    .frame(width: 30, height: 30)
+                    .background(AppColor.primary.opacity(0.14), in: Circle())
+                VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                    Text("إحصائيات التدريب".localized)
+                        .font(AppTypography.headline)
+                        .foregroundStyle(AppColor.textPrimary)
+                    Text("افتحها عند الحاجة حتى تبقى صفحة اللعب سريعة.".localized)
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColor.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: showsTrainingDashboard ? "chevron.up" : "chevron.down")
+                    .foregroundStyle(AppColor.textSecondary)
+            }
+            .padding(AppSpacing.md)
+            .appInteractiveGlassCard(cornerRadius: AppRadius.medium, tint: AppColor.primary)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("إحصائيات التدريب")
+        .accessibilityHint(showsTrainingDashboard ? "إخفاء الإحصائيات" : "عرض الإحصائيات")
+    }
+
+    @ViewBuilder
+    private var trainingDashboardSection: some View {
+        practiceRecommendationCard
+        microDrillCard
+        statsCard
+        difficultyStatsCard
+        scenarioFocusStatsCard
+        recentAttemptsCard
+        reviewQueueCard
     }
 
     private var header: some View {
