@@ -143,12 +143,12 @@ struct CatalogView: View {
     }
 
     private func catalogCard(_ item: GameCatalogItem) -> some View {
-        Button {
-            appEnvironment.openGameDetails(slug: item.slug, from: .catalog)
-        } label: {
-            GameCardView(item: item, onToggleFavorite: { toggleFavorite(item) })
-        }
-        .buttonStyle(.plain)
+        GameCardView(
+            item: item,
+            onOpenDetails: { appEnvironment.openGameDetails(slug: item.slug, from: .catalog) },
+            onStartPlaying: item.isPlayable ? { startPlaying(item) } : nil,
+            onToggleFavorite: { toggleFavorite(item) }
+        )
     }
 
     private var searchBar: some View {
@@ -173,6 +173,14 @@ struct CatalogView: View {
     private func toggleFavorite(_ item: GameCatalogItem) {
         item.isFavorite.toggle()
         try? modelContext.save()
+    }
+
+    private func startPlaying(_ item: GameCatalogItem) {
+        if item.category == .otherCardGame {
+            appEnvironment.navigate(to: .otherCardGamePlay(slug: item.slug), tab: .catalog)
+        } else {
+            appEnvironment.navigate(to: .balootGamePlay(slug: item.slug), tab: .catalog)
+        }
     }
 }
 

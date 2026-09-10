@@ -3,6 +3,8 @@ import SwiftUI
 /// بطاقة لعبة قابلة لإعادة الاستخدام في الرئيسية وصفحة الألعاب.
 struct GameCardView: View {
     let item: GameCatalogItem
+    var onOpenDetails: (() -> Void)?
+    var onStartPlaying: (() -> Void)?
     var onToggleFavorite: (() -> Void)?
 
     private var accentColor: Color { AppColor.categoryColor(for: item.category) }
@@ -66,15 +68,34 @@ struct GameCardView: View {
                     tint: item.isPlayable ? AppColor.success : (item.isBalootModeReference ? AppColor.accent : AppColor.textSecondary)
                 )
             }
+
+            VStack(spacing: AppSpacing.xs) {
+                if item.isPlayable, let onStartPlaying {
+                    Button(action: onStartPlaying) {
+                        Label("ابدأ اللعب".localized, systemImage: "play.fill")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(AppColor.success)
+                    .controlSize(.regular)
+                    .accessibilityHint("يفتح طاولة اللعب مباشرة".localized)
+                }
+
+                if let onOpenDetails {
+                    Button(action: onOpenDetails) {
+                        Label(item.isPlayable ? "التفاصيل والقواعد".localized : "عرض القواعد".localized, systemImage: "book.fill")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(accentColor)
+                    .controlSize(.regular)
+                }
+            }
         }
         .padding(AppSpacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
         .appInteractiveGlassCard(cornerRadius: AppRadius.large, tint: accentColor)
         .appShadow(AppShadow.card)
-        .contentShape(RoundedRectangle(cornerRadius: AppRadius.large))
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(item.displayTitle)، \(item.category.title)، \(item.displayAvailabilityTitle)، \(item.displayUseDescription)")
-        .accessibilityHint("اضغط مرتين لعرض التفاصيل والقواعد")
     }
 }
 
@@ -83,7 +104,7 @@ struct GameCardView: View {
     ScrollView {
         LazyVGrid(columns: [GridItem(.adaptive(minimum: 160), spacing: 16)], spacing: 16) {
             ForEach(items.prefix(4)) { item in
-                GameCardView(item: item, onToggleFavorite: {})
+                GameCardView(item: item, onOpenDetails: {}, onStartPlaying: {}, onToggleFavorite: {})
             }
         }
         .padding()

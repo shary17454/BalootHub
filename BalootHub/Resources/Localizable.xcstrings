@@ -113,6 +113,62 @@
         "zh-Hans": { "stringUnit": { "state": "translated", "value": "此页面目前不会启动该游戏的对局；它用于快速说明规则，并将其与 Baloot 工具分开。" } }
       }
     },
+    "ابدأ اللعب": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Start playing" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Commencer à jouer" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Empezar a jugar" } },
+        "de": { "stringUnit": { "state": "translated", "value": "Spiel starten" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Oynamaya başla" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Начать игру" } },
+        "ur": { "stringUnit": { "state": "translated", "value": "کھیل شروع کریں" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "खेल शुरू करें" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Mulai bermain" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "开始游玩" } }
+      }
+    },
+    "يفتح طاولة اللعب مباشرة": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Opens the play table directly" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Ouvre directement la table de jeu" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Abre la mesa de juego directamente" } },
+        "de": { "stringUnit": { "state": "translated", "value": "Öffnet den Spieltisch direkt" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Oyun masasını doğrudan açar" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Открывает игровой стол напрямую" } },
+        "ur": { "stringUnit": { "state": "translated", "value": "کھیل کی میز براہ راست کھولتا ہے" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "खेल की मेज सीधे खोलता है" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Membuka meja bermain secara langsung" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "直接打开游玩牌桌" } }
+      }
+    },
+    "التفاصيل والقواعد": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Details and rules" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Détails et règles" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Detalles y reglas" } },
+        "de": { "stringUnit": { "state": "translated", "value": "Details und Regeln" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Ayrıntılar ve kurallar" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Сведения и правила" } },
+        "ur": { "stringUnit": { "state": "translated", "value": "تفصیلات اور قواعد" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "विवरण और नियम" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Detail dan aturan" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "详情和规则" } }
+      }
+    },
+    "عرض القواعد": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Show rules" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Afficher les règles" } },
+        "es": { "stringUnit": { "state": "translated", "value": "Mostrar reglas" } },
+        "de": { "stringUnit": { "state": "translated", "value": "Regeln anzeigen" } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Kuralları göster" } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Показать правила" } },
+        "ur": { "stringUnit": { "state": "translated", "value": "قواعد دکھائیں" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "नियम दिखाएँ" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Tampilkan aturan" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "显示规则" } }
+      }
+    },
     "إحصائيات التدريب": {
       "localizations": {
         "en": { "stringUnit": { "state": "translated", "value": "Training statistics" } },

@@ -364,12 +364,12 @@ struct HomeView: View {
     }
 
     private func catalogCard(_ item: GameCatalogItem) -> some View {
-        Button {
-            appEnvironment.openGameDetails(slug: item.slug, from: .home)
-        } label: {
-            GameCardView(item: item, onToggleFavorite: { toggleFavorite(item) })
-        }
-        .buttonStyle(.plain)
+        GameCardView(
+            item: item,
+            onOpenDetails: { appEnvironment.openGameDetails(slug: item.slug, from: .home) },
+            onStartPlaying: item.isPlayable ? { startPlaying(item) } : nil,
+            onToggleFavorite: { toggleFavorite(item) }
+        )
     }
 
     private var searchResultsSection: some View {
@@ -380,12 +380,12 @@ struct HomeView: View {
                 EmptyStateView(systemImage: "magnifyingglass", title: "لا نتائج", message: "جرّب كلمة بحث أخرى مثل اسم اللعبة أو نوعها.")
             } else {
                 ForEach(searchResults) { item in
-                    Button {
-                        appEnvironment.openGameDetails(slug: item.slug, from: .home)
-                    } label: {
-                        GameCardView(item: item, onToggleFavorite: { toggleFavorite(item) })
-                    }
-                    .buttonStyle(.plain)
+                    GameCardView(
+                        item: item,
+                        onOpenDetails: { appEnvironment.openGameDetails(slug: item.slug, from: .home) },
+                        onStartPlaying: item.isPlayable ? { startPlaying(item) } : nil,
+                        onToggleFavorite: { toggleFavorite(item) }
+                    )
                 }
             }
         }
@@ -394,6 +394,14 @@ struct HomeView: View {
     private func toggleFavorite(_ item: GameCatalogItem) {
         item.isFavorite.toggle()
         try? modelContext.save()
+    }
+
+    private func startPlaying(_ item: GameCatalogItem) {
+        if item.category == .otherCardGame {
+            appEnvironment.navigate(to: .otherCardGamePlay(slug: item.slug), tab: .home)
+        } else {
+            appEnvironment.navigate(to: .balootGamePlay(slug: item.slug), tab: .home)
+        }
     }
 
     private func startRefresh() {
