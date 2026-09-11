@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>البلوت - حالة الخدمة</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07130f;
+      --panel: #10231d;
+      --line: #24453b;
+      --text: #f4f7f5;
+      --muted: #b8c6c0;
+      --accent: #2dd4bf;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at top, #14392f, var(--bg) 55%);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.7;
+    }
+
+    main {
+      width: min(92vw, 680px);
+      padding: 32px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--panel) 88%, black);
+      box-shadow: 0 24px 80px rgb(0 0 0 / 35%);
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 7vw, 4rem);
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+      border-radius: 999px;
+      color: var(--accent);
+      background: rgb(45 212 191 / 10%);
+      font-weight: 700;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 18px var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>البلوت</h1>
+    <p>
+      هذه صفحة حالة Railway لتأكيد أن خدمة التطبيق مرتبطة بمستودع GitHub وتعمل.
+      تطبيق iOS نفسه يستمر نشره عبر App Store Connect وXcode Cloud.
+    </p>
+    <div class="status"><span class="dot"></span> الخدمة تعمل</div>
+  </main>
+</body>
+</html>
+
