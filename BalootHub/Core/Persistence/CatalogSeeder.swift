@@ -847,7 +847,7 @@ private extension CatalogSeeder {
             slug: "baloot-rare-cases",
             arabicTitle: "حالات نادرة",
             englishTitle: "Baloot Rare Cases",
-            shortDescription: "مواقف حدّية نادرة الحدوث في المجلس الحقيقي (دورة ميتة، تعادل مشاريع، ترتيب التصعيد...) بحكمها وتفسيره.",
+            shortDescription: "مواقف حدّية نادرة الحدوث في المجلس الحقيقي، مثل الدورة الميتة وتعادل المشاريع وترتيب التصعيد، مع الحكم والتفسير.",
             category: .balootTool,
             playerCountText: "مرجع فردي",
             difficulty: .advanced,

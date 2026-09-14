@@ -20,6 +20,9 @@ struct StatusBadge: View {
                     .accessibilityHidden(true)
             }
             Text(title.localized)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .minimumScaleFactor(0.85)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .font(AppTypography.badge)

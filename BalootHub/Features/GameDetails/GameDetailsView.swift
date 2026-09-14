@@ -342,14 +342,22 @@ struct InfoRow: View {
     let value: String
 
     var body: some View {
-        HStack {
+        HStack(alignment: .top, spacing: AppSpacing.sm) {
             Label(title.localized, systemImage: icon)
                 .font(AppTypography.subheadline)
                 .foregroundStyle(AppColor.textSecondary)
-            Spacer()
+                .lineLimit(2)
+                .minimumScaleFactor(0.85)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: AppSpacing.sm)
             Text(value)
                 .font(AppTypography.subheadline.weight(.semibold))
                 .foregroundStyle(AppColor.textPrimary)
+                .multilineTextAlignment(.trailing)
+                .lineLimit(3)
+                .minimumScaleFactor(0.85)
+                .fixedSize(horizontal: false, vertical: true)
+                .layoutPriority(1)
         }
         .accessibilityElement(children: .combine)
     }

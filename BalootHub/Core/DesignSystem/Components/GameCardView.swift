@@ -73,6 +73,10 @@ struct GameCardView: View {
                 if item.isPlayable, let onStartPlaying {
                     Button(action: onStartPlaying) {
                         Label("ابدأ اللعب".localized, systemImage: "play.fill")
+                            .multilineTextAlignment(.center)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.85)
+                            .fixedSize(horizontal: false, vertical: true)
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
@@ -84,6 +88,10 @@ struct GameCardView: View {
                 if let onOpenDetails {
                     Button(action: onOpenDetails) {
                         Label(item.isPlayable ? "التفاصيل والقواعد".localized : "عرض القواعد".localized, systemImage: "book.fill")
+                            .multilineTextAlignment(.center)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.85)
+                            .fixedSize(horizontal: false, vertical: true)
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)

@@ -13,8 +13,9 @@ private struct StatTile: View {
             Label(title.localized, systemImage: icon)
                 .font(AppTypography.caption)
                 .foregroundStyle(AppColor.textSecondary)
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
+                .lineLimit(2)
+                .minimumScaleFactor(0.85)
+                .fixedSize(horizontal: false, vertical: true)
             Text(value)
                 .font(AppTypography.headline)
                 .foregroundStyle(AppColor.textPrimary)
@@ -33,6 +34,7 @@ struct WhatToPlayTrainerView: View {
 
     @Environment(\.modelContext) var modelContext
     @Environment(\.displayScale) private var displayScale
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Query(sort: \WhatToPlayAttempt.createdAt, order: .reverse) var attempts: [WhatToPlayAttempt]
 
     @State var difficulty: WhatToPlayDifficulty = .medium
@@ -3010,7 +3012,7 @@ struct WhatToPlayTrainerView: View {
 
             preDecisionChecklistView(checklist)
 
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 4), spacing: AppSpacing.xs) {
+            LazyVGrid(columns: optionButtonColumns, spacing: AppSpacing.sm) {
                 ForEach(scenario.options) { option in
                     Button {
                         choose(option, in: scenario)
@@ -3020,7 +3022,13 @@ struct WhatToPlayTrainerView: View {
                             Text(optionBadgeText(option))
                                 .font(.caption2.weight(.semibold))
                                 .foregroundStyle(optionBadgeTint(option))
+                                .multilineTextAlignment(.center)
+                                .lineLimit(2)
+                                .minimumScaleFactor(0.85)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
+                        .frame(maxWidth: .infinity, minHeight: 72)
+                        .padding(.vertical, 2)
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel(optionAccessibilityLabel(option))
@@ -3076,7 +3084,7 @@ struct WhatToPlayTrainerView: View {
                     .font(AppTypography.subheadline.weight(.semibold))
                     .foregroundStyle(AppColor.textPrimary)
 
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 4), spacing: AppSpacing.xs) {
+                LazyVGrid(columns: optionButtonColumns, spacing: AppSpacing.sm) {
                     ForEach(scenario.blockedCards) { blocked in
                         Button {
                             illegalMoveExplanation = RuleExplanationFormatter.illegalMoveExplanation(
@@ -3088,10 +3096,16 @@ struct WhatToPlayTrainerView: View {
                             VStack(spacing: 6) {
                                 MiniAnalysisCard(card: blocked.card, isSelected: false)
                                     .opacity(0.55)
-                                Image(systemName: "lock.fill")
+                                Label("غير متاح".localized, systemImage: "lock.fill")
                                     .font(.caption2.weight(.semibold))
                                     .foregroundStyle(AppColor.textSecondary)
+                                    .multilineTextAlignment(.center)
+                                    .lineLimit(2)
+                                    .minimumScaleFactor(0.85)
+                                    .fixedSize(horizontal: false, vertical: true)
                             }
+                            .frame(maxWidth: .infinity, minHeight: 72)
+                            .padding(.vertical, 2)
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel("\(blocked.card.accessibilityName)، \("ورقة غير قانونية".localized)")
@@ -3131,6 +3145,13 @@ struct WhatToPlayTrainerView: View {
     private func optionBadgeTint(_ option: WhatToPlayOption) -> Color {
         guard selectedOption != nil else { return AppColor.textSecondary }
         return option.rank == 1 ? AppColor.success : AppColor.textSecondary
+    }
+
+    private var optionButtonColumns: [GridItem] {
+        if dynamicTypeSize.isAccessibilitySize {
+            return [GridItem(.flexible(), spacing: AppSpacing.sm)]
+        }
+        return [GridItem(.adaptive(minimum: 86), spacing: AppSpacing.sm)]
     }
 
     private func optionAccessibilityLabel(_ option: WhatToPlayOption) -> String {

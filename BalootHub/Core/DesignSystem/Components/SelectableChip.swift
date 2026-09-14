@@ -11,6 +11,10 @@ struct SelectableChip: View {
         Button(action: action) {
             Text(title)
                 .font(AppTypography.subheadline)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .minimumScaleFactor(0.85)
+                .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, AppSpacing.md)
                 .padding(.vertical, AppSpacing.xs)
                 .frame(minHeight: 44)
