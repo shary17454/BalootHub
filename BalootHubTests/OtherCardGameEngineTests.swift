@@ -1,9 +1,10 @@
 import XCTest
+import BalootEngine
 @testable import BalootHub
 
 final class OtherCardGameEngineTests: XCTestCase {
     func testEveryCatalogTableCanReachAnEndUsingAvailableActions() {
-        for item in CatalogSeeder.previewItems().filter({ $0.category == .otherCardGame }) {
+        for item in CatalogSeeder.previewItems().filter({ $0.category == .otherCardGame && !OtherCardGamePlayView.originalEngineSlugs.contains($0.slug) }) {
             for seed in UInt64(1)...10 {
                 var state = OtherCardGameEngine.newGame(slug: item.slug, title: item.arabicTitle, seed: seed)
                 for _ in 0..<600 where !state.roundFinished {
@@ -22,6 +23,13 @@ final class OtherCardGameEngineTests: XCTestCase {
                 XCTAssertTrue(state.roundFinished, "No reachable ending: \(item.slug), seed \(seed)")
             }
         }
+    }
+
+    func testOriginalEnginesHaveDedicatedRoutes() {
+        XCTAssertEqual(OtherCardGamePlayView.originalEngineSlugs, ["kout-bou-sitta", "trex", "hand", "solitaire-klondike", "freecell", "spider-solitaire"])
+        let games = CatalogSeeder.previewItems().filter { OtherCardGamePlayView.originalEngineSlugs.contains($0.slug) }
+        XCTAssertEqual(games.count, 6)
+        XCTAssertTrue(games.allSatisfy(\.isPlayable))
     }
 
     func testTrickTakingGamesFinishCompleteDealsAcrossSeeds() {
@@ -43,20 +51,15 @@ final class OtherCardGameEngineTests: XCTestCase {
         }
     }
 
-    func testFoundationProgressesFromAceThroughKingAndIncludesStock() {
-        var state = OtherCardGameEngine.newGame(slug: "freecell", title: "Freecell")
-        state.players[0].hand = [.init(suit: .spade, rank: .ace)]
-        state.drawPile = [.init(suit: .spade, rank: .two)]
-        OtherCardGameEngine.playUserCard(state.user.hand[0], in: &state)
-        XCTAssertFalse(state.roundFinished)
-        OtherCardGameEngine.drawForUser(in: &state)
-        XCTAssertEqual(state.legalCardsForUser, [.init(suit: .spade, rank: .two)])
-        OtherCardGameEngine.playUserCard(state.user.hand[0], in: &state)
-        XCTAssertTrue(state.roundFinished)
-        state.roundFinished = false
-        state.foundations[.spade] = .king
-        state.players[0].hand = [.init(suit: .spade, rank: .ace)]
-        XCTAssertTrue(state.legalCardsForUser.isEmpty)
+    func testSolitaireUsesDedicatedBoardsInsteadOfGenericHand() {
+        let freecell = SolitaireGame(variant: .freecell, seed: 1)
+        XCTAssertEqual(freecell.columns.count, 8)
+        XCTAssertEqual(freecell.columns.flatMap { $0 }.count, 52)
+        XCTAssertTrue(freecell.stock.isEmpty)
+        let klondike = SolitaireGame(variant: .klondike, seed: 1)
+        XCTAssertEqual(klondike.columns.count, 7)
+        XCTAssertEqual(klondike.stock.count, 24)
+        XCTAssertFalse(klondike.won)
     }
 
     func testUserWinningDiscardStopsBeforeOpponentsMove() {
@@ -136,12 +139,11 @@ final class OtherCardGameEngineTests: XCTestCase {
     }
 
     func testHandCreatesPlayableMeldTableWithDrawPile() {
-        let state = OtherCardGameEngine.newGame(slug: "hand", title: "هاند", seed: 91)
-
-        XCTAssertEqual(state.rules.mode, .meldCollection)
-        XCTAssertEqual(state.players.count, 4)
-        XCTAssertEqual(state.players[0].hand.count, 10)
-        XCTAssertFalse(state.drawPile.isEmpty)
+        let state = HandMatch(seed: 91)
+        XCTAssertEqual(state.hands.count, 4)
+        XCTAssertEqual(state.hands.map(\.count), [15, 14, 14, 14])
+        XCTAssertEqual(state.stock.count, 49)
+        XCTAssertEqual(state.phase, .arrange)
     }
 
     func testWarRoundCanAdvanceFromRevealAction() {

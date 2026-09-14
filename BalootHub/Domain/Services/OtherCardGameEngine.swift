@@ -167,12 +167,6 @@ struct OtherCardGameRules: Equatable {
             make(mode: .trickTaking, cardsPerPlayer: 13, setup: "آخر ورقتين: نهاية الجولة لها قيمة خاصة.", play: "اتبع النوع واحتفظ بأوراق السيطرة للأكلات الأخيرة.", scoring: "آخر الأكلات تمنح نقاطًا إضافية أو عقوبة حسب الاتفاق.")
         case "tarneeb":
             make(mode: .trickTaking, cardsPerPlayer: 13, allowsTrump: true, setup: "طرنيب: أربعة لاعبين، الفريقان متقابلان، والحكم يحدد قوة الأكلات.", play: "اتبع النوع المطلوب إن كان عندك. إذا لم تملك النوع تستطيع القطع بالحكم. الهدف كسب الأكلات التي تعهد بها الفريق.", scoring: "تزيد نقاط الفريق بعدد الأكلات، وتخسر الجولة إذا لم تحقق التعهد.")
-        case "trex":
-            make(mode: .avoidPenalty, cardsPerPlayer: 13, setup: "تركس: أربع مملكات. هذه الطاولة تشغّل نمط العقوبات الأساسي لتتعلم تجنب الأوراق الخطرة.", play: "اتبع النوع المطلوب. حاول التخلص من أوراق العقوبة في الوقت المناسب ولا تأخذ أكلة تحمل هاص أو بنت.", scoring: "الأقل عقوبات هو الأفضل. الهاص والملكات ترفع الخسارة.")
-        case "hand":
-            make(mode: .meldCollection, cardsPerPlayer: 10, setup: "هاند: الهدف ترتيب اليد إلى مجموعات وسلاسل.", play: "العب ورقة تنتمي لمجموعة رتبة أو سلسلة من نفس النوع، أو اسحب حتى تجد ورقة تساعدك على الإنزال.", scoring: "الفائز من ينهي أوراقه أولًا، وبقية الأوراق تُحسب ضد أصحابها.")
-        case "kout-bou-sitta":
-            make(mode: .avoidPenalty, cardsPerPlayer: 13, setup: "كوت بو ستة: لعبة أكلات وشراكة، وهذه الطاولة تركّز على تجنب الأكلات المكلفة.", play: "اتبع النوع المطلوب، وخطط متى تأخذ الأكلة ومتى تتركها حسب الأوراق الخطرة.", scoring: "الأوراق الخطرة تزيد العقوبة، والأفضلية للأقل نقاط عقوبة.")
         case "bridge":
             make(mode: .trickTaking, cardsPerPlayer: 13, allowsTrump: true, setup: "بريدج: أربعة لاعبين وشراكة، الحكم يمثل العقد المختار.", play: "اتبع النوع المطلوب. استخدم الحكم لكسب الأكلات عند نفاد النوع، ووازن بين حماية الشريك وتحقيق العقد.", scoring: "كل أكلة تقرّب الفريق من العقد؛ الفشل في تحقيقه يعطي الأفضلية للخصم.")
         case "poker-texas-holdem":
@@ -189,8 +183,6 @@ struct OtherCardGameRules: Equatable {
             make(mode: .trickTaking, cardsPerPlayer: 13, setup: "ويست: لعبة أكلات مباشرة بلا مزايدة معقدة.", play: "اتبع النوع المطلوب وحاول قراءة الأوراق الخارجة لاختيار أعلى توقيت للأخذ.", scoring: "كل أكلة تكسبها ترفع نتيجتك.")
         case "euchre":
             make(mode: .trickTaking, cardsPerPlayer: 5, allowsTrump: true, setup: "يوكر: خمس أوراق لكل لاعب وحكم قوي.", play: "اتبع النوع. ركز على أوراق الحكم العالية لأن عدد الأكلات قليل.", scoring: "الأكثر أكلات في اليد القصيرة يفوز.")
-        case "solitaire-klondike", "freecell", "spider-solitaire":
-            make(mode: .solitaireFoundation, playerCount: 1, cardsPerPlayer: 28, setup: "\(title): ترتيب فردي للأساسات.", play: "ابدأ بالآسات ثم ابنِ كل نوع تصاعديًا. الورقة القانونية ترفع أساس نوعها خطوة واحدة.", scoring: "تفوز عندما تنتقل كل الأوراق إلى الأساسات.")
         case "crazy-eights":
             make(mode: .matchingDiscard, cardsPerPlayer: 7, setup: "الثمانية المجنونة: كرت مفتوح وحزمة سحب.", play: "طابق النوع أو الرقم مع الورقة المفتوحة. رقم 8 حر ويمكن لعبه على أي ورقة.", scoring: "من يتخلص من أوراقه أولًا يفوز.")
         case "old-maid":
