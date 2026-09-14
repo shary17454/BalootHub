@@ -240,6 +240,16 @@ final class BalootGameViewModel {
         startNewMatch()
     }
 
+    func suspendWork() {
+        aiTask.cancel()
+        analysisTask.cancel()
+    }
+
+    func resumeWork() {
+        advanceAI()
+        scheduleRoundAnalysisIfNeeded()
+    }
+
     deinit {
         // بدون هذا تبقى مهمة اللاعبين الآليين تدور بعد إغلاق الشاشة إلى أن تكتشف
         // أن `self` تحرّر، فتُهدر حسابات محاكاة كاملة بلا فائدة.

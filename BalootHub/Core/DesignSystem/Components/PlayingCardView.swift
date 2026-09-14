@@ -123,6 +123,7 @@ struct PlayingCardFaceView: View {
                 RoundedRectangle(cornerRadius: AppRadius.small)
                     .stroke(borderColor, lineWidth: isHighlighted ? 2 : 1)
             )
+            .accessibilityElement(children: .ignore)
             .accessibilityLabel(card.accessibilityName)
     }
 

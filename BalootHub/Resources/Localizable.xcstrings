@@ -1,6 +1,34 @@
 {
   "sourceLanguage": "ar",
   "strings": {
+    "تعادل.": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Draw." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Égalité." } },
+        "es": { "stringUnit": { "state": "translated", "value": "Empate." } },
+        "de": { "stringUnit": { "state": "translated", "value": "Unentschieden." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Berabere." } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Ничья." } },
+        "ur": { "stringUnit": { "state": "translated", "value": "برابری۔" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "बराबरी।" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Seri." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "平局。" } }
+      }
+    },
+    "لا توجد حركة قانونية متاحة. انتهت الجولة.": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "No legal moves remain. The round has ended." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Il ne reste aucun coup légal. La manche est terminée." } },
+        "es": { "stringUnit": { "state": "translated", "value": "No quedan jugadas legales. La ronda ha terminado." } },
+        "de": { "stringUnit": { "state": "translated", "value": "Keine gültigen Züge mehr. Die Runde ist beendet." } },
+        "tr": { "stringUnit": { "state": "translated", "value": "Geçerli hamle kalmadı. Tur sona erdi." } },
+        "ru": { "stringUnit": { "state": "translated", "value": "Допустимых ходов не осталось. Раунд завершён." } },
+        "ur": { "stringUnit": { "state": "translated", "value": "کوئی جائز چال باقی نہیں۔ راؤنڈ ختم ہو گیا۔" } },
+        "hi": { "stringUnit": { "state": "translated", "value": "कोई वैध चाल नहीं बची है। दौर समाप्त हो गया है।" } },
+        "id": { "stringUnit": { "state": "translated", "value": "Tidak ada langkah sah tersisa. Putaran telah berakhir." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "已无合法出牌。本局结束。" } }
+      }
+    },
     "لعبة قابلة للعب": {
       "localizations": {
         "en": { "stringUnit": { "state": "translated", "value": "Playable game" } },

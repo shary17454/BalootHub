@@ -3567,6 +3567,7 @@ public enum WhatToPlayTrainer {
         let hasPreference = preferredFocus != nil || preferredMode != nil || requestedTrumpSuit != nil
         let searchLimit = hasPreference ? 1_200 : 40
         for offset in 0..<searchLimit {
+            try Task.checkCancellation()
             let initialState = GameState.newLocalMatch(rules: rules)
             var state = initialState
             state = try GameEngine.apply(.dealCards(seed: seed &+ UInt64(offset)), to: state)
@@ -3577,6 +3578,7 @@ public enum WhatToPlayTrainer {
 
             var guardSteps = 0
             while guardSteps < 96 {
+                try Task.checkCancellation()
                 guardSteps += 1
 
                 if state.phase == .playing, state.currentTurnPlayerID == humanID {

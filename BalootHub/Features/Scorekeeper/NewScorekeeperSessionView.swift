@@ -11,12 +11,14 @@ struct NewScorekeeperSessionView: View {
     @State private var teamTwoName = "الخصم"
     @State private var useCustomTarget = false
     @State private var customTarget: Int = 152
+    @State private var saveError: String?
+    @State private var pendingSession: ScoreSession?
 
     private var defaultTarget: Int { settingsList.first?.defaultTargetScore ?? 152 }
 
     private var isValid: Bool {
-        !teamOneName.trimmingCharacters(in: .whitespaces).isEmpty
-            && !teamTwoName.trimmingCharacters(in: .whitespaces).isEmpty
+        !teamOneName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            && !teamTwoName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     var body: some View {
@@ -61,6 +63,11 @@ struct NewScorekeeperSessionView: View {
             }
         }
         .onAppear { customTarget = defaultTarget }
+        .alert("تنبيه", isPresented: Binding(get: { saveError != nil }, set: { if !$0 { saveError = nil } })) {
+            Button("حسنًا") { saveError = nil }
+        } message: {
+            Text(saveError ?? "")
+        }
     }
 
     private var customTargetBinding: Binding<Int> {
@@ -77,15 +84,26 @@ struct NewScorekeeperSessionView: View {
 
     private func createSession() {
         let target = useCustomTarget ? customTarget : defaultTarget
-        let session = ScoreSession(
-            teamOneName: teamOneName.trimmingCharacters(in: .whitespaces),
-            teamTwoName: teamTwoName.trimmingCharacters(in: .whitespaces),
+        guard isValid else { return }
+        let session = pendingSession ?? ScoreSession(
+            teamOneName: teamOneName.trimmingCharacters(in: .whitespacesAndNewlines),
+            teamTwoName: teamTwoName.trimmingCharacters(in: .whitespacesAndNewlines),
             targetScore: target
         )
-        modelContext.insert(session)
-        try? modelContext.save()
-        appEnvironment.scorekeeperPath.removeAll()
-        appEnvironment.openScorekeeperSession(id: session.id)
+        session.teamOneName = teamOneName.trimmingCharacters(in: .whitespacesAndNewlines)
+        session.teamTwoName = teamTwoName.trimmingCharacters(in: .whitespacesAndNewlines)
+        session.targetScore = target
+        if pendingSession == nil { modelContext.insert(session) }
+        pendingSession = session
+        do {
+            try modelContext.save()
+            pendingSession = nil
+            appEnvironment.scorekeeperPath.removeAll()
+            appEnvironment.openScorekeeperSession(id: session.id)
+        } catch {
+            AppLogger.persistence.error("Score session save failed: \(error.localizedDescription, privacy: .private)")
+            saveError = error.localizedDescription
+        }
     }
 }
 

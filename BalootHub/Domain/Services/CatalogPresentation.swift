@@ -172,25 +172,29 @@ enum CatalogPresentation {
             .filter { !groupedSlugs.contains($0.slug) && $0.category != .otherCardGame }
             .sorted { $0.sortOrder < $1.sortOrder }
 
-        return knownSections
+        let sections = knownSections.filter { $0.id == "play" }
             + [
                 CatalogPresentationSection(
                     id: "other-card-games",
                     title: "ألعاب ورق أخرى".localized,
                     detail: "ألعاب مستقلة قابلة للعب، مفصولة عن طاولة البلوت حتى لا تختلط القواعد.".localized,
                     items: otherGames
-                ),
+                )
+            ]
+            + knownSections.filter { $0.id != "play" }
+            + [
                 CatalogPresentationSection(
                     id: "more",
                     title: "عناصر إضافية".localized,
                     detail: "عناصر لم تدخل في المسارات الأساسية.".localized,
                     items: uncategorized
                 )
-            ].filter { !$0.items.isEmpty }
+            ]
+        return sections.filter { !$0.items.isEmpty }
     }
 
     private static func orderedItems(slugs: [String], from items: [GameCatalogItem]) -> [GameCatalogItem] {
-        let bySlug = Dictionary(uniqueKeysWithValues: items.map { ($0.slug, $0) })
+        let bySlug = Dictionary(items.map { ($0.slug, $0) }, uniquingKeysWith: { first, _ in first })
         return slugs.compactMap { bySlug[$0] }
     }
 }

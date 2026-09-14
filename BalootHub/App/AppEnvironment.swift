@@ -51,6 +51,11 @@ final class AppEnvironment {
         switch arguments[index + 1] {
         case "balootGamePlay":
             navigate(to: .balootGamePlay(slug: "baloot-classic"), tab: .home)
+        case "catalog":
+            selectedTab = .catalog
+        case "otherCardGamePlay":
+            let gameSlug = arguments.indices.contains(index + 2) ? arguments[index + 2] : "tarneeb"
+            navigate(to: .otherCardGamePlay(slug: gameSlug), tab: .catalog)
         case "whatToPlay":
             navigate(to: .whatToPlayTrainer(), tab: .home)
         case "settings":

@@ -3,6 +3,21 @@ import BalootEngine
 @testable import BalootHub
 
 final class WhatToPlayScenarioLoaderTests: XCTestCase {
+    func testCancelledGenerationDoesNotReturnAScenario() async {
+        let task = Task {
+            withUnsafeCurrentTask { $0?.cancel() }
+            return try await WhatToPlayScenarioLoader.generate(seed: 2026, difficulty: .medium)
+        }
+        do {
+            _ = try await task.value
+            XCTFail("Cancelled generation must not return a scenario")
+        } catch is CancellationError {
+            // Expected: cancellation propagates to the generation worker.
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
     func testUnattemptedSeedKeepsCurrentSeedWhenItWasNotSolvedForFilter() {
         let attempts = [
             attempt(seed: 2027, difficulty: .medium, focusKind: .openingLead)

@@ -57,10 +57,13 @@ struct OtherCardGamePlayView: View {
                 .font(AppTypography.subheadline)
                 .foregroundStyle(AppColor.textPrimary)
 
-            VStack(alignment: .leading, spacing: 4) {
-                Label(state.rules.setupText.localized, systemImage: "rectangle.on.rectangle")
-                Label(state.rules.playText.localized, systemImage: "hand.point.up.left.fill")
-                Label(state.rules.scoringText.localized, systemImage: "number.circle.fill")
+            DisclosureGroup("التفاصيل والقواعد") {
+                VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                    Label(state.rules.setupText.localized, systemImage: "rectangle.on.rectangle")
+                    Label(state.rules.playText.localized, systemImage: "hand.point.up.left.fill")
+                    Label(state.rules.scoringText.localized, systemImage: "number.circle.fill")
+                }
+                .padding(.top, AppSpacing.xs)
             }
             .font(AppTypography.caption)
             .foregroundStyle(AppColor.textSecondary)
@@ -191,7 +194,7 @@ struct OtherCardGamePlayView: View {
     }
 
     private var controls: some View {
-        HStack(spacing: AppSpacing.sm) {
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 140), spacing: AppSpacing.sm)], spacing: AppSpacing.sm) {
             Button {
                 reset()
             } label: {
@@ -201,7 +204,7 @@ struct OtherCardGamePlayView: View {
             .buttonStyle(.bordered)
             .controlSize(.large)
 
-            if state.rules.mode == .matchingDiscard || state.rules.mode == .blackjack {
+            if OtherCardGameEngine.canDraw(in: state) {
                 Button {
                     OtherCardGameEngine.drawForUser(in: &state)
                 } label: {
@@ -210,6 +213,17 @@ struct OtherCardGamePlayView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(state.roundFinished)
+                .controlSize(.large)
+            }
+
+            if OtherCardGameEngine.canPass(in: state) {
+                Button {
+                    OtherCardGameEngine.passUser(in: &state)
+                } label: {
+                    Label("بس", systemImage: "arrow.forward")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
                 .controlSize(.large)
             }
 
@@ -266,8 +280,7 @@ struct OtherCardGamePlayView: View {
                         otherCardView(card, highlighted: legal.contains(card))
                     }
                     .buttonStyle(.plain)
-                    .disabled(state.roundFinished || state.rules.mode == .blackjack || state.rules.mode == .war || state.rules.mode == .pokerShowdown)
-                    .opacity(legal.isEmpty || legal.contains(card) ? 1 : 0.45)
+                    .disabled(state.roundFinished || state.currentPlayerID != 0 || !legal.contains(card) || state.rules.mode == .blackjack || state.rules.mode == .war || state.rules.mode == .pokerShowdown)
                     .accessibilityHint(legal.contains(card) ? "ورقة قانونية الآن".localized : "ليست من الخيارات القانونية الآن".localized)
                 }
             }

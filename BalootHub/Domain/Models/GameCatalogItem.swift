@@ -155,6 +155,9 @@ final class GameCatalogItem {
 
     /// خطوة الاستخدام المختصرة التي تظهر في بطاقة الكتالوج وصفحة التفاصيل.
     var displayUseDescription: String {
+        if category == .otherCardGame {
+            return "اضغط بدء اللعب لفتح طاولة سريعة لهذه اللعبة، أو اقرأ القواعد قبل البداية.".localized
+        }
         if isPlayable {
             return "اضغط بدء اللعب لفتح الطاولة. الصن والحكم يجيان داخل مزايدة واحدة مثل الواقع.".localized
         }

@@ -101,7 +101,7 @@ struct OtherCardGameRules: Equatable {
         case .trickTaking:
             allowsTrump ? "اكسب أكبر عدد من الأكلات مع احترام اللون المطلوب والحكم." : "اكسب أكبر عدد من الأكلات مع احترام اللون المطلوب."
         case .avoidPenalty:
-            "تجنب أوراق العقوبة، خصوصًا الهاص والملكات."
+            playText
         case .matchingDiscard:
             "تخلص من أوراقك بمطابقة الرقم أو النوع، والثمانية ورقة حرة."
         case .fishing:
@@ -245,6 +245,8 @@ struct OtherCardGameTableState {
     var message: String
     var roundFinished: Bool
     var userStand: Bool
+    var consecutivePasses = 0
+    var lastDiscardPlayerID = 0
 
     var user: OtherCardGamePlayer { players[0] }
     var legalCardsForUser: [OtherCardGameCard] {
@@ -256,7 +258,7 @@ enum OtherCardGameEngine {
     static func newGame(slug: String, title: String, seed: UInt64 = 7_341) -> OtherCardGameTableState {
         let rules = OtherCardGameRules.rules(for: slug, title: title)
         var deck = shuffledDeck(seed: seed ^ UInt64(abs(slug.hashStable)))
-        let trump = rules.allowsTrump ? deck.first?.suit : nil
+        let trump: OtherCardGameCard.Suit? = slug == "spades" ? .spade : (rules.allowsTrump ? deck.first?.suit : nil)
         var players: [OtherCardGamePlayer] = (0..<rules.playerCount).map {
             OtherCardGamePlayer(id: $0, name: $0 == 0 ? "أنت" : "لاعب \($0 + 1)", hand: [])
         }
@@ -324,7 +326,9 @@ enum OtherCardGameEngine {
         case .solitaireFoundation:
             return player.hand.filter { card in
                 let current = state.foundations[card.suit]
-                return current == nil ? card.rank == .ace : card.rank.rawValue == (current?.rawValue ?? 0) + 1
+                if current == nil { return card.rank == .ace }
+                if current == .ace { return card.rank == .two }
+                return current != .king && card.rank.rawValue == (current?.rawValue ?? 0) + 1
             }
         case .blackjack, .war, .pokerShowdown:
             return player.hand
@@ -349,19 +353,27 @@ enum OtherCardGameEngine {
         switch state.rules.mode {
         case .matchingDiscard:
             state.discardPile.append(state.players[0].hand.remove(at: index))
+            state.consecutivePasses = 0
+            state.lastDiscardPlayerID = 0
             state.message = "لعبت \(card.rank.title) \(card.suit.title)."
+            finishIfNeeded(&state)
             state.currentPlayerID = nextPlayer(after: 0, in: state)
             advanceAI(in: &state)
         case .fishing:
             playFishing(card, playerIndex: 0, in: &state)
+            finishIfNeeded(&state)
             state.currentPlayerID = nextPlayer(after: 0, in: state)
             advanceAI(in: &state)
         case .pairMatching:
             playPair(card, playerIndex: 0, in: &state)
+            finishIfNeeded(&state)
             state.currentPlayerID = nextPlayer(after: 0, in: state)
             advanceAI(in: &state)
         case .meldCollection:
             playMeld(card, playerIndex: 0, in: &state)
+            finishIfNeeded(&state)
+            state.currentPlayerID = nextPlayer(after: 0, in: state)
+            advanceAI(in: &state)
         case .solitaireFoundation:
             playFoundation(card, in: &state)
         case .blackjack:
@@ -372,7 +384,12 @@ enum OtherCardGameEngine {
             resolveWarTurn(in: &state)
         case .trickTaking, .avoidPenalty:
             state.currentTrick.append((0, state.players[0].hand.remove(at: index)))
-            state.currentPlayerID = nextPlayer(after: 0, in: state)
+            if state.currentTrick.count == state.rules.playerCount {
+                resolveTrick(in: &state)
+            } else {
+                state.currentPlayerID = nextPlayer(after: 0, in: state)
+            }
+            finishIfNeeded(&state)
             advanceAI(in: &state)
         }
 
@@ -380,7 +397,12 @@ enum OtherCardGameEngine {
     }
 
     static func drawForUser(in state: inout OtherCardGameTableState) {
-        guard !state.drawPile.isEmpty, !state.roundFinished else { return }
+        guard !state.roundFinished, state.currentPlayerID == 0 else { return }
+        refillDrawPileIfNeeded(&state)
+        guard !state.drawPile.isEmpty else {
+            passUser(in: &state)
+            return
+        }
         switch state.rules.mode {
         case .matchingDiscard, .fishing, .pairMatching, .meldCollection, .solitaireFoundation:
             let card = state.drawPile.removeFirst()
@@ -418,6 +440,57 @@ enum OtherCardGameEngine {
         state.roundFinished = true
     }
 
+    static func canDraw(in state: OtherCardGameTableState) -> Bool {
+        guard !state.roundFinished, state.currentPlayerID == 0 else { return false }
+        switch state.rules.mode {
+        case .matchingDiscard:
+            return state.rules.slug != "president" && (!state.drawPile.isEmpty || state.discardPile.count > 1)
+        case .fishing, .pairMatching, .meldCollection, .solitaireFoundation, .blackjack:
+            return !state.drawPile.isEmpty
+        default:
+            return false
+        }
+    }
+
+    static func canPass(in state: OtherCardGameTableState) -> Bool {
+        guard !state.roundFinished, state.currentPlayerID == 0,
+              state.legalCardsForUser.isEmpty, !canDraw(in: state) else { return false }
+        switch state.rules.mode {
+        case .matchingDiscard, .fishing, .pairMatching, .meldCollection:
+            return true
+        default:
+            return false
+        }
+    }
+
+    static func passUser(in state: inout OtherCardGameTableState) {
+        guard canPass(in: state) else { return }
+        if state.rules.slug == "president" { passPresident(playerIndex: 0, in: &state) }
+        else { state.currentPlayerID = nextPlayer(after: 0, in: state) }
+        advanceAI(in: &state)
+        finishIfNeeded(&state)
+    }
+
+    private static func passPresident(playerIndex: Int, in state: inout OtherCardGameTableState) {
+        state.consecutivePasses += 1
+        if state.consecutivePasses >= state.players.count - 1 {
+            state.players[state.lastDiscardPlayerID].wonCards += state.discardPile
+            state.discardPile.removeAll()
+            state.consecutivePasses = 0
+            state.currentPlayerID = state.lastDiscardPlayerID
+        } else {
+            state.currentPlayerID = nextPlayer(after: playerIndex, in: state)
+        }
+    }
+
+    private static func refillDrawPileIfNeeded(_ state: inout OtherCardGameTableState) {
+        guard state.rules.mode == .matchingDiscard, state.rules.slug != "president", state.drawPile.isEmpty,
+              let top = state.discardPile.last, state.discardPile.count > 1 else { return }
+        // Keep the visible card in place; recycle only previously played cards.
+        state.drawPile = Array(state.discardPile.dropLast().reversed())
+        state.discardPile = [top]
+    }
+
     static func advanceAI(in state: inout OtherCardGameTableState) {
         var guardCounter = 0
         while state.currentPlayerID != 0, !state.roundFinished, guardCounter < 20 {
@@ -425,10 +498,16 @@ enum OtherCardGameEngine {
             let playerIndex = state.currentPlayerID
             switch state.rules.mode {
             case .matchingDiscard:
+                refillDrawPileIfNeeded(&state)
                 let legal = legalCards(for: state.players[playerIndex], in: state)
                 if let card = legal.sorted().first, let handIndex = state.players[playerIndex].hand.firstIndex(of: card) {
                     state.discardPile.append(state.players[playerIndex].hand.remove(at: handIndex))
+                    state.consecutivePasses = 0
+                    state.lastDiscardPlayerID = playerIndex
                     state.message = "\(state.players[playerIndex].name) لعب \(card.rank.title) \(card.suit.title)."
+                } else if state.rules.slug == "president" {
+                    passPresident(playerIndex: playerIndex, in: &state)
+                    continue
                 } else if !state.drawPile.isEmpty {
                     state.players[playerIndex].hand.append(state.drawPile.removeFirst())
                     state.players[playerIndex].hand.sort()
@@ -491,7 +570,8 @@ enum OtherCardGameEngine {
         case .avoidPenalty:
             state.players[winner].score += cards.reduce(0) { $0 + penaltyValue(for: $1, rules: state.rules) }
         default:
-            state.players[winner].score += 1
+            state.players[winner].score += state.rules.slug == "diamonds-collector"
+                ? cards.filter { $0.suit == .diamond }.count : 1
         }
         state.currentTrick.removeAll()
         state.currentPlayerID = winner
@@ -505,7 +585,11 @@ enum OtherCardGameEngine {
         }
         let user = state.players[0].hand.removeFirst()
         let dealer = state.players[1].hand.removeFirst()
-        if user.rank >= dealer.rank {
+        state.players[0].wonCards.append(user)
+        state.players[1].wonCards.append(dealer)
+        if user.rank == dealer.rank {
+            state.message = "تعادل."
+        } else if user.rank > dealer.rank {
             state.players[0].score += 1
             state.message = "ورقتك \(user.rank.title) أعلى من \(dealer.rank.title)."
         } else {
@@ -521,9 +605,14 @@ enum OtherCardGameEngine {
             if let winner = state.players.first(where: { $0.hand.isEmpty }) {
                 state.roundFinished = true
                 state.message = "\(winner.name) أنهى أوراقه وفاز بالجولة."
+            } else if state.rules.slug != "president", state.drawPile.isEmpty,
+                      !(state.rules.mode == .matchingDiscard && state.discardPile.count > 1),
+                      state.players.allSatisfy({ legalCards(for: $0, in: state).isEmpty }) {
+                state.roundFinished = true
+                state.message = "لا توجد حركة قانونية متاحة. انتهت الجولة."
             }
         case .solitaireFoundation:
-            if state.players[0].hand.isEmpty {
+            if state.players[0].hand.isEmpty && state.drawPile.isEmpty {
                 state.roundFinished = true
                 state.message = "اكتملت الأساسات وفزت بجولة \(state.rules.title)."
             }
@@ -544,7 +633,11 @@ enum OtherCardGameEngine {
         case .war:
             if state.players[0].hand.isEmpty || state.players[1].hand.isEmpty {
                 state.roundFinished = true
-                state.message = state.players[0].score >= state.players[1].score ? "فزت بجولة الحرب." : "فاز الخصم بجولة الحرب."
+                if state.players[0].score == state.players[1].score {
+                    state.message = "تعادل."
+                } else {
+                    state.message = state.players[0].score > state.players[1].score ? "فزت بجولة الحرب." : "فاز الخصم بجولة الحرب."
+                }
             }
         }
     }
@@ -580,6 +673,10 @@ enum OtherCardGameEngine {
             1
         case "no-hearts-no-queens":
             (card.suit == .heart ? 1 : 0) + (card.rank == .queen ? 5 : 0)
+        case "hearts-penalty":
+            card.suit == .heart ? 1 : 0
+        case "hearts":
+            (card.suit == .heart ? 1 : 0) + (card.suit == .spade && card.rank == .queen ? 13 : 0)
         default:
             ((card.suit == rules.penaltySuit) ? 1 : 0) + (card.rank == .queen ? 5 : 0)
         }
@@ -642,7 +739,9 @@ enum OtherCardGameEngine {
     private static func resolvePokerShowdown(in state: inout OtherCardGameTableState) {
         let userScore = pokerScore(cards: state.players[0].hand + state.communityCards)
         let opponentScore = pokerScore(cards: state.players[1].hand + state.communityCards)
-        if userScore >= opponentScore {
+        if userScore == opponentScore {
+            state.message = "تعادل."
+        } else if userScore > opponentScore {
             state.players[0].score += 1
             state.message = "فزت بكشف البوكر. تقييم يدك \(userScore)، الخصم \(opponentScore)."
         } else {
@@ -686,33 +785,48 @@ enum OtherCardGameEngine {
         return removed
     }
 
-    private static func pokerScore(cards: [OtherCardGameCard]) -> Int {
-        let ranks = Dictionary(grouping: cards, by: \.rank).mapValues(\.count)
-        let suits = Dictionary(grouping: cards, by: \.suit).mapValues(\.count)
-        let counts = ranks.values.sorted(by: >)
-        let isFlush = suits.values.contains { $0 >= 5 }
-        let sortedRanks = Set(cards.map { $0.rank.rawValue }).sorted()
-        let isStraight = containsStraight(sortedRanks)
-        if isStraight && isFlush { return 800 }
-        if counts.first == 4 { return 700 }
-        if counts.first == 3 && counts.dropFirst().first == 2 { return 600 }
-        if isFlush { return 500 }
-        if isStraight { return 400 }
-        if counts.first == 3 { return 300 }
-        if counts.prefix(2).allSatisfy({ $0 == 2 }) { return 200 }
-        if counts.first == 2 { return 100 }
-        return cards.map(\.rank.rawValue).max() ?? 0
-    }
-
-    private static func containsStraight(_ sortedRanks: [Int]) -> Bool {
-        guard sortedRanks.count >= 5 else { return false }
-        for index in 0...(sortedRanks.count - 5) {
-            let slice = sortedRanks[index..<(index + 5)]
-            if let first = slice.first, let last = slice.last, last - first == 4 {
-                return true
+    static func pokerScore(cards: [OtherCardGameCard]) -> Int {
+        guard cards.count >= 5 else { return 0 }
+        // Evaluate each five-card hand so a flush and an unrelated straight
+        // cannot be mistaken for a straight flush. At seven cards this is 21 hands.
+        var best = 0
+        for a in 0..<(cards.count - 4) {
+            for b in (a + 1)..<(cards.count - 3) {
+                for c in (b + 1)..<(cards.count - 2) {
+                    for d in (c + 1)..<(cards.count - 1) {
+                        for e in (d + 1)..<cards.count {
+                            best = max(best, fiveCardScore([cards[a], cards[b], cards[c], cards[d], cards[e]]))
+                        }
+                    }
+                }
             }
         }
-        return Set(sortedRanks).isSuperset(of: [14, 2, 3, 4, 5])
+        return best
+    }
+
+    private static func fiveCardScore(_ cards: [OtherCardGameCard]) -> Int {
+        let ranks = cards.map(\.rank.rawValue).sorted(by: >)
+        let groupedRanks: [Int: [Int]] = Dictionary(grouping: ranks, by: { $0 })
+        let rankCounts: [(rank: Int, count: Int)] = groupedRanks.map { (rank: $0.key, count: $0.value.count) }
+        let groups = rankCounts.sorted { lhs, rhs in
+            lhs.count == rhs.count ? lhs.rank > rhs.rank : lhs.count > rhs.count
+        }
+        let flush = Set(cards.map(\.suit)).count == 1
+        let straightHigh = Set(ranks).count == 5 && ranks[0] - ranks[4] == 4
+            ? ranks[0] : (ranks == [14, 5, 4, 3, 2] ? 5 : 0)
+        let category: Int
+        let kickers: [Int]
+        if flush && straightHigh > 0 { category = 8; kickers = [straightHigh] }
+        else if groups[0].count == 4 { category = 7; kickers = groups.map(\.rank) }
+        else if groups[0].count == 3 && groups[1].count == 2 { category = 6; kickers = groups.map(\.rank) }
+        else if flush { category = 5; kickers = ranks }
+        else if straightHigh > 0 { category = 4; kickers = [straightHigh] }
+        else if groups[0].count == 3 { category = 3; kickers = groups.map(\.rank) }
+        else if groups[0].count == 2 && groups[1].count == 2 { category = 2; kickers = groups.map(\.rank) }
+        else if groups[0].count == 2 { category = 1; kickers = groups.map(\.rank) }
+        else { category = 0; kickers = ranks }
+        return (kickers + Array(repeating: 0, count: 5 - kickers.count))
+            .reduce(category) { $0 * 15 + $1 }
     }
 
     private static func nextPlayer(after playerID: Int, in state: OtherCardGameTableState) -> Int {

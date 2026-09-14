@@ -83,15 +83,24 @@ enum WhatToPlayScenarioLoader {
         preferredTrumpSuit: Suit? = nil
     ) async throws -> WhatToPlayScenario {
         let normalizedTrumpSuit = preferredMode == .hokum ? preferredTrumpSuit : nil
-        return try await Task.detached(priority: .userInitiated) {
-            try WhatToPlayTrainer.generateScenario(
+        let generationTask = Task.detached(priority: .userInitiated) {
+            try Task.checkCancellation()
+            return try WhatToPlayTrainer.generateScenario(
                 seed: seed,
                 difficulty: difficulty,
                 preferredFocus: preferredFocus,
                 preferredMode: preferredMode,
                 preferredTrumpSuit: normalizedTrumpSuit
             )
-        }.value
+        }
+        return try await withTaskCancellationHandler {
+            try Task.checkCancellation()
+            let scenario = try await generationTask.value
+            try Task.checkCancellation()
+            return scenario
+        } onCancel: {
+            generationTask.cancel()
+        }
     }
 
     static func generate(code: String) async throws -> WhatToPlayScenario {

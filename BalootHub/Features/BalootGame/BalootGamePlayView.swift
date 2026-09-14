@@ -6,6 +6,7 @@ struct BalootGamePlayView: View {
     let slug: String
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -16,6 +17,7 @@ struct BalootGamePlayView: View {
     @State private var isPresentingRules = false
     @State private var isPresentingReplay = false
     @State private var celebration: CelebrationKind?
+    @State private var isTableVisible = false
     @Namespace private var cardNamespace
     @Query private var settingsList: [AppSettings]
 
@@ -72,6 +74,14 @@ struct BalootGamePlayView: View {
         }
         .onAppear { syncFeedbackSettings() }
         .onChange(of: viewModel.pendingFeedback) { _, _ in consumeFeedback() }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active && isTableVisible { viewModel.resumeWork() }
+            else { viewModel.suspendWork() }
+        }
+        .onDisappear {
+            isTableVisible = false
+            viewModel.suspendWork()
+        }
         .navigationTitle("طاولة اللعب")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -112,6 +122,7 @@ struct BalootGamePlayView: View {
             Button("متابعة اللعب", role: .cancel) {}
         }
         .onAppear {
+            isTableVisible = true
             if viewModel.onRoundFinished == nil {
                 let context = modelContext
                 viewModel.onRoundFinished = { finishedState in
@@ -120,6 +131,8 @@ struct BalootGamePlayView: View {
             }
             if viewModel.state.phase == .setup {
                 viewModel.deal()
+            } else {
+                viewModel.resumeWork()
             }
         }
         .alert("تنبيه", isPresented: errorAlertBinding, actions: {
@@ -175,7 +188,7 @@ struct BalootGamePlayView: View {
     /// الثابت على المقاسات العادية حيث يتّسع كل شيء.
     @ViewBuilder
     private var tableLayout: some View {
-        if dynamicTypeSize.isAccessibilitySize {
+        if dynamicTypeSize.isAccessibilitySize || horizontalSizeClass != .regular {
             ScrollView {
                 VStack(spacing: AppSpacing.lg) {
                     topBar
@@ -185,16 +198,8 @@ struct BalootGamePlayView: View {
                 }
             }
         } else if horizontalSizeClass == .regular {
-            seatedTableLayout
-        } else {
-            VStack {
-                topBar
-                Spacer()
-                centerPanel
-                Spacer()
-                trickArea
-                Spacer()
-                humanHandArea
+            ScrollView {
+                seatedTableLayout
             }
         }
     }
@@ -448,11 +453,10 @@ struct BalootGamePlayView: View {
     @ViewBuilder
     private var bidOptionButtons: some View {
         // الخيارات تصل إلى ستة في جولة الأشكال، فتُلفّ تلقائيًا بدل أن تتزاحم.
-        ViewThatFits(in: .horizontal) {
-            HStack(spacing: AppSpacing.sm) { bidOptions }
-            VStack(spacing: AppSpacing.sm) {
-                HStack(spacing: AppSpacing.sm) { bidOptions }
-            }
+        LazyVGrid(columns: dynamicTypeSize.isAccessibilitySize
+                  ? [GridItem(.flexible())]
+                  : [GridItem(.adaptive(minimum: 110), spacing: AppSpacing.sm)], spacing: AppSpacing.sm) {
+            bidOptions
         }
     }
 
@@ -463,6 +467,9 @@ struct BalootGamePlayView: View {
                 viewModel.placeBid(bid)
             } label: {
                 Text(bidLabel(bid))
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, minHeight: 32)
             }
             .buttonStyle(.borderedProminent)
             .tint(bidTint(bid))
@@ -1009,7 +1016,7 @@ struct BalootGamePlayView: View {
                 let isPlayable = canAct && legalCards.contains(card)
                 PlayingCardFaceView(card: card, style: appearance.cardFace, isHighlighted: isPlayable)
                     .matchedGeometryEffect(id: card.id, in: cardNamespace)
-                    .opacity(isPlayable ? 1 : 0.4)
+                    .opacity(viewModel.state.phase == .playing && !isPlayable ? 0.75 : 1)
                     .onTapGesture {
                         // الضغط على ورقة ممنوعة يشرح السبب بدل أن يُتجاهل بصمت.
                         if isPlayable {

@@ -8,6 +8,21 @@ import BalootEngine
 /// "يفتح على شاشة ناقصة" قبل أن يصل للمستخدم، لأن الواجهة تبني كل شيء من هذي البيانات.
 final class CatalogIntegrityTests: XCTestCase {
 
+    func testCatalogPlacesGamesBeforeTrainingAndReferences() {
+        let sections = CatalogPresentation.catalogSections(from: CatalogSeeder.previewItems())
+        XCTAssertEqual(Array(sections.prefix(2).map(\.id)), ["play", "other-card-games"])
+        XCTAssertTrue(CatalogPresentation.catalogSections(from: []).isEmpty)
+        let items = sections.flatMap(\.items)
+        XCTAssertEqual(Set(items.map(\.slug)).count, items.count)
+    }
+
+    func testPresentationToleratesDuplicateStoredSlugs() {
+        let items = CatalogSeeder.previewItems()
+        let baloot = items.first { $0.slug == "baloot-classic" }!
+        let sections = CatalogPresentation.homeSections(from: items + [baloot])
+        XCTAssertEqual(sections.first?.items.count, 1)
+    }
+
     private func makeSeededContext() throws -> ModelContext {
         let configuration = ModelConfiguration(schema: PersistenceController.appSchema, isStoredInMemoryOnly: true)
         let container = try ModelContainer(for: PersistenceController.appSchema, configurations: [configuration])
@@ -334,7 +349,7 @@ final class CatalogIntegrityTests: XCTestCase {
         XCTAssertFalse(references.items.contains { $0.isPlayable })
 
         let catalogSections = CatalogPresentation.catalogSections(from: items)
-        XCTAssertEqual(catalogSections.map(\.id), ["play", "training", "management", "references", "other-card-games"])
+        XCTAssertEqual(catalogSections.map(\.id), ["play", "other-card-games", "training", "management", "references"])
         let otherGames = try XCTUnwrap(catalogSections.first { $0.id == "other-card-games" })
         XCTAssertEqual(otherGames.items.map(\.category).uniqueValues, [.otherCardGame])
         XCTAssertEqual(
@@ -417,6 +432,7 @@ final class CatalogIntegrityTests: XCTestCase {
         let tarneeb = try XCTUnwrap(try allItems().first { $0.slug == "tarneeb" })
         XCTAssertEqual(tarneeb.displayUseTitle, "لعبة قابلة للعب".localized)
         XCTAssertTrue(tarneeb.displayUseDescription.contains("طاولة"))
+        XCTAssertFalse(tarneeb.displayUseDescription.contains("الصن"))
         XCTAssertTrue(tarneeb.isPlayable)
     }
 

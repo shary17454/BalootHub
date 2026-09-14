@@ -18,6 +18,7 @@ struct AddEditRoundView: View {
     @State private var multiplier: ScoreMultiplier = .none
     @State private var notes = ""
     @State private var validationMessage: String?
+    @State private var pendingRound: ScoreRound?
     /// لوحة الأرقام لا تحتوي زر إرجاع، فبدون تركيز صريح يمكن إغلاقه تبقى مفتوحة
     /// وتغطي بقية الحقول.
     @FocusState private var isEditingNumber: Bool
@@ -202,7 +203,7 @@ struct AddEditRoundView: View {
 
         let trimmedNotes = notes.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        if let roundToEdit {
+        if let roundToEdit = roundToEdit ?? pendingRound {
             roundToEdit.mode = mode
             roundToEdit.teamOneBaseScore = teamOneScore
             roundToEdit.teamTwoBaseScore = teamTwoScore
@@ -226,11 +227,18 @@ struct AddEditRoundView: View {
             )
             round.session = session
             session.rounds.append(round)
+            pendingRound = round
         }
 
         session.updatedAt = .now
-        try? modelContext.save()
-        dismiss()
+        do {
+            try modelContext.save()
+            pendingRound = nil
+            dismiss()
+        } catch {
+            AppLogger.persistence.error("Score round save failed: \(error.localizedDescription, privacy: .private)")
+            validationMessage = error.localizedDescription
+        }
     }
 }
 
