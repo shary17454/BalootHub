@@ -54,21 +54,13 @@ SwiftData is the local persistence layer. The app stores user data on-device onl
 - Offline tournaments.
 - Project declaration statistics.
 
-The container falls back to an in-memory store if the persistent store cannot open, preserving the on-disk data for a later recovery update.
+If the persistent store cannot open, the original on-disk data is preserved and the app falls back to an in-memory store for that session. The root UI now presents an explicit warning that changes will not persist, and save failures roll back instead of being silently swallowed.
 
 ## Commerce State
 
-The current review build is fully free and contains no StoreKit implementation, no local StoreKit configuration file, and no compiled paywall view.
+The current build includes StoreKit 2 and an optional «Baloot Plus» monthly/yearly subscription. Premium access in Release is derived only from verified App Store entitlements. A developer owner override remains available in Debug builds for testing, but it is excluded from Release access decisions.
 
-Reason: App Review rejected version 1.1 because the app referenced IAP while the associated product was not submitted for review. The production-safe behavior for this version is to remove IAP references from the binary and keep the app usable without a paywall.
-
-To add IAP later:
-
-1. Configure the product in App Store Connect.
-2. Add required IAP metadata and review screenshot.
-3. Submit the IAP product together with the app version.
-4. Add StoreKit 2 code and UI only in the same release that submits the product.
-5. Run purchase tests, Release build, and App Review smoke checks.
+Premium-gated areas currently include advanced what-to-play training, expanded hand analysis, the Baloot sandbox, and expert decision review during replay. Product identifiers and review metadata must be configured and submitted in App Store Connect with the same app version that contains this UI.
 
 ## Current Compliance Notes
 
@@ -76,4 +68,4 @@ To add IAP later:
 - No custom Info.plist file is present; Info.plist values are generated from Xcode build settings.
 - No entitlements file was found in the repository during Phase 1 inspection.
 - No privacy permissions such as camera, microphone, location, contacts, or photos were found.
-- The app currently targets iPhone only in Xcode settings (`TARGETED_DEVICE_FAMILY = 1`). iPad production support remains a planned requirement and must not be claimed complete until layout and App Store screenshot requirements are verified.
+- The app targets iPhone and iPad in Xcode settings (`TARGETED_DEVICE_FAMILY = "1,2"`).

@@ -393,7 +393,7 @@ struct HomeView: View {
 
     private func toggleFavorite(_ item: GameCatalogItem) {
         item.isFavorite.toggle()
-        try? modelContext.save()
+        _ = modelContext.saveOrRollback(operation: "HomeView")
     }
 
     private func startPlaying(_ item: GameCatalogItem) {

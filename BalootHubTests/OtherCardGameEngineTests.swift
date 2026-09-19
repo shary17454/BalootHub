@@ -2,6 +2,7 @@ import XCTest
 import BalootEngine
 @testable import BalootHub
 
+@MainActor
 final class OtherCardGameEngineTests: XCTestCase {
     func testEveryCatalogTableCanReachAnEndUsingAvailableActions() {
         for item in CatalogSeeder.previewItems().filter({ $0.category == .otherCardGame && !OtherCardGamePlayView.originalEngineSlugs.contains($0.slug) }) {
@@ -118,13 +119,15 @@ final class OtherCardGameEngineTests: XCTestCase {
                              OtherCardGameEngine.pokerScore(cards: base + [.init(suit: .heart, rank: .king)]))
     }
 
-    func testOtherCardGamesArePlayableWithoutMakingBalootModeReferencesPlayable() {
+    func testOnlyDedicatedOtherCardGameEnginesAreExposedAsPlayable() {
         let items = CatalogSeeder.previewItems()
         let otherGames = items.filter { $0.category == .otherCardGame }
+        let playableSlugs = Set(otherGames.filter(\.isPlayable).map(\.slug))
+        let dedicatedSlugs = OtherCardGamePlayView.originalEngineSlugs
         let balootModeReferences = items.filter(\.isBalootModeReference)
 
-        XCTAssertFalse(otherGames.isEmpty)
-        XCTAssertTrue(otherGames.allSatisfy(\.isPlayable))
+        XCTAssertEqual(playableSlugs, dedicatedSlugs)
+        XCTAssertTrue(otherGames.filter { !dedicatedSlugs.contains($0.slug) }.allSatisfy { !$0.isPlayable })
         XCTAssertTrue(balootModeReferences.allSatisfy { !$0.isPlayable })
     }
 

@@ -57,7 +57,7 @@ struct MatchHistoryView: View {
             Button("حذف", role: .destructive) {
                 if let sessionPendingDelete {
                     modelContext.delete(sessionPendingDelete)
-                    try? modelContext.save()
+                    _ = modelContext.saveOrRollback(operation: "MatchHistoryView")
                 }
             }
             Button("إلغاء", role: .cancel) {}
@@ -78,7 +78,7 @@ struct MatchHistoryView: View {
                     isPresentingDeleteConfirm = true
                 } else {
                     modelContext.delete(session)
-                    try? modelContext.save()
+                    _ = modelContext.saveOrRollback(operation: "MatchHistoryView")
                 }
             } label: {
                 Label("حذف", systemImage: "trash")

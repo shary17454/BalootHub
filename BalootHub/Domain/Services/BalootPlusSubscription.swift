@@ -23,13 +23,6 @@ enum BalootPlusProduct: String, CaseIterable, Identifiable, Sendable {
         }
     }
 
-    var recommendedSaudiPrice: String {
-        switch self {
-        case .monthly: "9.99 ر.س"
-        case .yearly: "79.99 ر.س"
-        }
-    }
-
     var sortOrder: Int {
         switch self {
         case .monthly: 0
@@ -43,7 +36,6 @@ enum BalootPlusFeature: String, CaseIterable, Identifiable, Sendable {
     case replayExpertReview
     case sandboxScenarioLibrary
     case expandedHandAnalyzer
-    case visualCustomizationPacks
 
     var id: String { rawValue }
 
@@ -53,7 +45,6 @@ enum BalootPlusFeature: String, CaseIterable, Identifiable, Sendable {
         case .replayExpertReview: "مراجعة الخبير للتسجيلات".localized
         case .sandboxScenarioLibrary: "مكتبة مواقف المختبر".localized
         case .expandedHandAnalyzer: "تحليل يد موسّع".localized
-        case .visualCustomizationPacks: "حزم تخصيص تجميلية".localized
         }
     }
 
@@ -66,9 +57,7 @@ enum BalootPlusFeature: String, CaseIterable, Identifiable, Sendable {
         case .sandboxScenarioLibrary:
             "يحفظ مواقف مختبر البلوت المتقدمة ويعيد تشغيلها كتمارين قابلة للمشاركة.".localized
         case .expandedHandAnalyzer:
-            "يوسّع توصية حلّل يدي بتقييم المخاطر والمشاريع والشراء السنوي أو الشهري.".localized
-        case .visualCustomizationPacks:
-            "يفتح طاولات وظهور أوراق وثيمات شكلية فقط، بلا أي أفضلية داخل اللعب.".localized
+            "يوسّع توصية حلّل يدي بتقييم المخاطر والمشاريع ومقارنة خيارات اليد.".localized
         }
     }
 }
@@ -172,8 +161,12 @@ final class SubscriptionStore {
     }
 
     var isPremiumUnlocked: Bool {
-        ownerEntitlementOverride.isUnlocked()
-            || !purchasedProductIDs.isDisjoint(with: Set(productIDs))
+        let hasStoreEntitlement = !purchasedProductIDs.isDisjoint(with: Set(productIDs))
+#if DEBUG
+        return ownerEntitlementOverride.isUnlocked() || hasStoreEntitlement
+#else
+        return hasStoreEntitlement
+#endif
     }
 
     var isBusy: Bool {

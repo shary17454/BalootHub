@@ -108,7 +108,7 @@ struct GameDetailsView: View {
                 .foregroundStyle(AppColor.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)
 
-            if item.category == .otherCardGame {
+            if item.category == .otherCardGame, item.isPlayable {
                 Text("هذه اللعبة لها طاولة لعب سريعة داخل التطبيق، وتبقى صفحة القواعد هنا لشرح الطريقة قبل البدء.".localized)
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
@@ -324,7 +324,7 @@ struct GameDetailsView: View {
 
             Button {
                 item.isFavorite.toggle()
-                try? modelContext.save()
+                _ = modelContext.saveOrRollback(operation: "GameDetailsView")
             } label: {
                 Label(item.isFavorite ? "إزالة من المفضلة" : "إضافة إلى المفضلة", systemImage: item.isFavorite ? "heart.fill" : "heart")
                     .frame(maxWidth: .infinity)

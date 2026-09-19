@@ -240,6 +240,6 @@ struct BalootAcademyView: View {
             lesson: lesson,
             selectedOptionID: selectedOptionID
         ))
-        try? modelContext.save()
+        _ = modelContext.saveOrRollback(operation: "BalootAcademyView")
     }
 }

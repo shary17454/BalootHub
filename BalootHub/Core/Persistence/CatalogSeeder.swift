@@ -6,7 +6,12 @@ import SwiftData
 enum CatalogSeeder {
     static func seedIfNeeded(container: ModelContainer) {
         let context = ModelContext(container)
-        try? refresh(context: context)
+        do {
+            try refresh(context: context)
+        } catch {
+            context.rollback()
+            AppLogger.persistence.error("Catalog refresh failed: \(error.localizedDescription, privacy: .private)")
+        }
     }
 
     static func refresh(context: ModelContext, saveImmediately: Bool = true) throws {
@@ -144,6 +149,7 @@ private struct CardGameReferenceDefinition {
     let estimatedDuration: String
     let iconName: String
     let sortOrder: Int
+    var isPlayable: Bool = false
     let objective: String
     let setup: String
     let dealing: String
@@ -165,7 +171,7 @@ private struct CardGameReferenceDefinition {
             estimatedDuration: estimatedDuration,
             iconName: iconName,
             accentToken: "otherGames",
-            isPlayable: true,
+            isPlayable: isPlayable,
             sortOrder: sortOrder,
             sections: [
                 .objective: objective,
@@ -776,7 +782,7 @@ private extension CatalogSeeder {
             estimatedDuration: "20–30 دقيقة للجولة",
             iconName: "suit.club.fill",
             accentToken: "otherGames",
-            isPlayable: true,
+            isPlayable: false,
             sortOrder: 51,
             sections: [
                 .objective: "تحقيق عدد الأكلات الذي التزم به اللاعب أو الفريق أثناء المزايدة، أو أكثر.",
@@ -1098,6 +1104,7 @@ private extension CatalogSeeder {
             estimatedDuration: "5–15 دقيقة",
             iconName: "rectangle.portrait.on.rectangle.portrait.fill",
             sortOrder: 64,
+            isPlayable: true,
             objective: "نقل كل الأوراق إلى قواعد الأنواع الأربعة مرتبة من الآس إلى الملك.",
             setup: "تُرتب سبعة أعمدة مع أوراق مخفية ومكشوفة، وتبقى كومة السحب جانبًا.",
             dealing: "يزداد عدد أوراق كل عمود تدريجيًا من عمود إلى سبعة أعمدة.",
@@ -1117,6 +1124,7 @@ private extension CatalogSeeder {
             estimatedDuration: "5–20 دقيقة",
             iconName: "square.grid.3x3.fill",
             sortOrder: 65,
+            isPlayable: true,
             objective: "نقل كل الأوراق إلى القواعد باستخدام الخلايا الحرة كمساحات مؤقتة.",
             setup: "كل الأوراق مكشوفة منذ البداية في أعمدة، مع أربع خلايا حرة وأربع قواعد.",
             dealing: "تُوزَّع 52 ورقة على ثمانية أعمدة مكشوفة.",
@@ -1136,6 +1144,7 @@ private extension CatalogSeeder {
             estimatedDuration: "10–30 دقيقة",
             iconName: "rectangle.grid.3x2.fill",
             sortOrder: 66,
+            isPlayable: true,
             objective: "تكوين سلاسل كاملة مرتبة من K إلى A من نفس النوع لإزالتها من الطاولة.",
             setup: "تُستخدم حزمتان وتختلف الصعوبة حسب عدد الأنواع المستخدمة.",
             dealing: "تُوزَّع أعمدة متعددة مع بعض الأوراق المخفية، وتبقى رزم توزيع إضافية.",

@@ -273,7 +273,7 @@ private struct AppearanceStudioContent: View {
             get: { settings?.celebrationEffectsEnabled ?? true },
             set: { newValue in
                 settings?.celebrationEffectsEnabled = newValue
-                try? modelContext.save()
+                _ = modelContext.saveOrRollback(operation: "AppearanceStudioView")
             }
         )
     }
@@ -316,7 +316,7 @@ private struct AppearanceStudioContent: View {
             return
         }
         settings.appearanceSelection = updated
-        try? modelContext.save()
+        _ = modelContext.saveOrRollback(operation: "AppearanceStudioView")
         FeedbackPlayer.shared.play(.cardPlayed)
     }
 }

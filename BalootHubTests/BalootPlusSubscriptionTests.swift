@@ -12,11 +12,6 @@ final class BalootPlusSubscriptionTests: XCTestCase {
         ])
     }
 
-    func testRecommendedSaudiPricesAreConfiguredForAppStoreSetup() {
-        XCTAssertEqual(BalootPlusProduct.monthly.recommendedSaudiPrice, "9.99 ر.س")
-        XCTAssertEqual(BalootPlusProduct.yearly.recommendedSaudiPrice, "79.99 ر.س")
-    }
-
     func testPaidFeaturesAreCosmeticTrainingOrAnalysisOnly() {
         let features = Set(BalootPlusFeature.allCases.map(\.rawValue))
 
@@ -24,8 +19,7 @@ final class BalootPlusSubscriptionTests: XCTestCase {
             "advancedTrainingAnalysis",
             "replayExpertReview",
             "sandboxScenarioLibrary",
-            "expandedHandAnalyzer",
-            "visualCustomizationPacks"
+            "expandedHandAnalyzer"
         ])
     }
 

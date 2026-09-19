@@ -11,6 +11,7 @@ final class AppEnvironment {
     var catalogPath: [AppRoute] = []
     var scorekeeperPath: [AppRoute] = []
     var historyPath: [AppRoute] = []
+    var persistenceWarning: String?
     let subscriptionStore = SubscriptionStore()
 
     /// ينتقل إلى تبويب معيّن ويضيف وجهة جديدة إلى مساره.

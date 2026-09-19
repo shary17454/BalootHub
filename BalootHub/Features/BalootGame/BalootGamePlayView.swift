@@ -1130,7 +1130,7 @@ struct BalootGamePlayView: View {
                 wasAwarded: awardedIDs.contains(project.id)
             ))
         }
-        try? modelContext.save()
+        _ = modelContext.saveOrRollback(operation: "BalootGamePlayView")
     }
 }
 

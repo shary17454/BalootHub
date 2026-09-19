@@ -11,6 +11,7 @@ struct RoundReplayView: View {
     let visiblePlayerID: Player.ID?
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(AppEnvironment.self) private var appEnvironment
     @State private var step: Int
     @State private var isPlaying = false
     @State private var speed: ReplayPlaybackSpeed = .normal
@@ -56,7 +57,8 @@ struct RoundReplayView: View {
         ScrollView {
             VStack(spacing: AppSpacing.md) {
                 progressCard
-                if let decisionHint {
+                if appEnvironment.subscriptionStore.hasAccess(to: .replayExpertReview),
+                   let decisionHint {
                     expertHintCard(decisionHint)
                 }
                 replayTable

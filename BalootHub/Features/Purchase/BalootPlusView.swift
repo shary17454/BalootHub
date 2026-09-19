@@ -14,7 +14,6 @@ struct BalootPlusView: View {
                 hero
                 plansSection
                 servicesSection
-                reviewReadinessSection
             }
             .padding(AppSpacing.md)
             .adaptiveContentWidth()
@@ -30,7 +29,7 @@ struct BalootPlusView: View {
                 .font(AppTypography.title)
                 .foregroundStyle(AppColor.accent)
 
-            Text("اشتراك اختياري يفتح أدوات تدريب وتحليل وتخصيص متقدمة، مع بقاء اللعب الأساسي عادلًا ومتاحًا بلا أفضلية مدفوعة.")
+            Text("اشتراك اختياري يفتح أدوات تدريب وتحليل متقدمة، مع بقاء اللعب الأساسي عادلًا ومتاحًا بلا أفضلية مدفوعة.")
                 .font(AppTypography.body)
                 .foregroundStyle(AppColor.textSecondary)
 
@@ -85,7 +84,7 @@ struct BalootPlusView: View {
 
     private func planCard(_ configuredProduct: BalootPlusProduct) -> some View {
         let storeProduct = subscriptionStore.product(for: configuredProduct)
-        let price = storeProduct?.displayPrice ?? configuredProduct.recommendedSaudiPrice
+        let price = storeProduct?.displayPrice ?? "غير متاح حاليًا".localized
 
         return VStack(alignment: .leading, spacing: AppSpacing.sm) {
             HStack(alignment: .firstTextBaseline) {
@@ -116,7 +115,7 @@ struct BalootPlusView: View {
             .disabled(storeProduct == nil || subscriptionStore.isBusy || subscriptionStore.isPremiumUnlocked)
 
             if storeProduct == nil {
-                Text("السعر أعلاه هو السعر المقترح. السعر النهائي يظهر من App Store بعد إنشاء المنتج وإتاحته.")
+                Text("تعذّر تحميل هذا المنتج من App Store حاليًا، لذلك تم تعطيل الشراء إلى أن يتوفر السعر الرسمي.")
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
             }
@@ -155,19 +154,6 @@ struct BalootPlusView: View {
         }
     }
 
-    private var reviewReadinessSection: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.xs) {
-            Text("معلومات المراجعة")
-                .font(AppTypography.title)
-                .foregroundStyle(AppColor.textPrimary)
-            Text("معرّفات المنتجات المطلوبة في App Store Connect: app.balooThub.ios.plus.monthly و app.balooThub.ios.plus.yearly ضمن مجموعة Baloot Plus. يجب إرفاق لقطة شاشة مراجعة لكل اشتراك قبل إرسال الإصدار.")
-                .font(AppTypography.caption)
-                .foregroundStyle(AppColor.textSecondary)
-        }
-        .padding(AppSpacing.md)
-        .background(AppColor.surface, in: RoundedRectangle(cornerRadius: AppRadius.medium))
-        .overlay(RoundedRectangle(cornerRadius: AppRadius.medium).stroke(AppColor.border, lineWidth: 1))
-    }
 }
 
 #Preview {

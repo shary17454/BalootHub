@@ -84,14 +84,14 @@ struct OfflineTournamentsView: View {
             seed: UInt64(Date().timeIntervalSince1970)
         )
         modelContext.insert(tournament)
-        try? modelContext.save()
+        _ = modelContext.saveOrRollback(operation: "OfflineTournamentsView")
     }
 
     private func delete(at offsets: IndexSet) {
         for index in offsets {
             modelContext.delete(tournaments[index])
         }
-        try? modelContext.save()
+        _ = modelContext.saveOrRollback(operation: "OfflineTournamentsView")
     }
 
     private func tournamentMetric(_ title: String, _ value: String, _ icon: String) -> some View {
@@ -208,7 +208,7 @@ private struct OfflineTournamentDetailView: View {
                     }
                     Button {
                         tournament.finish(champion: tournament.championName ?? tournament.teams.first ?? "")
-                        try? modelContext.save()
+                        _ = modelContext.saveOrRollback(operation: "OfflineTournamentsView")
                     } label: {
                         Label("اعتماد البطل", systemImage: "crown.fill")
                     }
@@ -229,11 +229,11 @@ private struct OfflineTournamentDetailView: View {
 
     private func record(match: OfflineTournamentMatch, side: OfflineTournamentPlanner.ResultSide) {
         OfflineTournamentPlanner.recordWin(for: match.id, side: side, in: tournament)
-        try? modelContext.save()
+        _ = modelContext.saveOrRollback(operation: "OfflineTournamentsView")
     }
 
     private func reset(match: OfflineTournamentMatch) {
         OfflineTournamentPlanner.resetMatch(matchID: match.id, in: tournament)
-        try? modelContext.save()
+        _ = modelContext.saveOrRollback(operation: "OfflineTournamentsView")
     }
 }
