@@ -6,7 +6,12 @@ import SwiftData
 enum CatalogSeeder {
     static func seedIfNeeded(container: ModelContainer) {
         let context = ModelContext(container)
-        try? refresh(context: context)
+        do {
+            try refresh(context: context)
+        } catch {
+            context.rollback()
+            AppLogger.persistence.error("Catalog refresh failed: \(error.localizedDescription, privacy: .private)")
+        }
     }
 
     static func refresh(context: ModelContext, saveImmediately: Bool = true) throws {
