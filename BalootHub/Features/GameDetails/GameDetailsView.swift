@@ -108,7 +108,7 @@ struct GameDetailsView: View {
                 .foregroundStyle(AppColor.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)
 
-            if item.category == .otherCardGame {
+            if item.category == .otherCardGame, item.isPlayable {
                 Text("هذه اللعبة لها طاولة لعب سريعة داخل التطبيق، وتبقى صفحة القواعد هنا لشرح الطريقة قبل البدء.".localized)
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
