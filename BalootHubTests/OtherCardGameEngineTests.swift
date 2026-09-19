@@ -2,6 +2,7 @@ import XCTest
 import BalootEngine
 @testable import BalootHub
 
+@MainActor
 final class OtherCardGameEngineTests: XCTestCase {
     func testEveryCatalogTableCanReachAnEndUsingAvailableActions() {
         for item in CatalogSeeder.previewItems().filter({ $0.category == .otherCardGame && !OtherCardGamePlayView.originalEngineSlugs.contains($0.slug) }) {
