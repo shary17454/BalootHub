@@ -126,3 +126,15 @@ Before moving into broader implementation phases, the next safe engineering step
 3. Keep the current submission free, or add IAP later only after the App Store Connect product metadata and review screenshot are ready to submit with the app version.
 4. Audit iPad support separately before changing `TARGETED_DEVICE_FAMILY`.
 5. Continue Phase 2 by selecting the next functional area and verifying it requirement-by-requirement against the product specification.
+
+
+## Current Status Update — 2026-09-19
+
+The IAP-removal notes above describe the historical App Review recovery build from August 2026. They are not the current product state.
+
+As of version 3.0.8 development:
+- StoreKit 2 and Baloot Plus have been reintroduced.
+- Release access is based on verified App Store entitlements; the owner override is Debug-only.
+- iPhone and iPad are both enabled with `TARGETED_DEVICE_FAMILY = "1,2"`.
+- Advanced training, expanded hand analysis, Baloot sandbox, and replay expert review are premium-gated.
+- Card-game catalog entries backed only by the generic compatibility engine are presented as rules references rather than claiming a complete playable implementation.
