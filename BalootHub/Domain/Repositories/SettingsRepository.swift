@@ -17,7 +17,7 @@ enum SettingsRepository {
         }
         let settings = AppSettings()
         context.insert(settings)
-        try? context.save()
+        _ = context.saveOrRollback(operation: "SettingsRepository")
         return settings
     }
 }
