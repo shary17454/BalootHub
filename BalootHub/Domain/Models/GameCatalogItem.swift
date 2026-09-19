@@ -123,7 +123,7 @@ final class GameCatalogItem {
     var displayUseTitle: String {
         if isPlayable { return "لعبة قابلة للعب".localized }
         if isBalootModeReference { return "شرح نمط داخل البلوت".localized }
-        if category == .otherCardGame { return "لعبة ورق قابلة للعب".localized }
+        if category == .otherCardGame { return "قواعد فقط".localized }
 
         switch slug {
         case "baloot-training":
@@ -155,8 +155,8 @@ final class GameCatalogItem {
 
     /// خطوة الاستخدام المختصرة التي تظهر في بطاقة الكتالوج وصفحة التفاصيل.
     var displayUseDescription: String {
-        if category == .otherCardGame {
-            return "اضغط بدء اللعب لفتح طاولة سريعة لهذه اللعبة، أو اقرأ القواعد قبل البداية.".localized
+        if category == .otherCardGame, !isPlayable {
+            return displayDescription
         }
         if isPlayable {
             return "اضغط بدء اللعب لفتح الطاولة. الصن والحكم يجيان داخل مزايدة واحدة مثل الواقع.".localized
@@ -164,10 +164,6 @@ final class GameCatalogItem {
         if isBalootModeReference {
             return "اقرأ القاعدة هنا، ثم العبها من طاولة البلوت الكاملة.".localized
         }
-        if category == .otherCardGame {
-            return "اضغط بدء اللعب لفتح طاولة سريعة لهذه اللعبة، أو اقرأ القواعد قبل البداية.".localized
-        }
-
         switch slug {
         case "baloot-training":
             return "افتح الأكاديمية واختر درسًا؛ كل درس فيه شرح ومثال وموقف عملي.".localized
