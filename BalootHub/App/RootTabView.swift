@@ -49,6 +49,17 @@ struct RootTabView: View {
         .tint(AppColor.primary)
         .appGlassNavigationChrome()
         .preferredColorScheme(colorScheme)
+        .alert(
+            "تنبيه التخزين".localized,
+            isPresented: Binding(
+                get: { appEnvironment.persistenceWarning != nil },
+                set: { if !$0 { appEnvironment.persistenceWarning = nil } }
+            )
+        ) {
+            Button("حسنًا".localized) { appEnvironment.persistenceWarning = nil }
+        } message: {
+            Text(appEnvironment.persistenceWarning ?? "")
+        }
     }
 
     private var colorScheme: ColorScheme? {
