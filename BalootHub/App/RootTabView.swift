@@ -88,18 +88,26 @@ struct RootTabView: View {
         case .balootAcademy(let lessonID):
             BalootAcademyView(initialLessonID: lessonID)
         case .handAnalyzer:
-            HandAnalyzerView()
+            if appEnvironment.subscriptionStore.hasAccess(to: .expandedHandAnalyzer) {
+                HandAnalyzerView()
+            } else {
+                BalootPlusView()
+            }
         case .whatToPlayTrainer(let seed, let seedBase, let difficulty, let focusKind, let gameMode, let trumpSuit, let targetCount, let sessionSource):
-            WhatToPlayTrainerView(
-                seed: seed,
-                seedBase: seedBase,
-                difficulty: difficulty,
-                preferredFocus: focusKind,
-                preferredMode: gameMode,
-                preferredTrumpSuit: trumpSuit,
-                targetCount: targetCount,
-                sessionSource: sessionSource
-            )
+            if appEnvironment.subscriptionStore.hasAccess(to: .advancedTrainingAnalysis) {
+                WhatToPlayTrainerView(
+                    seed: seed,
+                    seedBase: seedBase,
+                    difficulty: difficulty,
+                    preferredFocus: focusKind,
+                    preferredMode: gameMode,
+                    preferredTrumpSuit: trumpSuit,
+                    targetCount: targetCount,
+                    sessionSource: sessionSource
+                )
+            } else {
+                BalootPlusView()
+            }
         case .scoringQuiz:
             ScoringQuizView()
         case .dailyChallenges:
@@ -111,7 +119,11 @@ struct RootTabView: View {
         case .offlineTournaments:
             OfflineTournamentsView()
         case .balootSandbox:
-            BalootSandboxView()
+            if appEnvironment.subscriptionStore.hasAccess(to: .sandboxScenarioLibrary) {
+                BalootSandboxView()
+            } else {
+                BalootPlusView()
+            }
         case .balootPlus:
             BalootPlusView()
         case .trainingIntro:
