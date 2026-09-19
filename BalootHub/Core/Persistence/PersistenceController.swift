@@ -2,6 +2,11 @@ import Foundation
 import SwiftData
 
 /// يبني حاوية SwiftData للتطبيق، مع نسخة داخل الذاكرة فقط للمعاينات والاختبارات.
+struct PersistenceBootstrap {
+    let container: ModelContainer
+    let warningMessage: String?
+}
+
 enum PersistenceController {
     static var appSchema: Schema {
         Schema([
@@ -25,6 +30,10 @@ enum PersistenceController {
     /// البديل هنا تدرّج آمن: نحاول الدائم، ثم نسقط إلى مخزن داخل الذاكرة يُبقي التطبيق
     /// صالحًا للاستخدام في تلك الجلسة بدل أن يصبح غير قابل للفتح إطلاقًا.
     static func makeContainer() -> ModelContainer {
+        makeBootstrap().container
+    }
+
+    static func makeBootstrap() -> PersistenceBootstrap {
         createApplicationSupportDirectoryIfNeeded()
 
         let configuration = ModelConfiguration(schema: appSchema, isStoredInMemoryOnly: false)
@@ -32,16 +41,15 @@ enum PersistenceController {
             let container = try ModelContainer(for: appSchema, configurations: [configuration])
             CatalogSeeder.seedIfNeeded(container: container)
             SettingsRepository.ensureSettingsExist(container: container)
-            return container
+            return PersistenceBootstrap(container: container, warningMessage: nil)
         } catch {
-            // المخزن الدائم غير صالح للفتح: نكمل بمخزن مؤقت بدل إسقاط التطبيق.
-            // البيانات المحلية تبقى على القرص كما هي ولا تُمسح، فيمكن استرجاعها لاحقًا
-            // إن أصلح تحديثٌ قادمٌ سببَ الفشل. `try?` كانت تبتلع سبب الفشل الفعلي
-            // بلا أي أثر يُشخَّص منه لاحقًا؛ السبب الحقيقي الآن يُسجَّل صراحة.
+            // لا نحذف المخزن الأصلي ولا نحاول إنشاء مخزن دائم فوقه. نسمح للتطبيق
+            // بالفتح مؤقتًا، لكن نُبلغ المستخدم صراحةً بأن تغييرات هذه الجلسة لن تُحفظ.
             AppLogger.persistence.error("تعذّر فتح مخزن SwiftData الدائم: \(error.localizedDescription, privacy: .public)")
-            assertionFailure("تعذّر فتح مخزن SwiftData الدائم؛ تم التحويل إلى مخزن داخل الذاكرة")
+            let fallback = makePreviewContainer()
+            let message = "تعذّر فتح بيانات التطبيق المحلية. يعمل التطبيق الآن بوضع مؤقت ولن تُحفظ التغييرات بعد إغلاقه. بياناتك الأصلية لم تُحذف.".localized
+            return PersistenceBootstrap(container: fallback, warningMessage: message)
         }
-        return makePreviewContainer()
     }
 
     /// حاوية داخل الذاكرة فقط، تُستخدم في SwiftUI Previews واختبارات الوحدات،
@@ -74,5 +82,22 @@ enum PersistenceController {
             at: applicationSupportURL,
             withIntermediateDirectories: true
         )
+    }
+}
+
+
+extension ModelContext {
+    /// يحفظ التغييرات أو يتراجع عنها كاملة عند الفشل، بدل ترك الواجهة في حالة
+    /// تبدو محفوظة بينما لم تصل إلى القرص.
+    @discardableResult
+    func saveOrRollback(operation: String) -> Bool {
+        do {
+            try save()
+            return true
+        } catch {
+            rollback()
+            AppLogger.persistence.error("\(operation, privacy: .public) failed: \(error.localizedDescription, privacy: .private)")
+            return false
+        }
     }
 }
