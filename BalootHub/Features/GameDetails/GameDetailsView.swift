@@ -324,7 +324,7 @@ struct GameDetailsView: View {
 
             Button {
                 item.isFavorite.toggle()
-                try? modelContext.save()
+                _ = modelContext.saveOrRollback(operation: "GameDetailsView")
             } label: {
                 Label(item.isFavorite ? "إزالة من المفضلة" : "إضافة إلى المفضلة", systemImage: item.isFavorite ? "heart.fill" : "heart")
                     .frame(maxWidth: .infinity)
