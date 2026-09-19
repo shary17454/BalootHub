@@ -3,7 +3,7 @@ import SwiftData
 
 @main
 struct BalootHubApp: App {
-    let modelContainer = PersistenceController.makeContainer()
+    private let persistence = PersistenceController.makeBootstrap()
     @State private var appEnvironment = AppEnvironment()
 
     var body: some Scene {
@@ -12,11 +12,14 @@ struct BalootHubApp: App {
             // بدل تثبيتهما، حتى يعمل التطبيق فعليًا بالإنجليزية عند من يختارها.
             RootTabView()
                 .environment(appEnvironment)
-                .task { await appEnvironment.subscriptionStore.configure() }
+                .task {
+                    appEnvironment.persistenceWarning = persistence.warningMessage
+                    await appEnvironment.subscriptionStore.configure()
+                }
 #if DEBUG
                 .task { appEnvironment.applyDebugStartRouteIfNeeded() }
 #endif
         }
-        .modelContainer(modelContainer)
+        .modelContainer(persistence.container)
     }
 }
