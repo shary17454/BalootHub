@@ -172,7 +172,7 @@ struct CatalogView: View {
 
     private func toggleFavorite(_ item: GameCatalogItem) {
         item.isFavorite.toggle()
-        try? modelContext.save()
+        _ = modelContext.saveOrRollback(operation: "CatalogView")
     }
 
     private func startPlaying(_ item: GameCatalogItem) {
