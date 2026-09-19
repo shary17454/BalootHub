@@ -154,6 +154,7 @@ struct BalootPlusView: View {
         }
     }
 
+}
 
 #Preview {
     NavigationStack {
