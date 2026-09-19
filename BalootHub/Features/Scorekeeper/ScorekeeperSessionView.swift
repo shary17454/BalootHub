@@ -231,14 +231,14 @@ struct ScorekeeperSessionView: View {
     private func delete(round: ScoreRound, from session: ScoreSession) {
         modelContext.delete(round)
         session.updatedAt = .now
-        try? modelContext.save()
+        _ = modelContext.saveOrRollback(operation: "ScorekeeperSessionView")
     }
 
     private func finishSession(_ session: ScoreSession) {
         session.status = .finished
         session.completedAt = .now
         session.updatedAt = .now
-        try? modelContext.save()
+        _ = modelContext.saveOrRollback(operation: "ScorekeeperSessionView")
     }
 }
 
