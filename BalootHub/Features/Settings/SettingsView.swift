@@ -166,7 +166,7 @@ struct SettingsView: View {
     ) -> Binding<Value> {
         Binding(
             get: { settings[keyPath: keyPath] },
-            set: { settings[keyPath: keyPath] = $0; try? modelContext.save() }
+            set: { settings[keyPath: keyPath] = $0; _ = modelContext.saveOrRollback(operation: "SettingsView") }
         )
     }
 }
