@@ -374,7 +374,7 @@ struct ScoringQuizView: View {
             remainingSeconds: remainingSeconds
         )
         modelContext.insert(attempt)
-        try? modelContext.save()
+        _ = modelContext.saveOrRollback(operation: "ScoringQuizView")
     }
 }
 
