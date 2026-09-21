@@ -108,14 +108,22 @@ struct PlayingCardFaceView: View {
     var isHighlighted: Bool = false
 
     @ScaledMetric(relativeTo: .body) private var cardWidth: CGFloat = 46
-    @ScaledMetric(relativeTo: .body) private var cardHeight: CGFloat = 64
+    private var cardHeight: CGFloat { cardWidth * 64 / 46 }
+
+    init(card: PlayingCard, style: CardFaceStyle = .classic, isHighlighted: Bool = false, width: CGFloat = 46) {
+        self.card = card
+        self.style = style
+        self.isHighlighted = isHighlighted
+        _cardWidth = ScaledMetric(wrappedValue: width, relativeTo: .body)
+    }
 
     private var isRed: Bool { card.suit.isRed }
 
     var body: some View {
         content
             .foregroundStyle(inkColor)
-            .minimumScaleFactor(0.55)
+            .frame(width: 46, height: 64)
+            .scaleEffect(cardWidth / 46)
             .frame(width: cardWidth, height: cardHeight)
             .background(faceBackground)
             .overlay(faceTexture)
@@ -125,6 +133,8 @@ struct PlayingCardFaceView: View {
             )
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(card.accessibilityName)
+            .environment(\.layoutDirection, .leftToRight)
+            .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
     }
 
     @ViewBuilder
@@ -132,23 +142,19 @@ struct PlayingCardFaceView: View {
         switch style {
         case .classic:
             ZStack {
-                Image(systemName: symbolName)
-                    .font(.system(size: 20))
-                    .opacity(0.9)
+                pipField
                 cornerIndex(size: 11, symbolSize: 7)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                     .padding(.horizontal, 3)
                     .padding(.top, 3)
+                cornerIndex(size: 11, symbolSize: 7)
+                    .rotationEffect(.degrees(180))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                    .padding(3)
             }
         case .casino:
             ZStack {
-                VStack(spacing: 4) {
-                    Image(systemName: symbolName)
-                        .font(.system(size: 18, weight: .semibold))
-                    Image(systemName: symbolName)
-                        .font(.system(size: 12, weight: .medium))
-                        .opacity(0.72)
-                }
+                pipField
                 cornerIndex(size: 10, symbolSize: 7)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                     .padding(4)
@@ -226,11 +232,50 @@ struct PlayingCardFaceView: View {
         }
     }
 
+    private var pipPositions: [CGPoint] {
+        let rows: [CGFloat]
+        switch card.rank {
+        case .seven, .eight: rows = [0, 0.5, 1]
+        case .nine, .ten: rows = [0, 0.33, 0.67, 1]
+        default: return []
+        }
+        var points = rows.flatMap { y in [CGPoint(x: 0, y: y), CGPoint(x: 1, y: y)] }
+        switch card.rank {
+        case .seven: points.append(CGPoint(x: 0.5, y: 0.25))
+        case .eight, .ten: points += [CGPoint(x: 0.5, y: 0.25), CGPoint(x: 0.5, y: 0.75)]
+        case .nine: points.append(CGPoint(x: 0.5, y: 0.5))
+        default: break
+        }
+        return points
+    }
+
+    private var pipField: some View {
+        ZStack {
+            if pipPositions.isEmpty {
+                VStack(spacing: 1) {
+                    if card.rank != .ace {
+                        Text(rankLabel)
+                            .font(.system(size: 21, weight: .bold, design: .serif))
+                    }
+                    Image(systemName: symbolName)
+                        .font(.system(size: card.rank == .ace ? 24 : 15))
+                }
+            } else {
+                ForEach(Array(pipPositions.enumerated()), id: \.offset) { _, point in
+                    Image(systemName: symbolName)
+                        .font(.system(size: 8, weight: .semibold))
+                        .rotationEffect(.degrees(point.y > 0.5 ? 180 : 0))
+                        .position(x: 15 + point.x * 16, y: 14 + point.y * 36)
+                }
+            }
+        }
+    }
+
     private var inkColor: Color {
         switch style {
-        case .casino, .majlis, .largeIndex:
+        case .classic, .casino, .majlis, .largeIndex:
             isRed ? Color(red: 0.70, green: 0.06, blue: 0.05) : Color(red: 0.08, green: 0.08, blue: 0.07)
-        case .classic, .bold, .heritage, .minimal:
+        case .bold, .heritage, .minimal:
             isRed ? AppColor.danger : AppColor.textPrimary
         }
     }
@@ -252,7 +297,7 @@ struct PlayingCardFaceView: View {
     @ViewBuilder
     private var faceBackground: some View {
         switch style {
-        case .casino, .largeIndex:
+        case .classic, .casino, .largeIndex:
             RoundedRectangle(cornerRadius: AppRadius.small)
                 .fill(
                     LinearGradient(
@@ -270,7 +315,7 @@ struct PlayingCardFaceView: View {
                         endPoint: .bottomTrailing
                     )
                 )
-        case .classic, .bold, .heritage, .minimal:
+        case .bold, .heritage, .minimal:
             RoundedRectangle(cornerRadius: AppRadius.small)
                 .fill(AppColor.surfaceElevated)
         }
@@ -408,6 +453,16 @@ struct TableFeltSurface: View {
     var body: some View {
         RoundedRectangle(cornerRadius: AppRadius.large)
             .fill(style.gradient)
+            .overlay {
+                RoundedRectangle(cornerRadius: AppRadius.large)
+                    .strokeBorder(Color.black.opacity(0.38), lineWidth: 8)
+                RoundedRectangle(cornerRadius: AppRadius.large - 8)
+                    .strokeBorder(style.contentColor.opacity(0.22), lineWidth: 1)
+                    .padding(10)
+                RoundedRectangle(cornerRadius: AppRadius.large - 12)
+                    .strokeBorder(style.contentColor.opacity(0.10), style: StrokeStyle(lineWidth: 1, dash: [3, 5]))
+                    .padding(16)
+            }
             .overlay(
                 RoundedRectangle(cornerRadius: AppRadius.large)
                     .stroke(Color.white.opacity(0.18), lineWidth: 1)

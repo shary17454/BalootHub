@@ -933,10 +933,17 @@ final class BalootGameViewModel {
             while !Task.isCancelled {
                 guard let self, self.isAITurn,
                       let playerID = self.state.currentTurnPlayerID,
-                      let agent = self.aiAgentsByPlayerID[playerID]
+                      let configuredAgent = self.aiAgentsByPlayerID[playerID]
                 else { break }
 
                 let snapshot = self.state
+                // Recheck each turn so thermal pressure does not trigger more simulations.
+                let process = ProcessInfo.processInfo
+                let reduceComputation = process.isLowPowerModeEnabled
+                    || process.thermalState == .serious || process.thermalState == .critical
+                let agent = reduceComputation
+                    ? ProfiledBalootAgent(profile: configuredAgent.profile, usesReducedComputation: true)
+                    : configuredAgent
                 // `async let` تنشئ مهمة بنيوية فرعية تُلغى تلقائيًا إن أُلغيت هذه
                 // الحلقة (`aiTask.cancel()`)، بخلاف `Task.detached` سابقًا الذي كان
                 // يستمر بحساب بحث Monte Carlo كاملًا (حتى 16 عيّنة × 8 مرشحين لمستوى

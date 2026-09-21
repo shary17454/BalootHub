@@ -11,10 +11,12 @@ public struct ProfiledBalootAgent: BalootAgent, Sendable {
     private let playPolicy: BalootAgent
     private let biddingPolicy: BiddingPolicy
 
-    public init(profile: AIProfile) {
+    public init(profile: AIProfile, usesReducedComputation: Bool = false) {
         self.profile = profile
         self.biddingPolicy = profile.biddingPolicy
-        self.playPolicy = Self.makePlayPolicy(for: profile.level)
+        self.playPolicy = usesReducedComputation
+            ? SmartBalootAgent()
+            : Self.makePlayPolicy(for: profile.level)
     }
 
     /// سياسة اللعب حسب عمق التحليل المطلوب للمستوى.

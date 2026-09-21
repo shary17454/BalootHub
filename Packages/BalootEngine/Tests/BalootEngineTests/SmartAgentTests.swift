@@ -7,6 +7,38 @@ import Testing
 @Suite("SmartBalootAgent")
 struct SmartAgentTests {
 
+    @Test("Reduced computation preserves bidding and completes legal rounds")
+    func reducedComputationCompletesRounds() throws {
+        for profile in AIProfile.roster {
+            let reduced = ProfiledBalootAgent(profile: profile, usesReducedComputation: true)
+            let normal = ProfiledBalootAgent(profile: profile)
+            var state = GameState.newLocalMatch(rules: .simpleBidding)
+            state = try GameEngine.apply(.dealCards(seed: 42), to: state)
+            var moves = 0
+            while state.phase == .bidding || state.phase == .playing {
+                moves += 1
+                try #require(moves < 100)
+                let playerID = try #require(state.currentTurnPlayerID)
+                let hand = try #require(state.hands[playerID])
+                if state.phase == .bidding {
+                    let choice = reduced.chooseMode(hand: hand, state: state)
+                    let expected = normal.chooseMode(hand: hand, state: state)
+                    #expect(choice.mode == expected.mode)
+                    #expect(choice.trumpSuit == expected.trumpSuit)
+                    state = try GameEngine.apply(.chooseMode(playerID: playerID, mode: choice.mode, trumpSuit: choice.trumpSuit), to: state)
+                } else {
+                    let legal = LegalMoveValidator.legalCards(hand: hand, trick: state.currentTrick, mode: state.mode ?? .sun, trumpSuit: state.trumpSuit, rules: state.rules)
+                    let card = reduced.chooseCard(hand: hand, legalCards: legal, state: state)
+                    #expect(legal.contains(card))
+                    state = try GameEngine.apply(.playCard(playerID: playerID, card: card), to: state)
+                }
+            }
+            #expect(state.phase == .scoring)
+            state = try GameEngine.apply(.finishRound, to: state)
+            #expect(state.lastRoundResult != nil)
+        }
+    }
+
     /// يلعب جولة كاملة يقود فيها كل لاعب وكيلُ فريقه، ويعيد نقاط الفريقين.
     private func playRound(seed: UInt64, smartTeamIndex: Int) throws -> (smart: Int, simple: Int) {
         let smart = SmartBalootAgent()

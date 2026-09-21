@@ -38,7 +38,10 @@ struct BalootGamePlayView: View {
 
     /// هل تُعرض مؤثرات المشاريع والكبوت؟ إطفاء الحركة من إعدادات النظام يلغيها دائمًا.
     private var showsCelebrations: Bool {
-        !reduceMotion && (settingsList.first?.celebrationEffectsEnabled ?? true)
+        !reduceMotion && !ProcessInfo.processInfo.isLowPowerModeEnabled
+            && ProcessInfo.processInfo.thermalState != .serious
+            && ProcessInfo.processInfo.thermalState != .critical
+            && (settingsList.first?.celebrationEffectsEnabled ?? true)
     }
 
     init(slug: String) {
@@ -57,6 +60,16 @@ struct BalootGamePlayView: View {
             table
 
             tableLayout
+                .safeAreaInset(edge: .bottom, spacing: AppSpacing.xs) {
+                    VStack(spacing: AppSpacing.xs) {
+                        if viewModel.state.phase == .bidding {
+                            biddingControls
+                        }
+                        handCards
+                    }
+                        .padding(.horizontal, AppSpacing.xs)
+                        .background(appearance.felt.gradient)
+                }
                 .padding(AppSpacing.md)
                 // على iPad كانت العناصر تتناثر إلى الزوايا لأن `Spacer` يوزّع فراغًا
                 // هائلًا؛ تحديد العرض يُبقي الطاولة مقروءة ويترك اللبس يملأ الخلفية.
@@ -347,7 +360,12 @@ struct BalootGamePlayView: View {
     private var fullBiddingPanel: some View {
         VStack(spacing: AppSpacing.md) {
             if viewModel.tableMode == .versusAI {
-                aiProfileSummaryCard
+                DisclosureGroup {
+                    aiProfileSummaryCard
+                } label: {
+                    Text(viewModel.selectedAIProfileTitle)
+                        .font(AppTypography.caption)
+                }
             }
 
             if let upCard = viewModel.upCard {
@@ -355,7 +373,7 @@ struct BalootGamePlayView: View {
                     Text("الورقة المكشوفة")
                         .font(AppTypography.caption)
                         .foregroundStyle(AppColor.textSecondary)
-                    PlayingCardFaceView(card: upCard, style: appearance.cardFace)
+                    PlayingCardFaceView(card: upCard, style: appearance.cardFace, width: 84)
                 }
             }
 
@@ -370,13 +388,7 @@ struct BalootGamePlayView: View {
                 StatusBadge(viewModel.currentMultiplier.arabicName, systemImage: "flame.fill", tint: AppColor.danger)
             }
 
-            if viewModel.requiresLocalHandoffConfirmation {
-                localHandoffCard
-            } else if viewModel.isShowingHumanMultiplierControls {
-                multiplierButtons
-            } else if viewModel.canCurrentHumanAct && !viewModel.legalBidsForHuman.isEmpty {
-                bidOptionButtons
-            } else {
+            if !viewModel.canCurrentHumanAct && !viewModel.requiresLocalHandoffConfirmation {
                 LoadingStateView(message: "بقية اللاعبين يزايدون…")
             }
 
@@ -895,10 +907,11 @@ struct BalootGamePlayView: View {
 
     private var trickArea: some View {
         VStack(spacing: AppSpacing.xs) {
-            HStack(spacing: AppSpacing.sm) {
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 70), spacing: AppSpacing.xs)], spacing: AppSpacing.xs) {
                 if !viewModel.trickOnTable.isEmpty {
                     ForEach(viewModel.trickOnTable) { played in
-                        PlayingCardFaceView(card: played.card, style: appearance.cardFace)
+                        PlayingCardFaceView(card: played.card, style: appearance.cardFace, width: 64)
+                            .dynamicTypeSize(.large)
                             .matchedGeometryEffect(id: played.card.id, in: cardNamespace)
                             .transition(reduceMotion ? .identity : .scale.combined(with: .opacity))
                             // بلا اسم اللاعب يسمع مستخدم VoiceOver أربع أوراق بلا
@@ -926,9 +939,22 @@ struct BalootGamePlayView: View {
         .opacity(viewModel.isShowingResolvedTrick ? 0.75 : 1)
     }
 
+    @ViewBuilder
+    private var biddingControls: some View {
+        if viewModel.requiresLocalHandoffConfirmation {
+            localHandoffCard
+        } else if viewModel.isShowingHumanMultiplierControls {
+            multiplierButtons
+        } else if viewModel.canCurrentHumanAct && !viewModel.legalBidsForHuman.isEmpty {
+            bidOptionButtons
+        }
+    }
+
     private var humanHandArea: some View {
         VStack(spacing: AppSpacing.xs) {
-            tableGuidanceCard
+            if viewModel.state.phase != .bidding {
+                tableGuidanceCard
+            }
             if viewModel.state.phase == .playing {
                 Text(turnStatusText)
                     .font(AppTypography.subheadline)
@@ -936,17 +962,6 @@ struct BalootGamePlayView: View {
             }
             if viewModel.requiresLocalHandoffConfirmation && viewModel.state.phase == .playing {
                 localHandoffCard
-            }
-            // اليد ثماني أوراق كحد أقصى وتتّسع كاملةً على شاشة عريضة، فتُعرض
-            // متوسّطة بلا تمرير. الشريط الأفقي على الآيفون يبقى لأن العرض لا يكفي،
-            // وهو في الاتجاه من اليمين لليسار يبدأ من اليمين فيبدو مزاحًا على iPad.
-            if horizontalSizeClass == .regular {
-                handCards
-                    .frame(maxWidth: .infinity)
-            } else {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    handCards
-                }
             }
         }
     }
@@ -1006,15 +1021,16 @@ struct BalootGamePlayView: View {
         }
     }
 
-    /// أوراق يد اللاعب. مشتركة بين الشريط الأفقي على الآيفون والصف المتوسّط على iPad.
+    /// Adaptive rows keep every card visible on compact and regular screens.
     private var handCards: some View {
         // تُحسب مرة واحدة لكل إعادة رسم بدل مرة لكل ورقة.
         let legalCards = viewModel.legalCardIDsForHuman
         let canAct = viewModel.canCurrentHumanAct
-        return HStack(spacing: AppSpacing.xs) {
+        return LazyVGrid(columns: [GridItem(.adaptive(minimum: 76), spacing: AppSpacing.xs)], spacing: AppSpacing.sm) {
             ForEach(viewModel.visibleHumanHand) { card in
                 let isPlayable = canAct && legalCards.contains(card)
-                PlayingCardFaceView(card: card, style: appearance.cardFace, isHighlighted: isPlayable)
+                PlayingCardFaceView(card: card, style: appearance.cardFace, isHighlighted: isPlayable, width: 72)
+                    .dynamicTypeSize(.large)
                     .matchedGeometryEffect(id: card.id, in: cardNamespace)
                     .opacity(viewModel.state.phase == .playing && !isPlayable ? 0.75 : 1)
                     .onTapGesture {
