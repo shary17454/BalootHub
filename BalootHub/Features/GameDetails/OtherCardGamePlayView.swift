@@ -5,7 +5,7 @@ import BalootEngine
 struct OtherCardGamePlayView: View {
     let slug: String
 
-    static let originalEngineSlugs: Set<String> = ["kout-bou-sitta", "trex", "hand", "solitaire-klondike", "freecell", "spider-solitaire"]
+    nonisolated static let originalEngineSlugs: Set<String> = ["kout-bou-sitta", "trex", "hand", "solitaire-klondike", "freecell", "spider-solitaire"]
 
     @ViewBuilder var body: some View {
         switch slug {

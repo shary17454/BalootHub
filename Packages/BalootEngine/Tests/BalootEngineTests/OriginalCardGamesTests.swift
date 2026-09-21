@@ -140,7 +140,12 @@ final class OriginalCardGamesTests: XCTestCase {
                 if let hint = game.hint { try game.move(from: hint.source, count: hint.count, to: hint.destination) }
                 else if !game.stock.isEmpty { try game.draw() }
                 else { break }
-                let all = game.columns.flatMap { $0.map(\.value) } + game.cells.compactMap { $0 } + game.foundations.flatMap { $0 } + game.stock + game.waste + game.completed.flatMap { $0 }
+                var all: [StandardCard] = game.columns.flatMap { $0.map(\.value) }
+                all.append(contentsOf: game.cells.compactMap { $0 })
+                all.append(contentsOf: game.foundations.flatMap { $0 })
+                all.append(contentsOf: game.stock)
+                all.append(contentsOf: game.waste)
+                all.append(contentsOf: game.completed.flatMap { $0 })
                 XCTAssertEqual(Set(all.map(\.id)).count, variant == .spider ? 104 : 52)
                 XCTAssertEqual(all.count, variant == .spider ? 104 : 52)
                 XCTAssertEqual(before.moves + 1, game.moves)
