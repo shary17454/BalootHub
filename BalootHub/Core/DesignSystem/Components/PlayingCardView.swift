@@ -108,12 +108,16 @@ struct PlayingCardFaceView: View {
     var isHighlighted: Bool = false
 
     @ScaledMetric(relativeTo: .body) private var cardWidth: CGFloat = 46
-    private var cardHeight: CGFloat { cardWidth * 64 / 46 }
+    private let baseWidth: CGFloat
+    private var renderedWidth: CGFloat { min(cardWidth, baseWidth * 1.35) }
+    private var faceScale: CGFloat { renderedWidth / 46 }
+    private var cardHeight: CGFloat { renderedWidth * 64 / 46 }
 
     init(card: PlayingCard, style: CardFaceStyle = .classic, isHighlighted: Bool = false, width: CGFloat = 46) {
         self.card = card
         self.style = style
         self.isHighlighted = isHighlighted
+        self.baseWidth = width
         _cardWidth = ScaledMetric(wrappedValue: width, relativeTo: .body)
     }
 
@@ -122,9 +126,7 @@ struct PlayingCardFaceView: View {
     var body: some View {
         content
             .foregroundStyle(inkColor)
-            .frame(width: 46, height: 64)
-            .scaleEffect(cardWidth / 46)
-            .frame(width: cardWidth, height: cardHeight)
+            .frame(width: renderedWidth, height: cardHeight)
             .background(faceBackground)
             .overlay(faceTexture)
             .overlay(
@@ -145,23 +147,23 @@ struct PlayingCardFaceView: View {
                 pipField
                 cornerIndex(size: 11, symbolSize: 7)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                    .padding(.horizontal, 3)
-                    .padding(.top, 3)
+                    .padding(.horizontal, 3 * faceScale)
+                    .padding(.top, 3 * faceScale)
                 cornerIndex(size: 11, symbolSize: 7)
                     .rotationEffect(.degrees(180))
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-                    .padding(3)
+                    .padding(3 * faceScale)
             }
         case .casino:
             ZStack {
                 pipField
                 cornerIndex(size: 10, symbolSize: 7)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                    .padding(4)
+                    .padding(4 * faceScale)
                 cornerIndex(size: 10, symbolSize: 7)
                     .rotationEffect(.degrees(180))
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-                    .padding(4)
+                    .padding(4 * faceScale)
             }
         case .majlis:
             ZStack {
@@ -170,9 +172,9 @@ struct PlayingCardFaceView: View {
                     .padding(4)
                 VStack(spacing: 2) {
                     Image(systemName: symbolName)
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(.system(size: 18 * faceScale, weight: .semibold))
                     Text(rankLabel)
-                        .font(.system(size: 13, design: .serif).weight(.semibold))
+                        .font(.system(size: 13 * faceScale, design: .serif).weight(.semibold))
                 }
                 cornerIndex(size: 10, symbolSize: 7, design: .serif)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -201,29 +203,29 @@ struct PlayingCardFaceView: View {
                 .frame(maxHeight: .infinity, alignment: .bottom)
                 .padding(4)
                 Image(systemName: symbolName)
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.system(size: 16 * faceScale, weight: .medium))
                     .opacity(0.50)
             }
         case .bold:
             VStack(spacing: 0) {
                 Text(rankLabel)
-                    .font(.system(.title2, design: .rounded).weight(.heavy))
+                    .font(.system(size: 22 * faceScale, weight: .heavy, design: .rounded))
                 Image(systemName: symbolName)
-                    .font(.caption2)
+                    .font(.system(size: 11 * faceScale))
             }
         case .heritage:
             VStack(spacing: 2) {
                 Text(rankLabel)
-                    .font(.system(.title3, design: .serif).weight(.semibold))
+                    .font(.system(size: 20 * faceScale, weight: .semibold, design: .serif))
                 Image(systemName: symbolName)
-                    .font(.caption2)
+                    .font(.system(size: 11 * faceScale))
             }
         case .minimal:
             VStack(alignment: .leading, spacing: 1) {
                 Text(rankLabel)
-                    .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                    .font(.system(size: 17 * faceScale, weight: .semibold, design: .rounded))
                 Image(systemName: symbolName)
-                    .font(.caption2)
+                    .font(.system(size: 11 * faceScale))
                 Spacer(minLength: 0)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -255,17 +257,17 @@ struct PlayingCardFaceView: View {
                 VStack(spacing: 1) {
                     if card.rank != .ace {
                         Text(rankLabel)
-                            .font(.system(size: 21, weight: .bold, design: .serif))
+                            .font(.system(size: 21 * faceScale, weight: .bold, design: .serif))
                     }
                     Image(systemName: symbolName)
-                        .font(.system(size: card.rank == .ace ? 24 : 15))
+                        .font(.system(size: (card.rank == .ace ? 24 : 15) * faceScale))
                 }
             } else {
                 ForEach(Array(pipPositions.enumerated()), id: \.offset) { _, point in
                     Image(systemName: symbolName)
-                        .font(.system(size: 8, weight: .semibold))
+                        .font(.system(size: 8 * faceScale, weight: .semibold))
                         .rotationEffect(.degrees(point.y > 0.5 ? 180 : 0))
-                        .position(x: 15 + point.x * 16, y: 14 + point.y * 36)
+                        .position(x: (15 + point.x * 16) * faceScale, y: (14 + point.y * 36) * faceScale)
                 }
             }
         }
@@ -354,9 +356,9 @@ struct PlayingCardFaceView: View {
     ) -> some View {
         VStack(spacing: -1) {
             Text(rankLabel)
-                .font(.system(size: size, design: design).weight(.heavy))
+                .font(.system(size: size * faceScale, design: design).weight(.heavy))
             Image(systemName: symbolName)
-                .font(.system(size: symbolSize, weight: .bold))
+                .font(.system(size: symbolSize * faceScale, weight: .bold))
         }
         .lineLimit(1)
         .minimumScaleFactor(0.7)

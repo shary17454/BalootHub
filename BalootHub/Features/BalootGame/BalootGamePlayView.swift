@@ -61,14 +61,9 @@ struct BalootGamePlayView: View {
 
             tableLayout
                 .safeAreaInset(edge: .bottom, spacing: AppSpacing.xs) {
-                    VStack(spacing: AppSpacing.xs) {
-                        if viewModel.state.phase == .bidding {
-                            biddingControls
-                        }
-                        handCards
+                    if !dynamicTypeSize.isAccessibilitySize {
+                        tableControls
                     }
-                        .padding(.horizontal, AppSpacing.xs)
-                        .background(appearance.felt.gradient)
                 }
                 .padding(AppSpacing.md)
                 // على iPad كانت العناصر تتناثر إلى الزوايا لأن `Spacer` يوزّع فراغًا
@@ -950,6 +945,15 @@ struct BalootGamePlayView: View {
         }
     }
 
+    private var tableControls: some View {
+        VStack(spacing: AppSpacing.xs) {
+            if viewModel.state.phase == .bidding { biddingControls }
+            handCards
+        }
+        .padding(.horizontal, AppSpacing.xs)
+        .background(appearance.felt.gradient)
+    }
+
     private var humanHandArea: some View {
         VStack(spacing: AppSpacing.xs) {
             if viewModel.state.phase != .bidding {
@@ -963,6 +967,8 @@ struct BalootGamePlayView: View {
             if viewModel.requiresLocalHandoffConfirmation && viewModel.state.phase == .playing {
                 localHandoffCard
             }
+            // Large accessibility controls must scroll rather than consume the viewport.
+            if dynamicTypeSize.isAccessibilitySize { tableControls }
         }
     }
 
