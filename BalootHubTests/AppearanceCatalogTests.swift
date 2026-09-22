@@ -34,6 +34,7 @@ final class AppearanceCatalogTests: XCTestCase {
         XCTAssertTrue(faces.contains(.casino), "لازم يتوفر وجه أبيض قريب من ورق اللعب الحقيقي")
         XCTAssertTrue(faces.contains(.majlis), "لازم يتوفر وجه بطابع مجلس البلوت")
         XCTAssertTrue(faces.contains(.largeIndex), "لازم يتوفر وجه بفهرس كبير للقراءة السريعة")
+        XCTAssertTrue(faces.contains(.highContrast), "لازم يتوفر وجه عالي التباين للقراءة من مسافة")
         XCTAssertGreaterThanOrEqual(faces.count, 7, "شكل الورقة لازم يكون متنوعًا لا مجرد خيارين أو ثلاثة")
     }
 

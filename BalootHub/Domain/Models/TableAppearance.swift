@@ -65,6 +65,8 @@ enum CardFaceStyle: String, CaseIterable, AppearanceOption {
     case heritage
     /// حرف ورمز صغيران في الزاوية بلا زخرفة.
     case minimal
+    /// فهارس عالية التباين وحدود سميكة للقراءة من مسافة أو في الإضاءة القوية.
+    case highContrast
 
     static var fallback: CardFaceStyle { .classic }
 
@@ -77,6 +79,7 @@ enum CardFaceStyle: String, CaseIterable, AppearanceOption {
         case .bold: "عريض".localized
         case .heritage: "تراثي".localized
         case .minimal: "بسيط".localized
+        case .highContrast: "تباين عالٍ".localized
         }
     }
 
@@ -89,6 +92,7 @@ enum CardFaceStyle: String, CaseIterable, AppearanceOption {
         case .bold: "أرقام كبيرة تُقرأ بسهولة من بعد الذراع.".localized
         case .heritage: "أرقام عربية-هندية بطابع المجالس القديمة.".localized
         case .minimal: "زاوية واحدة بلا زخرفة، أهدأ شكل ممكن.".localized
+        case .highContrast: "فهارس كبيرة وحدود قوية لقراءة أسرع وتقليل الالتباس بين الأوراق.".localized
         }
     }
 
@@ -97,7 +101,7 @@ enum CardFaceStyle: String, CaseIterable, AppearanceOption {
 
     var requiredRank: CareerRank {
         switch self {
-        case .classic, .casino, .minimal: .newcomer
+        case .classic, .casino, .minimal, .highContrast: .newcomer
         case .largeIndex, .bold: .majlisRegular
         case .majlis, .heritage: .tableReader
         }

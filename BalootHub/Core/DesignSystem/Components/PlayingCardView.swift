@@ -231,6 +231,24 @@ struct PlayingCardFaceView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, AppSpacing.xxs)
             .padding(.top, AppSpacing.xxs)
+        case .highContrast:
+            ZStack {
+                VStack(spacing: 0) {
+                    Text(rankLabel)
+                        .font(.system(size: 24 * faceScale, weight: .black, design: .rounded))
+                    Image(systemName: symbolName)
+                        .font(.system(size: 16 * faceScale, weight: .black))
+                }
+                .minimumScaleFactor(0.72)
+
+                cornerIndex(size: 11, symbolSize: 8)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    .padding(4 * faceScale)
+                cornerIndex(size: 11, symbolSize: 8)
+                    .rotationEffect(.degrees(180))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                    .padding(4 * faceScale)
+            }
         }
     }
 
@@ -279,6 +297,8 @@ struct PlayingCardFaceView: View {
             isRed ? Color(red: 0.70, green: 0.06, blue: 0.05) : Color(red: 0.08, green: 0.08, blue: 0.07)
         case .bold, .heritage, .minimal:
             isRed ? AppColor.danger : AppColor.textPrimary
+        case .highContrast:
+            isRed ? Color(red: 0.82, green: 0.02, blue: 0.02) : Color.black
         }
     }
 
@@ -293,6 +313,8 @@ struct PlayingCardFaceView: View {
             return Color(red: 0.58, green: 0.58, blue: 0.54)
         case .classic, .bold, .heritage, .minimal:
             return AppColor.border
+        case .highContrast:
+            return Color.black.opacity(0.82)
         }
     }
 
@@ -320,6 +342,9 @@ struct PlayingCardFaceView: View {
         case .bold, .heritage, .minimal:
             RoundedRectangle(cornerRadius: AppRadius.small)
                 .fill(AppColor.surfaceElevated)
+        case .highContrast:
+            RoundedRectangle(cornerRadius: AppRadius.small)
+                .fill(Color.white)
         }
     }
 
@@ -346,6 +371,10 @@ struct PlayingCardFaceView: View {
             }
         case .classic, .bold, .heritage, .minimal:
             EmptyView()
+        case .highContrast:
+            RoundedRectangle(cornerRadius: AppRadius.small)
+                .stroke(Color.black.opacity(0.72), lineWidth: 1.4)
+                .padding(2)
         }
     }
 
