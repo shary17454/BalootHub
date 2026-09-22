@@ -36,11 +36,16 @@ struct BalootGamePlayView: View {
 
     private var onFeltSecondaryColor: Color { appearance.felt.contentColor.opacity(0.75) }
 
-    /// هل تُعرض مؤثرات المشاريع والكبوت؟ إطفاء الحركة من إعدادات النظام يلغيها دائمًا.
+    /// هل تُخفّف المؤثرات المرئية؟ يشمل ذلك إعداد النظام والطاقة المنخفضة والحرارة المرتفعة.
+    private var reducesNonessentialEffects: Bool {
+        let process = ProcessInfo.processInfo
+        return reduceMotion || process.isLowPowerModeEnabled
+            || process.thermalState == .serious || process.thermalState == .critical
+    }
+
+    /// هل تُعرض مؤثرات المشاريع والكبوت؟
     private var showsCelebrations: Bool {
-        !reduceMotion && !ProcessInfo.processInfo.isLowPowerModeEnabled
-            && ProcessInfo.processInfo.thermalState != .serious
-            && ProcessInfo.processInfo.thermalState != .critical
+        !reducesNonessentialEffects
             && (settingsList.first?.celebrationEffectsEnabled ?? true)
     }
 
@@ -908,7 +913,7 @@ struct BalootGamePlayView: View {
                         PlayingCardFaceView(card: played.card, style: appearance.cardFace, width: 64)
                             .dynamicTypeSize(.large)
                             .matchedGeometryEffect(id: played.card.id, in: cardNamespace)
-                            .transition(reduceMotion ? .identity : .scale.combined(with: .opacity))
+                            .transition(reducesNonessentialEffects ? .identity : .scale.combined(with: .opacity))
                             // بلا اسم اللاعب يسمع مستخدم VoiceOver أربع أوراق بلا
                             // معرفة من لعب أيًّا منها — وهي المعلومة التي تُبنى عليها
                             // قراءة الأكلة كلها.
@@ -928,8 +933,8 @@ struct BalootGamePlayView: View {
                     .transition(.opacity)
             }
         }
-        .animation(AppAnimation.standard(reduceMotion: reduceMotion), value: viewModel.trickOnTable.count)
-        .animation(AppAnimation.standard(reduceMotion: reduceMotion), value: viewModel.lastTrickWinnerName)
+        .animation(AppAnimation.standard(reduceMotion: reducesNonessentialEffects), value: viewModel.trickOnTable.count)
+        .animation(AppAnimation.standard(reduceMotion: reducesNonessentialEffects), value: viewModel.lastTrickWinnerName)
         .frame(minHeight: 110)
         .opacity(viewModel.isShowingResolvedTrick ? 0.75 : 1)
     }
@@ -1052,7 +1057,7 @@ struct BalootGamePlayView: View {
             }
         }
         .padding(.vertical, AppSpacing.xs)
-        .animation(AppAnimation.spring(reduceMotion: reduceMotion), value: viewModel.visibleHumanHand.count)
+        .animation(AppAnimation.spring(reduceMotion: reducesNonessentialEffects), value: viewModel.visibleHumanHand.count)
     }
 
     private var localHandoffCard: some View {
