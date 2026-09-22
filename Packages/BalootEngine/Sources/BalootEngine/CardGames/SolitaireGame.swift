@@ -53,8 +53,7 @@ public struct SolitaireGame: Sendable {
             collectSpider()
         } else if !stock.isEmpty {
             for _ in 0..<min(drawCount, stock.count) { waste.append(stock.removeLast()) }
-        }
-        else {
+        } else {
             guard !waste.isEmpty else { throw CardGameError.illegalMove }
             stock = waste.reversed(); waste = []
         }

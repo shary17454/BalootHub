@@ -58,17 +58,10 @@ The container falls back to an in-memory store if the persistent store cannot op
 
 ## Commerce State
 
-The current review build is fully free and contains no StoreKit implementation, no local StoreKit configuration file, and no compiled paywall view.
-
-Reason: App Review rejected version 1.1 because the app referenced IAP while the associated product was not submitted for review. The production-safe behavior for this version is to remove IAP references from the binary and keep the app usable without a paywall.
-
-To add IAP later:
-
-1. Configure the product in App Store Connect.
-2. Add required IAP metadata and review screenshot.
-3. Submit the IAP product together with the app version.
-4. Add StoreKit 2 code and UI only in the same release that submits the product.
-5. Run purchase tests, Release build, and App Review smoke checks.
+The current source includes StoreKit 2 subscription handling and a Baloot Plus purchase view. Product
+availability, metadata, review screenshots, and submission status are external App Store Connect state
+and must be verified there before release. Keep the app usable if product loading or purchase verification
+fails, and test purchase, restore, renewal, and cancellation in Sandbox.
 
 ## Current Compliance Notes
 
@@ -76,4 +69,4 @@ To add IAP later:
 - No custom Info.plist file is present; Info.plist values are generated from Xcode build settings.
 - No entitlements file was found in the repository during Phase 1 inspection.
 - No privacy permissions such as camera, microphone, location, contacts, or photos were found.
-- The app currently targets iPhone only in Xcode settings (`TARGETED_DEVICE_FAMILY = 1`). iPad production support remains a planned requirement and must not be claimed complete until layout and App Store screenshot requirements are verified.
+- Xcode currently targets iPhone and iPad (`TARGETED_DEVICE_FAMILY = 1,2`). This setting confirms target configuration, not complete visual or functional QA for every iPad layout.

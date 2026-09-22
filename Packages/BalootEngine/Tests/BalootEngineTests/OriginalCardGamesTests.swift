@@ -20,8 +20,7 @@ final class OriginalCardGamesTests: XCTestCase {
             XCTAssertTrue(game.hands[game.kingdomOwner].contains { $0.rank == 7 && $0.suit == .hearts })
             var steps = 0; var rounds = 0
             while !game.matchFinished && steps < 4_000 {
-                if game.roundFinished { rounds += 1; try game.nextRound() }
-                else { try game.stepAI() }
+                if game.roundFinished { rounds += 1; try game.nextRound() } else { try game.stepAI() }
                 if game.contract == .trex {
                     XCTAssertEqual(game.hands.flatMap { $0 }.count + game.layout.values.reduce(0) { $0 + $1.count }, 52)
                 } else {
@@ -52,8 +51,7 @@ final class OriginalCardGamesTests: XCTestCase {
             XCTAssertEqual(game.bid, 5); XCTAssertTrue(game.forcedBid); XCTAssertEqual(game.bidder, 5)
             var steps = 0
             while game.phase != .matchEnd && steps < 10_000 {
-                if game.phase == .roundEnd { try game.nextRound() }
-                else { try game.stepAI() }
+                if game.phase == .roundEnd { try game.nextRound() } else { try game.stepAI() }
                 let cards = game.hands.flatMap { $0 } + game.trick.map(\.card) + game.captured
                 XCTAssertEqual(cards.count, 54); XCTAssertEqual(Set(cards.map(\.id)).count, 54)
                 steps += 1
@@ -104,8 +102,7 @@ final class OriginalCardGamesTests: XCTestCase {
         for seed in UInt64(1)...20 {
             var game = HandMatch(seed: seed); var steps = 0
             while game.phase != .matchEnd && steps < 10_000 {
-                if game.phase == .roundEnd { try game.nextRound() }
-                else { try game.stepAI() }
+                if game.phase == .roundEnd { try game.nextRound() } else { try game.stepAI() }
                 let cards = game.hands.flatMap { $0 } + game.stock + game.discardPile + game.melds.flatMap(\.cards)
                 XCTAssertEqual(cards.count, 106); XCTAssertEqual(Set(cards.map(\.id)).count, 106)
                 steps += 1
@@ -137,9 +134,7 @@ final class OriginalCardGamesTests: XCTestCase {
             var game = SolitaireGame(variant: variant, seed: 21)
             for _ in 0..<100 {
                 let before = game
-                if let hint = game.hint { try game.move(from: hint.source, count: hint.count, to: hint.destination) }
-                else if !game.stock.isEmpty { try game.draw() }
-                else { break }
+                if let hint = game.hint { try game.move(from: hint.source, count: hint.count, to: hint.destination) } else if !game.stock.isEmpty { try game.draw() } else { break }
                 var all: [StandardCard] = game.columns.flatMap { $0.map(\.value) }
                 all.append(contentsOf: game.cells.compactMap { $0 })
                 all.append(contentsOf: game.foundations.flatMap { $0 })

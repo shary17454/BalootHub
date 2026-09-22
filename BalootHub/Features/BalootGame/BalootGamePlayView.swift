@@ -88,8 +88,7 @@ struct BalootGamePlayView: View {
         .onAppear { syncFeedbackSettings() }
         .onChange(of: viewModel.pendingFeedback) { _, _ in consumeFeedback() }
         .onChange(of: scenePhase) { _, phase in
-            if phase == .active && isTableVisible { viewModel.resumeWork() }
-            else { viewModel.suspendWork() }
+            if phase == .active && isTableVisible { viewModel.resumeWork() } else { viewModel.suspendWork() }
         }
         .onDisappear {
             isTableVisible = false

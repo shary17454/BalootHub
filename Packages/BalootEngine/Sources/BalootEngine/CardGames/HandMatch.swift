@@ -59,7 +59,7 @@ public struct HandMatch: Sendable {
             let ranks = natural.map { highAce ? $0.highRank : $0.rank }
             for start in 1...(15 - cards.count) {
                 let range = Array(start..<(start + cards.count))
-                guard range.last! <= (highAce ? 14 : 13), (!highAce || start > 1), ranks.allSatisfy(range.contains) else { continue }
+                guard range.last! <= (highAce ? 14 : 13), !highAce || start > 1, ranks.allSatisfy(range.contains) else { continue }
                 var remainingJokers = jokers
                 let ordered = range.map { rank -> StandardCard in
                     if let index = ranks.firstIndex(of: rank) { return natural[index] }
@@ -216,7 +216,7 @@ public struct HandMatch: Sendable {
             // Suggestions have a work budget; legality checks for a picked discard do not.
             if requiredID == nil && visits > 2_000 { return }
             if requiredID != nil && !best.isEmpty { return }
-            if (opened[player] || points >= 51), ids.count > bestCount, ids.count < hands[player].count,
+            if opened[player] || points >= 51, ids.count > bestCount, ids.count < hands[player].count,
                requiredID.map(ids.contains) ?? true {
                 best = selected; bestCount = ids.count
             }

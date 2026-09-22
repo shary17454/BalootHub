@@ -126,3 +126,13 @@ Before moving into broader implementation phases, the next safe engineering step
 3. Keep the current submission free, or add IAP later only after the App Store Connect product metadata and review screenshot are ready to submit with the app version.
 4. Audit iPad support separately before changing `TARGETED_DEVICE_FAMILY`.
 5. Continue Phase 2 by selecting the next functional area and verifying it requirement-by-requirement against the product specification.
+
+## Reassessment — 2026-09-23
+
+The notes above are historical. The current checkout includes StoreKit 2 and a Baloot Plus view, and the Xcode target enables iPhone and iPad. The old statements that IAP was removed and iPad was disabled are stale.
+
+- On the clean base commit `5a90c4c`, Swift Package tests passed (261 tests) and the app XCTest suite passed on iPhone 17 Pro Simulator (756 tests).
+- Strict SwiftLint initially reported 69 findings. Mechanical autocorrection reduced the strict lint findings to 42; strict lint still fails. Large-file/type/function limits and remaining style issues need staged refactoring; do not raise thresholds to hide them.
+- The checked-in build settings show version 3.0.9/build 504. App Store Connect separately showed submitted build 515; this audit did not prove the archive's source SHA. Reconcile provenance before the next binary upload.
+- No Instruments or physical-device battery/thermal test was performed; simulator tests do not prove power use or absence of hangs on hardware.
+- Re-running the full app suite after autocorrection was blocked by Xcode waiting for a Simulator test worker to materialize. The edited app target compiled; the post-format app test run is therefore unverified.

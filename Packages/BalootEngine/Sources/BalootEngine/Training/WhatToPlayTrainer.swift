@@ -2640,7 +2640,7 @@ public struct WhatToPlayPracticeRecommendationMetrics: Sendable, Equatable {
             category = .simulationReview
             difficulty = nearestDifficulty
         } else if let focusDifficulty,
-                  ((focusAccuracyPercent ?? 100) < 70 || (focusAverageExpectedImpact ?? 0) < 0) {
+                  (focusAccuracyPercent ?? 100) < 70 || (focusAverageExpectedImpact ?? 0) < 0 {
             category = .weaknessFocus
             difficulty = focusDifficulty
         } else if summary.attempts >= 3,

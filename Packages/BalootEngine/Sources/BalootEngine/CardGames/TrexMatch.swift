@@ -82,8 +82,7 @@ public struct TrexMatch: Sendable {
                 scores[player] += [200, 150, 100, 50][finishOrder.count]
                 finishOrder.append(player)
             }
-            if finishOrder.count == 4 { roundFinished = true }
-            else { advanceTrexTurn() }
+            if finishOrder.count == 4 { roundFinished = true } else { advanceTrexTurn() }
             return
         }
         trick.append((player, card))
@@ -145,7 +144,6 @@ public struct TrexMatch: Sendable {
     public mutating func stepAI() throws {
         if contract == nil { try choose(availableContracts[0], player: kingdomOwner); return }
         let choices = legalCards(player: turn).sorted { $0.highRank < $1.highRank }
-        if let card = choices.first { try play(card, player: turn) }
-        else { try pass(player: turn) }
+        if let card = choices.first { try play(card, player: turn) } else { try pass(player: turn) }
     }
 }

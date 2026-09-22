@@ -515,8 +515,7 @@ private struct KoutOriginalPlayView: View {
     }
 
     private func act(_ action: (inout KoutMatch) throws -> Void) {
-        do { try action(&game); failure = nil; revision += 1 }
-        catch { failure = "هذه الحركة غير مسموحة".localized }
+        do { try action(&game); failure = nil; revision += 1 } catch { failure = "هذه الحركة غير مسموحة".localized }
     }
 }
 
@@ -586,8 +585,7 @@ private struct TrexOriginalPlayView: View {
     }
 
     private func act(_ action: (inout TrexMatch) throws -> Void) {
-        do { try action(&game); failure = nil; revision += 1 }
-        catch { failure = "هذه الحركة غير مسموحة".localized }
+        do { try action(&game); failure = nil; revision += 1 } catch { failure = "هذه الحركة غير مسموحة".localized }
     }
 }
 
@@ -709,8 +707,7 @@ private struct HandOriginalPlayView: View {
     }
 
     private func act(_ action: (inout HandMatch) throws -> Void) {
-        do { try action(&game); failure = nil; selected = []; batches = []; revision += 1 }
-        catch { failure = "حركة غير صالحة: تحقق من حد الإنزال واحتفظ بورقة للرمي، واستخدم المكشوف المسحوب في مجموعة جديدة".localized }
+        do { try action(&game); failure = nil; selected = []; batches = []; revision += 1 } catch { failure = "حركة غير صالحة: تحقق من حد الإنزال واحتفظ بورقة للرمي، واستخدم المكشوف المسحوب في مجموعة جديدة".localized }
     }
 }
 
@@ -739,8 +736,7 @@ private struct SolitaireOriginalPlayView: View {
                     Button { if let previous = history.popLast() { game = previous; clear() } } label: { Image(systemName: "arrow.uturn.backward") }
                         .disabled(history.isEmpty).accessibilityLabel("تراجع".localized)
                     Button {
-                        if let hint = game.hint { source = hint.source; count = hint.count; hintedDestination = hint.destination; failure = nil }
-                        else { failure = "لا توجد نقلة متاحة؛ افحص المخزون أو تراجع".localized }
+                        if let hint = game.hint { source = hint.source; count = hint.count; hintedDestination = hint.destination; failure = nil } else { failure = "لا توجد نقلة متاحة؛ افحص المخزون أو تراجع".localized }
                     } label: { Image(systemName: "lightbulb") }.accessibilityLabel("تلميح".localized)
                     Spacer()
                     Text(String(format: "الحركات: %lld".localized, game.moves)).monospacedDigit()
@@ -794,8 +790,7 @@ private struct SolitaireOriginalPlayView: View {
                                 if game.columns[index].isEmpty { slot(.tableau(index), card: nil) }
                                 ForEach(Array(game.columns[index].enumerated()), id: \.element.value.id) { offset, card in
                                     Button {
-                                        if source != nil && source != .tableau(index) { destination(.tableau(index)) }
-                                        else if card.faceUp {
+                                        if source != nil && source != .tableau(index) { destination(.tableau(index)) } else if card.faceUp {
                                             let amount = game.columns[index].count - offset
                                             if game.movableCards(from: .tableau(index), count: amount) != nil {
                                                 source = .tableau(index); count = amount; hintedDestination = nil
@@ -831,11 +826,9 @@ private struct SolitaireOriginalPlayView: View {
 
     private func slot(_ pile: SolitaireGame.Pile, card: StandardCard?) -> some View {
         Button {
-            if source != nil { destination(pile) }
-            else if game.movableCards(from: pile) != nil { source = pile; count = 1 }
+            if source != nil { destination(pile) } else if game.movableCards(from: pile) != nil { source = pile; count = 1 }
         } label: {
-            if let card { OriginalCardTile(card: card, selected: source == pile || hintedDestination == pile) }
-            else {
+            if let card { OriginalCardTile(card: card, selected: source == pile || hintedDestination == pile) } else {
                 Image(systemName: "plus").frame(width: 58, height: 84)
                     .background(AppColor.surface, in: RoundedRectangle(cornerRadius: 6))
                     .overlay(RoundedRectangle(cornerRadius: 6).stroke(hintedDestination == pile ? AppColor.accent : .gray))

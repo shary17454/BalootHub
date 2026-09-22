@@ -78,8 +78,7 @@ public struct KoutMatch: Sendable {
         hands[player].remove(at: index)
         if leadSuit == nil {
             if card.isJoker {
-                if mayLead(card) { leadSuit = trump }
-                else { demotedJokers.insert(card.id) }
+                if mayLead(card) { leadSuit = trump } else { demotedJokers.insert(card.id) }
             } else { leadSuit = card.suit }
         }
         trick.append((player, card))
@@ -92,8 +91,7 @@ public struct KoutMatch: Sendable {
         let remaining = 9 - tricksWon.reduce(0, +)
         if tricksWon[team] >= bid || tricksWon[team] + remaining < bid {
             let succeeded = tricksWon[team] >= bid
-            if succeeded { scores[team] += bid == 9 ? 36 : bid }
-            else { scores[1 - team] += forcedBid ? 5 : bid * 2 }
+            if succeeded { scores[team] += bid == 9 ? 36 : bid } else { scores[1 - team] += forcedBid ? 5 : bid * 2 }
             let shutout = (scores[0] >= 51 && scores[1] == 0) || (scores[1] >= 51 && scores[0] == 0)
             phase = scores.contains(where: { $0 >= 101 }) || shutout || (round == 1 && bid == 9 && succeeded) ? .matchEnd : .roundEnd
         }

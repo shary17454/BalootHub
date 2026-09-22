@@ -457,8 +457,7 @@ enum OtherCardGameEngine {
 
     static func passUser(in state: inout OtherCardGameTableState) {
         guard canPass(in: state) else { return }
-        if state.rules.slug == "president" { passPresident(playerIndex: 0, in: &state) }
-        else { state.currentPlayerID = nextPlayer(after: 0, in: state) }
+        if state.rules.slug == "president" { passPresident(playerIndex: 0, in: &state) } else { state.currentPlayerID = nextPlayer(after: 0, in: state) }
         advanceAI(in: &state)
         finishIfNeeded(&state)
     }
@@ -808,15 +807,7 @@ enum OtherCardGameEngine {
             ? ranks[0] : (ranks == [14, 5, 4, 3, 2] ? 5 : 0)
         let category: Int
         let kickers: [Int]
-        if flush && straightHigh > 0 { category = 8; kickers = [straightHigh] }
-        else if groups[0].count == 4 { category = 7; kickers = groups.map(\.rank) }
-        else if groups[0].count == 3 && groups[1].count == 2 { category = 6; kickers = groups.map(\.rank) }
-        else if flush { category = 5; kickers = ranks }
-        else if straightHigh > 0 { category = 4; kickers = [straightHigh] }
-        else if groups[0].count == 3 { category = 3; kickers = groups.map(\.rank) }
-        else if groups[0].count == 2 && groups[1].count == 2 { category = 2; kickers = groups.map(\.rank) }
-        else if groups[0].count == 2 { category = 1; kickers = groups.map(\.rank) }
-        else { category = 0; kickers = ranks }
+        if flush && straightHigh > 0 { category = 8; kickers = [straightHigh] } else if groups[0].count == 4 { category = 7; kickers = groups.map(\.rank) } else if groups[0].count == 3 && groups[1].count == 2 { category = 6; kickers = groups.map(\.rank) } else if flush { category = 5; kickers = ranks } else if straightHigh > 0 { category = 4; kickers = [straightHigh] } else if groups[0].count == 3 { category = 3; kickers = groups.map(\.rank) } else if groups[0].count == 2 && groups[1].count == 2 { category = 2; kickers = groups.map(\.rank) } else if groups[0].count == 2 { category = 1; kickers = groups.map(\.rank) } else { category = 0; kickers = ranks }
         return (kickers + Array(repeating: 0, count: 5 - kickers.count))
             .reduce(category) { $0 * 15 + $1 }
     }
