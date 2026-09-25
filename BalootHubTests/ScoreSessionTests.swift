@@ -28,6 +28,17 @@ final class ScoreSessionTests: XCTestCase {
         XCTAssertEqual(session.teamTwoTotal(rules: rules), 72 + 140)
     }
 
+    func testExtremeStoredTotalsAreReadableAndNewOverflowIsRejected() {
+        let session = ScoreSession(teamOneName: "أ", teamTwoName: "ب", targetScore: 152)
+        let first = ScoreRound(roundNumber: 1, mode: .hokum, teamOneBaseScore: Int.max, teamTwoBaseScore: 0)
+        let second = ScoreRound(roundNumber: 2, mode: .hokum, teamOneBaseScore: 1, teamTwoBaseScore: 10)
+        session.rounds = [first, second]
+        XCTAssertEqual(session.teamOneTotal(rules: .standard), Int.max)
+        XCTAssertEqual(session.teamTwoTotal(rules: .standard), 10)
+        XCTAssertFalse(session.canRecordScores(teamOne: 1, teamTwo: 1, replacing: nil, rules: .standard))
+        XCTAssertTrue(session.canRecordScores(teamOne: 10, teamTwo: 1, replacing: first.id, rules: .standard))
+    }
+
     func testLeadingTeamNameReflectsHigherTotal() {
         let session = ScoreSession(teamOneName: "أ", teamTwoName: "ب", targetScore: 152)
         let round = ScoreRound(roundNumber: 1, mode: .hokum, teamOneBaseScore: 100, teamTwoBaseScore: 40)

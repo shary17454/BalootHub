@@ -1,6 +1,34 @@
 {
   "sourceLanguage": "ar",
   "strings": {
+    "التخزين مؤقت: تعذر فتح بياناتك. لن تُحفظ تغييرات هذه الجلسة بعد الإغلاق.": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "Temporary storage: your data could not be opened. Changes in this session will not be kept after closing the app."}},
+        "fr": {"stringUnit": {"state": "translated", "value": "Stockage temporaire : vos données n’ont pas pu être ouvertes. Les modifications de cette session ne seront pas conservées après la fermeture."}},
+        "es": {"stringUnit": {"state": "translated", "value": "Almacenamiento temporal: no se pudieron abrir tus datos. Los cambios de esta sesión no se conservarán al cerrar la app."}},
+        "de": {"stringUnit": {"state": "translated", "value": "Temporärer Speicher: Deine Daten konnten nicht geöffnet werden. Änderungen dieser Sitzung gehen beim Schließen verloren."}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Geçici depolama: verileriniz açılamadı. Bu oturumdaki değişiklikler uygulama kapatıldığında kaybolacak."}},
+        "id": {"stringUnit": {"state": "translated", "value": "Penyimpanan sementara: data Anda tidak dapat dibuka. Perubahan sesi ini tidak akan disimpan setelah aplikasi ditutup."}},
+        "ru": {"stringUnit": {"state": "translated", "value": "Временное хранилище: не удалось открыть данные. Изменения этого сеанса не сохранятся после закрытия приложения."}},
+        "ur": {"stringUnit": {"state": "translated", "value": "عارضی ذخیرہ: آپ کا ڈیٹا نہیں کھل سکا۔ اس سیشن کی تبدیلیاں ایپ بند کرنے کے بعد محفوظ نہیں رہیں گی۔"}},
+        "hi": {"stringUnit": {"state": "translated", "value": "अस्थायी संग्रहण: आपका डेटा नहीं खोला जा सका। ऐप बंद होने पर इस सत्र के बदलाव सहेजे नहीं रहेंगे।"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "临时存储：无法打开您的数据。关闭应用后，本次会话的更改将不会保留。"}}
+      }
+    },
+    "القيمة كبيرة جدًا. أدخل نقاطًا أقل.": {
+      "localizations": {
+        "en": {"stringUnit": {"state": "translated", "value": "The value is too large. Enter a smaller score."}},
+        "fr": {"stringUnit": {"state": "translated", "value": "La valeur est trop grande. Saisissez un score inférieur."}},
+        "es": {"stringUnit": {"state": "translated", "value": "El valor es demasiado grande. Introduce una puntuación menor."}},
+        "de": {"stringUnit": {"state": "translated", "value": "Der Wert ist zu groß. Gib eine kleinere Punktzahl ein."}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Değer çok büyük. Daha düşük bir puan girin."}},
+        "id": {"stringUnit": {"state": "translated", "value": "Nilai terlalu besar. Masukkan skor yang lebih kecil."}},
+        "ru": {"stringUnit": {"state": "translated", "value": "Значение слишком велико. Введите меньшее количество очков."}},
+        "ur": {"stringUnit": {"state": "translated", "value": "قدر بہت زیادہ ہے۔ کم اسکور درج کریں۔"}},
+        "hi": {"stringUnit": {"state": "translated", "value": "मान बहुत बड़ा है। कम अंक दर्ज करें।"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "数值过大。请输入较小的分数。"}}
+      }
+    },
     "سبايدر سوليتير": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Spider Solitaire"}},"fr":{"stringUnit":{"state":"translated","value":"Patience Spider"}},"es":{"stringUnit":{"state":"translated","value":"Solitario Spider"}},"de":{"stringUnit":{"state":"translated","value":"Spider-Patience"}},"tr":{"stringUnit":{"state":"translated","value":"Örümcek Solitaire"}},"id":{"stringUnit":{"state":"translated","value":"Solitair Laba-laba"}},"ru":{"stringUnit":{"state":"translated","value":"Пасьянс Паук"}},"ur":{"stringUnit":{"state":"translated","value":"اسپائیڈر سولٹیئر"}},"hi":{"stringUnit":{"state":"translated","value":"स्पाइडर सॉलिटेयर"}},"zh-Hans":{"stringUnit":{"state":"translated","value":"蜘蛛纸牌"}}}},
     "البادي يرمي ورقة دون سحب أو إنزال": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"The starter discards without drawing or melding"}},"fr":{"stringUnit":{"state":"translated","value":"Le premier joueur défausse sans piocher ni poser"}},"es":{"stringUnit":{"state":"translated","value":"Quien empieza descarta sin robar ni bajar"}},"de":{"stringUnit":{"state":"translated","value":"Der Startspieler wirft ab, ohne zu ziehen oder auszulegen"}},"tr":{"stringUnit":{"state":"translated","value":"Başlayan oyuncu çekmeden veya açmadan kart atar"}},"id":{"stringUnit":{"state":"translated","value":"Pemain awal membuang tanpa mengambil atau membuka kombinasi"}},"ru":{"stringUnit":{"state":"translated","value":"Начинающий сбрасывает без взятия и выкладки"}},"ur":{"stringUnit":{"state":"translated","value":"پہلا کھلاڑی بغیر اٹھائے یا مجموعہ رکھے پتا پھینکے"}},"hi":{"stringUnit":{"state":"translated","value":"पहला खिलाड़ी बिना उठाए या समूह रखे पत्ता फेंके"}},"zh-Hans":{"stringUnit":{"state":"translated","value":"先手直接弃牌，不摸牌或下组"}}}},
     "إضافة تسلسل": {"localizations":{"en":{"stringUnit":{"state":"translated","value":"Add run"}},"fr":{"stringUnit":{"state":"translated","value":"Ajouter une suite"}},"es":{"stringUnit":{"state":"translated","value":"Añadir secuencia"}},"de":{"stringUnit":{"state":"translated","value":"Folge hinzufügen"}},"tr":{"stringUnit":{"state":"translated","value":"Seri ekle"}},"id":{"stringUnit":{"state":"translated","value":"Tambah urutan"}},"ru":{"stringUnit":{"state":"translated","value":"Добавить ряд"}},"ur":{"stringUnit":{"state":"translated","value":"سلسلہ شامل کریں"}},"hi":{"stringUnit":{"state":"translated","value":"क्रम जोड़ें"}},"zh-Hans":{"stringUnit":{"state":"translated","value":"添加顺子"}}}},

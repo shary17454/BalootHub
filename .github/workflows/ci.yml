@@ -34,14 +34,18 @@ jobs:
       - name: اختيار جهاز محاكاة آيفون متاح
         id: sim
         run: |
-          NAME=$(xcrun simctl list devices available | grep -m1 -oE 'iPhone [0-9A-Za-z]+( Pro| Plus)?( Max)?' | head -1)
-          if [ -z "$NAME" ]; then
+          SIMULATOR_ID=$(xcrun simctl list devices available --json | /usr/bin/ruby -rjson -e '
+            devices = JSON.parse(STDIN.read).fetch("devices").values.flatten
+            device = devices.find { |item| item["isAvailable"] && item.fetch("name").start_with?("iPhone") }
+            puts device.fetch("udid") if device
+          ')
+          if [ -z "$SIMULATOR_ID" ]; then
             echo "لم يُعثر على أي محاكي آيفون متاح" >&2
             xcrun simctl list devices available >&2
             exit 1
           fi
-          echo "استخدام المحاكي: $NAME"
-          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+          echo "استخدام المحاكي: $SIMULATOR_ID"
+          echo "id=$SIMULATOR_ID" >> "$GITHUB_OUTPUT"
 
       # `xcodebuild test` يبني الهدف بنفسه، فخطوة بناء منفصلة قبله كانت تُضاعف
       # زمن التشغيل بلا فائدة.
@@ -49,8 +53,9 @@ jobs:
         run: >
           xcodebuild test
           -scheme BalootHub
-          -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.name }}"
+          -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.id }}"
           -destination-timeout 120
+          -parallel-testing-enabled NO
           -testLanguage ar
           -testRegion SA
           -resultBundlePath TestResults.xcresult
@@ -64,13 +69,13 @@ jobs:
           xcodebuild build
           -scheme BalootHub
           -configuration Release
-          -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.name }}"
+          -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.id }}"
           -destination-timeout 120
           -skipMacroValidation
           CODE_SIGNING_ALLOWED=NO
 
-      - name: رفع نتائج الاختبارات عند الفشل
-        if: failure()
+      - name: حفظ نتائج الاختبارات للمراجعة
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results

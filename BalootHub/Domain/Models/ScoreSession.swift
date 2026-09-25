@@ -47,11 +47,24 @@ final class ScoreSession {
     }
 
     func teamOneTotal(rules: ScoreRules) -> Int {
-        rounds.reduce(0) { $0 + $1.teamOneFinalScore(rules: rules) }
+        rounds.reduce(0) { ScoreRules.addingScores($0, $1.teamOneFinalScore(rules: rules)) }
     }
 
     func teamTwoTotal(rules: ScoreRules) -> Int {
-        rounds.reduce(0) { $0 + $1.teamTwoFinalScore(rules: rules) }
+        rounds.reduce(0) { ScoreRules.addingScores($0, $1.teamTwoFinalScore(rules: rules)) }
+    }
+
+    func canRecordScores(teamOne: Int, teamTwo: Int, replacing roundID: UUID?, rules: ScoreRules) -> Bool {
+        var one = teamOne
+        var two = teamTwo
+        for round in rounds where round.id != roundID {
+            let nextOne = one.addingReportingOverflow(round.teamOneFinalScore(rules: rules))
+            let nextTwo = two.addingReportingOverflow(round.teamTwoFinalScore(rules: rules))
+            guard !nextOne.overflow, !nextTwo.overflow else { return false }
+            one = nextOne.partialValue
+            two = nextTwo.partialValue
+        }
+        return true
     }
 
     /// الفريق المتقدم حاليًا، أو `nil` عند التعادل.

@@ -3,6 +3,53 @@ import SwiftData
 @testable import BalootHub
 
 final class CatalogSeederTests: XCTestCase {
+    func testStorageFailureFallsBackWithoutCrashingAndIsMarkedTemporary() {
+        enum StoreFailure: Error { case unavailable }
+        let container = PersistenceController.makeContainer(createPersistent: { _, _ in throw StoreFailure.unavailable })
+        XCTAssertTrue(PersistenceController.isTemporary(container))
+    }
+
+    func testScoreDataSurvivesClosingAndReopeningPersistentStore() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("BalootHubPersistence-\(UUID())")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let url = directory.appendingPathComponent("test.store")
+        let schema = PersistenceController.appSchema
+        func open() throws -> ModelContainer {
+            try ModelContainer(for: schema, configurations: [ModelConfiguration(schema: schema, url: url)])
+        }
+        let id = UUID()
+        do {
+            let container = try open()
+            XCTAssertFalse(PersistenceController.isTemporary(container))
+            let context = ModelContext(container)
+            let session = ScoreSession(id: id, teamOneName: "فريقنا", teamTwoName: "الخصم", targetScore: 152)
+            context.insert(session)
+            let round = ScoreRound(roundNumber: 1, mode: .hokum, teamOneBaseScore: 100, teamTwoBaseScore: 62)
+            round.session = session
+            session.rounds = [round]
+            try context.save()
+        }
+        let reopened = try open()
+        let context = ModelContext(reopened)
+        let session = try XCTUnwrap(try context.fetch(FetchDescriptor<ScoreSession>()).first)
+        XCTAssertEqual(session.id, id)
+        XCTAssertEqual(session.teamOneName, "فريقنا")
+        XCTAssertEqual(session.rounds.count, 1)
+        XCTAssertEqual(session.teamOneTotal(rules: .standard), 100)
+    }
+
+    func testFailedCatalogReadDoesNotInsertDuplicateRecords() throws {
+        let container = PersistenceController.makePreviewContainer()
+        let context = ModelContext(container)
+        let before = try context.fetchCount(FetchDescriptor<GameCatalogItem>())
+        enum ReadFailure: Error { case unavailable }
+
+        XCTAssertThrowsError(try CatalogSeeder.refresh(context: context, fetchItems: { _ in throw ReadFailure.unavailable }))
+        XCTAssertFalse(context.hasChanges)
+        XCTAssertEqual(try context.fetchCount(FetchDescriptor<GameCatalogItem>()), before)
+    }
+
     func testSeedIfNeededPopulatesEmptyContainer() throws {
         let configuration = ModelConfiguration(schema: PersistenceController.appSchema, isStoredInMemoryOnly: true)
         let container = try ModelContainer(for: PersistenceController.appSchema, configurations: [configuration])

@@ -77,7 +77,7 @@ struct PlayerStatsView: View {
             metric("الفوز".localized, "\(summary.wins)", "checkmark.seal.fill")
             metric("الخسارة".localized, "\(summary.losses)", "xmark.seal.fill")
             metric("نسبة الفوز".localized, "\(Int((summary.winRate * 100).rounded()))%", "percent")
-            metric("متوسط النقاط".localized, "\(Int(summary.averagePoints.rounded()))", "number")
+            metric("متوسط النقاط".localized, summary.averagePointsText, "number")
             metric("أطول سلسلة".localized, "\(summary.longestWinStreak)", "flame.fill")
             metric("أعلى فوز".localized, "\(summary.highestWinMargin)", "arrow.up.circle.fill")
             metric("أكبر خسارة".localized, "\(summary.biggestLossMargin)", "arrow.down.circle.fill")

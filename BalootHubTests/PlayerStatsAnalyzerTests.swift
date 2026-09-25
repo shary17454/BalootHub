@@ -3,6 +3,19 @@ import BalootEngine
 @testable import BalootHub
 
 final class PlayerStatsAnalyzerTests: XCTestCase {
+    func testExtremeStoredScoresDoNotOverflowStatisticsOrFormatting() {
+        let sessions = (0..<2).map { _ in
+            let session = ScoreSession(teamOneName: "أ", teamTwoName: "ب", targetScore: 152, status: .finished)
+            session.rounds = [ScoreRound(roundNumber: 1, mode: .hokum, teamOneBaseScore: Int.max, teamTwoBaseScore: 0, teamOneProjects: Int.max)]
+            return session
+        }
+        let summary = PlayerStatsAnalyzer.summarize(sessions: sessions, rules: .standard)
+        XCTAssertEqual(summary.averagePoints, Double(Int.max))
+        XCTAssertEqual(summary.projectPoints, Int.max)
+        XCTAssertFalse(summary.averagePointsText.isEmpty)
+        XCTAssertEqual(summary.wins, 2)
+    }
+
     func testSummarizesFinishedSessions() {
         let win = ScoreSession(createdAt: Date(timeIntervalSince1970: 1), teamOneName: "فريقنا", teamTwoName: "الخصم", targetScore: 100, status: .finished)
         let winRound = ScoreRound(roundNumber: 1, mode: .hokum, teamOneBaseScore: 120, teamTwoBaseScore: 40, teamOneProjects: 20)

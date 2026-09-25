@@ -63,6 +63,16 @@ struct BalootPlusView: View {
                     .padding(.top, AppSpacing.xxs)
             }
 
+            if subscriptionStore.isLoading || subscriptionStore.isPurchasing {
+                ProgressView("جارِ التحميل…")
+            } else if subscriptionStore.products.isEmpty {
+                Button("إعادة المحاولة") {
+                    Task { await subscriptionStore.loadProducts() }
+                }
+                .buttonStyle(.bordered)
+                .disabled(subscriptionStore.isBusy)
+            }
+
             Button {
                 Task { await subscriptionStore.restorePurchases() }
             } label: {

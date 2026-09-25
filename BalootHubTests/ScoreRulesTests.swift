@@ -2,6 +2,32 @@ import XCTest
 @testable import BalootHub
 
 final class ScoreRulesTests: XCTestCase {
+    func testOverflowingPersistedScoresRemainReadable() {
+        XCTAssertEqual(ScoreRules.standard.finalScore(baseScore: Int.max, projects: 1, multiplier: .none), Int.max)
+        XCTAssertEqual(ScoreRules.standard.finalScore(baseScore: Int.max, projects: 0, multiplier: .double), Int.max)
+    }
+
+    func testNewScoresRejectOverflowAndKeepExactBoundary() {
+        XCTAssertNil(ScoreRules.standard.checkedFinalScore(baseScore: Int.max, projects: 1, multiplier: .none))
+        XCTAssertNil(ScoreRules.standard.checkedFinalScore(baseScore: Int.max, projects: 0, multiplier: .double))
+        XCTAssertEqual(ScoreRules.standard.checkedFinalScore(baseScore: Int.max - 1, projects: 1, multiplier: .none), Int.max)
+    }
+
+    func testScoreInputAcceptsArabicAndPersianDecimalDigits() {
+        XCTAssertEqual(ScoreRoundInput.points("١٢٣"), 123)
+        XCTAssertEqual(ScoreRoundInput.points("۱۲۳"), 123)
+        XCTAssertEqual(ScoreRoundInput.points(" 123 "), 123)
+        XCTAssertEqual(ScoreRoundInput.points(String(Int.max)), Int.max)
+    }
+
+    func testScoreInputRejectsInvalidOrOverflowingProjectsInsteadOfUsingZero() {
+        for input in ["abc", "12.5", "-1", "١٢x", "9999999999999999999999999"] {
+            XCTAssertNil(ScoreRoundInput.points(input, allowsEmpty: true), input)
+        }
+        XCTAssertEqual(ScoreRoundInput.points("", allowsEmpty: true), 0)
+        XCTAssertNil(ScoreRoundInput.points(""))
+    }
+
     func testNoMultiplierReturnsBaseScorePlusProjects() {
         let rules = ScoreRules.standard
         XCTAssertEqual(rules.finalScore(baseScore: 100, projects: 20, multiplier: .none), 120)

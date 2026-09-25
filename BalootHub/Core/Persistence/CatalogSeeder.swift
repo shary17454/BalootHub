@@ -6,12 +6,20 @@ import SwiftData
 enum CatalogSeeder {
     static func seedIfNeeded(container: ModelContainer) {
         let context = ModelContext(container)
-        try? refresh(context: context)
+        do {
+            try refresh(context: context)
+        } catch {
+            AppLogger.persistence.error("Catalog refresh failed: \(error.localizedDescription, privacy: .private)")
+        }
     }
 
-    static func refresh(context: ModelContext, saveImmediately: Bool = true) throws {
-        let descriptor = FetchDescriptor<GameCatalogItem>()
-        let existingItems = (try? context.fetch(descriptor)) ?? []
+    static func refresh(
+        context: ModelContext,
+        saveImmediately: Bool = true,
+        fetchItems: (ModelContext) throws -> [GameCatalogItem] = { try $0.fetch(FetchDescriptor<GameCatalogItem>()) }
+    ) throws {
+        // A failed read is not an empty store: propagate it before inserting any records.
+        let existingItems = try fetchItems(context)
         var existingBySlug: [String: GameCatalogItem] = [:]
         for item in existingItems {
             existingBySlug[item.slug] = item

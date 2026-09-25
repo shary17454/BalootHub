@@ -95,7 +95,7 @@ struct AddEditRoundView: View {
 
             if let validationMessage {
                 Section {
-                    Text(validationMessage)
+                    Text(validationMessage.localized)
                         .foregroundStyle(AppColor.danger)
                         .font(AppTypography.caption)
                 }
@@ -169,13 +169,13 @@ struct AddEditRoundView: View {
         guard autoFillOpponentScore else { return }
         switch sourceTeam {
         case .teamOne:
-            guard let teamOneScore = Int(teamOneScoreText) else {
+            guard let teamOneScore = ScoreRoundInput.points(teamOneScoreText) else {
                 teamTwoScoreText = ""
                 return
             }
             teamTwoScoreText = String(ScoreRoundAutofill.complementaryScore(for: teamOneScore, mode: mode))
         case .teamTwo:
-            guard let teamTwoScore = Int(teamTwoScoreText) else {
+            guard let teamTwoScore = ScoreRoundInput.points(teamTwoScoreText) else {
                 teamOneScoreText = ""
                 return
             }
@@ -185,15 +185,19 @@ struct AddEditRoundView: View {
     }
 
     private func save() {
-        guard let teamOneScore = Int(teamOneScoreText), teamOneScore >= 0,
-              let teamTwoScore = Int(teamTwoScoreText), teamTwoScore >= 0 else {
+        guard let teamOneScore = ScoreRoundInput.points(teamOneScoreText),
+              let teamTwoScore = ScoreRoundInput.points(teamTwoScoreText),
+              let teamOneProjects = ScoreRoundInput.points(teamOneProjectsText, allowsEmpty: true),
+              let teamTwoProjects = ScoreRoundInput.points(teamTwoProjectsText, allowsEmpty: true) else {
             validationMessage = "أدخل نقاطًا صحيحة غير سالبة لكلا الفريقين."
             return
         }
-        let teamOneProjects = Int(teamOneProjectsText) ?? 0
-        let teamTwoProjects = Int(teamTwoProjectsText) ?? 0
-        guard teamOneProjects >= 0, teamTwoProjects >= 0 else {
-            validationMessage = "لا يمكن أن تكون نقاط المشاريع سالبة."
+        let rules = settingsList.first?.scoreRules ?? .standard
+        guard let one = rules.checkedFinalScore(baseScore: teamOneScore, projects: teamOneProjects, multiplier: multiplier),
+              let two = rules.checkedFinalScore(baseScore: teamTwoScore, projects: teamTwoProjects, multiplier: multiplier),
+              session.canRecordScores(teamOne: one, teamTwo: two, replacing: (roundToEdit ?? pendingRound)?.id, rules: rules)
+        else {
+            validationMessage = "القيمة كبيرة جدًا. أدخل نقاطًا أقل."
             return
         }
         guard teamOneScore > 0 || teamTwoScore > 0 || teamOneProjects > 0 || teamTwoProjects > 0 else {
@@ -214,7 +218,12 @@ struct AddEditRoundView: View {
         } else {
             // الاعتماد على العدد وحده كان يُنتج رقمين متطابقين بعد حذف صكة وسطية
             // (٣ صكات ⇒ حذف الثانية ⇒ التالية تأخذ الرقم ٣ الموجود أصلًا).
-            let nextRoundNumber = (session.rounds.map(\.roundNumber).max() ?? 0) + 1
+            let next = (session.rounds.map(\.roundNumber).max() ?? 0).addingReportingOverflow(1)
+            guard !next.overflow else {
+                validationMessage = "القيمة كبيرة جدًا. أدخل نقاطًا أقل."
+                return
+            }
+            let nextRoundNumber = next.partialValue
             let round = ScoreRound(
                 roundNumber: nextRoundNumber,
                 mode: mode,

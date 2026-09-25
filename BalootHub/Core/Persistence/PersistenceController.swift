@@ -24,12 +24,16 @@ enum PersistenceController {
     /// كان `fatalError` يعني انهيار التطبيق عند كل تشغيل بلا أي مخرج للمستخدم.
     /// البديل هنا تدرّج آمن: نحاول الدائم، ثم نسقط إلى مخزن داخل الذاكرة يُبقي التطبيق
     /// صالحًا للاستخدام في تلك الجلسة بدل أن يصبح غير قابل للفتح إطلاقًا.
-    static func makeContainer() -> ModelContainer {
+    static func makeContainer(
+        createPersistent: (Schema, ModelConfiguration) throws -> ModelContainer = {
+            try ModelContainer(for: $0, configurations: [$1])
+        }
+    ) -> ModelContainer {
         createApplicationSupportDirectoryIfNeeded()
 
         let configuration = ModelConfiguration(schema: appSchema, isStoredInMemoryOnly: false)
         do {
-            let container = try ModelContainer(for: appSchema, configurations: [configuration])
+            let container = try createPersistent(appSchema, configuration)
             CatalogSeeder.seedIfNeeded(container: container)
             SettingsRepository.ensureSettingsExist(container: container)
             return container
@@ -38,10 +42,13 @@ enum PersistenceController {
             // البيانات المحلية تبقى على القرص كما هي ولا تُمسح، فيمكن استرجاعها لاحقًا
             // إن أصلح تحديثٌ قادمٌ سببَ الفشل. `try?` كانت تبتلع سبب الفشل الفعلي
             // بلا أي أثر يُشخَّص منه لاحقًا؛ السبب الحقيقي الآن يُسجَّل صراحة.
-            AppLogger.persistence.error("تعذّر فتح مخزن SwiftData الدائم: \(error.localizedDescription, privacy: .public)")
-            assertionFailure("تعذّر فتح مخزن SwiftData الدائم؛ تم التحويل إلى مخزن داخل الذاكرة")
+            AppLogger.persistence.error("تعذّر فتح مخزن SwiftData الدائم: \(error.localizedDescription, privacy: .private)")
         }
         return makePreviewContainer()
+    }
+
+    static func isTemporary(_ container: ModelContainer) -> Bool {
+        container.configurations.allSatisfy(\.isStoredInMemoryOnly)
     }
 
     /// حاوية داخل الذاكرة فقط، تُستخدم في SwiftUI Previews واختبارات الوحدات،

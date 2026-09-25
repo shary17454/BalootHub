@@ -1,0 +1,30 @@
+{
+  "identifier": "F6EDBDB6-13C8-4F7A-8E25-9726CD977435",
+  "nonRenewingSubscriptions": [],
+  "products": [],
+  "settings": {"_failTransactionsEnabled": false, "_locale": "en_US", "_storefront": "USA", "_timeRate": 0},
+  "subscriptionGroups": [
+    {
+      "id": "84697261",
+      "localizations": [],
+      "name": "Baloot Plus",
+      "subscriptions": [
+        {
+          "adHocOffers": [], "codeOffers": [], "displayPrice": "9.99", "familyShareable": false,
+          "groupNumber": 1, "internalID": "84697262", "introductoryOffer": null,
+          "localizations": [{"description": "Local monthly test subscription", "displayName": "Baloot Plus Monthly", "locale": "en_US"}],
+          "productID": "app.balooThub.ios.plus.monthly", "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "Baloot Plus Monthly", "subscriptionGroupID": "84697261", "type": "RecurringSubscription"
+        },
+        {
+          "adHocOffers": [], "codeOffers": [], "displayPrice": "79.99", "familyShareable": false,
+          "groupNumber": 1, "internalID": "84697263", "introductoryOffer": null,
+          "localizations": [{"description": "Local yearly test subscription", "displayName": "Baloot Plus Yearly", "locale": "en_US"}],
+          "productID": "app.balooThub.ios.plus.yearly", "recurringSubscriptionPeriod": "P1Y",
+          "referenceName": "Baloot Plus Yearly", "subscriptionGroupID": "84697261", "type": "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version": {"major": 3, "minor": 0}
+}

@@ -148,11 +148,13 @@ final class SubscriptionStore {
     private let configuration: BalootPlusSubscriptionConfiguration
     private let ownerEntitlementOverride: BalootPlusOwnerEntitlementOverride
     @ObservationIgnored private var transactionUpdatesTask: Task<Void, Never>?
+    @ObservationIgnored private var entitlementRefreshGeneration = 0
 
     private(set) var products: [Product] = []
     private(set) var purchasedProductIDs: Set<String> = []
     private(set) var isLoading = false
     private(set) var isRestoringPurchases = false
+    private(set) var isPurchasing = false
     private(set) var purchaseState: BalootPlusPurchaseState = .idle
 
     init(
@@ -177,7 +179,7 @@ final class SubscriptionStore {
     }
 
     var isBusy: Bool {
-        isLoading || isRestoringPurchases
+        isLoading || isRestoringPurchases || isPurchasing
     }
 
     var configuredProducts: [BalootPlusProduct] {
@@ -198,6 +200,7 @@ final class SubscriptionStore {
     }
 
     func loadProducts() async {
+        guard !isBusy else { return }
         isLoading = true
         defer { isLoading = false }
 
@@ -218,17 +221,23 @@ final class SubscriptionStore {
         products.first { $0.id == configuredProduct.rawValue }
     }
 
-    func purchase(_ product: Product) async {
+    func purchase(
+        _ product: Product,
+        performPurchase: @MainActor (Product) async throws -> Product.PurchaseResult = { try await $0.purchase() }
+    ) async {
+        guard !isBusy, productIDs.contains(product.id) else { return }
+        isPurchasing = true
+        defer { isPurchasing = false }
         purchaseState = .idle
 
         do {
-            let result = try await product.purchase()
+            let result = try await performPurchase(product)
             switch result {
             case .success(let verificationResult):
                 let transaction = try Self.verifiedTransaction(from: verificationResult)
-                purchasedProductIDs.insert(transaction.productID)
                 await transaction.finish()
-                purchaseState = .purchased
+                await refreshEntitlements()
+                purchaseState = isPremiumUnlocked ? .purchased : .idle
             case .pending:
                 purchaseState = .pending
             case .userCancelled:
@@ -242,7 +251,7 @@ final class SubscriptionStore {
     }
 
     func restorePurchases() async {
-        guard !isRestoringPurchases else { return }
+        guard !isBusy else { return }
 
         isRestoringPurchases = true
         purchaseState = .restoring
@@ -269,18 +278,20 @@ final class SubscriptionStore {
     }
 
     func refreshEntitlements() async {
+        entitlementRefreshGeneration &+= 1
+        let generation = entitlementRefreshGeneration
         var activeProductIDs: Set<String> = []
 
         for await result in Transaction.currentEntitlements {
             guard let transaction = try? Self.verifiedTransaction(from: result) else { continue }
             guard productIDs.contains(transaction.productID) else { continue }
-            guard transaction.revocationDate == nil else { continue }
-            if let expirationDate = transaction.expirationDate, expirationDate < Date() {
-                continue
-            }
+            guard transaction.revocationDate == nil, !transaction.isUpgraded else { continue }
+            // StoreKit includes auto-renewable subscriptions in billing grace period.
+            // Filtering expirationDate here would incorrectly remove that valid entitlement.
             activeProductIDs.insert(transaction.productID)
         }
 
+        guard generation == entitlementRefreshGeneration, !Task.isCancelled else { return }
         purchasedProductIDs = activeProductIDs
     }
 
@@ -292,13 +303,9 @@ final class SubscriptionStore {
         guard let transaction = try? Self.verifiedTransaction(from: result) else { return }
         guard productIDs.contains(transaction.productID) else { return }
 
-        if transaction.revocationDate == nil {
-            purchasedProductIDs.insert(transaction.productID)
-        } else {
-            purchasedProductIDs.remove(transaction.productID)
-        }
-
         await transaction.finish()
+        // An update can be expired, revoked, or superseded. Refresh the authoritative set.
+        await refreshEntitlements()
     }
 
     private static func verifiedTransaction(

@@ -44,6 +44,10 @@ struct PlayerStatsSummary: Equatable {
     let scoringWeakestCategoryTitle: String
     let styleTitle: String
     let advice: String
+
+    var averagePointsText: String {
+        averagePoints.formatted(.number.precision(.fractionLength(0)))
+    }
 }
 
 enum PlayerStatsAnalyzer {
@@ -67,7 +71,7 @@ enum PlayerStatsAnalyzer {
         var wins = 0
         var losses = 0
         var ties = 0
-        var totalPoints = 0
+        var totalPoints = 0.0
         var sunRounds = 0
         var hokumRounds = 0
         var projectPoints = 0
@@ -80,7 +84,7 @@ enum PlayerStatsAnalyzer {
         for session in finished {
             let ours = session.teamOneTotal(rules: rules)
             let opponent = session.teamTwoTotal(rules: rules)
-            totalPoints += ours
+            totalPoints += Double(ours)
 
             let margin = ours - opponent
             if margin > 0 {
@@ -104,7 +108,7 @@ enum PlayerStatsAnalyzer {
                 case .hokum:
                     hokumRounds += 1
                 }
-                projectPoints += round.teamOneProjects
+                projectPoints = ScoreRules.addingScores(projectPoints, max(0, round.teamOneProjects))
                 let oursRound = round.teamOneFinalScore(rules: rules)
                 let opponentRound = round.teamTwoFinalScore(rules: rules)
                 if oursRound > 0, opponentRound == 0 {
@@ -115,7 +119,7 @@ enum PlayerStatsAnalyzer {
 
         let finishedMatches = finished.count
         let winRate = finishedMatches == 0 ? 0 : Double(wins) / Double(finishedMatches)
-        let averagePoints = finishedMatches == 0 ? 0 : Double(totalPoints) / Double(finishedMatches)
+        let averagePoints = finishedMatches == 0 ? 0 : totalPoints / Double(finishedMatches)
         let style = style(
             winRate: winRate,
             sunRounds: sunRounds,
