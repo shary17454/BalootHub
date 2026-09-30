@@ -223,4 +223,29 @@ struct ExpertAgentTests {
         let elapsed = Date().timeIntervalSince(start)
         #expect(elapsed < 1.5, "قرار واحد استغرق \(elapsed) ثانية")
     }
+
+    @Test("إلغاء مهمة الخبير يوقف البحث بالمحاكاة سريعًا")
+    func cancelledDecisionDoesNotContinueSimulating() async throws {
+        let expert = ExpertBalootAgent(samples: 256)
+        var state = GameState.newLocalMatch(rules: .simpleBidding)
+        state = try GameEngine.apply(.dealCards(seed: 42), to: state)
+        let bidder = try #require(state.currentTurnPlayerID)
+        state = try GameEngine.apply(.chooseMode(playerID: bidder, mode: .sun, trumpSuit: nil), to: state)
+        let player = try #require(state.currentTurnPlayerID)
+        let hand = try #require(state.hands[player])
+        let legal = LegalMoveValidator.legalCards(
+            hand: hand, trick: state.currentTrick, mode: .sun, trumpSuit: nil, rules: state.rules
+        )
+        #expect(legal.count > 1)
+
+        let result = await Task { () -> (PlayingCard, Duration) in
+            withUnsafeCurrentTask { $0?.cancel() }
+            let start = ContinuousClock.now
+            let card = expert.chooseCard(hand: hand, legalCards: legal, state: state)
+            return (card, start.duration(to: .now))
+        }.value
+
+        #expect(legal.contains(result.0))
+        #expect(result.1 < .milliseconds(500), "البحث الملغى استمر \(result.1)")
+    }
 }

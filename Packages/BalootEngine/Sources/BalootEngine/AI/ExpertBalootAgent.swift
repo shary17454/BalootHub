@@ -43,9 +43,13 @@ public struct ExpertBalootAgent: BalootAgent, Sendable {
         var bestAverage = -Double.infinity
 
         for candidate in legalCards {
+            // إلغاء المهمة الأب لا يوقف الحساب المتزامن تلقائيًا. أعِد ورقة
+            // قانونية فورًا؛ طبقة الواجهة تُهمل النتيجة إن كانت المهمة ملغاة.
+            if Task.isCancelled { return bestCard }
             var total = 0
             var completed = 0
             for sampleIndex in 0..<samples {
+                if Task.isCancelled { return bestCard }
                 // بذرة مشتقة من موضع اللعب والورقة المرشحة: عشوائية متنوعة لكنها حتمية.
                 var rng = SeededGenerator(seed: seed(for: candidate, state: state, sample: sampleIndex))
                 guard let determinized = determinize(state: state, myID: myID, myHand: hand,
@@ -53,7 +57,9 @@ public struct ExpertBalootAgent: BalootAgent, Sendable {
                 else { continue }
                 guard let afterPlay = try? GameEngine.apply(.playCard(playerID: myID, card: candidate), to: determinized)
                 else { continue }
-                total += playout(from: afterPlay, myTeamID: myTeamID)
+                let points = playout(from: afterPlay, myTeamID: myTeamID)
+                if Task.isCancelled { return bestCard }
+                total += points
                 completed += 1
             }
             guard completed > 0 else { continue }
@@ -76,7 +82,7 @@ public struct ExpertBalootAgent: BalootAgent, Sendable {
     private func playout(from state: GameState, myTeamID: Team.ID) -> Int {
         var current = state
         var steps = 0
-        while current.phase == .playing, steps < 40 {
+        while current.phase == .playing, steps < 40, !Task.isCancelled {
             steps += 1
             guard let playerID = current.currentTurnPlayerID,
                   let hand = current.hands[playerID], !hand.isEmpty else { break }
@@ -118,6 +124,7 @@ public struct ExpertBalootAgent: BalootAgent, Sendable {
         for id in others { assigned[id] = [] }
 
         for card in pool {
+            if Task.isCancelled { return nil }
             let eligible = others.filter { id in
                 (assigned[id]?.count ?? 0) < (needed[id] ?? 0)
                     && !(voids[id]?.contains(card.suit) ?? false)
