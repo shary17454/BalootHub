@@ -76,14 +76,9 @@ final class BalootPlusStoreKitTests: XCTestCase {
     func testRefundRemovesEntitlement() async throws {
         let session = try session()
         defer { session.clearTransactions() }
-        let store = SubscriptionStore()
-        // شغّل مستمع Transaction.updates قبل الشراء الخارجي كي نختبر تسليم
-        // الشراء والاسترداد إليه، لا قراءة لقطة قديمة بعد إنشاء المعاملة.
-        await store.configure()
         let transaction = try await session.buyProduct(identifier: BalootPlusProduct.yearly.rawValue)
-        for _ in 0..<100 where !store.purchasedProductIDs.contains(transaction.productID) {
-            try await Task.sleep(for: .milliseconds(50))
-        }
+        let store = SubscriptionStore()
+        await store.configure()
         XCTAssertTrue(store.purchasedProductIDs.contains(transaction.productID))
         let testTransaction = try XCTUnwrap(session.allTransactions().first {
             $0.productIdentifier == transaction.productID
