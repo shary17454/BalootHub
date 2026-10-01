@@ -77,12 +77,13 @@ final class BalootPlusStoreKitTests: XCTestCase {
         let session = try session()
         defer { session.clearTransactions() }
         let transaction = try await session.buyProduct(identifier: BalootPlusProduct.yearly.rawValue)
+        let testTransaction = try XCTUnwrap(session.allTransactions().first {
+            $0.identifier == Int(transaction.id)
+        })
+        try session.disableAutoRenewForTransaction(identifier: testTransaction.identifier)
         let store = SubscriptionStore()
         await store.configure()
         XCTAssertTrue(store.purchasedProductIDs.contains(transaction.productID))
-        let testTransaction = try XCTUnwrap(session.allTransactions().first {
-            $0.productIdentifier == transaction.productID
-        })
         try session.refundTransaction(identifier: testTransaction.identifier)
         // Refund delivery through StoreKit is asynchronous. Require the live listener
         // to remove access, with a bounded wait rather than assuming synchronous delivery.
