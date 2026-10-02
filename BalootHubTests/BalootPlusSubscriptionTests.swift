@@ -108,10 +108,14 @@ final class BalootPlusStoreKitTests: XCTestCase {
         try session.refundTransaction(identifier: testTransaction.identifier)
         // Refund delivery through StoreKit is asynchronous. Require the live listener
         // to remove access, with a bounded wait rather than assuming synchronous delivery.
-        for _ in 0..<100 where !store.purchasedProductIDs.isEmpty {
-            try await Task.sleep(for: .milliseconds(50))
+        for _ in 0..<300 where !store.purchasedProductIDs.isEmpty {
+            try await Task.sleep(for: .milliseconds(100))
         }
-        XCTAssertTrue(store.purchasedProductIDs.isEmpty)
+        let storeKitEntitlements = await currentEntitlementIDs()
+        XCTAssertTrue(
+            store.purchasedProductIDs.isEmpty,
+            "StoreKit current entitlements after refund: \(storeKitEntitlements.sorted())"
+        )
     }
 
     func testBillingGracePeriodKeepsEntitlement() async throws {
