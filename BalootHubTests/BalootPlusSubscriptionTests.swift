@@ -102,6 +102,15 @@ final class BalootPlusStoreKitTests: XCTestCase {
             $0.identifier == Int(transaction.id)
         })
         try session.disableAutoRenewForTransaction(identifier: testTransaction.identifier)
+        var currentProductIDs: Set<String> = []
+        for _ in 0..<300 {
+            currentProductIDs = await currentEntitlementIDs()
+            if currentProductIDs.contains(transaction.productID) { break }
+            try await Task.sleep(for: .milliseconds(100))
+        }
+        guard currentProductIDs.contains(transaction.productID) else {
+            return XCTFail("StoreKit did not expose the external purchase before the refund test")
+        }
         let store = SubscriptionStore()
         await store.configure()
         XCTAssertTrue(store.purchasedProductIDs.contains(transaction.productID))
