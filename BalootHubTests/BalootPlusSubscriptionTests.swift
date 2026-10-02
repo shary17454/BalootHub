@@ -39,18 +39,39 @@ final class BalootPlusSubscriptionTests: XCTestCase {
 /// SKTestSession routes every transaction to the local test store, never a real Apple account.
 @MainActor
 final class BalootPlusStoreKitTests: XCTestCase {
-    private func session() throws -> SKTestSession {
+    private enum SetupError: Error {
+        case staleEntitlements
+    }
+
+    private func currentEntitlementIDs() async -> Set<String> {
+        var productIDs: Set<String> = []
+        for await result in Transaction.currentEntitlements {
+            if case .verified(let transaction) = result {
+                productIDs.insert(transaction.productID)
+            }
+        }
+        return productIDs
+    }
+
+    private func session() async throws -> SKTestSession {
         let url = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
             .appendingPathComponent("Fixtures/BalootPlus.storekit")
         let session = try SKTestSession(contentsOf: url)
         session.resetToDefaultState()
         session.disableDialogs = true
         session.clearTransactions()
-        return session
+        for _ in 0..<200 {
+            if await currentEntitlementIDs().isEmpty {
+                return session
+            }
+            try await Task.sleep(for: .milliseconds(50))
+        }
+        XCTFail("StoreKit still reports an entitlement after clearing the shared test session")
+        throw SetupError.staleEntitlements
     }
 
     func testPurchaseRestoreAndExpirationUseCurrentEntitlements() async throws {
-        let session = try session()
+        let session = try await session()
         defer { session.clearTransactions() }
         let store = SubscriptionStore()
         await store.configure()
@@ -74,7 +95,7 @@ final class BalootPlusStoreKitTests: XCTestCase {
     }
 
     func testRefundRemovesEntitlement() async throws {
-        let session = try session()
+        let session = try await session()
         defer { session.clearTransactions() }
         let transaction = try await session.buyProduct(identifier: BalootPlusProduct.yearly.rawValue)
         let testTransaction = try XCTUnwrap(session.allTransactions().first {
@@ -94,7 +115,7 @@ final class BalootPlusStoreKitTests: XCTestCase {
     }
 
     func testBillingGracePeriodKeepsEntitlement() async throws {
-        let session = try session()
+        let session = try await session()
         defer { session.clearTransactions() }
         let productID = BalootPlusProduct.monthly.rawValue
         _ = try await session.buyProduct(identifier: productID)
@@ -111,7 +132,7 @@ final class BalootPlusStoreKitTests: XCTestCase {
     }
 
     func testPendingApprovalDoesNotUnlockSubscription() async throws {
-        let session = try session()
+        let session = try await session()
         defer { session.clearTransactions() }
         session.askToBuyEnabled = true
         let store = SubscriptionStore()
@@ -123,7 +144,7 @@ final class BalootPlusStoreKitTests: XCTestCase {
     }
 
     func testProductLoadingCanRetryAfterNetworkFailure() async throws {
-        let session = try session()
+        let session = try await session()
         defer { session.clearTransactions() }
         try await session.setSimulatedError(.generic(.networkError(URLError(.notConnectedToInternet))), forAPI: .loadProducts)
         let store = SubscriptionStore()
@@ -137,7 +158,7 @@ final class BalootPlusStoreKitTests: XCTestCase {
     }
 
     func testPurchaseAndRestoreCannotOverlapAndCancellationReleasesLock() async throws {
-        let session = try session()
+        let session = try await session()
         defer { session.clearTransactions() }
         let store = SubscriptionStore()
         await store.loadProducts()
