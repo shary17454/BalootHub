@@ -131,14 +131,22 @@ final class BalootPlusStoreKitTests: XCTestCase {
         let session = try await session()
         defer { session.clearTransactions() }
         let productID = BalootPlusProduct.monthly.rawValue
-        _ = try await session.buyProduct(identifier: productID)
         session.shouldEnterBillingRetryOnRenewal = true
         session.billingGracePeriodIsEnabled = true
+        _ = try await session.buyProduct(identifier: productID)
         try session.forceRenewalOfSubscription(productIdentifier: productID)
         let products = try await Product.products(for: [productID])
         let subscription = try XCTUnwrap(products.first?.subscription)
-        let statuses = try await subscription.status
-        XCTAssertTrue(statuses.contains { $0.state == .inGracePeriod })
+        var statuses = try await subscription.status
+        // StoreKit Test publishes the simulated renewal asynchronously.
+        for _ in 0..<50 where !statuses.contains(where: { $0.state == .inGracePeriod }) {
+            try await Task.sleep(for: .milliseconds(100))
+            statuses = try await subscription.status
+        }
+        XCTAssertTrue(
+            statuses.contains { $0.state == .inGracePeriod },
+            "Observed subscription states: \(statuses.map { String(describing: $0.state) })"
+        )
         let store = SubscriptionStore()
         await store.refreshEntitlements()
         XCTAssertTrue(store.purchasedProductIDs.contains(productID))
