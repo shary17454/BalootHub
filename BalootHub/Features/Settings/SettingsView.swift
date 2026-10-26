@@ -129,11 +129,11 @@ struct SettingsView: View {
 
             Section("اللعب الجماعي") {
                 NavigationLink {
-                    MultiplayerReadinessView()
+                    OnlineBalootView()
                 } label: {
-                    Label("جاهزية اللعب الجماعي", systemImage: "person.2.wave.2")
+                    Label("اللعب مع الأصدقاء عبر الإنترنت", systemImage: "person.2.wave.2")
                 }
-                Text("التطبيق يعمل دون إنترنت بالكامل. هذه الصفحة توضّح ما جُهِّز في البنية لدعم اللعب عن بُعد لاحقًا.")
+                Text("أنشئ غرفة خاصة لأربعة لاعبين أو انضم برمزها، يحتاج هذا النمط اتصالًا بالإنترنت")
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
             }
@@ -141,7 +141,7 @@ struct SettingsView: View {
             Section("عن التطبيق") {
                 LabeledContent("الاسم", value: "البلوت".localized)
                 LabeledContent("الإصدار", value: Self.appVersion)
-                Text("لا يجمع التطبيق أي بيانات شخصية، ولا يحتاج اتصالًا بالإنترنت. كل البيانات تُخزَّن محليًا على جهازك فقط.")
+                Text("اللعب المحلي والنتائج محفوظة على جهازك، عند اختيار اللعب عبر الإنترنت تُرسل الأسماء المستعارة وحركات المباراة إلى خادم الغرف المؤقتة")
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
             }
