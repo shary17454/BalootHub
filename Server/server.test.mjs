@@ -2,9 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {once} from 'node:events';
 import {createServer,Engine} from './server.mjs';
-const server=createServer(new Engine());server.listen(0,'127.0.0.1');await once(server,'listening');
-const base=`http://127.0.0.1:${server.address().port}`;
-test.after(async()=>await new Promise(r=>server.close(r)));
+const server=process.env.BALOOT_TEST_BASE?null:createServer(new Engine());
+if(server){server.listen(0,'127.0.0.1');await once(server,'listening');}
+const base=process.env.BALOOT_TEST_BASE||`http://127.0.0.1:${server.address().port}`;
+test.after(async()=>{if(server)await new Promise(r=>server.close(r));});
 async function call(path,body,token){const res=await fetch(base+path,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},body:body===undefined?undefined:JSON.stringify(body)});return{status:res.status,...await res.json()};}
 let code,clients=[];
 test('creates a private room with opaque session and hides it from unauthenticated readers',async()=>{
