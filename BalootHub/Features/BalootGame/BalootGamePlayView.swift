@@ -9,7 +9,6 @@ struct BalootGamePlayView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.modelContext) private var modelContext
     @Environment(AppEnvironment.self) private var appEnvironment
     @State private var viewModel: BalootGameViewModel
@@ -196,22 +195,22 @@ struct BalootGamePlayView: View {
     ///
     /// عند مقاسات خط الوصولية يصير المحتوى أطول من الشاشة، فتُدفع أزرار المزايدة
     /// خارجها بلا أي وسيلة للوصول إليها — أي أن اللاعب لا يستطيع المزايدة أصلًا.
-    /// لذلك يتحوّل التخطيط عندها إلى تمرير رأسي كامل بلا `Spacer`، ويبقى التوزيع
-    /// الثابت على المقاسات العادية حيث يتّسع كل شيء.
+    /// يتغيّر التخطيط مع عرض النافذة الفعلي عند فتح الجهاز أو طيّه، وليس مع نوعه
+    /// أو اتجاهه. خطوط الوصولية تحتفظ بالتخطيط الرأسي القابل للتمرير.
     @ViewBuilder
     private var tableLayout: some View {
-        if dynamicTypeSize.isAccessibilitySize || horizontalSizeClass != .regular {
+        GeometryReader { geometry in
             ScrollView {
-                VStack(spacing: AppSpacing.lg) {
-                    topBar
-                    centerPanel
-                    trickArea
-                    humanHandArea
+                if AppLayout.usesSeatedTable(width: geometry.size.width, dynamicTypeSize: dynamicTypeSize) {
+                    seatedTableLayout
+                } else {
+                    VStack(spacing: AppSpacing.lg) {
+                        topBar
+                        centerPanel
+                        trickArea
+                        humanHandArea
+                    }
                 }
-            }
-        } else if horizontalSizeClass == .regular {
-            ScrollView {
-                seatedTableLayout
             }
         }
     }

@@ -14,7 +14,7 @@ concurrency:
 jobs:
   engine-tests:
     name: اختبارات محرك BalootEngine
-    runs-on: macos-15
+    runs-on: xcode-27
     steps:
       - uses: actions/checkout@v4
       - name: عرض إصدار Swift
@@ -25,12 +25,14 @@ jobs:
 
   app-build-and-test:
     name: بناء واختبار تطبيق BalootHub
-    runs-on: macos-15
+    runs-on: xcode-27
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - name: عرض إصدار Xcode
-        run: xcodebuild -version
+        run: |
+          xcodebuild -version
+          xcodebuild -version | head -1 | grep -Eq '^Xcode 27(\.|$)'
       - name: اختيار جهاز محاكاة آيفون متاح
         id: sim
         run: |

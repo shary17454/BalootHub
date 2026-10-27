@@ -60,6 +60,13 @@ extension View {
 
 /// مقاسات تخطيط مشتركة تعتمد عليها الشاشات العريضة.
 enum AppLayout {
+    /// الحد الأدنى لعرض طاولة اللاعبين الأربعة، وفق المساحة المتاحة لا نوع الجهاز.
+    static let seatedTableMinimumWidth: CGFloat = 620
+
+    static func usesSeatedTable(width: CGFloat, dynamicTypeSize: DynamicTypeSize) -> Bool {
+        width >= seatedTableMinimumWidth && !dynamicTypeSize.isAccessibilitySize
+    }
+
     /// عرض مريح للقراءة يقارب ما توصي به آبل لعمود نص واحد.
     static let readableContentWidth: CGFloat = 700
 

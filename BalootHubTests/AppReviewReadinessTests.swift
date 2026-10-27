@@ -5,6 +5,32 @@ import StoreKit
 import StoreKitTest
 @testable import BalootHub
 
+final class DuoLayoutTests: XCTestCase {
+    func testTableLayoutFollowsAvailableWidthAsDeviceResizes() {
+        XCTAssertFalse(AppLayout.usesSeatedTable(width: 390, dynamicTypeSize: .large))
+        XCTAssertFalse(AppLayout.usesSeatedTable(width: 619, dynamicTypeSize: .large))
+        XCTAssertTrue(AppLayout.usesSeatedTable(width: 620, dynamicTypeSize: .large))
+        XCTAssertTrue(AppLayout.usesSeatedTable(width: 900, dynamicTypeSize: .large))
+        XCTAssertFalse(AppLayout.usesSeatedTable(width: 900, dynamicTypeSize: .accessibility1))
+    }
+
+    func testWelcomeControlsMoveClearOfVerticalFold() {
+        let display = CGSize(width: 950, height: 670)
+        let fold = CGRect(x: 460, y: 0, width: 30, height: 670)
+        let frame = WelcomeLayout.foregroundFrame(in: display, avoiding: fold)
+        XCTAssertEqual(frame, CGRect(x: 490, y: 0, width: 460, height: 670))
+        XCTAssertFalse(frame.intersects(fold))
+    }
+
+    func testWelcomeControlsMoveClearOfHorizontalFold() {
+        let display = CGSize(width: 670, height: 950)
+        let fold = CGRect(x: 0, y: 460, width: 670, height: 30)
+        let frame = WelcomeLayout.foregroundFrame(in: display, avoiding: fold)
+        XCTAssertEqual(frame, CGRect(x: 0, y: 490, width: 670, height: 460))
+        XCTAssertFalse(frame.intersects(fold))
+    }
+}
+
 /// Render actual views using disposable data. Attachments are for human visual review,
 /// not pixel-diff assertions or proof of VoiceOver/physical-device accessibility.
 @MainActor
