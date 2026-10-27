@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB2026102600000000000002 /* OnlineBalootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB2026102600000000000001; };
 		AE8D2AED780B745D3FB41C69 /* PrivacyManifestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89D1D12621991C946A4E6D8B /* PrivacyManifestTests.swift */; };
 		37129F95B2F77324B92143CD /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5AF289556F8FADC8ACDCAEED /* PrivacyInfo.xcprivacy */; };
 		D80DF04944529234006411A0 /* AdaptiveLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06009898129BB8065CC11A13 /* AdaptiveLayout.swift */; };
@@ -170,6 +171,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		AB2026102600000000000001 /* OnlineBalootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlineBalootView.swift; sourceTree = "<group>"; };
 		89D1D12621991C946A4E6D8B /* PrivacyManifestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyManifestTests.swift; sourceTree = "<group>"; };
 		5AF289556F8FADC8ACDCAEED /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		06009898129BB8065CC11A13 /* AdaptiveLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveLayout.swift; sourceTree = "<group>"; };
@@ -454,6 +456,7 @@
 				AA29D6EE75EE32A0BC90A631 /* AppearanceStudioView.swift */,
 				C8F07391EC254A07B8FD6B6F /* HouseRulesView.swift */,
 				B65370442FE445AB8978857A /* SettingsView.swift */,
+				AB2026102600000000000001 /* OnlineBalootView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -916,6 +919,7 @@
 				D9F9DDE126A54A5C809A7C50 /* ScorekeeperSessionView.swift in Sources */,
 				900B5945118245E694BD58F3 /* HouseRulesView.swift in Sources */,
 				79BA9746DCA54A48B4846ED5 /* SettingsView.swift in Sources */,
+				AB2026102600000000000002 /* OnlineBalootView.swift in Sources */,
 				F2BAAC0D94FF47CA855544E0 /* String+Localized.swift in Sources */,
 				B613485B54B27AD9B941AD0A /* ProjectDeclarationRecord.swift in Sources */,
 				821A2A823B60776A5228256C /* ProjectStatsAnalyzer.swift in Sources */,
