@@ -139,6 +139,13 @@ struct SettingsView: View {
             }
 
             Section("عن التطبيق") {
+                Button {
+                    NotificationCenter.default.post(name: .balootIssueReportRequested, object: nil)
+                } label: {
+                    Label("الإبلاغ عن مشكلة", systemImage: "exclamationmark.bubble")
+                }
+                .accessibilityHint("يفتح نموذج البلاغ مع معاينة اختيارية لصورة الشاشة")
+                .accessibilityIdentifier("openIssueReport")
                 LabeledContent("الاسم", value: "البلوت".localized)
                 LabeledContent("الإصدار", value: Self.appVersion)
                 Text("اللعب المحلي والنتائج محفوظة على جهازك، عند اختيار اللعب عبر الإنترنت تُرسل الأسماء المستعارة وحركات المباراة إلى خادم الغرف المؤقتة")

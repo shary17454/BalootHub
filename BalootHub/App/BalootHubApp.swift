@@ -3,10 +3,13 @@ import SwiftData
 
 @main
 struct BalootHubApp: App {
+    @UIApplicationDelegateAdaptor(ShakeReportAppDelegate.self) private var shakeReportDelegate
     @Environment(\.scenePhase) private var scenePhase
     let modelContainer = Self.makeContainer()
     @State private var appEnvironment = AppEnvironment()
     @State private var hasEnteredApp = ProcessInfo.processInfo.arguments.contains("-BalootHubStartRoute")
+    @State private var issueScreenshot: UIImage?
+    @State private var isIssueReportPresented = false
 
     var body: some Scene {
         WindowGroup {
@@ -32,6 +35,17 @@ struct BalootHubApp: App {
                 }
             }
                 .environment(appEnvironment)
+                .onReceive(NotificationCenter.default.publisher(for: .balootIssueReportRequested)) { _ in
+                    guard !isIssueReportPresented, scenePhase == .active else { return }
+                    issueScreenshot = IssueReportCapture.screenshot()
+                    isIssueReportPresented = true
+                }
+                .sheet(isPresented: $isIssueReportPresented) {
+                    IssueReportView(screenshot: issueScreenshot)
+                }
+                .onChange(of: isIssueReportPresented) { _, presented in
+                    if !presented { issueScreenshot = nil }
+                }
                 .task { await appEnvironment.subscriptionStore.configure() }
                 .onChange(of: scenePhase) { _, phase in
                     if phase == .active {

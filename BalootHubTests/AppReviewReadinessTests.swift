@@ -5,6 +5,37 @@ import StoreKit
 import StoreKitTest
 @testable import BalootHub
 
+@MainActor
+final class IssueReportContentTests: XCTestCase {
+    func testReportUsesRequestedRecipientAndVersion() {
+        XCTAssertEqual(IssueReportContent.recipient, "sharyalhwaid@gmail.com")
+        XCTAssertEqual(IssueReportContent.subject(version: "3.1.1"), "بلاغ من تطبيق البلوت 3.1.1")
+    }
+
+    func testReportTrimsDescriptionAndIncludesOnlyBasicDiagnostics() {
+        let body = IssueReportContent.body(details: "  تعطل عند فتح الطاولة  \n",
+                                           version: "3.1.1 (522)", systemVersion: "27.1")
+        XCTAssertTrue(body.contains("وصف المشكلة:\nتعطل عند فتح الطاولة"))
+        XCTAssertTrue(body.contains("البلوت 3.1.1 (522)"))
+        XCTAssertTrue(body.contains("iOS 27.1"))
+        XCTAssertFalse(body.contains("token"))
+    }
+
+    func testShakeRequestsReportButOtherMotionDoesNot() {
+        let reportRequested = expectation(description: "Shake requests issue report")
+        reportRequested.assertForOverFulfill = true
+        let token = NotificationCenter.default.addObserver(
+            forName: .balootIssueReportRequested, object: nil, queue: .main
+        ) { _ in reportRequested.fulfill() }
+        defer { NotificationCenter.default.removeObserver(token) }
+
+        let delegate = ShakeReportAppDelegate()
+        delegate.motionEnded(.remoteControlPlay, with: nil)
+        delegate.motionEnded(.motionShake, with: nil)
+        wait(for: [reportRequested], timeout: 1)
+    }
+}
+
 final class DuoLayoutTests: XCTestCase {
     func testTableLayoutFollowsAvailableWidthAsDeviceResizes() {
         XCTAssertFalse(AppLayout.usesSeatedTable(width: 390, dynamicTypeSize: .large))

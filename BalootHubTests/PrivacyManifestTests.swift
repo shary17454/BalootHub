@@ -41,13 +41,21 @@ final class PrivacyManifestTests: XCTestCase {
         }
     }
 
-    /// التطبيق لا يجمع بيانات ولا يتتبّع؛ أي تغيير هنا يستوجب تحديث إفصاح المتجر.
-    func testDeclaresNoTrackingAndNoCollectedData() throws {
+    /// غرف البلوت تجمع الاسم المستعار وحركات اللعب مؤقتًا، بلا تتبّع.
+    func testDeclaresOnlineRoomDataWithoutTracking() throws {
         let manifest = try Self.loadManifest()
 
         XCTAssertEqual(manifest["NSPrivacyTracking"] as? Bool, false)
         XCTAssertEqual((manifest["NSPrivacyTrackingDomains"] as? [String])?.isEmpty, true)
-        XCTAssertEqual((manifest["NSPrivacyCollectedDataTypes"] as? [Any])?.isEmpty, true)
+        let entries = try XCTUnwrap(manifest["NSPrivacyCollectedDataTypes"] as? [[String: Any]])
+        let types = Set(entries.compactMap { $0["NSPrivacyCollectedDataType"] as? String })
+        XCTAssertEqual(types, ["NSPrivacyCollectedDataTypeUserID", "NSPrivacyCollectedDataTypeGameplayContent"])
+        for entry in entries {
+            XCTAssertEqual(entry["NSPrivacyCollectedDataTypeLinked"] as? Bool, true)
+            XCTAssertEqual(entry["NSPrivacyCollectedDataTypeTracking"] as? Bool, false)
+            XCTAssertEqual(entry["NSPrivacyCollectedDataTypePurposes"] as? [String],
+                           ["NSPrivacyCollectedDataTypePurposeAppFunctionality"])
+        }
     }
 
     /// يمنع تكرار ما حدث فعلًا: نص في README يدّعي أن البيان غير مطلوب.

@@ -44,6 +44,7 @@
 		175C0313307E4C228B8FB145 /* AddEditRoundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B9C56455AED417BB794EFB6 /* AddEditRoundView.swift */; };
 		18B4663CAF194B098B610909 /* RulesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C714AB19C41A4452A6408D3C /* RulesView.swift */; };
 		1B6146E89E15460695DA7A4D /* BalootHubApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10E2C56EFED4109AA317BF3 /* BalootHubApp.swift */; };
+		A9C1D3E5F709112233445566 /* IssueReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9C1D3E5F709112233445567 /* IssueReportView.swift */; };
 		1C4D6563A41D4FDCA8234768 /* GameCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0F497C746E14D9B9D37C16E /* GameCategory.swift */; };
 		1F1CB02E49114969893329E4 /* OfflineTournament.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96B0E69259F48239E70C5E8 /* OfflineTournament.swift */; };
 		230B93AF93A34D21B23D548F /* AppRadius.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD327F6E506640BCBCF86B90 /* AppRadius.swift */; };
@@ -287,6 +288,7 @@
 		CD327F6E506640BCBCF86B90 /* AppRadius.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRadius.swift; sourceTree = "<group>"; };
 		D0B5439E97E842DC97907201 /* NewScorekeeperSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewScorekeeperSessionView.swift; sourceTree = "<group>"; };
 		D10E2C56EFED4109AA317BF3 /* BalootHubApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalootHubApp.swift; sourceTree = "<group>"; };
+		A9C1D3E5F709112233445567 /* IssueReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IssueReportView.swift; sourceTree = "<group>"; };
 		D3C4E5F60718293A4B5C6D6F /* WhatToPlayOptionDisclosure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayOptionDisclosure.swift; sourceTree = "<group>"; };
 		D3C4E5F60718293A4B5C6D71 /* WhatToPlayOptionDisclosureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatToPlayOptionDisclosureTests.swift; sourceTree = "<group>"; };
 		D4B917E8B5C44A0CB153A9C2 /* ScoringQuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoringQuizView.swift; sourceTree = "<group>"; };
@@ -689,6 +691,7 @@
 				2EBD530C3E0F4E029B78C128 /* AppEnvironment.swift */,
 				0E2F62849EC7457492219078 /* AppRouter.swift */,
 				D10E2C56EFED4109AA317BF3 /* BalootHubApp.swift */,
+				A9C1D3E5F709112233445567 /* IssueReportView.swift */,
 				41EF024C529F4D39B261D9D9 /* RootTabView.swift */,
 			);
 			path = App;
@@ -843,6 +846,7 @@
 				B9C349B1B96A4C3D975581BB /* AppEnvironment.swift in Sources */,
 				A1E170971A1A4EF58D95E021 /* AppRouter.swift in Sources */,
 				1B6146E89E15460695DA7A4D /* BalootHubApp.swift in Sources */,
+				A9C1D3E5F709112233445566 /* IssueReportView.swift in Sources */,
 				529EF7EDF1804FBC82FED2EC /* RootTabView.swift in Sources */,
 				003F12B7AF1147CFA775C624 /* AppAnimation.swift in Sources */,
 				8030A3C195BA457F83922533 /* AppColor.swift in Sources */,
@@ -1066,7 +1070,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 521;
+				CURRENT_PROJECT_VERSION = 522;
 				DEVELOPMENT_ASSET_PATHS = BalootHub/PreviewContent;
 				DEVELOPMENT_TEAM = 4HM66AD594;
 				ENABLE_PREVIEWS = YES;
@@ -1084,7 +1088,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.1.0;
+				MARKETING_VERSION = 3.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = app.balooThub.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1098,10 +1102,10 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 521;
+				CURRENT_PROJECT_VERSION = 522;
 				DEVELOPMENT_TEAM = 4HM66AD594;
 				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 3.1.0;
+				MARKETING_VERSION = 3.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = app.balooThub.ios.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -1116,10 +1120,10 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 521;
+				CURRENT_PROJECT_VERSION = 522;
 				DEVELOPMENT_TEAM = 4HM66AD594;
 				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 3.1.0;
+				MARKETING_VERSION = 3.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = app.balooThub.ios.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -1191,7 +1195,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 521;
+				CURRENT_PROJECT_VERSION = 522;
 				DEVELOPMENT_ASSET_PATHS = BalootHub/PreviewContent;
 				DEVELOPMENT_TEAM = 4HM66AD594;
 				ENABLE_PREVIEWS = YES;
@@ -1209,7 +1213,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.1.0;
+				MARKETING_VERSION = 3.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = app.balooThub.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
