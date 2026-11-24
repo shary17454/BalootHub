@@ -25,6 +25,18 @@ final class AppEnvironment {
         }
     }
 
+    /// يفتح الصفحة الأولى لاختصار مقصود، مع إبقاء تاريخ التبويبات الأخرى.
+    func openTabRoot(_ tab: AppTab) {
+        switch tab {
+        case .home: homePath = []
+        case .catalog: catalogPath = []
+        case .scorekeeper: scorekeeperPath = []
+        case .history: historyPath = []
+        case .settings: break
+        }
+        selectedTab = tab
+    }
+
     func openScorekeeperSession(id: UUID, tab: AppTab = .scorekeeper) {
         navigate(to: .scorekeeperSession(id: id), tab: tab)
     }

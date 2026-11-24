@@ -1,6 +1,272 @@
 {
   "sourceLanguage": "ar",
   "strings": {
+    "مجلس البلوت": {
+      "localizations": {
+        "de": {"stringUnit": {"state": "translated", "value": "Baloot-Runde"}},
+        "en": {"stringUnit": {"state": "translated", "value": "Baloot Majlis"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Mesa de Baloot"}},
+        "fr": {"stringUnit": {"state": "translated", "value": "Salon de Baloot"}},
+        "hi": {"stringUnit": {"state": "translated", "value": "बलूत बैठक"}},
+        "id": {"stringUnit": {"state": "translated", "value": "Majelis Baloot"}},
+        "ru": {"stringUnit": {"state": "translated", "value": "Гостиная Baloot"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Balot meclisi"}},
+        "ur": {"stringUnit": {"state": "translated", "value": "بلوٹ کی محفل"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "Baloot 牌室"}}
+      }
+    },
+    "العب البلوت": {
+      "localizations": {
+        "de": {"stringUnit": {"state": "translated", "value": "Baloot spielen"}},
+        "en": {"stringUnit": {"state": "translated", "value": "Play Baloot"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Jugar Baloot"}},
+        "fr": {"stringUnit": {"state": "translated", "value": "Jouer au Baloot"}},
+        "hi": {"stringUnit": {"state": "translated", "value": "बलूत खेलें"}},
+        "id": {"stringUnit": {"state": "translated", "value": "Main Baloot"}},
+        "ru": {"stringUnit": {"state": "translated", "value": "Играть в Baloot"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Balot oyna"}},
+        "ur": {"stringUnit": {"state": "translated", "value": "بلوٹ کھیلیں"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "玩 Baloot"}}
+      }
+    },
+    "العب محليًا دون اتصال": {
+      "localizations": {
+        "de": {"stringUnit": {"state": "translated", "value": "Lokal ohne Internet spielen"}},
+        "en": {"stringUnit": {"state": "translated", "value": "Play locally offline"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Juega sin conexión"}},
+        "fr": {"stringUnit": {"state": "translated", "value": "Jouez hors ligne"}},
+        "hi": {"stringUnit": {"state": "translated", "value": "ऑफ़लाइन खेलें"}},
+        "id": {"stringUnit": {"state": "translated", "value": "Main secara offline"}},
+        "ru": {"stringUnit": {"state": "translated", "value": "Играть без интернета"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Çevrimdışı oyna"}},
+        "ur": {"stringUnit": {"state": "translated", "value": "آف لائن کھیلیں"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "离线畅玩"}}
+      }
+    },
+    "العب مع الأصدقاء": {
+      "localizations": {
+        "de": {"stringUnit": {"state": "translated", "value": "Mit Freunden spielen"}},
+        "en": {"stringUnit": {"state": "translated", "value": "Play with friends"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Jugar con amigos"}},
+        "fr": {"stringUnit": {"state": "translated", "value": "Jouer avec des amis"}},
+        "hi": {"stringUnit": {"state": "translated", "value": "दोस्तों के साथ खेलें"}},
+        "id": {"stringUnit": {"state": "translated", "value": "Main bersama teman"}},
+        "ru": {"stringUnit": {"state": "translated", "value": "Играть с друзьями"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Arkadaşlarla oyna"}},
+        "ur": {"stringUnit": {"state": "translated", "value": "دوستوں کے ساتھ کھیلیں"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "与好友同玩"}}
+      }
+    },
+    "غرف خاصة عبر الإنترنت": {
+      "localizations": {
+        "de": {"stringUnit": {"state": "translated", "value": "Private Online-Räume"}},
+        "en": {"stringUnit": {"state": "translated", "value": "Private online rooms"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Salas privadas en línea"}},
+        "fr": {"stringUnit": {"state": "translated", "value": "Salons privés en ligne"}},
+        "hi": {"stringUnit": {"state": "translated", "value": "निजी ऑनलाइन कमरे"}},
+        "id": {"stringUnit": {"state": "translated", "value": "Ruang daring privat"}},
+        "ru": {"stringUnit": {"state": "translated", "value": "Закрытые комнаты онлайн"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Özel çevrimiçi odalar"}},
+        "ur": {"stringUnit": {"state": "translated", "value": "نجی آن لائن کمرے"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "线上私人房间"}}
+      }
+    },
+    "سجّل النقاط": {
+      "localizations": {
+        "de": {"stringUnit": {"state": "translated", "value": "Punkte erfassen"}},
+        "en": {"stringUnit": {"state": "translated", "value": "Track scores"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Registrar puntos"}},
+        "fr": {"stringUnit": {"state": "translated", "value": "Noter les scores"}},
+        "hi": {"stringUnit": {"state": "translated", "value": "स्कोर दर्ज करें"}},
+        "id": {"stringUnit": {"state": "translated", "value": "Catat skor"}},
+        "ru": {"stringUnit": {"state": "translated", "value": "Записать очки"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Puanları kaydet"}},
+        "ur": {"stringUnit": {"state": "translated", "value": "اسکور درج کریں"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "记录分数"}}
+      }
+    },
+    "حساب نقاط المجلس": {
+      "localizations": {
+        "de": {"stringUnit": {"state": "translated", "value": "Punkte für eure Runde"}},
+        "en": {"stringUnit": {"state": "translated", "value": "Score your table"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Lleva la puntuación de tu mesa"}},
+        "fr": {"stringUnit": {"state": "translated", "value": "Comptez les points de votre table"}},
+        "hi": {"stringUnit": {"state": "translated", "value": "अपनी मेज़ के अंक गिनें"}},
+        "id": {"stringUnit": {"state": "translated", "value": "Hitung skor di meja"}},
+        "ru": {"stringUnit": {"state": "translated", "value": "Подсчёт очков за столом"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Masanızın puanını hesaplayın"}},
+        "ur": {"stringUnit": {"state": "translated", "value": "اپنی محفل کے پوائنٹس گنیں"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "计算牌桌分数"}}
+      }
+    },
+    "أكاديمية البلوت": {
+      "localizations": {
+        "de": {"stringUnit": {"state": "translated", "value": "Baloot-Akademie"}},
+        "en": {"stringUnit": {"state": "translated", "value": "Baloot Academy"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Academia de Baloot"}},
+        "fr": {"stringUnit": {"state": "translated", "value": "Académie de Baloot"}},
+        "hi": {"stringUnit": {"state": "translated", "value": "बलूत अकादमी"}},
+        "id": {"stringUnit": {"state": "translated", "value": "Akademi Baloot"}},
+        "ru": {"stringUnit": {"state": "translated", "value": "Академия Baloot"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Balot akademisi"}},
+        "ur": {"stringUnit": {"state": "translated", "value": "بلوٹ اکیڈمی"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "Baloot 学院"}}
+      }
+    },
+    "ألعاب وأدوات وقواعد": {
+      "localizations": {
+        "de": {"stringUnit": {"state": "translated", "value": "Spiele, Werkzeuge und Regeln"}},
+        "en": {"stringUnit": {"state": "translated", "value": "Games, tools, and rules"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Juegos, herramientas y reglas"}},
+        "fr": {"stringUnit": {"state": "translated", "value": "Jeux, outils et règles"}},
+        "hi": {"stringUnit": {"state": "translated", "value": "खेल, टूल और नियम"}},
+        "id": {"stringUnit": {"state": "translated", "value": "Gim, alat, dan aturan"}},
+        "ru": {"stringUnit": {"state": "translated", "value": "Игры, инструменты и правила"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Oyunlar, araçlar ve kurallar"}},
+        "ur": {"stringUnit": {"state": "translated", "value": "کھیل، اوزار اور قواعد"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "游戏、工具和规则"}}
+      }
+    },
+    "تسجيل النقاط": {
+      "localizations": {
+        "de": {"stringUnit": {"state": "translated", "value": "Punktezähler"}},
+        "en": {"stringUnit": {"state": "translated", "value": "Scorekeeper"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Marcador"}},
+        "fr": {"stringUnit": {"state": "translated", "value": "Compteur de points"}},
+        "hi": {"stringUnit": {"state": "translated", "value": "स्कोरबोर्ड"}},
+        "id": {"stringUnit": {"state": "translated", "value": "Pencatat skor"}},
+        "ru": {"stringUnit": {"state": "translated", "value": "Счётчик очков"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Puan tablosu"}},
+        "ur": {"stringUnit": {"state": "translated", "value": "اسکور بورڈ"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "记分板"}}
+      }
+    },
+    "سجل الجلسات": {
+      "localizations": {
+        "de": {"stringUnit": {"state": "translated", "value": "Sitzungsverlauf"}},
+        "en": {"stringUnit": {"state": "translated", "value": "Session history"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Historial de sesiones"}},
+        "fr": {"stringUnit": {"state": "translated", "value": "Historique des sessions"}},
+        "hi": {"stringUnit": {"state": "translated", "value": "सत्र का इतिहास"}},
+        "id": {"stringUnit": {"state": "translated", "value": "Riwayat sesi"}},
+        "ru": {"stringUnit": {"state": "translated", "value": "История сессий"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Oturum geçmişi"}},
+        "ur": {"stringUnit": {"state": "translated", "value": "سیشن کی تاریخ"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "对局记录"}}
+      }
+    },
+    "تصفية المكتبة": {
+      "localizations": {
+        "de": {"stringUnit": {"state": "translated", "value": "Bibliothek filtern"}},
+        "en": {"stringUnit": {"state": "translated", "value": "Filter library"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Filtrar biblioteca"}},
+        "fr": {"stringUnit": {"state": "translated", "value": "Filtrer la bibliothèque"}},
+        "hi": {"stringUnit": {"state": "translated", "value": "लाइब्रेरी फ़िल्टर करें"}},
+        "id": {"stringUnit": {"state": "translated", "value": "Filter koleksi"}},
+        "ru": {"stringUnit": {"state": "translated", "value": "Фильтр библиотеки"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Kitaplığı filtrele"}},
+        "ur": {"stringUnit": {"state": "translated", "value": "لائبریری فلٹر کریں"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "筛选资料库"}}
+      }
+    },
+    "دليل أقسام المكتبة": {
+      "localizations": {
+        "de": {"stringUnit": {"state": "translated", "value": "Übersicht der Bibliothek"}},
+        "en": {"stringUnit": {"state": "translated", "value": "Guide to library sections"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Guía de secciones de la biblioteca"}},
+        "fr": {"stringUnit": {"state": "translated", "value": "Guide des sections de la bibliothèque"}},
+        "hi": {"stringUnit": {"state": "translated", "value": "लाइब्रेरी अनुभागों की गाइड"}},
+        "id": {"stringUnit": {"state": "translated", "value": "Panduan bagian koleksi"}},
+        "ru": {"stringUnit": {"state": "translated", "value": "Справка по разделам библиотеки"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Kitaplık bölümleri kılavuzu"}},
+        "ur": {"stringUnit": {"state": "translated", "value": "لائبریری کے حصوں کی رہنمائی"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "资料库分区指南"}}
+      }
+    },
+    "لا توجد مفضلة بعد": {
+      "localizations": {
+        "de": {"stringUnit": {"state": "translated", "value": "Noch keine Favoriten"}},
+        "en": {"stringUnit": {"state": "translated", "value": "No favorites yet"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Aún no hay favoritos"}},
+        "fr": {"stringUnit": {"state": "translated", "value": "Aucun favori pour le moment"}},
+        "hi": {"stringUnit": {"state": "translated", "value": "अभी कोई पसंदीदा नहीं"}},
+        "id": {"stringUnit": {"state": "translated", "value": "Belum ada favorit"}},
+        "ru": {"stringUnit": {"state": "translated", "value": "Пока нет избранного"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Henüz favori yok"}},
+        "ur": {"stringUnit": {"state": "translated", "value": "ابھی کوئی پسندیدہ نہیں"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "暂无收藏"}}
+      }
+    },
+    "أضف لعبة أو أداة إلى المفضلة من بطاقتها.": {
+      "localizations": {
+        "de": {"stringUnit": {"state": "translated", "value": "Füge ein Spiel oder Werkzeug über seine Karte zu den Favoriten hinzu."}},
+        "en": {"stringUnit": {"state": "translated", "value": "Add a game or tool to favorites from its card."}},
+        "es": {"stringUnit": {"state": "translated", "value": "Añade un juego o herramienta a favoritos desde su tarjeta."}},
+        "fr": {"stringUnit": {"state": "translated", "value": "Ajoutez un jeu ou un outil aux favoris depuis sa fiche."}},
+        "hi": {"stringUnit": {"state": "translated", "value": "किसी खेल या टूल के कार्ड से उसे पसंदीदा में जोड़ें।"}},
+        "id": {"stringUnit": {"state": "translated", "value": "Tambahkan gim atau alat ke favorit dari kartunya."}},
+        "ru": {"stringUnit": {"state": "translated", "value": "Добавьте игру или инструмент в избранное из его карточки."}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Bir oyun veya aracı kartından favorilere ekleyin."}},
+        "ur": {"stringUnit": {"state": "translated", "value": "کسی کھیل یا اوزار کو اس کے کارڈ سے پسندیدہ میں شامل کریں۔"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "在游戏或工具的卡片上将其加入收藏。"}}
+      }
+    },
+    "جرّب كلمة بحث أخرى أو غيّر التصفية.": {
+      "localizations": {
+        "de": {"stringUnit": {"state": "translated", "value": "Versuche einen anderen Suchbegriff oder ändere den Filter."}},
+        "en": {"stringUnit": {"state": "translated", "value": "Try another search term or change the filter."}},
+        "es": {"stringUnit": {"state": "translated", "value": "Prueba otra búsqueda o cambia el filtro."}},
+        "fr": {"stringUnit": {"state": "translated", "value": "Essayez un autre terme de recherche ou changez le filtre."}},
+        "hi": {"stringUnit": {"state": "translated", "value": "दूसरा शब्द खोजें या फ़िल्टर बदलें।"}},
+        "id": {"stringUnit": {"state": "translated", "value": "Coba kata pencarian lain atau ubah filter."}},
+        "ru": {"stringUnit": {"state": "translated", "value": "Попробуйте другой запрос или измените фильтр."}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Başka bir ifade arayın veya filtreyi değiştirin."}},
+        "ur": {"stringUnit": {"state": "translated", "value": "دوسرا لفظ تلاش کریں یا فلٹر بدلیں۔"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "请尝试其他关键词或更改筛选条件。"}}
+      }
+    },
+    "عرض كل العناصر": {
+      "localizations": {
+        "de": {"stringUnit": {"state": "translated", "value": "Alle Einträge anzeigen"}},
+        "en": {"stringUnit": {"state": "translated", "value": "Show all items"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Mostrar todo"}},
+        "fr": {"stringUnit": {"state": "translated", "value": "Tout afficher"}},
+        "hi": {"stringUnit": {"state": "translated", "value": "सभी आइटम दिखाएँ"}},
+        "id": {"stringUnit": {"state": "translated", "value": "Tampilkan semua"}},
+        "ru": {"stringUnit": {"state": "translated", "value": "Показать всё"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Tümünü göster"}},
+        "ur": {"stringUnit": {"state": "translated", "value": "سب دکھائیں"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "显示全部"}}
+      }
+    },
+    "المظهر والصوت": {
+      "localizations": {
+        "de": {"stringUnit": {"state": "translated", "value": "Darstellung und Ton"}},
+        "en": {"stringUnit": {"state": "translated", "value": "Appearance and sound"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Apariencia y sonido"}},
+        "fr": {"stringUnit": {"state": "translated", "value": "Apparence et son"}},
+        "hi": {"stringUnit": {"state": "translated", "value": "दिखावट और ध्वनि"}},
+        "id": {"stringUnit": {"state": "translated", "value": "Tampilan dan suara"}},
+        "ru": {"stringUnit": {"state": "translated", "value": "Внешний вид и звук"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Görünüm ve ses"}},
+        "ur": {"stringUnit": {"state": "translated", "value": "ظاہری شکل اور آواز"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "外观和声音"}}
+      }
+    },
+    "الدعم والخصوصية": {
+      "localizations": {
+        "de": {"stringUnit": {"state": "translated", "value": "Support und Datenschutz"}},
+        "en": {"stringUnit": {"state": "translated", "value": "Support and privacy"}},
+        "es": {"stringUnit": {"state": "translated", "value": "Ayuda y privacidad"}},
+        "fr": {"stringUnit": {"state": "translated", "value": "Assistance et confidentialité"}},
+        "hi": {"stringUnit": {"state": "translated", "value": "सहायता और गोपनीयता"}},
+        "id": {"stringUnit": {"state": "translated", "value": "Dukungan dan privasi"}},
+        "ru": {"stringUnit": {"state": "translated", "value": "Поддержка и конфиденциальность"}},
+        "tr": {"stringUnit": {"state": "translated", "value": "Destek ve gizlilik"}},
+        "ur": {"stringUnit": {"state": "translated", "value": "معاونت اور رازداری"}},
+        "zh-Hans": {"stringUnit": {"state": "translated", "value": "支持和隐私"}}
+      }
+    },
     "التخزين مؤقت: تعذر فتح بياناتك. لن تُحفظ تغييرات هذه الجلسة بعد الإغلاق.": {
       "localizations": {
         "en": {"stringUnit": {"state": "translated", "value": "Temporary storage: your data could not be opened. Changes in this session will not be kept after closing the app."}},

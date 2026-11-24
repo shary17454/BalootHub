@@ -8,6 +8,7 @@ enum CatalogFilter: String, CaseIterable, Identifiable {
     case otherCardGame
     case playable
     case rulesOnly
+    case favorites
 
     var id: String { rawValue }
 
@@ -21,6 +22,7 @@ enum CatalogFilter: String, CaseIterable, Identifiable {
         case .otherCardGame: "ألعاب ورق".localized
         case .playable: "متاح للعب".localized
         case .rulesOnly: "قواعد فقط".localized
+        case .favorites: "المفضلة".localized
         }
     }
 }
@@ -43,6 +45,8 @@ enum CatalogSearch {
             result = result.filter(\.isPlayable)
         case .rulesOnly:
             result = result.filter { !$0.isPlayable }
+        case .favorites:
+            result = result.filter(\.isFavorite)
         }
 
         let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)

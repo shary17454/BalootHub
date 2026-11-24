@@ -167,4 +167,19 @@ final class AppRouteTests: XCTestCase {
         XCTAssertTrue(appEnvironment.scorekeeperPath.isEmpty)
         XCTAssertTrue(appEnvironment.historyPath.isEmpty)
     }
+
+    @MainActor
+    func testOpeningTabRootClearsOnlyTheDestinationPath() {
+        let environment = AppEnvironment()
+        environment.navigate(to: .onlineBaloot, tab: .home)
+        environment.navigate(to: .scorekeeperNewSession, tab: .scorekeeper)
+        environment.navigate(to: .gameDetails(slug: "baloot-classic"), tab: .catalog)
+
+        environment.openTabRoot(.scorekeeper)
+
+        XCTAssertEqual(environment.selectedTab, .scorekeeper)
+        XCTAssertTrue(environment.scorekeeperPath.isEmpty)
+        XCTAssertEqual(environment.homePath, [.onlineBaloot])
+        XCTAssertEqual(environment.catalogPath, [.gameDetails(slug: "baloot-classic")])
+    }
 }

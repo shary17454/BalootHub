@@ -3,6 +3,7 @@ import SwiftData
 
 struct CatalogView: View {
     @Environment(AppEnvironment.self) private var appEnvironment
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \GameCatalogItem.sortOrder) private var allItems: [GameCatalogItem]
 
@@ -21,44 +22,47 @@ struct CatalogView: View {
         selectedFilter == .all && searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
-    private let columns = [GridItem(.adaptive(minimum: 260), spacing: AppSpacing.md)]
+    private var columns: [GridItem] {
+        dynamicTypeSize.isAccessibilitySize
+            ? [GridItem(.flexible())]
+            : [GridItem(.adaptive(minimum: 260), spacing: AppSpacing.md)]
+    }
 
     var body: some View {
         VStack(spacing: 0) {
             searchBar
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: AppSpacing.xs) {
+            Menu {
+                Picker("تصفية المكتبة", selection: $selectedFilter) {
                     ForEach(CatalogFilter.allCases) { filter in
-                        SelectableChip(title: filter.title, isSelected: selectedFilter == filter) {
-                            selectedFilter = filter
-                        }
+                        Text(filter.title).tag(filter)
                     }
                 }
-                .padding(.horizontal, AppSpacing.md)
-                .padding(.vertical, AppSpacing.sm)
+            } label: {
+                Label(selectedFilter.title, systemImage: "line.3.horizontal.decrease.circle")
+                    .font(AppTypography.subheadline)
+                    .frame(minHeight: 44)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, AppSpacing.md)
             }
+            .accessibilityLabel("تصفية المكتبة")
+            .accessibilityValue(selectedFilter.title)
+            .accessibilityIdentifier("catalogFilter")
 
             if allItems.isEmpty {
                 LoadingStateView(message: "جارِ تجهيز الكتالوج…")
                     .frame(maxHeight: .infinity)
             } else if filteredItems.isEmpty {
-                EmptyStateView(
-                    systemImage: "magnifyingglass",
-                    title: "لا نتائج مطابقة",
-                    message: "جرّب تغيير الفلتر أو كلمة البحث.",
-                    actionTitle: searchText.isEmpty ? nil : "مسح البحث",
-                    action: { searchText = "" }
-                )
-                .frame(maxHeight: .infinity)
+                emptyResults
+                    .frame(maxHeight: .infinity)
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: AppSpacing.lg) {
                         if usesGroupedLayout {
-                            usageGuide
                             ForEach(groupedSections) { section in
                                 catalogSection(section)
                             }
+                            usageGuide
                         } else {
                             LazyVGrid(columns: columns, spacing: AppSpacing.md) {
                                 ForEach(filteredItems) { item in
@@ -77,23 +81,30 @@ struct CatalogView: View {
         .appGlassNavigationChrome()
     }
 
-    private var usageGuide: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.sm) {
-            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                Text("ترتيب المكتبة")
-                    .font(AppTypography.title)
-                    .foregroundStyle(AppColor.textPrimary)
-                Text("ابدأ بالبلوت إذا تريد اللعب، واستخدم بقية الأقسام للتدريب أو قراءة القواعد.")
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColor.textSecondary)
+    private var emptyResults: some View {
+        let showsEmptyFavorites = selectedFilter == .favorites && searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        return EmptyStateView(
+            systemImage: showsEmptyFavorites ? "heart" : "magnifyingglass",
+            title: showsEmptyFavorites ? "لا توجد مفضلة بعد" : "لا نتائج مطابقة",
+            message: showsEmptyFavorites ? "أضف لعبة أو أداة إلى المفضلة من بطاقتها." : "جرّب كلمة بحث أخرى أو غيّر التصفية.",
+            actionTitle: "عرض كل العناصر",
+            action: {
+                searchText = ""
+                selectedFilter = .all
             }
+        )
+    }
 
+    private var usageGuide: some View {
+        DisclosureGroup("دليل أقسام المكتبة") {
             LazyVGrid(columns: columns, spacing: AppSpacing.md) {
                 ForEach(CatalogPresentation.usageGuideItems) { item in
                     usageGuideCard(item)
                 }
             }
+            .padding(.top, AppSpacing.sm)
         }
+        .font(AppTypography.headline)
     }
 
     private func usageGuideCard(_ item: CatalogUsageGuideItem) -> some View {
@@ -129,6 +140,7 @@ struct CatalogView: View {
                 Text(section.title)
                     .font(AppTypography.title)
                     .foregroundStyle(AppColor.textPrimary)
+                    .accessibilityAddTraits(.isHeader)
                 Text(section.detail)
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)

@@ -45,51 +45,47 @@ struct SettingsView: View {
 
     private func form(_ settings: AppSettings) -> some View {
         Form {
-            Section("المظهر") {
+            Section("المظهر والصوت") {
                 Picker("المظهر", selection: binding(settings, \.appearanceMode)) {
                     ForEach(AppearanceMode.allCases) { mode in
                         Text(mode.title).tag(mode)
                     }
                 }
-            }
 
-            Section("شكل الطاولة") {
+                Toggle("المؤثرات الصوتية", isOn: binding(settings, \.soundEnabled))
+                Toggle("الاهتزاز اللمسي", isOn: binding(settings, \.hapticsEnabled))
+
                 NavigationLink {
                     AppearanceStudioView()
                 } label: {
                     Label("تخصيص الطاولة", systemImage: "paintbrush.pointed")
                 }
-                Text("أشكال الأوراق وظهرها ولبس الطاولة والخلفية وصورة اللاعب والثيم. تُفتح الأنماط بالتقدّم في نمط المسيرة، بلا أي شراء.")
+                Text("تفتح أشكال الطاولة بالتقدّم في المسيرة مجانًا.")
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
             }
 
-            Section("بلوت بلس") {
+            Section("اللعب") {
                 NavigationLink {
-                    BalootPlusView()
+                    HouseRulesView()
                 } label: {
-                    Label("إدارة الاشتراك", systemImage: "crown.fill")
+                    Label("قواعد مجلسي", systemImage: "slider.horizontal.3")
                 }
-                HStack {
-                    Text("الحالة")
-                    Spacer()
-                    Text(appEnvironment.subscriptionStore.isPremiumUnlocked ? "مفعّل".localized : "غير مفعّل".localized)
-                        .foregroundStyle(AppColor.textSecondary)
+                Text("تُطبّق على الطاولات المحلية الجديدة. لتسجيل البلوت إعداداته الخاصة.")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColor.textSecondary)
+
+                NavigationLink {
+                    OnlineBalootView()
+                } label: {
+                    Label("اللعب مع الأصدقاء عبر الإنترنت", systemImage: "person.2.wave.2")
                 }
-                Text("اشتراك اختياري يربط خدمات التدريب والتحليل والتخصيص المتقدمة عبر StoreKit 2 ويدعم الاستعادة من حساب Apple.")
+                Text("أنشئ غرفة خاصة لأربعة لاعبين أو انضم برمز. يلزم اتصال بالإنترنت.")
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
             }
 
-            Section("الصوت والاهتزاز") {
-                Toggle("المؤثرات الصوتية", isOn: binding(settings, \.soundEnabled))
-                Toggle("الاهتزاز اللمسي", isOn: binding(settings, \.hapticsEnabled))
-                Text("تُستخدم أصوات واجهة النظام مباشرة، فلا يحمل التطبيق أي ملفات صوت.")
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColor.textSecondary)
-            }
-
-            Section("تسجيل البلوت") {
+            Section(AppTab.scorekeeper.title) {
                 Stepper(value: binding(settings, \.defaultTargetScore), in: AppSettings.allowedTargetScoreRange, step: 1) {
                     HStack {
                         Text("الحد المستهدف الافتراضي")
@@ -116,29 +112,7 @@ struct SettingsView: View {
                 Toggle("تأكيد قبل الحذف أو التراجع", isOn: binding(settings, \.confirmBeforeDelete))
             }
 
-            Section("قواعد اللعب") {
-                NavigationLink {
-                    HouseRulesView()
-                } label: {
-                    Label("قواعد مجلسي", systemImage: "slider.horizontal.3")
-                }
-                Text("تُستخدم هذه القواعد عند بدء طاولة بلوت جديدة، مع بقاء مسجل النقاط مستقلًا بصيغته الحالية.")
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColor.textSecondary)
-            }
-
-            Section("اللعب الجماعي") {
-                NavigationLink {
-                    OnlineBalootView()
-                } label: {
-                    Label("اللعب مع الأصدقاء عبر الإنترنت", systemImage: "person.2.wave.2")
-                }
-                Text("أنشئ غرفة خاصة لأربعة لاعبين أو انضم برمزها، يحتاج هذا النمط اتصالًا بالإنترنت")
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColor.textSecondary)
-            }
-
-            Section("عن التطبيق") {
+            Section("الدعم والخصوصية") {
                 Button {
                     NotificationCenter.default.post(name: .balootIssueReportRequested, object: nil)
                 } label: {
@@ -146,11 +120,36 @@ struct SettingsView: View {
                 }
                 .accessibilityHint("يفتح نموذج البلاغ مع معاينة اختيارية لصورة الشاشة")
                 .accessibilityIdentifier("openIssueReport")
-                LabeledContent("الاسم", value: "البلوت".localized)
-                LabeledContent("الإصدار", value: Self.appVersion)
-                Text("اللعب المحلي والنتائج محفوظة على جهازك، عند اختيار اللعب عبر الإنترنت تُرسل الأسماء المستعارة وحركات المباراة إلى خادم الغرف المؤقتة")
+
+                VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                    Text("الخصوصية")
+                    Text("تبقى نتائج اللعب المحلي على جهازك. عند اللعب عبر الإنترنت، تُرسل الأسماء المستعارة وحركات اللعب إلى خادم الغرف المؤقتة.")
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColor.textSecondary)
+                }
+                .accessibilityElement(children: .combine)
+            }
+
+            Section("بلوت بلس") {
+                NavigationLink {
+                    BalootPlusView()
+                } label: {
+                    Label("إدارة الاشتراك", systemImage: "crown.fill")
+                }
+                HStack {
+                    Text("الحالة")
+                    Spacer()
+                    Text(appEnvironment.subscriptionStore.isPremiumUnlocked ? "مفعّل".localized : "غير مفعّل".localized)
+                        .foregroundStyle(AppColor.textSecondary)
+                }
+                Text("اشتراك اختياري يمكنك استعادته بحساب Apple.")
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColor.textSecondary)
+            }
+
+            Section("عن التطبيق") {
+                LabeledContent("الاسم", value: "البلوت".localized)
+                LabeledContent("الإصدار", value: Self.appVersion)
             }
         }
     }

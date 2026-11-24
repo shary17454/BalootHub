@@ -60,15 +60,32 @@ final class CatalogFilterTests: XCTestCase {
         XCTAssertEqual(makeItems().count, 66)
     }
 
-    func testHomeWorkflowUsesFourClearEntryPoints() {
+    func testFavoritesFilterCombinesWithSearch() throws {
+        let items = makeItems()
+        let baloot = try XCTUnwrap(items.first { $0.slug == "baloot-classic" })
+        let tarneeb = try XCTUnwrap(items.first { $0.slug == "tarneeb" })
+        XCTAssertTrue(CatalogSearch.apply(filter: .favorites, query: "", to: items).isEmpty)
+
+        baloot.isFavorite = true
+        tarneeb.isFavorite = true
+
+        XCTAssertEqual(CatalogSearch.apply(filter: .favorites, query: "", to: items).map(\.slug),
+                       ["baloot-classic", "tarneeb"])
+        XCTAssertEqual(CatalogSearch.apply(filter: .favorites, query: "طرنيب", to: items).map(\.slug),
+                       ["tarneeb"])
+    }
+
+    func testHomeWorkflowPrioritizesLocalPlayAndExposesOnlineRooms() {
         let actions = CatalogPresentation.workflowActions
 
-        XCTAssertEqual(actions.map(\.id), ["play", "score", "learn", "library"])
+        XCTAssertEqual(actions.map(\.id), ["play", "online", "score", "learn", "library"])
         XCTAssertEqual(actions.first?.route, .balootGamePlay(slug: "baloot-classic"))
         XCTAssertEqual(actions.first?.tab, .home)
-        XCTAssertEqual(actions[1].tab, .scorekeeper)
-        XCTAssertEqual(actions[2].route, .balootAcademy())
-        XCTAssertEqual(actions[3].tab, .catalog)
+        XCTAssertEqual(actions[1].route, .onlineBaloot)
+        XCTAssertEqual(actions[1].tab, .home)
+        XCTAssertEqual(actions[2].tab, .scorekeeper)
+        XCTAssertEqual(actions[3].route, .balootAcademy())
+        XCTAssertEqual(actions[4].tab, .catalog)
         XCTAssertFalse(actions.contains { $0.id == "plus" })
     }
 

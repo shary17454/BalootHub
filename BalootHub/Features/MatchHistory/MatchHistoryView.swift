@@ -52,7 +52,7 @@ struct MatchHistoryView: View {
             }
         }
         .background(AppColor.background)
-        .navigationTitle("السجل")
+        .navigationTitle(AppTab.history.title)
         .confirmationDialog("هل تريد حذف هذه الجلسة نهائيًا؟", isPresented: $isPresentingDeleteConfirm, titleVisibility: .visible) {
             Button("حذف", role: .destructive) {
                 if let sessionPendingDelete {

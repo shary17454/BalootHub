@@ -74,6 +74,8 @@ struct RootTabView: View {
             BalootGamePlayView(slug: slug)
         case .otherCardGamePlay(let slug):
             OtherCardGamePlayView(slug: slug)
+        case .onlineBaloot:
+            OnlineBalootView()
         case .balootAcademy(let lessonID):
             BalootAcademyView(initialLessonID: lessonID)
         case .handAnalyzer:

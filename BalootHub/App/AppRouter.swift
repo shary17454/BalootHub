@@ -15,8 +15,8 @@ enum AppTab: String, CaseIterable, Identifiable {
         switch self {
         case .home: "الرئيسية".localized
         case .catalog: "المكتبة".localized
-        case .scorekeeper: "تسجيل البلوت".localized
-        case .history: "السجل".localized
+        case .scorekeeper: "تسجيل النقاط".localized
+        case .history: "سجل الجلسات".localized
         case .settings: "الإعدادات".localized
         }
     }
@@ -40,6 +40,7 @@ enum AppRoute: Hashable {
     case scorekeeperNewSession
     case balootGamePlay(slug: String)
     case otherCardGamePlay(slug: String)
+    case onlineBaloot
     case balootAcademy(lessonID: String? = nil)
     case handAnalyzer
     case whatToPlayTrainer(

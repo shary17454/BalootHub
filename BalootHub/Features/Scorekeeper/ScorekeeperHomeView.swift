@@ -10,8 +10,6 @@ struct ScorekeeperHomeView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
                 VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                    Text("تسجيل البلوت")
-                        .font(AppTypography.largeTitle)
                     Text("سجّل جلسة بلوت جديدة، أو تابع جلسة قائمة")
                         .font(AppTypography.subheadline)
                         .foregroundStyle(AppColor.textSecondary)
@@ -50,7 +48,7 @@ struct ScorekeeperHomeView: View {
             .adaptiveContentWidth()
         }
         .background(AppColor.background)
-        .navigationTitle("تسجيل البلوت")
+        .navigationTitle(AppTab.scorekeeper.title)
     }
 }
 

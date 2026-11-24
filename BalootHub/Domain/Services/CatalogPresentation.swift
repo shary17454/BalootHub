@@ -29,15 +29,23 @@ enum CatalogPresentation {
         CatalogWorkflowAction(
             id: "play",
             title: "العب البلوت".localized,
-            detail: "طاولة البلوت الكاملة: المزايدة تحدد صن أو حكم داخل نفس اللعبة.".localized,
+            detail: "العب محليًا دون اتصال".localized,
             iconName: "play.fill",
             route: .balootGamePlay(slug: "baloot-classic"),
             tab: .home
         ),
         CatalogWorkflowAction(
+            id: "online",
+            title: "العب مع الأصدقاء".localized,
+            detail: "غرف خاصة عبر الإنترنت".localized,
+            iconName: "person.2.fill",
+            route: .onlineBaloot,
+            tab: .home
+        ),
+        CatalogWorkflowAction(
             id: "score",
-            title: "سجل البلوت".localized,
-            detail: "استخدم مسجل المجلس للصكات والمشاريع والمضاعفات والهدف.".localized,
+            title: "سجّل النقاط".localized,
+            detail: "حساب نقاط المجلس".localized,
             iconName: "list.clipboard.fill",
             route: nil,
             tab: .scorekeeper
@@ -45,15 +53,15 @@ enum CatalogPresentation {
         CatalogWorkflowAction(
             id: "learn",
             title: "تعلّم وتدرّب".localized,
-            detail: "الأكاديمية ومدرب وش تلعب وتحليل اليد واختبار النقاط.".localized,
+            detail: "أكاديمية البلوت".localized,
             iconName: "graduationcap.fill",
             route: .balootAcademy(),
             tab: .home
         ),
         CatalogWorkflowAction(
             id: "library",
-            title: "مكتبة ألعاب الورق".localized,
-            detail: "قواعد البلوت والألعاب الأخرى مفصولة وواضحة: لعب، تدريب، أو مرجع.".localized,
+            title: "المكتبة".localized,
+            detail: "ألعاب وأدوات وقواعد".localized,
             iconName: "books.vertical.fill",
             route: nil,
             tab: .catalog
